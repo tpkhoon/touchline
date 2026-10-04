@@ -735,11 +735,12 @@
     comp: 'any',
     avail: 'any',
     more: false,
+    sort: 'default',
   };
   const SF_AGE = { any: [0, 99], u19: [0, 19], u21: [0, 21], u23: [0, 23], prime: [24, 29], vet: [30, 99] };
   const SF_PRICE = { any: Infinity, m1: 1e6, m5: 5e6, m20: 2e7 };
   const SF_WAGE = { any: Infinity, k10: 1e4, k25: 2.5e4, k50: 5e4, k100: 1e5 };
-  const sfActive = () => Object.entries(UI._sf).filter(([k, v]) => k !== 'more' && v !== 'any').length;
+  const sfActive = () => Object.entries(UI._sf).filter(([k, v]) => k !== 'more' && k !== 'sort' && v !== 'any').length;
   // Your XI's level: "a starter for us" means at least that
   const myLevel = () => {
     const c = club();
@@ -779,6 +780,28 @@
       return true;
     });
   }
+  // Sorting a list of players by what you know of them: his ability or potential as your scouts judge it (a range's
+  // middle; unknown last), or his value. 'default' keeps each list's own order.
+  const SF_SORTS = [
+    ['default', 'Best known'],
+    ['ca', 'Ability'],
+    ['pa', 'Potential'],
+    ['value', 'Value'],
+  ];
+  const sfSortRow = () =>
+    `<div class="chips noswipe" style="margin-top:6px"><span class="chip-lbl">Sort</span>${SF_SORTS.map(([v, l]) => `<button class="chip ${UI._sf.sort === v ? 'on' : ''}" data-act="sf" data-k="sort" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const sfSort = (list, getP, base) => {
+    const k = UI._sf.sort;
+    if (k === 'default') return base ? list.sort(base) : list;
+    const key = (x) => {
+      const p = getP(x),
+        v = FM.Scouting.view(p);
+      return k === 'value'
+        ? p.value
+        : (mid(k === 'ca' ? v.ca : v.pa) ?? (v.own ? (k === 'ca' ? p.ca : p.pa) : null) ?? -1);
+    };
+    return list.sort((a, b) => key(b) - key(a));
+  };
   function sfPanel() {
     const f = UI._sf,
       n = sfActive();
@@ -812,6 +835,7 @@
       : '';
     return `<div class="card flat" style="padding:8px 10px;margin-bottom:8px">
       ${row('pos', [['any', 'All'], ...D.POS.map((x) => [x, x])])}
+      ${sfSortRow()}
       ${
         f.more
           ? [
@@ -855,9 +879,11 @@
     UI.render();
   };
   UI.acts.sfReset = () => {
-    const more = UI._sf.more;
+    const more = UI._sf.more,
+      sort = UI._sf.sort;
     Object.keys(UI._sf).forEach((k) => (UI._sf[k] = 'any'));
     UI._sf.more = more;
+    UI._sf.sort = sort;
     UI.render();
   };
 
@@ -877,6 +903,8 @@
       newest: (a, b) => b.r.year - a.r.year || b.r.day - a.r.day,
       fee: (a, b) => (a.v.fee || 0) - (b.v.fee || 0),
       age: (a, b) => W.age(a.p) - W.age(b.p),
+      ability: (a, b) => (mid(b.v.ca) ?? -1) - (mid(a.v.ca) ?? -1),
+      potential: (a, b) => (mid(b.v.pa) ?? -1) - (mid(a.v.pa) ?? -1),
     };
     reps.sort(sorts[f.sort]);
     const disList = Object.keys(s.user.dismissed || {})
@@ -893,6 +921,8 @@
       ${chipRow('rf', 'sort', f.sort, [
         ['grade', 'Sort: grade'],
         ['newest', 'Newest'],
+        ['ability', 'Ability'],
+        ['potential', 'Potential'],
         ['fee', 'Cheapest'],
         ['age', 'Youngest'],
       ])}
@@ -926,7 +956,11 @@
       );
     if (q.region !== 'any') ps = ps.filter((p) => FM.Scouting.region(p) === q.region);
     // the cheap filters first, so the scouting estimates are worked out only for what's left
-    ps = sfApply(ps).sort((a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value);
+    ps = sfSort(
+      sfApply(ps),
+      (p) => p,
+      (a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value,
+    );
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
       <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
       ${sfPanel()}
@@ -945,7 +979,11 @@
   UI._fq = { pos: 'any' };
   function freeView() {
     let ps = sfApply(Object.values(S().players).filter((p) => !p.clubId && !p.retired));
-    ps = ps.map((p) => ({ p, v: FM.Scouting.view(p) })).sort((a, b) => b.v.score - a.v.score || b.p.ca - a.p.ca);
+    ps = sfSort(
+      ps.map((p) => ({ p, v: FM.Scouting.view(p) })),
+      (x) => x.p,
+      (a, b) => b.v.score - a.v.score || b.p.ca - a.p.ca,
+    );
     return `<div class="small muted" style="margin:0 2px 8px">Out-of-contract players can sign any time, window open or not — no fee, but they want a signing-on bonus and slightly higher wages. Scout them to see what you're getting.</div>
       ${sfPanel()}
       <div class="card flat list" style="padding:4px 12px">${
@@ -960,9 +998,9 @@
     UI.render();
   };
   function shortlistView() {
-    const sl = S().user.shortlist.filter(P);
+    const sl = sfSort(S().user.shortlist.filter(P).slice(), (id) => P(id));
     return sl.length
-      ? `<div class="card flat list" style="padding:4px 12px">${sl.map((id) => reportRow(P(id), FM.Scouting.view(P(id)))).join('')}</div>`
+      ? `${sfSortRow()}<div class="card flat list" style="padding:4px 12px">${sl.map((id) => reportRow(P(id), FM.Scouting.view(P(id)))).join('')}</div>`
       : '<div class="empty">Your shortlist is empty. Tap ☆ on a player card.</div>';
   }
   UI._mk = 'all';

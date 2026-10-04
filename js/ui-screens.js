@@ -636,7 +636,8 @@
   UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false };
   const SQ_SORT = {
     pos: ['Position', (a, b) => b.ca - a.ca],
-    ca: ['Rating', (a, b) => b.ca - a.ca],
+    ca: ['Ability', (a, b) => b.ca - a.ca],
+    pa: ['Potential', (a, b) => b.pa - a.pa || b.ca - a.ca],
     fit: ['Fitness', (a, b) => a.fitness - b.fitness],
     age: ['Age', (a, b) => W.age(a) - W.age(b)],
     wage: ['Wage', (a, b) => b.wage - a.wage],
@@ -712,7 +713,7 @@
     const foreign = sq.filter((p) => p.nat !== club().nat).length;
     const expiring = sq.filter((p) => !p.loan && p.contract <= S().year).length;
     const extra = (p) =>
-      `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
+      `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${q.sort === 'pa' ? ` · potential ${C.starText(p.pa, p.pos)}` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
     const list = sq.filter((p) => SQ_FILTER[q.filter][1](p, starters)).sort(SQ_SORT[q.sort][1]);
     const chipsRow = (act, cur, map, label = '', more = '') =>
       `<div class="chips noswipe">${label ? `<span class="chip-lbl">${label}</span>` : ''}${Object.entries(map)
@@ -1225,7 +1226,7 @@
               `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow ${CL(sp.c) ? 'tap' : ''}" ${CL(sp.c) ? `data-act="clubView" data-id="${sp.c}"` : ''}>${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : ''}${sp.from}–${sp.to || 'now'}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
           )
           .join('')}
-        ${p.intl && p.intl.caps ? `<div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${natLink(`${C.flag(p.nat)} ${p.intl.caps} caps · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goals`}`)}</b></div>` : ''}
+        <div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${p.intl && p.intl.caps ? natLink(`${C.flag(playsFor)} ${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'} · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goal${p.intl.goals === 1 ? '' : 's'}`}`) : `<span class="dim" style="font-weight:600">Uncapped${p.nat2 ? ' · free to choose' : ''}</span>`}</b></div>
         ${p.honours && p.honours.length ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Honours</span><b>${honoursLine(p)}</b></div>` : ''}
         ${trainedRows(p)}
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
@@ -2415,7 +2416,7 @@
     const c = club(),
       F = FM.Season.FAC;
     return (
-      `${c.building ? `<div class="warnline">🏗️ Building: ${F[c.building.k].name} — ${c.building.weeks} week(s) left</div>` : ''}<div class="small muted" style="margin:0 2px 10px">Infrastructure is your legacy. Upgrades take weeks and cost real money. One project at a time.</div><div class="card flat list" style="padding:0 14px">` +
+      `${c.building ? `<div class="warnline">🏗️ Building: ${F[c.building.k].name} — ${c.building.weeks} week(s) left</div>` : ''}<div class="card flat list" style="padding:0 14px">` +
       Object.entries(F)
         .map(([k, f]) => {
           const lvl = c.facilities[k],
@@ -2505,13 +2506,12 @@
               .join('')
           : '<div class="empty">Your save will write this chapter.</div>'
       }</div>`;
-    return `<div class="small muted" style="margin:0 2px 4px">The club remembers. Legends from history sit alongside the ones your save creates.</div>
-      ${sec(
-        'Top scorers',
-        all.filter((x) => x.goals).sort((a, b) => b.goals - a.goals),
-        (x) => x.goals,
-        (x) => `${x.pos} · ${x.apps} apps${x.era ? ' · ' + x.era : ''}`,
-      )}
+    return `${sec(
+      'Top scorers',
+      all.filter((x) => x.goals).sort((a, b) => b.goals - a.goals),
+      (x) => x.goals,
+      (x) => `${x.pos} · ${x.apps} apps${x.era ? ' · ' + x.era : ''}`,
+    )}
       ${sec(
         'Most appearances',
         all.slice().sort((a, b) => b.apps - a.apps),
@@ -2613,7 +2613,7 @@
     if (st.sold >= 3) tags.push(['💼', 'Wheeler-Dealer']);
     const fav = u.favClub && S().clubs[u.favClub];
     return `<div class="card"><div class="row" style="gap:12px">${C.avatar(u, 52)}<div class="grow"><div class="h2">${u.nat ? C.flag(u.nat) + ' ' : ''}${esc(u.name)}</div><div class="small dim">${esc(u.badges)} licence · ${club() ? `Manager of ${esc(club().name)}` : 'Out of work'}${fav ? ` · ❤️ ${esc(fav.name)}` : ''}</div></div></div>
-      <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.bar(u.rep)}</div><b style="margin-left:8px">${U.repText(u.rep)}</b></div>
+      <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.stars(U.repStars(u.rep))}</div></div>
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
       ${teamTalkCard(u)}
       ${UI.careerExtras()}
