@@ -31,6 +31,9 @@
       ['free', '🆓 Free agents'],
       ['shortlist', '⭐ Shortlist'],
       ['market', '🌍 Transfer Centre'],
+      ...(c && s.comps[c.comp].rules.mls && (FM.Draft.current() || (s.draftLog || []).length)
+        ? [['draft', '🎓 Draft']]
+        : []),
     ]
       .map(([v, l]) => `<button class="btn sm grow" data-act="trGo" data-v="${v}">${l}</button>`)
       .join('')}</div>`;
@@ -125,7 +128,8 @@
   };
   // the shortcuts: search and the shortlist live in Scout, free agents and the Transfer Centre here
   UI.acts.trGo = (d) => {
-    if (d.v === 'free' || d.v === 'market') {
+    if (d.v === 'draft') UI.draftSheet();
+    else if (d.v === 'free' || d.v === 'market') {
       UI.sub.transfers = d.v;
       UI.render();
     } else {
@@ -292,7 +296,70 @@
     }
   };
   const homeScreen = UI.screens.home;
-  UI.screens.home = (...a) => UI.deadlineCard() + homeScreen(...a);
+  UI.screens.home = (...a) => UI.deadlineCard() + UI.draftCard() + homeScreen(...a);
+
+  // ======================= The draft =======================
+  // The league's college draft (the American league): a card on Home while your club is on the clock, and a board to
+  // pick from. Each prospect shows a fogged ability range, like any player you haven't scouted.
+  const Dr = FM.Draft;
+  UI.draftCard = function () {
+    const d = Dr && Dr.current();
+    if (!d || !W.employed() || !Dr.userToPick()) return '';
+    const left = d.order.slice(d.pick).filter((id) => W.isUser(id)).length;
+    return `<div class="card row tap" data-act="draftOpen" style="border:1px solid var(--acc)"><span style="font-size:28px">🎓</span><div class="grow"><div class="h3">You're on the clock · pick ${d.pick + 1}</div><div class="tiny dim">${left} pick${left === 1 ? '' : 's'} left in the ${d.year} draft. Advancing the day lets your assistant pick for you.</div></div><span class="dim">›</span></div>`;
+  };
+  const prospectRow = (p, act) => {
+    const star = (ca, pos) => W.stars(ca, pos);
+    return `<div class="prow"><span class="pos ${FM.D.POS_GROUP[p.pos]}">${W.posLabel(p)}</span><div class="grow"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="small dim ellip">${W.age(p)} yrs · ${esc(FM.D.NATIONS[p.nat] ? FM.D.NATIONS[p.nat].name : p.nat)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.stars(star(p.ca - 4, p.pos), star(p.ca + 4, p.pos), star(p.pa + 4, p.pos))}${act || ''}</div></div>`;
+  };
+  UI.draftSheet = function () {
+    const d = Dr.current(),
+      log = (S().draftLog || []).slice(-1)[0];
+    document.querySelectorAll('.sheet-wrap').forEach((x) => x.remove());
+    if (!d && !log) return UI.toast('No draft yet');
+    let html;
+    if (d) {
+      const mine = Dr.userToPick(),
+        recent = d.picks.slice(-6).reverse();
+      html = `<div class="card flat"><div class="b">${mine ? `You're on the clock — pick ${d.pick + 1} (round ${Math.floor(d.pick / d.size) + 1})` : `Pick ${d.pick + 1} of ${d.order.length}`}</div><div class="small dim" style="margin-top:4px">Clubs that missed the playoffs pick first; the champions pick last. Undrafted prospects leave the game.</div><div class="row" style="gap:8px;margin-top:8px"><button class="btn sm grow" data-act="draftAuto">Let the assistant finish the draft</button></div></div>
+      ${recent.length ? `<div class="sec"><div class="h3">Latest picks</div></div><div class="card flat" style="padding:2px 12px">${recent.map((x) => `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(S().players[x.pid]))} <span class="dim">${S().players[x.pid].pos}</span></span><span class="ellip" style="max-width:120px">${esc(FM.clubOf(x.club).short)}</span></div>`).join('')}</div>` : ''}
+      <div class="sec"><div class="h3">Available prospects</div><span class="dim small">${d.pool.length}</span></div><div class="card flat list" style="padding:4px 12px">${d.pool
+        .slice(0, 40)
+        .map((p) =>
+          prospectRow(p, mine ? `<button class="btn sm" data-act="draftPick" data-id="${p.id}">Draft</button>` : ''),
+        )
+        .join('')}</div>`;
+    } else {
+      const own = log.picks.filter((x) => W.isUser(x.club));
+      html = `<div class="small dim" style="margin-bottom:8px">The ${log.year} draft.</div>${log.picks
+        .slice(0, 30)
+        .map((x) => {
+          const p = S().players[x.pid];
+          return p
+            ? `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(p))} <span class="dim">${p.pos}</span></span><span class="ellip" style="max-width:120px;${W.isUser(x.club) ? 'font-weight:800' : ''}">${esc(FM.clubOf(x.club).short)}</span></div>`
+            : '';
+        })
+        .join('')}${own.length ? '' : ''}`;
+    }
+    UI.sheet(html, { title: d ? `🎓 ${d.year} Draft` : '🎓 Draft results', full: true });
+  };
+  UI.acts.draftOpen = () => UI.draftSheet();
+  UI.acts.draftPick = (d) => {
+    const r = Dr.userPick(d.id);
+    if (!r.ok) return UI.toast(r.msg);
+    UI.toast(`Drafted ${W.name(r.p)}`);
+    if (Dr.current() && Dr.userToPick()) UI.draftSheet();
+    else {
+      UI.closeAllSheets();
+      UI.render();
+    }
+  };
+  UI.acts.draftAuto = () => {
+    Dr.finish();
+    UI.closeAllSheets();
+    UI.toast('Draft complete');
+    UI.render();
+  };
   UI.BID_STATUS = {
     accepted: '✅ Accepted',
     rejected: '❌ Rejected',

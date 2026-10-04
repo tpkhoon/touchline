@@ -1447,6 +1447,74 @@
     return rounds.concat(second);
   };
 
+  // Conference membership of a league's clubs (comp.conf: club id -> conference). Clubs the rules don't name (a club
+  // that arrived by promotion, say) join the smaller conference.
+  W.conferenceOf = function (comp) {
+    const names = Object.keys(comp.rules.conferences);
+    comp.conf = comp.conf || {};
+    for (const [n, codes] of Object.entries(comp.rules.conferences))
+      for (const code of codes) if (comp.clubs.includes('c_' + code)) comp.conf['c_' + code] = n;
+    for (const id of Object.keys(comp.conf)) if (!comp.clubs.includes(id)) delete comp.conf[id];
+    const size = (n) => comp.clubs.filter((id) => comp.conf[id] === n).length;
+    for (const id of comp.clubs) if (!comp.conf[id]) comp.conf[id] = names.slice().sort((a, b) => size(a) - size(b))[0];
+    return comp.conf;
+  };
+  // one conference's standings (the table's order, restricted to its clubs)
+  W.confTable = (comp, n) => W.sortedTable(comp).filter((r) => comp.conf && comp.conf[r.id] === n);
+  W.confClubs = (comp, n) => comp.clubs.filter((id) => comp.conf && comp.conf[id] === n);
+
+  // An MLS-style schedule: each conference plays a double round-robin among itself (the odd club out each round meets
+  // its counterpart from the other conference), and four more rounds are played entirely across the conferences.
+  W.conferenceRounds = function (comp) {
+    W.conferenceOf(comp);
+    const names = Object.keys(comp.rules.conferences),
+      A = W.confClubs(comp, names[0]),
+      B = W.confClubs(comp, names[1]);
+    const rrA = W.roundRobin(A),
+      rrB = W.roundRobin(B);
+    const n = Math.max(rrA.length, rrB.length);
+    const used = new Set();
+    const key = (x, y) => (x < y ? x + '|' + y : y + '|' + x);
+    const flip = (x, y) => (Math.random() < 0.5 ? [x, y] : [y, x]);
+    const rounds = [];
+    for (let r = 0; r < n; r++) {
+      const rd = [...(rrA[r] || []), ...(rrB[r] || [])];
+      const idle = (grp, lst) => {
+        const playing = new Set((lst[r] || []).flat());
+        return grp.filter((id) => !playing.has(id));
+      };
+      const ia = idle(A, rrA),
+        ib = idle(B, rrB);
+      for (let i = 0; i < Math.min(ia.length, ib.length); i++) {
+        rd.push(flip(ia[i], ib[i]));
+        used.add(key(ia[i], ib[i]));
+      }
+      rounds.push(rd);
+    }
+    // cross-conference rounds: a random perfect matching that avoids repeating a pairing where it can
+    const crossRounds = [];
+    const extra = Math.max(0, (comp.rules.rounds || 34) - n);
+    for (let k = 0; k < extra; k++) {
+      let best = null;
+      for (let tries = 0; tries < 30; tries++) {
+        const a = U.shuffle(A),
+          b = U.shuffle(B),
+          m = Math.min(a.length, b.length);
+        const pairs = a.slice(0, m).map((id, i) => [id, b[i]]);
+        const dup = pairs.filter(([x, y]) => used.has(key(x, y))).length;
+        if (!best || dup < best.dup) best = { pairs, dup };
+        if (!dup) break;
+      }
+      best.pairs.forEach(([x, y]) => used.add(key(x, y)));
+      crossRounds.push(best.pairs.map(([x, y]) => flip(x, y)));
+    }
+    // the extra rounds are spread through the season rather than bunched at the end
+    crossRounds.forEach((rd, k) =>
+      rounds.splice(Math.round(((k + 1) * (rounds.length + 1)) / (crossRounds.length + 1)) + k, 0, rd),
+    );
+    return rounds;
+  };
+
   W.setupSeasonFixtures = function (comp) {
     comp.table = {};
     comp.clubs.forEach(
@@ -1463,12 +1531,13 @@
         }),
     );
     comp.deductions = {};
-    let rounds = W.roundRobin(comp.clubs);
+    let rounds = comp.rules && comp.rules.conferences ? W.conferenceRounds(comp) : W.roundRobin(comp.clubs);
     if (comp.rules && comp.rules.rounds) rounds = rounds.slice(0, comp.rules.rounds); // formats shorter than a double round-robin
     comp.fixtures = rounds.map((rd, r) =>
       rd.map(([h, a]) => ({ id: FM.nextId('f'), comp: comp.id, round: r, h, a, res: null })),
     );
     comp.playoff = null;
+    comp.mls = null;
   };
 
   // A table in order: points, then the competition's own tiebreakers (D.TIEBREAK: head-to-head, wins, goal
@@ -1614,6 +1683,14 @@
       if (RC[r]) cal.push({ type: 'cup', regional: true, comps: FM.Regional.regionals().map((c) => c.id) });
       if (INTL[r] && S.nteams) INTL[r].forEach((tag) => cal.push({ type: 'intl', tag }));
     }
+    // MLS-style conference playoffs: Round One, Conference Semifinals, Conference Finals, then the cup final
+    if (W.leagues().some((c) => c.rules.mls))
+      cal.push(
+        { type: 'playoff', stage: 'M1' },
+        { type: 'playoff', stage: 'M2' },
+        { type: 'playoff', stage: 'M3' },
+        { type: 'playoff', stage: 'M4' },
+      );
     if (legs)
       cal.push(
         { type: 'playoff', stage: 'SF1' },

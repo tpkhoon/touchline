@@ -84,6 +84,7 @@
     if (cal.type === 'intl' || cal.type === 'tourn') return FM.Intl.dayFixtures(cal);
     const out = [];
     for (const c of W.leagues()) {
+      if (c.rules.mls) out.push(...Sea.mlsDay(c, cal.stage));
       const po = c.rules.promote && c.rules.promote.playoff;
       if (!po) continue;
       if (!c.playoff) {
@@ -211,6 +212,84 @@
       }
     }
     return out;
+  };
+  // The MLS playoff: seven clubs from each conference (the top seed byes the first round), single matches hosted by the
+  // better seed (the cup final by the better regular-season record). c.mls holds the seeds and every round's ties.
+  Sea.MLS_ROUNDS = { M1: 'Round One', M2: 'Conference Semifinal', M3: 'Conference Final', M4: 'MLS Cup' };
+  Sea.mlsDay = function (c, stage) {
+    const label = Sea.MLS_ROUNDS[stage];
+    if (!label) return [];
+    const names = Object.keys(c.rules.conferences),
+      tie = (h, a, extra) => ({
+        id: FM.nextId('f'),
+        comp: c.id,
+        po: label,
+        h,
+        a,
+        res: null,
+        ko: true,
+        ...extra,
+      });
+    if (!c.mls) {
+      const seeds = {};
+      for (const n of names)
+        seeds[n] = W.confTable(c, n)
+          .slice(0, c.rules.mls.playoff)
+          .map((r) => r.id);
+      c.mls = { seeds, M1: null, M2: null, M3: null, M4: null, winner: null, runnerUp: null };
+    }
+    const M = c.mls,
+      seedOf = (id) => {
+        for (const n of names) {
+          const i = M.seeds[n].indexOf(id);
+          if (i >= 0) return i;
+        }
+        return 99;
+      },
+      best = (x, y) => (seedOf(x) <= seedOf(y) ? [x, y] : [y, x]);
+    if (!M[stage]) {
+      if (stage === 'M1')
+        M.M1 = names.flatMap((n) => {
+          const s = M.seeds[n];
+          return [
+            [1, 6],
+            [2, 5],
+            [3, 4],
+          ]
+            .filter(([hi, lo]) => s[lo])
+            .map(([hi, lo]) => tie(s[hi], s[lo], { conf: n }));
+        });
+      else if (stage === 'M2')
+        M.M2 = names.flatMap((n) => {
+          // the top seed meets the lowest surviving seed; the other two survivors meet each other
+          const alive = (M.M1 || [])
+            .filter((f) => f.conf === n)
+            .map(winnerOf)
+            .sort((x, y) => seedOf(x) - seedOf(y));
+          alive.unshift(M.seeds[n][0]);
+          const lowest = alive.length > 1 ? alive.pop() : null;
+          return [
+            [alive[0], lowest],
+            [alive[1], alive[2]],
+          ]
+            .filter(([h, a]) => h && a)
+            .map(([h, a]) => tie(...best(h, a), { conf: n }));
+        });
+      else if (stage === 'M3')
+        M.M3 = names.flatMap((n) => {
+          const w = (M.M2 || []).filter((f) => f.conf === n).map(winnerOf);
+          return w.length === 2 ? [tie(...best(w[0], w[1]), { conf: n })] : [];
+        });
+      else if (stage === 'M4') {
+        const w = (M.M3 || []).map(winnerOf);
+        if (w.length === 2) {
+          const t = W.sortedTable(c).map((r) => r.id),
+            [h, a] = t.indexOf(w[0]) < t.indexOf(w[1]) ? w : [w[1], w[0]];
+          M.M4 = [tie(h, a, { final: true })];
+        } else M.M4 = [];
+      }
+    }
+    return M[stage] || [];
   };
   function winnerOf(fx) {
     const r = fx.res;
@@ -1299,12 +1378,37 @@
       const ypoty = players
         .filter((p) => W.age(p) <= 21 && p.season.apps >= 8)
         .sort((a, b) => b.season.rsum / b.season.apps - a.season.rsum / a.season.apps)[0];
+      // a conference league's champion is whoever wins its playoff final; the best record takes the Shield
+      const mlsFin = comp.mls && comp.mls.M4 && comp.mls.M4[0] && comp.mls.M4[0].res ? comp.mls.M4[0] : null,
+        champId = mlsFin ? winnerOf(mlsFin) : t[0].id,
+        runnerId = mlsFin ? (winnerOf(mlsFin) === mlsFin.h ? mlsFin.a : mlsFin.h) : t[1].id;
       entry.comps[comp.id] = {
         name: comp.name,
         sim: comp.sim || 'full',
         nat: comp.nat,
-        champion: t[0].id,
-        runnerUp: t[1].id,
+        champion: champId,
+        runnerUp: runnerId,
+        ...(comp.mls
+          ? {
+              shield: t[0].id,
+              conf: { ...comp.conf },
+              playoffs: Object.fromEntries(
+                ['M1', 'M2', 'M3', 'M4'].map((k) => [
+                  k,
+                  (comp.mls[k] || [])
+                    .filter((f) => f.res)
+                    .map((f) => ({
+                      h: f.h,
+                      a: f.a,
+                      hg: f.res.hg,
+                      ag: f.res.ag,
+                      pens: f.res.pens || null,
+                      w: winnerOf(f),
+                    })),
+                ]),
+              ),
+            }
+          : {}),
         // the whole table, every club's record: the archive behind club histories
         table: t.map((r) => ({ id: r.id, p: r.p, w: r.w, d: r.d, l: r.l, gf: r.gf, ga: r.ga, pts: r.pts, gd: r.gd })),
         toty: FM.Records.toty(comp.id), // the team of the season
@@ -1317,8 +1421,18 @@
         },
         ypoty: ypoty && { pid: ypoty.id, name: W.name(ypoty), club: ypoty.clubId },
       };
-      const champ = S.clubs[t[0].id];
+      const champ = S.clubs[champId];
       champ.titles[comp.id] = (champ.titles[comp.id] || 0) + 1;
+      if (comp.mls) {
+        const sh = S.clubs[t[0].id];
+        sh.titles[comp.id + 'S'] = (sh.titles[comp.id + 'S'] || 0) + 1;
+        FM.News.add({
+          type: 'world',
+          title: `${sh.name} win the Supporters' Shield`,
+          body: `The best record in ${comp.name}: ${t[0].pts} points.${champId !== sh.id ? ` ${champ.name} went on to win the ${comp.short === 'US1' ? 'MLS Cup' : 'league final'}.` : ' They went on to win the final too.'}`,
+          clubId: sh.id,
+        });
+      }
       champ.rep = Math.min(99, champ.rep + 2);
       // Merit payments + reputation drift toward league standing
       const n = t.length,
@@ -1332,8 +1446,11 @@
       if (poty) S.players[poty.id].cult += 5;
       const R = comp.rules;
       // Qualification relationship: this league's top n enter another competition next season
-      if (R.qualify)
-        qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(t.slice(0, R.qualify.n).map((r) => r.id));
+      if (R.qualify) {
+        // a playoff league sends its champion and its Shield winner first, then the next best records
+        const order = comp.mls ? [...new Set([champId, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
+        qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(order.slice(0, R.qualify.n));
+      }
       // second-tier continental cups: the next places down
       for (const cc of D.CONTINENTALS) {
         const k = cc.feeders && cc.feeders[comp.id];
@@ -1424,6 +1541,7 @@
     let trophies = [];
     if (userComp.champion === club.id) trophies.push(userComp.name);
     if (userComp.playoffWinner === club.id) trophies.push('Playoff winners');
+    if (userComp.shield === club.id) trophies.push("Supporters' Shield");
     const promoted = entry.promoted.includes(club.id),
       relegated = entry.relegated.includes(club.id);
     if (promoted) S.user.stats.promotions++;

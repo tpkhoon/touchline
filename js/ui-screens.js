@@ -1871,10 +1871,58 @@
       comp.sim && comp.sim !== 'full'
         ? `<div class="warnline" style="margin-bottom:8px">${FM.Tiers.ICON[comp.sim]} ${FM.Tiers.LABEL[comp.sim]} — ${comp.sim === 'light' ? 'results come from a fast statistical model; player stats are recorded.' : 'scores only; squads exist for scouting.'}</div>`
         : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${t.map((r, i) => `<tr class="${zone(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>
-      <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${legend.map((l) => `<span>${l}</span>`).join('')}</div>
-      ${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
+    const tableHTML = (rows, zoneOf, title) =>
+      `${title ? `<div class="h3" style="margin:10px 4px 4px">${esc(title)}</div>` : ''}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${rows.map((r, i) => `<tr class="${zoneOf(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>`;
+    const mls = R.mls && comp.conf;
+    const confNames = mls ? Object.keys(R.conferences) : [];
+    const byConf = mls && UI._confView !== 'all';
+    const tables = byConf
+      ? confNames
+          .map((cn) =>
+            tableHTML(
+              W.confTable(comp, cn),
+              (i) => (i < R.mls.playoff ? (i === 0 ? 'zone-up' : 'zone-po') : ''),
+              `${cn}ern Conference`,
+            ),
+          )
+          .join('')
+      : tableHTML(t, zone);
+    const confChips = mls
+      ? `<div class="row" style="gap:6px;margin:0 2px 6px"><button class="chip ${byConf ? 'on' : ''}" data-act="confView" data-v="conf">Conferences</button><button class="chip ${byConf ? '' : 'on'}" data-act="confView" data-v="all">Overall (Supporters' Shield)</button></div>`
+      : '';
+    const mlsLegend = mls
+      ? byConf
+        ? [`🟢 Conference leader`, `🔵 Playoffs (top ${R.mls.playoff})`]
+        : [`🟢 Supporters' Shield`, `🔵 ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`]
+      : null;
+    const bracket = mls && comp.mls ? UI.mlsBracket(comp) : '';
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${tables}
+      <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
+      ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
   }
+  // The MLS playoff bracket: each round's ties (the winners shown in bold), conference by conference
+  UI.mlsBracket = function (comp) {
+    const M = comp.mls,
+      rows = [];
+    for (const k of ['M1', 'M2', 'M3', 'M4']) {
+      const ties = M[k] || [];
+      if (!ties.length) continue;
+      rows.push(
+        `<div class="small b dim" style="margin:10px 0 2px">${FM.Season.MLS_ROUNDS[k].toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
+      );
+    }
+    const seeds = Object.entries(M.seeds)
+      .map(
+        ([cn, ids]) =>
+          `<div class="tiny dim" style="margin-top:4px"><b>${esc(cn)}</b>: ${ids.map((id, i) => `${i + 1} ${esc(CL(id).short)}`).join(' · ')}</div>`,
+      )
+      .join('');
+    return `<div class="card"><div class="h3">Playoffs</div>${seeds}${rows.join('')}</div>`;
+  };
+  UI.acts.confView = (d) => {
+    UI._confView = d.v;
+    UI.render();
+  };
   const stagePill = (po) => {
     const [base, leg] = po.split(' · ');
     const b =
