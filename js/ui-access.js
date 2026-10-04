@@ -200,6 +200,8 @@
   // After a new career begins (never on loading a save, never twice)
   const mount = UI.mount;
   UI.mount = function () {
+    // the welcome comes first; the season preview stays a tap away on Home instead of opening over it
+    if (UI._newCareer && FM.S && FM.S.user) FM.S.user.previewSeen = true;
     const r = mount.apply(this, arguments);
     if (UI._newCareer) {
       UI._newCareer = false;

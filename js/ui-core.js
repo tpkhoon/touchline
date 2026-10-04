@@ -880,7 +880,7 @@
         <div class="swatches">${W.AVATAR_BG.map((bg) => `<button class="swatch ${NG.avatar.bg === bg ? 'on' : ''}" style="background:${bg}" data-act="ngAvatarBg" data-bg="${bg}" aria-label="Avatar background"></button>`).join('')}</div>
         <div class="ng-label">Save slot</div>
         <div class="seg">${FM.Save.SLOTS.map((n) => `<button class="${NG.slot === n ? 'on' : ''}" data-act="ngSlot" data-n="${n}">Slot ${n}${UI.slotMeta(n) ? ' (overwrite)' : ''}</button>`).join('')}</div>
-        <div class="actions"><button class="btn pri block" data-act="ngNext">Choose your club →</button><button class="btn block" data-act="ngBack">Back</button></div>`;
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngNext">Choose your club →</button></div>`;
     } else if (NG.step === 1) {
       const row = (r, div) => {
         const [name, short, , c1, c2, idt, rep] = r;
@@ -917,7 +917,7 @@
       body = `<div class="h1" style="margin-top:2vh">Pick your club</div><div class="tag">Every club has an identity. The board and fans will judge you by it.</div><div class="sp"></div>
         <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${D.LEAGUE_CLUBS.map(([cid, , nat]) => `<option value="${cid}" ${NG.lg === cid ? 'selected' : ''}>${D.NATIONS[nat].flag} ${esc(D.LEAGUES.find((l) => l.id === cid).name)}</option>`).join('')}</select></div>
         <div id="ng-list">${UI._ngList()}</div>
-        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}>${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</button></div>`;
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
     } else {
       // Your world: what's in it and the rules it plays by (each competition's real ones; not chosen here)
       body = `<div class="h1" style="margin-top:4vh">Your world</div><div class="tag">Real league structures and rules, simplified where the game needs it.</div>
@@ -925,13 +925,13 @@
           const code = NG.club && NG.club !== 'none' ? String(NG.club).replace(/^c_/, '') : null;
           const lg = code && D.LEAGUES.find((l) => D[l.clubs].some((r) => r[1] === code));
           return lg
-            ? `<div class="tiny" style="color:#6f7f96;margin-top:14px">The rules of the league you will manage in, as in real life:</div>${UI.leagueRules(lg)}`
+            ? `<details style="margin-top:14px"><summary class="small b" style="color:#c8ff3d;cursor:pointer;padding:6px 0">${esc(lg.name)} — format, relegation, cups and squad rules</summary>${UI.leagueRules(lg)}</details>`
             : '<div class="small" style="color:#c9d4e3;margin-top:16px;line-height:1.6">Three points for a win and five substitutions, as everywhere today. Each league has its own promotion and relegation, continental places and foreign-player rules; you will see your league\'s when you take a job. Knockout ties go to extra time and penalties, with no away-goals rule.</div>';
         })()}
         ${UI.simSetup()}
         <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${D.facts().clubs} clubs in ${D.facts().leagues} leagues across ${D.facts().nations} nations, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
         ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
-        <div class="actions"><button class="btn pri block" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button><button class="btn block" data-act="ngBack">Back</button></div>`;
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button></div>`;
     }
     app.innerHTML = `<div class="title">${body}</div>`;
     const simBox = $('#ng-sim');
