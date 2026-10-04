@@ -1618,7 +1618,7 @@
     {
       id: 'D2',
       nat: 'ENG',
-      name: 'English National Championship',
+      name: 'English First Division',
       short: 'D2',
       tier: 2,
       sim: 'full',
@@ -1629,7 +1629,7 @@
     {
       id: 'D3',
       nat: 'ENG',
-      name: 'English National League One',
+      name: 'English Second Division',
       short: 'D3',
       tier: 3,
       sim: 'light',
@@ -1640,7 +1640,7 @@
     {
       id: 'D4',
       nat: 'ENG',
-      name: 'English National League Two',
+      name: 'English Third Division',
       short: 'D4',
       tier: 4,
       sim: 'light',
@@ -1651,7 +1651,7 @@
     {
       id: 'ES1',
       nat: 'ESP',
-      name: 'Spanish Liga Nacional',
+      name: 'Spanish Liga de Honor',
       short: 'ES1',
       tier: 1,
       sim: 'full',
@@ -1662,7 +1662,7 @@
     {
       id: 'ES2',
       nat: 'ESP',
-      name: 'Spanish Segunda Nacional',
+      name: 'Spanish Liga de Plata',
       short: 'ES2',
       tier: 2,
       sim: 'light',
@@ -1673,7 +1673,7 @@
     {
       id: 'ES3',
       nat: 'ESP',
-      name: 'Spanish Tercera Nacional',
+      name: 'Spanish Liga Federal',
       short: 'ES3',
       tier: 3,
       sim: 'light',
@@ -1684,7 +1684,7 @@
     {
       id: 'DE1',
       nat: 'GER',
-      name: 'German Nationalliga',
+      name: 'German Hauptliga',
       short: 'DE1',
       tier: 1,
       sim: 'full',
@@ -1695,7 +1695,7 @@
     {
       id: 'DE2',
       nat: 'GER',
-      name: 'German Zweite Nationalliga',
+      name: 'German Zweite Hauptliga',
       short: 'DE2',
       tier: 2,
       sim: 'light',
@@ -1706,7 +1706,7 @@
     {
       id: 'DE3',
       nat: 'GER',
-      name: 'German Dritte Nationalliga',
+      name: 'German Dritte Liga',
       short: 'DE3',
       tier: 3,
       sim: 'light',
@@ -1739,7 +1739,7 @@
     {
       id: 'BR1',
       nat: 'BRA',
-      name: 'Brazilian Série Nacional A',
+      name: 'Brazilian Liga Nacional',
       short: 'BR1',
       tier: 1,
       sim: 'full',
@@ -1761,7 +1761,7 @@
     {
       id: 'IT2',
       nat: 'ITA',
-      name: 'Italian Campionato Nazionale B',
+      name: 'Italian Campionato Cadetto',
       short: 'IT2',
       tier: 2,
       sim: 'light',
@@ -1772,7 +1772,7 @@
     {
       id: 'PT1',
       nat: 'POR',
-      name: 'Portuguese Liga Nacional',
+      name: 'Portuguese Liga de Honra',
       short: 'PT1',
       tier: 1,
       sim: 'light',
@@ -1783,7 +1783,7 @@
     {
       id: 'NL1',
       nat: 'NED',
-      name: 'Dutch Eerste Nationale',
+      name: 'Dutch Eerste Klasse',
       short: 'NL1',
       tier: 1,
       sim: 'light',
@@ -1794,7 +1794,7 @@
     {
       id: 'AR1',
       nat: 'ARG',
-      name: 'Argentine Premier Division',
+      name: 'Argentine Liga Mayor',
       short: 'AR1',
       tier: 1,
       sim: 'light',
@@ -1816,7 +1816,7 @@
     {
       id: 'JP1',
       nat: 'JPN',
-      name: 'Japanese Premier Division',
+      name: 'Japanese Premier League',
       short: 'JP1',
       tier: 1,
       sim: 'light',
@@ -1827,7 +1827,7 @@
     {
       id: 'MX1',
       nat: 'MEX',
-      name: 'Mexican Premier Division',
+      name: 'Mexican Liga Mayor',
       short: 'MX1',
       tier: 1,
       sim: 'minimal',
@@ -1838,7 +1838,7 @@
     {
       id: 'KR1',
       nat: 'KOR',
-      name: 'Korean Premier Division',
+      name: 'Korean Premier League',
       short: 'KR1',
       tier: 1,
       sim: 'minimal',
@@ -1849,7 +1849,7 @@
     {
       id: 'TH1',
       nat: 'THA',
-      name: 'Thai Premier Division',
+      name: 'Thai Premier League',
       short: 'TH1',
       tier: 1,
       sim: 'minimal',
@@ -1871,7 +1871,7 @@
     {
       id: 'MA1',
       nat: 'MAR',
-      name: 'Moroccan Premier Division',
+      name: 'Moroccan Division Nationale',
       short: 'MA1',
       tier: 1,
       sim: 'minimal',
@@ -1882,7 +1882,7 @@
     {
       id: 'RS1',
       nat: 'SRB',
-      name: 'Serbian Premier Division',
+      name: 'Serbian Prva Liga',
       short: 'RS1',
       tier: 1,
       sim: 'minimal',
@@ -1893,7 +1893,7 @@
     {
       id: 'BE1',
       nat: 'BEL',
-      name: 'Belgian Premier Division',
+      name: 'Belgian Eerste Klasse',
       short: 'BE1',
       tier: 1,
       sim: 'minimal',
@@ -1904,7 +1904,7 @@
     {
       id: 'TR1',
       nat: 'TUR',
-      name: 'Turkish Premier Division',
+      name: 'Turkish Birinci Lig',
       short: 'TR1',
       tier: 1,
       sim: 'minimal',
@@ -1915,7 +1915,7 @@
     {
       id: 'CZ1',
       nat: 'CZE',
-      name: 'Czech Premier Division',
+      name: 'Czech První Liga',
       short: 'CZ1',
       tier: 1,
       sim: 'minimal',
@@ -1926,7 +1926,7 @@
     {
       id: 'GR1',
       nat: 'GRE',
-      name: 'Greek Premier Division',
+      name: 'Greek Alfa Liga',
       short: 'GR1',
       tier: 1,
       sim: 'minimal',
@@ -1937,7 +1937,7 @@
     {
       id: 'NO1',
       nat: 'NOR',
-      name: 'Norwegian Premier Division',
+      name: 'Norwegian Topliga',
       short: 'NO1',
       tier: 1,
       sim: 'minimal',
@@ -1948,7 +1948,7 @@
     {
       id: 'PL1',
       nat: 'POL',
-      name: 'Polish Premier Division',
+      name: 'Polish Liga Główna',
       short: 'PL1',
       tier: 1,
       sim: 'minimal',
@@ -1959,7 +1959,7 @@
     {
       id: 'DK1',
       nat: 'DEN',
-      name: 'Danish Premier Division',
+      name: 'Danish Topliga',
       short: 'DK1',
       tier: 1,
       sim: 'minimal',
@@ -1970,7 +1970,7 @@
     {
       id: 'AT1',
       nat: 'AUT',
-      name: 'Austrian Premier Division',
+      name: 'Austrian Bundesstaffel',
       short: 'AT1',
       tier: 1,
       sim: 'minimal',
@@ -1981,7 +1981,7 @@
     {
       id: 'CH1',
       nat: 'SUI',
-      name: 'Swiss Premier Division',
+      name: 'Swiss Super Liga',
       short: 'CH1',
       tier: 1,
       sim: 'minimal',
@@ -2014,7 +2014,7 @@
     {
       id: 'HU1',
       nat: 'HUN',
-      name: 'Hungarian Premier Division',
+      name: 'Hungarian Első Osztály',
       short: 'HU1',
       tier: 1,
       sim: 'minimal',
@@ -2187,17 +2187,17 @@
   // single matches at the home of the club drawn first (the lower-division club, in the real draws), with extra
   // time and penalties. Away goals do not count anywhere: no competition has used them since 2021–22.
   FM.D.DOMESTIC_CUPS = [
-    ['CUPENG', 'ENG', 'English Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at Wembley
-    ['CUPESP', 'ESP', 'Spanish Copa Nacional', 'ESPC', { neutral: [2] }], // single-leg semi-finals since 2019–20
-    ['CUPGER', 'GER', 'German Nationalpokal', 'GERC', { neutral: [2] }], // final in Berlin
-    ['CUPFRA', 'FRA', 'French Coupe Nationale', 'FRAC', { neutral: [2] }],
-    ['CUPBRA', 'BRA', 'Brazilian Copa Nacional', 'BRAC', { legs: [8, 4, 2], neutral: [] }], // two legs from the later rounds, home-and-away final
-    ['CUPITA', 'ITA', 'Italian Coppa Nazionale', 'ITAC', { legs: [4], neutral: [2] }],
-    ['CUPPOR', 'POR', 'Portuguese Taça Nacional', 'PORC', { legs: [4], neutral: [2] }],
-    ['CUPNED', 'NED', 'Dutch Nationale Beker', 'NEDC', { neutral: [2] }],
-    ['CUPARG', 'ARG', 'Argentine Copa Nacional', 'ARGC', { neutral: 'all' }], // every tie at a neutral ground
-    ['CUPUSA', 'USA', 'American Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
-    ['CUPJPN', 'JPN', 'Japanese Cup', 'JPNC', { neutral: [2] }],
+    ['CUPENG', 'ENG', 'English Challenge Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at Wembley
+    ['CUPESP', 'ESP', 'Spanish Copa de la Federación', 'ESPC', { neutral: [2] }], // single-leg semi-finals since 2019–20
+    ['CUPGER', 'GER', 'German Verbandspokal', 'GERC', { neutral: [2] }], // final in Berlin
+    ['CUPFRA', 'FRA', 'French Coupe de la Fédération', 'FRAC', { neutral: [2] }],
+    ['CUPBRA', 'BRA', 'Brazilian Copa da Federação', 'BRAC', { legs: [8, 4, 2], neutral: [] }], // two legs from the later rounds, home-and-away final
+    ['CUPITA', 'ITA', 'Italian Coppa della Federazione', 'ITAC', { legs: [4], neutral: [2] }],
+    ['CUPPOR', 'POR', 'Portuguese Taça da Federação', 'PORC', { legs: [4], neutral: [2] }],
+    ['CUPNED', 'NED', 'Dutch Federatiebeker', 'NEDC', { neutral: [2] }],
+    ['CUPARG', 'ARG', 'Argentine Copa de la Federación', 'ARGC', { neutral: 'all' }], // every tie at a neutral ground
+    ['CUPUSA', 'USA', 'American Challenge Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
+    ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2] }],
   ];
   // Club World Cup: last season's continental finalists (winners only from Africa and North America)
   // [competition, 0 = winner / 1 = runner-up], in seed order

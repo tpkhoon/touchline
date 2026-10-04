@@ -205,7 +205,11 @@
     mkSide(club, idx) {
       const user = W.isUser(club.id) || W.isUserNation(club.id);
       const tactic = JSON.parse(JSON.stringify(W.isUser(club.id) ? FM.S.user.tactic : club.tactic));
-      const { xi, bench } = W.pickXI(club.id, tactic);
+      const { xi, bench } = W.pickXI(
+        club.id,
+        tactic,
+        this.o.rotate && !user ? FM.Regional.reserves(club.id) : undefined,
+      );
       const slots = D.FORMATIONS[tactic.formation];
       const sd = {
         idx,
@@ -1272,6 +1276,7 @@
   // first leg's score
   Match.tieOpts = function (fx) {
     const o = fx.wx ? { weather: D.WEATHER.find((w) => w[0] === fx.wx) } : {};
+    if (fx.rotate) o.rotate = true; // a county cup tie: the big clubs field a reserve side
     if (!fx.first) return o;
     const f1 = FM.Cups.findFixture(fx.first);
     if (!f1 || !f1.res) return o;

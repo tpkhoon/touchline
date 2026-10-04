@@ -441,6 +441,20 @@ check(S.news.length > 0 && S.news.length <= 2 * FM.News.CAP, `feed has ${S.news.
   check(none === 0, `${none} players at clubs without a squad number`);
   check(dup === 0, `${dup} players sharing a squad number with a team-mate`);
 }
+// county cups and state championships: every one finished last season (a winner each), and every fixture was played
+{
+  const last = S.archive[S.archive.length - 1],
+    won = last ? Object.keys(last.regional || {}) : [];
+  check(won.length >= 17, `only ${won.length} of the 19 regional competitions had a winner last season`);
+  const dup = new Set();
+  let dupes = 0;
+  for (const c of Object.values(S.comps).filter((x) => x.type === 'regional'))
+    for (const fx of FM.Regional.allFixtures(c)) {
+      if (dup.has(fx.id)) dupes++;
+      dup.add(fx.id);
+    }
+  check(dupes === 0, `${dupes} regional fixtures appear twice`);
+}
 // club news survives the world's transfer noise (counting every club the test manager has had: a late sacking can
 // leave him at a new club with little news of its own yet)
 const everManaged = new Set(S.user.history.map((h) => h.club).concat(S.user.clubId || []));

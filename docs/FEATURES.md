@@ -279,6 +279,9 @@ Every feature from the game design document, with what is playable in the protot
 | Players | A "Story so far" card on every profile: where he started, each move and what it cost, his totals, caps, honours and longest layoff | Alpha 2 |
 | Media | Great players who retire become pundits on the Touchline Tonight panel, with a short bio, and talk about the clubs they played for | Alpha 2 |
 | Career | A fictional football world on the real structure and rules: generated club, town, stadium, league, cup and derby names in the sound of each country, nicknames from kit colours; the real names kept in a database file to bring back later | Alpha 2 |
+| Competitions | English county cups (14 areas, knockout, reserve sides for the big clubs) and Brazilian state championships (5, league phase and a final) on days of their own early in the season; a Regional tab on the Cups screen | Alpha 2 |
+| Players | Larger player name pools (about 50–100% more first names and surnames for most nations), so squads repeat surnames far less | Alpha 2 |
+| Clubs | A founding year for every club (shown on its page) and crests with an emblem from its nickname and town: paws, wings, anchors, hammers, trees, suns, waves, mountains, boats | Alpha 2 |
 | Media | A Press room under Club: five outlets (tabloid, broadsheet, local paper, television panel, radio phone-in) with their own voices report on your matches, runs, signings, sales and seasons, each with a view of you that moves at its own speed; a Press filter in the feed; the press mood moves the board and fans a little every match | Playtest round 8 |
 | Settings | Club colours: use your club's colours as the app's accent, or switch it off for the standard accent | Playtest round 8 |
 | UI | Bottom bar: six equal columns, icons and labels on one line (International is Nations) | Playtest round 7 |

@@ -56,7 +56,57 @@
     (f) => `<path d="M14 31 V21.5 H16.4 V23.6 H18.6 V21.5 H21.4 V23.6 H23.6 V21.5 H26 V31 Z" fill="${f}"/>`, // tower
     (f) => `<path d="M20 18 L26.5 25 L20 32 L13.5 25 Z" fill="${f}"/>`, // diamond
     (f, bg) => `<circle cx="20" cy="25" r="6.5" fill="${f}"/><circle cx="20" cy="25" r="3.2" fill="${bg}"/>`, // ring
+    // themed ones, chosen from a club's nickname and town (see crestEmblem)
+    (f) =>
+      `<ellipse cx="20" cy="28.6" rx="5" ry="3.8" fill="${f}"/><circle cx="14.3" cy="23.2" r="2" fill="${f}"/><circle cx="18" cy="20.3" r="2.1" fill="${f}"/><circle cx="22" cy="20.3" r="2.1" fill="${f}"/><circle cx="25.7" cy="23.2" r="2" fill="${f}"/>`, // paw
+    (f) =>
+      `<path d="M20 31.5 L9.5 22 L14.5 21.2 L20 26 L25.5 21.2 L30.5 22 Z" fill="${f}"/><circle cx="20" cy="20.2" r="2.1" fill="${f}"/>`, // wings
+    (f) =>
+      `<circle cx="20" cy="19" r="1.9" fill="none" stroke="${f}" stroke-width="1.3"/><rect x="19.2" y="21" width="1.6" height="10.5" fill="${f}"/><rect x="16" y="22.6" width="8" height="1.5" fill="${f}"/><path d="M12.5 26 Q14 32.5 20 32.5 Q26 32.5 27.5 26 L25.2 27.4 Q24 30.6 20 30.6 Q16 30.6 14.8 27.4 Z" fill="${f}"/>`, // anchor
+    (f) =>
+      `<path d="M20 17.5 L26.5 25 H22.8 L27 31 H13 L17.2 25 H13.5 Z" fill="${f}"/><rect x="19" y="31" width="2" height="3.2" fill="${f}"/>`, // tree
+    (f) =>
+      `<g transform="rotate(45 20 25)"><rect x="19.2" y="17" width="1.6" height="16" fill="${f}"/><rect x="16.5" y="17" width="7" height="3.2" fill="${f}"/></g><g transform="rotate(-45 20 25)"><rect x="19.2" y="17" width="1.6" height="16" fill="${f}"/><rect x="16.5" y="17" width="7" height="3.2" fill="${f}"/></g>`, // crossed hammers
+    (f) =>
+      `<circle cx="20" cy="25" r="3.6" fill="${f}"/>${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<rect x="19.2" y="17.6" width="1.6" height="3" fill="${f}" transform="rotate(${a} 20 25)"/>`).join('')}`, // sun
+    (f) =>
+      `<path d="M20 17.5 V28 H13.5 Z" fill="${f}"/><path d="M21.5 20.5 V28 H27 Z" fill="${f}"/><path d="M12 29.2 H28 L25 33 H15 Z" fill="${f}"/>`, // sailing boat
+    (f) => `<path d="M9.5 31 L17 19 L21.2 26 L24.2 22 L30.5 31 Z" fill="${f}"/>`, // mountains
+    (f) =>
+      `<path d="M10.5 24.5 q3.2 -4 6.4 0 t6.4 0 t6.4 0" fill="none" stroke="${f}" stroke-width="2"/><path d="M10.5 30 q3.2 -4 6.4 0 t6.4 0 t6.4 0" fill="none" stroke="${f}" stroke-width="2"/>`, // waves
   ];
+  // The emblem a club's own identity suggests: its nickname first (animals, trades, the sea), then its town; clubs with
+  // neither take one by chance of their id. Indexes follow CREST_EMBLEMS.
+  const EMBLEM_WORDS = [
+    [
+      6,
+      /lion|leon|leone|löwe|leão|leões|wolf|wolves|lobo|wölfe|lupi|loup|bear|oso|bär|tiger|tigre|jaguar|panther|puma|fox|badger|otter|ulv|bjørn|orso|ours|lynx|cat\b/i,
+    ],
+    [
+      7,
+      /eagle|águila|aguia|águia|adler|aquil|aigle|falcon|halc|falke|falco|faucon|hawk|kestrel|heron|swan|cygne|cisne|crane|phoenix|dove|owl|ørn|örn|gaviõ|cigogne|stork/i,
+    ],
+    [
+      8,
+      /mariner|marin|sailor|pirate|corsair|fisher|fischer|harbour|dock|marinero|marinheiro|corsari|schiffer|pêcheur/i,
+    ],
+    [9, /forest|forester|oak|stag|deer|venado|veado|hirsch|cerf|cervi|rams?\b|ram\b|elk|elge/i],
+    [
+      10,
+      /miner|minero|mineiro|minatori|mineur|bergleute|knappen|ironmen|smith|schmied|forgeron|fabbri|kovář|steel|hammer|forge/i,
+    ],
+    [11, /\bsun\b|sol\b|soleil|sonne|sole\b|sonnen/i],
+    [1, /star|estrella|stella|stern|etoile|étoile|stjerne/i],
+  ];
+  const crestEmblem = (club, h) => {
+    const nick = club.nick || '';
+    for (const [i, re] of EMBLEM_WORDS) if (re.test(nick)) return i;
+    const town = `${club.city || ''} ${club.name || ''}`;
+    if (/sea|mouth|haven|port\b|mar\b|mer\b|coast|bay|harbour|beach|playa|praia|strand|havn/i.test(town))
+      return h % 2 ? 14 : 8;
+    if (/mount|monte|berg|alp|highland|peak|sierra|serra|montagne|hegy|gora/i.test(town)) return 13;
+    return Math.floor(h / 97) % CREST_EMBLEMS.length;
+  };
   const lum = (hex) => {
     const c = String(hex).replace('#', '');
     return (
@@ -71,7 +121,7 @@
       h = U.hash(club.id),
       shape = CREST_SHAPES.at(h % CREST_SHAPES.length),
       [pattern, busy] = CREST_PATTERNS.at(Math.floor(h / CREST_SHAPES.length) % CREST_PATTERNS.length),
-      emblem = CREST_EMBLEMS.at(Math.floor(h / 97) % CREST_EMBLEMS.length);
+      emblem = CREST_EMBLEMS[crestEmblem(club, h)];
     // every crest its own clip: a shared id breaks the clipping when the first copy sits in a hidden part of the page
     const id = `cl${++crestN}`;
     // the emblem in the second colour (or the colour that reads on the first), on a disc of the main colour over a
@@ -496,11 +546,13 @@
       : cal.type === 'league'
         ? FM.Season.matchdayLabel(cal)
         : cal.type === 'cup'
-          ? cal.world
-            ? 'Club World Cup'
-            : cal.stage
-              ? 'Continental night'
-              : 'Cup day'
+          ? cal.regional
+            ? 'Regional cups'
+            : cal.world
+              ? 'Club World Cup'
+              : cal.stage
+                ? 'Continental night'
+                : 'Cup day'
           : cal.type === 'pre'
             ? `Pre-season ${cal.idx + 1}/${FM.D.PRESEASON_DAYS}`
             : cal.type === 'intl'

@@ -92,7 +92,7 @@
           : cal.type === 'playoff'
             ? 'The playoffs are being contested.'
             : cal.type === 'cup'
-              ? `${others.length} ties elsewhere: ${[...new Set(others.map((f) => s.comps[f.comp].name))].join(', ') || 'no games'}.`
+              ? `${others.length} ${cal.regional ? 'regional ' : ''}ties elsewhere: ${[...new Set(others.map((f) => s.comps[f.comp].name))].join(', ') || 'no games'}.`
               : '';
       const what2 =
         cal.type === 'tourn'
@@ -2007,6 +2007,7 @@
       ['mine', 'My cups'],
       ['continental', 'Continental'],
       ['domestic', 'Domestic'],
+      ['regional', 'Regional'],
       ['world', '🌍 Club World Cup'],
     ]
       .map(([k, l]) => `<button class="chip ${v === k ? 'on' : ''}" data-act="cupsView" data-v="${k}">${l}</button>`)
@@ -2050,6 +2051,47 @@
         return `<div class="card"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · top 2 in each group reach the ${c.groups.length >= 4 ? 'quarter-finals' : 'semi-finals'} · ${legs} · neutral final</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
       })
       .join('');
+    // county cups and state championships: the ones you are in, or all of them
+    const regional = FM.Regional.regionals()
+      .filter((c) => c.clubs.length > 1 && (v === 'regional' || (v === 'mine' && inIt(c))))
+      .sort((a, b) => (inIt(b) ? 1 : 0) - (inIt(a) ? 1 : 0) || a.nat.localeCompare(b.nat))
+      .map((c) => {
+        const g = c.groups && c.groups[0];
+        const table = g
+          ? `<table class="t" style="margin-top:8px"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th></tr>${FM.Cups.groupTable(
+              g,
+            )
+              .map(
+                (r, i) =>
+                  `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td></tr>`,
+              )
+              .join('')}</table><div class="tiny dim" style="margin-top:6px">The top two meet in the final.</div>`
+          : '';
+        const fx =
+          c.format === 'ko'
+            ? c.rounds
+                .slice()
+                .reverse()
+                .map(
+                  (r) =>
+                    `<div class="small b dim" style="margin:12px 0 2px">${esc(r.name.toUpperCase())}</div>${r.ties
+                      .concat(r.ties2 || [])
+                      .map(fxLine)
+                      .join('')}`,
+                )
+                .join('')
+            : (c.final ? `<div class="small b dim" style="margin:12px 0 2px">FINAL</div>${fxLine(c.final)}` : '') +
+              (g
+                ? g.fixtures
+                    .flat()
+                    .filter((f) => f.res)
+                    .reverse()
+                    .map(fxLine)
+                    .join('')
+                : '');
+        return `<div class="card"><div class="row"><div class="h3 grow">🏅 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
+      })
+      .join('');
     const dom = W.cups()
       .filter((c) => v === 'domestic' || (v === 'mine' && inIt(c)))
       .map((c) => {
@@ -2071,7 +2113,7 @@
       .join('');
     return (
       tabs +
-      (wc + cont + dom ||
+      (wc + cont + dom + regional ||
         `<div class="empty">${v === 'mine' ? "Your club isn't in any cup competitions right now." : 'Nothing here yet.'}</div>`)
     );
   }

@@ -17,7 +17,8 @@ import { generate } from './worldgen.mjs';
 const [cmd, fileArg] = process.argv.slice(2);
 const DB = path.resolve(ROOT, fileArg || 'data/real-world.json');
 const CLUBS_JS = path.join(ROOT, 'js/clubs.js'),
-  DATA_JS = path.join(ROOT, 'js/data.js');
+  DATA_JS = path.join(ROOT, 'js/data.js'),
+  REGIONAL_JS = path.join(ROOT, 'js/regional.js');
 
 // ---------------------------------------------------------------- read the source
 function readSource() {
@@ -29,7 +30,14 @@ function readSource() {
     leagues[l.id] = { nat: l.nat, tier: l.tier, name: l.name, short: l.short };
     for (const row of D[l.clubs]) {
       const info = D.CLUB_INFO[row[1]] || [];
-      clubs[row[1]] = { league: l.id, nat: l.nat, row, short: info[0] || '', nick: info[1] || '' };
+      clubs[row[1]] = {
+        league: l.id,
+        nat: l.nat,
+        row,
+        short: info[0] || '',
+        nick: info[1] || '',
+        founded: info[2] || '',
+      };
     }
   }
   return {
@@ -40,6 +48,9 @@ function readSource() {
     ),
     cups: Object.fromEntries(D.DOMESTIC_CUPS.map((c) => [c[0], { nat: c[1], name: c[2], short: c[3] }])),
     rivals: D.RIVALS.map(([a, b, name]) => [a, b, name]),
+    regions: Object.fromEntries(
+      (D.REGIONS || []).map((r) => [r[0], { nat: r[1], format: r[2], name: r[3], short: r[4], clubs: r[5] }]),
+    ),
     nations: Object.fromEntries(Object.entries(D.NATIONS).map(([k, n]) => [k, n.name])),
   };
 }
@@ -98,7 +109,9 @@ function applyClubs(db) {
   const codes = Object.keys(db.clubs);
   src =
     src.slice(0, start) +
-    codes.map((c) => `${c}|${db.clubs[c].short || ''}|${db.clubs[c].nick || ''}`).join(NL) +
+    codes
+      .map((c) => `${c}|${db.clubs[c].short || ''}|${db.clubs[c].nick || ''}|${db.clubs[c].founded || ''}`)
+      .join(NL) +
     src.slice(end);
   const infoLines = codes.length;
   fs.writeFileSync(CLUBS_JS, crlf ? src.replace(/\n/g, '\r\n') : src);
@@ -135,14 +148,35 @@ function applyData(db) {
   fs.writeFileSync(DATA_JS, crlf ? src.replace(/\n/g, '\r\n') : src);
   return n;
 }
+// the county cups and state championships (js/regional.js): a name and short each, by region id
+function applyRegions(db) {
+  if (!db.regions) return 0;
+  let src = fs.readFileSync(REGIONAL_JS, 'utf8');
+  const crlf = src.includes('\r\n');
+  src = src.split('\r\n').join('\n');
+  let n = 0;
+  for (const [id, r] of Object.entries(db.regions)) {
+    // the row: [id, nation, format, name, short, clubs]
+    // (the formatter spreads the longest rows over several lines, so the gaps may include line breaks)
+    const re = new RegExp(
+      String.raw`(\[\s*['"]${id}['"],\s*['"][A-Z]+['"],\s*['"](?:ko|rr)['"],\s*)(['"])((?:\\.|(?!\2).)*)\2(,\s*)(['"])([^'"]*)\5`,
+    );
+    src = src.replace(re, (_, a, _q1, _nm, mid) => {
+      n++;
+      return `${a}${q(r.name)}${mid}${q(r.short)}`;
+    });
+  }
+  fs.writeFileSync(REGIONAL_JS, crlf ? src.split('\n').join('\r\n') : src);
+  return n;
+}
 function apply(db) {
   const a = applyClubs(db),
-    d = applyData(db);
+    d = applyData(db) + applyRegions(db);
   console.log(
     `Applied: ${a.rows} club rows, ${a.infoLines} abbreviation/nickname lines, ${a.rivals} derbies, ${d} league and competition names.`,
   );
   try {
-    execSync('npx prettier --write js/clubs.js js/data.js', { cwd: ROOT, stdio: 'ignore' });
+    execSync('npx prettier --write js/clubs.js js/data.js js/regional.js', { cwd: ROOT, stdio: 'ignore' });
   } catch (e) {
     console.log('(prettier not run: npm run format)');
   }

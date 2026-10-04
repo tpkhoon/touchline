@@ -1445,6 +1445,14 @@
       while (CUP[r]) r++;
       CUP[r] = 'DC';
     }
+    // Regional cups (county cups, state championships) get days of their own early in the season
+    const RC = {},
+      rcDays = FM.Regional.daysNeeded();
+    for (let i = 0; i < rcDays; i++) {
+      let r = W.scaleRound(2 + 2 * i);
+      while (RC[r]) r++;
+      RC[r] = true;
+    }
     const legs = !!S.rules.twoLegs;
     const cal = [];
     for (let i = 0; i < D.PRESEASON_DAYS; i++) cal.push({ type: 'pre', idx: i });
@@ -1459,6 +1467,7 @@
       if (CWC[r] && W.worldCups().length)
         cal.push({ type: 'cup', comps: W.worldCups().map((c) => c.id), stage: CWC[r], world: true });
       if (CUP[r] && W.cups().length) cal.push({ type: 'cup', comps: W.cups().map((c) => c.id) });
+      if (RC[r]) cal.push({ type: 'cup', regional: true, comps: FM.Regional.regionals().map((c) => c.id) });
       if (INTL[r] && S.nteams) INTL[r].forEach((tag) => cal.push({ type: 'intl', tag }));
     }
     if (legs)
@@ -1553,6 +1562,7 @@
         name,
         short,
         nick: info[1] || '', // its nickname, where it has a well-known one
+        founded: info[2] || null, // the year it was founded, where the world has one
         city,
         nat,
         colors: [c1, c2],

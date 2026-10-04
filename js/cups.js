@@ -129,6 +129,7 @@
       c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.13)); // participation fee
     }
     for (const c of W.worldCups()) Cu.setupWorld(c);
+    FM.Regional.setupSeason(); // county cups and state championships
     Cu.licenceCheck();
   };
 
@@ -141,6 +142,7 @@
   Cu.addDomestic = (s, id, nat, name, short, opts) =>
     (s.comps[id] = { id, type: 'cup', nat, name, short, clubs: [], prize: 3e6, opts: opts || {} });
   Cu.ensureContinentals = function (s) {
+    FM.Regional.ensure(s);
     for (const c of D.CONTINENTALS) if (!s.comps[c.id]) s.comps[c.id] = { ...c, type: 'continental', clubs: [] };
     for (const [id, nat, name, short, opts] of D.DOMESTIC_CUPS)
       if (!s.comps[id]) Cu.addDomestic(s, id, nat, name, short, opts);
@@ -196,6 +198,7 @@
   };
   Cu.fixturesFor = function (comp, cal) {
     if (comp.type === 'cup') return domestic(comp);
+    if (comp.type === 'regional') return FM.Regional.fixturesFor(comp);
     if (comp.type === 'world') return world(comp, cal.stage);
     const list = continental(comp, cal.stage);
     for (const f of list) {
@@ -288,6 +291,8 @@
     c.rounds.push({ name, day: S().day, ties, byes, n: p === n ? n : 0, legs: twoLegs ? 2 : 1 });
     return ties;
   }
+
+  Cu.domestic = domestic;
 
   // Knockout round with optional legs. pairs: [[seeded, unseeded], ...] — the seeded side hosts the decider.
   function koRound(c, key, stage, label, pairsFn, neutral) {
@@ -511,6 +516,8 @@
   }
 
   // Called by Season.apply for every cup/continental result
+  // What a result is worth: a national cup's amount, a regional one's small share of it, or a prize-based figure
+  Cu.purse = (c, cupAmt, other) => (c.type === 'regional' ? cupAmt * 0.1 : c.type === 'cup' ? cupAmt : other);
   Cu.onResult = function (fx) {
     const c = S().comps[fx.comp],
       r = fx.res;
@@ -527,12 +534,12 @@
       return;
     }
     if (!Cu.decides(fx)) {
-      S().clubs[fx.h].balance += c.type === 'cup' ? 2e5 : c.prize * 0.08;
+      S().clubs[fx.h].balance += Cu.purse(c, 2e5, c.prize * 0.08);
       return;
     } // first leg: gate receipts
     const w = winnerOf(fx),
       l = w === fx.h ? fx.a : fx.h;
-    S().clubs[w].balance += c.type === 'cup' ? 4e5 : c.prize * 0.25;
+    S().clubs[w].balance += Cu.purse(c, 4e5, c.prize * 0.25);
     if (fx.final) Cu.finish(c, w, l);
   };
 
@@ -543,13 +550,17 @@
     c.lastFinal = { w, r: l, year: S().year };
     club.titles[c.id] = (club.titles[c.id] || 0) + 1;
     club.balance += c.prize || 0;
-    club.rep = Math.min(99, club.rep + (c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5));
+    club.rep = Math.min(
+      99,
+      club.rep + (c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5),
+    );
     club.fanMood = Math.min(100, club.fanMood + 15);
     if (W.isUser(w)) {
-      S().user.stats.trophies++;
-      S().user.rep = Math.min(99, S().user.rep + (c.type === 'cup' ? 4 : 8));
+      if (c.type !== 'regional') S().user.stats.trophies++; // (a county cup is an honour, not a trophy of the season)
+      S().user.rep = Math.min(99, S().user.rep + (c.type === 'regional' ? 1 : c.type === 'cup' ? 4 : 8));
       club.boardConf = Math.min(100, club.boardConf + 15);
     }
+    if (c.type === 'regional' && !W.isUser(w)) return; // (another club's county cup is not news)
     FM.Stories.share({
       kicker:
         c.type === 'world'
@@ -586,6 +597,7 @@
         if (c.playoff) out.push(...c.playoff.sf, ...(c.playoff.sf2 || []), c.playoff.final, c.playoff.final2);
       }
       if (c.type === 'cup') (c.rounds || []).forEach((r) => out.push(...r.ties, ...(r.ties2 || [])));
+      if (c.type === 'regional') out.push(...FM.Regional.allFixtures(c));
       if (c.type === 'continental') (c.groups || []).forEach((g) => out.push(...g.fixtures.flat()));
       if (c.type === 'continental' || c.type === 'world') out.push(...Cu.koList(c));
     }
@@ -628,6 +640,10 @@
         text: out1 ? 'Knocked out' : tie ? last.name : last ? `Through to next round` : 'Awaiting draw',
         alive: !out1,
       });
+    }
+    for (const c of FM.Regional.regionals()) {
+      const st = FM.Regional.status(c, clubId);
+      if (st) out.push({ c, ...st });
     }
     for (const c of W.continentals().concat(W.worldCups())) {
       if (!c.clubs.includes(clubId)) continue;

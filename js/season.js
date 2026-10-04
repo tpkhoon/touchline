@@ -720,11 +720,13 @@
     return c.type === 'league'
       ? Sea.matchdayLabel(c)
       : c.type === 'cup'
-        ? c.world
-          ? 'Club World Cup'
-          : c.stage
-            ? 'Continental night'
-            : 'Cup day'
+        ? c.regional
+          ? 'Regional cups'
+          : c.world
+            ? 'Club World Cup'
+            : c.stage
+              ? 'Continental night'
+              : 'Cup day'
         : c.type === 'pre'
           ? 'Pre-season'
           : c.type === 'intl'
@@ -1352,8 +1354,14 @@
     S.qualified = qualified;
     entry.qualified = qualified;
     entry.cups = {};
+    entry.regional = {}; // county cups and state championships: kept apart, they are not the season's trophies
     for (const c of Object.values(S.comps))
-      if (c.type !== 'league' && c.winner) entry.cups[c.id] = { name: c.name, winner: c.winner, runnerUp: c.runnerUp };
+      if (c.type !== 'league' && c.winner)
+        (c.type === 'regional' ? entry.regional : entry.cups)[c.id] = {
+          name: c.name,
+          winner: c.winner,
+          runnerUp: c.runnerUp,
+        };
     // Apply promotion/relegation relationships (then put any B team now level with its parent back down)
     const applyMove = ([id, from, to]) => {
       const c = S.clubs[id];

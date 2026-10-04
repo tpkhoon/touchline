@@ -12626,5 +12626,140 @@
  },
  "format": "touchline-names",
  "version": 1,
- "note": "Club, league, cup and derby names as they were in the game source. Keyed by club code (the part of the id after c_). Apply with: node tools/realworld.mjs apply"
+ "note": "Club, league, cup and derby names as they were in the game source. Keyed by club code (the part of the id after c_). Apply with: node tools/realworld.mjs apply",
+ "regions": {
+  "ENG_LON": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "London Senior Cup",
+   "short": "LSC",
+   "clubs": "ARS CHE TOT WHU CRY FUL BRE QPR MIL CHA LEY WIM BNT BRO"
+  },
+  "ENG_MAN": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Manchester Premier Cup",
+   "short": "MPC",
+   "clubs": "MCI MUN SAL OLD STO"
+  },
+  "ENG_LAN": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Lancashire Senior Cup",
+   "short": "LNC",
+   "clubs": "BUR BLB PNE BLP BWA WIG ACS FLE BRW"
+  },
+  "ENG_LIV": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Liverpool Senior Cup",
+   "short": "LVC",
+   "clubs": "LIV EVE TRA"
+  },
+  "ENG_BIR": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Birmingham Senior Cup",
+   "short": "BSC",
+   "clubs": "AVL BIR WBA WOL WAL COV"
+  },
+  "ENG_STA": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Staffordshire Senior Cup",
+   "short": "STC",
+   "clubs": "STK PVA BRT CREW SHR"
+  },
+  "ENG_EMD": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "East Midlands Senior Cup",
+   "short": "EMC",
+   "clubs": "NFO NCO DER LEI MNS CHF LIN GRI NTN"
+  },
+  "ENG_SHF": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Sheffield and Hallamshire Senior Cup",
+   "short": "SHC",
+   "clubs": "SHU SHW BNS ROT DON"
+  },
+  "ENG_YOR": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Yorkshire Senior Cup",
+   "short": "YSC",
+   "clubs": "LEE HUD BFD HARR HUL"
+  },
+  "ENG_NE": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "North East Senior Cup",
+   "short": "NEC",
+   "clubs": "NEW SUN MID"
+  },
+  "ENG_SOU": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "South Coast Senior Cup",
+   "short": "SCC",
+   "clubs": "SOU POM BOU BHA CRAW"
+  },
+  "ENG_EAS": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Eastern Counties Cup",
+   "short": "ECC",
+   "clubs": "IPS NCI CAMU COL GILL WAT STV LUT PBO"
+  },
+  "ENG_WES": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "West Country Senior Cup",
+   "short": "WCC",
+   "clubs": "BRC BRR SWI CHT PLY EXE"
+  },
+  "ENG_TV": {
+   "nat": "ENG",
+   "format": "ko",
+   "name": "Berks and Bucks Senior Cup",
+   "short": "BBC",
+   "clubs": "OXF REA WYC MKD"
+  },
+  "BRA_RJ": {
+   "nat": "BRA",
+   "format": "rr",
+   "name": "Campeonato Carioca",
+   "short": "CRJ",
+   "clubs": "FLA BOT FLU VAS"
+  },
+  "BRA_SP": {
+   "nat": "BRA",
+   "format": "rr",
+   "name": "Campeonato Paulista",
+   "short": "CPA",
+   "clubs": "PAL COR SAO SAN RBB MSL"
+  },
+  "BRA_RS": {
+   "nat": "BRA",
+   "format": "rr",
+   "name": "Campeonato Gaúcho",
+   "short": "CGA",
+   "clubs": "GRE SCI JVD"
+  },
+  "BRA_MG": {
+   "nat": "BRA",
+   "format": "rr",
+   "name": "Campeonato Mineiro",
+   "short": "CMI",
+   "clubs": "CAM CRU"
+  },
+  "BRA_NE": {
+   "nat": "BRA",
+   "format": "rr",
+   "name": "Copa do Nordeste",
+   "short": "CNE",
+   "clubs": "BAH VIT FTZ CEA SPT"
+  }
+ }
 }

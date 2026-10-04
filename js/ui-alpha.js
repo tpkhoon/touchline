@@ -595,6 +595,7 @@
       <div class="card"><div class="row small"><span class="grow muted">Manager</span><b>${W.isUser(id) ? `${s.user.nat ? C.flag(s.user.nat) + ' ' : ''}${esc(s.user.name)}` : mgr ? `${C.flag(mgr.nat)} ${esc(mgr.fn + ' ' + mgr.ln)}` : '—'}</b></div>
         ${!W.isUser(id) && mgr && FM.Records.managerLine(mgr, id) ? `<div class="tiny dim" style="text-align:right;margin-top:2px">${esc(FM.Records.managerLine(mgr, id))}</div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">System</span><b>${tac.formation} · ${tac.buildup} · ${tac.press}</b></div>
+        ${c.founded ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Founded</span><b>${c.founded}</b></div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">Stadium</span><b>${esc(c.stadium ? c.stadium.name : '—')}${c.stadium ? ` · ${c.stadium.cap.toLocaleString()}${c.sim === 'full' ? ` · opened ${FM.Records.stadium(c).opened}` : ''}` : ''}</b></div>
         ${c.rival ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Rival</span><b class="tap" data-act="clubView" data-id="${c.rival}">⚔️ ${esc(s.clubs[c.rival].name)}</b></div>` : ''}
         ${rivalTag ? `<div class="row small" style="margin-top:6px"><span class="grow muted">With your club</span><b>${rivalTag}</b></div>` : ''}
