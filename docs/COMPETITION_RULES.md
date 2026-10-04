@@ -35,7 +35,56 @@ tables in the continental cups use UEFA's rule: head-to-head first.
   The 2. Bundesliga does the same with the 3. Liga (2 up, 3rd in the play-off; 2 down, 16th in the play-off). A B
   team can't be promoted into its parent's division, so the next club takes its place.
 - **Italy:** Serie A 3 down. Serie B: 2 up, play-offs 3rd–6th with a two-legged final.
-- **France:** Ligue 1 2 down; Ligue 2 2 up.
+- **France:** Ligue 1 2 down plus a play-off: 16th plays the best non-promoted club of Ligue 2 over two legs. Ligue 2: 2 up, the 3rd-placed club in the play-off.
+
+## League formats: splits, tournaments and title playoffs
+
+Where a real league does not simply play a double round-robin, the game follows its format. The data lives in
+`rules` in `js/data.js` (`split`, `torneos`, `zones`, `playoffs`, `conferences`, `mls`).
+
+### Splits
+
+After the regular season the table divides into groups that play each other again. Final positions go group by
+group, whatever the points. Points carry over unless noted.
+
+| League | Regular season | Split | After the split |
+| --- | --- | --- | --- |
+| Scottish Premiership | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
+| Belgian Pro League | 30 matches | Top 6 / the rest | The top 6 play 10 more with the points halved; the rest finish |
+| Danish Superliga | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
+| Austrian Bundesliga | 22 matches | Top 6 / bottom 6 | 10 matches each, points halved (rounded up) |
+| Swiss Super League | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
+| Czech First League | 30 matches | Top 6 / middle 4 / bottom 6 | 10, 6 and 10 matches, points kept |
+| Serbian SuperLiga | 30 matches | Top 8 / bottom 8 | 7 matches each, points kept |
+| Super League Greece | 26 matches | Top 6 / bottom 8 | 10 and 7 matches, points halved |
+| K League 1 | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
+| Cymru Premier | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
+
+### Two tournaments a year
+
+Liga MX (Apertura and Clausura) and Argentina (Apertura and Clausura) have two champions a year, each tournament its
+own table and its own knockout. The season's table is the two together; it decides the continental places after the
+champions.
+
+- **Mexico:** 18 clubs play each other once in each tournament (17 matches). The top six go straight to the
+  quarter-finals; places 7–10 play in (7th v 10th, 8th v 9th, one match each); then quarter-finals, semi-finals and a
+  final, all single matches hosted by the better seed (the real Liguilla uses two legs).
+- **Argentina:** 28 clubs in two zones of 14 (split by reputation, snaked), each playing its zone once and one match
+  against the other zone (14 matches a tournament). The top eight of each zone play a cross-zone round of 16, then
+  quarter-finals, semi-finals and a final at a neutral ground, all single matches.
+
+### Title playoffs
+
+- **MLS (USA):** see the American league above: seven a conference, the top seed skipping Round One, ending in the
+  MLS Cup; the best record wins the Supporters' Shield.
+- **A-League (Australia):** the top six play off: 3rd v 6th and 4th v 5th (elimination finals), semi-finals (1st and
+  2nd against the survivors) and the Grand Final, all single matches hosted by the better seed.
+
+### Relegation play-offs
+
+Germany (Bundesliga and 2. Bundesliga) and France (Ligue 1): the club above the automatic places plays the best
+non-promoted club of the division below over two legs. Italy, Spain and England have none in the real top flights;
+Serie B's play-out has nowhere to send the loser (there is no Serie C in the game).
 
 ## Domestic cups
 

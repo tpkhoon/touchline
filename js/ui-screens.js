@@ -1874,50 +1874,114 @@
     const tableHTML = (rows, zoneOf, title) =>
       `${title ? `<div class="h3" style="margin:10px 4px 4px">${esc(title)}</div>` : ''}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${rows.map((r, i) => `<tr class="${zoneOf(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>`;
     const mls = R.mls && comp.conf;
+    const torn = comp.torneos,
+      groups = comp.groups && R.split;
     const confNames = mls ? Object.keys(R.conferences) : [];
     const byConf = mls && UI._confView !== 'all';
-    const tables = byConf
-      ? confNames
-          .map((cn) =>
-            tableHTML(
-              W.confTable(comp, cn),
-              (i) => (i < R.mls.playoff ? (i === 0 ? 'zone-up' : 'zone-po') : ''),
-              `${cn}ern Conference`,
-            ),
-          )
-          .join('')
-      : tableHTML(t, zone);
+    // two tournaments a year: the one on show (the second once it has started), or the season's table
+    const started2 =
+      torn &&
+      comp.fixtures
+        .slice(comp.torneoHalf)
+        .flat()
+        .some((f) => f.res);
+    const tv = torn ? (UI._torneoView === undefined ? (started2 ? 1 : 0) : UI._torneoView) : null;
+    const finals = R.playoffs && R.playoffs.type === 'finals6';
+    let tables, shown;
+    if (byConf) {
+      tables = confNames
+        .map((cn) =>
+          tableHTML(
+            W.confTable(comp, cn),
+            (i) => (i < R.mls.playoff ? (i === 0 ? 'zone-up' : 'zone-po') : ''),
+            `${cn}ern Conference`,
+          ),
+        )
+        .join('');
+      shown = comp.ko && comp.ko[0];
+    } else if (torn && tv !== 'all') {
+      const cut = comp.zones ? 8 : 6;
+      tables = comp.zones
+        ? ['A', 'B']
+            .map((z) =>
+              tableHTML(
+                W.torneoTable(comp, tv, z),
+                (i) => (i === 0 ? 'zone-up' : i < cut ? 'zone-po' : ''),
+                `${torn[tv].name} · Zone ${z}`,
+              ),
+            )
+            .join('')
+        : tableHTML(
+            W.torneoTable(comp, tv),
+            (i) => (i < 6 ? (i === 0 ? 'zone-up' : 'zone-po') : i < 10 ? 'zone-po' : ''),
+            torn[tv].name,
+          );
+      shown = comp.ko && comp.ko[tv];
+    } else if (groups) {
+      tables = comp.groups
+        .map((ids, g) =>
+          tableHTML(
+            t.filter((r) => ids.includes(r.id)),
+            (i) => (g === 0 && i === 0 ? 'zone-up' : ''),
+            R.split.names[g],
+          ),
+        )
+        .join('');
+    } else {
+      tables = tableHTML(t, (i) => (finals && i < 6 && i > 0 ? 'zone-po' : zone(i)));
+      if (finals || torn) shown = comp.ko && comp.ko[0];
+    }
+    const chip = (on, act, v, label) =>
+      `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-v="${v}">${label}</button>`;
     const confChips = mls
-      ? `<div class="row" style="gap:6px;margin:0 2px 6px"><button class="chip ${byConf ? 'on' : ''}" data-act="confView" data-v="conf">Conferences</button><button class="chip ${byConf ? '' : 'on'}" data-act="confView" data-v="all">Overall (Supporters' Shield)</button></div>`
-      : '';
+      ? `<div class="row" style="gap:6px;margin:0 2px 6px">${chip(byConf, 'confView', 'conf', 'Conferences')}${chip(!byConf, 'confView', 'all', "Overall (Supporters' Shield)")}</div>`
+      : torn
+        ? `<div class="row" style="gap:6px;margin:0 2px 6px">${torn.map((x, i) => chip(tv === i, 'torneoView', i, esc(x.name))).join('')}${chip(tv === 'all', 'torneoView', 'all', 'Season')}</div>`
+        : '';
+    const splitNote = groups
+      ? `<div class="tiny dim" style="margin:0 4px 8px">${comp.split && comp.split.done ? `Split after round ${R.split.after}` : `Splits after round ${R.split.after} into ${R.split.groups.join(' / ')}`}${R.split.halve ? ': points are halved' : ': points carry over'}.</div>`
+      : R.split
+        ? `<div class="tiny dim" style="margin:0 4px 8px">Splits after round ${R.split.after} into ${R.split.groups.join(' / ')}${R.split.halve ? ', points halved' : ''}.</div>`
+        : '';
     const mlsLegend = mls
       ? byConf
         ? [`🟢 Conference leader`, `🔵 Playoffs (top ${R.mls.playoff})`]
         : [`🟢 Supporters' Shield`, `🔵 ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`]
-      : null;
-    const bracket = mls && comp.mls ? UI.mlsBracket(comp) : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${tables}
+      : torn && tv !== 'all'
+        ? [
+            comp.zones ? '🔵 Knockouts (top 8 of each zone)' : '🟢 Direct to the quarter-finals (top 6)',
+            ...(comp.zones ? [] : ['🔵 Play-in (7–10)']),
+          ]
+        : finals
+          ? ['🟢 Champion', '🔵 Finals (top 6)']
+          : null;
+    const bracket = shown ? UI.koBracket(comp, shown) : '';
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${tables}
       <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
       ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
   }
-  // The MLS playoff bracket: each round's ties (the winners shown in bold), conference by conference
-  UI.mlsBracket = function (comp) {
-    const M = comp.mls,
+  // A title playoff bracket: the seeds, then each round's ties
+  UI.koBracket = function (comp, M) {
+    const type = W.koType(comp),
       rows = [];
     for (const k of ['M1', 'M2', 'M3', 'M4']) {
       const ties = M[k] || [];
       if (!ties.length) continue;
       rows.push(
-        `<div class="small b dim" style="margin:10px 0 2px">${FM.Season.MLS_ROUNDS[k].toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
+        `<div class="small b dim" style="margin:10px 0 2px">${esc(FM.Season.KO_ROUNDS[type][k]).toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
       );
     }
     const seeds = Object.entries(M.seeds)
       .map(
         ([cn, ids]) =>
-          `<div class="tiny dim" style="margin-top:4px"><b>${esc(cn)}</b>: ${ids.map((id, i) => `${i + 1} ${esc(CL(id).short)}`).join(' · ')}</div>`,
+          `<div class="tiny dim" style="margin-top:4px">${cn === 'all' ? '' : `<b>${esc(cn)}</b>: `}${ids.map((id, i) => `${i + 1} ${esc(CL(id).short)}`).join(' · ')}</div>`,
       )
       .join('');
     return `<div class="card"><div class="h3">Playoffs</div>${seeds}${rows.join('')}</div>`;
+  };
+  UI.acts.torneoView = (d) => {
+    UI._torneoView = d.v === 'all' ? 'all' : +d.v;
+    UI.render();
   };
   UI.acts.confView = (d) => {
     UI._confView = d.v;

@@ -466,7 +466,11 @@
       const share = p.season.apps / games,
         exp = FM.D.STATUS[FM.Contracts.expectedStatus(p, club)].share;
       if (exp - share > 0.15)
-        add('time', -Math.round(Math.min(25, (exp - share) * 50)), 'Not getting the games he expects');
+        add(
+          'time',
+          -Math.round(Math.min(25, (exp - share) * 50) * (W.hasTrait(p, 'Needs Game Time') ? 1.6 : 1)),
+          'Not getting the games he expects',
+        );
       else if (share - exp >= 0.1)
         add('time', Math.round(Math.min(10, (share - exp) * 20)), 'Playing as much as he wants');
     }
@@ -485,6 +489,7 @@
     if (p.contract <= s.year && !p.pre) add('contract', -4, 'His contract is running down');
     if (p.wage < W.wageFor(p) * 0.8) add('pay', -6, 'Underpaid for his level');
     if (p.wantsOut) add('away', -10, 'He wants to leave');
+    if (W.hasTrait(p, 'Homesick') && club.nat !== p.nat && club.nat !== p.nat2) add('home', -6, 'Far from home');
     if (p.inj && (p.inj.out || 0) >= 6) add('injury', -5, 'A long injury');
     if (FM.Matchday.captainOf(club.id) === p) add('captain', 3, 'Captain of the club');
     return out.sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 5);

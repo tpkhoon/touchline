@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-275 features are playable in the web prototype today. Build = the build that added it.
+279 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -304,6 +304,10 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | The American league is built like MLS: two conferences (East and West) with their own tables and an overall table for the Supporters' Shield, a 34-game schedule weighted to the conference (a double round-robin within it, the odd club out meeting the other conference, four more cross-conference rounds), and seven clubs per conference in the playoffs: the top seed skips Round One, single matches through the Conference Semifinals and Finals to the MLS Cup, hosted by the better seed. The MLS Cup winner is the champion; the champion and the Shield winner head the CONCACAF places | Playtest round 10 |
 | Transfers | A college draft each winter for leagues that have one (the American league): three rounds, clubs that missed the playoffs picking first and the champions last, from a class of generated prospects kept out of the player pool until picked. The AI picks as the clock reaches it; you pick on the Draft board (a card on Home while you are on the clock, a Draft button on the Transfers tab) or let your assistant finish; undrafted prospects leave the game | Playtest round 10 |
 | Tools | Name generator: `npm run names` (`tools/namegen.mjs`) and a Names tab in the developer dashboard make player, town, club, ground, nickname, league and sponsor names by nation and seed, flagging names the world generator's checks would reject (rude, hard to say, too long, close to a real town or club) | Playtest round 10 |
+| Competitions | League splits as in real life: Scotland (33 + 5, top six and bottom six), Belgium (a top-six playoff on halved points), Denmark, Austria (halved), Switzerland, Czechia (three groups), Serbia, Greece, South Korea and Wales; the table shows each group and final positions go group by group | Playtest round 10 |
+| Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
+| Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
+| Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
 
 ## Yet to be added
 

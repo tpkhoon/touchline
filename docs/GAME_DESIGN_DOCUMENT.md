@@ -178,7 +178,7 @@ Players are remembered for who they are, not their rating. Personality is what c
 | Transfer value | Moves with age, form, potential and contract length |
 | Form | Charts of recent ratings |
 
-**Traits and hidden personality:** Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Media Friendly, Temperamental, Derby Specialist.
+**Traits and hidden personality:** Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Media Friendly, Temperamental, Derby Specialist, Fair-Weather, Consistent, Flair, and (round 10) Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick and Needs Game Time. A player has up to three, made from his attributes and hidden character; each has a real effect in matches, development, injuries or morale.
 
 Personality quirks should read like real people. A player might be a cult hero who hates rainy matches, loves derbies, clashes with strict managers, and becomes captain after defending teammates.
 

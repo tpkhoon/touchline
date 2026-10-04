@@ -317,6 +317,9 @@
       if (this.big && W.hasTrait(p, 'Big Game Player')) f *= 1.06;
       if (this.bigGame && p.id === sd.star) f *= 1 + CAL.star;
       if (this.derby && W.hasTrait(p, 'Derby Specialist')) f *= 1.08;
+      if (this.big && W.hasTrait(p, 'Big-Match Nerves')) f *= 0.95;
+      if (this.knockout && W.hasTrait(p, 'Cup Specialist')) f *= 1.05;
+      if (this.minute <= 20 && W.hasTrait(p, 'Slow Starter')) f *= 0.93;
       if (sd.injured[p.id]) f *= 0.6;
       return f;
     }
@@ -753,6 +756,8 @@
         0.9,
       );
       if (type === 'longshot' && W.hasTrait(p, 'Flair')) pGoal += 0.03;
+      if ((this.minute >= 75 || type === 'penalty') && W.hasTrait(p, 'Clutch')) pGoal *= 1.1;
+      if ((type === 'cross' || sp === 'cor') && W.hasTrait(p, 'Aerial Threat')) pGoal *= 1.1;
       let outcome,
         howler = false;
       if (Math.random() < pGoal) outcome = 'goal';
@@ -936,6 +941,7 @@
               (22 - p.hid.temp) *
               (DW[sd.slots[i].t] + 0.2) *
               (W.hasTrait(p, 'Temperamental') ? 2 : 1) *
+              (W.hasTrait(p, 'Hatchet Man') ? 2 : 1) *
               (sd.yc[p.id] ? CAL.bookedCaution : 1),
           );
           if (!o) return;
@@ -1008,7 +1014,10 @@
             (rfs[i] =
               (t === 'GK' ? 0.25 : t === 'WB' || t === 'FB' || t === 'CM' || t === 'WM' ? 1.1 : 1) *
               (1 + (this.roleAt(sd, i).press || 0) * 2));
-          sd.st[p.id] = Math.max(0, sd.st[p.id] - 0.42 * (1.35 - (p.attrs.stamina / 20) * 0.7) * pf * rf);
+          sd.st[p.id] = Math.max(
+            0,
+            sd.st[p.id] - 0.42 * (1.35 - (p.attrs.stamina / 20) * 0.7) * pf * rf * (W.hasTrait(p, 'Engine') ? 0.75 : 1),
+          );
           if (!sd.injured[p.id] && Math.random() < FM.Injury.matchChance(p, sd.st[p.id])) {
             sd.injured[p.id] = tl.m;
             out.events.push({

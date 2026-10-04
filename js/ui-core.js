@@ -828,6 +828,42 @@
   };
   // The rules of one league, from the game's own data: format, tiebreakers, promotion and relegation, continental
   // places, cups and the squad and foreign-player rules (the new-career screen shows the league you picked)
+  // How a league's season runs, in lines: the plain double round-robin, or its conferences, split, tournaments and playoffs
+  const formatLines = (n, r) => {
+    const out = [];
+    if (r.conferences)
+      out.push(
+        `${n} clubs in two conferences (${Object.keys(r.conferences).join(' and ')}): ${r.rounds} matches, most of them against the conference.`,
+      );
+    else if (r.zones)
+      out.push(
+        `${n} clubs in two zones of ${n / 2}, twice a year (${r.torneos.join(' and ')}): each plays its zone once and one match against the other zone.`,
+      );
+    else if (r.torneos)
+      out.push(`${n} clubs, two tournaments a year (${r.torneos.join(' and ')}): each plays every other club once.`);
+    else if (r.split) {
+      const sp = r.split;
+      out.push(
+        `${n} clubs play ${sp.after} matches, then the table splits into groups of ${sp.groups.join(', ')} (${sp.names.join(', ')}) that play on${sp.halve ? ' with the points halved' : ' with the points carried over'}.`,
+      );
+    } else out.push(`${n} clubs, each playing every other home and away: ${(n - 1) * 2} matches.`);
+    const t = r.playoffs && r.playoffs.type;
+    if (r.mls)
+      out.push(
+        `The top ${r.mls.playoff} of each conference play off (single matches) for the cup; the best record wins the Supporters' Shield.`,
+      );
+    if (t === 'finals6')
+      out.push('The top six play off: elimination finals, semi-finals and a Grand Final decide the champion.');
+    if (t === 'liguilla')
+      out.push(
+        'Each tournament ends with a Liguilla: places 7–10 play in, then the top eight play quarter-finals, semi-finals and a final. Each has a champion.',
+      );
+    if (t === 'zones')
+      out.push(
+        'Each tournament ends with knockouts for the top eight of each zone (round of 16 to the final). Each has a champion.',
+      );
+    return out;
+  };
   UI.leagueRules = function (l) {
     const R = FM.Reg,
       nat = D.NATIONS[l.nat],
@@ -865,7 +901,7 @@
         ? `<div class="ng-rules"><div class="ng-label" style="margin-top:14px">${esc(title)}</div>${lines.map((x) => `<div class="small" style="color:#c9d4e3;line-height:1.55;margin-top:4px">• ${esc(x)}</div>`).join('')}</div>`
         : '';
     return `<div class="h3" style="margin-top:14px;color:#c8ff3d">${nat.flag} ${esc(l.name)} · ${esc(nat.name)}</div>
-      ${block('Format', [`${n} clubs, each playing every other home and away: ${(n - 1) * 2} matches.`, '3 points for a win, 1 for a draw.', `Level on points: ${tb}.`])}
+      ${block('Format', [...formatLines(n, r), '3 points for a win, 1 for a draw.', `Level on points: ${tb}.`])}
       ${block('Promotion and relegation', move)}
       ${block('Continental places', europe.length ? europe : ['No continental places from this league.'])}
       ${block('Domestic cups', cups.length ? [`${cups.join(', ')}: one-off ties with extra time and penalties.`] : ['No domestic cup is played.'])}

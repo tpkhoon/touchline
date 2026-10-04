@@ -198,6 +198,28 @@ for (let s = 0; s < SEASONS; s++) {
       );
     }
   }
+  // league formats: splits (the top group fills the top places, every club played its full schedule), two tournaments
+  // each with a champion, and a final for every playoff league
+  {
+    const ents = summary && summary.entry && summary.entry.comps;
+    for (const [id, e] of Object.entries(ents || {})) {
+      if (e.split) {
+        const n0 = e.split.groups[0].length,
+          top = new Set(e.split.groups[0]);
+        check(
+          e.table.slice(0, n0).every((r) => top.has(r.id)),
+          `season ${s + 1}: ${id}'s top group does not fill the top places`,
+        );
+        check(top.has(e.champion), `season ${s + 1}: ${id}'s champion is not in its top group`);
+      }
+      if (e.torneos)
+        check(
+          e.torneos.length === 2 && e.torneos.every((t) => t.champion && t.playoffs.M4.length === 1),
+          `season ${s + 1}: ${id} is missing a tournament champion`,
+        );
+      else if (e.playoffs) check(e.playoffs.M4.length === 1, `season ${s + 1}: ${id} has no final`);
+    }
+  }
   // naturalised players hold the citizenship they were granted, and no federation that bars it granted one
   {
     const bad = Object.values(FM.S.players).filter(
