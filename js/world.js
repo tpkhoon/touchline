@@ -1921,34 +1921,6 @@
     u.contractRem = null;
     if (FM.Season.jobMarket) FM.Season.jobMarket(true);
   };
-  // A new career at a club that the world generated as by far the weakest in its league starts hopeless (a 20-point
-  // gap to the leaders, 14 points from safety before a ball is kicked). Its squad is lifted, as one whole, to the level
-  // of the league's second-weakest side: a relegation fight, not a foregone conclusion. Nobody else is touched.
-  W.balanceUserSquad = function () {
-    const S = FM.S,
-      uc = W.userClub(),
-      comp = uc && S.comps[uc.comp];
-    if (!comp || !comp.clubs || comp.clubs.length < 6) return;
-    const xiAvg = (c) => U.avg(W.pickXI(c.id, c.tactic).xi.filter(Boolean), (p) => p.ca);
-    const others = comp.clubs
-      .filter((id) => id !== uc.id && S.clubs[id])
-      .map((id) => xiAvg(S.clubs[id]))
-      .sort((a, b) => a - b);
-    const floor = others[1] ?? others[0];
-    let lifted = 0;
-    for (let i = 0; i < 4 && lifted < 9; i++) {
-      const need = Math.min(9 - lifted, floor - xiAvg(uc));
-      if (need < 0.3) break;
-      const d = Math.ceil(need * 10) / 10;
-      for (const p of W.squad(uc.id)) {
-        for (const k in p.attrs) p.attrs[k] = U.clamp(p.attrs[k] + d / 5, 1, 20);
-        p.pa = Math.max(p.pa, Math.round(p.ca + d));
-        W.refresh(p);
-        p.wage = W.wageFor(p);
-      }
-      lifted += d;
-    }
-  };
   W.takeCharge = function (clubId, mgrName, isNew = true) {
     const S = FM.S,
       club = S.clubs[clubId];
@@ -1999,8 +1971,6 @@
         });
     }
     S.user.joinedClubYear = S.year;
-    S.user.joinedDay = S.day;
-    if (isNew) W.balanceUserSquad();
     S.user.tactic = club.tactic;
     if (S.user.tactic.fam == null) S.user.tactic.fam = 55; // tactical familiarity 0–100
     S.user.preseason = S.user.preseason || {};

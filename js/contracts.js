@@ -442,18 +442,11 @@
   };
 
   // AI clubs meeting a release clause can take a player — you can't stop them
-  // A new manager gets a few weeks first (the clause is in the contract, but nobody has the time to trigger it in
-  // the first days of a job), and a clause is never sprung without notice: the buyer is named a game day before the
-  // payment, which is the manager's chance to talk to the player or tie him to a new deal.
-  Co.CLAUSE_GRACE = 8; // game days after taking a job
-  Co.clauseShielded = function () {
-    const u = S().user;
-    return u.joinedDay != null && u.joinedClubYear === S().year && S().day - u.joinedDay < Co.CLAUSE_GRACE;
-  };
+  // A clause is never sprung without notice: the buyer is named a game day before the payment, which is the
+  // manager's chance to talk to the player or tie him to a new deal.
   Co.releaseClauses = function () {
     const s = S(),
       uc = W.userClub();
-    if (Co.clauseShielded()) return;
     const cands = W.squad(uc.id).filter((p) => !p.loan && p.deal && p.deal.release && !W.hasTrait(p, 'Loyal'));
     // a warning given on an earlier day: the payment goes in now, unless the player has signed a new deal, the club
     // cannot pay any more, or the window has closed (this runs only while it is open)
