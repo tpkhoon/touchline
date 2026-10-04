@@ -550,6 +550,36 @@
     out = out.charAt(0).toUpperCase() + out.slice(1).toLowerCase();
     return MONO_BLOCK.has(plain(out).toLowerCase()) ? null : out;
   };
+  // Youth years for a player made with the world: the nation he grew up in (his own, now and then where he plays now if
+  // he moved young) and the club there that trained him (for a young player often his current club; B teams belong to
+  // their parent). A nation with no club in this world leaves the club empty.
+  let youthPool = { S: null, n: 0, by: {} };
+  W.assignYouth = function (p, clubId) {
+    const S = FM.S,
+      age = W.age(p),
+      here = clubId && S.clubs[clubId];
+    if (youthPool.S !== S || youthPool.n !== Object.keys(S.clubs).length) {
+      const by = {};
+      for (const c of Object.values(S.clubs))
+        if (c.comp && !c.parent && c.sim !== 'nation') (by[c.nat] = by[c.nat] || []).push(c);
+      youthPool = { S, n: Object.keys(S.clubs).length, by };
+    }
+    if (p.youth && S.clubs[p.youth]) {
+      p.homeNat = S.clubs[p.youth].nat;
+      p.trainedAt = p.youth;
+      return;
+    }
+    let home = p.nat;
+    if (here && here.nat !== p.nat && age <= 24 && Math.random() < 0.12) home = here.nat; // moved abroad as a teenager
+    p.homeNat = home;
+    const pool = youthPool.by[home] || [];
+    const own = here && (here.parent ? S.clubs[here.parent] : here);
+    if (own && own.nat === home && age <= 22 && Math.random() < 0.6) p.trainedAt = own.id;
+    else if (pool.length) {
+      let r = Math.random() * pool.reduce((t, c) => t + c.rep, 0);
+      p.trainedAt = (pool.find((c) => (r -= c.rep) < 0) || pool[0]).id;
+    } else p.trainedAt = null;
+  };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
     const heritage = W.pickHeritage(nat),
@@ -1763,6 +1793,7 @@
       p.contract = S.year;
       S.players[p.id] = p;
     }
+    for (const id in S.players) W.assignYouth(S.players[id], S.players[id].clubId); // where each grew up and who trained him
     FM.Contracts.seedWorld();
     W.leagues().forEach(W.setupSeasonFixtures);
     FM.Intl.setup();

@@ -1325,21 +1325,20 @@
       t = R.trained(p);
     const nat = (code) => (D.NATIONS[code] ? `${C.flag(code)} ${esc(D.NATIONS[code].name)}` : esc(code));
     const where = t.club
-      ? `${C.crest(t.club, 16)} ${esc(t.club.name)} (${nat(t.club.nat)})`
-      : `${nat(p.nat)} <span class="dim" style="font-weight:400">(no youth record: counted where he was born)</span>`;
+      ? `${C.crest(t.club, 16)} ${esc(t.club.name)} <span class="dim" style="font-weight:400">(${nat(t.club.nat)})</span>`
+      : `<span class="dim" style="font-weight:400">a youth academy in</span> ${nat(t.home)}`;
     const how =
       t.why === 'academy'
         ? 'came through its academy'
         : t.why === 'record'
           ? `${t.seasons} season${t.seasons > 1 ? 's' : ''} there between 15 and 21`
-          : '';
-    const hg = t.nations.length
-      ? t.nations.map(nat).join(', ')
-      : '<span class="dim" style="font-weight:400">no nation</span>';
+          : 'his youth club, from before the game began';
+    const others = t.nations.filter((n) => n !== t.home);
+    const hg = `${nat(t.home)}${others.length ? `<div class="tiny dim" style="font-weight:400">also homegrown for ${others.map(nat).join(', ')}</div>` : ''}`;
     const own = p.clubId && CL(p.clubId) && CL(p.clubId).nat;
     const need = own && R.rulesFor(CL(p.clubId)) && R.rulesFor(CL(p.clubId)).squad;
-    return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}${how ? `<div class="tiny dim" style="font-weight:400">${how}</div>` : ''}</b></div>
-        <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown for</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
+    return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}<div class="tiny dim" style="font-weight:400">${how}</div></b></div>
+        <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown in</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
   };
   // As national team manager: a player eligible for your nation who plays for another (or has not chosen) can be asked
   // to commit, if he has not yet been capped

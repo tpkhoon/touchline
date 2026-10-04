@@ -109,13 +109,26 @@
   };
   R.nonEU = (p, club) => R.nonEUNat(p.nat, club);
   R.isForeign = (p, c, r) => p.nat !== c.nat && !(r && r.exempt && r.exempt.includes(p.nat));
-  // Homegrown for a nation: three seasons at its clubs between 15 and 21. Players created with the world have no
-  // youth record, so they count as trained where they were born (or at the academy that produced them).
+  // Where a player grew up as a youth (his home nation) and the club that trained him: players made with the world have
+  // no youth record, so each is given one when first needed (W.assignYouth): usually a club of his own nation, for a
+  // young player often the club he is at now.
+  R.home = function (p) {
+    if (p.homeNat === undefined) W.assignYouth(p, p.clubId);
+    return p.homeNat;
+  };
+  R.youthClub = function (p) {
+    const S = FM.S;
+    if (p.youth && S.clubs[p.youth]) return S.clubs[p.youth];
+    if (p.homeNat === undefined) W.assignYouth(p, p.clubId);
+    return p.trainedAt && S.clubs[p.trainedAt] ? S.clubs[p.trainedAt] : null;
+  };
+  // Homegrown for a nation: three seasons at its clubs between 15 and 21, or the youth years he is given as a player
+  // made with the world (his home nation).
   R.homegrown = function (p, nat) {
     const S = FM.S,
       sp = p.career.spells;
     if (p.youth && S.clubs[p.youth] && S.clubs[p.youth].nat === nat) return true;
-    if (!sp.length || sp[0].from - p.born > 18) return p.nat === nat;
+    if (!sp.length || sp[0].from - p.born > 18) return R.home(p) === nat;
     let yrs = 0;
     for (const s of sp) {
       const c = S.clubs[s.c];
@@ -126,10 +139,10 @@
     }
     return yrs >= 3;
   };
-  // Where a player counts as trained, and the nations he is homegrown for: { club, why, years, nations }.
-  // why: 'academy' (he came through a club's academy), 'record' (the club where he spent most of his years between 15 and 21)
-  // or 'born' (no youth record, as for players made with the world: he counts as trained in the country of his birth).
-  // years: his seasons at each nation's clubs in that window. nations: every nation he is homegrown for.
+  // The club that trained him and the nation(s) he is homegrown for: { club, home, why, years, nations }.
+  // club: his youth club: the academy that produced him ('academy'), the club where he spent most of his years between
+  // 15 and 21 ('record'), or the youth club he was given with the world ('given'); null if his nation has no club in
+  // this world. home: the nation he is homegrown in; nations: every nation he counts as homegrown for (home first).
   R.trained = function (p) {
     const S = FM.S,
       sp = p.career.spells,
@@ -145,15 +158,17 @@
         byClub[c.id] = (byClub[c.id] || 0) + (b - a + 1);
       }
     }
-    const cand = new Set([p.nat, ...Object.keys(years)]);
-    if (p.youth && S.clubs[p.youth]) cand.add(S.clubs[p.youth].nat);
-    const nations = [...cand].filter((n) => R.homegrown(p, n));
-    if (p.youth && S.clubs[p.youth]) return { club: S.clubs[p.youth], why: 'academy', years, nations };
+    const home = R.home(p),
+      yc = R.youthClub(p);
+    const cand = new Set([home, p.nat, ...Object.keys(years)]);
+    if (yc) cand.add(yc.nat);
+    const nations = [...cand].filter((n) => R.homegrown(p, n)).sort((x, y) => (y === home) - (x === home));
+    if (p.youth && S.clubs[p.youth]) return { club: S.clubs[p.youth], home, why: 'academy', years, nations };
     if (sp.length && sp[0].from - p.born <= 18) {
       const best = Object.entries(byClub).sort((x, y) => y[1] - x[1])[0];
-      if (best) return { club: S.clubs[best[0]], why: 'record', years, nations, seasons: best[1] };
+      if (best) return { club: S.clubs[best[0]], home, why: 'record', years, nations, seasons: best[1] };
     }
-    return { club: null, why: 'born', years, nations };
+    return { club: yc, home, why: 'given', years, nations };
   };
   const senior = (p) => W.age(p) > 21;
 
