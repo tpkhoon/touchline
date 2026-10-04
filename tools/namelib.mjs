@@ -1028,17 +1028,17 @@ for (const k of Object.keys(LANG)) LANG[k].key = k;
 const langKey = (L) => L.key;
 // The division names of a nation: the language's usual set, or one of its alternatives (r: a seeded random)
 export const tiersFor = (L, r) => {
-  const sets = [L.tiers, ...(TIER_SETS[langKey(L)] || [])];
+  const sets = [L.tiers, ...(L.tierSets || TIER_SETS[langKey(L)] || [])];
   return sets[Math.floor(r() * sets.length)];
 };
 // Alternative club-name patterns a language adds to its usual ones (worldgen uses them for a share of the clubs)
-export const clubMoreFor = (L) => CLUB_MORE[langKey(L)] || [];
+export const clubMoreFor = (L) => L.clubMore || CLUB_MORE[langKey(L)] || [];
 export const cupFor = (L, r) => {
-  const sets = [L.cup, ...(CUP_SETS[langKey(L)] || []).filter((c) => c !== L.cup)];
+  const sets = [L.cup, ...(L.cups || CUP_SETS[langKey(L)] || []).filter((c) => c !== L.cup)];
   return sets[Math.floor(r() * sets.length)];
 };
 // An alternative nickname for a colour, where the language has some ("Red Devils", "Bluebirds")
-export const colourAltFor = (L) => COLOUR_ALT[langKey(L)];
+export const colourAltFor = (L) => (L.colourAlt !== undefined ? L.colourAlt : COLOUR_ALT[langKey(L)]);
 const COLOUR_ALT = {
   eng: {
     red: ['Red Devils', 'Crimsons', 'Scarlets', 'Reds'],
@@ -1083,6 +1083,30 @@ const NATION_L = {
     b: words('burgh ness dee ie more ray rie ock wick mouth loch kirk side bridge ton land shiels'),
     pre: ['Upper', 'Nether', 'Easter', 'Wester', 'Mid', 'Kirk'],
     joins: ['-on-Tay', '-on-Spey', '-by-the-Sea', ' of the Glens', '-on-Forth'],
+    // Scottish clubs: Thistle, Academical, Juniors, Athletic ...; parks and gardens, lairds and clansmen
+    club: [
+      ...rep(['{c} United', '{c} Town'], 3),
+      ...rep(['{c} Athletic', '{c} Rovers'], 2),
+      '{c} Thistle',
+      '{c} Albion',
+      '{c} Vale',
+      '{c} Academical',
+      '{c} Juniors',
+      '{c} Victoria',
+      '{c} City',
+      '{c} Wanderers',
+    ],
+    ground: ['{c} Park', '{x} Park', '{c} Gardens', '{x} Green', '{x} Road', '{c} Muir', '{x} Brae'],
+    misc: words(
+      'Lairds Highlanders Clansmen Pipers Mariners Drovers Foresters Weavers Fishermen Ironmen Thistles Stags',
+    ),
+    colourAlt: null,
+    clubMore: ['{c} Burgh', 'Inter {c}', '{c} Hearts Athletic'],
+    tiers: ['Premier Division', 'Division One', 'Division Two', 'Division Three', 'Regional Division'],
+    tierSets: [['Elite Division', 'Championship Division', 'Second Division', 'Third Division', 'Highland Division']],
+    cup: 'Challenge Shield',
+    cups: ['Scottish Shield', 'National Trophy', 'Federation Cup'],
+    quirk: ['Upper', 'Nether', 'Mid', 'Easter', 'Wester', 'Old', 'New'],
   },
   WAL: {
     ...LANG.eng,
@@ -1094,6 +1118,27 @@ const NATION_L = {
     pre: ['Llan', 'Pen', 'Aber', 'Caer', 'Porth'],
     preGap: '',
     joins: [' Bach', ' Fawr', '-y-Bont', ' Uchaf'],
+    // Welsh clubs: Town, City, AFC, Vale, Welfare; Parc grounds, dragons and valleymen
+    club: [
+      ...rep(['{c} Town', '{c} City'], 3),
+      ...rep(['{c} Rovers', '{c} United'], 2),
+      '{c} Athletic',
+      '{c} Albion',
+      'AFC {c}',
+      '{c} Vale',
+      '{c} Wanderers',
+      '{c} Welfare',
+      '{c} Borough',
+    ],
+    ground: ['{c} Park', 'Parc {x}', '{x} Road', 'Stadiwm {c}', '{c} Ground', '{x} Field', 'Maes {x}'],
+    misc: words('Dragons Miners Valleymen Druids Harpers Quarrymen Drovers Ravens Choristers Shepherds'),
+    colourAlt: null,
+    clubMore: ['{c} Cymru', 'Clwb {c}', '{c} Hotspur'],
+    tiers: ['Premier Division', 'Division One', 'Division Two', 'Division Three', 'Regional Division'],
+    tierSets: [['Uwch Division', 'Ail Division', 'Trydedd Division', 'Pedwaredd Division', 'Cynghrair Rhanbarthol']],
+    cup: 'Challenge Cup',
+    cups: ['Cwpan Her', 'National Cup', 'Federation Shield'],
+    quirk: ['Upper', 'Lower', 'Old', 'New', 'Caer', 'Pen'],
   },
   IRL: {
     ...LANG.eng,
@@ -1104,6 +1149,27 @@ const NATION_L = {
     b: words('more agh drum town gar garvan lough mullen na kenny bridge ford ard ree glass dara'),
     pre: ['Upper', 'Lower', 'Old', 'Little', 'Castle', 'Port'],
     joins: [' Cross', '-on-Shannon', ' Bridge', ' Upper'],
+    // Irish clubs: Rovers, United, Celtic, Swifts, Harps, Hibernians; showgrounds and parks
+    club: [
+      ...rep(['{c} Rovers', '{c} United'], 3),
+      ...rep(['{c} City', '{c} Town'], 2),
+      '{c} Celtic',
+      '{c} Athletic',
+      '{c} Wanderers',
+      '{c} Swifts',
+      '{c} Harps',
+      '{c} Shamrocks',
+      '{c} Gaels',
+    ],
+    ground: ['{c} Park', '{x} Park', '{c} Showgrounds', '{x} Road', '{c} Oval', '{x} Street', '{c} Lawn'],
+    misc: words('Rebels Shamrocks Saints Harps Gaels Clansmen Fianna Corsairs Drovers Hurlers Tricolours'),
+    colourAlt: null,
+    clubMore: ['{c} Bohs', 'Inter {c}', '{c} Dynamos'],
+    tiers: ['Premier Division', 'Division One', 'Division Two', 'Division Three', 'Provincial League'],
+    tierSets: [['Senior Premier', 'Senior One', 'Senior Two', 'Senior Three', 'Provincial League']],
+    cup: 'Challenge Cup',
+    cups: ['Irish Trophy', 'National Shield', 'Federation Cup'],
+    quirk: ['Upper', 'Lower', 'Old', 'Little', 'Castle', 'Port'],
   },
   USA: {
     ...LANG.eng,
@@ -1114,6 +1180,42 @@ const NATION_L = {
     b: words('field ville port ton burg wood dale ford view haven falls springs ridge bluff creek hills grove'),
     pre: ['New', 'Port', 'Fort', 'Lake', 'Mount', 'San', 'Santa', 'El', 'North', 'South', 'West', 'East'],
     joins: [' Heights', ' Springs', ' Falls', ' Park', ' Beach'],
+    // American clubs: FC and SC, Inter, Sporting, Real, and a mascot after the city; arenas and fields
+    club: [
+      ...rep(['{c} FC', '{c} SC'], 3),
+      ...rep(['FC {c}', '{c} United'], 2),
+      'Inter {c}',
+      'Sporting {c}',
+      'Real {c}',
+      'AC {c}',
+      '{c} City FC',
+      '{c} Athletic',
+      ...[
+        'Thunder',
+        'Storm',
+        'Blaze',
+        'Surge',
+        'Fury',
+        'Heat',
+        'Mustangs',
+        'Pioneers',
+        'Rockets',
+        'Stallions',
+        'Express',
+        'Fire',
+      ].map((m) => `{c} ${m}`),
+    ],
+    ground: ['{c} Stadium', '{x} Field', '{x} Park', '{c} Arena', '{x} Stadium', '{c} Field', '{p} Field'],
+    misc: words(
+      'Wolves Mustangs Eagles Bison Pioneers Thunder Storm Lightning Rockets Stallions Comets Voyagers Dragons Foxes Crush Fire',
+    ),
+    colourAlt: null,
+    clubMore: ['{c} Rapids', '{c} Union Club', '{c} Revolution'],
+    tiers: ['Major League', 'Championship League', 'Division Two', 'Division Three', 'Regional League'],
+    tierSets: [['Super League', 'Challenge League', 'Open Division', 'Amateur Division', 'Regional League']],
+    cup: 'Challenge Cup',
+    cups: ['National Cup', 'Federation Cup', 'Founders Cup', 'Liberty Cup'],
+    quirk: ['New', 'Port', 'Fort', 'Lake', 'Mount'],
   },
   AUS: {
     ...LANG.eng,
@@ -1124,6 +1226,24 @@ const NATION_L = {
     b: words('bool dah gong nup bin ton ra by ville lea wa ooka dale ford more cannon nunda'),
     pre: ['Port', 'Mount', 'North', 'South', 'East', 'West', 'Lake', 'New'],
     joins: [' Heights', ' Bay', ' Beach', ' Creek', ' Plains'],
+    // Australian clubs: FC, City, United, Wanderers, Strikers
+    club: [
+      ...rep(['{c} FC', '{c} City'], 3),
+      ...rep(['{c} United', '{c} Wanderers'], 2),
+      '{c} Athletic',
+      '{c} Strikers',
+      '{c} Roar',
+      '{c} Heart',
+      'Sporting {c}',
+    ],
+    ground: ['{c} Oval', '{x} Park', '{c} Stadium', '{x} Reserve', '{c} Sportsground', '{x} Field'],
+    misc: words('Kookaburras Koalas Wallabies Dingoes Sharks Stingers Roos Magpies Emus Crocs Drovers Miners'),
+    colourAlt: null,
+    clubMore: ['{c} Rovers', '{c} Strikers FC'],
+    tierSets: [['A-Division', 'B-Division', 'State Premier', 'State One', 'Regional League']],
+    cup: 'Challenge Cup',
+    cups: ['National Cup', 'Federation Cup', 'Southern Cross Cup'],
+    quirk: ['North', 'South', 'East', 'West', 'Port', 'Mount'],
   },
 };
 export const langOf = (nat) =>
@@ -1221,19 +1341,141 @@ const QUIRK = {
   por: ['Vila', 'São', 'Santa', 'Alto'],
   nld: ['Oud', 'Nieuw', 'Groot', 'Klein'],
 };
-export const quirkFor = (L) => QUIRK[L.key] || [];
+export const quirkFor = (L) => L.quirk || QUIRK[L.key] || [];
 // A club name is "simple" when it is the town and one short word (big clubs get those)
 export const isSimpleClub = (t) => !/[0-9&]/.test(t) && t.replace('{c}', 'X').split(' ').length <= 2;
-// Fictional league sponsors ("Aurum Top Division")
+// Fictional league sponsors ("Aurum Top Division"): companies that sound as if they belong to the country, so a
+// Serbian league is not sponsored by "Brightway". Each nation has its own list (SPONSORS_NAT); the rest use their
+// language's; the generic list is the last resort.
 export const SPONSORS = words(
   `Aurum Nordbank Kaizen Vantage Meridian Helix Orbis Solara Tandem Zenith Polaris Cobalt Argent Ironwood Lumen Quanta
-  Verity Summit Halcyon Brightway Northgate Calder Redwater Evergreen Pinnacle Harbor Crestline Sable Monarch Beacon
-  Altura Bluepeak Corvane Dunmore Elmstead Fairhaven Glenrock Hartwell Ivorygate Juniper Kestrel Lakeshore Marlowe
-  Northwind Oakridge Parkhurst Quillon Ravenscar Silverlake Thornfield Umberton Valemont Whitcombe Yarrow Zephyr
-  Ashgrove Bramwell Cinder Driftwood Eastgate Foxmoor Granite Highmark Ironbridge Jadestone Kingsley Lionheart
-  Mapleton Nightjar Orchard Primrose Quarry Riverstone Stonebridge Tidewater Upland Vanguard Westbrook Alderwood
-  Birchfield Copperfield Dovedale Emberline Fernhill Goldcrest Heathmoor Inkwell Jasper Kiln Larchmont Millstone
-  Nettlefield Opaline Pennant Quickwater Rosewood Saltmarsh Tarnside Urbane Verdant Wrenfield Axiom Borealis Cascade
-  Deltaline Equinox Fulcrum Gravitas Horizon Insignia Keystone Landmark Momentum Nexus Optima Paragon Quorum
-  Radiant Sterling Trident Unity Vertex Windward Xenith Yonder Zinc Apex Banner Crown Dynasty Empire Frontier`,
+  Verity Summit Halcyon Brightway Northgate Calder Redwater Evergreen Pinnacle Harbor Crestline Sable Monarch Beacon`,
 );
+const SPONSORS_NAT = {
+  ENG: words(
+    `Brightway Northgate Calder Redwater Ironbridge Thornfield Kingsley Alderwood Stonebridge Westbrook Highmark Foxmoor
+    Heathmoor Millstone Whitcombe Parkhurst Marlowe Ravenscar Dunmore Elmstead Fairhaven Bluepeak Lakeshore Oakridge`,
+  ),
+  SCO: words(
+    `Lochside Glenrock Highmark Thistlegate Braemar Clanbank Caledon Tayside Ardmore Strathmore Bannockburn Craigmuir
+    Kinloch Dunmore Fraserwood Heatherlea Stonehaven Corriehill`,
+  ),
+  WAL: words(
+    `Gwalia Cambrian Dragonbank Tywi Cardiganbay Eryri Rhosyn Brynmor Gwynfa Penmaen Celtbank Afonwen Dyfed Menai Llwyd
+    Glanmor Hafren Tegfan`,
+  ),
+  IRL: words(
+    `Shannonbank Emerald Corrib Liffeybridge Glendalough Clannad Tara Ardmore Lough Kilbride Boyne Dunmara Rathmore Eireline
+    Slaney Burrenwood Carrick Mullaghmore`,
+  ),
+  USA: words(
+    `Libertyline Heartland Frontier Pioneer Eagleview Summit Mainstreet Redwood Silverlake Starfield Americana Oakwood
+    Northstar Freedom Cardinal Patriot Westgate Independence Prairie Bluegrass`,
+  ),
+  AUS: words(
+    `Southern Outback Coolabah Wattle Murrayfield Kookaburra Banksia Harbourside Gumtree Yarraline Boomerang Coastal
+    Redcentre Tasman Federation Kangaline Eucalypt Southcross`,
+  ),
+  ESP: words(
+    `Banca_Mediterránea Solmar Ibérica Costa_Brava Gibralfaro Duero Alhambra Tramontana Iberdrola_Sur Mesetabank Laurel
+    Vegasol Segura Cantábrica Sierra_Norte Guadiana Ebro Levante Atlántica Montesol`,
+  ),
+  ITA: words(
+    `Banca_Adriatica Tirrenia Appennino Lombarda Serenissima Mediolana Vesuvio Etruria Lazio_Assicurazioni Sorrento Alpina
+    Padania Laguna Toscana_Energia Aurora Valdarno Sicania Trinacria`,
+  ),
+  FRA: words(
+    `Banque_Atlantique Provence Lorraine Aquitaine Rhône_Assurances Armorique Loire Gascogne Auvergne Camargue Saône
+    Vendée Bretagne_Énergie Artois Garonne Alsacienne Normandie_Mutuelle Occitane`,
+  ),
+  GER: words(
+    `Nordbank Rheinland Hansa_Versicherung Schwarzwald Elbe_Energie Bayerische_Mitte Mainfranken Weser Ostsee Allgäu
+    Saalebank Lausitz Neckar Taunus Westfalen_Kredit Spreewald Harzer Oderland`,
+  ),
+  AUT: words(
+    `Donau_Versicherung Alpenbank Tirolia Wiener_Mitte Steirmark Salzach Arlberg Kärnten Semmering Vorarlberg Wachau
+    Burgenland_Energie Traunsee Innbank`,
+  ),
+  SUI: words(
+    `Helvetia_Nord Rigi_Versicherung Lemanbank Gotthard Aareland Engadin Zürisee Jurabank Matterhorn_Energie Rheintal
+    Titlis Lugano_Assicurazioni Säntis Bernina`,
+  ),
+  NED: words(
+    `Rijnbank Hollandia Zuiderzee Maasland Delta_Verzekering Amstelbank IJsselstroom Brabant_Energie Utrechtse_Mutuele
+    Zeeuwse Waddenbank Veluwe Noordzee Grachten Polderbank Gelderland`,
+  ),
+  BEL: words(
+    `Scheldebank Brabantia Ardennen Vlaanderen_Verzekering Maasvallei Wallonia_Énergie Banque_Meuse Lys Kempen
+    Limburgia Zenne Hainaut Flandria Dendre`,
+  ),
+  POR: words(
+    `Banco_Lusitano Douro Atlântica Algarve_Seguros Tejo Minho Alentejana Lusa_Energia Portucale Sagres Mondego
+    Lisboa_Capital Beira Ribatejo Cávado Berlengas`,
+  ),
+  BRA: words(
+    `Banco_Tropical Amazônia Cruzeiro_do_Sul Planalto Paraná_Seguros Guanabara Itaúna_Energia Bandeirantes Carioca
+    Mantiqueira Pampa Serrana Potiguar Sertão Iguaçu Atlântica_Brasil`,
+  ),
+  ARG: words(
+    `Banco_Pampeano Patagonia Río_de_la_Plata Aconcagua Seguros_Andinos Cuyo Mesopotamia Pehuén Quilmes_Energía Tango
+    Cóndor Austral Chaco Iguazú`,
+  ),
+  MEX: words(
+    `Banco_Azteca_del_Norte Sierra_Madre Yucatán Tenochtitlán_Seguros Pacífica Mezcal_Energía Anáhuac Tlaloc Cempasúchil
+    Occidente Tamaulipas Sonoran Oaxaqueña Chapala`,
+  ),
+  JPN: words(
+    `Sakura_Bank Fujimi Asahi_Seimei Kaede Tokaido_Energy Hinode Shirakawa Mizuho_Kita Kirameki Yamato_Seiko Setouchi
+    Aoba Kitakami Tsubasa Ginrei Hokuto`,
+  ),
+  KOR: words(
+    `Hanbit Daehan_Insurance Mugunghwa Seorak Hangang_Bank Baekdu Jirisan Dongseo_Energy Cheongsan Haeoreum Namsan
+    Taebaek Geumgang Hanra`,
+  ),
+  THA: words(
+    `Siam_Bank Chaophraya Lanna Andaman_Insurance Isan_Energy Thaimit Phuket_Capital Mekong Rattana Chiang_Mai_Trust
+    Suvarna Krungsri_Nua Sawasdee Naga`,
+  ),
+  TUR: words(
+    `Boğaz_Bankası Anadolu_Sigorta Marmara Ege_Enerji Toros Karadeniz Selçuk Kapadokya Bosfor_Holding Akdeniz_Yatırım
+    Trakya Fırat Yıldız_Kredi Ihlara`,
+  ),
+  GRE: words(
+    `Aegean_Bank Olympiaki Ellas_Asfalistiki Kyklades Pindos Thessalia_Energy Attiki Ionion Kriti_Holding Delphi
+    Peloponnisos Makedonia Nostos Aeolos`,
+  ),
+  POL: words(
+    `Bank_Wisła Odra_Ubezpieczenia Mazowsze Tatry_Energia Pomorze Baltyk_Invest Śląsk Podhale Warta_Kredyt Mazury
+    Lechia_Holding Jantar Karpaty Narew`,
+  ),
+  CZE: words(
+    `Vltava_Banka Morava_Pojišťovna Šumava Krkonoše_Energie Labe Bohemia_Invest Haná Beskydy Slovácko Orlice Sázava
+    Zlatá_Praha Podlipanská Jizera`,
+  ),
+  HUN: words(
+    `Duna_Bank Tisza_Biztosító Balaton Mátra_Energia Alföld Pannónia_Invest Szigetköz Bükk Tokaj Zemplén Dunakanyar
+    Hortobágy Sárrét Kékes`,
+  ),
+  DEN: words(
+    `Jyske_Fonde Øresund Sjællands_Forsikring Limfjord Nordlys_Energi Fyn_Kredit Bornholm Kattegat Himmerland Skagerak
+    Vestkyst Lolland Mols Dannebrog`,
+  ),
+  NOR: words(
+    `Fjordbank Nordlys_Forsikring Vestland Telemark_Energi Trollheimen Hardanger_Kreditt Lofoten Glomma Nordkapp Jotunheim
+    Skagerrak Dovre Sørlandet Romsdal`,
+  ),
+  SRB: words(
+    `Dunavska_Banka Moravska_Osiguranje Fruška_Gora_Energo Sumadija Tara_Invest Vojvodina_Kredit Zlatibor Kopaonik
+    Sava_Banka Banat Rasina Podunavlje Šar_Planina Zapadna_Morava`,
+  ),
+  MAR: words(
+    `Banque_Atlas Souss_Assurances Rif_Énergie Médina_Holding Sahara_Invest Oum_Rbia Essaouira Tanger_Med_Capital Anfa
+    Ourika Draa Saïss Tafilalet Chaouia`,
+  ),
+  NGA: words(
+    `Niger_Bank Lagos_Trust Naija_Insurance Eko_Energy Zuma_Holdings Jos_Capital Kano_Mutual Delta_Oil_Services Sahel_Union
+    Calabar_Invest Benue Cross_River_Trust Ibadan_Premier Oloibiri`,
+  ),
+};
+const sp = (l) => l.map((x) => x.replace(/_/g, ' '));
+export const sponsorsFor = (nat) => sp(SPONSORS_NAT[nat] || SPONSORS);

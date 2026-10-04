@@ -172,6 +172,32 @@ for (let s = 0; s < SEASONS; s++) {
   }
   check(FM.S.year === year + 1, `season ${s + 1}: year did not advance`);
   check(summary && summary.entry, `season ${s + 1}: no season summary`);
+  // the American league: conferences, 34 games each, a seven-a-side playoff ending in one final, then a draft
+  {
+    const us = summary && summary.entry && summary.entry.comps.US1;
+    if (us) {
+      check(!!us.shield && !!us.conf, `season ${s + 1}: US1 has no Shield or conferences recorded`);
+      check(
+        us.playoffs.M1.length === 6 && us.playoffs.M2.length === 4,
+        `season ${s + 1}: US1 playoff rounds are the wrong size`,
+      );
+      check(us.playoffs.M3.length === 2 && us.playoffs.M4.length === 1, `season ${s + 1}: US1 playoff finals missing`);
+      check(
+        us.playoffs.M4[0] && us.playoffs.M4[0].w === us.champion,
+        `season ${s + 1}: US1 champion is not the final's winner`,
+      );
+      check(
+        us.table.every((r) => r.p === 34),
+        `season ${s + 1}: a US1 club did not play 34 games`,
+      );
+      const d = FM.S.draft;
+      check(d && d.done && d.picks.length === d.order.length, `season ${s + 1}: the US1 draft did not complete`);
+      check(
+        d && d.picks.every((x) => FM.S.players[x.pid] && FM.S.players[x.pid].clubId),
+        `season ${s + 1}: a draftee has no club`,
+      );
+    }
+  }
   // B teams stay below their parent clubs; your competitive matches are logged for the analytics tab
   {
     const tierOf = (c) => (c && c.comp && FM.S.comps[c.comp] ? FM.S.comps[c.comp].tier : 99);

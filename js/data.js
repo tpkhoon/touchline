@@ -1747,7 +1747,7 @@
     {
       id: 'D1',
       nat: 'ENG',
-      name: 'English Top Division',
+      name: 'English Premier Division',
       short: 'ENG1',
       tier: 1,
       sim: 'full',
@@ -1758,7 +1758,7 @@
     {
       id: 'D2',
       nat: 'ENG',
-      name: 'English Division One',
+      name: 'English First Division',
       short: 'ENG2',
       tier: 2,
       sim: 'full',
@@ -1769,7 +1769,7 @@
     {
       id: 'D3',
       nat: 'ENG',
-      name: 'English Division Two',
+      name: 'English Second Division',
       short: 'ENG3',
       tier: 3,
       sim: 'light',
@@ -1780,7 +1780,7 @@
     {
       id: 'D4',
       nat: 'ENG',
-      name: 'English Division Three',
+      name: 'English Third Division',
       short: 'ENG4',
       tier: 4,
       sim: 'light',
@@ -1802,7 +1802,7 @@
     {
       id: 'ES2',
       nat: 'ESP',
-      name: 'Sable Liga de Plata',
+      name: 'Gibralfaro Liga de Plata',
       short: 'ES2',
       tier: 2,
       sim: 'light',
@@ -1824,7 +1824,7 @@
     {
       id: 'DE1',
       nat: 'GER',
-      name: 'Opaline Meisterliga',
+      name: 'Neckar Meisterliga',
       short: 'DE1',
       tier: 1,
       sim: 'full',
@@ -1835,7 +1835,7 @@
     {
       id: 'DE2',
       nat: 'GER',
-      name: 'Jadestone Aufstiegsliga',
+      name: 'Ostsee Aufstiegsliga',
       short: 'DE2',
       tier: 2,
       sim: 'light',
@@ -1879,7 +1879,7 @@
     {
       id: 'BR1',
       nat: 'BRA',
-      name: 'Yonder Série Nacional',
+      name: 'Atlântica Brasil Série Nacional',
       short: 'BR1',
       tier: 1,
       sim: 'full',
@@ -1890,7 +1890,7 @@
     {
       id: 'IT1',
       nat: 'ITA',
-      name: 'Nettlefield Lega Nazionale',
+      name: 'Laguna Lega Nazionale',
       short: 'IT1',
       tier: 1,
       sim: 'light',
@@ -1912,7 +1912,7 @@
     {
       id: 'PT1',
       nat: 'POR',
-      name: 'Lionheart Superliga',
+      name: 'Portucale Superliga',
       short: 'PT1',
       tier: 1,
       sim: 'light',
@@ -1934,7 +1934,7 @@
     {
       id: 'AR1',
       nat: 'ARG',
-      name: 'Momentum Superliga',
+      name: 'Austral Superliga',
       short: 'AR1',
       tier: 1,
       sim: 'light',
@@ -1945,13 +1945,56 @@
     {
       id: 'US1',
       nat: 'USA',
-      name: 'Zinc Super League',
+      name: 'Prairie Major League',
       short: 'US1',
       tier: 1,
       sim: 'light',
       clubs: 'CLUBS_US1',
       repBand: [67, 55],
-      rules: { rounds: 34, qualify: { to: 'NC', n: 4 } },
+      rules: {
+        rounds: 34,
+        qualify: { to: 'NC', n: 4 },
+        // like MLS: two conferences, a 34-game schedule weighted to the conference, the best seven of each in the
+        // playoffs (ending in the league's cup final), the best overall record taking the Supporters' Shield, and a
+        // college draft each winter
+        mls: { playoff: 7, draftRounds: 3 },
+        conferences: {
+          East: [
+            'MIA',
+            'CIN',
+            'CLB',
+            'PHI',
+            'NYC',
+            'ATL',
+            'NYR',
+            'NSH',
+            'ORL',
+            'CLT',
+            'CHI',
+            'DCU',
+            'NER',
+            'TRT',
+            'MTL',
+          ],
+          West: [
+            'LAF',
+            'LAG',
+            'SEA',
+            'VAN',
+            'PTI',
+            'MIN',
+            'SDG',
+            'RSL',
+            'DAL',
+            'HOU',
+            'SKC',
+            'STL',
+            'RAP',
+            'AUS',
+            'SJE',
+          ],
+        },
+      },
     },
     {
       id: 'JP1',
@@ -1978,7 +2021,7 @@
     {
       id: 'KR1',
       nat: 'KOR',
-      name: 'Polaris Premier League',
+      name: 'Daehan Insurance Premier League',
       short: 'KR1',
       tier: 1,
       sim: 'minimal',
@@ -2000,7 +2043,7 @@
     {
       id: 'NG1',
       nat: 'NGA',
-      name: 'Nigerian Top Division',
+      name: 'Nigerian Premier Division',
       short: 'NG1',
       tier: 1,
       sim: 'minimal',
@@ -2022,7 +2065,7 @@
     {
       id: 'RS1',
       nat: 'SRB',
-      name: 'Brightway Prva Liga',
+      name: 'Fruška Gora Energo Prva Liga',
       short: 'RS1',
       tier: 1,
       sim: 'minimal',
@@ -2033,7 +2076,7 @@
     {
       id: 'BE1',
       nat: 'BEL',
-      name: 'Birchfield Eerste Klasse',
+      name: 'Kempen Eerste Klasse',
       short: 'BE1',
       tier: 1,
       sim: 'minimal',
@@ -2066,7 +2109,7 @@
     {
       id: 'GR1',
       nat: 'GRE',
-      name: 'Bramwell Alfa Liga',
+      name: 'Attiki Alfa Liga',
       short: 'GR1',
       tier: 1,
       sim: 'minimal',
@@ -2088,7 +2131,7 @@
     {
       id: 'PL1',
       nat: 'POL',
-      name: 'Halcyon Liga Główna',
+      name: 'Mazowsze Liga Główna',
       short: 'PL1',
       tier: 1,
       sim: 'minimal',
@@ -2099,7 +2142,7 @@
     {
       id: 'DK1',
       nat: 'DEN',
-      name: 'Thornfield Topliga',
+      name: 'Fyn Kredit Topliga',
       short: 'DK1',
       tier: 1,
       sim: 'minimal',
@@ -2110,7 +2153,7 @@
     {
       id: 'AT1',
       nat: 'AUT',
-      name: 'Kingsley Bundesstaffel',
+      name: 'Arlberg Bundesstaffel',
       short: 'AT1',
       tier: 1,
       sim: 'minimal',
@@ -2154,7 +2197,7 @@
     {
       id: 'HU1',
       nat: 'HUN',
-      name: 'Marlowe Első Osztály',
+      name: 'Alföld Első Osztály',
       short: 'HU1',
       tier: 1,
       sim: 'minimal',
@@ -2165,7 +2208,7 @@
     {
       id: 'IE1',
       nat: 'IRL',
-      name: 'Quorum Premier Union',
+      name: 'Burrenwood Senior Premier',
       short: 'IE1',
       tier: 1,
       sim: 'minimal',
@@ -2176,7 +2219,7 @@
     {
       id: 'WA1',
       nat: 'WAL',
-      name: 'Welsh Premier Union',
+      name: 'Welsh Uwch Division',
       short: 'WA1',
       tier: 1,
       sim: 'minimal',
@@ -2336,7 +2379,7 @@
     ['CUPPOR', 'POR', 'Portuguese Taça Nacional', 'PORC', { legs: [4], neutral: [2] }],
     ['CUPNED', 'NED', 'Dutch Kampioensbeker', 'NEDC', { neutral: [2] }],
     ['CUPARG', 'ARG', 'Argentine Copa de la Federación', 'ARGC', { neutral: 'all' }], // every tie at a neutral ground
-    ['CUPUSA', 'USA', 'American Football Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
+    ['CUPUSA', 'USA', 'American Liberty Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
     ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2] }],
   ];
   // Club World Cup: last season's continental finalists (winners only from Africa and North America)

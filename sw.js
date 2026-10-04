@@ -44,6 +44,7 @@ const FILES = [
   './js/matchday.js',
   './js/records.js',
   './js/injuries.js',
+  './js/draft.js',
   './js/save.js',
   './js/simrun.js',
   './js/native.js',

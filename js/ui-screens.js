@@ -633,7 +633,9 @@
                 : squadView())
     );
   };
-  UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false };
+  UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false, rev: false };
+  // which sorts run low to high by themselves (the rest high to low); the arrow button turns either around
+  const SQ_ASC = new Set(['fit', 'age', 'contract']);
   const SQ_SORT = {
     pos: ['Position', (a, b) => b.ca - a.ca],
     ca: ['Ability', (a, b) => b.ca - a.ca],
@@ -677,6 +679,10 @@
     UI._sq.stat = !UI._sq.stat;
     UI.render();
   };
+  UI.acts.sqRev = () => {
+    UI._sq.rev = !UI._sq.rev;
+    UI.render();
+  };
   UI.acts.sqSort = (d) => {
     UI._sq.sort = d.v;
     UI.render();
@@ -715,6 +721,8 @@
     const extra = (p) =>
       `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${q.sort === 'pa' ? ` · potential ${C.starText(p.pa, p.pos)}` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
     const list = sq.filter((p) => SQ_FILTER[q.filter][1](p, starters)).sort(SQ_SORT[q.sort][1]);
+    if (q.rev && q.sort !== 'pos') list.reverse();
+    const asc = SQ_ASC.has(q.sort) !== !!(q.rev && q.sort !== 'pos');
     const chipsRow = (act, cur, map, label = '', more = '') =>
       `<div class="chips noswipe">${label ? `<span class="chip-lbl">${label}</span>` : ''}${Object.entries(map)
         .map(
@@ -734,7 +742,7 @@
         : `<div class="card flat list" style="padding:4px 12px">${list.map((p) => C.playerRow(p, extra(p), contractTag(p, q.sort === 'contract'))).join('')}</div>`;
     return `<div class="row small dim" style="margin:0 2px 8px"><span>${sq.length} players</span><span>·</span><span>Wages ${U.money(U.sum(sq, (p) => p.wage))}/wk</span><span class="grow"></span><span>Foreign ${foreign}${FM.Reg.real() ? '' : ` (${W.foreignLimitText()} in squad)`}</span></div>${UI.regLine(club())}
       ${expiring ? `<button class="warnline tap" style="width:100%;text-align:left;border:0" data-act="sqFilter" data-v="expiring">⏳ ${expiring} contract${expiring === 1 ? '' : 's'} expire this season — unsigned players leave on a free. Show them ›</button>` : ''}
-      ${chipsRow('sqSort', q.sort, SQ_SORT, 'Sort')}${chipsRow('sqFilter', q.filter, SQ_FILTER, 'Show', `<button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Stats in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button>`)}
+      ${chipsRow('sqSort', q.sort, SQ_SORT, 'Sort', q.sort === 'pos' ? '' : `<button class="chip on" data-act="sqRev" title="Reverse the order">${asc ? '↑ Low to high' : '↓ High to low'}</button>`)}${chipsRow('sqFilter', q.filter, SQ_FILTER, 'Show', `<button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Stats in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button>`)}
       ${list.length ? body : '<div class="empty">No players match this filter.</div>'}`;
   }
   function academyView() {
@@ -1203,7 +1211,7 @@
       nt
         ? `<span class="tap" data-act="nation" data-id="${nt.id}" style="text-decoration:underline dotted">${html}</span>`
         : html;
-    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${D.NATIONS[playsFor].name}`)}${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : 'Eligible through family'}">${C.flag(otherNat)} ${D.NATIONS[otherNat].name} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''} · ${age} yrs${c ? ` · <span class="tap" data-act="clubView" data-id="${c.id}" style="text-decoration:underline dotted">${esc(c.name)}</span>` : ''}</div></div>${c ? `<span class="tap" data-act="clubView" data-id="${c.id}">${C.crest(c, 48)}</span>` : ''}</div>
+    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${D.NATIONS[playsFor].name}`)} · <b title="International appearances">${p.intl && p.intl.caps ? `${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'}` : 'Uncapped'}</b>${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : 'Eligible through family'}">${C.flag(otherNat)} ${D.NATIONS[otherNat].name} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''} · ${age} yrs${c ? ` · <span class="tap" data-act="clubView" data-id="${c.id}" style="text-decoration:underline dotted">${esc(c.name)}</span>` : ''}</div></div>${c ? `<span class="tap" data-act="clubView" data-id="${c.id}">${C.crest(c, 48)}</span>` : ''}</div>
       <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].short || S().comps[W.refComp()].name)}${own || v.k >= 40 ? ` · ${C.posOveralls(p)}` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${me} ${ml}</b></div>` : ''}</div></div>
       <div class="sp"></div>
       ${ownActions}
@@ -1443,6 +1451,23 @@
     UI.toast(p.listed ? 'Transfer listed — bids will come in when the window is open' : 'Removed from transfer list');
     UI.refreshSheet(playerHTML(p));
     UI.save();
+  };
+  UI.acts.loanList = (d) => {
+    const p = P(d.id);
+    p.loanListed = !p.loanListed;
+    UI.toast(
+      p.loanListed ? 'Loan listed: clubs will ask for him when the window is open' : 'Removed from the loan list',
+    );
+    UI.refreshSheet(playerHTML(p));
+    UI.save();
+  };
+  UI.acts.offerLoan = (d) => {
+    const p = P(d.id),
+      r = FM.Market.offerLoan(p);
+    UI.toast(r.msg, 4000);
+    UI.save();
+    UI.render();
+    if (document.querySelector('.sheet-wrap') && P(d.id)) UI.refreshSheet(playerHTML(p));
   };
   UI.acts.offerClubs = (d) => {
     const p = P(d.id),
@@ -1846,10 +1871,58 @@
       comp.sim && comp.sim !== 'full'
         ? `<div class="warnline" style="margin-bottom:8px">${FM.Tiers.ICON[comp.sim]} ${FM.Tiers.LABEL[comp.sim]} — ${comp.sim === 'light' ? 'results come from a fast statistical model; player stats are recorded.' : 'scores only; squads exist for scouting.'}</div>`
         : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${t.map((r, i) => `<tr class="${zone(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>
-      <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${legend.map((l) => `<span>${l}</span>`).join('')}</div>
-      ${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
+    const tableHTML = (rows, zoneOf, title) =>
+      `${title ? `<div class="h3" style="margin:10px 4px 4px">${esc(title)}</div>` : ''}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${rows.map((r, i) => `<tr class="${zoneOf(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>`;
+    const mls = R.mls && comp.conf;
+    const confNames = mls ? Object.keys(R.conferences) : [];
+    const byConf = mls && UI._confView !== 'all';
+    const tables = byConf
+      ? confNames
+          .map((cn) =>
+            tableHTML(
+              W.confTable(comp, cn),
+              (i) => (i < R.mls.playoff ? (i === 0 ? 'zone-up' : 'zone-po') : ''),
+              `${cn}ern Conference`,
+            ),
+          )
+          .join('')
+      : tableHTML(t, zone);
+    const confChips = mls
+      ? `<div class="row" style="gap:6px;margin:0 2px 6px"><button class="chip ${byConf ? 'on' : ''}" data-act="confView" data-v="conf">Conferences</button><button class="chip ${byConf ? '' : 'on'}" data-act="confView" data-v="all">Overall (Supporters' Shield)</button></div>`
+      : '';
+    const mlsLegend = mls
+      ? byConf
+        ? [`🟢 Conference leader`, `🔵 Playoffs (top ${R.mls.playoff})`]
+        : [`🟢 Supporters' Shield`, `🔵 ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`]
+      : null;
+    const bracket = mls && comp.mls ? UI.mlsBracket(comp) : '';
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${tables}
+      <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
+      ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
   }
+  // The MLS playoff bracket: each round's ties (the winners shown in bold), conference by conference
+  UI.mlsBracket = function (comp) {
+    const M = comp.mls,
+      rows = [];
+    for (const k of ['M1', 'M2', 'M3', 'M4']) {
+      const ties = M[k] || [];
+      if (!ties.length) continue;
+      rows.push(
+        `<div class="small b dim" style="margin:10px 0 2px">${FM.Season.MLS_ROUNDS[k].toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
+      );
+    }
+    const seeds = Object.entries(M.seeds)
+      .map(
+        ([cn, ids]) =>
+          `<div class="tiny dim" style="margin-top:4px"><b>${esc(cn)}</b>: ${ids.map((id, i) => `${i + 1} ${esc(CL(id).short)}`).join(' · ')}</div>`,
+      )
+      .join('');
+    return `<div class="card"><div class="h3">Playoffs</div>${seeds}${rows.join('')}</div>`;
+  };
+  UI.acts.confView = (d) => {
+    UI._confView = d.v;
+    UI.render();
+  };
   const stagePill = (po) => {
     const [base, leg] = po.split(' · ');
     const b =

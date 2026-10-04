@@ -6676,410 +6676,410 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Aspenview City",
+    "Aspenview SC",
     "MIA",
     "Aspenview",
     "#F7B5CD",
     "#231F20",
     "oil",
     67,
-    "The Cherrygrove Stadium",
+    "Aspenview Arena",
     21550
    ],
    "short": "ASP",
-   "nick": "Foxes",
+   "nick": "Whites",
    "founded": 1993
   },
   "LAF": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Silverfield Victoria",
+    "Silverfield Surge",
     "LAF",
     "Silverfield",
     "#000000",
     "#C39E6D",
     "oil",
     66,
-    "Mapleton Park",
+    "Mesafield Field",
     22000
    ],
    "short": "SIL",
-   "nick": "Thistles",
+   "nick": "Fire",
    "founded": 1938
   },
   "LAG": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Silverfield Albion",
+    "Silverfield City FC",
     "LAG",
     "Silverfield",
     "#FFFFFF",
     "#00245D",
     "historic",
     65,
-    "Cypressdale Green",
+    "Summitville Field",
     27000
    ],
    "short": "SID",
-   "nick": "Lions",
+   "nick": "Dragons",
    "founded": 1929
   },
   "SEA": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Sunfield Wanderers",
+    "Sunfield City FC",
     "SEA",
     "Sunfield",
     "#5D9741",
     "#005595",
     "fan",
     64,
-    "Springsprings Park",
+    "Sunfield Field",
     37722
    ],
    "short": "SUN",
-   "nick": "Lancers",
+   "nick": "Voyagers",
    "founded": 1942
   },
   "CIN": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Goldenville Sporting",
+    "Goldenville Revolution",
     "CIN",
     "Goldenville",
     "#003087",
     "#FE5000",
     "youth",
     63,
-    "Riverwood Lane",
+    "Riverwood Field",
     26000
    ],
    "short": "GOL",
-   "nick": "Gulls",
+   "nick": "Comets",
    "founded": 1935
   },
   "CLB": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Cherryford Wednesday",
+    "Cherryford Mustangs",
     "CLB",
     "Cherryford",
     "#FEDD00",
     "#000000",
     "historic",
     62,
-    "Oakville Park",
+    "Cherryford Field",
     20371
    ],
    "short": "CHD",
-   "nick": "Canaries",
+   "nick": "Yellows",
    "founded": 1907
   },
   "PHI": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Millgrove Rangers",
+    "Millgrove Athletic",
     "PHI",
     "Millgrove",
     "#071B2C",
     "#B19B69",
     "youth",
     62,
-    "Millgrove Park",
+    "Millgrove Stadium",
     18500
    ],
    "short": "MIE",
-   "nick": "Lilywhites",
+   "nick": "Voyagers",
    "founded": 1921
   },
   "NYC": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Fort Summiton Harriers",
+    "Fort Summiton Rockets",
     "NYC",
     "Fort Summiton",
     "#6CACE4",
     "#041E42",
     "oil",
     62,
-    "Cypresshills Lane",
+    "Cypresshills Park",
     28743
    ],
    "short": "FOR",
-   "nick": "Skyhawks",
+   "nick": "Lightning",
    "founded": 1961
   },
   "ATL": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Lakegrove Olympic",
+    "Lakegrove Union Club",
     "ATL",
     "Lakegrove",
     "#80000A",
     "#A19060",
     "fan",
     61,
-    "Lakehaven Park",
+    "Lakegrove Field",
     42500
    ],
    "short": "LAK",
-   "nick": "Clarets",
+   "nick": "Maroons",
    "founded": 1952
   },
   "NYR": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "AFC Fort Summiton",
+    "Fort Summiton Revolution",
     "NYR",
     "Fort Summiton",
     "#FFFFFF",
     "#BA0C2F",
     "oil",
     60,
-    "Canyonhills Park",
+    "Canyonburg Field",
     25000
    ],
    "short": "FOT",
-   "nick": "Seagulls",
+   "nick": "Pioneers",
    "founded": 1963
   },
   "NSH": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Fortview Albion",
+    "Fortview City FC",
     "NSH",
     "Fortview",
     "#ECE83A",
     "#1F1646",
     "fan",
     60,
-    "Elkdale Green",
+    "Eagleview Field",
     30000
    ],
    "short": "FOW",
-   "nick": "Foxes",
+   "nick": "Yellows",
    "founded": 1977
   },
   "ORL": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Springridge City",
+    "Springridge SC",
     "ORL",
     "Springridge",
     "#633492",
     "#FDE192",
     "fan",
     60,
-    "Whitefalls Road",
+    "Whitefalls Field",
     25500
    ],
    "short": "SPR",
-   "nick": "Burgundies",
+   "nick": "Rockets",
    "founded": 1938
   },
   "VAN": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Eaglefield Beach Town",
+    "FC Eaglefield Beach",
     "VAN",
     "Eaglefield Beach",
     "#FFFFFF",
     "#00245E",
     "youth",
     60,
-    "Cypressville Lane",
+    "Cypressville Field",
     22120
    ],
    "short": "EAG",
-   "nick": "Lilywhites",
+   "nick": "Whites",
    "founded": 1973
   },
   "PTI": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Bluehills Rovers",
+    "Real Bluehills",
     "PTI",
     "Bluehills",
     "#00482B",
     "#D69A00",
     "fan",
     59,
-    "Bluehills Park",
+    "Bluehills Stadium",
     25218
    ],
    "short": "BLU",
-   "nick": "Dark Horses",
+   "nick": "Rockets",
    "founded": 1914
   },
   "MIN": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Hickoryridge Villa",
+    "Hickoryridge Stallions",
     "MIN",
     "Hickoryridge",
     "#585958",
     "#8CD2F4",
     "fan",
     58,
-    "Springville Green",
+    "Aspenhaven Field",
     19400
    ],
    "short": "HIC",
-   "nick": "Bluebirds",
+   "nick": "Maroons",
    "founded": 1941
   },
   "SDG": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Cedarville Town",
+    "Cedarville FC",
     "SDG",
     "Cedarville",
     "#1B1F23",
     "#6E4C9F",
     "oil",
     58,
-    "Goldenhills Green",
+    "Bayfalls Field",
     35000
    ],
    "short": "CED",
-   "nick": "Blackcats",
+   "nick": "Blacks",
    "founded": 1975
   },
   "RSL": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Bearville United",
+    "Bearville FC",
     "RSL",
     "Bearville",
     "#B30838",
     "#013A81",
     "youth",
     58,
-    "Bearville Park",
+    "Bearville Stadium",
     20213
    ],
    "short": "BLE",
-   "nick": "Lions",
+   "nick": "Reds",
    "founded": 1985
   },
   "DAL": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Athletic Club Pineridge",
+    "Pineridge Fire",
     "DAL",
     "Pineridge",
     "#E81F3E",
     "#2A4076",
     "youth",
     58,
-    "Harborhaven Green",
+    "Cedardale Field",
     20500
    ],
    "short": "PIN",
-   "nick": "Red Devils",
+   "nick": "Reds",
    "founded": 1927
   },
   "CLT": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Whitedale Rangers",
+    "Whitedale Thunder",
     "CLT",
     "Whitedale",
     "#1A85C8",
     "#000000",
     "fan",
     57,
-    "The Greenfalls Stadium",
+    "Whitedale Arena",
     38000
    ],
    "short": "WHI",
-   "nick": "Posh",
+   "nick": "Fire",
    "founded": 1979
   },
   "HOU": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Aspenhaven Athletic",
+    "Sporting Aspenhaven",
     "HOU",
     "Aspenhaven",
     "#FF6B00",
     "#101820",
     "fan",
     57,
-    "Aspenhaven Ground",
+    "Bluehills Park",
     22039
    ],
    "short": "ASN",
-   "nick": "Brewers",
+   "nick": "Oranges",
    "founded": 1920
   },
   "SKC": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Goldenburg Wednesday",
+    "Goldenburg Pioneers",
     "SKC",
     "Goldenburg",
     "#91B0D5",
     "#002F65",
     "fan",
     57,
-    "Bearidge Field",
+    "Goldenburg Field",
     18467
    ],
    "short": "GOG",
-   "nick": "Rockets",
+   "nick": "Dragons",
    "founded": 1948
   },
   "STL": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Canyonhaven Villa",
+    "Canyonhaven Stallions",
     "STL",
     "Canyonhaven",
     "#DD004A",
     "#0A1E2C",
     "fan",
     57,
-    "The Lakeford Stadium",
+    "Canyonhaven Arena",
     22423
    ],
    "short": "CEN",
-   "nick": "Clarets",
+   "nick": "Reds",
    "founded": 1928
   },
   "RAP": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Mapleford & District",
+    "Mapleford Revolution",
     "RAP",
     "Mapleford",
     "#960A2C",
     "#9CC2EA",
     "youth",
     56,
-    "Mapleford Ground",
+    "Walnutgrove Park",
     18061
    ],
    "short": "MAP",
@@ -7090,126 +7090,126 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Bluewood City",
+    "Bluewood SC",
     "AUS",
     "Bluewood",
     "#00B140",
     "#000000",
     "fan",
     56,
-    "Elkwood Field",
+    "Bluewood Field",
     20738
    ],
    "short": "BLD",
-   "nick": "Dragons",
+   "nick": "Greens",
    "founded": 1979
   },
   "CHI": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Sunsprings United",
+    "Sunsprings FC",
     "CHI",
     "Sunsprings",
     "#7CCDEF",
     "#FF0000",
     "fan",
     56,
-    "Oakwood Lane",
+    "Oakwood Park",
     61500
    ],
    "short": "SUS",
-   "nick": "Cityzens",
+   "nick": "Sky Blues",
    "founded": 1960
   },
   "DCU": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Pinefield Argyle",
+    "Pinefield Fury",
     "DCU",
     "Pinefield",
     "#000000",
     "#EF3E42",
     "fan",
     56,
-    "Pinefield Park",
+    "Pinefield Stadium",
     20000
    ],
    "short": "PID",
-   "nick": "Panthers",
+   "nick": "Blacks",
    "founded": 1920
   },
   "NER": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Summitfalls Corinthians",
+    "Summitfalls Union Club",
     "NER",
     "Summitfalls",
     "#0A2240",
     "#CE0E2D",
     "fan",
     56,
-    "Summitfalls Park",
+    "Summitfalls Stadium",
     65878
    ],
    "short": "SUM",
-   "nick": "Mariners",
+   "nick": "Navy",
    "founded": 1961
   },
   "TRT": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "New Redcreek Albion",
+    "AC New Redcreek",
     "TRT",
     "New Redcreek",
     "#B81137",
     "#455560",
     "fan",
     57,
-    "Cypresston Park",
+    "New Redcreek Field",
     30991
    ],
    "short": "REK",
-   "nick": "Reds",
+   "nick": "Storm",
    "founded": 1968
   },
   "MTL": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Greencreek Olympic",
+    "Greencreek Union Club",
     "MTL",
     "Greencreek",
     "#000000",
     "#0033A1",
     "fan",
     55,
-    "Fortsprings Park",
+    "Sungrove Stadium",
     19619
    ],
    "short": "GRK",
-   "nick": "Wasps",
+   "nick": "Blacks",
    "founded": 1989
   },
   "SJE": {
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Prairiedale County",
+    "Prairiedale Storm",
     "SJE",
     "Prairiedale",
     "#0067B1",
     "#000000",
     "fan",
     55,
-    "Whitecreek Park",
+    "Summitburg Stadium",
     18000
    ],
    "short": "PRA",
-   "nick": "Lions",
+   "nick": "Blues",
    "founded": 1968
   },
   "VIS": {
@@ -11520,84 +11520,84 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Strathshiels Town",
+    "Strathshiels United",
     "CEL2",
     "Strathshiels",
     "#00843D",
     "#FFFFFF",
     "giant",
     70,
-    "Rosock Road"
+    "Rosock Park"
    ],
    "short": "STS",
-   "nick": "Royals",
+   "nick": "Greens",
    "founded": 1864
   },
   "RAN2": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Strathshiels City",
+    "Strathshiels Athletic",
     "RAN2",
     "Strathshiels",
     "#1B458F",
     "#FFFFFF",
     "giant",
     68,
-    "The Lindee Stadium"
+    "Lindee Green"
    ],
    "short": "SLS",
-   "nick": "Knights",
+   "nick": "Fishermen",
    "founded": 1890
   },
   "HEA": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Upper Moffock Victoria",
+    "Upper Moffock Vale",
     "HEA",
     "Upper Moffock",
     "#8A1538",
     "#FFFFFF",
     "historic",
     56,
-    "The Stranwick Stadium"
+    "Stranwick Green"
    ],
    "short": "MOF",
-   "nick": "Burgundies",
+   "nick": "Clansmen",
    "founded": 1870
   },
   "ABE": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Langock Orient",
+    "Langock Academical",
     "ABE",
     "Langock",
     "#E30613",
     "#FFFFFF",
     "historic",
     56,
-    "Calrie Field"
+    "Langock Muir"
    ],
    "short": "LCK",
-   "nick": "Crimsons",
+   "nick": "Reds",
    "founded": 1864
   },
   "HIB": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Upper Moffock Dynamo",
+    "Inter Upper Moffock",
     "HIB",
     "Upper Moffock",
     "#00843D",
     "#FFFFFF",
     "historic",
     55,
-    "Tulliloch Park"
+    "Nairnkirk Road"
    ],
-   "short": "MOK",
+   "short": "INT",
    "nick": "Greens",
    "founded": 1873
   },
@@ -11605,82 +11605,82 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Balness Dynamo",
+    "Inter Balness",
     "MOT2",
     "Balness",
     "#FFB81C",
     "#8A1538",
     "fan",
     50,
-    "Dunland Road"
+    "Balness Park"
    ],
-   "short": "BAL",
-   "nick": "Canaries",
+   "short": "INR",
+   "nick": "Yellows",
    "founded": 1877
   },
   "DUN2": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Mid Kilness United",
+    "Mid Kilness Town",
     "DUN2",
     "Mid Kilness",
     "#F47920",
     "#000000",
     "fan",
     51,
-    "Peebside Lane"
+    "Mid Kilness Gardens"
    ],
    "short": "MID",
-   "nick": "Rams",
+   "nick": "Oranges",
    "founded": 1898
   },
   "KIL": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Kirkie Hotspur",
+    "Kirkie Burgh",
     "KIL",
     "Kirkie",
     "#003DA5",
     "#FFFFFF",
     "fan",
     50,
-    "Roside Lane"
+    "Roside Park"
    ],
    "short": "KIE",
-   "nick": "Bluebirds",
+   "nick": "Blues",
    "founded": 1901
   },
   "SMI": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Jedland United",
+    "Jedland Town",
     "SMI",
     "Jedland",
     "#000000",
     "#FFFFFF",
     "fan",
     50,
-    "Hawrie Lane"
+    "Hawrie Park"
    ],
    "short": "JED",
-   "nick": "Magpies",
+   "nick": "Fishermen",
    "founded": 1902
   },
   "DND": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Mid Kilness Stanley",
+    "Mid Kilness Burgh",
     "DND",
     "Mid Kilness",
     "#0B1F4B",
     "#FFFFFF",
     "fan",
     49,
-    "Fraserbridge Road"
+    "Fraserbridge Park"
    ],
    "short": "MIK",
    "nick": "Navy",
@@ -11690,238 +11690,238 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Tayloch Rangers",
+    "Tayloch Thistle",
     "LIV2",
     "Tayloch",
     "#FFDD00",
     "#000000",
     "fan",
     47,
-    "Jedee Park"
+    "Jedee Brae"
    ],
    "short": "TAY",
-   "nick": "Bees",
+   "nick": "Pipers",
    "founded": 1920
   },
   "FAL": {
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Kilrie-on-Forth Villa",
+    "Inter Kilrie-on-Forth",
     "FAL",
     "Kilrie-on-Forth",
     "#0B1F4B",
     "#FFFFFF",
     "fan",
     47,
-    "Auchshiels Road"
+    "Kilrie-on-Forth Park"
    ],
-   "short": "KIO",
-   "nick": "Knights",
+   "short": "IER",
+   "nick": "Navy",
    "founded": 1919
   },
   "MCY": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Wodoville Wanderers",
+    "Wodoville United",
     "MCY",
     "Wodoville",
     "#6CABDD",
     "#FFFFFF",
     "oil",
     57,
-    "Cesswa Park"
+    "Cesswa Field"
    ],
    "short": "WOD",
-   "nick": "Wolves",
+   "nick": "Miners",
    "founded": 1958
   },
   "SYD": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Geralnup Argyle",
+    "Geralnup Strikers",
     "SYD",
     "Geralnup",
     "#6CACE4",
     "#0B1F4B",
     "giant",
     57,
-    "Geralnup Ground"
+    "Geralnup Stadium"
    ],
    "short": "GER",
-   "nick": "Azure",
+   "nick": "Sky Blues",
    "founded": 1934
   },
   "MVC": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Wodoville Town",
+    "Wodoville City",
     "MVC",
     "Wodoville",
     "#0B1F4B",
     "#FFFFFF",
     "giant",
     55,
-    "Wodoville Ground"
+    "Wodoville Stadium"
    ],
    "short": "WOE",
-   "nick": "Mariners",
+   "nick": "Navy",
    "founded": 1918
   },
   "WSW": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Geralnup Victoria",
+    "Geralnup United",
     "WSW",
     "Geralnup",
     "#E30613",
     "#000000",
     "fan",
     53,
-    "Narcannon Road"
+    "Narton Reserve"
    ],
    "short": "GEP",
-   "nick": "Red Devils",
+   "nick": "Reds",
    "founded": 1945
   },
   "CCM": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Mount Bundawa Athletic",
+    "Mount Bundawa United",
     "CCM",
     "Mount Bundawa",
     "#FFDD00",
     "#0B1F4B",
     "youth",
     52,
-    "Gymby Green"
+    "Gymby Field"
    ],
    "short": "MOU",
-   "nick": "Bees",
+   "nick": "Magpies",
    "founded": 1932
   },
   "BRQ": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Mount Bundaooka Orient",
+    "Mount Bundaooka Strikers",
     "BRQ",
     "Mount Bundaooka",
     "#F47920",
     "#000000",
     "historic",
     51,
-    "Mandnunda Field"
+    "Mount Bundaooka Sportsground"
    ],
    "short": "MOT",
-   "nick": "Flames",
+   "nick": "Koalas",
    "founded": 1901
   },
   "AUC": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Cofflea Stanley",
+    "Cofflea Rovers",
     "AUC",
     "Cofflea",
     "#0B1F4B",
     "#00A3E0",
     "oil",
     51,
-    "The Milbool Stadium"
+    "Cofflea Stadium"
    ],
    "short": "COF",
-   "nick": "Mariners",
+   "nick": "Navy",
    "founded": 1972
   },
   "ADU": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Nowlea Olympic",
+    "Nowlea Rovers",
     "ADU",
     "Nowlea",
     "#E30613",
     "#FFFFFF",
     "fan",
     50,
-    "Milooka Field"
+    "Nowlea Sportsground"
    ],
    "short": "NOA",
-   "nick": "Gulls",
+   "nick": "Reds",
    "founded": 1942
   },
   "WPX": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "New Tamford Albion",
+    "West Tamford Wanderers",
     "WPX",
     "Tamford",
     "#FFDD00",
     "#000000",
     "fan",
     49,
-    "Dubwa Park"
+    "Narby Reserve"
    ],
    "short": "TAM",
-   "nick": "Seagulls",
+   "nick": "Emus",
    "founded": 1978
   },
   "MAF": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Balnup Borough",
+    "Balnup Wanderers",
     "MAF",
     "Balnup",
     "#000000",
     "#FFFFFF",
     "selling",
     48,
-    "Balnup Park"
+    "Balnup Oval"
    ],
-   "short": "BAP",
-   "nick": "Drovers",
+   "short": "BAL",
+   "nick": "Crocs",
    "founded": 1988
   },
   "NJE": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Portcannon Albion",
+    "Portcannon Wanderers",
     "NJE",
     "Portcannon",
     "#003DA5",
     "#E30613",
     "fan",
     48,
-    "Wagbin Park"
+    "Wagbin Field"
    ],
-   "short": "PAL",
-   "nick": "Bluebirds",
+   "short": "POW",
+   "nick": "Blues",
    "founded": 1954
   },
   "PGL": {
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Cobnup Alexandra",
+    "Cobnup Roar",
     "PGL",
     "Cobnup",
     "#6A1B9A",
     "#FFFFFF",
     "fallen",
     47,
-    "Geralcannon Lane"
+    "Geralcannon Park"
    ],
    "short": "COB",
-   "nick": "Clarets",
+   "nick": "Maroons",
    "founded": 1924
   },
   "FTC": {
@@ -12139,44 +12139,44 @@
     "#FFFFFF",
     "historic",
     51,
-    "The Glentown Stadium"
+    "Glentown Road"
    ],
    "short": "LIS",
-   "nick": "Reds",
+   "nick": "Harps",
    "founded": 1881
   },
   "SRO": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Lisbridge Victoria",
+    "Lisbridge Wanderers",
     "SRO",
     "Lisbridge",
     "#00843D",
     "#FFFFFF",
     "giant",
     51,
-    "The Glengarvan Stadium"
+    "Glengarvan Road"
    ],
-   "short": "LIV",
-   "nick": "Weavers",
+   "short": "LIW",
+   "nick": "Greens",
    "founded": 1884
   },
   "DRY": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Oranglass Swifts",
+    "Inter Oranglass",
     "DRY",
     "Oranglass",
     "#E30613",
     "#FFFFFF",
     "fan",
     48,
-    "Monlough Lane"
+    "Monlough Park"
    ],
-   "short": "OSS",
-   "nick": "Shepherds",
+   "short": "INO",
+   "nick": "Reds",
    "founded": 1950
   },
   "BHI": {
@@ -12193,99 +12193,99 @@
     "Lisbridge Park"
    ],
    "short": "COD",
-   "nick": "Stags",
+   "nick": "Clansmen",
    "founded": 1941
   },
   "SPAT": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Newree Argyle",
+    "Newree Gaels",
     "SPAT",
     "Lisbridge",
     "#E30613",
     "#FFFFFF",
     "fan",
     47,
-    "Rosglass Field"
+    "Rosglass Street"
    ],
    "short": "NEW",
-   "nick": "Grecians",
+   "nick": "Reds",
    "founded": 1929
   },
   "DRO": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Port Carrickree Rovers",
+    "Port Carrickree Gaels",
     "DRO",
     "Port Carrickree",
     "#003DA5",
     "#FFFFFF",
     "fan",
     44,
-    "The Limdara Stadium"
+    "Limdara Road"
    ],
    "short": "PRT",
-   "nick": "Otters",
+   "nick": "Hurlers",
    "founded": 1946
   },
   "GAU": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Athgarvan Hotspur",
+    "Athgarvan Bohs",
     "GAU",
     "Athgarvan",
     "#8A1538",
     "#FFFFFF",
     "fan",
     43,
-    "Glengarvan Green"
+    "Athgarvan Lawn"
    ],
    "short": "ATH",
-   "nick": "Wine Reds",
+   "nick": "Gaels",
    "founded": 1939
   },
   "SLR": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Sligtown County",
+    "Sligtown Celtic",
     "SLR",
     "Sligtown",
     "#E30613",
     "#FFFFFF",
     "fan",
     43,
-    "Sligtown Ground"
+    "Sligtown Showgrounds"
    ],
    "short": "SLI",
-   "nick": "Robins",
+   "nick": "Corsairs",
    "founded": 1883
   },
   "WFI": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Newlough Orient",
+    "Newlough Wanderers",
     "WFI",
     "Newlough",
     "#003DA5",
     "#FFFFFF",
     "fan",
     42,
-    "Balmullen Green"
+    "Newlough Lawn"
    ],
    "short": "NEH",
-   "nick": "Royals",
+   "nick": "Blues",
    "founded": 1891
   },
   "DDK": {
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Castle Kilough Royals",
+    "Castle Kilough Bohs",
     "DDK",
     "Castle Kilough",
     "#FFFFFF",
@@ -12295,31 +12295,31 @@
     "Castle Kilough Park"
    ],
    "short": "CAK",
-   "nick": "Whites",
+   "nick": "Rebels",
    "founded": 1898
   },
   "TNS": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Talbach Vale",
+    "Talbach Cymru",
     "TNS",
     "Talbach",
     "#00843D",
     "#FFFFFF",
     "oil",
     49,
-    "The Aberllyn Stadium"
+    "Stadiwm Talbach"
    ],
    "short": "TAL",
-   "nick": "Grecians",
+   "nick": "Choristers",
    "founded": 1931
   },
   "BAL": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Llangnant Rangers",
+    "Llangnant Athletic",
     "BAL",
     "Llangnant",
     "#FFFFFF",
@@ -12329,14 +12329,14 @@
     "Llangnant Park"
    ],
    "short": "LLA",
-   "nick": "Comets",
+   "nick": "Ravens",
    "founded": 1900
   },
   "CQN": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "West Dolgwyn Stanley",
+    "Lower Dolgwyn Cymru",
     "CQN",
     "Dolgwyn",
     "#FFFFFF",
@@ -12346,55 +12346,55 @@
     "Dolgfa Field"
    ],
    "short": "DON",
-   "nick": "Lilywhites",
+   "nick": "Whites",
    "founded": 1930
   },
   "PEN": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "East Clyngwyn Rovers",
+    "Lower Clyngwyn Rovers",
     "PEN",
     "Clyngwyn",
     "#E30613",
     "#FFFFFF",
     "fan",
     41,
-    "Dolgydd Road"
+    "Parc Dolgydd"
    ],
    "short": "CLY",
-   "nick": "Reds",
+   "nick": "Quarrymen",
    "founded": 1886
   },
   "HAV": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "West Aberach City",
+    "Lower Aberach Town",
     "HAV",
     "Aberach",
     "#003DA5",
     "#FFFFFF",
     "fan",
     40,
-    "Rhosogg Green"
+    "Maes Rhosogg"
    ],
    "short": "ABE",
-   "nick": "Stags",
+   "nick": "Choristers",
    "founded": 1878
   },
   "BTU": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Caerwyn Sporting",
+    "Caerwyn Hotspur",
     "BTU",
     "Caerwyn",
     "#FFDD00",
     "#000000",
     "fan",
     40,
-    "Corsfa Green"
+    "Maes Corsfa"
    ],
    "short": "CYN",
    "nick": "Yellows",
@@ -12404,102 +12404,102 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Balanant Athletic",
+    "Balanant Rovers",
     "CMU",
     "Balanant",
     "#FFDD00",
     "#000000",
     "youth",
     40,
-    "Llangwyn Road"
+    "Parc Llangwyn"
    ],
    "short": "BAT",
-   "nick": "Magpies",
+   "nick": "Yellows",
    "founded": 1902
   },
   "LLA": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Balawyn Rangers",
+    "Balawyn Athletic",
     "LLA",
     "Balawyn",
     "#E30613",
     "#FFFFFF",
     "fan",
     38,
-    "Llanwyn Green"
+    "Maes Llanwyn"
    ],
    "short": "BYN",
-   "nick": "Knights",
+   "nick": "Reds",
    "founded": 1952
   },
   "CAE": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Market Ogmant Athletic",
+    "Pen Ogmant United",
     "CAE",
     "Ogmant",
     "#E30613",
     "#FFFFFF",
     "fan",
     38,
-    "Porthach Park"
+    "Porthach Field"
    ],
-   "short": "MET",
-   "nick": "Eagles",
+   "short": "PEO",
+   "nick": "Choristers",
    "founded": 1926
   },
   "NEW2": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Tenbach Rovers",
+    "Tenbach Welfare",
     "NEW2",
     "Tenbach",
     "#E30613",
     "#FFFFFF",
     "fan",
     38,
-    "Tenbach Ground"
+    "Rhayfa Road"
    ],
    "short": "TEH",
-   "nick": "Lancers",
+   "nick": "Choristers",
    "founded": 1916
   },
   "COL2": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Bangorni Albion",
+    "Bangorni Rovers",
     "COL2",
     "Bangorni",
     "#FFDD00",
     "#003DA5",
     "fan",
     38,
-    "Trenant Road"
+    "Bangorni Park"
    ],
    "short": "BAI",
-   "nick": "Yellows",
+   "nick": "Harpers",
    "founded": 1892
   },
   "FLI": {
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Bangorddu & District",
+    "Bangorddu Hotspur",
     "FLI",
     "Bangorddu",
     "#FFFFFF",
     "#E30613",
     "fan",
     37,
-    "Fishwyn Park"
+    "Fishwyn Field"
    ],
    "short": "BDU",
-   "nick": "Stags",
+   "nick": "Drovers",
    "founded": 1911
   }
  },
@@ -12507,25 +12507,25 @@
   "D1": {
    "nat": "ENG",
    "tier": 1,
-   "name": "English Top Division",
+   "name": "English Premier Division",
    "short": "ENG1"
   },
   "D2": {
    "nat": "ENG",
    "tier": 2,
-   "name": "English Division One",
+   "name": "English First Division",
    "short": "ENG2"
   },
   "D3": {
    "nat": "ENG",
    "tier": 3,
-   "name": "English Division Two",
+   "name": "English Second Division",
    "short": "ENG3"
   },
   "D4": {
    "nat": "ENG",
    "tier": 4,
-   "name": "English Division Three",
+   "name": "English Third Division",
    "short": "ENG4"
   },
   "ES1": {
@@ -12537,7 +12537,7 @@
   "ES2": {
    "nat": "ESP",
    "tier": 2,
-   "name": "Sable Liga de Plata",
+   "name": "Gibralfaro Liga de Plata",
    "short": "ES2"
   },
   "ES3": {
@@ -12549,13 +12549,13 @@
   "DE1": {
    "nat": "GER",
    "tier": 1,
-   "name": "Opaline Meisterliga",
+   "name": "Neckar Meisterliga",
    "short": "DE1"
   },
   "DE2": {
    "nat": "GER",
    "tier": 2,
-   "name": "Jadestone Aufstiegsliga",
+   "name": "Ostsee Aufstiegsliga",
    "short": "DE2"
   },
   "DE3": {
@@ -12579,13 +12579,13 @@
   "BR1": {
    "nat": "BRA",
    "tier": 1,
-   "name": "Yonder Série Nacional",
+   "name": "Atlântica Brasil Série Nacional",
    "short": "BR1"
   },
   "IT1": {
    "nat": "ITA",
    "tier": 1,
-   "name": "Nettlefield Lega Nazionale",
+   "name": "Laguna Lega Nazionale",
    "short": "IT1"
   },
   "IT2": {
@@ -12597,7 +12597,7 @@
   "PT1": {
    "nat": "POR",
    "tier": 1,
-   "name": "Lionheart Superliga",
+   "name": "Portucale Superliga",
    "short": "PT1"
   },
   "NL1": {
@@ -12609,13 +12609,13 @@
   "AR1": {
    "nat": "ARG",
    "tier": 1,
-   "name": "Momentum Superliga",
+   "name": "Austral Superliga",
    "short": "AR1"
   },
   "US1": {
    "nat": "USA",
    "tier": 1,
-   "name": "Zinc Super League",
+   "name": "Prairie Major League",
    "short": "US1"
   },
   "JP1": {
@@ -12633,7 +12633,7 @@
   "KR1": {
    "nat": "KOR",
    "tier": 1,
-   "name": "Polaris Premier League",
+   "name": "Daehan Insurance Premier League",
    "short": "KR1"
   },
   "TH1": {
@@ -12645,7 +12645,7 @@
   "NG1": {
    "nat": "NGA",
    "tier": 1,
-   "name": "Nigerian Top Division",
+   "name": "Nigerian Premier Division",
    "short": "NG1"
   },
   "MA1": {
@@ -12657,13 +12657,13 @@
   "RS1": {
    "nat": "SRB",
    "tier": 1,
-   "name": "Brightway Prva Liga",
+   "name": "Fruška Gora Energo Prva Liga",
    "short": "RS1"
   },
   "BE1": {
    "nat": "BEL",
    "tier": 1,
-   "name": "Birchfield Eerste Klasse",
+   "name": "Kempen Eerste Klasse",
    "short": "BE1"
   },
   "TR1": {
@@ -12681,7 +12681,7 @@
   "GR1": {
    "nat": "GRE",
    "tier": 1,
-   "name": "Bramwell Alfa Liga",
+   "name": "Attiki Alfa Liga",
    "short": "GR1"
   },
   "NO1": {
@@ -12693,19 +12693,19 @@
   "PL1": {
    "nat": "POL",
    "tier": 1,
-   "name": "Halcyon Liga Główna",
+   "name": "Mazowsze Liga Główna",
    "short": "PL1"
   },
   "DK1": {
    "nat": "DEN",
    "tier": 1,
-   "name": "Thornfield Topliga",
+   "name": "Fyn Kredit Topliga",
    "short": "DK1"
   },
   "AT1": {
    "nat": "AUT",
    "tier": 1,
-   "name": "Kingsley Bundesstaffel",
+   "name": "Arlberg Bundesstaffel",
    "short": "AT1"
   },
   "CH1": {
@@ -12729,19 +12729,19 @@
   "HU1": {
    "nat": "HUN",
    "tier": 1,
-   "name": "Marlowe Első Osztály",
+   "name": "Alföld Első Osztály",
    "short": "HU1"
   },
   "IE1": {
    "nat": "IRL",
    "tier": 1,
-   "name": "Quorum Premier Union",
+   "name": "Burrenwood Senior Premier",
    "short": "IE1"
   },
   "WA1": {
    "nat": "WAL",
    "tier": 1,
-   "name": "Welsh Premier Union",
+   "name": "Welsh Uwch Division",
    "short": "WA1"
   }
  },
@@ -12855,7 +12855,7 @@
   },
   "CUPUSA": {
    "nat": "USA",
-   "name": "American Football Cup",
+   "name": "American Liberty Cup",
    "short": "USAC"
   },
   "CUPJPN": {

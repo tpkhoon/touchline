@@ -134,7 +134,7 @@
           '✈️',
           `${W.short(p)} (${W.age(p)}, ${p.pos}) needs games: ${p.season.apps} so far. ${dest.name}${comp ? ` (${comp.name})` : ''} would ${starts ? 'start him' : 'give him minutes'} at a level that stretches him.${open ? '' : ' Loans reopen with the window.'}`,
           p.id,
-          open ? { label: 'Loan out', act: 'loanOut', id: p.id } : null,
+          open ? { label: 'Loan list', act: 'loanOut', id: p.id } : null,
         );
       }
     });

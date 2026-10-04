@@ -41,6 +41,7 @@
     'matchday',
     'records',
     'injuries',
+    'draft',
     'save',
   ];
   R.broken = false;
