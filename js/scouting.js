@@ -143,14 +143,14 @@
   Sc.say = function (p, v) {
     if (v.own || !v.ca) return null;
     const conf = Sc.confidenceOf(v),
-      now = W.stars((v.ca[0] + v.ca[1]) / 2),
+      now = W.stars((v.ca[0] + v.ca[1]) / 2, p.pos),
       age = W.age(p);
     const sure = conf >= 85 ? "I'm sure of it" : `I'm about ${conf}% sure`;
     let line = `He's a ${halves(now)} player now`;
     if (age <= 26 && v.pa) {
-      const lo = W.stars(v.pa[0]),
-        hi = W.stars(v.pa[1]),
-        mid = W.stars((v.pa[0] + v.pa[1]) / 2);
+      const lo = W.stars(v.pa[0], p.pos),
+        hi = W.stars(v.pa[1], p.pos),
+        mid = W.stars((v.pa[0] + v.pa[1]) / 2, p.pos);
       line +=
         mid > now + 0.4
           ? ` and could reach ${halves(mid)}${hi - lo >= 1 ? `, anywhere from ${halves(lo)} to ${halves(hi)}` : ''}`
@@ -243,7 +243,7 @@
             (a.pos === 'any' || D.POS_GROUP[p.pos] === a.pos) &&
             (!a.nat || a.nat === 'any' || p.nat === a.nat) &&
             W.age(p) <= a.maxAge &&
-            (!a.minStars || W.stars(Sc.scoutPA(scout, p)) >= a.minStars) &&
+            (!a.minStars || W.stars(Sc.scoutPA(scout, p), p.pos) >= a.minStars) &&
             (!a.maxFee || FM.Transfers.askPrice(p) <= a.maxFee * 1.1),
         );
         if (!cands.length) continue;

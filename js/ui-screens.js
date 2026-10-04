@@ -302,7 +302,7 @@
         .filter((id) => P(id) && W.isUser(P(id).clubId))
         .map(
           (id) =>
-            `<button class="chip ${P(id).contract > S().year ? 'on' : ''}" data-act="renew" data-id="${id}">${P(id).contract > S().year ? '✅' : '✍️'} ${esc(W.short(P(id)))} · ${C.starText(P(id).ca)}</button>`,
+            `<button class="chip ${P(id).contract > S().year ? 'on' : ''}" data-act="renew" data-id="${id}">${P(id).contract > S().year ? '✅' : '✍️'} ${esc(W.short(P(id)))} · ${C.starText(P(id).ca, P(id).pos)}</button>`,
         )
         .join('')}</div>`;
     if (n.type === 'youth' && n.pids)
@@ -760,7 +760,7 @@
       .map((s, i) => {
         const p = xi[i];
         const fit = p ? W.fitAt(p, s.t, s, T.roles[i]) : 0;
-        return `<div class="slot-dot ${sel === i ? 'sel' : ''}" style="left:${U.clamp(s.y * 100, 11, 89)}%;top:${s.t === 'GK' ? 90 : Math.min(74, 6 + (1 - (s.x - 0.04) / 0.76) * 80)}%" data-act="slot" data-i="${i}"><div class="d" style="background:${c.colors[0]};color:${U.ink(c.colors[0])};${fit < 0.8 ? 'border-color:var(--warn)' : ''}">${p ? W.stars(W.slotOverall(p, s.t, s, T.roles[i])) : '—'}</div><div class="n">${p && p === arm ? '<b class="capt">C</b>' : ''}${p ? esc(p.ln) : 'Empty'}</div>${p ? `<div class="fr"><div class="f"><i style="width:${Math.round(p.fitness)}%;background:${C.fitColor(p.fitness)}"></i></div><span style="color:${C.fitColor(p.fitness)}">${Math.round(p.fitness)}%</span></div>` : ''}<div class="r">${D.slotLabel(s)} · ${esc(T.roles[i])}</div></div>`;
+        return `<div class="slot-dot ${sel === i ? 'sel' : ''}" style="left:${U.clamp(s.y * 100, 11, 89)}%;top:${s.t === 'GK' ? 90 : Math.min(74, 6 + (1 - (s.x - 0.04) / 0.76) * 80)}%" data-act="slot" data-i="${i}"><div class="d" style="background:${c.colors[0]};color:${U.ink(c.colors[0])};${fit < 0.8 ? 'border-color:var(--warn)' : ''}">${p ? W.stars(W.slotOverall(p, s.t, s, T.roles[i]), s.t) : '—'}</div><div class="n">${p && p === arm ? '<b class="capt">C</b>' : ''}${p ? esc(p.ln) : 'Empty'}</div>${p ? `<div class="fr"><div class="f"><i style="width:${Math.round(p.fitness)}%;background:${C.fitColor(p.fitness)}"></i></div><span style="color:${C.fitColor(p.fitness)}">${Math.round(p.fitness)}%</span></div>` : ''}<div class="r">${D.slotLabel(s)} · ${esc(T.roles[i])}</div></div>`;
       })
       .join('');
     const seg = (k, vals) =>
@@ -815,7 +815,7 @@
           sl = D.FORMATIONS[f];
         const ovr = xi.map((p, i) => (p ? W.slotOverall(p, sl[i].t, sl[i], t2.roles[i]) : 0));
         const weak = ovr.reduce((m, v, i) => (i > 0 && v < ovr[m] ? i : m), 1);
-        return { f, avg: U.avg(ovr), weak: `${D.slotLabel(sl[weak])} ${C.starText(ovr[weak])}` };
+        return { f, avg: U.avg(ovr), weak: `${D.slotLabel(sl[weak])} ${C.starText(ovr[weak], sl[weak].t)}` };
       })
       .sort((a, b) => b.avg - a.avg);
     const cur = fits.find((x) => x.f === T.formation);
@@ -829,7 +829,7 @@
             `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="grow">${x.f}${x.f === T.formation ? ' <span class="pill acc">now</span>' : ''}</span><span class="dim" style="margin-right:10px">weakest ${esc(x.weak)}</span><b>${C.starText(x.avg)}</b></div>`,
         )
         .join('')}
-      ${cur && fits[0].f !== T.formation ? `<div class="tiny dim" style="margin-top:6px">${esc(fits[0].f)} suits this squad better (about ${(Math.round(((fits[0].avg - cur.avg) / W.STAR_STEP) * 20) / 20).toFixed(2)} of a star on the XI).</div>` : ''}</div>`;
+      ${cur && fits[0].f !== T.formation ? `<div class="tiny dim" style="margin-top:6px">${esc(fits[0].f)} suits this squad better (about ${(Math.round(((fits[0].avg - cur.avg) / W.starStep()) * 20) / 20).toFixed(2)} of a star on the XI).</div>` : ''}</div>`;
   }
   function tacticHint(T) {
     const b = {
@@ -1088,7 +1088,7 @@
     return `<div class="card"><div class="h3">Positions</div><div class="tiny dim" style="margin-bottom:4px">How at home he is in each position and his rating there${own ? '. Playing and training in a position raises it; a position left alone fades.' : ''}</div>${rows
       .map(
         (x) =>
-          `<div class="row small" style="padding:3px 0"><b style="width:44px">${esc(x.t === p.pos ? W.posLabel(p) : W.altLabel(p, x.t))}</b><span class="grow" style="${cls[x.fam] ? `color:var(--${cls[x.fam]})` : ''}">${x.fam}</span><b>${C.starText(x.ovr)}</b></div>`,
+          `<div class="row small" style="padding:3px 0"><b style="width:44px">${esc(x.t === p.pos ? W.posLabel(p) : W.altLabel(p, x.t))}</b><span class="grow" style="${cls[x.fam] ? `color:var(--${cls[x.fam]})` : ''}">${x.fam}</span><b>${C.starText(x.ovr, x.t)}</b></div>`,
       )
       .join('')}</div>`;
   };
@@ -1119,6 +1119,11 @@
     const age = W.age(p);
     const [ml, me] = W.moraleLabel(p.morale);
     const avg = p.season.apps ? (p.season.rsum / p.season.apps).toFixed(2) : '—';
+    // how much his position asks of an attribute: a key one (its weight is high), one it barely uses, or none at all
+    const relW = D.POS_W[p.pos] || {},
+      wMax = Math.max(...Object.values(relW)),
+      rel = (k) =>
+        (relW[k] || 0) >= wMax * 0.6 ? 'key' : (relW[k] || 0) === 0 && !(k === 'stamina' && p.pos !== 'GK') ? 'na' : ''; // (stamina tires every outfield player)
     const attrs = () => {
       if (!(own || v.k >= 40))
         return `<div class="lock">🔒 Attributes unknown — assign a scout to learn more (${Math.round(v.k)}% known)</div>`;
@@ -1145,11 +1150,11 @@
                   if (words || yours) {
                     const w = words ? FM.Scouting.wordPct(words[k]) : yours && yours[k];
                     if (w)
-                      return `<div class="attr"><span class="muted">${D.ATTR_LABEL[k]}</span><span class="v" style="font-size:12px;${w.cls ? `color:var(--${w.cls})` : ''}">${w.word}</span></div>`;
+                      return `<div class="attr ${rel(k)}"><span class="muted">${D.ATTR_LABEL[k]}</span><span class="v" style="font-size:12px;${w.cls ? `color:var(--${w.cls})` : ''}">${w.word}</span></div>`;
                   }
                   const val = Math.round(p.attrs[k]);
                   const shown = unc ? `${Math.max(1, val - unc)}–${Math.min(20, val + unc)}` : val;
-                  return `<div class="attr"><span class="muted">${D.ATTR_LABEL[k]}</span><span class="v ${unc ? '' : C.vcls(val)}">${shown}</span></div>`;
+                  return `<div class="attr ${rel(k)}"><span class="muted">${D.ATTR_LABEL[k]}</span><span class="v ${unc ? '' : C.vcls(val)}">${shown}</span></div>`;
                 })
                 .join('')}</div>`,
           )

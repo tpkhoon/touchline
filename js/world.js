@@ -63,13 +63,10 @@
     if (p.hid.cons >= 15) v *= 1.05;
     return v;
   };
-  // Star ratings are measured against the league you manage in: three and a half stars is a typical starter there, five
-  // the best players in the league, two a fringe player. A Championship regular is four or five stars in League Two and two or
-  // three in the Premier League. (The old absolute scale is W.starsAbs.) Out of work: the league you last managed in,
-  // or the top flight.
+  // Star ratings are measured against the league you manage in (see W.stars below). A Championship regular is four or five stars
+  // in League Two and two or three in the Premier League. (The old absolute scale is W.starsAbs.) Out of work: the league
+  // you last managed in, or the top flight.
   W.starsAbs = (ca) => U.clamp(Math.round(((ca - 30) / 55) * 10) / 2, 0.5, 5);
-  W.STAR_STEP = 8; // ability points per star
-  W.STAR_SHIFT = 3; // a typical starter sits a little above the league's average eleven
   W.refComp = function () {
     const S = FM.S,
       c = S && S.user && S.user.clubId && S.clubs[S.user.clubId];
@@ -103,8 +100,69 @@
     lvlCache.v.set(compId, v);
     return v;
   };
-  W.stars = (ca) =>
-    U.clamp(Math.round((3 + (ca - W.leagueLevel(W.refComp()) + W.STAR_SHIFT) / W.STAR_STEP) * 2) / 2, 0.5, 5); // 0.5–5
+  // Stars are a player measured against the regular starters of the league you manage in, at his own end of the pitch:
+  // keepers against keepers, defenders against defenders, and so on (strikers' ability numbers run lower than keepers',
+  // so one scale for everyone made a typical striker look like a worse player than a typical keeper). Each league's
+  // own spread sets the size of a star: a star is a little under one standard deviation of its starters' ability,
+  // so a division where everyone is close together still has its best and worst players, and 3 stars is a typical
+  // starter, five the best few in the league, two a fringe player.
+  W.STAR_GROUPS = {
+    GK: 'GK',
+    CB: 'DEF',
+    FB: 'DEF',
+    WB: 'DEF',
+    DM: 'MID',
+    CM: 'MID',
+    WM: 'MID',
+    AM: 'MID',
+    W: 'ATT',
+    ST: 'ATT',
+  };
+  W.STAR_CENTER = 3.1; // the stars of a player exactly at his league's average starter
+  W.STAR_SLOPE = 0.85; // stars per standard deviation
+  W.STAR_MIN_SD = 3.5; // a very tight league does not turn small differences into big ones
+  let refCache = { stamp: null, S: null, by: new Map() };
+  // The ability of a league's starters, overall and by group: { mean, sd, n } for GK, DEF, MID, ATT and ALL
+  W.starRef = function (compId) {
+    const S = FM.S,
+      stamp = `${S.year}.${Math.floor(S.day / 10)}`;
+    if (refCache.stamp !== stamp || refCache.S !== S) refCache = { stamp, S, by: new Map() };
+    if (refCache.by.has(compId)) return refCache.by.get(compId);
+    const comp = S.comps[compId],
+      lists = { GK: [], DEF: [], MID: [], ATT: [], ALL: [] };
+    if (comp && comp.clubs)
+      for (const id of comp.clubs) {
+        // the players who would start for the club: its eleven, in whatever shape it plays (who a club starts is who
+        // the league's regulars are, so each group is measured against the players who really fill it)
+        const club = S.clubs[id];
+        for (const p of W.pickXI(id, W.isUser(id) ? S.user.tactic : club.tactic).xi) {
+          const g = p && W.STAR_GROUPS[p.pos];
+          if (g) {
+            lists[g].push(p.ca);
+            lists.ALL.push(p.ca);
+          }
+        }
+      }
+    const out = {};
+    for (const g in lists) {
+      const a = lists[g],
+        n = a.length,
+        mean = n ? a.reduce((t, x) => t + x, 0) / n : 66,
+        sd = n > 1 ? Math.sqrt(a.reduce((t, x) => t + (x - mean) ** 2, 0) / (n - 1)) : 6;
+      out[g] = { mean, sd: Math.max(W.STAR_MIN_SD, sd), n };
+    }
+    refCache.by.set(compId, out);
+    return out;
+  };
+  // How many points of ability make one star in the league you manage in (a wider league needs more)
+  W.starStep = () => W.starRef(W.refComp()).ALL.sd / W.STAR_SLOPE;
+  // Stars (0.5–5) for an ability value, in a position (any position of the pitch; without one, against all starters)
+  W.stars = function (ca, pos) {
+    const ref = W.starRef(W.refComp()),
+      g = pos && W.STAR_GROUPS[pos],
+      r = g && ref[g].n >= 8 ? ref[g] : ref.ALL;
+    return U.clamp(Math.round((W.STAR_CENTER + (W.STAR_SLOPE * (ca - r.mean)) / r.sd) * 2) / 2, 0.5, 5);
+  };
   // How well a player fits a slot (0–1): his natural position's table, or a second position he has learned
   // (p.alt). Given the slot itself, its side counts on the flanks: a full-back or wing-back is at home on the side
   // of his stronger foot, a winger too unless his role cuts inside (inv), when he wants the other flank.

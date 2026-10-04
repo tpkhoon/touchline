@@ -341,7 +341,7 @@
             `<div class="card flat small" style="margin-top:10px"><div class="b">${esc(g.label)}: ${g.n} for ${g.cap} places</div><div class="tiny dim" style="margin-bottom:6px">${dl != null ? `Leave ${g.n - g.cap} out by the deadline (${dl} day${dl === 1 ? '' : 's'}), or sell or loan someone out. Unticked, the weakest are left out.` : 'Too many: the weakest sit out until the next window closes.'}</div>${g.players
               .map(
                 (p) =>
-                  `<div class="row small" style="padding:4px 0">${C.pos(p)}<span class="grow">${C.pname(p, W.name(p))} <span class="dim">${C.starText(p.ca)}</span></span>${dl != null ? `<button class="chip ${p.leaveOut ? 'on' : ''}" data-act="regLeaveOut" data-id="${p.id}">${p.leaveOut ? 'Leaving out' : 'Leave out'}</button>` : ''}</div>`,
+                  `<div class="row small" style="padding:4px 0">${C.pos(p)}<span class="grow">${C.pname(p, W.name(p))} <span class="dim">${C.starText(p.ca, p.pos)}</span></span>${dl != null ? `<button class="chip ${p.leaveOut ? 'on' : ''}" data-act="regLeaveOut" data-id="${p.id}">${p.leaveOut ? 'Leaving out' : 'Leave out'}</button>` : ''}</div>`,
               )
               .join('')}</div>`,
         )

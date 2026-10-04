@@ -2191,3 +2191,11 @@ main {
   padding: 0 3px;
   vertical-align: 1px;
 }
+
+.attr.key .muted {
+  color: var(--ink);
+  font-weight: 700;
+}
+.attr.na {
+  opacity: 0.45;
+}

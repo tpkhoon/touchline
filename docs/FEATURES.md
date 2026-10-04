@@ -282,6 +282,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | English county cups (14 areas, knockout, reserve sides for the big clubs) and Brazilian state championships (5, league phase and a final) on days of their own early in the season; a Regional tab on the Cups screen | Alpha 2 |
 | Players | Larger player name pools (about 50–100% more first names and surnames for most nations), so squads repeat surnames far less | Alpha 2 |
 | Clubs | A founding year for every club (shown on its page) and crests with an emblem from its nickname and town: paws, wings, anchors, hammers, trees, suns, waves, mountains, boats | Alpha 2 |
+| Players | Star ratings by position and league: against the starters of the league you manage in, at the player's own end of the pitch, scaled by that league's spread (3 stars a typical starter, 5 the best few); key attributes for a position in bold, unused ones dimmed | Alpha 2 |
 | Media | A Press room under Club: five outlets (tabloid, broadsheet, local paper, television panel, radio phone-in) with their own voices report on your matches, runs, signings, sales and seasons, each with a view of you that moves at its own speed; a Press filter in the feed; the press mood moves the board and fans a little every match | Playtest round 8 |
 | Settings | Club colours: use your club's colours as the app's accent, or switch it off for the standard accent | Playtest round 8 |
 | UI | Bottom bar: six equal columns, icons and labels on one line (International is Nations) | Playtest round 7 |

@@ -140,29 +140,29 @@
   // His rating in stars against the league you manage in (no numbers): a scouted player's is a range.
   C.playerOverall = function (p) {
     const v = FM.Scouting.view(p);
-    if (v.own) return `${W.stars(p.ca)}★`;
+    if (v.own) return `${W.stars(p.ca, p.pos)}★`;
     if (!v.ca) return '?';
-    const lo = W.stars(v.ca[0]),
-      hi = W.stars(v.ca[1]);
+    const lo = W.stars(v.ca[0], p.pos),
+      hi = W.stars(v.ca[1], p.pos);
     return lo === hi ? `${lo}★` : `${lo}–${hi}★`;
   };
   // Stars for an ability value, as text ("3.5★")
-  C.starText = (ca) => `${W.stars(ca)}★`;
+  C.starText = (ca, pos) => `${W.stars(ca, pos)}★`;
   // Overall at each position he can play (his own first), when his attributes are known
   C.posOveralls = function (p) {
     if (p.pos === 'GK') return '';
     return W.positionTable(p, 0.8)
       .map(
         (x) =>
-          `${x.t === p.pos ? W.posLabel(p) : W.altLabel(p, x.t)} ${C.starText(x.ovr)}${x.fam === 'natural' ? '' : ` (${x.fam})`}`,
+          `${x.t === p.pos ? W.posLabel(p) : W.altLabel(p, x.t)} ${C.starText(x.ovr, x.t)}${x.fam === 'natural' ? '' : ` (${x.fam})`}`,
       )
       .join(' · ');
   };
   C.playerStars = function (p) {
     const v = FM.Scouting.view(p);
-    if (v.own) return C.stars(W.stars(p.ca), W.stars(p.ca), W.stars(p.pa));
+    if (v.own) return C.stars(W.stars(p.ca, p.pos), W.stars(p.ca, p.pos), W.stars(p.pa, p.pos));
     if (!v.ca) return `<span class="dim small b">? ? ?</span>`;
-    return C.stars(W.stars(v.ca[0]), W.stars(v.ca[1]), v.pa ? W.stars(v.pa[1]) : null);
+    return C.stars(W.stars(v.ca[0], p.pos), W.stars(v.ca[1], p.pos), v.pa ? W.stars(v.pa[1], p.pos) : null);
   };
   // A player's name that opens his profile when tapped (text: what to show, his short name by default)
   C.pname = (p, text) =>
