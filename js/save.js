@@ -153,10 +153,20 @@
     }
     // each league's real promotion, relegation and play-off rules (Germany's relegation play-offs, two-legged
     // play-off finals): older saves take the current ones, once
-    if (s.compRules !== 2 && s.comps && FM.D.LEAGUES) {
-      s.compRules = 2;
+    if (s.compRules !== 3 && s.comps && FM.D.LEAGUES) {
+      s.compRules = 3;
       for (const l of FM.D.LEAGUES)
         if (s.comps[l.id] && s.comps[l.id].type === 'league') s.comps[l.id].rules = JSON.parse(JSON.stringify(l.rules));
+    }
+    // the traits added later (Engine, Clutch, Mentor ...): older players are given the ones they qualify for, up to three
+    if (!s.traitsV2 && s.players && FM.W && FM.W.rollNewTraits) {
+      s.traitsV2 = 1;
+      for (const p of Object.values(s.players))
+        if (p.hid && p.traits && p.traits.length < 3)
+          p.traits = p.traits
+            .concat(FM.W.rollNewTraits(p, p.traits.slice()))
+            .filter((t, i, a) => a.indexOf(t) === i)
+            .slice(0, 3);
     }
     // real-life club abbreviations and nicknames (the id keeps the club's code)
     if (!s.clubAbbr && s.clubs && FM.D.CLUB_INFO) {

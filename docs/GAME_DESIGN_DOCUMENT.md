@@ -2,6 +2,30 @@
 
 Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/db0a1349-77d1-4363-b0df-55ef94250bd5)
 
+## Contents
+
+- [Vision and positioning](#vision-and-positioning)
+- [Audience and business model](#audience-and-business-model)
+- [Design pillars](#design-pillars)
+- [Core gameplay loop](#core-gameplay-loop)
+- [Match engine](#match-engine)
+- [Tactical system](#tactical-system)
+- [Players and personalities](#players-and-personalities)
+- [Scouting and transfers](#scouting-and-transfers)
+- [Youth development and university football](#youth-development-and-university-football)
+- [Club identity, facilities and staff](#club-identity-facilities-and-staff)
+- [Season preview and pre-season](#season-preview-and-pre-season)
+- [Living world and football stories](#living-world-and-football-stories)
+- [Career mode and manager identity](#career-mode-and-manager-identity)
+- [Legacy and history](#legacy-and-history)
+- [Global database and competitions](#global-database-and-competitions)
+- [Historical eras and scenarios](#historical-eras-and-scenarios)
+- [World editor and community sharing](#world-editor-and-community-sharing)
+- [Mobile-first UX](#mobile-first-ux)
+- [Monetisation and cosmetics](#monetisation-and-cosmetics)
+- [Prototype status and roadmap](#prototype-status-and-roadmap)
+
+
 ## Vision and positioning
 
 Touchline is a premium, mobile-only football management game that gives Football Manager players a proper long-term save on their phone without losing immersion.
@@ -154,7 +178,7 @@ Players are remembered for who they are, not their rating. Personality is what c
 | Transfer value | Moves with age, form, potential and contract length |
 | Form | Charts of recent ratings |
 
-**Traits and hidden personality:** Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Media Friendly, Temperamental, Derby Specialist.
+**Traits and hidden personality:** Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Media Friendly, Temperamental, Derby Specialist, Fair-Weather, Consistent, Flair, and (round 10) Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick and Needs Game Time. A player has up to three, made from his attributes and hidden character; each has a real effect in matches, development, injuries or morale.
 
 Personality quirks should read like real people. A player might be a cult hero who hates rainy matches, loves derbies, clashes with strict managers, and becomes captain after defending teammates.
 
@@ -405,7 +429,9 @@ Gameplay updates are free.
 
 ## Prototype status and roadmap
 
-Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 710 real clubs in 40 real leagues across 31 nations in three simulation tiers, B teams and U21/U18 sides, eleven domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 85 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups. The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
+Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 710 real clubs in 40 real leagues across 31 nations in three simulation tiers, B teams and U21/U18 sides, eleven domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 85 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
+
+The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
 
 | Area | In the prototype | Yet to be added |
 | --- | --- | --- |

@@ -4,9 +4,31 @@
 
 Full design: [docs/GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/FEATURES.md](docs/FEATURES.md) · [docs/COMPETITION_RULES.md](docs/COMPETITION_RULES.md).
 
-A playable vertical slice: **710 real clubs in 40 real leagues (at their real sizes) across 31 nations, in three simulation tiers** — full (Premier League, Championship, LaLiga, Bundesliga, Ligue 1, Brasileirão), light (League One, League Two, Segunda División, Primera Federación, 2. and 3. Liga, Serie A and Serie B, Ligue 2, Portugal, Netherlands, Argentina, USA, Japan) and minimal (Belgium, Turkey, Czechia, Greece, Norway, Poland, Denmark, Austria, Switzerland, Scotland, Serbia, Hungary, Ireland, Wales, Australia, Mexico, Korea, Thailand, Nigeria, Morocco); your own league and the leagues just above and below it always run in the full engine — with B teams and U21/U18 sides, eleven domestic cups, ten continental cups (Europa League, Conference League, Copa Sudamericana, AFC Champions League Two and the CAF Confederation Cup included), a Club World Cup, international football with 85 national teams and qualifiers, a live match engine, and the story-driven world around it.
+A playable vertical slice: **710 real clubs in 40 real leagues (at their real sizes) across 31 nations, in three simulation tiers**:
 
-## Run it
+- **Full:** Premier League, Championship, LaLiga, Bundesliga, Ligue 1, Brasileirão.
+- **Light:** League One, League Two, Segunda División, Primera Federación, 2. and 3. Liga, Serie A and Serie B, Ligue 2, Portugal, Netherlands, Argentina, USA, Japan.
+- **Minimal:** Belgium, Turkey, Czechia, Greece, Norway, Poland, Denmark, Austria, Switzerland, Scotland, Serbia, Hungary, Ireland, Wales, Australia, Mexico, Korea, Thailand, Nigeria, Morocco.
+
+Your own league and the leagues just above and below it always run in the full engine.
+
+Around the leagues: B teams and U21/U18 sides, eleven domestic cups, ten continental cups (Europa League, Conference League, Copa Sudamericana, AFC Champions League Two and the CAF Confederation Cup included), a Club World Cup, international football with 85 national teams and qualifiers, a live match engine, and the story-driven world around it.
+
+## Contents
+
+- [Quick start](#quick-start)
+- [Saves](#saves)
+- [Develop, test, build](#develop-test-build)
+- [Developer dashboard](#developer-dashboard)
+- [Docs syncing](#docs-syncing)
+- [GitHub Pages and save format changes](#github-pages-and-save-format-changes)
+- [Native app (Capacitor 8)](#native-app-capacitor-8)
+- [Install it as an app (offline)](#install-it-as-an-app-offline)
+- [What's in the slice](#whats-in-the-slice)
+- [Code map](#code-map)
+- [Not yet built](#not-yet-built-next-candidates)
+
+## Quick start
 
 No build step. Serve the folder and open it at phone width (or on a phone on the same network):
 
@@ -14,86 +36,185 @@ No build step. Serve the folder and open it at phone width (or on a phone on the
 python -m http.server 5173
 ```
 
-Then open http://localhost:5173. Saves go to IndexedDB in the browser, or to real files in the native app (3 slots, autosave after every matchday and whenever the app goes to the background). Older saves are upgraded automatically (the original is kept as a backup); only saves from before Alpha 1 can't be. Club → Settings exports a compressed `.touchline` backup and imports one (also from the title screen).
+Then open http://localhost:5173.
+
+## Saves
+
+- Saves go to IndexedDB in the browser, or to real files in the native app.
+- There are 3 slots, with autosave after every matchday and whenever the app goes to the background.
+- Older saves are upgraded automatically (the original is kept as a backup); only saves from before Alpha 1 can't be.
+- Club → Settings exports a compressed `.touchline` backup and imports one (also from the title screen).
 
 ## Develop, test, build
 
-The source runs as-is — no build is needed to play or develop. Node tooling (`npm install` once) adds:
+The source runs as-is: no build is needed to play or develop. Node tooling (`npm install` once) adds the commands below.
 
-```bash
-npm test
-```
+| Command                                                                 | Purpose                                                                                                                                                  |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run serve`                                                         | Serve the folder on port 5173 (same as the `python -m http.server` above).                                                                                |
+| `npm test`                                                              | Headless regression test: two seeded seasons plus invariants, save pack/unpack and migrations (about a minute).                                          |
+| `npm run test:quick`                                                    | The same regression test over one season.                                                                                                                |
+| `npm run calibrate`                                                     | Calibration report: three seeded seasons compared with real football, 49 measures.                                                                       |
+| `npm run test:regens`                                                   | Regen test: academy intakes aged year by year, checked for realistic career shapes (about 20 seconds).                                                   |
+| `npm run test:suite`                                                    | Wider suite: a manager plays every match for three seasons, checking speed, tables, squads, finances and world shape.                                    |
+| `npm run test:long`                                                     | The wider suite over twenty seasons, without the speed limits.                                                                                           |
+| `npm run test:wonderkids`                                               | Wonderkid test: ten seeded seasons following every high-potential prospect.                                                                              |
+| `npm run test:realstats`                                                | Tests for the real-stats converter.                                                                                                                      |
+| `npm run test:worlddef`                                                 | Tests for the world definition.                                                                                                                          |
+| `npm run test:import`                                                   | Tests for the historical importer.                                                                                                                       |
+| `npm run import:history -- --dir data/samples/history --out world.json` | Run the historical importer on a folder of data.                                                                                                         |
+| `npm run dev-tools`                                                     | Start the developer dashboard on http://localhost:5190.                                                                                                  |
+| `npm run names -- --kind clubs --nat SCO --count 20 --seed 3`           | Name generator (`tools/namegen.mjs`): players, towns, clubs, grounds, nicknames, leagues and sponsors by nation and seed, flagging names that would be rejected. |
+| `npm run docs:sync-status`                                              | List docs whose Claude Docs copy has changed since the last sync.                                                                                        |
+| `npm run docs:synced`                                                   | Record the docs as synced (run it right after syncing).                                                                                                  |
+| `npm run check:docs`                                                    | Check the headline numbers in the README and design document against the data.                                                                           |
+| `npm run changelog`                                                     | Regenerate `js/changelog.js` (Settings → What's new) from the Shipped list in `docs/ROADMAP.md`.                                                          |
+| `npm run lint`                                                          | ESLint.                                                                                                                                                  |
+| `npm run format`                                                        | Prettier (`npm run format:check` only reports).                                                                                                          |
+| `npm run build`                                                         | Minified production build in `dist/`.                                                                                                                    |
+| `npm run serve:dist`                                                    | Preview the production build.                                                                                                                            |
+| `npm run cap:sync`                                                      | Build and copy the web app into the Android and iOS projects.                                                                                            |
+| `npm run android` / `npm run ios`                                       | Sync, then open the native project.                                                                                                                      |
 
-Headless regression test: two seasons with a seeded RNG through the same code the app uses (including the Web Worker's JSON hand-off), then invariants, save pack/unpack and save migrations. About a minute; exits non-zero on failure. `npm run test:quick` plays one season.
+### Regression test
 
-```bash
-npm run calibrate
-```
+`npm test` runs two seasons with a seeded RNG through the same code the app uses (including the Web Worker's JSON hand-off), then checks invariants, save pack/unpack and save migrations. It takes about a minute and exits non-zero on failure. `npm run test:quick` plays one season.
 
-Calibration report: three seeded seasons compared with real football, 49 measures in four groups: matches (goals, home/draw/away split, shots, xG, set pieces, penalties, cards, title races, cup upsets, light-league scores, goals trend), player careers (age profile of top-flight minutes, keeper ages, top-100 age, peak ages, retirement ages, academy-grown vs generated player shape, world elite trend, top-flight squad turnover, plus the ability-change-by-age curve) and injuries (rate per club, share of squads out, layoff lengths, long-term injuries, match vs training, muscle and hamstring shares, re-injuries, age effect) and the market (top-flight loans out, loanees' games, how long free agents wait, players created from nowhere). Trend measures need `--seasons 8` or more (use it for any long-run question). The engine's tuning knobs live in `FM.CAL` at the top of `js/engine.js` (try values with `node tools/calibrate.mjs --set chanceRate=0.15,homeAtt=1.1`, or any setting by path such as `--set Season.ELITE.growth=0.6`; `targetGoals` is the level the tactical equilibrium settles back toward, via `S.era`), injury rates in `FM.Injury.CAL` (`js/injuries.js`), the career curve in `CURVE` and academy potential in `Sea.YOUTH` (`js/careers.js`), together with elite growth (`Sea.ELITE`), veteran renewals (`Sea.VET`) and unattached veterans retiring (`Sea.FA_RETIRE`). AI managers' ability (`FM.CAL.mgr`) and AI tactical familiarity (`FM.CAL.aiFam`) are engine knobs. The report ends with each league's champions' pre-season rank, to spot a league that is too predictable.
+### Calibration
 
-```bash
-npm run test:regens
-```
+`npm run calibrate` is a calibration report: three seeded seasons compared with real football, 49 measures in four groups:
 
-Regen test: five academy intakes (plus the world's generated youngsters) aged year by year through the real development code, about 20 seconds. Reports career shapes with examples: prospects who deliver, flops (stalled, plateaued, burned out), one-season wonders, early primes (at their best by 18–19) and long primes (still at their best at 33–34), and checks each against an expected range; exits non-zero on failure. The rates live in `Sea.ARCS` (`js/careers.js`).
+- **Matches:** goals, home/draw/away split, shots, xG, set pieces, penalties, cards, title races, cup upsets, light-league scores, goals trend.
+- **Player careers:** age profile of top-flight minutes, keeper ages, top-100 age, peak ages, retirement ages, academy-grown vs generated player shape, world elite trend, top-flight squad turnover, plus the ability-change-by-age curve.
+- **Injuries:** rate per club, share of squads out, layoff lengths, long-term injuries, match vs training, muscle and hamstring shares, re-injuries, age effect.
+- **The market:** top-flight loans out, loanees' games, how long free agents wait, players created from nowhere.
 
-```bash
-npm run test:suite
-npm run test:long
-```
+The report ends with each league's champions' pre-season rank, to spot a league that is too predictable. Trend measures need `--seasons 8` or more (use it for any long-run question).
 
-Wider suite (`tools/suite.mjs`): a manager plays every match for three seasons (`test:long`: twenty, without the speed limits), and it checks speed (a league day, a pre-season day and a season against a budget; `--budget 2` for a slower machine), that every league table adds up, leagues keep their size and as many clubs go up as down, every full-simulation club can field a legal side all season, no club drifts into impossible debt or wealth, and the world keeps its size and shape. About two minutes a season. In the app, the developer panel has the matching UI smoke test: it opens every tab, sub-tab and a sample of sheets and reports what threw or showed a broken value.
+Where the tuning knobs live:
 
-```bash
-npm run test:realstats
-npm run test:worlddef
-npm run test:import
-npm run import:history -- --dir data/samples/history --out world.json
-```
+- The engine's knobs are in `FM.CAL` at the top of `js/engine.js`. Try values with `node tools/calibrate.mjs --set chanceRate=0.15,homeAtt=1.1`, or any setting by path such as `--set Season.ELITE.growth=0.6`. `targetGoals` is the level the tactical equilibrium settles back toward, via `S.era`.
+- AI managers' ability (`FM.CAL.mgr`) and AI tactical familiarity (`FM.CAL.aiFam`) are also engine knobs.
+- Injury rates are in `FM.Injury.CAL` (`js/injuries.js`).
+- The career curve is in `CURVE` and academy potential in `Sea.YOUTH` (`js/careers.js`), together with elite growth (`Sea.ELITE`), veteran renewals (`Sea.VET`) and unattached veterans retiring (`Sea.FA_RETIRE`).
 
-Data tools for the editor and club packs. The real-stats converter (`js/realstats.js`, command line `tools/realstats.mjs players.csv`) turns a real player's numbers into attributes and ability. The world definition (`js/worlddef.js`, command line `tools/worlddef.mjs --export world.json`) is the world as data, apart from a save: export, validation, an editing API and loading onto a new world. The historical importer (`tools/import-history.mjs`) reads season tables, player stats and club details into a definition through the converter; a synthetic sample is in `data/samples/history`.
+### Regen test
 
-**Developer dashboard:** `npm run dev-tools`, then open http://localhost:5190. A local app (`tools/devserver.mjs`, page in `tools/dev/`) that is not part of the game: it runs the test suites, calibration, wonderkid and transfer tests, lint, docs check and build as jobs with live output and a result history in `.devtools/` (two runs of a job can be compared measure by measure); hosts the real-stats converter and the historical importer (paste or upload CSV/JSON, download the result) and a world-definition validator; and closes the tuning loop: a **gate** (a quick or full set of jobs compared with pinned baselines, failing when a job fails or a measure leaves its range), **trends** (each measure across every run, with the real range as a band), a **seed matrix** (one job on several seeds, with mean, spread and how many seeds are in range) and **sweeps** (a tuning constant tried at several values on the same seeds, next to the game's own value; any capitalised number the game exposes works, and a run reads it from `TOUCHLINE_TUNE` without touching the source); and lets you see inside a world: a **World** tab that keeps one headless world in memory (`tools/worldhost.mjs`) to browse clubs, players, tables and the feed, run a scan for things that should not be (clubs that cannot field a side, flat attribute spreads, expired contracts, duplicate names …), step days or run until a condition holds (a club with no keeper, impossible debt, an injury wave) with charts of what happened each day, and a **match lab** that simulates one fixture hundreds of times with an optional tactic change; and a **Saves** tab that reports a save file's version, where its bytes go, what an upgrade adds or removes and whether it survives a pack and unpack; and has data tools: a **Definitions** tab that edits a world definition in forms (club names, colours, ratings, stadiums, players added through the converter, past seasons) with live validation against the base world and a button to try it in a new world; **converter calibration** (give it players with the ability you expect, in an `expected` column, and it shows the error, the bias by position group and the offset and spread that fit best, `RS.TUNE` in `js/realstats.js`; a synthetic sample is in `data/samples/converter`); and a **column mapper** that turns a messy CSV (any column names, comma, semicolon or tab) into the importer's format, matching club names to the base world's clubs with suggestions; and covers release and health: a **Release** tab with one checklist (working tree clean and pushed, the Pages deploy for this commit, the live site up and on the build you expect, docs, lint, format and the tool tests, a build with its size against the last one, the 1-season suite, the latest gate, the UI smoke test run from the Game tab, and whether the Claude Docs copies are in step) and a one-click release check; and a **Profile** tab that takes a real CPU profile of a headless run (`node --cpu-prof`) and shows time by file, functions by their own time and a call icicle, with the `.cpuprofile` to download for Chrome's Performance panel, plus the speed numbers of every suite run as trends; and shows the game in a frame with the in-game developer panel (Settings → Help → Developer tools: world check, market, wonderkids, speed, a season on a copy, the UI smoke test). `js/devtools.js` is added to the game only inside the dashboard, never to `index.html`, the build or the Pages site.
+`npm run test:regens` ages five academy intakes (plus the world's generated youngsters) year by year through the real development code, in about 20 seconds. It reports career shapes with examples and checks each against an expected range; it exits non-zero on failure. The shapes:
 
-**Developer tools, quick start**
+- prospects who deliver;
+- flops (stalled, plateaued, burned out);
+- one-season wonders;
+- early primes (at their best by 18–19);
+- long primes (still at their best at 33–34).
 
-1. `npm install` once, then `npm run dev-tools` and open http://localhost:5190 (it listens on 127.0.0.1 only).
-2. **Run** starts the test suites, calibration, lint and the rest as jobs with live output and a history; **Gate**, **Trends**, **Seeds** and **Sweep** compare runs against baselines and tuning constants; **World** keeps one headless world in memory to browse, scan for problems and step through days; **Saves** works on save files; **Converter**, **Importer** and **Definitions** handle real-stats data and world definitions.
-3. **Game** shows the game itself with the developer panel switched on: open **Settings (⚙️) → Developer tools** for the world check, market summary, wonderkid list, speed test, "play a season" and a UI smoke test. They run on a copy of your save and put the real one back.
-4. The panel (`js/devtools.js`) is never part of the public page or a built app: it only exists through the dashboard's Game tab.
+The rates live in `Sea.ARCS` (`js/careers.js`).
 
-```bash
-npm run docs:sync-status
-npm run docs:synced
-```
+### Wider suite
 
-The roadmap, feature list and design document have copies in Claude Docs, which cannot be read from here. `docs/SYNC.json` holds a hash of each at the moment it was last synced: `docs:sync-status` lists the ones that have changed since, and `docs:synced` records them as synced (run it right after syncing). The dashboard's Release tab reads the same record.
+The wider suite (`tools/suite.mjs`) has a manager play every match for three seasons (`test:long`: twenty, without the speed limits). It checks:
 
-```bash
-npm run test:wonderkids
-```
+- speed (a league day, a pre-season day and a season against a budget; `--budget 2` for a slower machine);
+- that every league table adds up, leagues keep their size and as many clubs go up as down;
+- that every full-simulation club can field a legal side all season;
+- that no club drifts into impossible debt or wealth;
+- that the world keeps its size and shape.
 
-Wonderkid test: ten seeded seasons, following every prospect of 19 or under with a potential of 85+, against what real football shows (how many reach world class, stall or flop, and when the best peak).
+It takes about two minutes a season. In the app, the developer panel has the matching UI smoke test: it opens every tab, sub-tab and a sample of sheets and reports what threw or showed a broken value.
 
-```bash
-npm run lint
-npm run format
-```
+### Wonderkid test
+
+`npm run test:wonderkids` runs ten seeded seasons, following every prospect of 19 or under with a potential of 85+, against what real football shows (how many reach world class, stall or flop, and when the best peak).
+
+### Data tools
+
+These serve the editor and club packs (`npm run test:realstats`, `test:worlddef`, `test:import`, `import:history`):
+
+- **Real-stats converter:** `js/realstats.js`, command line `tools/realstats.mjs players.csv`. Turns a real player's numbers into attributes and ability.
+- **World definition:** `js/worlddef.js`, command line `tools/worlddef.mjs --export world.json`. The world as data, apart from a save: export, validation, an editing API and loading onto a new world.
+- **Historical importer:** `tools/import-history.mjs`. Reads season tables, player stats and club details into a definition through the converter; a synthetic sample is in `data/samples/history`.
+
+### Name generator
+
+`npm run names -- --kind clubs --nat SCO --count 20 --seed 3` (`tools/namegen.mjs`) generates names for players, towns, clubs, grounds, nicknames, leagues and sponsors by nation and seed. It flags names the world generator's checks would reject: rude, hard to say, too long, or close to a real town or club. The dashboard has the same thing as its Names tab.
+
+### Lint and format
 
 ESLint (`eslint.config.mjs`) catches undefined names and unused variables; Prettier (`.prettierrc.json`, 120 columns) formats the code. Run both before committing; `npm run format:check` only reports.
 
-```bash
-npm run build
-```
+### Build
 
-Minified production build in `dist/`: `sim.min.js` (engine, also loaded by the simulation worker) + `ui.min.js`, content-hashed URLs and a regenerated service worker. Preview it with `npm run serve:dist`.
+`npm run build` makes a minified production build in `dist/`: `sim.min.js` (engine, also loaded by the simulation worker) + `ui.min.js`, content-hashed URLs and a regenerated service worker. Preview it with `npm run serve:dist`.
+
+## Developer dashboard
+
+Run `npm run dev-tools` (after `npm install` once), then open http://localhost:5190. It listens on 127.0.0.1 only.
+
+It is a local app (`tools/devserver.mjs`, page in `tools/dev/`) that is not part of the game. It runs the test suites, calibration, wonderkid and transfer tests, lint, docs check and build as jobs with live output and a result history in `.devtools/` (two runs of a job can be compared measure by measure). The tabs, by group:
+
+| Group              | Tabs                                             | What they do                                                      |
+| ------------------ | ------------------------------------------------ | ----------------------------------------------------------------- |
+| Run and tune       | **Run**, **Gate**, **Trends**, **Seeds**, **Sweep** | Run the jobs and close the tuning loop (details below).           |
+| Inside a world     | **World**, **Saves**                             | Browse and test a headless world; inspect save files.             |
+| Data tools         | **Converter**, **Importer**, **Definitions**     | Real-stats data and world definitions.                            |
+| Names              | **Names**                                        | The name generator, in a tab.                                     |
+| Release and health | **Release**, **Profile**                         | Release checklist; CPU profiling.                                 |
+| The game           | **Game**                                         | The game in a frame with the in-game developer panel.             |
+
+### Run, Gate, Trends, Seeds, Sweep
+
+- **Run** starts the test suites, calibration, lint and the rest as jobs with live output and a history.
+- **Gate** runs a quick or full set of jobs, compares them with pinned baselines, and fails when a job fails or a measure leaves its range.
+- **Trends** shows each measure across every run, with the real range as a band.
+- **Seeds** (seed matrix) runs one job on several seeds, with mean, spread and how many seeds are in range.
+- **Sweep** tries a tuning constant at several values on the same seeds, next to the game's own value. Any capitalised number the game exposes works, and a run reads it from `TOUCHLINE_TUNE` without touching the source.
+
+### World and Saves
+
+- **World** keeps one headless world in memory (`tools/worldhost.mjs`) to browse clubs, players, tables and the feed. It can:
+  - run a scan for things that should not be (clubs that cannot field a side, flat attribute spreads, expired contracts, duplicate names …);
+  - step days, or run until a condition holds (a club with no keeper, impossible debt, an injury wave), with charts of what happened each day;
+  - run a **match lab** that simulates one fixture hundreds of times with an optional tactic change.
+- **Saves** reports a save file's version, where its bytes go, what an upgrade adds or removes and whether it survives a pack and unpack.
+
+### Converter, Importer, Definitions
+
+- **Converter** and **Importer** host the real-stats converter and the historical importer (paste or upload CSV/JSON, download the result), plus a world-definition validator.
+- **Definitions** edits a world definition in forms (club names, colours, ratings, stadiums, players added through the converter, past seasons) with live validation against the base world and a button to try it in a new world.
+- **Converter calibration:** give it players with the ability you expect, in an `expected` column, and it shows the error, the bias by position group and the offset and spread that fit best (`RS.TUNE` in `js/realstats.js`). A synthetic sample is in `data/samples/converter`.
+- **Column mapper:** turns a messy CSV (any column names, comma, semicolon or tab) into the importer's format, matching club names to the base world's clubs with suggestions.
+
+### Names
+
+The **Names** tab is the name generator: players, towns, clubs, grounds, nicknames, leagues and sponsors by nation and seed, flagging names the world generator's checks would reject (rude, hard to say, too long, close to a real town or club). The same generator runs from the command line, see [Name generator](#name-generator).
+
+### Release and Profile
+
+- **Release** is one checklist and a one-click release check: working tree clean and pushed, the Pages deploy for this commit, the live site up and on the build you expect, docs, lint, format and the tool tests, a build with its size against the last one, the 1-season suite, the latest gate, the UI smoke test run from the Game tab, and whether the Claude Docs copies are in step.
+- **Profile** takes a real CPU profile of a headless run (`node --cpu-prof`) and shows time by file, functions by their own time and a call icicle, with the `.cpuprofile` to download for Chrome's Performance panel, plus the speed numbers of every suite run as trends.
+
+### Game
+
+**Game** shows the game in a frame with the in-game developer panel switched on. Open **Settings (⚙️) → Help → Developer tools** for the world check, market summary, wonderkid list, speed test, "play a season" (a season on a copy) and the UI smoke test. They run on a copy of your save and put the real one back.
+
+`js/devtools.js` (the panel) is added to the game only inside the dashboard, never to `index.html`, the build, a built app or the Pages site.
+
+## Docs syncing
+
+The roadmap, feature list and design document have copies in Claude Docs, which cannot be read from here. `docs/SYNC.json` holds a hash of each at the moment it was last synced.
+
+- `npm run docs:sync-status` lists the ones that have changed since.
+- `npm run docs:synced` records them as synced (run it right after syncing).
+
+The dashboard's Release tab reads the same record.
+
+## GitHub Pages and save format changes
 
 **GitHub Pages:** `.github/workflows/pages.yml` builds `dist/` and publishes it on every push to `main`. One-time setup: in the repository's Settings → Pages, set Source to "GitHub Actions". The game is then at `https://<user>.github.io/<repo>/` (all paths are relative, so the subpath works, and it installs as an offline web app from there).
 
 **Save format changes:** bump `FM.SAVE_VERSION` in `js/core.js` and add a migration to `MIG` in `js/save.js` (from the previous version). Never edit a shipped migration; `npm test` checks every version has an upgrade path.
 
-### Native app (Capacitor 8)
+## Native app (Capacitor 8)
 
 `android/` and `ios/` are Capacitor projects that package `dist/`. `npm run cap:sync` builds and copies the web app into both.
 
@@ -102,7 +223,7 @@ Minified production build in `dist/`: `sim.min.js` (engine, also loaded by the s
 - The app id is `app.touchline.manager` (change it in `capacitor.config.json` before the first store upload). App icons and splash screens are still Capacitor's defaults.
 - In the app, saves are files in the app's private data folder (written to a temp file, then renamed); haptics, share and the status bar use the native plugins; the Android back button closes the top-most sheet; phones are locked to portrait (tablets rotate).
 
-### Install it as an app (offline)
+## Install it as an app (offline)
 
 Touchline is an installable web app: it has a manifest, app icons and a service worker, and bundles its fonts, so once it has loaded it plays with no internet connection.
 
@@ -180,7 +301,7 @@ js/injuries.js   injury catalogue and risk model, training injuries, recovery, m
 js/save.js       save format, migrations, storage backends (files / IndexedDB), backup export/import
 js/simrun.js     runs matchday simulation in the Web Worker (js/sim-worker.js) with a progress overlay
 js/native.js     Capacitor plugins with web fallbacks, back button, background autosave, boot
-tools/           sim-test.mjs (regression test), calibrate.mjs (realism report), regens.mjs (career-shape test), harness.mjs (seeded loader they share), build.mjs (production build)
+tools/           namegen.mjs (name generator), sim-test.mjs (regression test), calibrate.mjs (realism report), regens.mjs (career-shape test), harness.mjs (seeded loader they share), build.mjs (production build)
 ```
 
 ## Not yet built (next candidates)

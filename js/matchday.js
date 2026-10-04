@@ -107,7 +107,7 @@
     },
     cor: { label: 'Corners', icon: '⛳', score: (A) => (A.passing * 1.1 + A.technique + A.vision * 0.9) / 3 },
   };
-  Md.spScore = (p, k) => Md.SP[k].score(p.attrs);
+  Md.spScore = (p, k) => Md.SP[k].score(p.attrs) + (W.hasTrait(p, 'Set-Piece Expert') ? 3 : 0);
   Md.bestTaker = (players, k) =>
     players.filter((p) => p.pos !== 'GK').sort((a, b) => Md.spScore(b, k) - Md.spScore(a, k))[0] || null;
   // The user's chosen taker (if picked), else the best candidate in the XI

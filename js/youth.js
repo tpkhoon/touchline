@@ -125,7 +125,11 @@
         .map((p) => p.ca);
     const base = W.levelFor(c.rep) - (team === 'u21' ? 16 : 24) + ((c.facilities && c.facilities.academy) || 2) * 2;
     while (real.length < 11) real.push(base);
-    return U.avg(real, (x) => x);
+    // youth football is streaky: each side has a good or bad year of its own, so the top academies don't win everything
+    const yf = (S().youthForm = S().youthForm || {}),
+      k = clubId + team;
+    if (yf[k] === undefined) yf[k] = U.gauss(0, 4);
+    return U.avg(real, (x) => x) + yf[k];
   };
   // One round of every nation's youth leagues: clubs paired at random, a result from the two sides' level
   Y.round = function () {
@@ -141,8 +145,8 @@
           const [h, a] = [ids[i], ids[i + 1]],
             sh = strength(h, team),
             sa = strength(a, team);
-          const hg = U.poisson(Math.max(0.3, 1.45 + (sh - sa) / 14)),
-            ag = U.poisson(Math.max(0.3, 1.2 + (sa - sh) / 14));
+          const hg = U.poisson(Math.max(0.3, 1.45 + (sh - sa) / 38)),
+            ag = U.poisson(Math.max(0.3, 1.2 + (sa - sh) / 38));
           for (const [id, gf, ga] of [
             [h, hg, ag],
             [a, ag, hg],
@@ -176,6 +180,7 @@
   Y.newSeason = function () {
     const s = S();
     s.youth = {};
+    s.youthForm = {};
     Y.assignAll();
     Y.rebalance();
   };

@@ -2,11 +2,17 @@
 
 Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/dcc1d812-21cc-47af-86dd-67235bca8506)
 
+## Contents
+
+- [In the game](#in-the-game)
+- [Yet to be added](#yet-to-be-added)
+
+
 Every feature from the game design document, with what is playable in the prototype today and what is still to come. Status and phase match [ROADMAP.md](ROADMAP.md).
 
 ## In the game
 
-270 features are playable in the web prototype today. Build = the build that added it.
+279 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -286,6 +292,8 @@ Every feature from the game design document, with what is playable in the protot
 | Players | Ability formula measured from the engine: the weights of each position's rating come from regressing goal difference on every attribute over 150,000 simulated matches (21% more of a result explained than the hand-made table, 96% of the possible), with a constant per position that keeps ratings, values and wages on the same scale; saves are re-rated on load | Alpha 2 |
 | Players | A profile shows where he counts as trained (his academy, or the club where he spent most of his years between 15 and 21, or the country of his birth when there is no youth record) and the nations he is homegrown for, with whether that counts under his league's squad-list rule | Alpha 2 |
 | Competitions | Every tournament on the Cups screen folds away behind its title (yours start open), with Open all and Fold all | Alpha 2 |
+| International | Naturalisation: a player who has lived in a country for a number of seasons after 18 (FIFA minimum 5 years by default; Spain 10, or 2 for Argentina, Uruguay, Colombia, Mexico and Portugal; Portugal 6, or 3 for Brazil; Italy 10, or 4 for EU; France 5; Germany 8; never in Japan, Korea, Thailand, Nigeria, Ghana, Senegal and the Ivory Coast) can be granted its citizenship, at a yearly rate and cap per country and only if uncapped and good enough for its squad; he becomes eligible as a second nation (second flag, "Naturalised in <year>" on the profile, news for notable cases) and may switch allegiance like other dual nationals | Playtest round 10 |
+| Youth | Youth and B-team simulation review: youth leagues are less one-sided (a gentler strength gap and a good or bad year for each side, so top academies no longer win nearly everything; table spread roughly top ~85 points, median ~50, bottom ~25 of 114); B teams verified: stocked at 22, light-sim, never promoted level with their parent, rebalanced for AI parents | Playtest round 10 |
 | Media | A Press room under Club: five outlets (tabloid, broadsheet, local paper, television panel, radio phone-in) with their own voices report on your matches, runs, signings, sales and seasons, each with a view of you that moves at its own speed; a Press filter in the feed; the press mood moves the board and fans a little every match | Playtest round 8 |
 | Settings | Club colours: use your club's colours as the app's accent, or switch it off for the standard accent | Playtest round 8 |
 | UI | Bottom bar: six equal columns, icons and labels on one line (International is Nations) | Playtest round 7 |
@@ -293,6 +301,13 @@ Every feature from the game design document, with what is playable in the protot
 | Season | A half-played matchday (left on the full-time screen) is finished as the save loads | Playtest round 4 |
 | Tactics | Auto pick prefers natural and accomplished players over improvised ones | Playtest round 4 |
 | UI | "Next match" says why it stopped and opens the Needs reply list | Playtest round 4 |
+| Competitions | The American league is built like MLS: two conferences (East and West) with their own tables and an overall table for the Supporters' Shield, a 34-game schedule weighted to the conference (a double round-robin within it, the odd club out meeting the other conference, four more cross-conference rounds), and seven clubs per conference in the playoffs: the top seed skips Round One, single matches through the Conference Semifinals and Finals to the MLS Cup, hosted by the better seed. The MLS Cup winner is the champion; the champion and the Shield winner head the CONCACAF places | Playtest round 10 |
+| Transfers | A college draft each winter for leagues that have one (the American league): three rounds, clubs that missed the playoffs picking first and the champions last, from a class of generated prospects kept out of the player pool until picked. The AI picks as the clock reaches it; you pick on the Draft board (a card on Home while you are on the clock, a Draft button on the Transfers tab) or let your assistant finish; undrafted prospects leave the game | Playtest round 10 |
+| Tools | Name generator: `npm run names` (`tools/namegen.mjs`) and a Names tab in the developer dashboard make player, town, club, ground, nickname, league and sponsor names by nation and seed, flagging names the world generator's checks would reject (rude, hard to say, too long, close to a real town or club) | Playtest round 10 |
+| Competitions | League splits as in real life: Scotland (33 + 5, top six and bottom six), Belgium (a top-six playoff on halved points), Denmark, Austria (halved), Switzerland, Czechia (three groups), Serbia, Greece, South Korea and Wales; the table shows each group and final positions go group by group | Playtest round 10 |
+| Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
+| Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
+| Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
 
 ## Yet to be added
 

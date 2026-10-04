@@ -198,6 +198,39 @@ for (let s = 0; s < SEASONS; s++) {
       );
     }
   }
+  // league formats: splits (the top group fills the top places, every club played its full schedule), two tournaments
+  // each with a champion, and a final for every playoff league
+  {
+    const ents = summary && summary.entry && summary.entry.comps;
+    for (const [id, e] of Object.entries(ents || {})) {
+      if (e.split) {
+        const n0 = e.split.groups[0].length,
+          top = new Set(e.split.groups[0]);
+        check(
+          e.table.slice(0, n0).every((r) => top.has(r.id)),
+          `season ${s + 1}: ${id}'s top group does not fill the top places`,
+        );
+        check(top.has(e.champion), `season ${s + 1}: ${id}'s champion is not in its top group`);
+      }
+      if (e.torneos)
+        check(
+          e.torneos.length === 2 && e.torneos.every((t) => t.champion && t.playoffs.M4.length === 1),
+          `season ${s + 1}: ${id} is missing a tournament champion`,
+        );
+      else if (e.playoffs) check(e.playoffs.M4.length === 1, `season ${s + 1}: ${id} has no final`);
+    }
+  }
+  // naturalised players hold the citizenship they were granted, and no federation that bars it granted one
+  {
+    const bad = Object.values(FM.S.players).filter(
+      (p) => p.natur && (p.nat2 !== p.natur.code || (FM.D.NATURALISE[p.natur.code] || {}).never),
+    );
+    check(bad.length === 0, `season ${s + 1}: ${bad.length} naturalised players have the wrong second nation`);
+    // youth leagues stay competitive: no side wins nearly everything
+    const ys = Object.values(FM.S.youth || {}).flatMap((n) => Object.values(n));
+    const dom = ys.filter((lg) => Object.values(lg.table).some((r) => r.p >= 20 && r.pts > r.p * 2.7));
+    check(dom.length === 0, `season ${s + 1}: ${dom.length} youth leagues have a side winning over 90% of its games`);
+  }
   // B teams stay below their parent clubs; your competitive matches are logged for the analytics tab
   {
     const tierOf = (c) => (c && c.comp && FM.S.comps[c.comp] ? FM.S.comps[c.comp].tier : 99);

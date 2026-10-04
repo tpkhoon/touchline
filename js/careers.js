@@ -106,7 +106,13 @@
       const train =
         (club ? club.facilities.training || 2 : 2) + (club && W.isUser(club.id) ? FM.Staff.impact('coach').dev : 0);
       const mins = Math.min(0.45, p.season.apps * 0.03 + Math.min(0.15, (p.season.yapps || 0) * 0.008)); // youth-team games help a little
-      const f = 0.55 + train * 0.09 + (p.hid.prof - 10) / 25 + mins;
+      const f =
+        0.55 +
+        train * 0.09 +
+        (p.hid.prof - 10) / 25 +
+        mins +
+        (W.hasTrait(p, 'Model Professional') ? 0.1 : 0) -
+        (W.hasTrait(p, 'Low Work Ethic') ? 0.1 : 0);
       const early = arc === 'early' && a <= 21,
         fast = early || (arc === 'burnout' && a <= p.arc.peak);
       g = Math.min(g * f * (early ? 3 : fast ? 1.3 : 1), head * (early ? 1.2 : 0.45)) * frac * U.rand(0.6, 1.4); // closing in on potential slows down: players keep improving into their mid-twenties
@@ -114,6 +120,8 @@
       if (p.ca >= Sea.ELITE.from) g *= Sea.ELITE.growth; // the very best grow more slowly: keeps the elite from inflating
       if (p.inj && (p.inj.out || 0) >= 8) g *= 0.4; // months on the treatment table cost development
       g *= FM.Training.devK(p); // your training focus and intensity
+      // a Mentor in the squad: the young learn from him
+      if (a <= 21 && club && W.squad(club.id).some((q) => q !== p && W.hasTrait(q, 'Mentor'))) g *= 1.12;
       // the training ground has a ceiling: a player who has outgrown it develops slowly until it is upgraded
       if (club) {
         const cap = Sea.devCap(club);

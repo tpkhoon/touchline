@@ -5,6 +5,51 @@
 
   FM.D = {};
 
+  // ---------- Naturalisation ----------
+  // A player who has lived in a country for `years` seasons after turning 18 can be granted its citizenship, and with it
+  // the right to play for its national team (if he has never been capped). `fast` shortens the wait for citizens of
+  // related nations, `rate` is the chance a year that a federation pushes through a player it wants, `cap` how many
+  // it will naturalise in a season, and `never` marks countries that do not allow a second citizenship. Anywhere
+  // not listed follows FIFA's own minimum of five years.
+  FM.D.NATURALISE_DEFAULT = { years: 5, rate: 0.12, cap: 1 };
+  FM.D.NATURALISE = {
+    ESP: { years: 10, rate: 0.4, cap: 2, fast: { years: 2, from: ['ARG', 'URU', 'COL', 'MEX', 'POR'] } },
+    POR: { years: 6, rate: 0.4, cap: 2, fast: { years: 3, from: ['BRA'] } },
+    ITA: {
+      years: 10,
+      rate: 0.3,
+      cap: 2,
+      fast: {
+        years: 4,
+        from: ['FRA', 'ESP', 'POR', 'GER', 'NED', 'BEL', 'IRL', 'GRE', 'POL', 'AUT', 'CRO', 'CZE', 'HUN', 'DEN'],
+      },
+    },
+    FRA: { years: 5, rate: 0.35, cap: 2 },
+    GER: { years: 8, rate: 0.2, cap: 1 },
+    NED: { years: 5, rate: 0.25, cap: 1 },
+    BEL: { years: 5, rate: 0.3, cap: 2 },
+    TUR: { years: 5, rate: 0.35, cap: 2 },
+    SUI: { years: 10, rate: 0.2, cap: 1 },
+    AUT: { years: 10, rate: 0.2, cap: 1 },
+    DEN: { years: 9, rate: 0.1, cap: 1 },
+    NOR: { years: 7, rate: 0.1, cap: 1 },
+    USA: { years: 5, rate: 0.2, cap: 2 },
+    MEX: { years: 5, rate: 0.3, cap: 2, fast: { years: 2, from: ['ARG', 'URU', 'COL', 'BRA'] } },
+    AUS: { years: 4, rate: 0.2, cap: 1 },
+    ENG: { years: 5, rate: 0.15, cap: 1 },
+    SCO: { years: 5, rate: 0.15, cap: 1 },
+    WAL: { years: 5, rate: 0.15, cap: 1 },
+    IRL: { years: 5, rate: 0.2, cap: 1 },
+    MAR: { years: 5, rate: 0.05, cap: 1 },
+    JPN: { never: true },
+    KOR: { never: true },
+    THA: { never: true },
+    NGA: { never: true },
+    GHA: { never: true },
+    SEN: { never: true },
+    CIV: { never: true },
+  };
+
   // ---------- Attributes (1–20 scale, FM-style) ----------
   FM.D.ATTRS = [
     'pace',
@@ -586,6 +631,26 @@
     'Fair-Weather': { icon: '🌧️', desc: 'Hates rainy matches. Noticeably worse in the wet.' },
     Consistent: { icon: '📈', desc: 'Rarely has a bad game.' },
     Flair: { icon: '✨', desc: 'Tries the unexpected. Moments of magic.' },
+    Engine: { icon: '⚙️', desc: 'Tireless: loses energy far more slowly in a match.' },
+    'Set-Piece Expert': {
+      icon: '🎯',
+      desc: 'Better from the spot, on free kicks and on corners than his numbers say.',
+    },
+    Clutch: {
+      icon: '🧊',
+      desc: 'Cool when it matters: finishes better after the 75th minute and from the penalty spot.',
+    },
+    'Aerial Threat': { icon: '🦅', desc: 'Dangerous from crosses and corners.' },
+    'Hatchet Man': { icon: '🪓', desc: 'Hard in the tackle: booked and sent off more often.' },
+    'Slow Starter': { icon: '🐢', desc: 'Takes time to get going: weaker in the first twenty minutes.' },
+    'Cup Specialist': { icon: '🏆', desc: 'Raises his game in knockout matches.' },
+    'Big-Match Nerves': { icon: '😰', desc: 'Shrinks on the big occasion.' },
+    'Model Professional': { icon: '📋', desc: 'Lives right: develops faster and picks up fewer injuries.' },
+    'Low Work Ethic': { icon: '😴', desc: 'Trains half-heartedly: develops more slowly.' },
+    Versatile: { icon: '🔀', desc: 'Learns new positions quickly.' },
+    Mentor: { icon: '🧓', desc: 'Young teammates grow faster around him.' },
+    Homesick: { icon: '🏠', desc: 'Unsettled at a club outside his own country.' },
+    'Needs Game Time': { icon: '🪑', desc: 'Sulks quickly when left out of the side.' },
   };
 
   // ---------- Nations ----------
@@ -1863,7 +1928,7 @@
       sim: 'full',
       clubs: 'CLUBS_FR1',
       repBand: [90, 57],
-      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'FR2', n: 2 } },
+      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'FR2', n: 2, playoff: true } },
     },
     {
       id: 'FR2',
@@ -1874,7 +1939,7 @@
       sim: 'light',
       clubs: 'CLUBS_FR2',
       repBand: [58, 44],
-      rules: { promote: { to: 'FR1', auto: 2 } },
+      rules: { promote: { to: 'FR1', auto: 2, tie: true } },
     },
     {
       id: 'BR1',
@@ -1940,7 +2005,12 @@
       sim: 'light',
       clubs: 'CLUBS_AR1',
       repBand: [79, 53],
-      rules: { rounds: 27, qualify: { to: 'CL', n: 3 } },
+      rules: {
+        torneos: ['Apertura', 'Clausura'],
+        zones: true,
+        playoffs: { type: 'zones' },
+        qualify: { to: 'CL', n: 3 },
+      },
     },
     {
       id: 'US1',
@@ -2016,7 +2086,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_MX1',
       repBand: [70, 55],
-      rules: { qualify: { to: 'NC', n: 4 } },
+      rules: { torneos: ['Apertura', 'Clausura'], playoffs: { type: 'liguilla' }, qualify: { to: 'NC', n: 4 } },
     },
     {
       id: 'KR1',
@@ -2027,7 +2097,16 @@
       sim: 'minimal',
       clubs: 'CLUBS_KR1',
       repBand: [60, 51],
-      rules: { qualify: { to: 'AC', n: 2 } },
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+        qualify: { to: 'AC', n: 2 },
+      },
     },
     {
       id: 'TH1',
@@ -2071,7 +2150,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_RS1',
       repBand: [64, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 30,
+          groups: [8, 8],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'BE1',
@@ -2082,7 +2169,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_BE1',
       repBand: [68, 50],
-      rules: {},
+      rules: {
+        split: {
+          after: 30,
+          groups: [6, 10],
+          rounds: ['double', 'none'],
+          names: ['Championship playoff', 'Regular season'],
+          halve: true,
+        },
+      },
     },
     {
       id: 'TR1',
@@ -2104,7 +2199,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_CZ1',
       repBand: [64, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 30,
+          groups: [6, 4, 6],
+          rounds: ['double', 'double', 'double'],
+          names: ['Championship', 'Europe play-off', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'GR1',
@@ -2115,7 +2218,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_GR1',
       repBand: [68, 48],
-      rules: {},
+      rules: {
+        split: {
+          after: 26,
+          groups: [6, 8],
+          rounds: ['double', 'single'],
+          names: ['Play-offs', 'Play-outs'],
+          halve: true,
+        },
+      },
     },
     {
       id: 'NO1',
@@ -2148,7 +2259,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_DK1',
       repBand: [64, 48],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'AT1',
@@ -2159,7 +2278,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_AT1',
       repBand: [64, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Relegation'],
+          halve: true,
+        },
+      },
     },
     {
       id: 'CH1',
@@ -2170,7 +2297,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_CH1',
       repBand: [63, 48],
-      rules: {},
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'SC1',
@@ -2181,7 +2316,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_SC1',
       repBand: [70, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'AU1',
@@ -2192,7 +2335,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AU1',
       repBand: [58, 46],
-      rules: { qualify: { to: 'AC', n: 2 } },
+      rules: { playoffs: { type: 'finals6' }, qualify: { to: 'AC', n: 2 } },
     },
     {
       id: 'HU1',
@@ -2225,7 +2368,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_WA1',
       repBand: [49, 37],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Conference'],
+          halve: false,
+        },
+      },
     },
   ];
   FM.D.CONTINENTALS = [

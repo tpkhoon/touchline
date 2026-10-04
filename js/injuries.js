@@ -51,7 +51,10 @@
   Inj.risk = function (p) {
     const a = W.age(p),
       c = p.clubId && S().clubs[p.clubId];
-    let r = (0.45 + p.hid.inj / 20) * (W.hasTrait(p, 'Injury Prone') ? 1.6 : 1);
+    let r =
+      (0.45 + p.hid.inj / 20) *
+      (W.hasTrait(p, 'Injury Prone') ? 1.6 : 1) *
+      (W.hasTrait(p, 'Model Professional') ? 0.85 : 1);
     r *= a <= 21 ? 0.9 : a <= 24 ? 0.95 : a <= 29 ? 1 : 1 + (a - 29) * 0.04;
     if (p.pos === 'GK') r *= 0.55;
     if (p.injRisk) r *= Inj.CAL.reinjury * (p.injRisk.rushed ? 2.4 : 1);

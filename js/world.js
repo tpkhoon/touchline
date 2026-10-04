@@ -311,6 +311,34 @@
     return a;
   }
 
+  // The traits added after the first dozen: what the player is made of (his attributes and hidden character) decides
+  // which of them he can have. Also used once on older saves, which are given them on load.
+  W.rollNewTraits = function (p, t) {
+    const h = p.hid,
+      A = p.attrs,
+      age = W.age(p),
+      add = (name, ok, chance = 1) => ok && !t.includes(name) && U.chance(chance) && t.push(name);
+    add('Engine', A.stamina >= 14, 0.5);
+    add(
+      'Set-Piece Expert',
+      p.pos !== 'GK' && Math.max(...['pen', 'fk', 'cor'].map((k) => FM.Matchday.spScore(p, k))) >= 13.5,
+      0.5,
+    );
+    add('Clutch', h.big >= 12 && A.composure >= 12, 0.5);
+    add('Aerial Threat', A.strength >= 13 && A.positioning >= 10 && ['ST', 'CB'].includes(p.pos), 0.6);
+    add('Hatchet Man', h.temp <= 10 && A.tackling >= 11 && ['DM', 'CB', 'CM', 'FB', 'WB'].includes(p.pos), 0.5);
+    add('Slow Starter', true, 0.04);
+    add('Cup Specialist', h.big >= 13, 0.1);
+    add('Big-Match Nerves', h.big <= 4);
+    add('Model Professional', h.prof >= 17);
+    add('Low Work Ethic', h.prof <= 4);
+    add('Versatile', true, 0.05);
+    add('Mentor', age >= 29 && h.lead >= 13 && h.prof >= 13, 0.5);
+    add('Homesick', h.loy >= 13 && h.amb <= 8, 0.5);
+    add('Needs Game Time', h.temp <= 7 && h.amb >= 13, 0.5);
+    return t;
+  };
+
   function genTraits(p) {
     const h = p.hid,
       t = [];
@@ -326,6 +354,7 @@
     if (U.chance(0.05)) t.push('Derby Specialist');
     if (U.chance(0.06)) t.push('Fair-Weather');
     if (p.attrs.dribbling >= 14 && U.chance(0.25)) t.push('Flair');
+    W.rollNewTraits(p, t);
     return U.shuffle(t).slice(0, 3);
   }
 
@@ -1515,42 +1544,131 @@
     return rounds;
   };
 
-  W.setupSeasonFixtures = function (comp) {
-    comp.table = {};
-    comp.clubs.forEach(
-      (id) =>
-        (comp.table[id] = {
-          p: 0,
-          w: 0,
-          d: 0,
-          l: 0,
-          gf: 0,
-          ga: 0,
-          pts: comp.deductions?.[id] ? -comp.deductions[id] : 0,
-          form: [],
-        }),
+  const blankRow = (pts = 0) => ({ p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts, form: [] });
+
+  // Argentina's format: two zones of equal size (snaked by reputation), each playing its zone once and then a
+  // cross-zone round, twice a year: the Apertura, then the Clausura with the home matches reversed.
+  W.zoneRounds = function (comp) {
+    const ids = comp.clubs.slice().sort((a, b) => FM.clubOf(b).rep - FM.clubOf(a).rep),
+      A = [],
+      B = [];
+    ids.forEach((id, i) => (i % 4 === 0 || i % 4 === 3 ? A : B).push(id));
+    comp.zones = {};
+    A.forEach((id) => (comp.zones[id] = 'A'));
+    B.forEach((id) => (comp.zones[id] = 'B'));
+    const rrA = W.roundRobin(A),
+      rrB = W.roundRobin(B),
+      h = Math.max(rrA.length, rrB.length) / 2;
+    const cross = A.slice(0, Math.min(A.length, B.length)).map((a, i) => (Math.random() < 0.5 ? [a, B[i]] : [B[i], a]));
+    const t1 = [],
+      t2 = [];
+    for (let r = 0; r < h; r++) {
+      t1.push([...(rrA[r] || []), ...(rrB[r] || [])]);
+      t2.push([...(rrA[h + r] || []), ...(rrB[h + r] || [])]);
+    }
+    t1.push(cross);
+    t2.push(cross.map(([x, y]) => [y, x]));
+    return t1.concat(t2);
+  };
+
+  // The rounds played after a league splits (a round per index, the groups' matches side by side)
+  W.splitRounds = (sp) =>
+    Math.max(
+      0,
+      ...sp.groups.map((n, i) =>
+        sp.rounds[i] === 'none' ? 0 : (n % 2 ? n : n - 1) * (sp.rounds[i] === 'double' ? 2 : 1),
+      ),
     );
+
+  W.setupSeasonFixtures = function (comp) {
+    const R = comp.rules || {};
+    comp.table = {};
+    comp.clubs.forEach((id) => (comp.table[id] = blankRow(comp.deductions?.[id] ? -comp.deductions[id] : 0)));
     comp.deductions = {};
-    let rounds = comp.rules && comp.rules.conferences ? W.conferenceRounds(comp) : W.roundRobin(comp.clubs);
-    if (comp.rules && comp.rules.rounds) rounds = rounds.slice(0, comp.rules.rounds); // formats shorter than a double round-robin
+    let rounds = R.conferences ? W.conferenceRounds(comp) : R.zones ? W.zoneRounds(comp) : W.roundRobin(comp.clubs);
+    if (R.rounds) rounds = rounds.slice(0, R.rounds); // formats shorter than a double round-robin
+    comp.groupOf = null;
+    comp.split = null;
+    if (R.split) {
+      // a regular season of `after` rounds (a third time round for the 33-game leagues), then the split
+      while (rounds.length < R.split.after) {
+        const rr = W.roundRobin(comp.clubs);
+        rounds = rounds.concat(rr.slice(0, rr.length / 2));
+      }
+      rounds = rounds.slice(0, R.split.after);
+      for (let i = W.splitRounds(R.split); i > 0; i--) rounds.push([]);
+      comp.split = { done: false };
+    }
     comp.fixtures = rounds.map((rd, r) =>
       rd.map(([h, a]) => ({ id: FM.nextId('f'), comp: comp.id, round: r, h, a, res: null })),
     );
+    // two tournaments a year (Apertura and Clausura): each its own table, the season's table the two together
+    comp.torneos = R.torneos
+      ? R.torneos.map((name) => ({ name, table: Object.fromEntries(comp.clubs.map((id) => [id, blankRow()])) }))
+      : null;
+    comp.torneoHalf = comp.torneos ? Math.ceil(comp.fixtures.length / 2) : 0;
     comp.playoff = null;
-    comp.mls = null;
+    comp.ko = null;
+  };
+
+  // The split: after the regular season the table divides into groups (the top six, the rest ...) that play each other
+  // again; the points carry over, or are halved (rounded up) where the real league does. Final positions go group
+  // by group, whatever the points.
+  W.doSplit = function (c) {
+    const sp = c.rules.split,
+      t = W.sortedTable(c);
+    c.groupOf = {};
+    c.groups = [];
+    let at = 0;
+    sp.groups.forEach((n, g) => {
+      const ids = t.slice(at, at + n).map((r) => r.id);
+      at += n;
+      ids.forEach((id) => (c.groupOf[id] = g));
+      c.groups.push(ids);
+    });
+    if (sp.halve) for (const id of c.clubs) c.table[id].pts = Math.ceil(c.table[id].pts / 2);
+    const per = c.groups.map((ids, g) => {
+      if (sp.rounds[g] === 'none' || ids.length < 2) return [];
+      const rr = W.roundRobin(ids);
+      return sp.rounds[g] === 'double' ? rr : rr.slice(0, rr.length / 2);
+    });
+    for (let j = 0; j < c.fixtures.length - sp.after; j++)
+      c.fixtures[sp.after + j] = per.flatMap((rds) =>
+        (rds[j] || []).map(([h, a]) => ({ id: FM.nextId('f'), comp: c.id, round: sp.after + j, h, a, res: null })),
+      );
+    c.split.done = true;
+    const uc = W.userClub();
+    if (uc && uc.comp === c.id)
+      FM.News.add({
+        type: 'world',
+        title: `${c.name} splits`,
+        body: `${sp.names
+          .map(
+            (n, g) =>
+              `${n}: ${c.groups[g]
+                .slice(0, 3)
+                .map((id) => FM.clubOf(id).short)
+                .join(', ')}${c.groups[g].length > 3 ? '…' : ''}`,
+          )
+          .join(' · ')}.${sp.halve ? ' Points are halved.' : ' Points carry over.'}`,
+        big: false,
+      });
   };
 
   // A table in order: points, then the competition's own tiebreakers (D.TIEBREAK: head-to-head, wins, goal
   // difference, goals scored, in the order its real rules use), then the club's name. comp: a league, or a group
   // ({ table, fixtures, tiebreak }) — head-to-head reads the results from its fixtures.
   W.sortedTable = function (comp) {
+    const grp = (id) => (comp.groupOf && comp.groupOf[id]) || 0; // a split league: group by group
     const rows = Object.entries(comp.table)
       .map(([id, r]) => ({ id, ...r, gd: r.gf - r.ga }))
-      .sort((a, b) => b.pts - a.pts || FM.clubOf(a.id).name.localeCompare(FM.clubOf(b.id).name));
+      .sort(
+        (a, b) => grp(a.id) - grp(b.id) || b.pts - a.pts || FM.clubOf(a.id).name.localeCompare(FM.clubOf(b.id).name),
+      );
     const rule = comp.tiebreak || (comp.rules && comp.rules.tiebreak) || D.TIEBREAK[comp.id] || D.TIEBREAK_DEFAULT;
     for (let i = 0; i < rows.length;) {
       let j = i + 1;
-      while (j < rows.length && rows[j].pts === rows[i].pts) j++;
+      while (j < rows.length && rows[j].pts === rows[i].pts && grp(rows[j].id) === grp(rows[i].id)) j++;
       if (j - i > 1) {
         const run = rows.slice(i, j);
         // head-to-head among the clubs level on points (only worked out when a rule asks for it)
@@ -1594,6 +1712,13 @@
     }
     return rows;
   };
+  // one tournament's table (Apertura / Clausura), and one zone of it (Argentina)
+  W.torneoTable = function (comp, t, zone) {
+    const half = comp.torneoHalf,
+      fx = (t ? comp.fixtures.slice(half) : comp.fixtures.slice(0, half)).flat();
+    const rows = W.sortedTable({ id: comp.id, rules: comp.rules, table: comp.torneos[t].table, fixtures: [fx] });
+    return zone ? rows.filter((r) => comp.zones && comp.zones[r.id] === zone) : rows;
+  };
   W.position = (clubId) => {
     const c = FM.S.clubs[clubId];
     return W.sortedTable(FM.S.comps[c.comp]).findIndex((r) => r.id === clubId) + 1;
@@ -1616,7 +1741,14 @@
   W.roundOn = (c, r) => (c.onDay ? (c.onDay[r] ?? -1) : r);
   W.roundFixtures = (c, r) => {
     const k = W.roundOn(c, r);
-    return k >= 0 ? c.fixtures[k] || null : null;
+    if (k < 0) return null;
+    // a split league makes its post-split rounds once every regular-season match is in
+    const sp = c.rules.split;
+    if (sp && c.split && !c.split.done && k >= sp.after) {
+      if (c.fixtures.slice(0, sp.after).every((rd) => rd.every((f) => f.res))) W.doSplit(c);
+      else return [];
+    }
+    return c.fixtures[k] || null;
   };
   W.roundsBefore = (c, r) => {
     if (!c.onDay) return Math.min(r, c.fixtures.length);
@@ -1627,6 +1759,9 @@
 
   // League days with midweek cup, continental, Club World Cup and international days slotted in between.
   // Two-legged knockouts add a second leg day; tournament summers append the finals at the end.
+  const KO_STAGES = ['M1', 'M2', 'M3', 'M4'];
+  // the kind of title playoff a league has: 'mls', 'finals6', 'liguilla' or 'zones' (none: null)
+  W.koType = (c) => (c.rules.playoffs && c.rules.playoffs.type) || (c.rules.mls ? 'mls' : null);
   W.buildCalendar = function () {
     const S = FM.S,
       rounds = Math.max(...W.leagues().map((c) => c.fixtures.length));
@@ -1667,10 +1802,15 @@
       RC[r] = true;
     }
     const legs = !!S.rules.twoLegs;
+    const mid = W.leagues().filter((c) => W.koType(c) && c.torneos);
     const cal = [];
     for (let i = 0; i < D.PRESEASON_DAYS; i++) cal.push({ type: 'pre', idx: i });
     for (let r = 0; r < rounds; r++) {
       cal.push({ type: 'league', round: r });
+      // the first tournament's knockouts follow its last round
+      for (const c of mid)
+        if (c.onDay[r] === c.torneoHalf - 1)
+          for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 0 });
       let st = CC[r];
       if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF)1$/, '$1');
       if (st && W.continentals().length) cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: st });
@@ -1683,14 +1823,12 @@
       if (RC[r]) cal.push({ type: 'cup', regional: true, comps: FM.Regional.regionals().map((c) => c.id) });
       if (INTL[r] && S.nteams) INTL[r].forEach((tag) => cal.push({ type: 'intl', tag }));
     }
-    // MLS-style conference playoffs: Round One, Conference Semifinals, Conference Finals, then the cup final
-    if (W.leagues().some((c) => c.rules.mls))
-      cal.push(
-        { type: 'playoff', stage: 'M1' },
-        { type: 'playoff', stage: 'M2' },
-        { type: 'playoff', stage: 'M3' },
-        { type: 'playoff', stage: 'M4' },
-      );
+    // Title playoffs (the MLS Cup, A-League finals, the Liguilla, Argentina's knockouts): four days, the last tournament's at the
+    // end of the season (a league with one tournament uses days with no tournament set)
+    if (W.leagues().some((c) => W.koType(c) && !c.torneos))
+      for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m });
+    if (W.leagues().some((c) => W.koType(c) && c.torneos))
+      for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 1 });
     if (legs)
       cal.push(
         { type: 'playoff', stage: 'SF1' },
@@ -1721,7 +1859,8 @@
       retired: [],
       wbPos: 2, // wing-backs are a position from the start (older saves convert theirs on load)
       wmPos: 1, // so are wide midfielders (LM/RM)
-      compRules: 2, // and each league's real promotion, relegation and play-off rules
+      traitsV2: 1,
+      compRules: 3, // and each league's real promotion, relegation and play-off rules
       clubAbbr: 2, // clubs show their real abbreviations and nicknames
       rules: {
         win: opts.win || 3,

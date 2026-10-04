@@ -25,6 +25,7 @@
     "docs:sync-status": "node tools/docsync.mjs",
     "docs:synced": "node tools/docsync.mjs --mark",
     "dev-tools": "node tools/devserver.mjs",
+    "names": "node tools/namegen.mjs",
     "test:wonderkids": "node tools/wonderkids.mjs --seasons 10",
     "lint": "eslint .",
     "format": "prettier --write .",
