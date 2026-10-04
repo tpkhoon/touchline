@@ -800,27 +800,33 @@
       : '';
     return `<div class="card flat" style="padding:8px 10px;margin-bottom:8px">
       ${row('pos', [['any', 'All'], ...D.POS.map((x) => [x, x])])}
-      ${row('age', [
-        ['any', 'Any age'],
-        ['u19', '≤19'],
-        ['u21', '≤21'],
-        ['u23', '≤23'],
-        ['prime', '24–29'],
-        ['vet', '30+'],
-      ])}
-      ${row('level', [
-        ['any', 'Any level'],
-        ['starter', 'Would start for us'],
-        ['squad', 'Squad player'],
-        ['prospect', 'Prospect'],
-      ])}
-      ${row('price', [
-        ['any', 'Any fee'],
-        ['budget', 'Within budget'],
-        ['m1', `≤ ${U.money(1e6)}`],
-        ['m5', `≤ ${U.money(5e6)}`],
-        ['m20', `≤ ${U.money(2e7)}`],
-      ])}
+      ${
+        f.more
+          ? [
+              row('age', [
+                ['any', 'Any age'],
+                ['u19', '≤19'],
+                ['u21', '≤21'],
+                ['u23', '≤23'],
+                ['prime', '24–29'],
+                ['vet', '30+'],
+              ]),
+              row('level', [
+                ['any', 'Any level'],
+                ['starter', 'Would start for us'],
+                ['squad', 'Squad player'],
+                ['prospect', 'Prospect'],
+              ]),
+              row('price', [
+                ['any', 'Any fee'],
+                ['budget', 'Within budget'],
+                ['m1', `≤ ${U.money(1e6)}`],
+                ['m5', `≤ ${U.money(5e6)}`],
+                ['m20', `≤ ${U.money(2e7)}`],
+              ]),
+            ].join('')
+          : ''
+      }
       ${more}
       <div class="row" style="margin-top:6px;gap:6px"><button class="btn sm" data-act="sfMore">${f.more ? 'Fewer filters ▴' : 'More filters ▾'}</button><span class="grow"></span>${n ? `<button class="btn sm" data-act="sfReset">Clear ${n} filter${n === 1 ? '' : 's'}</button>` : ''}</div></div>`;
   }
@@ -910,7 +916,7 @@
     // the cheap filters first, so the scouting estimates are worked out only for what's left
     ps = sfApply(ps).sort((a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value);
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
-      ${chipRow('q', 'region', q.region, [['any', 'Everywhere'], ...Object.entries(D.REGIONS)])}
+      <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
       ${sfPanel()}
       <div class="card flat list" style="padding:4px 12px">${
         ps
