@@ -1227,5 +1227,13 @@ export const isSimpleClub = (t) => !/[0-9&]/.test(t) && t.replace('{c}', 'X').sp
 // Fictional league sponsors ("Aurum Top Division")
 export const SPONSORS = words(
   `Aurum Nordbank Kaizen Vantage Meridian Helix Orbis Solara Tandem Zenith Polaris Cobalt Argent Ironwood Lumen Quanta
-  Verity Summit Halcyon Brightway Northgate Calder Redwater Evergreen Pinnacle Harbor Crestline Sable Monarch Beacon`,
+  Verity Summit Halcyon Brightway Northgate Calder Redwater Evergreen Pinnacle Harbor Crestline Sable Monarch Beacon
+  Altura Bluepeak Corvane Dunmore Elmstead Fairhaven Glenrock Hartwell Ivorygate Juniper Kestrel Lakeshore Marlowe
+  Northwind Oakridge Parkhurst Quillon Ravenscar Silverlake Thornfield Umberton Valemont Whitcombe Yarrow Zephyr
+  Ashgrove Bramwell Cinder Driftwood Eastgate Foxmoor Granite Highmark Ironbridge Jadestone Kingsley Lionheart
+  Mapleton Nightjar Orchard Primrose Quarry Riverstone Stonebridge Tidewater Upland Vanguard Westbrook Alderwood
+  Birchfield Copperfield Dovedale Emberline Fernhill Goldcrest Heathmoor Inkwell Jasper Kiln Larchmont Millstone
+  Nettlefield Opaline Pennant Quickwater Rosewood Saltmarsh Tarnside Urbane Verdant Wrenfield Axiom Borealis Cascade
+  Deltaline Equinox Fulcrum Gravitas Horizon Insignia Keystone Landmark Momentum Nexus Optima Paragon Quorum
+  Radiant Sterling Trident Unity Vertex Windward Xenith Yonder Zinc Apex Banner Crown Dynasty Empire Frontier`,
 );

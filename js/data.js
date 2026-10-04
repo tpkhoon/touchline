@@ -1802,7 +1802,7 @@
     {
       id: 'ES2',
       nat: 'ESP',
-      name: 'Orbis Liga de Plata',
+      name: 'Sable Liga de Plata',
       short: 'ES2',
       tier: 2,
       sim: 'light',
@@ -1824,7 +1824,7 @@
     {
       id: 'DE1',
       nat: 'GER',
-      name: 'Calder Meisterliga',
+      name: 'Opaline Meisterliga',
       short: 'DE1',
       tier: 1,
       sim: 'full',
@@ -1835,7 +1835,7 @@
     {
       id: 'DE2',
       nat: 'GER',
-      name: 'Lumen Aufstiegsliga',
+      name: 'Jadestone Aufstiegsliga',
       short: 'DE2',
       tier: 2,
       sim: 'light',
@@ -1879,7 +1879,7 @@
     {
       id: 'BR1',
       nat: 'BRA',
-      name: 'Monarch Série Nacional',
+      name: 'Yonder Série Nacional',
       short: 'BR1',
       tier: 1,
       sim: 'full',
@@ -1890,7 +1890,7 @@
     {
       id: 'IT1',
       nat: 'ITA',
-      name: 'Northgate Lega Nazionale',
+      name: 'Nettlefield Lega Nazionale',
       short: 'IT1',
       tier: 1,
       sim: 'light',
@@ -1912,7 +1912,7 @@
     {
       id: 'PT1',
       nat: 'POR',
-      name: 'Ironwood Superliga',
+      name: 'Lionheart Superliga',
       short: 'PT1',
       tier: 1,
       sim: 'light',
@@ -1934,7 +1934,7 @@
     {
       id: 'AR1',
       nat: 'ARG',
-      name: 'Harbor Superliga',
+      name: 'Momentum Superliga',
       short: 'AR1',
       tier: 1,
       sim: 'light',
@@ -1945,7 +1945,7 @@
     {
       id: 'US1',
       nat: 'USA',
-      name: 'Sable Super League',
+      name: 'Zinc Super League',
       short: 'US1',
       tier: 1,
       sim: 'light',
@@ -1978,7 +1978,7 @@
     {
       id: 'KR1',
       nat: 'KOR',
-      name: 'Nordbank Premier League',
+      name: 'Polaris Premier League',
       short: 'KR1',
       tier: 1,
       sim: 'minimal',
@@ -2022,7 +2022,7 @@
     {
       id: 'RS1',
       nat: 'SRB',
-      name: 'Meridian Prva Liga',
+      name: 'Brightway Prva Liga',
       short: 'RS1',
       tier: 1,
       sim: 'minimal',
@@ -2033,7 +2033,7 @@
     {
       id: 'BE1',
       nat: 'BEL',
-      name: 'Summit Eerste Klasse',
+      name: 'Birchfield Eerste Klasse',
       short: 'BE1',
       tier: 1,
       sim: 'minimal',
@@ -2066,7 +2066,7 @@
     {
       id: 'GR1',
       nat: 'GRE',
-      name: 'Cobalt Alfa Liga',
+      name: 'Bramwell Alfa Liga',
       short: 'GR1',
       tier: 1,
       sim: 'minimal',
@@ -2088,7 +2088,7 @@
     {
       id: 'PL1',
       nat: 'POL',
-      name: 'Vantage Liga Główna',
+      name: 'Halcyon Liga Główna',
       short: 'PL1',
       tier: 1,
       sim: 'minimal',
@@ -2099,7 +2099,7 @@
     {
       id: 'DK1',
       nat: 'DEN',
-      name: 'Polaris Topliga',
+      name: 'Thornfield Topliga',
       short: 'DK1',
       tier: 1,
       sim: 'minimal',
@@ -2110,7 +2110,7 @@
     {
       id: 'AT1',
       nat: 'AUT',
-      name: 'Quanta Bundesstaffel',
+      name: 'Kingsley Bundesstaffel',
       short: 'AT1',
       tier: 1,
       sim: 'minimal',
@@ -2154,7 +2154,7 @@
     {
       id: 'HU1',
       nat: 'HUN',
-      name: 'Tandem Első Osztály',
+      name: 'Marlowe Első Osztály',
       short: 'HU1',
       tier: 1,
       sim: 'minimal',
@@ -2165,7 +2165,7 @@
     {
       id: 'IE1',
       nat: 'IRL',
-      name: 'Crestline Premier Union',
+      name: 'Quorum Premier Union',
       short: 'IE1',
       tier: 1,
       sim: 'minimal',

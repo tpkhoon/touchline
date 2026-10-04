@@ -12537,7 +12537,7 @@
   "ES2": {
    "nat": "ESP",
    "tier": 2,
-   "name": "Orbis Liga de Plata",
+   "name": "Sable Liga de Plata",
    "short": "ES2"
   },
   "ES3": {
@@ -12549,13 +12549,13 @@
   "DE1": {
    "nat": "GER",
    "tier": 1,
-   "name": "Calder Meisterliga",
+   "name": "Opaline Meisterliga",
    "short": "DE1"
   },
   "DE2": {
    "nat": "GER",
    "tier": 2,
-   "name": "Lumen Aufstiegsliga",
+   "name": "Jadestone Aufstiegsliga",
    "short": "DE2"
   },
   "DE3": {
@@ -12579,13 +12579,13 @@
   "BR1": {
    "nat": "BRA",
    "tier": 1,
-   "name": "Monarch Série Nacional",
+   "name": "Yonder Série Nacional",
    "short": "BR1"
   },
   "IT1": {
    "nat": "ITA",
    "tier": 1,
-   "name": "Northgate Lega Nazionale",
+   "name": "Nettlefield Lega Nazionale",
    "short": "IT1"
   },
   "IT2": {
@@ -12597,7 +12597,7 @@
   "PT1": {
    "nat": "POR",
    "tier": 1,
-   "name": "Ironwood Superliga",
+   "name": "Lionheart Superliga",
    "short": "PT1"
   },
   "NL1": {
@@ -12609,13 +12609,13 @@
   "AR1": {
    "nat": "ARG",
    "tier": 1,
-   "name": "Harbor Superliga",
+   "name": "Momentum Superliga",
    "short": "AR1"
   },
   "US1": {
    "nat": "USA",
    "tier": 1,
-   "name": "Sable Super League",
+   "name": "Zinc Super League",
    "short": "US1"
   },
   "JP1": {
@@ -12633,7 +12633,7 @@
   "KR1": {
    "nat": "KOR",
    "tier": 1,
-   "name": "Nordbank Premier League",
+   "name": "Polaris Premier League",
    "short": "KR1"
   },
   "TH1": {
@@ -12657,13 +12657,13 @@
   "RS1": {
    "nat": "SRB",
    "tier": 1,
-   "name": "Meridian Prva Liga",
+   "name": "Brightway Prva Liga",
    "short": "RS1"
   },
   "BE1": {
    "nat": "BEL",
    "tier": 1,
-   "name": "Summit Eerste Klasse",
+   "name": "Birchfield Eerste Klasse",
    "short": "BE1"
   },
   "TR1": {
@@ -12681,7 +12681,7 @@
   "GR1": {
    "nat": "GRE",
    "tier": 1,
-   "name": "Cobalt Alfa Liga",
+   "name": "Bramwell Alfa Liga",
    "short": "GR1"
   },
   "NO1": {
@@ -12693,19 +12693,19 @@
   "PL1": {
    "nat": "POL",
    "tier": 1,
-   "name": "Vantage Liga Główna",
+   "name": "Halcyon Liga Główna",
    "short": "PL1"
   },
   "DK1": {
    "nat": "DEN",
    "tier": 1,
-   "name": "Polaris Topliga",
+   "name": "Thornfield Topliga",
    "short": "DK1"
   },
   "AT1": {
    "nat": "AUT",
    "tier": 1,
-   "name": "Quanta Bundesstaffel",
+   "name": "Kingsley Bundesstaffel",
    "short": "AT1"
   },
   "CH1": {
@@ -12729,13 +12729,13 @@
   "HU1": {
    "nat": "HUN",
    "tier": 1,
-   "name": "Tandem Első Osztály",
+   "name": "Marlowe Első Osztály",
    "short": "HU1"
   },
   "IE1": {
    "nat": "IRL",
    "tier": 1,
-   "name": "Crestline Premier Union",
+   "name": "Quorum Premier Union",
    "short": "IE1"
   },
   "WA1": {
