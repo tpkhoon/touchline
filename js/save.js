@@ -42,6 +42,18 @@
       for (const k in defaults) if (u[k] === undefined) u[k] = defaults[k];
       if (u.tactic && u.tactic.fam == null) u.tactic.fam = 55;
     },
+    // v6 → v7 (measured ability): the rating counts what the match engine rewards (D.RATE_W), so every player's ability,
+    // and his market value with it, is worked out again from the same attributes
+    6(s) {
+      const W = FM.W;
+      if (!W || !s.players) return;
+      for (const p of Object.values(s.players)) {
+        if (!p.attrs) continue;
+        p.ca = W.calcCA(p);
+        if (p.pa < p.ca) p.pa = p.ca;
+        p.value = W.value(p);
+      }
+    },
     // v5 → v6 (long saves): slimmer retired-player records (no duplicated spells, history kept only for the greats)
     5(s) {
       s.retired = (s.retired || []).map((r) => {

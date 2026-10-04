@@ -13,14 +13,15 @@
   W.calcCA = function (p, pos = p.pos) {
     // a natural wing-back is judged on wing-back weights; anyone else in a wing-back slot as a full-back (the slot
     // asks the same of him, and the match engine is calibrated on it)
-    const w = D.POS_W[pos === 'WB' && p.pos !== 'WB' ? 'FB' : pos];
+    const key = pos === 'WB' && p.pos !== 'WB' ? 'FB' : pos,
+      w = D.RATE_W[key];
     let s = 0,
       t = 0;
     for (const k in w) {
       s += p.attrs[k] * w[k];
       t += w[k];
     }
-    return Math.round((s / t) * 5);
+    return Math.round((s / t) * 5 + (D.RATE_OFF[key] || 0));
   };
   W.refresh = function (p) {
     p.ca = W.calcCA(p);

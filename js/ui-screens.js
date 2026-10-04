@@ -1120,7 +1120,7 @@
     const [ml, me] = W.moraleLabel(p.morale);
     const avg = p.season.apps ? (p.season.rsum / p.season.apps).toFixed(2) : '—';
     // how much his position asks of an attribute: a key one (its weight is high), one it barely uses, or none at all
-    const relW = D.POS_W[p.pos] || {},
+    const relW = D.RATE_W[p.pos] || {},
       wMax = Math.max(...Object.values(relW)),
       rel = (k) =>
         (relW[k] || 0) >= wMax * 0.6 ? 'key' : (relW[k] || 0) === 0 && !(k === 'stamina' && p.pos !== 'GK') ? 'na' : ''; // (stamina tires every outfield player)

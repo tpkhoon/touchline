@@ -64,8 +64,9 @@
       pct[k] = Math.round(((less + eq / 2) / Math.max(1, a.length)) * 100);
     }
     // best and worst among the stats his position asks for
-    const rows = Object.keys(D.POS_W[p.pos])
-      .map((k) => ({ k, pct: pct[k] }))
+    const rows = Object.entries(D.RATE_W[p.pos])
+      .filter(([, wt]) => wt >= 1.5) // (what his position's rating leans on)
+      .map(([k]) => ({ k, pct: pct[k] }))
       .sort((a, b) => b.pct - a.pct);
     return {
       scope: g.scope,
