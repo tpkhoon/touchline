@@ -7,6 +7,27 @@ const rep = (list, n) => Array.from({ length: n }, () => list).flat(); // (weigh
 const VOWELS = 'aeiouyáéíóúàèìòùâêîôûäöüåæøãõ';
 const isVowel = (c) => VOWELS.includes((c || '').toLowerCase());
 
+// Words no generated name may contain, in the languages the library writes in (matched on the name with accents
+// and spaces removed, so a rude word split across two parts is caught too). The short ones only count as a whole
+// word, so real surnames such as Dickens or Cocker stay.
+const RUDE_PART =
+  `cabron cabrona puta puto putas putos mierda coño joder pendej culo culos polla pollas verga chinga marica maricon
+  zorra gilipoll hijoput cojon capullo merde putain salope connard encule foutre bordel batard nique scheiss scheisse
+  fotze wichser arsch hure schwuchtel hurensohn votze cazzo merda vaffa troia stronz puttana vaffanculo minchia
+  fuck shit cunt cunts twat wank bollock bastard piss slut whore nigg porra caralho buceta viado piroca
+  kurwa pierdol chuj jebac pizda sikmek orospu amcik yarrak kokot hovno`.split(/\s+/);
+const RUDE_WORD = new Set('dick dicks cock cocks fag fags tit tits ass arse anus sex pene bite con cul'.split(' '));
+const plain = (t) =>
+  String(t)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+export const isRude = (text) => {
+  const t = plain(text);
+  if (RUDE_PART.some((w) => t.replace(/[^a-z]/g, '').includes(w))) return true;
+  return t.split(/[^a-z]+/).some((w) => RUDE_WORD.has(w));
+};
+
 export const LANG = {
   eng: {
     nations: 'ENG SCO WAL IRL AUS USA RSA GHA NGA',

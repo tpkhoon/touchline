@@ -158,8 +158,8 @@
       me = FM.clubOf(home ? fx.h : fx.a),
       opp = FM.clubOf(home ? fx.a : fx.h);
     const str = (t) => U.avg(W.pickXI(t.id, W.isUser(t.id) ? S.user.tactic : t.tactic).xi.filter(Boolean), (p) => p.ca);
-    const pw = U.clamp(0.36 + (str(me) - str(opp)) / 25 + (fx.neutral ? 0 : home ? 0.06 : -0.04), 0.08, 0.85);
     const derby = me.rival === opp.id;
+    const pw = FM.Season.matchOdds(me, opp, home, str(me), str(opp), fx.neutral, derby);
     const comp = S.comps[fx.comp];
     const big = derby || !!fx.ko || !!fx.first || !!fx.intl || opp.rep >= 80 || (comp && comp.type === 'continental');
     return { pw, fav: pw >= 0.5, under: pw < 0.33, big, derby, fam: (S.user.tactic && S.user.tactic.fam) || 55 };

@@ -342,7 +342,7 @@
       FM.News.add({
         type: 'board',
         title: 'Ultimatum met',
-        body: `${got} points from ${played} games. The board are satisfied — for now.`,
+        body: `${U.pts(got)} from ${played} game${played === 1 ? '' : 's'}. The board are satisfied — for now.`,
         clubId: c.id,
       });
       return false;

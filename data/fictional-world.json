@@ -122,7 +122,7 @@
     "The Stratdale Stadium",
     62850
    ],
-   "short": "CON",
+   "short": "QUA",
    "nick": "Foresters",
    "founded": 1894
   },
@@ -194,7 +194,7 @@
     "Chelington Ground",
     62500
    ],
-   "short": "CHEL",
+   "short": "FIL",
    "nick": "Maroons",
    "founded": 1882
   },
@@ -212,7 +212,7 @@
     "Stratcaster Park",
     25486
    ],
-   "short": "CHE2",
+   "short": "BRA",
    "nick": "Herons",
    "founded": 1865
   },
@@ -248,7 +248,7 @@
     "Sutcaster Road",
     29589
    ],
-   "short": "CHE3",
+   "short": "TAD",
    "nick": "Whites",
    "founded": 1879
   },
@@ -266,7 +266,7 @@
     "Sutwich Park",
     17250
    ],
-   "short": "CHE4",
+   "short": "TET",
    "nick": "Rams",
    "founded": 1966
   },
@@ -392,7 +392,7 @@
     "Lewcastle Park",
     32384
    ],
-   "short": "TET",
+   "short": "TEN",
    "nick": "Reds",
    "founded": 1983
   },
@@ -428,7 +428,7 @@
     "North Litworth Ground",
     32050
    ],
-   "short": "NOR",
+   "short": "LIT",
    "nick": "Reds",
    "founded": 1955
   },
@@ -572,7 +572,7 @@
     "Holney Lane",
     30089
    ],
-   "short": "SOU",
+   "short": "BEX",
    "nick": "Reds",
    "founded": 1867
   },
@@ -644,7 +644,7 @@
     "Reafield Green",
     39732
    ],
-   "short": "NOH",
+   "short": "LIH",
    "nick": "Foresters",
    "founded": 1904
   },
@@ -662,7 +662,7 @@
     "Holbridge Road",
     31367
    ],
-   "short": "RODW",
+   "short": "ROU",
    "nick": "Blues",
    "founded": 1888
   },
@@ -680,7 +680,7 @@
     "Becksea Field",
     27000
    ],
-   "short": "REYS",
+   "short": "REC",
    "nick": "Reds",
    "founded": 1956
   },
@@ -698,7 +698,7 @@
     "Chelington Park",
     18439
    ],
-   "short": "CHE5",
+   "short": "TOR",
    "nick": "Lions",
    "founded": 1875
   },
@@ -734,7 +734,7 @@
     "Redminster Lane",
     20146
    ],
-   "short": "CHE6",
+   "short": "HAT",
    "nick": "Navy",
    "founded": 1881
   },
@@ -770,7 +770,7 @@
     "The Farnbury Stadium",
     27111
    ],
-   "short": "CHE7",
+   "short": "EDE",
    "nick": "Foresters",
    "founded": 1888
   },
@@ -788,7 +788,7 @@
     "Sudhaven Lane",
     12500
    ],
-   "short": "FIL",
+   "short": "FIE",
    "nick": "Ironmen",
    "founded": 1920
   },
@@ -860,7 +860,7 @@
     "Dermouth Park",
     28723
    ],
-   "short": "BEX",
+   "short": "BED",
    "nick": "Whites",
    "founded": 1904
   },
@@ -1076,7 +1076,7 @@
     "Milbrook Park",
     9271
    ],
-   "short": "CHE8",
+   "short": "FAL",
    "nick": "Spartans",
    "founded": 1883
   },
@@ -1148,7 +1148,7 @@
     "Branham Park",
     15036
    ],
-   "short": "SOL",
+   "short": "BEL",
    "nick": "Falcons",
    "founded": 1900
   },
@@ -1166,7 +1166,7 @@
     "Kesdon Field",
     9215
    ],
-   "short": "CHE9",
+   "short": "DAR",
    "nick": "Foresters",
    "founded": 1918
   },
@@ -1184,7 +1184,7 @@
     "Abingwich Road",
     7800
    ],
-   "short": "DAR",
+   "short": "DAE",
    "nick": "Drovers",
    "founded": 1906
   },
@@ -1256,7 +1256,7 @@
     "Winley Park",
     6500
    ],
-   "short": "CHE10",
+   "short": "CAN",
    "nick": "Oranges",
    "founded": 1950
   },
@@ -1292,7 +1292,7 @@
     "Calbridge Road",
     9832
    ],
-   "short": "REY2",
+   "short": "REU",
    "nick": "Blues",
    "founded": 1866
   },
@@ -1310,7 +1310,7 @@
     "Thirford Lane",
     5000
    ],
-   "short": "CHE11",
+   "short": "WIT",
    "nick": "Rams",
    "founded": 1887
   },
@@ -1328,7 +1328,7 @@
     "Hartington Lane",
     8127
    ],
-   "short": "NEW",
+   "short": "BUR",
    "nick": "Falcons",
    "founded": 1945
   },
@@ -1346,7 +1346,7 @@
     "Mansbrook Green",
     7066
    ],
-   "short": "BED",
+   "short": "BEE",
    "nick": "Reds",
    "founded": 1946
   },
@@ -1382,7 +1382,7 @@
     "Witpool Green",
     10105
    ],
-   "short": "SAI",
+   "short": "BUX",
    "nick": "Ironmen",
    "founded": 1880
   },
@@ -1436,7 +1436,7 @@
     "Petley Park",
     5327
    ],
-   "short": "SOE",
+   "short": "LAE",
    "nick": "Eagles",
    "founded": 1921
   },
@@ -1580,7 +1580,7 @@
     "Sandington Road",
     5108
    ],
-   "short": "OLD",
+   "short": "YEO",
    "nick": "Reds",
    "founded": 1910
   },
@@ -1616,7 +1616,7 @@
     "The Exsey Stadium",
     15728
    ],
-   "short": "BUR",
+   "short": "BUN",
    "nick": "Reds",
    "founded": 1867
   },
@@ -1886,7 +1886,7 @@
     "Estadio Segovero",
     26020
    ],
-   "short": "PEÑ",
+   "short": "PEN",
    "nick": "Rojos",
    "founded": 1894
   },
@@ -1904,7 +1904,7 @@
     "Estadio Municipal de Cervar",
     40000
    ],
-   "short": "CERV",
+   "short": "CEC",
    "nick": "Azules",
    "founded": 1872
   },
@@ -1922,7 +1922,7 @@
     "Ciudad Deportiva Olmador",
     14708
    ],
-   "short": "OOR",
+   "short": "SAL",
    "nick": "Mineros",
    "founded": 1936
   },
@@ -1958,7 +1958,7 @@
     "Campo de Villa Roblón",
     19840
    ],
-   "short": "VIL",
+   "short": "ROB",
    "nick": "Azules",
    "founded": 1913
   },
@@ -1994,7 +1994,7 @@
     "Estadio La Cordana",
     26354
    ],
-   "short": "MOS",
+   "short": "MOE",
    "nick": "Rojos",
    "founded": 1908
   },
@@ -2012,7 +2012,7 @@
     "Campo de Salamador",
     31388
    ],
-   "short": "SAL",
+   "short": "SAR",
    "nick": "Blancos",
    "founded": 1933
   },
@@ -2030,7 +2030,7 @@
     "Campo de San de Piedador",
     32660
    ],
-   "short": "SAN",
+   "short": "PIE",
    "nick": "Azules",
    "founded": 1889
   },
@@ -2066,7 +2066,7 @@
     "Ciudad Deportiva Benavete",
     27618
    ],
-   "short": "BEE",
+   "short": "BTE",
    "nick": "Granates",
    "founded": 1902
   },
@@ -2120,7 +2120,7 @@
     "Campo de La de Aranjero",
     33608
    ],
-   "short": "LAD",
+   "short": "LAA",
    "nick": "Halcones",
    "founded": 1887
   },
@@ -2246,7 +2246,7 @@
     "Estadio Salamena",
     15500
    ],
-   "short": "MÓN",
+   "short": "MOM",
    "nick": "Blancos",
    "founded": 1887
   },
@@ -2264,7 +2264,7 @@
     "Nuevo Estadio Torrero",
     3306
    ],
-   "short": "TOR",
+   "short": "TOO",
    "nick": "Azules",
    "founded": 1896
   },
@@ -2300,7 +2300,7 @@
     "Estadio La Talador",
     17524
    ],
-   "short": "SEGO",
+   "short": "SEB",
    "nick": "Blancos",
    "founded": 1948
   },
@@ -2615,7 +2615,7 @@
     "Estadio La Hinojares",
     15105
    ],
-   "short": "VIA",
+   "short": "MAY",
    "nick": "Negros",
    "founded": 1897
   },
@@ -2759,7 +2759,7 @@
     "Estadio Municipal de Moralete",
     4000
    ],
-   "short": "MOE",
+   "short": "MTE",
    "nick": "Negros",
    "founded": 1876
   },
@@ -2975,7 +2975,7 @@
     "Steinbach-Stadion",
     50000
    ],
-   "short": "BRA",
+   "short": "BRN",
    "nick": "Weißen",
    "founded": 1895
   },
@@ -3001,7 +3001,7 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "FC Unter Furtbach",
+    "Germania Unter Furtbach",
     "M05",
     "Unter Furtbach",
     "#C3141E",
@@ -3011,7 +3011,7 @@
     "Waldstadion Unter Furtbach",
     33305
    ],
-   "short": "UNH",
+   "short": "UNR",
    "nick": "Roten",
    "founded": 1879
   },
@@ -3047,7 +3047,7 @@
     "Mühlfeld-Arena",
     30150
    ],
-   "short": "MÜH",
+   "short": "MUH",
    "nick": "Blauen",
    "founded": 1989
   },
@@ -3119,7 +3119,7 @@
     "Elstein-Stadion",
     74475
    ],
-   "short": "WAG",
+   "short": "WAN",
    "nick": "Falken",
    "founded": 1882
   },
@@ -3209,7 +3209,7 @@
     "Sportpark Altheim",
     49000
    ],
-   "short": "ALTW",
+   "short": "ALS",
    "nick": "Grünen",
    "founded": 1867
   },
@@ -3299,7 +3299,7 @@
     "Kalburg-Stadion",
     17810
    ],
-   "short": "BRN",
+   "short": "BIN",
    "nick": "Blauen",
    "founded": 1942
   },
@@ -3482,7 +3482,7 @@
     6350,
     "TSG"
    ],
-   "short": "MÜHB",
+   "short": "MUHB",
    "nick": "",
    "founded": 2008
   },
@@ -3572,7 +3572,7 @@
     "Stadion am Kirchtal",
     8343
    ],
-   "short": "BRAN",
+   "short": "BRB",
    "nick": "Roten",
    "founded": 1888
   },
@@ -4184,7 +4184,7 @@
     "Stade Fonlac",
     18378
    ],
-   "short": "BES",
+   "short": "BEU",
    "nick": "Rouges",
    "founded": 1921
   },
@@ -4220,7 +4220,7 @@
     "Stade Municipal de Château-Clermont",
     15660
    ],
-   "short": "CHÂ",
+   "short": "CHU",
    "nick": "Mineurs",
    "founded": 1912
   },
@@ -4238,7 +4238,7 @@
     "Stade de la Lavières",
     18467
    ],
-   "short": "CHAO",
+   "short": "CON",
    "nick": "Oranges",
    "founded": 1954
   },
@@ -4256,7 +4256,7 @@
     "Stade de la Beauon",
     20068
    ],
-   "short": "BEU",
+   "short": "BAU",
    "nick": "Lynx",
    "founded": 1908
   },
@@ -4382,7 +4382,7 @@
     "Stade Municipal de Lanange",
     25064
    ],
-   "short": "LAE",
+   "short": "LGE",
    "nick": "Loups",
    "founded": 1883
   },
@@ -4400,7 +4400,7 @@
     "Stade Clerange",
     20087
    ],
-   "short": "SAE",
+   "short": "SAI",
    "nick": "Blancs",
    "founded": 1907
   },
@@ -4418,7 +4418,7 @@
     "Complexe Paulac",
     9534
    ],
-   "short": "SAR",
+   "short": "SAS",
    "nick": "Rouges",
    "founded": 1952
   },
@@ -4508,7 +4508,7 @@
     "Arena Guarama",
     66795
    ],
-   "short": "GUAR",
+   "short": "GIA",
    "nick": "Alvinegros",
    "founded": 1885
   },
@@ -4598,7 +4598,7 @@
     "Estádio Nhaniba",
     78838
    ],
-   "short": "IPE",
+   "short": "MAA",
    "nick": "Leões",
    "founded": 1895
   },
@@ -4634,7 +4634,7 @@
     "Estádio Novo Pindoma",
     21880
    ],
-   "short": "IBIP",
+   "short": "VAS",
    "nick": "Alvinegros",
    "founded": 1905
   },
@@ -4814,7 +4814,7 @@
     "Stadio Trenezia",
     75817
    ],
-   "short": "PIE",
+   "short": "PIO",
    "nick": "Azzurri",
    "founded": 1891
   },
@@ -4850,7 +4850,7 @@
     "Stadio Serale",
     54726
    ],
-   "short": "MAA",
+   "short": "MRA",
    "nick": "Celesti",
    "founded": 1870
   },
@@ -4868,7 +4868,7 @@
     "Stadio Nuovo Ponola",
     75817
    ],
-   "short": "PIO",
+   "short": "PTO",
    "nick": "Cervi",
    "founded": 1891
   },
@@ -4904,7 +4904,7 @@
     "Stadio Civico di Belago",
     70634
    ],
-   "short": "BEL",
+   "short": "BEO",
    "nick": "Granata",
    "founded": 1897
   },
@@ -4922,7 +4922,7 @@
     "Stadio Monate",
     70634
    ],
-   "short": "BEO",
+   "short": "BGO",
    "nick": "Celesti",
    "founded": 1900
   },
@@ -4976,7 +4976,7 @@
     "Stadio Comunale di Vilezia",
     13602
    ],
-   "short": "VILE",
+   "short": "VIL",
    "nick": "Azzurri",
    "founded": 1909
   },
@@ -5174,7 +5174,7 @@
     "Stadio Nuovo Sassara",
     16917
    ],
-   "short": "SAS",
+   "short": "STO",
    "nick": "Rossi",
    "founded": 1910
   },
@@ -5210,7 +5210,7 @@
     "Arena Frascia",
     16284
    ],
-   "short": "TOO",
+   "short": "TNO",
    "nick": "Tori",
    "founded": 1907
   },
@@ -5282,7 +5282,7 @@
     "Stadio Nuovo Casento",
     10336
    ],
-   "short": "VTE",
+   "short": "VNO",
    "nick": "Bianchi",
    "founded": 1939
   },
@@ -5390,7 +5390,7 @@
     "Arena Ferago",
     21525
    ],
-   "short": "VNO",
+   "short": "VCA",
    "nick": "Falchi",
    "founded": 1939
   },
@@ -5408,7 +5408,7 @@
     "Stadio Venona",
     9500
    ],
-   "short": "SAA",
+   "short": "FAA",
    "nick": "Gialli",
    "founded": 1893
   },
@@ -5426,7 +5426,7 @@
     "Stadio Orvara",
     32336
    ],
-   "short": "CTE",
+   "short": "CEL",
    "nick": "Bianchi",
    "founded": 1888
   },
@@ -5480,7 +5480,7 @@
     "Stadio Trenago",
     26308
    ],
-   "short": "VALA",
+   "short": "VTE",
    "nick": "Verdi",
    "founded": 1884
   },
@@ -5570,7 +5570,7 @@
     "Arena Vendeiro",
     50095
    ],
-   "short": "PORT",
+   "short": "POP",
    "nick": "Marinheiros",
    "founded": 1893
   },
@@ -5588,7 +5588,7 @@
     "Estádio Nova Venda",
     30286
    ],
-   "short": "SANT",
+   "short": "SAN",
    "nick": "Tigres",
    "founded": 1940
   },
@@ -5606,7 +5606,7 @@
     "Complexo Desportivo Penura",
     30029
    ],
-   "short": "PEN",
+   "short": "PEA",
    "nick": "Brancos",
    "founded": 1955
   },
@@ -5696,7 +5696,7 @@
     "Estádio Municipal de Alto Avouro",
     5600
    ],
-   "short": "ARO",
+   "short": "ATO",
    "nick": "Amarelos",
    "founded": 1937
   },
@@ -5732,7 +5732,7 @@
     "Complexo Desportivo Portares da Serra",
     6153
    ],
-   "short": "POA",
+   "short": "POS",
    "nick": "Verdes",
    "founded": 1889
   },
@@ -5750,7 +5750,7 @@
     "Estádio Penais",
     3000
    ],
-   "short": "POR2",
+   "short": "TOM",
    "nick": "Corvos",
    "founded": 1898
   },
@@ -5768,7 +5768,7 @@
     "Arena Elvinha",
     5132
    ],
-   "short": "POMB",
+   "short": "POA",
    "nick": "Pretos",
    "founded": 1864
   },
@@ -5876,7 +5876,7 @@
     "Klein Oostburg Arena",
     35119
    ],
-   "short": "KLG",
+   "short": "KLN",
    "nick": "Zwanen",
    "founded": 1862
   },
@@ -5984,7 +5984,7 @@
     "Bergwaard Stadion",
     12500
    ],
-   "short": "GRD",
+   "short": "GOT",
    "nick": "Rooien",
    "founded": 1880
   },
@@ -6110,7 +6110,7 @@
     "De Maaswijk",
     12080
    ],
-   "short": "WAK",
+   "short": "WAG",
    "nick": "Zwarten",
    "founded": 1891
   },
@@ -6128,7 +6128,7 @@
     "Hoogzand Stadion",
     7384
    ],
-   "short": "LAA",
+   "short": "LAZ",
    "nick": "Oranjes",
    "founded": 1930
   },
@@ -6146,7 +6146,7 @@
     "Zaanhorst Arena",
     4500
    ],
-   "short": "ZST",
+   "short": "HOT",
    "nick": "Bijen",
    "founded": 1878
   },
@@ -6182,7 +6182,7 @@
     "Estadio Lavo",
     85018
    ],
-   "short": "ANO",
+   "short": "ARO",
    "nick": "Albos",
    "founded": 1882
   },
@@ -6200,7 +6200,7 @@
     "Estadio Municipal de Arrano",
     54000
    ],
-   "short": "ARRA",
+   "short": "ANO",
    "nick": "Azules",
    "founded": 1892
   },
@@ -6272,7 +6272,7 @@
     "Estadio Monumental Urqón",
     47964
    ],
-   "short": "ARR2",
+   "short": "LEZ",
    "nick": "Cóndores",
    "founded": 1912
   },
@@ -6290,7 +6290,7 @@
     "Estadio Herero",
     49540
    ],
-   "short": "ARR3",
+   "short": "FRS",
    "nick": "Pumas",
    "founded": 1953
   },
@@ -6362,7 +6362,7 @@
     "Estadio Ortia",
     26000
    ],
-   "short": "ARR4",
+   "short": "VEA",
    "nick": "Toros",
    "founded": 1957
   },
@@ -6398,7 +6398,7 @@
     "Estadio Monumental Quirui",
     48314
    ],
-   "short": "ARR5",
+   "short": "PEL",
    "nick": "Halcones",
    "founded": 1965
   },
@@ -6524,7 +6524,7 @@
     "Estadio Puesar",
     26535
    ],
-   "short": "DDA",
+   "short": "DNA",
    "nick": "Rojos",
    "founded": 1971
   },
@@ -6542,7 +6542,7 @@
     "Cancha de Quirona",
     34901
    ],
-   "short": "QUA",
+   "short": "QNA",
    "nick": "Verdes",
    "founded": 1925
   },
@@ -6560,7 +6560,7 @@
     "Estadio Herini",
     24000
    ],
-   "short": "GAA",
+   "short": "GAO",
    "nick": "Halcones",
    "founded": 1907
   },
@@ -6578,7 +6578,7 @@
     "Cancha de Castas",
     35200
    ],
-   "short": "CAST",
+   "short": "CCA",
    "nick": "Celestes",
    "founded": 1903
   },
@@ -6614,7 +6614,7 @@
     "Cancha de Arrano",
     4500
    ],
-   "short": "ARR6",
+   "short": "FRI",
    "nick": "Rojos",
    "founded": 1912
   },
@@ -6650,7 +6650,7 @@
     "Estadio Municipal de Coronel Franero",
     22000
    ],
-   "short": "COO",
+   "short": "COL",
    "nick": "Verdes",
    "founded": 1949
   },
@@ -6658,7 +6658,7 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Cabrona FC",
+    "Arreda FC",
     "RIE",
     "Arrano",
     "#000000",
@@ -6668,7 +6668,7 @@
     "Estadio Miro",
     3000
    ],
-   "short": "ARR7",
+   "short": "ADA",
    "nick": "Matadores",
    "founded": 1938
   },
@@ -6812,7 +6812,7 @@
     "Woksey Lane",
     28743
    ],
-   "short": "NER",
+   "short": "WAR",
    "nick": "Herons",
    "founded": 1961
   },
@@ -6848,7 +6848,7 @@
     "Tamsey Park",
     25000
    ],
-   "short": "NORT",
+   "short": "WER",
    "nick": "Stags",
    "founded": 1963
   },
@@ -6902,7 +6902,7 @@
     "Wrexton Lane",
     22120
    ],
-   "short": "HOD",
+   "short": "HAM",
    "nick": "Whites",
    "founded": 1973
   },
@@ -7064,7 +7064,7 @@
     "The Beckcombe Stadium",
     22423
    ],
-   "short": "TAD",
+   "short": "TAN",
    "nick": "Reds",
    "founded": 1928
   },
@@ -7172,7 +7172,7 @@
     "Yeoworth Park",
     30991
    ],
-   "short": "NOY",
+   "short": "HAY",
    "nick": "Badgers",
    "founded": 1968
   },
@@ -7298,7 +7298,7 @@
     "Saigawa Athletic Stadium",
     26827
    ],
-   "short": "SWA",
+   "short": "SAA",
    "nick": "Dragons",
    "founded": 1925
   },
@@ -7424,7 +7424,7 @@
     "Matsura Stadium",
     24481
    ],
-   "short": "MATS",
+   "short": "MAS",
    "nick": "Oranges",
    "founded": 1909
   },
@@ -7514,7 +7514,7 @@
     "Kawamoto Arena",
     49970
    ],
-   "short": "HIGA",
+   "short": "HIU",
    "nick": "Greens",
    "founded": 1912
   },
@@ -7568,7 +7568,7 @@
     "Kitashima Park",
     15440
    ],
-   "short": "AKIS",
+   "short": "AKP",
    "nick": "Tigers",
    "founded": 1926
   },
@@ -7636,7 +7636,7 @@
     67,
     "Estadio Olímpico de Coatohua"
    ],
-   "short": "CUA",
+   "short": "HES",
    "nick": "Jaguares",
    "founded": 1882
   },
@@ -7670,7 +7670,7 @@
     64,
     "Estadio Chalachitlán"
    ],
-   "short": "YAU",
+   "short": "HYA",
    "nick": "Rojos",
    "founded": 1923
   },
@@ -7687,7 +7687,7 @@
     63,
     "Estadio Papanalco"
    ],
-   "short": "JILI",
+   "short": "JUA",
    "nick": "Azulones",
    "founded": 1971
   },
@@ -7721,7 +7721,7 @@
     62,
     "Estadio Municipal de Ocotipan"
    ],
-   "short": "OCO",
+   "short": "HAO",
    "nick": "Verdes",
    "founded": 1968
   },
@@ -7738,7 +7738,7 @@
     60,
     "Estadio Huilco"
    ],
-   "short": "PUE",
+   "short": "SOS",
    "nick": "Tigres",
    "founded": 1928
   },
@@ -7755,7 +7755,7 @@
     60,
     "Estadio Municipal de Coatohua"
    ],
-   "short": "COAT",
+   "short": "CUA",
    "nick": "Rojos",
    "founded": 1931
   },
@@ -7772,7 +7772,7 @@
     58,
     "Estadio Tecatl"
    ],
-   "short": "OCA",
+   "short": "OCO",
    "nick": "Leones",
    "founded": 1957
   },
@@ -7942,7 +7942,7 @@
     57,
     "Sincheon Arena"
    ],
-   "short": "CHU",
+   "short": "CHC",
    "nick": "Dolphins",
    "founded": 1938
   },
@@ -8163,7 +8163,7 @@
     50,
     "Maenam Stadium"
    ],
-   "short": "WAN",
+   "short": "WAA",
    "nick": "Elephants",
    "founded": 1913
   },
@@ -8180,7 +8180,7 @@
     48,
     "Ubonkaeo Arena"
    ],
-   "short": "SAKC",
+   "short": "SAC",
    "nick": "Blues",
    "founded": 1973
   },
@@ -8316,7 +8316,7 @@
     45,
     "Wangyai Stadium"
    ],
-   "short": "NAK",
+   "short": "MUA",
    "nick": "Reds",
    "founded": 1984
   },
@@ -8435,7 +8435,7 @@
     51,
     "The Gainholm Stadium"
    ],
-   "short": "CAY",
+   "short": "CBR",
    "nick": "Eagles",
    "founded": 1907
   },
@@ -8469,7 +8469,7 @@
     48,
     "Walingham Lane"
    ],
-   "short": "SWE",
+   "short": "SWA",
    "nick": "Reds",
    "founded": 1927
   },
@@ -8503,7 +8503,7 @@
     47,
     "Wokby Green"
    ],
-   "short": "LIT",
+   "short": "LIE",
    "nick": "Blues",
    "founded": 1905
   },
@@ -8537,7 +8537,7 @@
     47,
     "Dargate Park"
    ],
-   "short": "CRS",
+   "short": "CBE",
    "nick": "Blues",
    "founded": 1947
   },
@@ -8588,7 +8588,7 @@
     46,
     "Tivhaven Park"
    ],
-   "short": "HAT",
+   "short": "HAA",
    "nick": "Greens",
    "founded": 1964
   },
@@ -8622,7 +8622,7 @@
     46,
     "Stocliff Park"
    ],
-   "short": "STO",
+   "short": "STF",
    "nick": "Yellows",
    "founded": 1916
   },
@@ -8775,7 +8775,7 @@
     54,
     "Stade Montières"
    ],
-   "short": "DIEU",
+   "short": "DID",
    "nick": "Bleus",
    "founded": 2008
   },
@@ -8809,7 +8809,7 @@
     50,
     "Complexe Armont"
    ],
-   "short": "SAU",
+   "short": "AUB",
    "nick": "Rouges",
    "founded": 1945
   },
@@ -8877,7 +8877,7 @@
     48,
     "Stade de la Damay"
    ],
-   "short": "MNS",
+   "short": "MOS",
    "nick": "Verts",
    "founded": 1954
   },
@@ -8911,7 +8911,7 @@
     47,
     "Stade Vendens"
    ],
-   "short": "DIE2",
+   "short": "ROR",
    "nick": "Mineurs",
    "founded": 1989
   },
@@ -8928,7 +8928,7 @@
     47,
     "Stade de la Clerange"
    ],
-   "short": "SAC",
+   "short": "LUC",
    "nick": "Rouges",
    "founded": 1974
   },
@@ -8945,7 +8945,7 @@
     46,
     "Parc des Sports de Monbourg-sur-Aure"
    ],
-   "short": "MRE",
+   "short": "MOG",
    "nick": "Cigognes",
    "founded": 1964
   },
@@ -8996,7 +8996,7 @@
     61,
     "Stadion Bratina"
    ],
-   "short": "JASO",
+   "short": "JAJ",
    "nick": "Crni",
    "founded": 1935
   },
@@ -9047,7 +9047,7 @@
     53,
     "Stadion Kosovice"
    ],
-   "short": "JAS2",
+   "short": "VYS",
    "nick": "Bikovi",
    "founded": 1989
   },
@@ -9098,7 +9098,7 @@
     51,
     "Stadion Velava"
    ],
-   "short": "JAS3",
+   "short": "GOR",
    "nick": "Plavi",
    "founded": 1924
   },
@@ -9115,7 +9115,7 @@
     50,
     "Stadion Jasovac"
    ],
-   "short": "JAS4",
+   "short": "KAM",
    "nick": "Baroni",
    "founded": 1994
   },
@@ -9166,7 +9166,7 @@
     49,
     "Stadion Mir Petina"
    ],
-   "short": "PEA",
+   "short": "PNA",
    "nick": "Lavovi",
    "founded": 1943
   },
@@ -9200,7 +9200,7 @@
     48,
     "Stadion Kosovac"
    ],
-   "short": "VYS",
+   "short": "VYE",
    "nick": "Crveni",
    "founded": 1961
   },
@@ -9234,7 +9234,7 @@
     46,
     "Gradski Stadion Vysovice"
    ],
-   "short": "VYE",
+   "short": "VCE",
    "nick": "Baroni",
    "founded": 1968
   },
@@ -9404,7 +9404,7 @@
     55,
     "Dijklo Stadion"
    ],
-   "short": "BERG",
+   "short": "BEB",
    "nick": "Geelen",
    "founded": 1943
   },
@@ -9557,7 +9557,7 @@
     67,
     "Demehir Şehir Stadyumu"
    ],
-   "short": "DIR",
+   "short": "YEN",
    "nick": "Siyahlar",
    "founded": 1899
   },
@@ -9591,7 +9591,7 @@
     60,
     "Demdere Stadyumu"
    ],
-   "short": "DEME",
+   "short": "AKO",
    "nick": "Turuncular",
    "founded": 1960
   },
@@ -9608,7 +9608,7 @@
     57,
     "Dembahçe Şehir Stadyumu"
    ],
-   "short": "DEE",
+   "short": "DED",
    "nick": "Kırmızılar",
    "founded": 1920
   },
@@ -9642,7 +9642,7 @@
     55,
     "Demehir Cumhuriyet Stadyumu"
    ],
-   "short": "DEM2",
+   "short": "GUL",
    "nick": "Bordolar",
    "founded": 1946
   },
@@ -9659,7 +9659,7 @@
     54,
     "Tavsaray Arena"
    ],
-   "short": "DEM3",
+   "short": "KAY",
    "nick": "Mavililer",
    "founded": 1950
   },
@@ -9676,7 +9676,7 @@
     54,
     "Çansaray Cumhuriyet Stadyumu"
    ],
-   "short": "ÇAN",
+   "short": "CANS",
    "nick": "Yeşiller",
    "founded": 1948
   },
@@ -9693,7 +9693,7 @@
     54,
     "Uşehir Cumhuriyet Stadyumu"
    ],
-   "short": "UEH",
+   "short": "USE",
    "nick": "Yeşiller",
    "founded": 1914
   },
@@ -9761,7 +9761,7 @@
     52,
     "Çanlar Cumhuriyet Stadyumu"
    ],
-   "short": "ÇAR",
+   "short": "CANL",
    "nick": "Sarılar",
    "founded": 1971
   },
@@ -9795,7 +9795,7 @@
     51,
     "Orhköy Arena"
    ],
-   "short": "GÜL",
+   "short": "GUR",
    "nick": "Aslanlar",
    "founded": 1931
   },
@@ -9812,7 +9812,7 @@
     51,
     "Akpınar Arena"
    ],
-   "short": "DEM4",
+   "short": "ORH",
    "nick": "Kartallar",
    "founded": 1936
   },
@@ -9880,7 +9880,7 @@
     56,
     "Aréna Kostany"
    ],
-   "short": "NYÁ",
+   "short": "NYA",
    "nick": "Nebesky modří",
    "founded": 1983
   },
@@ -9965,7 +9965,7 @@
     50,
     "Stadion u Trenec"
    ],
-   "short": "HOLA",
+   "short": "LIB",
    "nick": "Medvědi",
    "founded": 1938
   },
@@ -9982,7 +9982,7 @@
     50,
     "Městský stadion Zlínava"
    ],
-   "short": "ZLÍ",
+   "short": "ZLI",
    "nick": "Zelení",
    "founded": 1940
   },
@@ -10033,7 +10033,7 @@
     48,
     "Městský stadion Nový Hradená"
    ],
-   "short": "NOÁ",
+   "short": "NOY",
    "nick": "Kováři",
    "founded": 1957
   },
@@ -10067,7 +10067,7 @@
     47,
     "Stadion Zlínedov"
    ],
-   "short": "HOL2",
+   "short": "HOV",
    "nick": "Kováři",
    "founded": 1932
   },
@@ -10084,7 +10084,7 @@
     47,
     "Stadion u Kostov"
    ],
-   "short": "STV",
+   "short": "STY",
    "nick": "Žlutí",
    "founded": 1975
   },
@@ -10101,7 +10101,7 @@
     68,
     "Stadio Trouli"
    ],
-   "short": "MRA",
+   "short": "MAM",
    "nick": "Ierakes",
    "founded": 1912
   },
@@ -10135,7 +10135,7 @@
     64,
     "Ioanaki Arena"
    ],
-   "short": "LAMI",
+   "short": "LLA",
    "nick": "Nautikoí",
    "founded": 1908
   },
@@ -10237,7 +10237,7 @@
     50,
     "Stadio Alexaki"
    ],
-   "short": "TRÁ",
+   "short": "TIA",
    "nick": "Titánes",
    "founded": 1940
   },
@@ -10407,7 +10407,7 @@
     58,
     "Bergø Idrætsanlæg"
    ],
-   "short": "BEØ",
+   "short": "BEG",
    "nick": "Løver",
    "founded": 1871
   },
@@ -10492,7 +10492,7 @@
     49,
     "Sønderfors Arena"
    ],
-   "short": "SØN",
+   "short": "SND",
    "nick": "Falke",
    "founded": 1895
   },
@@ -10526,7 +10526,7 @@
     48,
     "Nordnyø Arena"
    ],
-   "short": "NOØ",
+   "short": "NOR",
    "nick": "De Blå",
    "founded": 1892
   },
@@ -10543,7 +10543,7 @@
     52,
     "Ringård Idrætspark"
    ],
-   "short": "SØS",
+   "short": "SNS",
    "nick": "De Blå",
    "founded": 1880
   },
@@ -10645,7 +10645,7 @@
     58,
     "Stadion Miejski im. Radosk"
    ],
-   "short": "SCE",
+   "short": "SRY",
    "nick": "Orły",
    "founded": 1980
   },
@@ -10713,7 +10713,7 @@
     53,
     "Stadion Ludowy Słupówka"
    ],
-   "short": "SUA",
+   "short": "ZAG",
    "nick": "Czerwoni",
    "founded": 1916
   },
@@ -10747,7 +10747,7 @@
     51,
     "Stadion Ludowy Stary Białec"
    ],
-   "short": "STC",
+   "short": "STB",
    "nick": "Żółci",
    "founded": 1928
   },
@@ -10781,7 +10781,7 @@
     52,
     "Arena Wielów"
    ],
-   "short": "OPO",
+   "short": "ZAE",
    "nick": "Niebiescy",
    "founded": 1971
   },
@@ -10798,7 +10798,7 @@
     50,
     "Stadion Miejski im. Radec"
    ],
-   "short": "DBR",
+   "short": "DAB",
    "nick": "Żółci",
    "founded": 1939
   },
@@ -10815,7 +10815,7 @@
     50,
     "Stadion im. Rybno"
    ],
-   "short": "KAL",
+   "short": "GOK",
    "nick": "Sokoły",
    "founded": 1915
   },
@@ -10849,7 +10849,7 @@
     50,
     "Stadion Miejski im. Chełmesk"
    ],
-   "short": "DOLN",
+   "short": "ZIE",
    "nick": "Żubry",
    "founded": 1940
   },
@@ -10900,7 +10900,7 @@
     47,
     "Stadion im. Kosta"
    ],
-   "short": "GÓR",
+   "short": "GOY",
    "nick": "Pomarańczowi",
    "founded": 1937
   },
@@ -10917,7 +10917,7 @@
     64,
     "Brovik Stadion"
    ],
-   "short": "BJØ",
+   "short": "BJR",
    "nick": "De Hvide",
    "founded": 1890
   },
@@ -10951,7 +10951,7 @@
     58,
     "Nordsund Park"
    ],
-   "short": "SØY",
+   "short": "SNY",
    "nick": "Bjørne",
    "founded": 1869
   },
@@ -10968,7 +10968,7 @@
     56,
     "Dyrløkke Park"
    ],
-   "short": "VÆS",
+   "short": "VNS",
    "nick": "Rever",
    "founded": 1902
   },
@@ -10985,7 +10985,7 @@
     56,
     "Østborg Stadion"
    ],
-   "short": "BÆS",
+   "short": "BES",
    "nick": "De Røde",
    "founded": 1927
   },
@@ -11002,7 +11002,7 @@
     52,
     "Østgård Idrætspark"
    ],
-   "short": "HOØ",
+   "short": "HOF",
    "nick": "De Blå",
    "founded": 1876
   },
@@ -11206,7 +11206,7 @@
     51,
     "Bachafen-Arena"
    ],
-   "short": "BACH",
+   "short": "BAB",
    "nick": "Schwarzen",
    "founded": 1930
   },
@@ -11257,7 +11257,7 @@
     48,
     "Stadion Hagsee"
    ],
-   "short": "OBL",
+   "short": "OBR",
    "nick": "Wölfe",
    "founded": 1931
   },
@@ -11291,7 +11291,7 @@
     47,
     "Hainingen-Stadion"
    ],
-   "short": "OBR",
+   "short": "OER",
    "nick": "Hirsche",
    "founded": 1866
   },
@@ -11308,7 +11308,7 @@
     47,
     "Schwarzheim-Stadion"
    ],
-   "short": "KALT",
+   "short": "KAL",
    "nick": "Bären",
    "founded": 1893
   },
@@ -11316,16 +11316,16 @@
    "league": "CH1",
    "nat": "SUI",
    "row": [
-    "FC Unter Neckarhafen",
+    "Unter Neckarhafen 1899",
     "BAS",
     "Unter Neckarhafen",
     "#E30613",
     "#003DA5",
     "giant",
     62,
-    "Waldstadion Unter Neckarhafen"
+    "Stadion Wiestadt"
    ],
-   "short": "UNN",
+   "short": "UER",
    "nick": "Löwen",
    "founded": 1886
   },
@@ -11410,7 +11410,7 @@
     53,
     "Stadion am Bachof"
    ],
-   "short": "HOT",
+   "short": "HRT",
    "nick": "Grünen",
    "founded": 1904
   },
@@ -11444,7 +11444,7 @@
     51,
     "Stadion Altal"
    ],
-   "short": "HOM",
+   "short": "HEN",
    "nick": "Ritter",
    "founded": 1900
   },
@@ -11461,7 +11461,7 @@
     52,
     "Stadion Hagburg"
    ],
-   "short": "KIU",
+   "short": "KAN",
    "nick": "Bergleute",
    "founded": 1927
   },
@@ -11478,7 +11478,7 @@
     51,
     "Stadion Oberdorf"
    ],
-   "short": "OBG",
+   "short": "OBK",
    "nick": "Weißen",
    "founded": 1914
   },
@@ -11495,7 +11495,7 @@
     49,
     "Sportpark Bruchkirchen"
    ],
-   "short": "BER2",
+   "short": "BBE",
    "nick": "Roten",
    "founded": 1877
   },
@@ -11563,7 +11563,7 @@
     56,
     "The Wrexmere Stadium"
    ],
-   "short": "SBE",
+   "short": "TUE",
    "nick": "Rams",
    "founded": 1870
   },
@@ -11597,7 +11597,7 @@
     55,
     "Quarwell Park"
    ],
-   "short": "SOUT",
+   "short": "TBE",
    "nick": "Greens",
    "founded": 1873
   },
@@ -11631,7 +11631,7 @@
     51,
     "Wedsea Lane"
    ],
-   "short": "CHUR",
+   "short": "CHH",
    "nick": "Oranges",
    "founded": 1898
   },
@@ -11682,7 +11682,7 @@
     49,
     "Rotholm Road"
    ],
-   "short": "CHU2",
+   "short": "CCH",
    "nick": "Navy",
    "founded": 1918
   },
@@ -11699,7 +11699,7 @@
     47,
     "Stowmouth Park"
    ],
-   "short": "CALG",
+   "short": "CTE",
    "nick": "Stags",
    "founded": 1920
   },
@@ -11733,7 +11733,7 @@
     57,
     "Thornwell Park"
    ],
-   "short": "PUDM",
+   "short": "PUE",
    "nick": "Falcons",
    "founded": 1958
   },
@@ -11767,7 +11767,7 @@
     55,
     "Pudmere Ground"
    ],
-   "short": "PUD2",
+   "short": "PUT",
    "nick": "Navy",
    "founded": 1918
   },
@@ -11801,7 +11801,7 @@
     52,
     "Wedbridge Green"
    ],
-   "short": "WEE",
+   "short": "ASH",
    "nick": "Miners",
    "founded": 1932
   },
@@ -11818,7 +11818,7 @@
     51,
     "Hayington Field"
    ],
-   "short": "EAS",
+   "short": "ABT",
    "nick": "Eagles",
    "founded": 1901
   },
@@ -11835,7 +11835,7 @@
     51,
     "The Sopham Stadium"
    ],
-   "short": "TUE",
+   "short": "TUB",
    "nick": "Navy",
    "founded": 1972
   },
@@ -11852,7 +11852,7 @@
     50,
     "Shephurst Field"
    ],
-   "short": "LLD",
+   "short": "LAD",
    "nick": "Reds",
    "founded": 1942
   },
@@ -11869,7 +11869,7 @@
     49,
     "Claygate Park"
    ],
-   "short": "SLE",
+   "short": "SAE",
    "nick": "Drovers",
    "founded": 1978
   },
@@ -11920,7 +11920,7 @@
     47,
     "Clifshall Lane"
    ],
-   "short": "CAN",
+   "short": "CAY",
    "nick": "Maroons",
    "founded": 1924
   },
@@ -11954,7 +11954,7 @@
     53,
     "Győrehegy Városi Stadion"
    ],
-   "short": "GYR",
+   "short": "GYO",
    "nick": "Huszárok",
    "founded": 1944
   },
@@ -12005,7 +12005,7 @@
     53,
     "Sáró Aréna"
    ],
-   "short": "SÁR",
+   "short": "SAF",
    "nick": "Kékek",
    "founded": 1966
   },
@@ -12073,7 +12073,7 @@
     48,
     "Kálád Városi Stadion"
    ],
-   "short": "KÁL",
+   "short": "KAD",
    "nick": "Vörösök",
    "founded": 1933
   },
@@ -12090,7 +12090,7 @@
     49,
     "Fehérehegy Aréna"
    ],
-   "short": "BARA",
+   "short": "ZZA",
    "nick": "Medvék",
    "founded": 1919
   },
@@ -12158,7 +12158,7 @@
     51,
     "The Elmdale Stadium"
    ],
-   "short": "GLOS",
+   "short": "GLV",
    "nick": "Greens",
    "founded": 1884
   },
@@ -12175,7 +12175,7 @@
     48,
     "Hincombe Lane"
    ],
-   "short": "WAR",
+   "short": "WAY",
    "nick": "Reds",
    "founded": 1950
   },
@@ -12192,7 +12192,7 @@
     47,
     "Gloswell Park"
    ],
-   "short": "GLO2",
+   "short": "CLY",
    "nick": "Badgers",
    "founded": 1941
   },
@@ -12209,7 +12209,7 @@
     47,
     "Lymeshall Field"
    ],
-   "short": "GLO3",
+   "short": "KIN",
    "nick": "Reds",
    "founded": 1929
   },
@@ -12226,7 +12226,7 @@
     44,
     "The Thiringham Stadium"
    ],
-   "short": "OLE",
+   "short": "BUC",
    "nick": "Chargers",
    "founded": 1946
   },
@@ -12243,7 +12243,7 @@
     43,
     "Eport Green"
    ],
-   "short": "CGE",
+   "short": "CST",
    "nick": "Otters",
    "founded": 1939
   },
@@ -12294,7 +12294,7 @@
     44,
     "Church Falwood Park"
    ],
-   "short": "CHD",
+   "short": "CHF",
    "nick": "Lions",
    "founded": 1898
   },
@@ -12362,7 +12362,7 @@
     41,
     "Spaldwick Road"
    ],
-   "short": "CLEV",
+   "short": "CGE",
    "nick": "Mariners",
    "founded": 1886
   },
@@ -12464,7 +12464,7 @@
     38,
     "Wilpool Ground"
    ],
-   "short": "WILP",
+   "short": "WIR",
    "nick": "Chargers",
    "founded": 1916
   },
@@ -12508,25 +12508,25 @@
    "nat": "ENG",
    "tier": 1,
    "name": "English Premier Division",
-   "short": "D1"
+   "short": "ENG1"
   },
   "D2": {
    "nat": "ENG",
    "tier": 2,
    "name": "English First Division",
-   "short": "D2"
+   "short": "ENG2"
   },
   "D3": {
    "nat": "ENG",
    "tier": 3,
    "name": "English Second Division",
-   "short": "D3"
+   "short": "ENG3"
   },
   "D4": {
    "nat": "ENG",
    "tier": 4,
    "name": "English Third Division",
-   "short": "D4"
+   "short": "ENG4"
   },
   "ES1": {
    "nat": "ESP",

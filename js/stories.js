@@ -304,7 +304,10 @@
           ? ['Typical. I said it would end like this', 'Season over. See you in the cup, I guess']
           : ['A point. Of course. Never a win when we need one', "That's two points thrown away, not one gained"],
       nerd: lucky
-        ? [`xG ${xgMe}–${xgOp}. We got away with one there`, `Won on xG ${xgMe} to ${xgOp}? Take it, but it won't last`]
+        ? [
+            `xG ${xgMe}–${xgOp}. We got away with one there`,
+            `${won ? 'Won' : 'Got a point'} on xG ${xgMe} to ${xgOp}? Take it, but it won't last`,
+          ]
         : unlucky
           ? [
               `xG ${xgMe}–${xgOp} and nothing to show for it. That's variance, not form`,

@@ -95,6 +95,8 @@
         v = n % 100;
       return n + (s[(v - 20) % 10] || s[v] || s[0]);
     },
+    // "1 pt", "3 pts"
+    pts: (n) => `${n} pt${Math.abs(n) === 1 ? '' : 's'}`,
     hash(str) {
       let h = 2166136261;
       for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);

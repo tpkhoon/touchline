@@ -271,7 +271,6 @@
     if (h.prof >= 16 && h.amb >= 13) return 'Model Professional';
     if (h.loy >= 16) return 'Loyal Servant';
     if (h.amb >= 16 && h.loy <= 8) return 'Mercenary';
-    if (h.lead >= 16) return 'Born Leader';
     if (h.temp <= 5) return 'Volatile';
     if (h.prof <= 6) return 'Laid Back';
     if (h.amb >= 16) return 'Ambitious';
@@ -670,7 +669,7 @@
       list = p.side === 'L' || p.foot === 'Left' ? [3, 2, ...list] : [2, 3, ...list];
     const senior = W.age(p) > 18;
     if (senior) for (const n of list) if (!taken.has(n)) return n;
-    let n = senior ? 2 : 30;
+    let n = senior ? 12 : 30; // (past the shirts the positions want: a spare winger is not number 9)
     while (taken.has(n)) n++;
     return n;
   };
@@ -977,6 +976,7 @@
       FM.S.players[p.id] = p;
       mine.push(p);
     }
+    mine.forEach((p) => (p.no = 0)); // (numbers handed out as each player was made go back: the best choose first)
     W.numberSquad(mine);
     W.rosterVer++; // (these players went straight into the club: any squad index built before now is out of date)
   }
@@ -1560,7 +1560,7 @@
       wbPos: 2, // wing-backs are a position from the start (older saves convert theirs on load)
       wmPos: 1, // so are wide midfielders (LM/RM)
       compRules: 2, // and each league's real promotion, relegation and play-off rules
-      clubAbbr: 1, // clubs show their real abbreviations and nicknames
+      clubAbbr: 2, // clubs show their real abbreviations and nicknames
       rules: {
         win: opts.win || 3,
         subs: opts.subs || 5,
@@ -1921,6 +1921,34 @@
     u.contractRem = null;
     if (FM.Season.jobMarket) FM.Season.jobMarket(true);
   };
+  // A new career at a club that the world generated as by far the weakest in its league starts hopeless (a 20-point
+  // gap to the leaders, 14 points from safety before a ball is kicked). Its squad is lifted, as one whole, to the level
+  // of the league's second-weakest side: a relegation fight, not a foregone conclusion. Nobody else is touched.
+  W.balanceUserSquad = function () {
+    const S = FM.S,
+      uc = W.userClub(),
+      comp = uc && S.comps[uc.comp];
+    if (!comp || !comp.clubs || comp.clubs.length < 6) return;
+    const xiAvg = (c) => U.avg(W.pickXI(c.id, c.tactic).xi.filter(Boolean), (p) => p.ca);
+    const others = comp.clubs
+      .filter((id) => id !== uc.id && S.clubs[id])
+      .map((id) => xiAvg(S.clubs[id]))
+      .sort((a, b) => a - b);
+    const floor = others[1] ?? others[0];
+    let lifted = 0;
+    for (let i = 0; i < 4 && lifted < 9; i++) {
+      const need = Math.min(9 - lifted, floor - xiAvg(uc));
+      if (need < 0.3) break;
+      const d = Math.ceil(need * 10) / 10;
+      for (const p of W.squad(uc.id)) {
+        for (const k in p.attrs) p.attrs[k] = U.clamp(p.attrs[k] + d / 5, 1, 20);
+        p.pa = Math.max(p.pa, Math.round(p.ca + d));
+        W.refresh(p);
+        p.wage = W.wageFor(p);
+      }
+      lifted += d;
+    }
+  };
   W.takeCharge = function (clubId, mgrName, isNew = true) {
     const S = FM.S,
       club = S.clubs[clubId];
@@ -1971,6 +1999,8 @@
         });
     }
     S.user.joinedClubYear = S.year;
+    S.user.joinedDay = S.day;
+    if (isNew) W.balanceUserSquad();
     S.user.tactic = club.tactic;
     if (S.user.tactic.fam == null) S.user.tactic.fam = 55; // tactical familiarity 0–100
     S.user.preseason = S.user.preseason || {};

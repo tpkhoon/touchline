@@ -48,6 +48,24 @@
       d = Math.max(0.1, 1 - w - l);
     return (w + d / 2) / (w + d + l);
   };
+  // The pre-match "Win chance" and the team talk's read of the occasion: the two XIs' average ability, moved by what
+  // the match engine moves too: the home crowd (its mood, the ground, a derby or a heated rivalry, a long trip) and
+  // each side's confidence. A smooth curve, so a big gap makes a long shot rather than the same floor every week.
+  // me/opp are clubs (or national teams); xiMe/xiOpp the average ability of the sides' XIs.
+  Sea.matchOdds = function (me, opp, home, xiMe, xiOpp, neutral, derby) {
+    const hc = home ? me : opp,
+      ac = home ? opp : me;
+    const hf = neutral
+        ? 0
+        : FM.Match.homeFactor(hc, ac, !!derby || (hc.sim !== 'nation' && FM.Records.heated(hc.id, ac.id))),
+      conf = (c) => (c && c.sim !== 'nation' && c.conf) || 0;
+    // points of ability: ~2.5 for a normal home crowd, confidence worth up to 4 either way
+    const edge = (home ? 1 : -1) * 2.5 * hf + 4 * (conf(me) - conf(opp));
+    const d = xiMe - xiOpp + edge;
+    const e = 1 / (1 + Math.exp(-d / 9)),
+      draw = 0.28 * Math.exp(-((d / 16) ** 2));
+    return U.clamp(e - draw / 2, 0.01, 0.95);
+  };
   Sea.seasonLabel = () => `${FM.S.year}/${String((FM.S.year + 1) % 100).padStart(2, '0')}`;
 
   // Fixtures played on the current day (creates playoff ties lazily)

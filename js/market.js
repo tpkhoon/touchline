@@ -1082,6 +1082,13 @@
       if (to.id === uc.rival) {
         mood -= 8;
         posts.push(`Selling ${W.short(p)} to ${to.short}?! Unforgivable.`, 'Board out. Today.');
+      } else if (a <= 21 && p.pa >= W.levelFor(uc.rep) + 2 && fee < 1000 * Math.pow(1.13, p.pa) * 0.6) {
+        // a teenager with a future, gone for a fraction of what he could be worth
+        mood -= 6;
+        posts.push(
+          `Selling a ${a}-year-old with that talent for ${U.money(fee)}? Madness.`,
+          `${W.short(p)} could have been ours for a decade. Robbed. 😡`,
+        );
       } else if (key || fav) {
         mood -= 5;
         posts.push(`Gutted to see ${W.short(p)} go. One of our best.`, `${U.money(fee)} isn't enough for him.`);

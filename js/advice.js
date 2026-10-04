@@ -104,9 +104,10 @@
       groupCount = (g) => sq.filter((q) => !q.loan && D.POS_GROUP[q.pos] === g).length,
       NEED = { GK: 2, DEF: 6, MID: 5, ATT: 4 };
     sq.filter((p) => W.age(p) <= 23 && !xi.includes(p) && !p.loan).forEach((p) => {
-      const rivals = xi.filter(
-        (q, i) => q && D.POS_GROUP[slots[i].t === 'WB' ? 'FB' : slots[i].t] === D.POS_GROUP[p.pos],
-      );
+      // compared with the starters who play his own position (a winger with the wingers, not with whoever is
+      // standing in that slot), else with his own line
+      const own = xi.filter((q) => q && q.pos === p.pos),
+        rivals = own.length ? own : xi.filter((q) => q && D.POS_GROUP[q.pos] === D.POS_GROUP[p.pos]);
       const weakest = rivals.sort((a, b) => a.ca - b.ca)[0];
       if (weakest && p.ca >= weakest.ca - 2)
         add(

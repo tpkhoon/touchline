@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { langOf, placeName, stem, TIERS_BY, CUP_BY } from './namelib.mjs';
+import { langOf, placeName, stem, TIERS_BY, CUP_BY, isRude } from './namelib.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -120,15 +120,46 @@ export function generate(real, seed = 1) {
     let place,
       n = 0;
     do place = placeName(L, r);
-    while (usedPlace.has(place) && ++n < 500);
+    while ((usedPlace.has(place) || isRude(place)) && ++n < 500);
     if (usedPlace.has(place)) place += n;
     usedPlace.add(place);
     placeFor.set(key, place);
     return place;
   };
-  const shortOf = (place) => {
-    const base = place.replace(/[^A-Za-zÀ-ÿ]/g, '').toUpperCase();
-    for (const s of [base.slice(0, 3), base.slice(0, 2) + base.slice(-1), base[0] + base.slice(-2), base.slice(0, 4)])
+  // A club's abbreviation comes from its own name, not its town (a big city's later clubs are named for their
+  // districts, so the town's letters would give several clubs the same, wrong code): the first distinctive word,
+  // leaving out "Town", "United", "FC", "Deportivo" and the like
+  const GENERIC = new Set(
+    `town city united athletic rovers albion wanderers rangers county borough victoria orient argyle alexandra
+    south north east west upper lower new old st san santa saint wednesday harriers villa club cf deportivo atlético atletico sporting racing unión union real balompié cd ud
+    juventud sv fc tsv sc fsv vfb vfl sportfreunde spvgg fortuna eintracht viktoria teutonia germania as us stade rc aj
+    athlétic es étoile de ec sport clube esporte associação atlética grêmio união sociedade esportiva futebol calcio
+    ac unione virtus asd ssc pro audace grémio vv rkc kv sparta afc ado boys vooruit eendracht social y sportivo
+    gimnasia estudiantes defensores independiente fk sk sokol slavia ks nk mfk ao lokomotiva zora spor belediyespor
+    yeni gençlik idman yurdu atletik gücü birlik slavoj slovan dynamo tj ae pae gs panathlitikos ethnikos apollon doxa
+    niki if ik bk boldklub il fremad fotball mks gks lks stal ruch polonia sokół unia znicz se te vsc futball klub
+    egyetértés egylet b`.split(/\s+/),
+  );
+  const fold = (t) =>
+    t
+      .normalize('NFD')
+      .replace(/[^A-Za-z]/g, '')
+      .toUpperCase();
+  const shortOf = (name, place) => {
+    const words = name.split(/[\s-]+/).filter((w) => fold(w).length >= 2);
+    const keys = words.filter((w) => !GENERIC.has(w.toLowerCase()) && !/^\d/.test(w)).map(fold);
+    const base = keys[0] || fold(place),
+      second = keys[1] || fold(words[words.length - 1] || ''),
+      tail = fold(words[words.length - 1] || '');
+    for (const s of [
+      base.slice(0, 3),
+      base.slice(0, 2) + base.slice(-1),
+      base[0] + base.slice(-2),
+      base.slice(0, 2) + (second[0] || ''),
+      base[0] + (second.slice(0, 2) || ''),
+      base.slice(0, 2) + tail[0],
+      base.slice(0, 4),
+    ])
       if (s.length >= 3 && !usedShort.has(s)) return (usedShort.add(s), s);
     for (let i = 2; ; i++) {
       const s = base.slice(0, 3) + i;
@@ -172,7 +203,7 @@ export function generate(real, seed = 1) {
       let d,
         dt = 0;
       do d = surname(L, rd);
-      while (usedPlace.has(d) && ++dt < 100);
+      while ((usedPlace.has(d) || isRude(d)) && ++dt < 100);
       usedPlace.add(d);
       base = d;
     }
@@ -182,15 +213,15 @@ export function generate(real, seed = 1) {
       // the first club in a town takes the plain town name more often than a second one does
       name = L.club[(Math.floor(r() * L.club.length) + (k - 1) * 3 + tries) % L.club.length].replace('{c}', base);
       tries++;
-    } while (usedName.has(name) && tries < L.club.length * 2);
+    } while ((usedName.has(name) || isRude(name)) && tries < L.club.length * 2);
     if (usedName.has(name)) name = `${place} ${k + 1}`;
     usedName.add(name);
     let ground,
       gt = 0;
     do ground = r.pick(L.ground).replace('{c}', place).replace('{x}', surname(L, r)).replace('{p}', surname(L, r));
-    while (usedGround.has(ground) && ++gt < 30);
+    while ((usedGround.has(ground) || isRude(ground)) && ++gt < 30);
     usedGround.add(ground);
-    return (done[code] = { name, city: place, stadium: ground, short: shortOf(place), nick: '' });
+    return (done[code] = { name, city: place, stadium: ground, short: shortOf(name, place), nick: '' });
   };
   // when each club was founded: the old giants and historic clubs of the old football countries first, clubs of the
   // newer football countries a good deal later; a B team shares its parent's
@@ -245,7 +276,7 @@ export function generate(real, seed = 1) {
     const dem = DEMONYM[l.nat] || real.nations[l.nat] || l.nat,
       tiers = TIERS_BY[l.nat] || langOf(l.nat).tiers;
     l.name = `${dem} ${tiers[l.tier - 1] || `Division ${l.tier}`}`;
-    l.short = id;
+    l.short = /^D\d$/.test(id) ? `${l.nat}${l.tier}` : id; // ("D1" read as England's first division, which is D2)
   }
   const seen = new Set();
   for (const c of Object.values(out.continentals)) {

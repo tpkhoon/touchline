@@ -23,6 +23,7 @@
   const P = (id) => FM.S.players[id];
 
   // ---------------- Preview ----------------
+  const DANGER_POS = { ST: 1, W: 0.96, AM: 0.96, WM: 0.9, CM: 0.82, WB: 0.74, FB: 0.7, DM: 0.68, CB: 0.6, GK: 0.2 };
   MV.preview = function () {
     const fx = FM.Season.userFixture();
     if (!fx) return;
@@ -33,7 +34,14 @@
     const nt = me.sim === 'nation',
       myTactic = nt ? me.tactic : s.user.tactic;
     const oppXI = W.pickXI(opp.id, opp.tactic).xi.filter(Boolean);
-    const key = oppXI.slice().sort((a, b) => b.ca - a.ca)[0];
+    // the danger man is the one who scores or creates: judged on ability weighted by how attacking his position is,
+    // plus what he has done this season, never a keeper or a centre-back just because he is the best-rated
+    const threat = (p) => {
+      const st = p.season || {},
+        g = st.apps >= 3 ? ((st.goals || 0) + 0.6 * (st.ast || 0)) / st.apps : 0;
+      return p.ca * (DANGER_POS[p.pos] ?? 0.6) + g * 8;
+    };
+    const key = oppXI.slice().sort((a, b) => threat(b) - threat(a))[0] || oppXI[0];
     const { xi } = W.pickXI(me.id, myTactic);
     const unavailable = nt
       ? FM.Intl.pool(me.code)
@@ -76,7 +84,7 @@
               `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
           )
           .join(' · ')}</div>
-        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' 🚑' : ' 🟥')).join(', ')}</div>` : ''}</div>
+        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' (injured)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
       ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
       ${MV.talkCard(fx)}
@@ -239,7 +247,7 @@
     const ov = document.createElement('div');
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
-    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip">${esc(H.club.name)}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip">${esc(A.club.name)}</span></div></div>
+    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(C.shortName(H.club))}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(C.shortName(A.club))}</span></div></div>
       <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}

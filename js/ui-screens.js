@@ -36,7 +36,7 @@
         U.avg(W.pickXI(t.id, W.isUser(t.id) ? s.user.tactic : t.tactic).xi.filter(Boolean), (p) => p.ca);
       const us = str(me),
         them = str(opp);
-      const pw = FM.Season.winChance(us, them, home, fx.neutral);
+      const pw = FM.Season.matchOdds(me, opp, home, us, them, fx.neutral, derby);
       const compName = fx.intl ? 'International' : s.comps[fx.comp].name;
       const f1 = fx.first && FM.Cups.findFixture(fx.first);
       const aggNote =
@@ -108,7 +108,7 @@
     const waiting = s.news.filter(UI.isOpenDecision).length;
     return `${hero}
       <div class="kpis">
-        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${s.comps[c.comp].short} · ${row.pts} pts</div>` : `<div class="v">—</div><div class="l">${s.comps[c.comp].short} · season starts soon</div>`}</div>
+        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${s.comps[c.comp].short} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l">${s.comps[c.comp].short} · season starts soon</div>`}</div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.boardConf)}">${Math.round(c.boardConf)}%</div><div class="l">Board</div></div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.fanMood)}">${Math.round(c.fanMood)}%</div><div class="l">Fans</div></div>
       </div>
@@ -356,9 +356,9 @@
         ga = home ? d.mine.ag : d.mine.hg,
         opp = TM(home ? d.mine.a : d.mine.h);
       const r = gf > ga ? ['W', 'var(--good)'] : gf < ga ? ['L', 'var(--bad)'] : ['D', 'var(--ink3)'];
-      our = `<div class="big"><span class="wdl" style="background:${r[1]}">${r[0]}</span><div class="grow" style="min-width:0"><div class="b ellip">${gf}–${ga} v ${opp ? esc(opp.name) : '?'} (${home ? 'H' : 'A'})</div><div class="small dim">Now ${U.ordinal(d.pos)} ${arrow(d.move)} · ${d.pts} pts${d.top ? ` · ${d.gap ? `${d.gap} clear` : 'top on goal difference'}` : ` · ${d.gap ? `${d.gap} behind the leaders` : 'level on points with the leaders'}`}${d.safety != null ? ` · ${d.inZone ? (d.safety < 0 ? `${-d.safety} pts from safety` : 'in the drop zone on goal difference') : d.safety > 0 ? `${d.safety} pts clear of the drop zone` : 'level on points with the drop zone'}` : ''}</div></div></div>`;
+      our = `<div class="big"><span class="wdl" style="background:${r[1]}">${r[0]}</span><div class="grow" style="min-width:0"><div class="b ellip">${gf}–${ga} v ${opp ? esc(opp.name) : '?'} (${home ? 'H' : 'A'})</div><div class="small dim">Now ${U.ordinal(d.pos)} ${arrow(d.move)} · ${U.pts(d.pts)}${d.top ? ` · ${d.gap ? `${d.gap} clear` : 'top on goal difference'}` : ` · ${d.gap ? `${d.gap} behind the leaders` : 'level on points with the leaders'}`}${d.safety != null ? ` · ${d.inZone ? (d.safety < 0 ? `${U.pts(-d.safety)} from safety` : 'in the drop zone on goal difference') : d.safety > 0 ? `${U.pts(d.safety)} clear of the drop zone` : 'level on points with the drop zone'}` : ''}</div></div></div>`;
     } else
-      our = `<div class="small dim" style="margin-top:6px">No league game for us this round. We're ${U.ordinal(d.pos)} ${arrow(d.move)} on ${d.pts} pts.</div>`;
+      our = `<div class="small dim" style="margin-top:6px">No league game for us this round. We're ${U.ordinal(d.pos)} ${arrow(d.move)} on ${U.pts(d.pts)}.</div>`;
     const table = `<div class="dsec">${d.table.map(([id, pts, mv], i) => `<div class="dr ${id === me ? 'me' : ''}"><span style="width:18px" class="dim">${i + 1}</span>${C.crest(TM(id), 16)}<span class="grow ellip">${esc(TM(id).name)}</span>${arrow(mv)}<b style="width:28px;text-align:right">${pts}</b></div>`).join('')}${d.pos > d.table.length ? `<div class="dr me"><span style="width:18px">${d.pos}</span>${C.crest(TM(me), 16)}<span class="grow ellip">${esc(TM(me).name)}</span>${arrow(d.move)}<b style="width:28px;text-align:right">${d.pts}</b></div>` : ''}</div>`;
     const results = `<div class="dsec"><div class="tiny b dim">RESULTS</div><div class="res">${d.results
       .map(([h, a, hg, ag]) => {
@@ -1281,7 +1281,26 @@
         : [h.apps, h.g, h.a || 0, h.r ? h.r.toFixed(2) : '—'];
       return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip" style="max-width:110px">${c ? esc(c.short) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
     };
-    const tot = history.reduce(
+    // The rows only go back as far as the game has a record: what the Career panel counts beyond them (earlier
+    // seasons at a club, and his career before that) comes as rows of its own, so the totals agree
+    const extra = [];
+    const spells = (p.career && p.career.spells) || [];
+    for (const club of new Set(spells.map((x) => x.c))) {
+      const sp = spells.filter((x) => x.c === club),
+        rows = history.filter((h) => h.c === club);
+      const apps = sp.reduce((t, x) => t + (x.apps || 0), 0) - rows.reduce((t, h) => t + h.apps, 0),
+        g = sp.reduce((t, x) => t + (x.goals || 0), 0) - rows.reduce((t, h) => t + h.g, 0);
+      if (apps > 0) extra.push({ c: club, apps, g: Math.max(0, g), earlier: true });
+    }
+    const shownApps = history.concat(extra).reduce((t, h) => t + h.apps, 0),
+      shownG = history.concat(extra).reduce((t, h) => t + h.g, 0);
+    if (p.career && p.career.apps > shownApps)
+      extra.push({ apps: p.career.apps - shownApps, g: Math.max(0, p.career.goals - shownG), before: true });
+    const extraRow = (h) => {
+      const c = h.c && CL(h.c);
+      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.short) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td></tr>`;
+    };
+    const tot = history.concat(extra).reduce(
       (t, h) => ({
         apps: t.apps + h.apps,
         g: t.g + h.g,
@@ -1293,7 +1312,7 @@
     );
     return `<div class="card"><div class="h3">Season by season</div>
       <table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${head.map((h) => `<th>${h}</th>`).join('')}</tr>
-      ${history.map(row).join('')}
+      ${history.map(row).join('')}${extra.map(extraRow).join('')}
       <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}</tr></table></div>`;
   };
   // Where he counts as trained and for whom he is homegrown (the registration rules read the same record)

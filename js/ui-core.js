@@ -170,6 +170,18 @@
       ? `<span class="tap pname" data-act="player" data-id="${p.id}">${esc(text != null ? text : W.short(p))}</span>`
       : '—';
   C.pos = (p) => `<span class="pos ${D.POS_GROUP[p.pos]}">${W.posLabel(p)}</span>`;
+  // The name without its trailing "United", "Town", "Victoria"... when the full one is too long for the room
+  const TAIL = new Set(
+    'fc cf afc united city town athletic rovers albion wanderers rangers county borough victoria alexandra harriers orient argyle wednesday villa balompié'.split(
+      ' ',
+    ),
+  );
+  C.shortName = (club, max = 14) => {
+    const words = String(club.name).split(' ');
+    while (words.join(' ').length > max && words.length > 1 && TAIL.has(words[words.length - 1].toLowerCase()))
+      words.pop();
+    return words.join(' ');
+  };
   C.flag = (nat) => (D.NATIONS[nat] ? D.NATIONS[nat].flag : '🏳️');
   // The manager's avatar (older careers without one get a neutral face)
   C.avatar = (user, size = 40) => {
@@ -908,7 +920,7 @@
         <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}>${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</button></div>`;
     } else {
       // Your world: what's in it and the rules it plays by (each competition's real ones; not chosen here)
-      body = `<div class="h1" style="margin-top:4vh">Your world</div><div class="tag">Real football, played by its real rules.</div>
+      body = `<div class="h1" style="margin-top:4vh">Your world</div><div class="tag">Real league structures and rules, simplified where the game needs it.</div>
         ${(() => {
           const code = NG.club && NG.club !== 'none' ? String(NG.club).replace(/^c_/, '') : null;
           const lg = code && D.LEAGUES.find((l) => D[l.clubs].some((r) => r[1] === code));

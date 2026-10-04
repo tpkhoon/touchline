@@ -168,6 +168,24 @@
         if (info && info[1] && !c.nick) c.nick = info[1];
       }
     }
+    // abbreviations come from the club's own name now (many carried the codes of its old, real-life name: CHE3, CON)
+    if (s.clubAbbr !== 2 && s.clubs && FM.D.CLUB_INFO) {
+      s.clubAbbr = 2;
+      for (const [id, c] of Object.entries(s.clubs)) {
+        const info = FM.D.CLUB_INFO[id.slice(2)];
+        if (info && info[0]) c.short = info[0];
+      }
+    }
+    // England's divisions were labelled D1–D4 ("D1" read as the First Division, which is D2): ENG1–ENG4
+    if (s.comps && FM.D.LEAGUES)
+      for (const l of FM.D.LEAGUES) {
+        const c = s.comps[l.id];
+        if (c && /^D\d$/.test(c.short) && l.short !== c.short) c.short = l.short;
+      }
+    // "Born Leader" duplicated the Leader trait: the personality is read from the other hidden traits now
+    if (s.players && FM.W)
+      for (const p of Object.values(s.players))
+        if (p.personality === 'Born Leader' && p.hid) p.personality = FM.W.personality(p.hid);
     // the world ranking is a coefficient now (it was an Elo rating, 1500 for an average side)
     for (const t of Object.values(s.nteams || {}))
       if (t.coef == null && t.elo != null) {
