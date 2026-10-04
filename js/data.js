@@ -1802,7 +1802,7 @@
     {
       id: 'ES2',
       nat: 'ESP',
-      name: 'Spanish Liga de Plata',
+      name: 'Orbis Liga de Plata',
       short: 'ES2',
       tier: 2,
       sim: 'light',
@@ -1824,7 +1824,7 @@
     {
       id: 'DE1',
       nat: 'GER',
-      name: 'German Meisterliga',
+      name: 'Calder Meisterliga',
       short: 'DE1',
       tier: 1,
       sim: 'full',
@@ -1835,7 +1835,7 @@
     {
       id: 'DE2',
       nat: 'GER',
-      name: 'German Aufstiegsliga',
+      name: 'Lumen Aufstiegsliga',
       short: 'DE2',
       tier: 2,
       sim: 'light',
@@ -1879,7 +1879,7 @@
     {
       id: 'BR1',
       nat: 'BRA',
-      name: 'Brazilian Série Nacional',
+      name: 'Monarch Série Nacional',
       short: 'BR1',
       tier: 1,
       sim: 'full',
@@ -1890,7 +1890,7 @@
     {
       id: 'IT1',
       nat: 'ITA',
-      name: 'Italian Lega Nazionale',
+      name: 'Northgate Lega Nazionale',
       short: 'IT1',
       tier: 1,
       sim: 'light',
@@ -1912,7 +1912,7 @@
     {
       id: 'PT1',
       nat: 'POR',
-      name: 'Portuguese Superliga',
+      name: 'Ironwood Superliga',
       short: 'PT1',
       tier: 1,
       sim: 'light',
@@ -1934,7 +1934,7 @@
     {
       id: 'AR1',
       nat: 'ARG',
-      name: 'Argentine Superliga',
+      name: 'Harbor Superliga',
       short: 'AR1',
       tier: 1,
       sim: 'light',
@@ -1945,7 +1945,7 @@
     {
       id: 'US1',
       nat: 'USA',
-      name: 'American Super League',
+      name: 'Sable Super League',
       short: 'US1',
       tier: 1,
       sim: 'light',
@@ -1978,7 +1978,7 @@
     {
       id: 'KR1',
       nat: 'KOR',
-      name: 'Korean Premier League',
+      name: 'Nordbank Premier League',
       short: 'KR1',
       tier: 1,
       sim: 'minimal',
@@ -2022,7 +2022,7 @@
     {
       id: 'RS1',
       nat: 'SRB',
-      name: 'Serbian Prva Liga',
+      name: 'Meridian Prva Liga',
       short: 'RS1',
       tier: 1,
       sim: 'minimal',
@@ -2033,7 +2033,7 @@
     {
       id: 'BE1',
       nat: 'BEL',
-      name: 'Belgian Eerste Klasse',
+      name: 'Summit Eerste Klasse',
       short: 'BE1',
       tier: 1,
       sim: 'minimal',
@@ -2066,7 +2066,7 @@
     {
       id: 'GR1',
       nat: 'GRE',
-      name: 'Greek Alfa Liga',
+      name: 'Cobalt Alfa Liga',
       short: 'GR1',
       tier: 1,
       sim: 'minimal',
@@ -2088,7 +2088,7 @@
     {
       id: 'PL1',
       nat: 'POL',
-      name: 'Polish Liga Główna',
+      name: 'Vantage Liga Główna',
       short: 'PL1',
       tier: 1,
       sim: 'minimal',
@@ -2099,7 +2099,7 @@
     {
       id: 'DK1',
       nat: 'DEN',
-      name: 'Danish Topliga',
+      name: 'Polaris Topliga',
       short: 'DK1',
       tier: 1,
       sim: 'minimal',
@@ -2110,7 +2110,7 @@
     {
       id: 'AT1',
       nat: 'AUT',
-      name: 'Austrian Bundesstaffel',
+      name: 'Quanta Bundesstaffel',
       short: 'AT1',
       tier: 1,
       sim: 'minimal',
@@ -2154,7 +2154,7 @@
     {
       id: 'HU1',
       nat: 'HUN',
-      name: 'Hungarian Első Osztály',
+      name: 'Tandem Első Osztály',
       short: 'HU1',
       tier: 1,
       sim: 'minimal',
@@ -2165,7 +2165,7 @@
     {
       id: 'IE1',
       nat: 'IRL',
-      name: 'Irish Premier Union',
+      name: 'Crestline Premier Union',
       short: 'IE1',
       tier: 1,
       sim: 'minimal',

@@ -34,7 +34,7 @@
     ['ENG_EAS', 'ENG', 'ko', 'Grenwold Senior Cup', 'GREC', 'IPS NCI CAMU COL GILL WAT STV LUT PBO'],
     ['ENG_WES', 'ENG', 'ko', 'Reysey Senior Cup', 'REYC', 'BRC BRR SWI CHT PLY EXE'],
     ['ENG_TV', 'ENG', 'ko', 'Filcombe Senior Cup', 'FILC', 'OXF REA WYC MKD'],
-    ['BRA_RJ', 'BRA', 'rr', 'Campeonato Ibipe', 'IBIC', 'FLA BOT FLU VAS'],
+    ['BRA_RJ', 'BRA', 'rr', 'Campeonato Vila Maramirim', 'VILC', 'FLA BOT FLU VAS'],
     ['BRA_SP', 'BRA', 'rr', 'Campeonato Guarama', 'GUAC', 'PAL COR SAO SAN RBB MSL'],
     ['BRA_RS', 'BRA', 'rr', 'Campeonato Guina', 'GUIC', 'GRE SCI JVD'],
     ['BRA_MG', 'BRA', 'rr', 'Campeonato Pitangaçu', 'PITC', 'CAM CRU'],

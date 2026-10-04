@@ -19,6 +19,12 @@ import {
   cupFor,
   clubMoreFor,
   colourAltFor,
+  nameChecks,
+  hardToSay,
+  tooLong,
+  quirkFor,
+  isSimpleClub,
+  SPONSORS,
 } from './namelib.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -119,6 +125,17 @@ export function generate(real, seed = 1) {
     usedName = new Set(),
     usedShort = new Set(),
     usedGround = new Set();
+  const checks = nameChecks(
+    // (real towns and the town-like first words of real clubs' names)
+    Object.values(real.clubs).flatMap((c) => [c.row[2], c.row[0].split(' ').find((w) => w.length >= 5) || '']),
+    Object.values(real.clubs).map((c) => c.row[0]),
+  );
+  // a town name must be new, polite, easy to say and unlike any real town
+  const townBad = (name, L) =>
+    usedPlace.has(name) || isRude(name) || hardToSay(name, L) || name.length > 16 || checks.closeToTown(name);
+  // a club name the same, and not too long or too like a real club
+  const clubBad = (name, L) =>
+    usedName.has(name) || isRude(name) || hardToSay(name, L) || tooLong(name) || checks.closeToClub(name);
   const placeFor = new Map(),
     perPlace = {},
     done = {};
@@ -131,7 +148,7 @@ export function generate(real, seed = 1) {
     let place,
       n = 0;
     do place = placeName(L, r);
-    while ((usedPlace.has(place) || isRude(place)) && ++n < 500);
+    while (townBad(place, L) && ++n < 500);
     if (usedPlace.has(place)) place += n;
     usedPlace.add(place);
     placeFor.set(key, place);
@@ -215,23 +232,35 @@ export function generate(real, seed = 1) {
       let d,
         dt = 0;
       do d = surname(L, rd);
-      while ((usedPlace.has(d) || isRude(d)) && ++dt < 100);
+      while (townBad(d, L) && ++dt < 100);
       usedPlace.add(d);
       base = d;
     }
+    // big clubs get short, plain names (the town and one word); small clubs any pattern, and now and then a town that
+    // sounds smaller and older ("North Litworth Wanderers"); the German and Italian habit of a founding year
+    const rep = row[6],
+      patterns = rep >= 70 ? L.club.filter(isSimpleClub) : L.club,
+      rq = rngOf(`${seed}|quirk|${code}`);
+    const quirk = quirkFor(L);
+    if (rep < 50 && quirk.length && !/[ -]/.test(base) && rq() < 0.22) {
+      const q = rq.pick(quirk);
+      base = q.endsWith('-') ? q + base : `${q} ${base}`;
+    }
+    const year = L.key === 'ger' || L.key === 'ita' ? foundedOf(c, code) : null;
     let name,
       tries = 0;
     do {
       // the first club in a town takes the plain town name more often than a second one does
-      name = L.club[(Math.floor(r() * L.club.length) + (k - 1) * 3 + tries) % L.club.length].replace('{c}', base);
+      name = patterns[(Math.floor(r() * patterns.length) + (k - 1) * 3 + tries) % patterns.length].replace('{c}', base);
+      if (year && !/[0-9]/.test(name) && rq() < 0.3) name += ` ${year}`;
       tries++;
-    } while ((usedName.has(name) || isRude(name)) && tries < L.club.length * 2);
+    } while (clubBad(name, L) && tries < patterns.length * 2);
     // a share of the clubs take one of the language's other patterns ("Hotspur", "Rot-Weiß", "Olympique")
     const more = clubMoreFor(L),
       ra = rngOf(`${seed}|altname|${code}`);
-    if (more.length && ra() < 0.3) {
+    if (rep < 70 && more.length && ra() < 0.3) {
       const alt = ra.pick(more).replace('{c}', base);
-      if (!usedName.has(alt) && !isRude(alt)) name = alt;
+      if (!clubBad(alt, L)) name = alt;
     }
     if (usedName.has(name)) name = `${place} ${k + 1}`;
     usedName.add(name);
@@ -290,11 +319,27 @@ export function generate(real, seed = 1) {
     out.clubs[code].nick = i.nick;
     out.clubs[code].founded = i.founded;
   }
+  const leagueNames = new Set(),
+    sponsorsUsed = new Set();
   // leagues and cups keep their ids, formats and rules; only the name changes
   for (const [id, l] of Object.entries(out.leagues)) {
     const dem = DEMONYM[l.nat] || real.nations[l.nat] || l.nat,
       tiers = TIERS_BY[l.nat] || tiersFor(langOf(l.nat), rngOf(`${seed}|tiers|${l.nat}`));
-    l.name = `${dem} ${tiers[l.tier - 1] || `Division ${l.tier}`}`;
+    const tierName = tiers[l.tier - 1] || `Division ${l.tier}`,
+      rs = rngOf(`${seed}|sponsor|${id}`);
+    // the top two divisions often carry a sponsor's name ("Aurum Top Division")
+    let name = `${dem} ${tierName}`;
+    if (l.tier <= 2 && rs() < (l.tier === 1 ? 0.55 : 0.3)) {
+      const free = SPONSORS.filter((x) => !sponsorsUsed.has(x)),
+        spon = rs.pick(free.length ? free : SPONSORS),
+        sp = `${spon} ${tierName}`;
+      if (!leagueNames.has(sp)) {
+        name = sp;
+        sponsorsUsed.add(spon);
+      }
+    }
+    leagueNames.add(name);
+    l.name = name;
     l.short = /^D\d$/.test(id) ? `${l.nat}${l.tier}` : id; // ("D1" read as England's first division, which is D2)
   }
   const seen = new Set();

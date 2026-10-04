@@ -4,7 +4,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Baywick Town",
+    "Baywick United",
     "MCI",
     "Baywick",
     "#6CABDD",
@@ -22,7 +22,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Clifwold Stanley",
+    "Clifwold Rovers",
     "LIV",
     "Clifwold",
     "#C8102E",
@@ -40,7 +40,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Chelington North End",
+    "Chelington County",
     "ARS",
     "Chelington",
     "#EF0107",
@@ -76,7 +76,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Baywick Alexandra",
+    "Baywick Argyle",
     "MUN",
     "Baywick",
     "#DA291C",
@@ -130,7 +130,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Everwich Rovers",
+    "Everwich Athletic",
     "AVL",
     "Everwich",
     "#670E36",
@@ -148,7 +148,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Calgate Albion",
+    "Calgate Rovers",
     "BHA",
     "Calgate",
     "#0057B8",
@@ -166,7 +166,7 @@
    "league": "D1",
    "nat": "ENG",
    "row": [
-    "Epington Alexandra",
+    "Epington Argyle",
     "NFO",
     "Epington",
     "#DD0000",
@@ -598,17 +598,17 @@
    "league": "D2",
    "nat": "ENG",
    "row": [
-    "Market Darchester Harriers",
+    "Stratsey Harriers",
     "SWA",
-    "Market Darchester",
+    "Stratsey",
     "#FFFFFF",
     "#121212",
     "youth",
     53,
-    "Market Darchester Ground",
+    "Stratsey Ground",
     21088
    ],
-   "short": "MAR",
+   "short": "STR",
    "nick": "Whites",
    "founded": 1956
   },
@@ -616,9 +616,9 @@
    "league": "D2",
    "nat": "ENG",
    "row": [
-    "Wilshall Sporting",
+    "King's Branmere Sporting",
     "DER",
-    "Wilshall",
+    "King's Branmere",
     "#FFFFFF",
     "#000000",
     "fallen",
@@ -626,7 +626,7 @@
     "Welcastle Road",
     32956
    ],
-   "short": "WIL",
+   "short": "KIN",
    "nick": "Royals",
    "founded": 1869
   },
@@ -796,7 +796,7 @@
    "league": "D3",
    "nat": "ENG",
    "row": [
-    "Lamwold Wednesday",
+    "New Lamwold Wednesday",
     "CAR",
     "Lamwold",
     "#0070B5",
@@ -850,7 +850,7 @@
    "league": "D3",
    "nat": "ENG",
    "row": [
-    "Bexstead Athletic",
+    "Great Bexstead Athletic",
     "BWA",
     "Bexstead",
     "#FFFFFF",
@@ -860,7 +860,7 @@
     "Dermouth Park",
     28723
    ],
-   "short": "BED",
+   "short": "GRT",
    "nick": "Lilywhites",
    "founded": 1904
   },
@@ -1120,9 +1120,9 @@
    "league": "D3",
    "nat": "ENG",
    "row": [
-    "Ledford-on-the-Hill Borough",
+    "Old Cansingham Borough",
     "EXE",
-    "Ledford-on-the-Hill",
+    "Cansingham",
     "#D6001C",
     "#FFFFFF",
     "fan",
@@ -1130,7 +1130,7 @@
     "Richpool Field",
     8696
    ],
-   "short": "LED",
+   "short": "CAN",
    "nick": "Red Devils",
    "founded": 1894
   },
@@ -1256,7 +1256,7 @@
     "Winley Park",
     6500
    ],
-   "short": "CAN",
+   "short": "CAS",
    "nick": "Warriors",
    "founded": 1950
   },
@@ -1282,7 +1282,7 @@
    "league": "D4",
    "nat": "ENG",
    "row": [
-    "Reysey Vale",
+    "West Reysey Vale",
     "BRR",
     "Reysey",
     "#0050A0",
@@ -1346,7 +1346,7 @@
     "Mansbrook Green",
     7066
    ],
-   "short": "BEE",
+   "short": "BED",
    "nick": "Red Devils",
    "founded": 1946
   },
@@ -1372,9 +1372,9 @@
    "league": "D4",
    "nat": "ENG",
    "row": [
-    "Saint Buxcastle Vale",
+    "Sutwich Vale",
     "COL",
-    "Saint Buxcastle",
+    "Sutwich",
     "#0045A0",
     "#FFFFFF",
     "fan",
@@ -1382,7 +1382,7 @@
     "Witpool Green",
     10105
    ],
-   "short": "BUX",
+   "short": "SUH",
    "nick": "Foresters",
    "founded": 1880
   },
@@ -1408,9 +1408,9 @@
    "league": "D4",
    "nat": "ENG",
    "row": [
-    "Reaney Alexandra",
+    "North Yeothorpe Alexandra",
     "CREW",
-    "Reaney",
+    "Yeothorpe",
     "#E2001A",
     "#FFFFFF",
     "youth",
@@ -1418,7 +1418,7 @@
     "Folbury Park",
     10153
    ],
-   "short": "REA",
+   "short": "YEO",
    "nick": "Seahawks",
    "founded": 1890
   },
@@ -1444,9 +1444,9 @@
    "league": "D4",
    "nat": "ENG",
    "row": [
-    "Sawsea Athletic",
+    "Milcaster Athletic",
     "GILL",
-    "Sawsea",
+    "Milcaster",
     "#0033A0",
     "#FFFFFF",
     "historic",
@@ -1454,7 +1454,7 @@
     "Camstow Lane",
     11582
    ],
-   "short": "SAW",
+   "short": "MIL",
    "nick": "Blue Army",
    "founded": 1901
   },
@@ -1534,7 +1534,7 @@
    "league": "D4",
    "nat": "ENG",
    "row": [
-    "Epington Wanderers",
+    "Church Epington Wanderers",
     "NCO",
     "Epington",
     "#000000",
@@ -1544,7 +1544,7 @@
     "Witby Road",
     19841
    ],
-   "short": "EPN",
+   "short": "CHU",
    "nick": "Rams",
    "founded": 1901
   },
@@ -1580,7 +1580,7 @@
     "Sandington Road",
     5108
    ],
-   "short": "YEO",
+   "short": "YEK",
    "nick": "Crimsons",
    "founded": 1910
   },
@@ -1606,9 +1606,9 @@
    "league": "D4",
    "nat": "ENG",
    "row": [
-    "Burdon City",
+    "Little Tarncaster City",
     "SWI",
-    "Burdon",
+    "Tarncaster",
     "#E2001A",
     "#FFFFFF",
     "fallen",
@@ -1616,7 +1616,7 @@
     "The Exsey Stadium",
     15728
    ],
-   "short": "BUN",
+   "short": "LIE",
    "nick": "Red Devils",
    "founded": 1867
   },
@@ -1660,7 +1660,7 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Unión Olmador",
+    "Deportivo Olmador",
     "RMA",
     "Olmador",
     "#FFFFFF",
@@ -1696,7 +1696,7 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Racing Olmador",
+    "Olmador CF",
     "ATM",
     "Olmador",
     "#CB3524",
@@ -1714,7 +1714,7 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Estudiantes de Cuenero",
+    "Real Cuenero",
     "ATH",
     "Cuenero",
     "#EE2523",
@@ -1750,7 +1750,7 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Juventud Liorera",
+    "Atlético Liorera",
     "RSO",
     "Liorera",
     "#143C8B",
@@ -1768,7 +1768,7 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Estudiantes de Alcaledo",
+    "Deportivo Alcaledo",
     "BET",
     "Alcaledo",
     "#0BB363",
@@ -1876,9 +1876,9 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Juventud Peñara",
+    "Juventud Calatares",
     "MLL",
-    "Peñara",
+    "Calatares",
     "#E20613",
     "#000000",
     "fan",
@@ -1886,7 +1886,7 @@
     "Estadio Segovero",
     26020
    ],
-   "short": "PEN",
+   "short": "CES",
    "nick": "Rojos",
    "founded": 1894
   },
@@ -1912,7 +1912,7 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Atlético Salamara",
+    "Atlético Osunera",
     "RAY",
     "Olmador",
     "#FFFFFF",
@@ -1922,7 +1922,7 @@
     "Ciudad Deportiva Olmador",
     14708
    ],
-   "short": "SAL",
+   "short": "OSU",
    "nick": "Cruzados",
    "founded": 1936
   },
@@ -1984,14 +1984,14 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Monte Fuentares Sporting Club",
+    "Racing Monte Fuentares",
     "LEV",
     "Monte Fuentares",
     "#B5123E",
     "#004F9F",
     "fan",
     59,
-    "Estadio La Cordana",
+    "Estadio Zamanes",
     26354
    ],
    "short": "MOE",
@@ -2002,17 +2002,17 @@
    "league": "ES1",
    "nat": "ESP",
    "row": [
-    "Salamador CF",
+    "Sorar CF",
     "ELC",
-    "Salamador",
+    "Sorar",
     "#FFFFFF",
     "#05642C",
     "fan",
     58,
-    "Campo de Salamador",
+    "Campo de Sorar",
     31388
    ],
-   "short": "SAR",
+   "short": "SOR",
    "nick": "Blancos",
    "founded": 1933
   },
@@ -2066,7 +2066,7 @@
     "Ciudad Deportiva Benavete",
     27618
    ],
-   "short": "BTE",
+   "short": "BEE",
    "nick": "Granates",
    "founded": 1902
   },
@@ -2074,9 +2074,9 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Unión Liorón",
+    "Unión El de Calatosa",
     "MAL",
-    "Liorón",
+    "El de Calatosa",
     "#0073CF",
     "#FFFFFF",
     "fallen",
@@ -2084,7 +2084,7 @@
     "Estadio Valino",
     30044
    ],
-   "short": "LIN",
+   "short": "ELL",
    "nick": "Azules",
    "founded": 1873
   },
@@ -2102,7 +2102,7 @@
     "Estadio Municipal de Salamedo",
     15274
    ],
-   "short": "SAO",
+   "short": "SAL",
    "nick": "Rojos",
    "founded": 1940
   },
@@ -2110,7 +2110,7 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "La de Aranjero Sporting Club",
+    "Racing La de Aranjero",
     "ZAR",
     "La de Aranjero",
     "#FFFFFF",
@@ -2192,7 +2192,7 @@
     "Campo de Marbejo",
     22222
    ],
-   "short": "MAO",
+   "short": "MAR",
    "nick": "Blancos",
    "founded": 1898
   },
@@ -2236,9 +2236,9 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Deportivo Montón",
+    "Deportivo Sorana",
     "CAS",
-    "Montón",
+    "Sorana",
     "#FFFFFF",
     "#000000",
     "oil",
@@ -2246,7 +2246,7 @@
     "Estadio Salamena",
     15500
    ],
-   "short": "MOM",
+   "short": "SOA",
    "nick": "Blancos",
    "founded": 1887
   },
@@ -2254,17 +2254,17 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Torrero CF",
+    "Roblón CF",
     "AND",
-    "Torrero",
+    "Roblón",
     "#0038A8",
     "#FEDD00",
     "oil",
     50,
-    "Nuevo Estadio Torrero",
+    "Nuevo Estadio Roblón",
     3306
    ],
-   "short": "TOO",
+   "short": "RON",
    "nick": "Azules",
    "founded": 1896
   },
@@ -2362,7 +2362,7 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Juventud Liorera B",
+    "Atlético Liorera B",
     "RSS",
     "Liorera",
     "#143C8B",
@@ -2381,7 +2381,7 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Racing Corvana",
+    "Racing Santa Corvana",
     "CYD",
     "Corvana",
     "#FFFFFF",
@@ -2417,7 +2417,7 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Unión Olmador B",
+    "Deportivo Olmador B",
     "RMC",
     "Olmador",
     "#FFFFFF",
@@ -2455,7 +2455,7 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Estudiantes de Cuenero B",
+    "Real Cuenero B",
     "BIA",
     "Cuenero",
     "#EE2523",
@@ -2492,7 +2492,7 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Racing Olmador B",
+    "Olmador CF B",
     "ATB",
     "Olmador",
     "#CB3524",
@@ -2568,7 +2568,7 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Estudiantes de Alcaledo B",
+    "Deportivo Alcaledo B",
     "BEB",
     "Alcaledo",
     "#0BB363",
@@ -2597,7 +2597,7 @@
     "Estadio Oñatena",
     22824
    ],
-   "short": "RON",
+   "short": "ROL",
    "nick": "Titanes",
    "founded": 1900
   },
@@ -2605,7 +2605,7 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Estudiantes de Villa Mayorena",
+    "Deportivo Villa Mayorena",
     "CTG",
     "Villa Mayorena",
     "#000000",
@@ -2641,17 +2641,17 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Baila Balompié",
+    "Torrilla Balompié",
     "NAS",
-    "Baila",
+    "Torrilla",
     "#C8102E",
     "#000000",
     "historic",
     41,
-    "Ciudad Deportiva Baila",
+    "Ciudad Deportiva Torrilla",
     14591
    ],
-   "short": "BAI",
+   "short": "TOA",
    "nick": "Alacranes",
    "founded": 1885
   },
@@ -2705,7 +2705,7 @@
     "Nuevo Estadio Castador",
     30000
    ],
-   "short": "CAS",
+   "short": "CAC",
    "nick": "Azules",
    "founded": 1884
   },
@@ -2713,9 +2713,9 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Atlético Cervara",
+    "Atlético Elchanes",
     "IBI",
-    "Cervara",
+    "Elchanes",
     "#0057B8",
     "#FFFFFF",
     "oil",
@@ -2723,7 +2723,7 @@
     "Estadio Gandejo",
     4500
    ],
-   "short": "CEA",
+   "short": "ELC",
    "nick": "Azules",
    "founded": 1943
   },
@@ -2731,9 +2731,9 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Club Castedo",
+    "Club Osuneda",
     "CDLU",
-    "Castedo",
+    "Osuneda",
     "#E2001A",
     "#FFFFFF",
     "fan",
@@ -2741,7 +2741,7 @@
     "Estadio La Benero",
     7840
    ],
-   "short": "CAO",
+   "short": "OSA",
    "nick": "Rojos",
    "founded": 1939
   },
@@ -2767,7 +2767,7 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Peñino Sporting Club",
+    "Nueva Peñino Sporting Club",
     "ALG",
     "Peñino",
     "#C8102E",
@@ -2777,7 +2777,7 @@
     "Estadio Lermete",
     7100
    ],
-   "short": "PEO",
+   "short": "NUE",
    "nick": "Rojos",
    "founded": 1947
   },
@@ -2785,7 +2785,7 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Viktoria Dillhafen",
+    "Union Dillhafen",
     "BAY",
     "Dillhafen",
     "#DC052D",
@@ -2803,7 +2803,7 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Blau-Weiß Althof im Tal",
+    "Teutonia Althof im Tal",
     "BVB",
     "Althof im Tal",
     "#FDE100",
@@ -2813,7 +2813,7 @@
     "Stadion Waldau",
     81365
    ],
-   "short": "BLA",
+   "short": "ALT",
    "nick": "Falken",
    "founded": 1951
   },
@@ -2821,17 +2821,17 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Arminia Unter Felswald",
+    "TSV Unter Felswald",
     "B04",
     "Unter Felswald",
     "#E32221",
     "#000000",
     "historic",
     81,
-    "Unter Felswald-Arena",
+    "Thalbrück-Stadion",
     30210
    ],
-   "short": "ARM",
+   "short": "UNT",
    "nick": "Bären",
    "founded": 1866
   },
@@ -2839,7 +2839,7 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Teutonia Marieningen",
+    "Viktoria Marieningen",
     "RBL",
     "Marieningen",
     "#FFFFFF",
@@ -2857,7 +2857,7 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "SC Dornsee 1901",
+    "Viktoria Dornsee",
     "SGE",
     "Dornsee",
     "#000000",
@@ -2875,17 +2875,17 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Teutonia Niederhafen am Berg",
+    "Viktoria Burgtal",
     "VFB",
-    "Niederhafen am Berg",
+    "Burgtal",
     "#FFFFFF",
     "#E32219",
     "historic",
     74,
-    "Waldstadion Niederhafen am Berg",
+    "Waldstadion Burgtal",
     60449
    ],
-   "short": "NIE",
+   "short": "BUL",
    "nick": "Gladiatoren",
    "founded": 1873
   },
@@ -2921,7 +2921,7 @@
     "Stadion Eichkirchen",
     28917
    ],
-   "short": "ARA",
+   "short": "ARM",
    "nick": "Grünen",
    "founded": 1915
   },
@@ -3011,7 +3011,7 @@
     "Waldstadion Unter Furtbach",
     33305
    ],
-   "short": "UNT",
+   "short": "UNR",
    "nick": "Roten",
    "founded": 1879
   },
@@ -3019,9 +3019,9 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Sportfreunde Waldingen am Berg",
+    "Sportfreunde Burgingen",
     "FCU",
-    "Waldingen am Berg",
+    "Burgingen",
     "#EB1923",
     "#FFFFFF",
     "fan",
@@ -3029,7 +3029,7 @@
     "Stadion am Waldingen",
     22012
    ],
-   "short": "WAL",
+   "short": "BUN",
    "nick": "Roten",
    "founded": 1916
   },
@@ -3037,7 +3037,7 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "VfL Mühlfeld",
+    "VfL Mühlfeld 1989",
     "TSG",
     "Mühlfeld",
     "#1C63B7",
@@ -3073,14 +3073,14 @@
    "league": "DE1",
    "nat": "GER",
    "row": [
-    "Sportfreunde Berghorst",
+    "Berghorst 1899",
     "STP",
     "Berghorst",
     "#624839",
     "#FFFFFF",
     "fan",
     60,
-    "Marienbach-Stadion",
+    "Waldstadion Berghorst",
     29546
    ],
    "short": "BET",
@@ -3109,9 +3109,9 @@
    "league": "DE2",
    "nat": "GER",
    "row": [
-    "Eintracht Waldingen am Berg",
+    "Eintracht Burgingen",
     "BSC",
-    "Waldingen am Berg",
+    "Burgingen",
     "#005CA9",
     "#FFFFFF",
     "fallen",
@@ -3119,7 +3119,7 @@
     "Elstein-Stadion",
     74475
    ],
-   "short": "WAN",
+   "short": "BUB",
    "nick": "Fischer",
    "founded": 1882
   },
@@ -3163,7 +3163,7 @@
    "league": "DE2",
    "nat": "GER",
    "row": [
-    "Fortuna Neckardorf",
+    "Fortuna Neckardorf 1905",
     "VFLB",
     "Neckardorf",
     "#005CA9",
@@ -3209,7 +3209,7 @@
     "Sportpark Altheim",
     49000
    ],
-   "short": "ALT",
+   "short": "ALS",
    "nick": "Grünen",
    "founded": 1867
   },
@@ -3433,18 +3433,18 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Teutonia Niederhafen am Berg B",
+    "Viktoria Burgtal B",
     "VFS",
-    "Niederhafen am Berg",
+    "Burgtal",
     "#FFFFFF",
     "#E32219",
     "youth",
     42,
-    "Waldstadion Niederhafen am Berg",
+    "Waldstadion Burgtal",
     5000,
     "VFB"
    ],
-   "short": "NIEB",
+   "short": "BULB",
    "nick": "",
    "founded": 1903
   },
@@ -3452,7 +3452,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Blau-Weiß Althof im Tal B",
+    "Teutonia Althof im Tal B",
     "BVZ",
     "Althof im Tal",
     "#FDE100",
@@ -3463,7 +3463,7 @@
     9999,
     "BVB"
    ],
-   "short": "BLAB",
+   "short": "ALTB",
    "nick": "",
    "founded": 1983
   },
@@ -3471,7 +3471,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "VfL Mühlfeld B",
+    "VfL Mühlfeld 1989 B",
     "TSZ",
     "Mühlfeld",
     "#1C63B7",
@@ -3508,7 +3508,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "VfB Ahrhafen",
+    "VfB Ahrhafen 1894",
     "FCE",
     "Ahrhafen",
     "#E2001A",
@@ -3544,7 +3544,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Blau-Weiß Burgberg",
+    "Blau-Weiß Klein Burgberg",
     "SVWW",
     "Burgberg",
     "#E2001A",
@@ -3554,7 +3554,7 @@
     "Sportpark Lütwald",
     15295
    ],
-   "short": "BLU",
+   "short": "BLA",
    "nick": "Roten",
    "founded": 1889
   },
@@ -3562,7 +3562,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "TSV Branhafen",
+    "TSV Branhafen 1888",
     "VKO",
     "Branhafen",
     "#E2001A",
@@ -3598,7 +3598,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Union Hirschburg",
+    "Union Hirschburg 1886",
     "AUE",
     "Hirschburg",
     "#6A0DAD",
@@ -3616,7 +3616,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Borussia Ebersee",
+    "Borussia Ober Ebersee",
     "AAC",
     "Ebersee",
     "#FFD700",
@@ -3652,7 +3652,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "SpVgg Lindhafen",
+    "SpVgg Lindhafen 1909",
     "OSN",
     "Lindhafen",
     "#6A0DAD",
@@ -3662,7 +3662,7 @@
     "Lindhafen-Arena",
     15741
    ],
-   "short": "LEN",
+   "short": "LIN",
    "nick": "Adler",
    "founded": 1909
   },
@@ -3688,7 +3688,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Borussia Holzkirchen",
+    "Borussia Unter Holzkirchen",
     "JAH",
     "Holzkirchen",
     "#E2001A",
@@ -3706,7 +3706,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "VfL Branwald",
+    "VfL Groß Branwald",
     "ULM",
     "Branwald",
     "#000000",
@@ -3716,7 +3716,7 @@
     "Westerheim-Stadion",
     17000
    ],
-   "short": "BRD",
+   "short": "GRO",
    "nick": "Schwarzen",
    "founded": 1883
   },
@@ -3742,7 +3742,7 @@
    "league": "DE3",
    "nat": "GER",
    "row": [
-    "Teutonia Dillhorst",
+    "Teutonia Dillhorst 1884",
     "FCS",
     "Dillhorst",
     "#0033A0",
@@ -3796,7 +3796,7 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "AS Quimcourt",
+    "Athlétic Quimcourt",
     "PSG",
     "Quimcourt",
     "#004170",
@@ -3814,17 +3814,17 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "AJ Rocac",
+    "Stade Lunens",
     "OMA",
-    "Rocac",
+    "Lunens",
     "#FFFFFF",
     "#2FAEE0",
     "giant",
     82,
-    "Parc des Sports de Rocac",
+    "Complexe Tourlac",
     67394
    ],
-   "short": "ROC",
+   "short": "LUN",
    "nick": "Blancs",
    "founded": 1898
   },
@@ -3832,7 +3832,7 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "SC Chaange",
+    "AJ Chaange",
     "ASM",
     "Chaange",
     "#E30613",
@@ -3850,7 +3850,7 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "Étoile Joylieu",
+    "RC Joylieu",
     "OLY",
     "Joylieu",
     "#FFFFFF",
@@ -3868,7 +3868,7 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "FC Mirières",
+    "US Mirières",
     "LIL",
     "Mirières",
     "#E01E13",
@@ -3886,7 +3886,7 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "Étoile de Bourcourt",
+    "ES Bourcourt",
     "NIC",
     "Bourcourt",
     "#CE1126",
@@ -3904,7 +3904,7 @@
    "league": "FR1",
    "nat": "FRA",
    "row": [
-    "Valange FC",
+    "Stade Valange",
     "REN",
     "Valange",
     "#E2001A",
@@ -4004,7 +4004,7 @@
     "Complexe Sarac",
     35322
    ],
-   "short": "LUN",
+   "short": "LUU",
    "nick": "Jaunes",
    "founded": 1892
   },
@@ -4058,7 +4058,7 @@
     "Stade Lunville",
     18541
    ],
-   "short": "ROG",
+   "short": "ROC",
    "nick": "Comètes",
    "founded": 1945
   },
@@ -4192,7 +4192,7 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "Athlétic Cherault",
+    "Athlétic Saint-Cherault",
     "PAU",
     "Cherault",
     "#FFD700",
@@ -4220,7 +4220,7 @@
     "Stade Municipal de Château-Clermont",
     15660
    ],
-   "short": "CHU",
+   "short": "CAU",
    "nick": "Gladiateurs",
    "founded": 1912
   },
@@ -4228,7 +4228,7 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "Chaon FC",
+    "Château-Chaon FC",
     "LAV",
     "Chaon",
     "#F58025",
@@ -4238,7 +4238,7 @@
     "Stade de la Lavières",
     18467
    ],
-   "short": "CON",
+   "short": "CHC",
    "nick": "Oranges",
    "founded": 1954
   },
@@ -4274,7 +4274,7 @@
     "Parc des Sports de Casslac",
     12097
    ],
-   "short": "CAC",
+   "short": "CCA",
    "nick": "Blancs",
    "founded": 1930
   },
@@ -4300,9 +4300,9 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "Athlétic Nanville",
+    "Athlétic Vilon-en-Vallée",
     "ROD",
-    "Nanville",
+    "Vilon-en-Vallée",
     "#E2001A",
     "#FFD700",
     "fan",
@@ -4310,7 +4310,7 @@
     "Stade de la Cherville",
     5955
    ],
-   "short": "NAN",
+   "short": "VIL",
    "nick": "Rouges",
    "founded": 1942
   },
@@ -4318,17 +4318,17 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "Olympique Ponange",
+    "Olympique Beaubourg",
     "CF63",
-    "Ponange",
+    "Beaubourg",
     "#E2001A",
     "#005CA9",
     "fan",
     49,
-    "Stade Municipal de Ponange",
+    "Stade Municipal de Beaubourg",
     11980
    ],
-   "short": "OLP",
+   "short": "OLB",
    "nick": "Loups",
    "founded": 1888
   },
@@ -4336,9 +4336,9 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "AS Mirac",
+    "AS Sarlac",
     "USL",
-    "Mirac",
+    "Sarlac",
     "#005CA9",
     "#FFFFFF",
     "fan",
@@ -4346,7 +4346,7 @@
     "Stade Ponbourg",
     4933
    ],
-   "short": "MIC",
+   "short": "SAR",
    "nick": "Bleus",
    "founded": 1920
   },
@@ -4390,9 +4390,9 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "Racing Sainte-Cassville",
+    "Racing Dureau",
     "ASN",
-    "Sainte-Cassville",
+    "Dureau",
     "#FFFFFF",
     "#E2001A",
     "fallen",
@@ -4400,7 +4400,7 @@
     "Stade Clerange",
     20087
    ],
-   "short": "SAI",
+   "short": "DUR",
    "nick": "Blancs",
    "founded": 1907
   },
@@ -4444,17 +4444,17 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Sociedade Esportiva Ibipe",
+    "União Vila Maramirim",
     "FLA",
-    "Ibipe",
+    "Vila Maramirim",
     "#C4122E",
     "#000000",
     "giant",
     85,
-    "Estádio Municipal de Ibipe",
+    "Estádio Municipal de Vila Maramirim",
     78838
    ],
-   "short": "IBI",
+   "short": "VIA",
    "nick": "Rubro-Negros",
    "founded": 1880
   },
@@ -4462,7 +4462,7 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Racing Guarama",
+    "União Guarama",
     "PAL",
     "Guarama",
     "#006437",
@@ -4480,7 +4480,7 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Sport Clube Guarama",
+    "Guarama FC",
     "COR",
     "Guarama",
     "#FFFFFF",
@@ -4498,7 +4498,7 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Guaria FC",
+    "Grêmio Guaria",
     "SAO",
     "Guarama",
     "#FFFFFF",
@@ -4516,9 +4516,9 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Atlético Ibipe",
+    "Vila Maramirim FC",
     "BOT",
-    "Ibipe",
+    "Vila Maramirim",
     "#000000",
     "#FFFFFF",
     "oil",
@@ -4526,7 +4526,7 @@
     "Complexo Tijina",
     46831
    ],
-   "short": "IBE",
+   "short": "VLA",
    "nick": "Pretos",
    "founded": 1982
   },
@@ -4570,7 +4570,7 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Atlético Guina",
+    "Guina EC",
     "SCI",
     "Guina",
     "#E30613",
@@ -4588,9 +4588,9 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Clube Maraba",
+    "União Pitangai",
     "FLU",
-    "Ibipe",
+    "Vila Maramirim",
     "#7A1F3D",
     "#00613C",
     "historic",
@@ -4598,7 +4598,7 @@
     "Estádio Nhaniba",
     78838
    ],
-   "short": "MAA",
+   "short": "PII",
    "nick": "Leões",
    "founded": 1895
   },
@@ -4606,7 +4606,7 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Sport Clube Pitangaçu",
+    "Atlético Pitangaçu",
     "CRU",
     "Pitangaçu",
     "#0033A0",
@@ -4624,9 +4624,9 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Associação Atlética Vassoguá",
+    "Vassoguá EC",
     "VAS",
-    "Ibipe",
+    "Vila Maramirim",
     "#FFFFFF",
     "#000000",
     "fallen",
@@ -4642,7 +4642,7 @@
    "league": "BR1",
    "nat": "BRA",
    "row": [
-    "Sport Clube Urucai",
+    "Urucai EC",
     "SAN",
     "Urucai",
     "#FFFFFF",
@@ -4778,7 +4778,7 @@
     "Estádio Municipal de Arapara",
     19924
    ],
-   "short": "AAR",
+   "short": "ARA",
    "nick": "Verdões",
    "founded": 1893
   },
@@ -4804,7 +4804,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Unione Pietto",
+    "US Pietto",
     "INT",
     "Pietto",
     "#0068A8",
@@ -4840,9 +4840,9 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Pro Marara",
+    "AC Monte Roccate",
     "NAP",
-    "Marara",
+    "Monte Roccate",
     "#12A0D7",
     "#FFFFFF",
     "historic",
@@ -4850,7 +4850,7 @@
     "Stadio Serale",
     54726
    ],
-   "short": "MRA",
+   "short": "MRO",
    "nick": "Celesti",
    "founded": 1870
   },
@@ -4858,7 +4858,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Atletico Pietto",
+    "Pro Pietto",
     "ACM",
     "Pietto",
     "#FB090B",
@@ -4894,7 +4894,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "US Belago",
+    "AC Belago",
     "ROM",
     "Belago",
     "#8E1F2F",
@@ -4912,14 +4912,14 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Atletico Belago",
+    "US Belago 1900",
     "LAZ",
     "Belago",
     "#87D8F7",
     "#FFFFFF",
     "historic",
     74,
-    "Stadio Monate",
+    "Stadio Monola",
     70634
    ],
    "short": "BGO",
@@ -4930,9 +4930,9 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Sporting Corale",
+    "Audace Ferara",
     "BOL",
-    "Corale",
+    "Ferara",
     "#A21C26",
     "#1A2F48",
     "youth",
@@ -4940,7 +4940,7 @@
     "Stadio Nuovo Trenello",
     36462
    ],
-   "short": "COE",
+   "short": "FER",
    "nick": "Rossi",
    "founded": 1906
   },
@@ -4948,17 +4948,17 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Unione Porto Santano",
+    "US Ferucci",
     "FIO",
-    "Porto Santano",
+    "Ferucci",
     "#482E92",
     "#FFFFFF",
     "historic",
     73,
-    "Stadio Civico di Porto Santano",
+    "Stadio Civico di Ferucci",
     43147
    ],
-   "short": "POR",
+   "short": "FEI",
    "nick": "Gladiatori",
    "founded": 1903
   },
@@ -4966,17 +4966,17 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Juventus Vilezia",
+    "Frascano Calcio 1909",
     "COM",
-    "Vilezia",
+    "Frascano",
     "#0E3E8C",
     "#FFFFFF",
     "oil",
     70,
-    "Stadio Comunale di Vilezia",
+    "Stadio Comunale di Frascano",
     13602
    ],
-   "short": "JUV",
+   "short": "FRA",
    "nick": "Azzurri",
    "founded": 1909
   },
@@ -5002,7 +5002,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "AC Mirara",
+    "AC Mirara 1901",
     "UDI",
     "Mirara",
     "#FFFFFF",
@@ -5056,7 +5056,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Sporting Frascola",
+    "Sporting Frascola 1952",
     "CAG",
     "Frascola",
     "#A6192E",
@@ -5066,7 +5066,7 @@
     "Stadio Nuovo Vilale",
     16416
    ],
-   "short": "FRA",
+   "short": "FLA",
    "nick": "Rossi",
    "founded": 1952
   },
@@ -5074,7 +5074,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Virtus Orvezia",
+    "Virtus Orvezia 1977",
     "SAS",
     "Orvezia",
     "#00A650",
@@ -5092,17 +5092,17 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Audace Casia",
+    "Audace Valara",
     "VER",
-    "Casia",
+    "Valara",
     "#FFD100",
     "#003DA5",
     "youth",
     60,
-    "Stadio Comunale di Casia",
+    "Stadio Comunale di Valara",
     39211
    ],
-   "short": "CAA",
+   "short": "VAA",
    "nick": "Gialli",
    "founded": 1952
   },
@@ -5110,9 +5110,9 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "Virtus Piate",
+    "Virtus Casucci",
     "LEC",
-    "Piate",
+    "Casucci",
     "#FFD100",
     "#E30613",
     "youth",
@@ -5120,7 +5120,7 @@
     "Arena Vilate",
     31533
    ],
-   "short": "PIA",
+   "short": "CAI",
    "nick": "Gabbiani",
    "founded": 1927
   },
@@ -5128,7 +5128,7 @@
    "league": "IT1",
    "nat": "ITA",
    "row": [
-    "SSC Trenone",
+    "SSC Trenone 1902",
     "CRE",
     "Trenone",
     "#E30613",
@@ -5174,7 +5174,7 @@
     "Stadio Nuovo Sassara",
     16917
    ],
-   "short": "STO",
+   "short": "SAO",
    "nick": "Rossi",
    "founded": 1910
   },
@@ -5200,9 +5200,9 @@
    "league": "IT2",
    "nat": "ITA",
    "row": [
-    "Sporting Torano",
+    "Sporting Trenago",
     "EMP",
-    "Torano",
+    "Trenago",
     "#005CA9",
     "#FFFFFF",
     "youth",
@@ -5210,7 +5210,7 @@
     "Arena Frascia",
     16284
    ],
-   "short": "TNO",
+   "short": "TRO",
    "nick": "Cervi",
    "founded": 1907
   },
@@ -5254,9 +5254,9 @@
    "league": "IT2",
    "nat": "ITA",
    "row": [
-    "Atletico Pescate",
+    "Atletico Corucci",
     "BARI",
-    "Pescate",
+    "Corucci",
     "#FFFFFF",
     "#E2001A",
     "fallen",
@@ -5264,7 +5264,7 @@
     "Stadio Nuovo Toria",
     58270
    ],
-   "short": "PES",
+   "short": "COI",
    "nick": "Volpi",
    "founded": 1895
   },
@@ -5308,7 +5308,7 @@
    "league": "IT2",
    "nat": "ITA",
    "row": [
-    "US Paducci",
+    "US Paducci 1942",
     "CTZ",
     "Paducci",
     "#FFD700",
@@ -5336,7 +5336,7 @@
     "Arena Ravia",
     23860
    ],
-   "short": "PII",
+   "short": "PNO",
    "nick": "Bianchi",
    "founded": 1931
   },
@@ -5362,7 +5362,7 @@
    "league": "IT2",
    "nat": "ITA",
    "row": [
-    "US Ponino",
+    "US San Ponino",
     "SUD2",
     "Ponino",
     "#FFFFFF",
@@ -5426,7 +5426,7 @@
     "Stadio Orvara",
     32336
    ],
-   "short": "JUS",
+   "short": "JUV",
    "nick": "Bianchi",
    "founded": 1888
   },
@@ -5452,17 +5452,17 @@
    "league": "IT2",
    "nat": "ITA",
    "row": [
-    "Audace Corara",
+    "Audace San Marona",
     "ENT",
-    "Corara",
+    "San Marona",
     "#005CA9",
     "#FFFFFF",
     "fan",
     45,
-    "Stadio Civico di Corara",
+    "Stadio Civico di San Marona",
     5535
    ],
-   "short": "CRA",
+   "short": "MAA",
    "nick": "Azzurri",
    "founded": 1906
   },
@@ -5524,7 +5524,7 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Naval Porteiro",
+    "Sporting Porteiro",
     "BEN",
     "Porteiro",
     "#E30613",
@@ -5534,7 +5534,7 @@
     "Estádio Leirares",
     64642
    ],
-   "short": "NAL",
+   "short": "POR",
    "nick": "Rubro-Negros",
    "founded": 1900
   },
@@ -5542,7 +5542,7 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Sport Clube Pombão",
+    "União Pombão",
     "FCP",
     "Pombão",
     "#003893",
@@ -5560,7 +5560,7 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Sporting Porteiro",
+    "Atlético Porteiro",
     "SCP",
     "Porteiro",
     "#008057",
@@ -5578,7 +5578,7 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Associação Santinha",
+    "Clube Santinha",
     "SCB",
     "Santinha",
     "#E30613",
@@ -5606,7 +5606,7 @@
     "Complexo Desportivo Penura",
     30029
    ],
-   "short": "PEA",
+   "short": "PEN",
    "nick": "Brancos",
    "founded": 1955
   },
@@ -5614,9 +5614,9 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Sporting Moncha",
+    "Sporting Alenteira",
     "SCL",
-    "Moncha",
+    "Alenteira",
     "#E30613",
     "#FFFFFF",
     "fan",
@@ -5624,7 +5624,7 @@
     "Estádio Nova Ferrães",
     13277
    ],
-   "short": "MHA",
+   "short": "ALE",
    "nick": "Rubro-Negros",
    "founded": 1927
   },
@@ -5642,7 +5642,7 @@
     "Estádio Mirela",
     5307
    ],
-   "short": "GRO",
+   "short": "GUG",
    "nick": "Dragões",
    "founded": 1934
   },
@@ -5668,9 +5668,9 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Associação Santouro",
+    "Associação Gouvura",
     "GIL",
-    "Santouro",
+    "Gouvura",
     "#E30613",
     "#003DA5",
     "fan",
@@ -5678,7 +5678,7 @@
     "Estádio Portão",
     12046
    ],
-   "short": "SRO",
+   "short": "GOU",
    "nick": "Rubro-Negros",
    "founded": 1897
   },
@@ -5704,9 +5704,9 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Lamal Atlético Clube",
+    "Marvães Atlético Clube",
     "RAV",
-    "Lamal",
+    "Marvães",
     "#00843D",
     "#FFFFFF",
     "oil",
@@ -5714,7 +5714,7 @@
     "Arena Figa",
     9065
    ],
-   "short": "LAL",
+   "short": "MAS",
    "nick": "Verdes",
    "founded": 1961
   },
@@ -5722,17 +5722,17 @@
    "league": "PT1",
    "nat": "POR",
    "row": [
-    "Sporting Portares da Serra",
+    "Sporting Campo Vendão",
     "MOR",
-    "Portares da Serra",
+    "Campo Vendão",
     "#00843D",
     "#FFFFFF",
     "fan",
     57,
-    "Complexo Desportivo Portares da Serra",
+    "Complexo Desportivo Campo Vendão",
     6153
    ],
-   "short": "POS",
+   "short": "CAO",
    "nick": "Verdes",
    "founded": 1889
   },
@@ -5912,7 +5912,7 @@
     "Westhoven Stadion",
     19478
    ],
-   "short": "GRT",
+   "short": "GOT",
    "nick": "Rooien",
    "founded": 1982
   },
@@ -5938,9 +5938,9 @@
    "league": "NL1",
    "nat": "NED",
    "row": [
-    "SC Westbrug",
+    "SC Nieuw Gronvoort",
     "UTR",
-    "Westbrug",
+    "Nieuw Gronvoort",
     "#E30613",
     "#FFFFFF",
     "fan",
@@ -5948,7 +5948,7 @@
     "Alkdijk Stadion",
     23750
    ],
-   "short": "WES",
+   "short": "NIE",
    "nick": "Rooien",
    "founded": 1948
   },
@@ -5984,7 +5984,7 @@
     "Bergwaard Stadion",
     12500
    ],
-   "short": "GOT",
+   "short": "GRH",
    "nick": "Rooien",
    "founded": 1880
   },
@@ -6172,7 +6172,7 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Gimnasia de Arrano",
+    "Sportivo Arrano",
     "RIV",
     "Arrano",
     "#FFFFFF",
@@ -6190,7 +6190,7 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Defensores de Arrano",
+    "Atlético Arrano",
     "BOC",
     "Arrano",
     "#0033A0",
@@ -6226,14 +6226,14 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Club Social y Deportivo Dorrez",
+    "Atlético Dorrez",
     "IND",
     "Dorrez",
     "#E30613",
     "#FFFFFF",
     "fallen",
     67,
-    "Estadio Monumental Pellona",
+    "Estadio Monumental Franona",
     48069
    ],
    "short": "DEZ",
@@ -6244,17 +6244,17 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Unión de Velero",
+    "Unión de Ortini",
     "ELP",
-    "Velero",
+    "Ortini",
     "#E30613",
     "#FFFFFF",
     "youth",
     66,
-    "Estadio Municipal de Velero",
+    "Estadio Municipal de Ortini",
     30018
    ],
-   "short": "VEL",
+   "short": "ORT",
    "nick": "Ñandúes",
    "founded": 1947
   },
@@ -6262,14 +6262,14 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Club Social y Deportivo Lezo",
+    "Club Deportivo Lezo",
     "SLO",
     "Arrano",
     "#0033A0",
     "#E30613",
     "historic",
     65,
-    "Estadio Monumental Urqón",
+    "Estadio Monumental Rodilla",
     47964
    ],
    "short": "LEZ",
@@ -6362,7 +6362,7 @@
     "Estadio Ortia",
     26000
    ],
-   "short": "VEA",
+   "short": "VEL",
    "nick": "Matadores",
    "founded": 1957
   },
@@ -6442,9 +6442,9 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Independiente Velero",
+    "Independiente Ortini",
     "GLP",
-    "Velero",
+    "Ortini",
     "#FFFFFF",
     "#1B2C5A",
     "fan",
@@ -6452,7 +6452,7 @@
     "Estadio Monumental Lezini",
     24544
    ],
-   "short": "VEO",
+   "short": "ORI",
    "nick": "Leones",
    "founded": 1944
   },
@@ -6460,14 +6460,14 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Gimnasia de Garero del Plata",
+    "Garero del Plata FC",
     "GOD",
     "Garero del Plata",
     "#0033A0",
     "#FFFFFF",
     "youth",
     58,
-    "Estadio Municipal de Garero del Plata",
+    "Cancha de Garero del Plata",
     42000
    ],
    "short": "GAR",
@@ -6496,9 +6496,9 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Atlético Velas",
+    "Atlético Castón",
     "UNI",
-    "Velas",
+    "Castón",
     "#E30613",
     "#FFFFFF",
     "fan",
@@ -6506,7 +6506,7 @@
     "Estadio Cabras",
     22852
    ],
-   "short": "VES",
+   "short": "CON",
    "nick": "Halcones",
    "founded": 1910
   },
@@ -6578,7 +6578,7 @@
     "Cancha de Castas",
     35200
    ],
-   "short": "CCA",
+   "short": "CAST",
    "nick": "Celestes",
    "founded": 1903
   },
@@ -6586,17 +6586,17 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Atlético Bustona",
+    "Atlético Pellez",
     "PLA",
-    "Bustona",
+    "Pellez",
     "#FFFFFF",
     "#6B3F1F",
     "fan",
     56,
-    "Cancha de Bustona",
+    "Cancha de Pellez",
     28530
    ],
-   "short": "BUS",
+   "short": "PEZ",
    "nick": "Albos",
    "founded": 1943
   },
@@ -6622,17 +6622,17 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Club Atlético Ortini",
+    "Club Atlético Torilla",
     "CCD",
-    "Ortini",
+    "Torilla",
     "#000000",
     "#FFFFFF",
     "fan",
     55,
-    "Cancha de Ortini",
+    "Cancha de Torilla",
     30000
    ],
-   "short": "ORT",
+   "short": "TLA",
    "nick": "Negros",
    "founded": 1923
   },
@@ -6640,14 +6640,14 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Club Social y Deportivo Coronel Franero",
+    "Atlético Coronel Franero",
     "SAR",
     "Coronel Franero",
     "#00843D",
     "#FFFFFF",
     "fan",
     54,
-    "Estadio Municipal de Coronel Franero",
+    "Cancha de Coronel Franero",
     22000
    ],
    "short": "COL",
@@ -6676,17 +6676,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Wisthorpe City",
+    "Aspenview City",
     "MIA",
-    "Wisthorpe",
+    "Aspenview",
     "#F7B5CD",
     "#231F20",
     "oil",
     67,
-    "The Rosingham Stadium",
+    "The Cherrygrove Stadium",
     21550
    ],
-   "short": "WIS",
+   "short": "ASP",
    "nick": "Foxes",
    "founded": 1993
   },
@@ -6694,17 +6694,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Pickborough Victoria",
+    "Silverfield Victoria",
     "LAF",
-    "Pickborough",
+    "Silverfield",
     "#000000",
     "#C39E6D",
     "oil",
     66,
-    "Exby Park",
+    "Mapleton Park",
     22000
    ],
-   "short": "PIH",
+   "short": "SIL",
    "nick": "Thistles",
    "founded": 1938
   },
@@ -6712,17 +6712,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Pickborough Albion",
+    "Silverfield Albion",
     "LAG",
-    "Pickborough",
+    "Silverfield",
     "#FFFFFF",
     "#00245D",
     "historic",
     65,
-    "Yarport Green",
+    "Cypressdale Green",
     27000
    ],
-   "short": "PGH",
+   "short": "SID",
    "nick": "Lions",
    "founded": 1929
   },
@@ -6730,17 +6730,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Nanton Wanderers",
+    "Sunfield Wanderers",
     "SEA",
-    "Nanton",
+    "Sunfield",
     "#5D9741",
     "#005595",
     "fan",
     64,
-    "Ameshurst Park",
+    "Springsprings Park",
     37722
    ],
-   "short": "NON",
+   "short": "SUN",
    "nick": "Lancers",
    "founded": 1942
   },
@@ -6748,17 +6748,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Merbury Sporting",
+    "Goldenville Sporting",
     "CIN",
-    "Merbury",
+    "Goldenville",
     "#003087",
     "#FE5000",
     "youth",
     63,
-    "Clevebrook Lane",
+    "Riverwood Lane",
     26000
    ],
-   "short": "MEY",
+   "short": "GOL",
    "nick": "Gulls",
    "founded": 1935
   },
@@ -6766,17 +6766,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Ripcombe Wednesday",
+    "Cherryford Wednesday",
     "CLB",
-    "Ripcombe",
+    "Cherryford",
     "#FEDD00",
     "#000000",
     "historic",
     62,
-    "Chalfield Park",
+    "Oakville Park",
     20371
    ],
-   "short": "RIP",
+   "short": "CHD",
    "nick": "Canaries",
    "founded": 1907
   },
@@ -6784,17 +6784,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Petington Rangers",
+    "Millgrove Rangers",
     "PHI",
-    "Petington",
+    "Millgrove",
     "#071B2C",
     "#B19B69",
     "youth",
     62,
-    "Petington Park",
+    "Millgrove Park",
     18500
    ],
-   "short": "PET",
+   "short": "MIE",
    "nick": "Lilywhites",
    "founded": 1921
   },
@@ -6802,17 +6802,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "North Warchester Harriers",
+    "Fort Summiton Harriers",
     "NYC",
-    "North Warchester",
+    "Fort Summiton",
     "#6CACE4",
     "#041E42",
     "oil",
     62,
-    "Woksey Lane",
+    "Cypresshills Lane",
     28743
    ],
-   "short": "WAR",
+   "short": "FOR",
    "nick": "Skyhawks",
    "founded": 1961
   },
@@ -6820,17 +6820,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Bexingham Olympic",
+    "Lakegrove Olympic",
     "ATL",
-    "Bexingham",
+    "Lakegrove",
     "#80000A",
     "#A19060",
     "fan",
     61,
-    "Bedcliff Park",
+    "Lakehaven Park",
     42500
    ],
-   "short": "BEM",
+   "short": "LAK",
    "nick": "Clarets",
    "founded": 1952
   },
@@ -6838,17 +6838,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "AFC North Warchester",
+    "AFC Fort Summiton",
     "NYR",
-    "North Warchester",
+    "Fort Summiton",
     "#FFFFFF",
     "#BA0C2F",
     "oil",
     60,
-    "Tamsey Park",
+    "Canyonhills Park",
     25000
    ],
-   "short": "WER",
+   "short": "FOT",
    "nick": "Seagulls",
    "founded": 1963
   },
@@ -6856,17 +6856,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Blackmere Albion",
+    "Fortview Albion",
     "NSH",
-    "Blackmere",
+    "Fortview",
     "#ECE83A",
     "#1F1646",
     "fan",
     60,
-    "Farnwood Green",
+    "Elkdale Green",
     30000
    ],
-   "short": "BLE",
+   "short": "FOW",
    "nick": "Foxes",
    "founded": 1977
   },
@@ -6874,17 +6874,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Astoney City",
+    "Springridge City",
     "ORL",
-    "Astoney",
+    "Springridge",
     "#633492",
     "#FDE192",
     "fan",
     60,
-    "Ingate Road",
+    "Whitefalls Road",
     25500
    ],
-   "short": "AST",
+   "short": "SPR",
    "nick": "Burgundies",
    "founded": 1938
   },
@@ -6892,17 +6892,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Hadham-under-Wood Town",
+    "Eaglefield Beach Town",
     "VAN",
-    "Hadham-under-Wood",
+    "Eaglefield Beach",
     "#FFFFFF",
     "#00245E",
     "youth",
     60,
-    "Wrexton Lane",
+    "Cypressville Lane",
     22120
    ],
-   "short": "HAM",
+   "short": "EAG",
    "nick": "Lilywhites",
    "founded": 1973
   },
@@ -6910,17 +6910,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Holsey Rovers",
+    "Bluehills Rovers",
     "PTI",
-    "Holsey",
+    "Bluehills",
     "#00482B",
     "#D69A00",
     "fan",
     59,
-    "Holsey Park",
+    "Bluehills Park",
     25218
    ],
-   "short": "HOY",
+   "short": "BLU",
    "nick": "Dark Horses",
    "founded": 1914
   },
@@ -6928,17 +6928,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Sedsea Villa",
+    "Hickoryridge Villa",
     "MIN",
-    "Sedsea",
+    "Hickoryridge",
     "#585958",
     "#8CD2F4",
     "fan",
     58,
-    "Ashbury Green",
+    "Springville Green",
     19400
    ],
-   "short": "SED",
+   "short": "HIC",
    "nick": "Bluebirds",
    "founded": 1941
   },
@@ -6946,17 +6946,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Dorton Town",
+    "Cedarville Town",
     "SDG",
-    "Dorton",
+    "Cedarville",
     "#1B1F23",
     "#6E4C9F",
     "oil",
     58,
-    "Marsey Green",
+    "Goldenhills Green",
     35000
    ],
-   "short": "DON",
+   "short": "CED",
    "nick": "Blackcats",
    "founded": 1975
   },
@@ -6964,17 +6964,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Granton United",
+    "Bearville United",
     "RSL",
-    "Granton",
+    "Bearville",
     "#B30838",
     "#013A81",
     "youth",
     58,
-    "Granton Park",
+    "Bearville Park",
     20213
    ],
-   "short": "GRA",
+   "short": "BLE",
    "nick": "Lions",
    "founded": 1985
   },
@@ -6982,17 +6982,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Athletic Club Cranstow",
+    "Athletic Club Pineridge",
     "DAL",
-    "Cranstow",
+    "Pineridge",
     "#E81F3E",
     "#2A4076",
     "youth",
     58,
-    "Thirhaven Green",
+    "Harborhaven Green",
     20500
    ],
-   "short": "CRW",
+   "short": "PIN",
    "nick": "Red Devils",
    "founded": 1927
   },
@@ -7000,17 +7000,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Hunminster Rangers",
+    "Whitedale Rangers",
     "CLT",
-    "Hunminster",
+    "Whitedale",
     "#1A85C8",
     "#000000",
     "fan",
     57,
-    "The Olgate Stadium",
+    "The Greenfalls Stadium",
     38000
    ],
-   "short": "HUN",
+   "short": "WHI",
    "nick": "Posh",
    "founded": 1979
   },
@@ -7018,17 +7018,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Wiscliff Athletic",
+    "Aspenhaven Athletic",
     "HOU",
-    "Wiscliff",
+    "Aspenhaven",
     "#FF6B00",
     "#101820",
     "fan",
     57,
-    "Wiscliff Ground",
+    "Aspenhaven Ground",
     22039
    ],
-   "short": "WIF",
+   "short": "ASN",
    "nick": "Brewers",
    "founded": 1920
   },
@@ -7036,17 +7036,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Lymestead Wednesday",
+    "Goldenburg Wednesday",
     "SKC",
-    "Lymestead",
+    "Goldenburg",
     "#91B0D5",
     "#002F65",
     "fan",
     57,
-    "Glasney Field",
+    "Bearidge Field",
     18467
    ],
-   "short": "LYM",
+   "short": "GOG",
    "nick": "Rockets",
    "founded": 1948
   },
@@ -7054,17 +7054,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Tadhaven Villa",
+    "Canyonhaven Villa",
     "STL",
-    "Tadhaven",
+    "Canyonhaven",
     "#DD004A",
     "#0A1E2C",
     "fan",
     57,
-    "The Beckcombe Stadium",
+    "The Lakeford Stadium",
     22423
    ],
-   "short": "TAN",
+   "short": "CEN",
    "nick": "Clarets",
    "founded": 1928
   },
@@ -7072,17 +7072,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Excombe & District",
+    "Mapleford & District",
     "RAP",
-    "Excombe",
+    "Mapleford",
     "#960A2C",
     "#9CC2EA",
     "youth",
     56,
-    "Excombe Ground",
+    "Mapleford Ground",
     18061
    ],
-   "short": "EXC",
+   "short": "MAP",
    "nick": "Maroons",
    "founded": 2001
   },
@@ -7090,17 +7090,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Howbrook City",
+    "Bluewood City",
     "AUS",
-    "Howbrook",
+    "Bluewood",
     "#00B140",
     "#000000",
     "fan",
     56,
-    "Filport Field",
+    "Elkwood Field",
     20738
    ],
-   "short": "HOK",
+   "short": "BLD",
    "nick": "Dragons",
    "founded": 1979
   },
@@ -7108,17 +7108,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Nanhurst United",
+    "Sunsprings United",
     "CHI",
-    "Nanhurst",
+    "Sunsprings",
     "#7CCDEF",
     "#FF0000",
     "fan",
     56,
-    "Calbrook Lane",
+    "Oakwood Lane",
     61500
    ],
-   "short": "NAT",
+   "short": "SUS",
    "nick": "Cityzens",
    "founded": 1960
   },
@@ -7126,17 +7126,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Crewford Argyle",
+    "Pinefield Argyle",
     "DCU",
-    "Crewford",
+    "Pinefield",
     "#000000",
     "#EF3E42",
     "fan",
     56,
-    "Crewford Park",
+    "Pinefield Park",
     20000
    ],
-   "short": "CRE",
+   "short": "PID",
    "nick": "Panthers",
    "founded": 1920
   },
@@ -7144,17 +7144,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Tutborough Corinthians",
+    "Summitfalls Corinthians",
     "NER",
-    "Tutborough",
+    "Summitfalls",
     "#0A2240",
     "#CE0E2D",
     "fan",
     56,
-    "Tutborough Park",
+    "Summitfalls Park",
     65878
    ],
-   "short": "TUH",
+   "short": "SUM",
    "nick": "Mariners",
    "founded": 1961
   },
@@ -7162,17 +7162,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "North Hatsey Albion",
+    "New Redcreek Albion",
     "TRT",
-    "North Hatsey",
+    "New Redcreek",
     "#B81137",
     "#455560",
     "fan",
     57,
-    "Yeoworth Park",
+    "Cypresston Park",
     30991
    ],
-   "short": "HAY",
+   "short": "REK",
    "nick": "Reds",
    "founded": 1968
   },
@@ -7180,17 +7180,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Olwich Olympic",
+    "Greencreek Olympic",
     "MTL",
-    "Olwich",
+    "Greencreek",
     "#000000",
     "#0033A1",
     "fan",
     55,
-    "Blackdon Park",
+    "Fortsprings Park",
     19619
    ],
-   "short": "OLW",
+   "short": "GRK",
    "nick": "Wasps",
    "founded": 1989
   },
@@ -7198,17 +7198,17 @@
    "league": "US1",
    "nat": "USA",
    "row": [
-    "Stafminster County",
+    "Prairiedale County",
     "SJE",
-    "Stafminster",
+    "Prairiedale",
     "#0067B1",
     "#000000",
     "fan",
     55,
-    "Hunpool Park",
+    "Whitecreek Park",
     18000
    ],
-   "short": "STA",
+   "short": "PRA",
    "nick": "Lions",
    "founded": 1968
   },
@@ -7288,17 +7288,17 @@
    "league": "JP1",
    "nat": "JPN",
    "row": [
-    "Saigawa Sevens",
+    "Shinsaki Sevens",
     "KAW",
-    "Saigawa",
+    "Shinsaki",
     "#1E90FF",
     "#000000",
     "historic",
     62,
-    "Saigawa Athletic Stadium",
+    "Shinsaki Athletic Stadium",
     26827
    ],
-   "short": "SAA",
+   "short": "SKI",
    "nick": "Tigers",
    "founded": 1925
   },
@@ -7460,7 +7460,7 @@
     "Kawahara Arena",
     21600
    ],
-   "short": "HNO",
+   "short": "HOK",
    "nick": "Crimsons",
    "founded": 1958
   },
@@ -7514,7 +7514,7 @@
     "Kawamoto Arena",
     49970
    ],
-   "short": "HIU",
+   "short": "HNO",
    "nick": "Greens",
    "founded": 1912
   },
@@ -7576,7 +7576,7 @@
    "league": "MX1",
    "nat": "MEX",
    "row": [
-    "Atlético Jilitzin",
+    "Club Jilitzin",
     "AME",
     "Jilitzin",
     "#FFE600",
@@ -7644,14 +7644,14 @@
    "league": "MX1",
    "nat": "MEX",
    "row": [
-    "Real Jilitzin",
+    "Atlético Jilitzin",
     "CAZ",
     "Jilitzin",
     "#0033A0",
     "#FFFFFF",
     "historic",
     66,
-    "Estadio Coatechitlán"
+    "Estadio Huihua"
    ],
    "short": "JIN",
    "nick": "Azules",
@@ -7670,7 +7670,7 @@
     64,
     "Estadio Chalachitlán"
    ],
-   "short": "HYA",
+   "short": "HAY",
    "nick": "Rojos",
    "founded": 1923
   },
@@ -7729,9 +7729,9 @@
    "league": "MX1",
    "nat": "MEX",
    "row": [
-    "Santos Puerto de Tulohua",
+    "Santos Ocotec",
     "SLA",
-    "Puerto de Tulohua",
+    "Ocotec",
     "#00843D",
     "#FFFFFF",
     "youth",
@@ -7780,16 +7780,16 @@
    "league": "MX1",
    "nat": "MEX",
    "row": [
-    "Atlético Ixtec",
+    "Atlético Pachalco",
     "NCX",
-    "Ixtec",
+    "Pachalco",
     "#E30613",
     "#FFFFFF",
     "fan",
     57,
     "Estadio Papanilco"
    ],
-   "short": "IXT",
+   "short": "PAC",
    "nick": "Rojos",
    "founded": 1958
   },
@@ -7848,16 +7848,16 @@
    "league": "MX1",
    "nat": "MEX",
    "row": [
-    "Atlético Pachua",
+    "Atlético Cuerolco",
     "ASL",
-    "Pachua",
+    "Cuerolco",
     "#E30613",
     "#003DA5",
     "fan",
     56,
     "Estadio La Teolco"
    ],
-   "short": "PAC",
+   "short": "CUO",
    "nick": "Rojos",
    "founded": 1910
   },
@@ -7916,16 +7916,16 @@
    "league": "KR1",
    "nat": "KOR",
    "row": [
-    "Bohwa United",
+    "Chunseong United",
     "POH",
-    "Bohwa",
+    "Chunseong",
     "#E30613",
     "#000000",
     "historic",
     57,
     "Haesan Arena"
    ],
-   "short": "BOH",
+   "short": "CHG",
    "nick": "Reds",
    "founded": 1904
   },
@@ -7942,7 +7942,7 @@
     57,
     "Sincheon Arena"
    ],
-   "short": "CHC",
+   "short": "CCH",
    "nick": "Wolves",
    "founded": 1938
   },
@@ -7993,7 +7993,7 @@
     53,
     "Seowon Arena"
    ],
-   "short": "CHG",
+   "short": "CNG",
    "nick": "Sharks",
    "founded": 1989
   },
@@ -8035,9 +8035,9 @@
    "league": "KR1",
    "nat": "KOR",
    "row": [
-    "Gyeongcheon FC",
+    "Gyeongseong FC",
     "DGU",
-    "Gyeongcheon",
+    "Gyeongseong",
     "#87CEEB",
     "#1C2B4F",
     "youth",
@@ -8129,7 +8129,7 @@
     51,
     "Khaoyai Arena"
    ],
-   "short": "NOO",
+   "short": "NON",
    "nick": "Reds",
    "founded": 1929
   },
@@ -8146,7 +8146,7 @@
     50,
     "Sakpur Arena"
    ],
-   "short": "NEO",
+   "short": "NOO",
    "nick": "Rockets",
    "founded": 1952
   },
@@ -8154,16 +8154,16 @@
    "league": "TH1",
    "nat": "THA",
    "row": [
-    "Wangchan Athletic",
+    "Singburi Athletic",
     "MTU",
-    "Wangchan",
+    "Singburi",
     "#E30613",
     "#000000",
     "historic",
     50,
     "Maenam Stadium"
    ],
-   "short": "WAA",
+   "short": "SII",
    "nick": "Tigers",
    "founded": 1913
   },
@@ -8265,7 +8265,7 @@
     46,
     "Wangmai Provincial Stadium"
    ],
-   "short": "WAI",
+   "short": "WAN",
    "nick": "Knights",
    "founded": 1926
   },
@@ -8307,9 +8307,9 @@
    "league": "TH1",
    "nat": "THA",
    "row": [
-    "Muang Nakhonsai",
+    "Muang Sakpur",
     "AYU",
-    "Nakhonsai",
+    "Sakpur",
     "#E30613",
     "#FFFFFF",
     "fan",
@@ -8324,16 +8324,16 @@
    "league": "TH1",
    "nat": "THA",
    "row": [
-    "Paksai Mariners",
+    "Takpur Mariners",
     "RYG",
-    "Paksai",
+    "Takpur",
     "#003DA5",
     "#FFFFFF",
     "fan",
     44,
     "Nakhonsai Stadium"
    ],
-   "short": "PAK",
+   "short": "TAR",
    "nick": "Blues",
    "founded": 1958
   },
@@ -8418,7 +8418,7 @@
     51,
     "Stambrook Park"
    ],
-   "short": "STK",
+   "short": "STA",
    "nick": "Emeralds",
    "founded": 1965
   },
@@ -8443,7 +8443,7 @@
    "league": "NG1",
    "nat": "NGA",
    "row": [
-    "Kirkstead Wanderers",
+    "Lower Kirkstead Wanderers",
     "SSC",
     "Kirkstead",
     "#003DA5",
@@ -8503,7 +8503,7 @@
     47,
     "Wokby Green"
    ],
-   "short": "LIE",
+   "short": "LLE",
    "nick": "Cats",
    "founded": 1905
   },
@@ -8511,7 +8511,7 @@
    "league": "NG1",
    "nat": "NGA",
    "row": [
-    "Roswich Athletic",
+    "West Roswich Athletic",
     "HRT",
     "Roswich",
     "#E30613",
@@ -8528,16 +8528,16 @@
    "league": "NG1",
    "nat": "NGA",
    "row": [
-    "Chipcombe-le-Moors Athletic",
+    "Old Sandholm Athletic",
     "IKC",
-    "Chipcombe-le-Moors",
+    "Old Sandholm",
     "#003DA5",
     "#FFD100",
     "oil",
     47,
     "Dargate Park"
    ],
-   "short": "CBE",
+   "short": "SAM",
    "nick": "Miners",
    "founded": 1947
   },
@@ -8545,16 +8545,16 @@
    "league": "NG1",
    "nat": "NGA",
    "row": [
-    "Nansey Wednesday",
+    "Torstead Wednesday",
     "ABW",
-    "Nansey",
+    "Torstead",
     "#00843D",
     "#FFD100",
     "fan",
     47,
     "Sutwood Field"
    ],
-   "short": "NAY",
+   "short": "TOD",
    "nick": "Greens",
    "founded": 1919
   },
@@ -8571,7 +8571,7 @@
     47,
     "Bridfield Park"
    ],
-   "short": "HUR",
+   "short": "HUN",
    "nick": "Blues",
    "founded": 1925
   },
@@ -8579,7 +8579,7 @@
    "league": "NG1",
    "nat": "NGA",
    "row": [
-    "Hatpool Vale",
+    "New Hatpool Vale",
     "KWU",
     "Hatpool",
     "#00843D",
@@ -8622,7 +8622,7 @@
     46,
     "Stocliff Park"
    ],
-   "short": "STF",
+   "short": "STO",
    "nick": "Falcons",
    "founded": 1916
   },
@@ -8707,7 +8707,7 @@
     59,
     "Stade de la Rocourt"
    ],
-   "short": "NAU",
+   "short": "NAN",
    "nick": "Rouges",
    "founded": 1902
   },
@@ -8724,7 +8724,7 @@
     59,
     "Stade de la Cherac"
    ],
-   "short": "NEU",
+   "short": "NAU",
    "nick": "Faucons",
    "founded": 1907
   },
@@ -8800,16 +8800,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "Racing Saint-Aublieu",
+    "Racing Courault",
     "HAG",
-    "Saint-Aublieu",
+    "Courault",
     "#E30613",
     "#FFD100",
     "fan",
     50,
     "Complexe Armont"
    ],
-   "short": "AUB",
+   "short": "COU",
    "nick": "Rouges",
    "founded": 1945
   },
@@ -8834,16 +8834,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "SC Mirens",
+    "SC Joybourg",
     "MAT",
-    "Mirens",
+    "Joybourg",
     "#E30613",
     "#FFFFFF",
     "historic",
     49,
-    "Parc des Sports de Mirens"
+    "Parc des Sports de Joybourg"
    ],
-   "short": "MIS",
+   "short": "JOG",
    "nick": "Rouges",
    "founded": 1923
   },
@@ -8868,16 +8868,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "AJ Monens",
+    "AJ Saint-Blanbourg",
     "DHJ",
-    "Monens",
+    "Blanbourg",
     "#00843D",
     "#FFFFFF",
     "fan",
     48,
     "Stade de la Damay"
    ],
-   "short": "MOS",
+   "short": "BLG",
    "nick": "Verts",
    "founded": 1954
   },
@@ -8885,16 +8885,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "Sporting Lanay",
+    "Sporting Blanay",
     "RSZ",
-    "Lanay",
+    "Blanay",
     "#00843D",
     "#FFFFFF",
     "fan",
     47,
     "Complexe Dieuault"
    ],
-   "short": "LAY",
+   "short": "BLY",
    "nick": "Verts",
    "founded": 1916
   },
@@ -8919,16 +8919,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "ES Saint-Lunac",
+    "ES Lanon-sur-Aure",
     "COD",
-    "Saint-Lunac",
+    "Lanon-sur-Aure",
     "#E30613",
     "#00843D",
     "fan",
     47,
     "Stade de la Clerange"
    ],
-   "short": "LUC",
+   "short": "LON",
    "nick": "Rouges",
    "founded": 1974
   },
@@ -8936,16 +8936,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "FC Monbourg-sur-Aure",
+    "FC Roceau",
     "SCC",
-    "Monbourg-sur-Aure",
+    "Roceau",
     "#E30613",
     "#000000",
     "fan",
     46,
-    "Parc des Sports de Monbourg-sur-Aure"
+    "Parc des Sports de Roceau"
    ],
-   "short": "MOG",
+   "short": "RAU",
    "nick": "Pionniers",
    "founded": 1964
   },
@@ -8953,16 +8953,16 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "FC Mirlac",
+    "FC Courac",
     "JSS",
-    "Mirlac",
+    "Courac",
     "#003DA5",
     "#FFFFFF",
     "fan",
     46,
     "Complexe Valon"
    ],
-   "short": "MAC",
+   "short": "COC",
    "nick": "Lions",
    "founded": 1973
   },
@@ -9021,16 +9021,16 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "KS Tarina",
+    "KS Drain",
     "TSC",
-    "Tarina",
+    "Drain",
     "#003DA5",
     "#FFFFFF",
     "oil",
     56,
-    "Stadion Mir Tarina"
+    "Stadion Mir Drain"
    ],
-   "short": "TAR",
+   "short": "DRA",
    "nick": "Baroni",
    "founded": 1919
   },
@@ -9055,16 +9055,16 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "Union Slavek",
+    "Union Vysik",
     "RAD",
-    "Slavek",
+    "Vysik",
     "#E30613",
     "#FFFFFF",
     "fan",
     53,
     "Stadion Gorina"
    ],
-   "short": "SLA",
+   "short": "VYK",
    "nick": "Lisice",
    "founded": 1948
   },
@@ -9072,16 +9072,16 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "SK Lubik",
+    "SK Mirovac",
     "NPZ",
-    "Lubik",
+    "Mirovac",
     "#E30613",
     "#FFFFFF",
     "fan",
     52,
     "Drapol Arena"
    ],
-   "short": "LUB",
+   "short": "MIC",
    "nick": "Sokolovi",
    "founded": 1934
   },
@@ -9089,7 +9089,7 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "NK Gorik",
+    "NK Kosin",
     "OFK",
     "Jasovac",
     "#003DA5",
@@ -9098,7 +9098,7 @@
     51,
     "Stadion Velava"
    ],
-   "short": "GOR",
+   "short": "KOS",
    "nick": "Plavi",
    "founded": 1924
   },
@@ -9123,16 +9123,16 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "FK Slaava",
+    "FK Malovac",
     "SPS",
-    "Slaava",
+    "Malovac",
     "#003DA5",
     "#FFFFFF",
     "fan",
     50,
     "Stadion Plesovo"
    ],
-   "short": "SVA",
+   "short": "MAL",
    "nick": "Orlovi",
    "founded": 1973
   },
@@ -9166,7 +9166,7 @@
     49,
     "Stadion Mir Petina"
    ],
-   "short": "PNA",
+   "short": "PET",
    "nick": "Zmajevi",
    "founded": 1943
   },
@@ -9191,16 +9191,16 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "Lokomotiva Vysice",
+    "Lokomotiva Malec",
     "MLU",
-    "Vysice",
+    "Malec",
     "#E30613",
     "#FFFFFF",
     "fan",
     48,
     "Stadion Kosovac"
    ],
-   "short": "VYE",
+   "short": "MAC",
    "nick": "Crveni",
    "founded": 1961
   },
@@ -9208,16 +9208,16 @@
    "league": "RS1",
    "nat": "SRB",
    "row": [
-    "MFK Borava",
+    "MFK Ostany",
     "JUB",
-    "Borava",
+    "Ostany",
     "#003DA5",
     "#FFFFFF",
     "fan",
     46,
     "Stadion Slaany"
    ],
-   "short": "BVA",
+   "short": "OST",
    "nick": "Baroni",
    "founded": 1955
   },
@@ -9234,7 +9234,7 @@
     46,
     "Gradski Stadion Vysovice"
    ],
-   "short": "VCE",
+   "short": "VYE",
    "nick": "Komete",
    "founded": 1968
   },
@@ -9404,7 +9404,7 @@
     55,
     "Dijklo Stadion"
    ],
-   "short": "BEB",
+   "short": "BRD",
    "nick": "Geelen",
    "founded": 1943
   },
@@ -9761,7 +9761,7 @@
     52,
     "Çanlar Cumhuriyet Stadyumu"
    ],
-   "short": "CANL",
+   "short": "CBE",
    "nick": "Sarılar",
    "founded": 1971
   },
@@ -9778,7 +9778,7 @@
     52,
     "Bozova Şehir Stadyumu"
    ],
-   "short": "BOB",
+   "short": "BVA",
    "nick": "Yeşiller",
    "founded": 1959
   },
@@ -9888,16 +9888,16 @@
    "league": "CZ1",
    "nat": "CZE",
    "row": [
-    "Slavoj Mladov",
+    "Slavoj Hradoná",
     "SIG",
-    "Mladov",
+    "Hradoná",
     "#003DA5",
     "#FFFFFF",
     "youth",
     53,
-    "Městský stadion Mladov"
+    "Městský stadion Hradoná"
    ],
-   "short": "MLA",
+   "short": "HRA",
    "nick": "Medvědi",
    "founded": 1923
   },
@@ -9956,7 +9956,7 @@
    "league": "CZ1",
    "nat": "CZE",
    "row": [
-    "Sokol Liboná",
+    "Sokol Strice",
     "BOH",
     "Holava",
     "#00843D",
@@ -9965,7 +9965,7 @@
     50,
     "Stadion u Trenec"
    ],
-   "short": "LIB",
+   "short": "SCE",
    "nick": "Býci",
    "founded": 1938
   },
@@ -10101,7 +10101,7 @@
     68,
     "Stadio Trouli"
    ],
-   "short": "MAM",
+   "short": "MRA",
    "nick": "Nautikoí",
    "founded": 1912
   },
@@ -10109,16 +10109,16 @@
    "league": "GR1",
    "nat": "GRE",
    "row": [
-    "Lamida FC",
+    "Pelos FC",
     "PAO",
-    "Lamida",
+    "Pelos",
     "#00843D",
     "#FFFFFF",
     "giant",
     64,
-    "Dimotiko Stadio Lamida"
+    "Dimotiko Stadio Pelos"
    ],
-   "short": "LDA",
+   "short": "PES",
    "nick": "Prásinoi",
    "founded": 1925
   },
@@ -10126,16 +10126,16 @@
    "league": "GR1",
    "nat": "GRE",
    "row": [
-    "Doxa Lamida",
+    "Doxa Pelos",
     "AEK",
-    "Lamida",
+    "Pelos",
     "#FFDD00",
     "#000000",
     "giant",
     64,
     "Ioanaki Arena"
    ],
-   "short": "LLA",
+   "short": "POS",
    "nick": "Korákia",
    "founded": 1908
   },
@@ -10143,16 +10143,16 @@
    "league": "GR1",
    "nat": "GRE",
    "row": [
-    "Niki Pirás",
+    "Niki Agouli",
     "PAOK",
-    "Pirás",
+    "Agouli",
     "#000000",
     "#FFFFFF",
     "historic",
     65,
     "Serouli Arena"
    ],
-   "short": "PIR",
+   "short": "AGO",
    "nick": "Titánes",
    "founded": 1930
   },
@@ -10160,16 +10160,16 @@
    "league": "GR1",
    "nat": "GRE",
    "row": [
-    "AE Pirás",
+    "AE Agouli",
     "ARI",
-    "Pirás",
+    "Agouli",
     "#FFDD00",
     "#000000",
     "fan",
     57,
-    "Dimotiko Stadio Pirás"
+    "Dimotiko Stadio Agouli"
    ],
-   "short": "PIS",
+   "short": "AGI",
    "nick": "Kítrinoi",
    "founded": 1942
   },
@@ -10381,16 +10381,16 @@
    "league": "NO1",
    "nat": "NOR",
    "row": [
-    "Lillesund FK",
+    "Holvang FK",
     "RBK",
-    "Lillesund",
+    "Holvang",
     "#FFFFFF",
     "#000000",
     "giant",
     58,
     "Holby Stadion"
    ],
-   "short": "LIL",
+   "short": "HOG",
    "nick": "De Hvide",
    "founded": 1900
   },
@@ -10441,7 +10441,7 @@
     51,
     "Langby Arena"
    ],
-   "short": "LBY",
+   "short": "LAY",
    "nick": "De Hvide",
    "founded": 1877
   },
@@ -10475,7 +10475,7 @@
     49,
     "Strandlund Arena"
    ],
-   "short": "STR",
+   "short": "STD",
    "nick": "De Blå",
    "founded": 1880
   },
@@ -10764,7 +10764,7 @@
     52,
     "Stadion Miejski im. Brzezewo"
    ],
-   "short": "LUA",
+   "short": "LUB",
    "nick": "Pomarańczowi",
    "founded": 1982
   },
@@ -10815,7 +10815,7 @@
     50,
     "Stadion im. Rybno"
    ],
-   "short": "GOK",
+   "short": "GOR",
    "nick": "Górnicy",
    "founded": 1915
   },
@@ -10942,16 +10942,16 @@
    "league": "DK1",
    "nat": "DEN",
    "row": [
-    "Sønderby FK",
+    "Strandsund FK",
     "BIF",
-    "Sønderby",
+    "Strandsund",
     "#FFDD00",
     "#003DA5",
     "historic",
     58,
     "Nordsund Park"
    ],
-   "short": "SNY",
+   "short": "STF",
    "nick": "Vikinger",
    "founded": 1869
   },
@@ -10968,7 +10968,7 @@
     56,
     "Dyrløkke Park"
    ],
-   "short": "VNS",
+   "short": "VES",
    "nick": "Bjørner",
    "founded": 1902
   },
@@ -10976,16 +10976,16 @@
    "league": "DK1",
    "nat": "DEN",
    "row": [
-    "Fremad Bergnæs",
+    "Fremad Storborg",
     "FCN",
-    "Bergnæs",
+    "Storborg",
     "#E30613",
     "#FFFFFF",
     "youth",
     56,
     "Østborg Stadion"
    ],
-   "short": "BES",
+   "short": "STG",
    "nick": "De Røde",
    "founded": 1927
   },
@@ -11078,16 +11078,16 @@
    "league": "DK1",
    "nat": "DEN",
    "row": [
-    "Sydby IF",
+    "Nordstad IF",
     "VBK",
-    "Sydby",
+    "Nordstad",
     "#E30613",
     "#FFFFFF",
     "fan",
     49,
     "Storgård Park"
    ],
-   "short": "SYY",
+   "short": "NAD",
    "nick": "De Røde",
    "founded": 1915
   },
@@ -11121,7 +11121,7 @@
     64,
     "Rheinhorst-Stadion"
    ],
-   "short": "GOL",
+   "short": "GRG",
    "nick": "Weißen",
    "founded": 1938
   },
@@ -11172,7 +11172,7 @@
     56,
     "Stadion Zellstadt"
    ],
-   "short": "BBR",
+   "short": "BOB",
    "nick": "Weinroten",
    "founded": 1875
   },
@@ -11231,7 +11231,7 @@
    "league": "AT1",
    "nat": "AUT",
    "row": [
-    "Germania Freistadt",
+    "Germania Freistadt 1930",
     "BWL",
     "Freistadt",
     "#003DA5",
@@ -11265,7 +11265,7 @@
    "league": "AT1",
    "nat": "AUT",
    "row": [
-    "Viktoria Rheinhafen",
+    "Viktoria Rheinhafen 1934",
     "ALT",
     "Rheinhafen",
     "#000000",
@@ -11282,16 +11282,16 @@
    "league": "AT1",
    "nat": "AUT",
    "row": [
-    "Sportfreunde Oberweiler",
+    "Germania Neu Oberweiler",
     "GAK",
     "Oberweiler",
     "#E30613",
     "#FFFFFF",
     "fallen",
     47,
-    "Hainingen-Stadion"
+    "Sportpark Neckarwald"
    ],
-   "short": "OER",
+   "short": "NEU",
    "nick": "Raben",
    "founded": 1866
   },
@@ -11299,7 +11299,7 @@
    "league": "AT1",
    "nat": "AUT",
    "row": [
-    "FSV Kaltal",
+    "FSV Kaltal 1893",
     "RIE2",
     "Kaltal",
     "#000000",
@@ -11316,16 +11316,16 @@
    "league": "CH1",
    "nat": "SUI",
    "row": [
-    "Unter Neckarhafen 1899",
+    "FC Holzberg",
     "BAS",
-    "Unter Neckarhafen",
+    "Holzberg",
     "#E30613",
     "#003DA5",
     "giant",
     62,
-    "Stadion Wiestadt"
+    "Waldstadion Holzberg"
    ],
-   "short": "UNR",
+   "short": "HRG",
    "nick": "Löwen",
    "founded": 1886
   },
@@ -11410,7 +11410,7 @@
     53,
     "Stadion am Bachof"
    ],
-   "short": "TUS2",
+   "short": "TUH",
    "nick": "Grünen",
    "founded": 1904
   },
@@ -11452,16 +11452,16 @@
    "league": "CH1",
    "nat": "SUI",
    "row": [
-    "SV Kirchweiler an der Au",
+    "SV Holzbach",
     "LS",
-    "Kirchweiler an der Au",
+    "Holzbach",
     "#003DA5",
     "#FFFFFF",
     "oil",
     52,
     "Stadion Hagburg"
    ],
-   "short": "KER",
+   "short": "HCH",
    "nick": "Gladiatoren",
    "founded": 1927
   },
@@ -11478,7 +11478,7 @@
     51,
     "Stadion Oberdorf"
    ],
-   "short": "OBK",
+   "short": "OER",
    "nick": "Weißen",
    "founded": 1914
   },
@@ -11495,7 +11495,7 @@
     49,
     "Sportpark Bruchkirchen"
    ],
-   "short": "BBE",
+   "short": "BEB",
    "nick": "Roten",
    "founded": 1877
   },
@@ -11503,7 +11503,7 @@
    "league": "CH1",
    "nat": "SUI",
    "row": [
-    "Teutonia Bruchstadt",
+    "Teutonia Bruchstadt 1953",
     "THU",
     "Bruchstadt",
     "#E30613",
@@ -11520,16 +11520,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Oakingham City",
+    "Strathshiels Town",
     "CEL2",
-    "Oakingham",
+    "Strathshiels",
     "#00843D",
     "#FFFFFF",
     "giant",
     70,
-    "Wexbridge Road"
+    "Rosock Road"
    ],
-   "short": "OAK",
+   "short": "STS",
    "nick": "Royals",
    "founded": 1864
   },
@@ -11537,16 +11537,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Oakingham Borough",
+    "Strathshiels City",
     "RAN2",
-    "Oakingham",
+    "Strathshiels",
     "#1B458F",
     "#FFFFFF",
     "giant",
     68,
-    "Cansdon Park"
+    "The Lindee Stadium"
    ],
-   "short": "OAM",
+   "short": "SLS",
    "nick": "Knights",
    "founded": 1890
   },
@@ -11554,16 +11554,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "South Tuncombe Victoria",
+    "Upper Moffock Victoria",
     "HEA",
-    "South Tuncombe",
+    "Upper Moffock",
     "#8A1538",
     "#FFFFFF",
     "historic",
     56,
-    "The Wrexmere Stadium"
+    "The Stranwick Stadium"
    ],
-   "short": "TUE",
+   "short": "MOF",
    "nick": "Burgundies",
    "founded": 1870
   },
@@ -11571,16 +11571,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Daldon-on-Wold Orient",
+    "Langock Orient",
     "ABE",
-    "Daldon-on-Wold",
+    "Langock",
     "#E30613",
     "#FFFFFF",
     "historic",
     56,
-    "Carport Field"
+    "Calrie Field"
    ],
-   "short": "DAL",
+   "short": "LCK",
    "nick": "Crimsons",
    "founded": 1864
   },
@@ -11588,16 +11588,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "South Tuncombe Dynamo",
+    "Upper Moffock Dynamo",
     "HIB",
-    "South Tuncombe",
+    "Upper Moffock",
     "#00843D",
     "#FFFFFF",
     "historic",
     55,
-    "Quarwell Park"
+    "Tulliloch Park"
    ],
-   "short": "TBE",
+   "short": "MOK",
    "nick": "Greens",
    "founded": 1873
   },
@@ -11605,16 +11605,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Bexton Dynamo",
+    "Balness Dynamo",
     "MOT2",
-    "Bexton",
+    "Balness",
     "#FFB81C",
     "#8A1538",
     "fan",
     50,
-    "Falsey Road"
+    "Dunland Road"
    ],
-   "short": "BON",
+   "short": "BAL",
    "nick": "Canaries",
    "founded": 1877
   },
@@ -11622,16 +11622,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Church Haton United",
+    "Mid Kilness United",
     "DUN2",
-    "Church Haton",
+    "Mid Kilness",
     "#F47920",
     "#000000",
     "fan",
     51,
-    "Wedsea Lane"
+    "Peebside Lane"
    ],
-   "short": "CHH",
+   "short": "MID",
    "nick": "Rams",
    "founded": 1898
   },
@@ -11639,16 +11639,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Ingworth Hotspur",
+    "Kirkie Hotspur",
     "KIL",
-    "Ingworth",
+    "Kirkie",
     "#003DA5",
     "#FFFFFF",
     "fan",
     50,
-    "Wesney Lane"
+    "Roside Lane"
    ],
-   "short": "ING",
+   "short": "KIE",
    "nick": "Bluebirds",
    "founded": 1901
   },
@@ -11656,16 +11656,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Stoshall United",
+    "Jedland United",
     "SMI",
-    "Stoshall",
+    "Jedland",
     "#000000",
     "#FFFFFF",
     "fan",
     50,
-    "Shepwood Lane"
+    "Hawrie Lane"
    ],
-   "short": "STL",
+   "short": "JED",
    "nick": "Magpies",
    "founded": 1902
   },
@@ -11673,16 +11673,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Church Haton Stanley",
+    "Mid Kilness Stanley",
     "DND",
-    "Church Haton",
+    "Mid Kilness",
     "#0B1F4B",
     "#FFFFFF",
     "fan",
     49,
-    "Rotholm Road"
+    "Fraserbridge Road"
    ],
-   "short": "CCH",
+   "short": "MIK",
    "nick": "Navy",
    "founded": 1918
   },
@@ -11690,16 +11690,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Calgate-by-the-Sea Rangers",
+    "Tayloch Rangers",
     "LIV2",
-    "Calgate-by-the-Sea",
+    "Tayloch",
     "#FFDD00",
     "#000000",
     "fan",
     47,
-    "Stowmouth Park"
+    "Jedee Park"
    ],
-   "short": "CTE",
+   "short": "TAY",
    "nick": "Bees",
    "founded": 1920
   },
@@ -11707,16 +11707,16 @@
    "league": "SC1",
    "nat": "SCO",
    "row": [
-    "Herminster-under-Wood Corinthians",
+    "Kilrie-on-Forth Villa",
     "FAL",
-    "Herminster-under-Wood",
+    "Kilrie-on-Forth",
     "#0B1F4B",
     "#FFFFFF",
     "fan",
     47,
-    "Bedington Road"
+    "Auchshiels Road"
    ],
-   "short": "HEU",
+   "short": "KIO",
    "nick": "Knights",
    "founded": 1919
   },
@@ -11724,16 +11724,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Pudmere Wanderers",
+    "Wodoville Wanderers",
     "MCY",
-    "Pudmere",
+    "Wodoville",
     "#6CABDD",
     "#FFFFFF",
     "oil",
     57,
-    "Thornwell Park"
+    "Cesswa Park"
    ],
-   "short": "PUE",
+   "short": "WOD",
    "nick": "Wolves",
    "founded": 1958
   },
@@ -11741,16 +11741,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Croyby Argyle",
+    "Geralnup Argyle",
     "SYD",
-    "Croyby",
+    "Geralnup",
     "#6CACE4",
     "#0B1F4B",
     "giant",
     57,
-    "Croyby Ground"
+    "Geralnup Ground"
    ],
-   "short": "CRO",
+   "short": "GER",
    "nick": "Azure",
    "founded": 1934
   },
@@ -11758,16 +11758,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Pudmere Town",
+    "Wodoville Town",
     "MVC",
-    "Pudmere",
+    "Wodoville",
     "#0B1F4B",
     "#FFFFFF",
     "giant",
     55,
-    "Pudmere Ground"
+    "Wodoville Ground"
    ],
-   "short": "PUT",
+   "short": "WOE",
    "nick": "Mariners",
    "founded": 1918
   },
@@ -11775,16 +11775,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Croyby Victoria",
+    "Geralnup Victoria",
     "WSW",
-    "Croyby",
+    "Geralnup",
     "#E30613",
     "#000000",
     "fan",
     53,
-    "Ingshall Road"
+    "Narcannon Road"
    ],
-   "short": "CRY",
+   "short": "GEP",
    "nick": "Red Devils",
    "founded": 1945
   },
@@ -11792,16 +11792,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "West Ashgate Athletic",
+    "Mount Bundawa Athletic",
     "CCM",
-    "West Ashgate",
+    "Mount Bundawa",
     "#FFDD00",
     "#0B1F4B",
     "youth",
     52,
-    "Wedbridge Green"
+    "Gymby Green"
    ],
-   "short": "ASH",
+   "short": "MOU",
    "nick": "Bees",
    "founded": 1932
   },
@@ -11809,16 +11809,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "East Abinghurst Orient",
+    "Mount Bundaooka Orient",
     "BRQ",
-    "East Abinghurst",
+    "Mount Bundaooka",
     "#F47920",
     "#000000",
     "historic",
     51,
-    "Hayington Field"
+    "Mandnunda Field"
    ],
-   "short": "ABT",
+   "short": "MOT",
    "nick": "Flames",
    "founded": 1901
   },
@@ -11826,16 +11826,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Tutcombe Stanley",
+    "Cofflea Stanley",
     "AUC",
-    "Tutcombe",
+    "Cofflea",
     "#0B1F4B",
     "#00A3E0",
     "oil",
     51,
-    "The Sopham Stadium"
+    "The Milbool Stadium"
    ],
-   "short": "TST",
+   "short": "COF",
    "nick": "Mariners",
    "founded": 1972
   },
@@ -11843,16 +11843,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Lanwold Olympic",
+    "Nowlea Olympic",
     "ADU",
-    "Lanwold",
+    "Nowlea",
     "#E30613",
     "#FFFFFF",
     "fan",
     50,
-    "Shephurst Field"
+    "Milooka Field"
    ],
-   "short": "LAD",
+   "short": "NOA",
    "nick": "Gulls",
    "founded": 1942
   },
@@ -11860,16 +11860,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Sandcastle Albion",
+    "New Tamford Albion",
     "WPX",
-    "Sandcastle",
+    "Tamford",
     "#FFDD00",
     "#000000",
     "fan",
     49,
-    "Claygate Park"
+    "Dubwa Park"
    ],
-   "short": "SAE",
+   "short": "TAM",
    "nick": "Seagulls",
    "founded": 1978
   },
@@ -11877,16 +11877,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Rosby Borough",
+    "Balnup Borough",
     "MAF",
-    "Rosby",
+    "Balnup",
     "#000000",
     "#FFFFFF",
     "selling",
     48,
-    "Rosby Park"
+    "Balnup Park"
    ],
-   "short": "ROY",
+   "short": "BAP",
    "nick": "Drovers",
    "founded": 1988
   },
@@ -11894,16 +11894,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Sudsey Albion",
+    "Portcannon Albion",
     "NJE",
-    "Sudsey",
+    "Portcannon",
     "#003DA5",
     "#E30613",
     "fan",
     48,
-    "Ledby Park"
+    "Wagbin Park"
    ],
-   "short": "SUY",
+   "short": "PAL",
    "nick": "Bluebirds",
    "founded": 1954
   },
@@ -11911,16 +11911,16 @@
    "league": "AU1",
    "nat": "AUS",
    "row": [
-    "Cansby Alexandra",
+    "Cobnup Alexandra",
     "PGL",
-    "Cansby",
+    "Cobnup",
     "#6A1B9A",
     "#FFFFFF",
     "fallen",
     47,
-    "Clifshall Lane"
+    "Geralcannon Lane"
    ],
-   "short": "CAY",
+   "short": "COB",
    "nick": "Clarets",
    "founded": 1924
   },
@@ -12107,7 +12107,7 @@
     46,
     "Zalavár Stadion"
    ],
-   "short": "NNY",
+   "short": "NAY",
    "nick": "Vörösök",
    "founded": 1931
   },
@@ -12132,16 +12132,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Gloswell United",
+    "Lisbridge United",
     "SHL",
-    "Gloswell",
+    "Lisbridge",
     "#E30613",
     "#FFFFFF",
     "historic",
     51,
-    "The Exworth Stadium"
+    "The Glentown Stadium"
    ],
-   "short": "GLL",
+   "short": "LIS",
    "nick": "Reds",
    "founded": 1881
   },
@@ -12149,16 +12149,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Gloswell Victoria",
+    "Lisbridge Victoria",
     "SRO",
-    "Gloswell",
+    "Lisbridge",
     "#00843D",
     "#FFFFFF",
     "giant",
     51,
-    "The Elmdale Stadium"
+    "The Glengarvan Stadium"
    ],
-   "short": "GLV",
+   "short": "LIV",
    "nick": "Weavers",
    "founded": 1884
   },
@@ -12166,16 +12166,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Warsey Swifts",
+    "Oranglass Swifts",
     "DRY",
-    "Warsey",
+    "Oranglass",
     "#E30613",
     "#FFFFFF",
     "fan",
     48,
-    "Hincombe Lane"
+    "Monlough Lane"
    ],
-   "short": "WAY",
+   "short": "OSS",
    "nick": "Shepherds",
    "founded": 1950
   },
@@ -12183,16 +12183,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Clevebury United",
+    "Corard United",
     "BHI",
-    "Gloswell",
+    "Lisbridge",
     "#E30613",
     "#000000",
     "fan",
     47,
-    "Gloswell Park"
+    "Lisbridge Park"
    ],
-   "short": "CLY",
+   "short": "COD",
    "nick": "Stags",
    "founded": 1941
   },
@@ -12200,16 +12200,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Kirkton Argyle",
+    "Newree Argyle",
     "SPAT",
-    "Gloswell",
+    "Lisbridge",
     "#E30613",
     "#FFFFFF",
     "fan",
     47,
-    "Lymeshall Field"
+    "Rosglass Field"
    ],
-   "short": "KIN",
+   "short": "NEW",
    "nick": "Grecians",
    "founded": 1929
   },
@@ -12217,16 +12217,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Old Buckcastle Rovers",
+    "Port Carrickree Rovers",
     "DRO",
-    "Old Buckcastle",
+    "Port Carrickree",
     "#003DA5",
     "#FFFFFF",
     "fan",
     44,
-    "The Thiringham Stadium"
+    "The Limdara Stadium"
    ],
-   "short": "BUC",
+   "short": "PRT",
    "nick": "Otters",
    "founded": 1946
   },
@@ -12234,16 +12234,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Castle Stratbridge Hotspur",
+    "Athgarvan Hotspur",
     "GAU",
-    "Castle Stratbridge",
+    "Athgarvan",
     "#8A1538",
     "#FFFFFF",
     "fan",
     43,
-    "Eport Green"
+    "Glengarvan Green"
    ],
-   "short": "CST",
+   "short": "ATH",
    "nick": "Wine Reds",
    "founded": 1939
   },
@@ -12251,16 +12251,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Melby County",
+    "Sligtown County",
     "SLR",
-    "Melby",
+    "Sligtown",
     "#E30613",
     "#FFFFFF",
     "fan",
     43,
-    "Melby Ground"
+    "Sligtown Ground"
    ],
-   "short": "MEL",
+   "short": "SLI",
    "nick": "Robins",
    "founded": 1883
   },
@@ -12268,16 +12268,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Keswood Orient",
+    "Newlough Orient",
     "WFI",
-    "Keswood",
+    "Newlough",
     "#003DA5",
     "#FFFFFF",
     "fan",
     42,
-    "Reythorpe Green"
+    "Balmullen Green"
    ],
-   "short": "KES",
+   "short": "NEH",
    "nick": "Royals",
    "founded": 1891
   },
@@ -12285,16 +12285,16 @@
    "league": "IE1",
    "nat": "IRL",
    "row": [
-    "Church Falwood Royals",
+    "Castle Kilough Royals",
     "DDK",
-    "Church Falwood",
+    "Castle Kilough",
     "#FFFFFF",
     "#000000",
     "fallen",
     44,
-    "Church Falwood Park"
+    "Castle Kilough Park"
    ],
-   "short": "CHF",
+   "short": "CAK",
    "nick": "Whites",
    "founded": 1898
   },
@@ -12302,16 +12302,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Ingcombe Vale",
+    "Talbach Vale",
     "TNS",
-    "Ingcombe",
+    "Talbach",
     "#00843D",
     "#FFFFFF",
     "oil",
     49,
-    "The Abingney Stadium"
+    "The Aberllyn Stadium"
    ],
-   "short": "INE",
+   "short": "TAL",
    "nick": "Grecians",
    "founded": 1931
   },
@@ -12319,16 +12319,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Helcastle Rangers",
+    "Llangnant Rangers",
     "BAL",
-    "Helcastle",
+    "Llangnant",
     "#FFFFFF",
     "#000000",
     "fan",
     42,
-    "Helcastle Park"
+    "Llangnant Park"
    ],
-   "short": "HEL",
+   "short": "LLA",
    "nick": "Comets",
    "founded": 1900
   },
@@ -12336,16 +12336,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Spaldbridge Stanley",
+    "West Dolgwyn Stanley",
     "CQN",
-    "Spaldbridge",
+    "Dolgwyn",
     "#FFFFFF",
     "#003DA5",
     "fan",
     41,
-    "Stamwick Field"
+    "Dolgfa Field"
    ],
-   "short": "SPA",
+   "short": "DON",
    "nick": "Lilywhites",
    "founded": 1930
   },
@@ -12353,16 +12353,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Clevebridge Rovers",
+    "East Clyngwyn Rovers",
     "PEN",
-    "Clevebridge",
+    "Clyngwyn",
     "#E30613",
     "#FFFFFF",
     "fan",
     41,
-    "Spaldwick Road"
+    "Dolgydd Road"
    ],
-   "short": "CGE",
+   "short": "CLY",
    "nick": "Reds",
    "founded": 1886
   },
@@ -12370,16 +12370,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Aldpool City",
+    "West Aberach City",
     "HAV",
-    "Aldpool",
+    "Aberach",
     "#003DA5",
     "#FFFFFF",
     "fan",
     40,
-    "Midwold Green"
+    "Rhosogg Green"
    ],
-   "short": "ALL",
+   "short": "ABE",
    "nick": "Stags",
    "founded": 1878
   },
@@ -12387,16 +12387,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Tavbrook Sporting",
+    "Caerwyn Sporting",
     "BTU",
-    "Tavbrook",
+    "Caerwyn",
     "#FFDD00",
     "#000000",
     "fan",
     40,
-    "Cranwick Green"
+    "Corsfa Green"
    ],
-   "short": "TOK",
+   "short": "CYN",
    "nick": "Yellows",
    "founded": 1947
   },
@@ -12404,16 +12404,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Bevercastle Athletic",
+    "Balanant Athletic",
     "CMU",
-    "Bevercastle",
+    "Balanant",
     "#FFDD00",
     "#000000",
     "youth",
     40,
-    "Hasham Road"
+    "Llangwyn Road"
    ],
-   "short": "BEV",
+   "short": "BAT",
    "nick": "Magpies",
    "founded": 1902
   },
@@ -12421,16 +12421,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Bedford Rangers",
+    "Balawyn Rangers",
     "LLA",
-    "Bedford",
+    "Balawyn",
     "#E30613",
     "#FFFFFF",
     "fan",
     38,
-    "Halford Green"
+    "Llanwyn Green"
    ],
-   "short": "BEDF",
+   "short": "BYN",
    "nick": "Knights",
    "founded": 1952
   },
@@ -12438,16 +12438,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Harwich Athletic",
+    "Market Ogmant Athletic",
     "CAE",
-    "Harwich",
+    "Ogmant",
     "#E30613",
     "#FFFFFF",
     "fan",
     38,
-    "Marpool Park"
+    "Porthach Park"
    ],
-   "short": "HCH",
+   "short": "MET",
    "nick": "Eagles",
    "founded": 1926
   },
@@ -12455,16 +12455,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Wilpool Rovers",
+    "Tenbach Rovers",
     "NEW2",
-    "Wilpool",
+    "Tenbach",
     "#E30613",
     "#FFFFFF",
     "fan",
     38,
-    "Wilpool Ground"
+    "Tenbach Ground"
    ],
-   "short": "WIR",
+   "short": "TEH",
    "nick": "Lancers",
    "founded": 1916
   },
@@ -12472,16 +12472,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Blackworth Albion",
+    "Bangorni Albion",
     "COL2",
-    "Blackworth",
+    "Bangorni",
     "#FFDD00",
     "#003DA5",
     "fan",
     38,
-    "Radcastle Road"
+    "Trenant Road"
    ],
-   "short": "BLH",
+   "short": "BAI",
    "nick": "Yellows",
    "founded": 1892
   },
@@ -12489,16 +12489,16 @@
    "league": "WA1",
    "nat": "WAL",
    "row": [
-    "Bradcaster & District",
+    "Bangorddu & District",
     "FLI",
-    "Bradcaster",
+    "Bangorddu",
     "#FFFFFF",
     "#E30613",
     "fan",
     37,
-    "Fenham Park"
+    "Fishwyn Park"
    ],
-   "short": "BRR",
+   "short": "BDU",
    "nick": "Stags",
    "founded": 1911
   }
@@ -12537,7 +12537,7 @@
   "ES2": {
    "nat": "ESP",
    "tier": 2,
-   "name": "Spanish Liga de Plata",
+   "name": "Orbis Liga de Plata",
    "short": "ES2"
   },
   "ES3": {
@@ -12549,13 +12549,13 @@
   "DE1": {
    "nat": "GER",
    "tier": 1,
-   "name": "German Meisterliga",
+   "name": "Calder Meisterliga",
    "short": "DE1"
   },
   "DE2": {
    "nat": "GER",
    "tier": 2,
-   "name": "German Aufstiegsliga",
+   "name": "Lumen Aufstiegsliga",
    "short": "DE2"
   },
   "DE3": {
@@ -12579,13 +12579,13 @@
   "BR1": {
    "nat": "BRA",
    "tier": 1,
-   "name": "Brazilian Série Nacional",
+   "name": "Monarch Série Nacional",
    "short": "BR1"
   },
   "IT1": {
    "nat": "ITA",
    "tier": 1,
-   "name": "Italian Lega Nazionale",
+   "name": "Northgate Lega Nazionale",
    "short": "IT1"
   },
   "IT2": {
@@ -12597,7 +12597,7 @@
   "PT1": {
    "nat": "POR",
    "tier": 1,
-   "name": "Portuguese Superliga",
+   "name": "Ironwood Superliga",
    "short": "PT1"
   },
   "NL1": {
@@ -12609,13 +12609,13 @@
   "AR1": {
    "nat": "ARG",
    "tier": 1,
-   "name": "Argentine Superliga",
+   "name": "Harbor Superliga",
    "short": "AR1"
   },
   "US1": {
    "nat": "USA",
    "tier": 1,
-   "name": "American Super League",
+   "name": "Sable Super League",
    "short": "US1"
   },
   "JP1": {
@@ -12633,7 +12633,7 @@
   "KR1": {
    "nat": "KOR",
    "tier": 1,
-   "name": "Korean Premier League",
+   "name": "Nordbank Premier League",
    "short": "KR1"
   },
   "TH1": {
@@ -12657,13 +12657,13 @@
   "RS1": {
    "nat": "SRB",
    "tier": 1,
-   "name": "Serbian Prva Liga",
+   "name": "Meridian Prva Liga",
    "short": "RS1"
   },
   "BE1": {
    "nat": "BEL",
    "tier": 1,
-   "name": "Belgian Eerste Klasse",
+   "name": "Summit Eerste Klasse",
    "short": "BE1"
   },
   "TR1": {
@@ -12681,7 +12681,7 @@
   "GR1": {
    "nat": "GRE",
    "tier": 1,
-   "name": "Greek Alfa Liga",
+   "name": "Cobalt Alfa Liga",
    "short": "GR1"
   },
   "NO1": {
@@ -12693,19 +12693,19 @@
   "PL1": {
    "nat": "POL",
    "tier": 1,
-   "name": "Polish Liga Główna",
+   "name": "Vantage Liga Główna",
    "short": "PL1"
   },
   "DK1": {
    "nat": "DEN",
    "tier": 1,
-   "name": "Danish Topliga",
+   "name": "Polaris Topliga",
    "short": "DK1"
   },
   "AT1": {
    "nat": "AUT",
    "tier": 1,
-   "name": "Austrian Bundesstaffel",
+   "name": "Quanta Bundesstaffel",
    "short": "AT1"
   },
   "CH1": {
@@ -12729,13 +12729,13 @@
   "HU1": {
    "nat": "HUN",
    "tier": 1,
-   "name": "Hungarian Első Osztály",
+   "name": "Tandem Első Osztály",
    "short": "HU1"
   },
   "IE1": {
    "nat": "IRL",
    "tier": 1,
-   "name": "Irish Premier Union",
+   "name": "Crestline Premier Union",
    "short": "IE1"
   },
   "WA1": {
@@ -12898,7 +12898,7 @@
   [
    "NFO",
    "DER",
-   "Epington–Wilshall Derby"
+   "Epington–King's Branmere Derby"
   ],
   [
    "BHA",
@@ -12958,7 +12958,7 @@
   [
    "SWA",
    "CAR",
-   "Market Darchester–Lamwold Derby"
+   "Stratsey–Lamwold Derby"
   ],
   [
    "PNE",
@@ -12983,7 +12983,7 @@
   [
    "PLY",
    "EXE",
-   "Huckborough–Ledford-on-the-Hill Derby"
+   "Huckborough–Cansingham Derby"
   ],
   [
    "PBO",
@@ -13018,7 +13018,7 @@
   [
    "VIL",
    "CAS",
-   "Plasares–Montón Derby"
+   "Plasares–Sorana Derby"
   ],
   [
    "CEL",
@@ -13043,7 +13043,7 @@
   [
    "MAL",
    "GRA",
-   "Liorón–Montino Derby"
+   "El de Calatosa–Montino Derby"
   ],
   [
    "LPA",
@@ -13088,17 +13088,17 @@
   [
    "VFB",
    "SCF",
-   "Niederhafen am Berg–Bruchingen Derby"
+   "Burgtal–Bruchingen Derby"
   ],
   [
    "RBL",
    "FCU",
-   "Marieningen–Waldingen am Berg Derby"
+   "Marieningen–Burgingen Derby"
   ],
   [
    "PSG",
    "OMA",
-   "Quimcourt–Rocac Derby"
+   "Quimcourt–Lunens Derby"
   ],
   [
    "LIL",
@@ -13138,7 +13138,7 @@
   [
    "FLA",
    "FLU",
-   "Ibipe Derby"
+   "Vila Maramirim Derby"
   ],
   [
    "PAL",
@@ -13163,7 +13163,7 @@
   [
    "BOT",
    "VAS",
-   "Ibipe Derby"
+   "Vila Maramirim Derby"
   ],
   [
    "BAH",
@@ -13193,7 +13193,7 @@
   [
    "FIO",
    "BOL",
-   "Porto Santano–Corale Derby"
+   "Ferucci–Ferara Derby"
   ],
   [
    "GEN",
@@ -13258,7 +13258,7 @@
   [
    "ELP",
    "GLP",
-   "Velero Derby"
+   "Ortini Derby"
   ],
   [
    "TAL",
@@ -13278,42 +13278,42 @@
   [
    "LAG",
    "LAF",
-   "Pickborough Derby"
+   "Silverfield Derby"
   ],
   [
    "SEA",
    "PTI",
-   "Nanton–Holsey Derby"
+   "Sunfield–Bluehills Derby"
   ],
   [
    "NYC",
    "NYR",
-   "North Warchester Derby"
+   "Fort Summiton Derby"
   ],
   [
    "TRT",
    "MTL",
-   "North Hatsey–Olwich Derby"
+   "New Redcreek–Greencreek Derby"
   ],
   [
    "HOU",
    "DAL",
-   "Wiscliff–Cranstow Derby"
+   "Aspenhaven–Pineridge Derby"
   ],
   [
    "RAP",
    "RSL",
-   "Excombe–Granton Derby"
+   "Mapleford–Bearville Derby"
   ],
   [
    "CIN",
    "CLB",
-   "Merbury–Ripcombe Derby"
+   "Goldenville–Cherryford Derby"
   ],
   [
    "ATL",
    "ORL",
-   "Bexingham–Astoney Derby"
+   "Lakegrove–Springridge Derby"
   ],
   [
    "GAM",
@@ -13323,7 +13323,7 @@
   [
    "YFM",
    "KAW",
-   "Akisaki–Saigawa Derby"
+   "Akisaki–Shinsaki Derby"
   ],
   [
    "FCT",
@@ -13353,7 +13353,7 @@
   [
    "ULS",
    "POH",
-   "Gangyang–Bohwa Derby"
+   "Gangyang–Chunseong Derby"
   ],
   [
    "SEO",
@@ -13383,7 +13383,7 @@
   [
    "MAT",
    "IRT",
-   "Mirens–Tourlac Derby"
+   "Joybourg–Tourlac Derby"
   ],
   [
    "CZV",
@@ -13393,7 +13393,7 @@
   [
    "VOJ",
    "SPS",
-   "Novany–Slaava Derby"
+   "Novany–Malovac Derby"
   ],
   [
    "CLB2",
@@ -13423,17 +13423,17 @@
   [
    "OLY2",
    "PAO",
-   "Marópetra–Lamida Derby"
+   "Marópetra–Pelos Derby"
   ],
   [
    "PAOK",
    "ARI",
-   "Pirás Derby"
+   "Agouli Derby"
   ],
   [
    "RBK",
    "MOL",
-   "Lillesund–Bergø Derby"
+   "Holvang–Bergø Derby"
   ],
   [
    "VIF",
@@ -13453,7 +13453,7 @@
   [
    "FCK",
    "BIF",
-   "Bjørnstrup–Sønderby Derby"
+   "Bjørnstrup–Strandsund Derby"
   ],
   [
    "RAP2",
@@ -13468,7 +13468,7 @@
   [
    "BAS",
    "FCZ",
-   "Unter Neckarhafen–Hohen Waldheim Derby"
+   "Holzberg–Hohen Waldheim Derby"
   ],
   [
    "GCZ",
@@ -13478,32 +13478,32 @@
   [
    "CEL2",
    "RAN2",
-   "Oakingham Derby"
+   "Strathshiels Derby"
   ],
   [
    "HEA",
    "HIB",
-   "South Tuncombe Derby"
+   "Upper Moffock Derby"
   ],
   [
    "DUN2",
    "DND",
-   "Church Haton Derby"
+   "Mid Kilness Derby"
   ],
   [
    "MCY",
    "MVC",
-   "Pudmere Derby"
+   "Wodoville Derby"
   ],
   [
    "SYD",
    "WSW",
-   "Croyby Derby"
+   "Geralnup Derby"
   ],
   [
    "SYD",
    "MVC",
-   "Croyby–Pudmere Derby"
+   "Geralnup–Wodoville Derby"
   ],
   [
    "FTC",
@@ -13518,27 +13518,27 @@
   [
    "SHL",
    "BHI",
-   "Gloswell Derby"
+   "Lisbridge Derby"
   ],
   [
    "SRO",
    "SPAT",
-   "Gloswell Derby"
+   "Lisbridge Derby"
   ],
   [
    "DRY",
    "SRO",
-   "Warsey–Gloswell Derby"
+   "Oranglass–Lisbridge Derby"
   ],
   [
    "TNS",
    "BAL",
-   "Ingcombe–Helcastle Derby"
+   "Talbach–Llangnant Derby"
   ],
   [
    "CQN",
    "FLI",
-   "Spaldbridge–Bradcaster Derby"
+   "Dolgwyn–Bangorddu Derby"
   ]
  ],
  "nations": {
@@ -13729,8 +13729,8 @@
   "BRA_RJ": {
    "nat": "BRA",
    "format": "rr",
-   "name": "Campeonato Ibipe",
-   "short": "IBIC",
+   "name": "Campeonato Vila Maramirim",
+   "short": "VILC",
    "clubs": "FLA BOT FLU VAS"
   },
   "BRA_SP": {
