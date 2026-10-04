@@ -1722,7 +1722,7 @@
               .sort((a, b) => (a.nat + a.tier).localeCompare(b.nat + b.tier))
               .map((l) => {
                 const t = W.sortedTable(l)[0];
-                return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="sub" data-k="league" data-v="${l.id}"><span style="font-size:18px">${C.flag(l.nat)}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(l.name)}${l.id === club().comp ? ' <span class="pill acc">You</span>' : ''}</div><div class="tiny dim ellip">Tier ${l.tier} · ${l.clubs.length} clubs${l.rules.qualify ? ` · top ${l.rules.qualify.n} → ${esc(s.comps[l.rules.qualify.to].short)}` : ''} · leader ${t && t.p ? esc(CL(t.id).short) : '—'}</div></div>${tierPill(l.sim || 'full')}</div>`;
+                return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="sub" data-k="league" data-v="${l.id}"><span style="font-size:18px">${C.flag(l.nat)}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(l.name)}${club() && l.id === club().comp ? ' <span class="pill acc">You</span>' : ''}</div><div class="tiny dim ellip">Tier ${l.tier} · ${l.clubs.length} clubs${l.rules.qualify ? ` · top ${l.rules.qualify.n} → ${esc(s.comps[l.rules.qualify.to].short)}` : ''} · leader ${t && t.p ? esc(CL(t.id).short) : '—'}</div></div>${tierPill(l.sim || 'full')}</div>`;
               })
               .join('')}</div>`,
         )
@@ -2283,8 +2283,7 @@
         .join('')}</div>`;
   };
   function overviewView() {
-    const s = S(),
-      c = club(),
+    const c = club(),
       I = D.IDENTITY[c.identity];
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
@@ -2301,16 +2300,7 @@
             `<div class="row small" style="margin-top:8px;align-items:flex-start"><span>${o.ok ? '✅' : o.minOk ? '🟡' : '⏳'}</span><span class="grow">${esc(o.text)}${o.minText ? `<div class="tiny dim">At the very least: ${esc(o.minText)}</div>` : ''}</span><span class="pill ${o.weight === 'critical' ? 'bad' : o.weight === 'bonus' ? '' : 'warn'}" style="font-size:10px">${FM.Board.WEIGHT[o.weight || 'important'].label}</span><span class="dim" style="margin-left:6px">${esc(o.status)}</span></div>`,
         )
         .join('')}</div>
-      <div class="card"><div class="h3">Honours</div>${
-        Object.keys(c.titles).length
-          ? Object.entries(c.titles)
-              .map(
-                ([k, n]) =>
-                  `<div class="row small" style="margin-top:6px">🏆 <span class="grow">${esc(s.comps[k].name)}</span><b>${n}</b></div>`,
-              )
-              .join('')
-          : '<div class="small dim" style="margin-top:6px">No trophies in this save — yet.</div>'
-      }</div>
+      ${UI.honoursCard(c, 'No trophies in this save — yet.')}
       ${UI.clubRecordsCard(c)}
       ${UI.stadiumCard(c)}
       <div class="card"><div class="h3">Backroom staff</div>${staff.map((st) => `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>${C.flag(st.nat)}</span><div class="grow"><b>${esc(st.fn + ' ' + st.ln)}</b><div class="dim tiny">${esc(st.role)}</div></div><span class="pill">${esc(st.personality)}</span></div>`).join('')}</div>`;
@@ -2472,6 +2462,7 @@
               .join('')}</div>`
           : ''
       }
+      ${UI.regionalSeason(e, false)}
       ${
         e.cups && Object.keys(e.cups).length
           ? `<div style="margin-top:10px"><div class="small b dim" style="text-transform:uppercase;letter-spacing:.6px">Cups</div>${Object.values(
@@ -2536,6 +2527,40 @@
           : '<div class="small dim">First season in progress.</div>'
       }</div>`;
   }
+  // Honours of a club: national, continental and world trophies first; county cups and state championships are a
+  // category of their own beneath them
+  UI.honoursCard = function (c, none) {
+    const entries = Object.entries(c.titles || {}).filter(([k]) => S().comps[k]),
+      main = entries.filter(([k]) => S().comps[k].type !== 'regional'),
+      reg = entries.filter(([k]) => S().comps[k].type === 'regional');
+    const line = ([k, n], icon) =>
+      `<div class="row small" style="margin-top:6px">${icon} <span class="grow">${esc(S().comps[k].name)}</span><b>${n}</b></div>`;
+    if (!entries.length && none)
+      return `<div class="card"><div class="h3">Honours</div><div class="small dim" style="margin-top:6px">${none}</div></div>`;
+    if (!entries.length) return '';
+    return `<div class="card"><div class="h3">Honours</div>${main.map((e) => line(e, '🏆')).join('') || (none ? `<div class="small dim" style="margin-top:6px">${none}</div>` : '')}${
+      reg.length
+        ? `<div class="small b dim" style="margin-top:12px;text-transform:uppercase;letter-spacing:.6px">Regional</div>${reg.map((e) => line(e, '🏅')).join('')}`
+        : ''
+    }</div>`;
+  };
+  // A season's county cups and state championships, tucked away under one heading (the winners of every area; yours first)
+  UI.regionalSeason = function (e, card) {
+    const list = Object.entries(e.regional || {});
+    if (!list.length) return '';
+    const mine = (x) => FM.W.isUser(x.winner) || FM.W.isUser(x.runnerUp);
+    const rows = list
+      .sort((a, b) => (mine(b[1]) ? 1 : 0) - (mine(a[1]) ? 1 : 0))
+      .map(
+        ([, x]) =>
+          `<div class="row small" style="margin-top:6px">🏅 <span class="grow ${mine(x) ? 'b' : 'dim'}">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).short)}</b></div>`,
+      )
+      .join('');
+    const head = `Regional competitions (${list.length})`;
+    return card
+      ? `<div class="card flat"><details><summary class="small b dim" style="cursor:pointer">${head}</summary>${rows}</details></div>`
+      : `<div style="margin-top:10px"><details><summary class="small b dim" style="cursor:pointer;text-transform:uppercase;letter-spacing:.6px">${head}</summary>${rows}</details></div>`;
+  };
   function settingsView() {
     const s = S();
     return `<div class="card"><div class="row"><div class="grow"><div class="h3">Theme</div><div class="small dim">Dark or light UI</div></div><div class="seg" style="width:160px"><button class="${s.settings.theme === 'dark' ? 'on' : ''}" data-act="theme" data-v="dark">Dark</button><button class="${s.settings.theme === 'light' ? 'on' : ''}" data-act="theme" data-v="light">Light</button></div></div></div>
@@ -2737,7 +2762,13 @@
     }
     UI._import = res.state;
     const st = res.state,
-      c = st.clubs[st.user.clubId];
+      // (a backup made out of work has no club: shown by the manager's name, with a plain badge)
+      c = st.clubs[st.user.clubId] || {
+        id: 'none',
+        name: `${st.user.name} (out of work)`,
+        short: '—',
+        colors: ['#334155', '#94a3b8'],
+      };
     UI.sheet(
       `<div class="card row">${C.crest(c, 36)}<div class="grow"><div class="b">${esc(c.name)}</div><div class="small dim">${esc(st.user.name)} · ${st.year} · day ${st.day + 1}${res.from < FM.Save.VERSION ? ` · upgraded from v${res.from}` : ''}</div></div></div>
       <div class="h3" style="margin:10px 0 6px">Import into</div>
@@ -2794,6 +2825,7 @@
             `<div class="row small" style="margin-top:6px">${C.flag(x.nat)} <span class="grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).short)}</b></div>`,
         )
         .join('')}</div>
+      ${UI.regionalSeason(e, true)}
       ${
         e.cups && Object.keys(e.cups).length
           ? `<div class="card flat"><div class="small b dim">CUPS</div>${Object.values(e.cups)

@@ -533,6 +533,8 @@
     $('#main').scrollTop = 0;
   };
   UI.render = function (anim) {
+    // (the game's screen is not up, say the title screen after a day's simulation finished behind it: nothing to draw)
+    if (!document.getElementById('nav-home') || !FM.S || !FM.S.user) return;
     const S = FM.S,
       club = W.userClub();
     UI.applyClubTheme();

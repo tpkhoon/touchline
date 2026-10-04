@@ -1209,8 +1209,10 @@
             );
       });
     // Takeover
-    if (Math.random() < 0.5) {
-      const c = U.pick(full.filter((x) => !W.isUser(x.id) && x.identity !== 'oil'));
+    // (a small or heavily trimmed world can run out of clubs a consortium could buy: then there is no takeover)
+    const buyable = full.filter((x) => !W.isUser(x.id) && x.identity !== 'oil');
+    if (Math.random() < 0.5 && buyable.length) {
+      const c = U.pick(buyable);
       c.identity = 'oil';
       c.balance += FM.Season.revenuePotential(c) * 2;
       c.budget = Math.round(c.balance * 0.5);

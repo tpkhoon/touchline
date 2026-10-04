@@ -205,6 +205,9 @@
   };
   // ---------------- Live ----------------
   MV.start = function (fx, instant) {
+    // a new match: nothing of the last one's post-match screen is left, and its result is not this one's
+    document.getElementById('postOv')?.remove();
+    MV.applied = false;
     const m = new FM.Match({
       h: fx.h,
       a: fx.a,

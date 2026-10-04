@@ -591,7 +591,7 @@
       title: `${u.name} named ${t.name} manager`,
       sub: `${club ? `A dual role alongside ${club.name}.` : 'A full-time international job while you wait for a club.'} ${I.nextTournament() ? `Next up: the ${I.nextTournament().kind === 'world' ? 'World Cup' : 'continental championships'} in ${I.nextTournament().year}.` : ''}`,
       big: D.NATIONS[t.code].flag,
-      clubId: club.id,
+      clubId: club ? club.id : undefined, // (out of work, there is no club to name)
     });
     return { ok: true, msg: `You are the new ${t.name} manager.` };
   };

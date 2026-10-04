@@ -607,16 +607,7 @@
       ${h2h.length ? `<div class="card"><div class="row"><div class="h3 grow">Head-to-head this season</div>${h2hRec}</div>${h2h.map((f) => `<div class="tiny dim" style="padding-top:6px">${esc(fxWhere(f))}</div>${f.res ? UI.fxLine(f) : `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span class="grow ellip" style="text-align:right">${esc(s.clubs[f.h].name)}</span><b style="min-width:44px;text-align:center">v</b><span class="grow ellip">${esc(s.clubs[f.a].name)}</span></div>`}`).join('')}</div>` : ''}
       ${allTimeCard}
       ${UI.clubSeasonsCard(id)}
-      ${
-        Object.keys(c.titles || {}).length
-          ? `<div class="card"><div class="h3">Honours</div>${Object.entries(c.titles)
-              .map(
-                ([k, n]) =>
-                  `<div class="row small" style="margin-top:6px">🏆 <span class="grow">${esc(s.comps[k] ? s.comps[k].name : k)}</span><b>${n}</b></div>`,
-              )
-              .join('')}</div>`
-          : ''
-      }`;
+      ${UI.honoursCard(c)}`;
     UI.sheet(html, { full: true, title: esc(c.name) });
   };
   UI.acts.clubGoMine = () => {
@@ -788,7 +779,7 @@
       <div class="row small" style="margin-top:8px"><span style="width:90px" class="dim">Confidence</span><div class="grow">${C.bar(c.boardConf, C.moodColor(c.boardConf))}</div><b style="margin-left:8px">${Math.round(c.boardConf)}%</b></div>
       ${ult ? `<div class="warnline" style="margin-top:10px">⚠️ Ultimatum: ${ult.need} points from 5 league games. So far ${row.pts - ult.pts} from ${row.p - ult.from}.</div>` : ''}
       ${b.agenda ? `<div class="warnline" style="margin-top:10px">📌 The board's demand: ${esc(b.agenda.text)}. They will check at the next meeting.</div>` : ''}
-      <div class="row" style="gap:6px;margin-top:10px">${B.MEETINGS.map((m) => `<span class="pill ${held.includes(m.k) ? 'good' : next && next.k === m.k ? 'acc' : ''}" title="${esc(m.label)}">${held.includes(m.k) ? '✓ ' : ''}${esc(m.label.replace(/ board (meeting|review)/, '').replace('Pre-season', 'Pre-season'))}</span>`).join('')}</div>
+      <div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap">${B.MEETINGS.map((m) => `<span class="pill ${held.includes(m.k) ? 'good' : next && next.k === m.k ? 'acc' : ''}" title="${esc(m.label)}">${held.includes(m.k) ? '✓ ' : ''}${esc(m.label.replace(/ board (meeting|review)/, '').replace('Pre-season', 'Pre-season'))}</span>`).join('')}</div>
       <div class="small muted" style="margin-top:8px">${open ? '🔔 A board meeting is waiting for you in the feed.' : next ? `Next: ${esc(next.label)}${days ? `, in about ${days} day${days === 1 ? '' : 's'}` : ', today'}.` : 'No more meetings this season.'}</div>
       <div class="tiny dim" style="margin-top:8px">Four meetings a season. At each the board say how they see things, may make a demand of their own, and hear one request: they answer on confidence, money, recent form, your reputation and what you have asked before.</div></div>`;
   };
