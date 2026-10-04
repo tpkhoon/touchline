@@ -1757,20 +1757,22 @@
     if (S().comps[t] && S().comps[t].type === 'league' && t !== mine) opts.push([t, lname(S().comps[t])]);
     opts.push(['world', '🗺️ All leagues']);
     if (W.cups().length || W.continentals().length) opts.push(['cups', 'Cups']);
-    opts.push(['fixtures', 'Fixtures'], ['totw', 'Team of the week'], ['stats', 'Stats']);
+    opts.push(['fixtures', 'Fixtures'], ['totw', 'Team of the week'], ['awards', 'Awards'], ['stats', 'Stats']);
     return (
       chips('league', opts) +
       (t === 'fixtures'
         ? fixturesView()
         : t === 'totw'
           ? totwView()
-          : t === 'stats'
-            ? statsView()
-            : t === 'cups'
-              ? cupsView()
-              : t === 'world'
-                ? worldView()
-                : tableView(t))
+          : t === 'awards'
+            ? awardsView()
+            : t === 'stats'
+              ? statsView()
+              : t === 'cups'
+                ? cupsView()
+                : t === 'world'
+                  ? worldView()
+                  : tableView(t))
     );
   };
   // International football has its own tab: national teams, rankings, tournaments and your national job
@@ -1945,6 +1947,76 @@
       ${sel ? `${lines(sel.xi)}${mgr ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>🎙️</span><span class="grow" style="margin-left:8px">Manager of the week: <b>${esc(((m) => (m ? `${m} (${mgr.name})` : mgr.name))(W.isUser(mgr.id) ? s.user.name : s.staff[mgr.manager] ? `${s.staff[mgr.manager].fn} ${s.staff[mgr.manager].ln}` : ''))}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:8px">The first team of the week is picked after the first league matchday.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Team of the season so far</div></div>${toty ? `<div class="tiny dim">By average rating, for players with a fair share of the games.</div>${lines(toty)}` : '<div class="small dim" style="margin-top:8px">Not enough games played yet.</div>'}</div>`;
   }
+  // ---- Awards: the world's best XI, a league's awards, and what a cup or tournament gave out ----
+  UI.xiLines = (xi) =>
+    ['GK', 'DEF', 'MID', 'ATT']
+      .map((g) => {
+        const rows = xi.filter((x) => D.POS_GROUP[x.pos] === g);
+        return rows.length
+          ? `<div class="small b dim" style="margin:10px 0 2px">${{ GK: 'GOALKEEPER', DEF: 'DEFENCE', MID: 'MIDFIELD', ATT: 'ATTACK' }[g]}</div>${rows
+              .map((x) => {
+                const pl = P(x.id),
+                  cl = CL(x.c);
+                return `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${x.id}"><span class="pos ${D.POS_GROUP[x.pos]}" style="min-width:34px;text-align:center">${x.lab}</span><span class="grow ellip" style="margin-left:8px">${pl && W.ownPlayer(pl) ? '⭐ ' : ''}${esc(x.n)} <span class="dim">· ${cl ? (cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.short)) : '?'}</span></span><b>${x.r.toFixed(1)}</b></div>`;
+              })
+              .join('')}`
+          : '';
+      })
+      .join('');
+  UI.awardsHTML = (aw, xiLabel = 'TEAM OF THE TOURNAMENT') => {
+    if (!aw) return '<div class="small dim" style="margin-top:6px">Nothing to give out yet.</div>';
+    const side = (id) => {
+      const cl = id && CL(id);
+      return cl
+        ? ` <span class="dim">· ${cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.short)}</span>`
+        : '';
+    };
+    const row = (icon, label, a, tail = '') =>
+      a
+        ? `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line);gap:8px" data-act="player" data-id="${a.pid}"><span>${icon}</span><span class="grow ellip"><span class="dim">${label}</span> <b>${esc(a.name)}</b>${side(a.club)}</span><b>${tail}</b></div>`
+        : '';
+    return `${row('👟', 'Golden Boot', aw.boot, aw.boot ? `${aw.boot.goals} goal${aw.boot.goals === 1 ? '' : 's'}` : '')}${row('⭐', 'Best player', aw.player, aw.player ? aw.player.avg.toFixed(2) : '')}${row('🌱', 'Best young player', aw.young, aw.young ? aw.young.avg.toFixed(2) : '')}${row('🧤', 'Best goalkeeper', aw.keeper, aw.keeper ? aw.keeper.avg.toFixed(2) : '')}${row('🎯', 'Most assists', aw.assists, aw.assists ? aw.assists.assists : '')}
+      ${aw.xi ? `<div class="small b dim" style="margin:12px 0 0">${xiLabel}</div>${UI.xiLines(aw.xi)}` : ''}`;
+  };
+  function awardsView() {
+    const s = S(),
+      cur = UI._awardsComp || myComp();
+    const pick = `<div class="chips" style="flex-wrap:wrap">${W.leagues()
+      .map(
+        (c) =>
+          `<button class="chip ${c.id === cur ? 'on' : ''}" data-act="awardsComp" data-v="${c.id}">${C.flag(c.nat)} ${esc(c.short)}</button>`,
+      )
+      .join('')}</div>`;
+    const world = FM.Records.worldXI(),
+      la = FM.Records.leagueAwards(cur);
+    const past = s.archive
+      .filter((e) => e.worldXI || (e.comps[cur] && e.comps[cur].awards))
+      .slice(-4)
+      .reverse();
+    return `<div class="card"><div class="row"><div class="h3 grow">World best XI</div><span class="pill acc">${esc(FM.Season.seasonLabel())} so far</span></div>
+      <div class="tiny dim">The best average ratings in every league played in full or light, with a little extra for the stronger leagues.</div>
+      ${world ? `${UI.xiLines(world.xi)}${world.best ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>🌍</span><span class="grow" style="margin-left:8px">Player of the year so far: <b>${esc(world.best.name)}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:6px">Awards start once the league seasons are under way.</div>'}</div>
+      ${pick}
+      <div class="card"><div class="row"><div class="h3 grow">${esc(S().comps[cur].name)} awards</div><span class="pill">so far</span></div>${UI.awardsHTML(la, 'TEAM OF THE SEASON')}</div>
+      ${
+        past.length
+          ? `<div class="sec"><div class="h3">Previous seasons</div></div>${past
+              .map(
+                (e) =>
+                  `<details class="card cupfold" data-cup="aw_${e.year}" ${(UI._cupsOpen || {})['aw_' + e.year] ? 'open' : ''}><summary><div class="row"><div class="h3 grow">${esc(e.label)}</div></div></summary>${
+                    e.worldXI
+                      ? `<div class="small b dim" style="margin-top:8px">WORLD BEST XI${e.worldXI.best ? ` · player of the year ${esc(e.worldXI.best.name)}` : ''}</div>${UI.xiLines(e.worldXI.xi)}`
+                      : ''
+                  }${e.comps[cur] && e.comps[cur].awards ? `<div class="small b dim" style="margin-top:12px">${esc(e.comps[cur].name.toUpperCase())}</div>${UI.awardsHTML(e.comps[cur].awards)}` : ''}</details>`,
+              )
+              .join('')}`
+          : ''
+      }`;
+  }
+  UI.acts.awardsComp = (d) => {
+    UI._awardsComp = d.v;
+    UI.render();
+  };
   function statsView() {
     const s = S(),
       cur = UI._statsComp || myComp();
@@ -2105,6 +2177,9 @@
     const inIt = (c) => c.clubs.includes(uc);
     // each tournament folds away: open by default for those you are in (and the lone Club World Cup), as you left the rest
     const isOpen = (id) => UI._cupsOpen[id] ?? (!!S().comps[id] && (S().comps[id].clubs.includes(uc) || v === 'world'));
+    // a finished competition's awards and team of the tournament close its card
+    const awardsOf = (c) =>
+      c.awards ? `<div class="small b dim" style="margin:14px 0 0">AWARDS</div>${UI.awardsHTML(c.awards)}` : '';
     const foldAll = (html) =>
       html
         .split(/(?=<div class="card" data-cupid=")/)
@@ -2113,7 +2188,7 @@
             /^<div class="card" data-cupid="([^"]+)">(<div class="row">[\s\S]*?<div class="h3 grow">[\s\S]*?<\/div>(?:<span class="pill acc">[\s\S]*?<\/span>)?<\/div>)([\s\S]*)<\/div>$/,
           );
           return m
-            ? `<details class="card cupfold" data-cup="${m[1]}" ${isOpen(m[1]) ? 'open' : ''}><summary>${m[2]}</summary>${m[3]}</details>`
+            ? `<details class="card cupfold" data-cup="${m[1]}" ${isOpen(m[1]) ? 'open' : ''}><summary>${m[2]}</summary>${m[3]}${awardsOf(S().comps[m[1]] || {})}</details>`
             : card;
         })
         .join('');

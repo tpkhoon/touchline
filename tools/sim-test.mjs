@@ -455,6 +455,26 @@ check(S.news.length > 0 && S.news.length <= 2 * FM.News.CAP, `feed has ${S.news.
     }
   check(dupes === 0, `${dupes} regional fixtures appear twice`);
 }
+// awards: last season's world best XI, every full league's awards, the cups' and the finals' awards and teams
+{
+  const last = S.archive[S.archive.length - 1];
+  check(!!(last && last.worldXI && last.worldXI.xi.length >= 8), 'no world best XI for last season');
+  const lg = Object.values(last.comps).filter((x) => x.sim === 'full');
+  check(
+    lg.every((x) => x.awards && x.awards.xi && x.awards.player),
+    'a full league has no awards or team of the season',
+  );
+  const cups = Object.values(last.cups || {});
+  check(
+    cups.length && cups.filter((c) => c.awards).length >= Math.ceil(cups.length / 2),
+    `only ${cups.filter((c) => c.awards).length} of ${cups.length} finished cups have awards`,
+  );
+  const fin = (S.tourns || []).filter((t) => t.winner);
+  check(
+    fin.every((t) => t.awards && t.awards.xi),
+    'a finished international tournament has no awards',
+  );
+}
 // club news survives the world's transfer noise (counting every club the test manager has had: a late sacking can
 // leave him at a new club with little news of its own yet)
 const everManaged = new Set(S.user.history.map((h) => h.club).concat(S.user.clubId || []));

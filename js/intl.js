@@ -422,6 +422,7 @@
         const p = s.players[pid];
         p.intl = p.intl || { caps: 0, goals: 0, first: s.year };
         const first = p.intl.caps === 0;
+        if (tourn && sd.rating && sd.rating[pid] != null) FM.Records.noteComp('T_' + fx.tid, p, sd.rating[pid]);
         if (first) p.alleg = sd.club.code;
         p.intl.caps++;
         (p.intl.by = p.intl.by || {})[s.year] = (p.intl.by[s.year] || 0) + 1;
@@ -440,6 +441,7 @@
     r.goals.forEach((g) => {
       const p = s.players[g.pid];
       if (p && p.intl) p.intl.goals++;
+      if (tourn) FM.Records.noteGoal(fx, g, 'T_' + fx.tid);
     });
     // Coefficient update (qualifiers and finals count for more than friendlies)
     const exp = 1 / (1 + Math.pow(10, ((A.club.coef - H.club.coef) * 10 - (fx.neutral ? 0 : 60)) / 400));
@@ -492,6 +494,7 @@
       runner = T(w === fin.h ? fin.a : fin.h);
     t.winner = champ.id;
     t.runnerUp = runner.id;
+    const awards = FM.Records.finishTournament(t); // its awards and team of the tournament
     champ.titles[t.id] = (champ.titles[t.id] || 0) + 1;
     const goals = {};
     t.games.forEach((g) => g.goals.forEach((x) => (goals[x.pid] = (goals[x.pid] || 0) + 1)));
@@ -510,6 +513,7 @@
       runnerUp: runner.id,
       final: `${wg}–${lg}${fin.res.pens ? ` (${hw ? fin.res.pens[0] : fin.res.pens[1]}–${hw ? fin.res.pens[1] : fin.res.pens[0]} pens)` : ''}`,
       games: t.games.length,
+      awards,
       topScorer:
         top && s.players[top[0]]
           ? { pid: top[0], name: W.name(s.players[top[0]]), goals: top[1], nat: s.players[top[0]].nat }

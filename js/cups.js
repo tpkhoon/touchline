@@ -48,6 +48,7 @@
         .map((x) => x.id);
       c.rounds = [];
       c.winner = null;
+      c.awards = null;
       c.runnerUp = null;
     }
     // second-tier cups go second, so the main cups' entrants are taken first
@@ -125,6 +126,7 @@
         }));
       c.ko = { qf: [], qf2: null, sf: [], sf2: null, final: null };
       c.winner = null;
+      c.awards = null;
       c.runnerUp = null;
       c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.13)); // participation fee
     }
@@ -185,6 +187,7 @@
     c.clubs = ids.slice(0, 8);
     c.ko = { qf: [], sf: [], final: null };
     c.winner = null;
+    c.awards = null;
     c.runnerUp = null;
     c.clubs.forEach((id) => (S().clubs[id].balance += 2e6));
   };
@@ -548,6 +551,7 @@
     c.winner = w;
     c.runnerUp = l;
     c.lastFinal = { w, r: l, year: S().year };
+    if (FM.Records) FM.Records.finishComp(c); // its awards and team of the tournament
     club.titles[c.id] = (club.titles[c.id] || 0) + 1;
     club.balance += c.prize || 0;
     club.rep = Math.min(

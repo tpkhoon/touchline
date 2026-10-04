@@ -96,6 +96,7 @@
       c.clubs = Rg.members(c).map((x) => x.id);
       c.rounds = [];
       c.winner = null;
+      c.awards = null;
       c.runnerUp = null;
       c.final = null;
       c.cursor = -1;

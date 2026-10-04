@@ -346,6 +346,7 @@
         p.cult += 3;
       }
       if (g.ast) S.players[g.ast].season.ast++;
+      FM.Records.noteGoal(fx, g);
     });
     res.cards.forEach((c) => {
       const p = S.players[c.pid];
@@ -1379,6 +1380,7 @@
           name: c.name,
           winner: c.winner,
           runnerUp: c.runnerUp,
+          awards: c.awards || null, // its awards and team of the tournament
         };
     // Apply promotion/relegation relationships (then put any B team now level with its parent back down)
     const applyMove = ([id, from, to]) => {

@@ -31,6 +31,7 @@
     ATT = new Set(['W', 'ST']);
   R.noteRating = function (fx, p, r) {
     const comp = S().comps[fx.comp];
+    if (comp && comp.type !== 'league' && comp.type !== 'friendly') R.noteComp(fx.comp, p, r); // a cup's own stats
     if (!comp || comp.type !== 'league' || fx.ko || fx.leg) return;
     const buf = (S().totwBuf = S().totwBuf || {});
     (buf[fx.comp] = buf[fx.comp] || []).push({
@@ -625,10 +626,196 @@
     return st.cap;
   };
 
+  // ---------- Tournament and season awards ----------
+  // Cups, continental cups and the finals keep their own per-player stats while they are played (S.compStats, one entry
+  // per competition: appearances, rating total, goals, assists); when a competition ends, its awards are worked out
+  // and kept with it: the Golden Boot, best player, best young player, best goalkeeper, most assists and a team of the
+  // tournament. Leagues get the same from the season's numbers, and the world gets a best XI.
+  const stats = (key) => {
+    const s = S();
+    if (!s.compStats || s.compStats.year !== s.year) s.compStats = { year: s.year, by: {} };
+    return (s.compStats.by[key] = s.compStats.by[key] || {});
+  };
+  const entryOf = (key, pid) => {
+    const m = stats(key);
+    return (m[pid] = m[pid] || { a: 0, r: 0, g: 0, s: 0 });
+  };
+  R.noteComp = function (key, p, r) {
+    const e = entryOf(key, p.id);
+    e.a++;
+    e.r += r;
+  };
+  // a goal (and its assist) in a match of fx's competition, or in a tournament (key given)
+  R.noteGoal = function (fx, g, key) {
+    const comp = !key && S().comps[fx.comp];
+    if (!key && (!comp || comp.type === 'league' || comp.type === 'friendly')) return;
+    const k = key || fx.comp;
+    if (S().players[g.pid]) entryOf(k, g.pid).g++;
+    if (g.ast && S().players[g.ast]) entryOf(k, g.ast).s++;
+  };
+  // rows: [{ p, a (appearances), r (rating total), g, s, adj (a rating bonus, default 0), side (club or nation id) }]
+  R.awardsOf = function (rows) {
+    const maxA = Math.max(0, ...rows.map((x) => x.a)),
+      min = Math.max(1, Math.round(maxA * 0.5));
+    const avg = (x) => x.r / Math.max(1, x.a) + (x.adj || 0);
+    const who = (x, extra = {}) => ({
+      pid: x.p.id,
+      name: W.name(x.p),
+      club: x.side || x.p.clubId,
+      pos: x.p.pos,
+      ...extra,
+    });
+    const ok = rows.filter((x) => x.p && x.a >= min);
+    const top = (list, key) => list.slice().sort((a, b) => key(b) - key(a))[0];
+    const boot = top(
+      rows.filter((x) => x.g > 0),
+      (x) => x.g * 100 + x.s * 10 - x.a,
+    );
+    const ast = top(
+      rows.filter((x) => x.s > 0),
+      (x) => x.s * 100 + x.g * 10 - x.a,
+    );
+    const player = top(ok, (x) => avg(x) + x.g * 0.02);
+    const young = top(
+      ok.filter((x) => W.age(x.p) <= 21),
+      avg,
+    );
+    const keeper = top(
+      ok.filter((x) => x.p.pos === 'GK'),
+      avg,
+    );
+    const xi = R.pickTeam(
+      ok.map((x) => ({
+        id: x.p.id,
+        n: W.short(x.p),
+        pos: x.p.pos,
+        lab: W.posLabel(x.p),
+        c: x.side || x.p.clubId,
+        r: Math.round(avg(x) * 100) / 100,
+      })),
+    );
+    return {
+      boot: boot && who(boot, { goals: boot.g, assists: boot.s }),
+      assists: ast && who(ast, { assists: ast.s }),
+      player: player && who(player, { avg: +(player.r / player.a).toFixed(2) }),
+      young: young && who(young, { avg: +(young.r / young.a).toFixed(2) }),
+      keeper: keeper && who(keeper, { avg: +(keeper.r / keeper.a).toFixed(2) }),
+      xi,
+    };
+  };
+  // A competition's rows from its own stats (the side is the player's club, or his nation's team for the finals)
+  const rowsOf = (key, sideOf) => {
+    const m = (S().compStats && S().compStats.year === S().year && S().compStats.by[key]) || {};
+    return Object.entries(m)
+      .map(([pid, e]) => ({
+        p: S().players[pid],
+        a: e.a,
+        r: e.r,
+        g: e.g,
+        s: e.s,
+        side: sideOf && S().players[pid] && sideOf(S().players[pid]),
+      }))
+      .filter((x) => x.p);
+  };
+  const awardLines = (aw) =>
+    [
+      aw.boot && `Golden Boot: ${aw.boot.name} (${aw.boot.goals} goal${aw.boot.goals === 1 ? '' : 's'})`,
+      aw.player && `Best player: ${aw.player.name}`,
+      aw.young && `Best young player: ${aw.young.name}`,
+      aw.keeper && `Best goalkeeper: ${aw.keeper.name}`,
+      aw.assists && `Most assists: ${aw.assists.name} (${aw.assists.assists})`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  // A cup or continental competition has just ended: its awards, kept on it, and the news if it matters to you
+  R.finishComp = function (c) {
+    const aw = R.awardsOf(rowsOf(c.id));
+    c.awards = aw.boot || aw.player || aw.xi ? aw : null;
+    if (S().compStats && S().compStats.by) delete S().compStats.by[c.id];
+    if (!c.awards) return;
+    const mine = W.userClub() && c.clubs && c.clubs.includes(W.userClub().id);
+    if (mine || c.type === 'continental' || c.type === 'world')
+      news({
+        type: 'award',
+        title: `${c.name}: awards and team of the tournament`,
+        body: awardLines(c.awards),
+        pid: c.awards.player ? c.awards.player.pid : undefined,
+      });
+  };
+  // The international finals ended (rows: players by nation)
+  R.finishTournament = function (t) {
+    const key = 'T_' + t.id;
+    const aw = R.awardsOf(rowsOf(key, (p) => 'n_' + (FM.Intl ? FM.Intl.nationOf(p) : p.nat)));
+    t.awards = aw.boot || aw.player || aw.xi ? aw : null;
+    if (S().compStats && S().compStats.by) delete S().compStats.by[key];
+    if (!t.awards) return null;
+    news({
+      type: 'award',
+      title: `${t.name}: awards and team of the tournament`,
+      body: awardLines(t.awards),
+      pid: t.awards.player ? t.awards.player.pid : undefined,
+    });
+    return t.awards;
+  };
+  // A league's awards from this season's numbers (so far, or at the end)
+  R.leagueAwards = function (compId) {
+    const comp = S().comps[compId];
+    if (!comp || !comp.table) return null;
+    const rows = [];
+    for (const id of comp.clubs)
+      for (const p of W.squad(id))
+        rows.push({ p, a: p.season.apps, r: p.season.rsum, g: p.season.goals, s: p.season.ast });
+    const aw = R.awardsOf(rows);
+    return aw.boot || aw.player || aw.xi ? aw : null;
+  };
+  // The world's best XI of the season: every player at a fully or lightly simulated club with a fair share of his
+  // league's games, rated on his average, with a little extra for a stronger league. Also the world's best player.
+  R.worldXI = function () {
+    const s = S(),
+      list = [];
+    for (const comp of W.leagues()) {
+      if (comp.sim === 'minimal') continue;
+      const games = Math.max(0, ...Object.values(comp.table).map((r) => r.p)),
+        min = Math.max(4, Math.round(games * 0.5));
+      for (const id of comp.clubs) {
+        const bonus = (W.levelFor(s.clubs[id].rep) - 60) * 0.02;
+        for (const p of W.squad(id))
+          if (p.season.apps >= min)
+            list.push({
+              id: p.id,
+              n: W.short(p),
+              pos: p.pos,
+              lab: W.posLabel(p),
+              c: p.clubId,
+              r: Math.round((p.season.rsum / p.season.apps + bonus) * 100) / 100,
+            });
+      }
+    }
+    const xi = R.pickTeam(list);
+    const best = list.slice().sort((a, b) => b.r - a.r)[0];
+    return xi ? { xi, best: best && { pid: best.id, name: W.name(s.players[best.id]), club: best.c } } : null;
+  };
+
   // Rivalries cool a little every summer
   const endSeason = FM.Season.endSeason;
   FM.Season.endSeason = function () {
+    // the awards are worked out from this season's numbers before the season closes them
+    const wxi = R.worldXI(),
+      lg = {};
+    for (const c of W.leagues()) lg[c.id] = R.leagueAwards(c.id);
     const out = endSeason.apply(this, arguments);
+    const e = S().archive && S().archive[S().archive.length - 1];
+    if (e) {
+      e.worldXI = wxi;
+      for (const id in e.comps) if (lg[id]) e.comps[id].awards = lg[id];
+    }
+    if (wxi)
+      news({
+        type: 'award',
+        title: `World best XI of ${e ? e.label : 'the season'}`,
+        body: `${wxi.xi.map((x) => x.n).join(', ')}.${wxi.best ? ` Player of the year: ${wxi.best.name}.` : ''}`,
+        pid: wxi.best ? wxi.best.pid : undefined,
+      });
     R.seasonEnd();
     return out;
   };
