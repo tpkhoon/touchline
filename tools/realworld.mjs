@@ -49,7 +49,7 @@ function readSource() {
     cups: Object.fromEntries(D.DOMESTIC_CUPS.map((c) => [c[0], { nat: c[1], name: c[2], short: c[3] }])),
     rivals: D.RIVALS.map(([a, b, name]) => [a, b, name]),
     regions: Object.fromEntries(
-      (D.REGIONS || []).map((r) => [r[0], { nat: r[1], format: r[2], name: r[3], short: r[4], clubs: r[5] }]),
+      (D.AREAS || []).map((r) => [r[0], { nat: r[1], format: r[2], name: r[3], short: r[4], clubs: r[5] }]),
     ),
     nations: Object.fromEntries(Object.entries(D.NATIONS).map(([k, n]) => [k, n.name])),
   };

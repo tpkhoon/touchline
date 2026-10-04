@@ -310,7 +310,7 @@
         .map(([v, l]) => `<div class="grow"><div class="h3">${v}</div><div class="tiny dim">${l}</div></div>`)
         .join('')}</div></div>
       <div class="card"><div class="h3">Match by match</div><div class="tiny dim">The last ${Math.min(24, n)} competitive matches</div>${matchChart(log)}</div>
-      <div class="card"><div class="h3">The analyst's view</div><div class="tiny dim" style="margin-bottom:4px">${esc(FM.Staff.get('analyst').fn)} ${esc(FM.Staff.get('analyst').ln)} · ability ${an}/20 — a better analyst spots more</div>${notes.map((t) => `<div class="small note" style="padding:7px 0;border-top:1px solid var(--line)">📊 ${esc(t)}</div>`).join('') || '<div class="small dim">Too early to say much.</div>'}</div>
+      <div class="card"><div class="h3">The analyst's view</div><div class="tiny dim" style="margin-bottom:4px">${esc(FM.Staff.get('analyst').fn)} ${esc(FM.Staff.get('analyst').ln)} · ability ${U.staffText(an)} — a better analyst spots more</div>${notes.map((t) => `<div class="small note" style="padding:7px 0;border-top:1px solid var(--line)">📊 ${esc(t)}</div>`).join('') || '<div class="small dim">Too early to say much.</div>'}</div>
       ${comp}
       <div class="card"><div class="h3">Where the chances come from</div><table class="t" style="margin-top:6px"><tr><th class="l"></th><th>Shots</th><th>Goals</th><th>xG</th><th>Faced</th><th>Conc.</th><th>xGA</th></tr>${typeRows}</table></div>
       <div class="card"><div class="h3">When the goals come</div><div class="row tiny dim" style="margin:4px 0"><span class="grow" style="text-align:right">Scored</span><span style="width:52px"></span><span class="grow">Conceded</span></div>${bandRows}</div>`;

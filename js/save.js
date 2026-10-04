@@ -168,6 +168,49 @@
         if (info && info[1] && !c.nick) c.nick = info[1];
       }
     }
+    // abbreviations come from the club's own name now (many carried the codes of its old, real-life name: CHE3, CON)
+    if (s.clubAbbr !== 2 && s.clubs && FM.D.CLUB_INFO) {
+      s.clubAbbr = 2;
+      // (only where the club still has the name the abbreviation was made from)
+      const named = new Map(FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || []).map((r) => [r[1], r[0]]));
+      for (const [id, c] of Object.entries(s.clubs)) {
+        const info = FM.D.CLUB_INFO[id.slice(2)];
+        if (info && info[0] && named.get(id.slice(2)) === c.name) c.short = info[0];
+      }
+    }
+    // England's divisions were labelled D1–D4 ("D1" read as the First Division, which is D2): ENG1–ENG4
+    if (s.comps && FM.D.LEAGUES)
+      for (const l of FM.D.LEAGUES) {
+        const c = s.comps[l.id];
+        if (c && /^D\d$/.test(c.short) && l.short !== c.short) c.short = l.short;
+      }
+    // second nationalities (through family heritage) for players made before they existed
+    if (s.players && FM.W && FM.D.POOL_NATS)
+      for (const p of Object.values(s.players))
+        if (p.heritage && p.nat2 === undefined) p.nat2 = FM.W.dualNat(p.nat, p.heritage, null);
+    // scouts made while the county-cup data overwrote the scouting regions have numbered regions: new profiles, and
+    // any assignment to a region that does not exist is cleared
+    if (s.staff && FM.W && FM.D.REGIONS) {
+      for (const st of Object.values(s.staff))
+        if (st.role === 'Scout' && st.regions && Object.keys(st.regions).some((k) => !FM.D.REGIONS[k]))
+          Object.assign(st, FM.W.scoutProfile(st.nat in FM.D.NATIONS ? st.nat : 'ENG', st.ability || 12));
+      if (s.user && s.user.assignments)
+        s.user.assignments = s.user.assignments.filter((a) => a.region == null || FM.D.REGIONS[a.region]);
+    }
+    // three clubs were renamed when the name generator learned to avoid rude words ("Cabrona FC")
+    if (s.clubs && FM.D.LEAGUES)
+      for (const row of FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || [])) {
+        const c = s.clubs['c_' + row[1]];
+        if (c && ['Cabrona FC', 'FC Unter Furtbach', 'FC Unter Neckarhafen'].includes(c.name)) {
+          c.name = row[0];
+          c.city = row[2];
+          if (row[7] && c.stadium) c.stadium.name = row[7];
+        }
+      }
+    // "Born Leader" duplicated the Leader trait: the personality is read from the other hidden traits now
+    if (s.players && FM.W)
+      for (const p of Object.values(s.players))
+        if (p.personality === 'Born Leader' && p.hid) p.personality = FM.W.personality(p.hid);
     // the world ranking is a coefficient now (it was an Elo rating, 1500 for an average side)
     for (const t of Object.values(s.nteams || {}))
       if (t.coef == null && t.elo != null) {

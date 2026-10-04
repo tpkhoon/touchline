@@ -7,6 +7,27 @@ const rep = (list, n) => Array.from({ length: n }, () => list).flat(); // (weigh
 const VOWELS = 'aeiouyáéíóúàèìòùâêîôûäöüåæøãõ';
 const isVowel = (c) => VOWELS.includes((c || '').toLowerCase());
 
+// Words no generated name may contain, in the languages the library writes in (matched on the name with accents
+// and spaces removed, so a rude word split across two parts is caught too). The short ones only count as a whole
+// word, so real surnames such as Dickens or Cocker stay.
+const RUDE_PART =
+  `cabron cabrona puta puto putas putos mierda coño joder pendej culo culos polla pollas verga chinga marica maricon
+  zorra gilipoll hijoput cojon capullo merde putain salope connard encule foutre bordel batard nique scheiss scheisse
+  fotze wichser arsch hure schwuchtel hurensohn votze cazzo merda vaffa troia stronz puttana vaffanculo minchia
+  fuck shit cunt cunts twat wank bollock bastard piss slut whore nigg porra caralho buceta viado piroca
+  kurwa pierdol chuj jebac pizda sikmek orospu amcik yarrak kokot hovno`.split(/\s+/);
+const RUDE_WORD = new Set('dick dicks cock cocks fag fags tit tits ass arse anus sex pene bite con cul'.split(' '));
+const plain = (t) =>
+  String(t)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+export const isRude = (text) => {
+  const t = plain(text);
+  if (RUDE_PART.some((w) => t.replace(/[^a-z]/g, '').includes(w))) return true;
+  return t.split(/[^a-z]+/).some((w) => RUDE_WORD.has(w));
+};
+
 export const LANG = {
   eng: {
     nations: 'ENG SCO WAL IRL AUS USA RSA GHA NGA',
@@ -896,6 +917,142 @@ export const LANG = {
     cup: 'Champions Cup',
   },
 };
+// ---------------------------------------------------------------- more variety
+// Extra nickname words, club-name patterns, division names and cup names, so the world is not 700 "Town", "United" and
+// "Premier Division". Nations that share a language each draw their own division and cup names (worldgen, by seed).
+const NICK_MORE = {
+  eng: words(
+    `Bluebirds Canaries Magpies Saints Pilgrims Shrimpers Seagulls Hornets Swans Potters Tykes Cobblers Millers Posh
+    Imps Gulls Grecians Stags Terriers Bantams Lilywhites Royals Robins Cherries Clarets Owls Blades Foxes Seahawks
+    Warriors Knights Smiths Dockers Weavers Brewers Colliers Anglers Shepherds Tinners Bees Bulldogs Cats Wasps
+    Eagles Panthers Kings Pioneers Harriers Thistles Dragons Comets Rockets Lancers Archers Yeomen Wanderers`,
+  ),
+  spa: words('Halcones Cóndores Zorros Osos Gladiadores Corsarios Marineros Cruzados Leñadores Pastores Titanes Rayos'),
+  por: words('Gladiadores Corsários Pescadores Cavaleiros Pioneiros Dragões Raposas Ursos Foguetes Pastores'),
+  bra: words('Gladiadores Corsários Pescadores Cavaleiros Raposas Ursos Foguetes Pioneiros Bandeirantes Capivaras'),
+  mex: words('Gladiadores Corsarios Pescadores Charros Zorros Osos Rayos Titanes Cruzados Pioneros'),
+  arg: words('Gladiadores Corsarios Pescadores Zorros Osos Rayos Titanes Cruzados Pioneros Ñandúes'),
+  ger: words('Gladiatoren Seeadler Raben Kicker Kumpel Stahlwerker Brauer Pioniere Schwarzbären Rothirsche Wikinger'),
+  nld: words('Gladiatoren Zeemeeuwen Raven Kasteelheren Vissers Brouwers Pioniers Beren Herten Vikingen'),
+  nor: words('Gladiatorer Måker Ravner Fiskere Bryggere Pionerer Bjørner Hjorter Soldater Kometer'),
+  fra: words('Gladiateurs Mouettes Corbeaux Pêcheurs Brasseurs Pionniers Ours Chevaliers Renards Comètes'),
+  ita: words('Gladiatori Gabbiani Corvi Pescatori Birrai Pionieri Orsi Cavalieri Volpi Comete'),
+  pol: words('Gladiatorzy Mewy Kruki Rybacy Piwosze Pionierzy Niedźwiedzie Rycerze Lisy Komety'),
+  cze: words('Gladiátoři Racci Havrani Rybáři Sládci Průkopníci Medvědi Rytíři Lišky Komety'),
+  hun: words('Gladiátorok Sirályok Hollók Halászok Sörfőzők Úttörők Medvék Lovagok Rókák Üstökösök'),
+  gre: words('Gladiátores Lárioi Korákia Psarádes Pioníri Arkoúdes Ippótes Alepoúdes Kometes'),
+  slav: words('Gladijatori Galebovi Vrane Ribari Pivari Pioniri Vitezovi Lisice Komete'),
+  tur: words('Gladyatörler Martılar Kargalar Balıkçılar Öncüler Ayılar Şövalyeler Tilkiler Kuyruklu_Yıldızlar'),
+  jpn: words('Falcons Sharks Foxes Stags Ravens Comets Knights Pioneers Rockets Lancers'),
+  kor: words('Sharks Foxes Stags Ravens Comets Knights Pioneers Rockets Lancers Cranes'),
+  tha: words('Sharks Foxes Stags Ravens Comets Knights Pioneers Rockets Crocodiles Buffaloes'),
+};
+const CLUB_MORE = {
+  eng: [
+    '{c} Hotspur',
+    '{c} Vale',
+    '{c} Stanley',
+    '{c} North End',
+    '{c} Royals',
+    '{c} Swifts',
+    '{c} Olympic',
+    '{c} Corinthians',
+    '{c} Dynamo',
+    '{c} Sporting',
+    'FC {c}',
+    'AFC {c}',
+    '{c} & District',
+  ],
+  spa: ['Racing {c}', 'Real {c}', 'Unión {c}', '{c} Balompié', 'Juventud {c}', 'Estudiantes de {c}'],
+  ger: [
+    'SV {c}',
+    'TuS {c}',
+    'Rot-Weiß {c}',
+    'Blau-Weiß {c}',
+    'SC {c} 1901',
+    'Hertha {c}',
+    'Borussia {c}',
+    'Arminia {c}',
+  ],
+  fra: ['Olympique {c}', 'AS {c}', 'Racing {c}', 'Union {c}', 'Sporting {c}', 'FC {c}', 'Stade {c}', 'Étoile {c}'],
+  ita: ['Virtus {c}', 'Unione {c}', 'Audace {c}', 'Atletico {c}', 'Pro {c}', 'Juventus {c}', 'Sporting {c}'],
+  por: ['Sporting {c}', 'Académico {c}', 'União {c}', 'Os Belenenses de {c}', 'Naval {c}', 'Desportivo {c}'],
+  nld: ['SV {c}', 'FC {c}', 'VV {c}', 'Sparta {c}', 'Go Ahead {c}', 'RKC {c}', 'ADO {c}'],
+};
+// Division and cup names a nation of that language may take instead of the first set
+const TIER_SETS = {
+  eng: [
+    ['Super League', 'Challenge League', 'Second League', 'Third League', 'Fourth League'],
+    ['Top Division', 'Division One', 'Division Two', 'Division Three', 'Division Four'],
+    ['Elite Division', 'Challenge Division', 'Premier Division B', 'Union Division', 'Regional Division'],
+    ['Premier Union', 'Union One', 'Union Two', 'Union Three', 'Union Four'],
+  ],
+  spa: [
+    ['Liga Suprema', 'Liga Nacional', 'Segunda Federal', 'Tercera Federal', 'Liga Regional'],
+    ['Primera Honor', 'Segunda Honor', 'Tercera Honor', 'Cuarta Honor', 'Quinta Honor'],
+  ],
+  por: [['Superliga', 'Liga Nacional', 'Liga Federal', 'Liga Regional', 'Liga Distrital']],
+  bra: [['Série Nacional', 'Série Acesso', 'Série Federal', 'Série Estadual', 'Série Regional']],
+  mex: [['Liga Premier', 'Liga de Plata', 'Liga Nacional', 'Liga Regional', 'Liga Estatal']],
+  arg: [['Superliga', 'Primera Nacional', 'Primera Federal', 'Primera Regional', 'Liga Provincial']],
+  ger: [
+    ['Spitzenliga', 'Zweitliga', 'Drittliga', 'Viertliga', 'Fünftliga'],
+    ['Meisterliga', 'Aufstiegsliga', 'Nordliga', 'Regionalliga', 'Landesliga'],
+  ],
+  nld: [['Hoofdklasse', 'Eerste Divisie', 'Tweede Divisie', 'Derde Divisie', 'Vierde Divisie']],
+  nor: [['Elitserien', 'Første Divisjon', 'Andre Divisjon', 'Tredje Divisjon', 'Fjerde Divisjon']],
+  fra: [
+    ['Ligue Nationale', 'Ligue Deux', 'Nationale', 'Régional', 'Départemental'],
+    ['Championnat de France', 'Division Deux', 'Division Trois', 'Régional Un', 'Régional Deux'],
+  ],
+  ita: [
+    ['Serie Nazionale', 'Serie Cadetta', 'Serie C', 'Serie D', 'Eccellenza'],
+    ['Lega Nazionale', 'Lega Cadetta', 'Lega Terza', 'Lega Quarta', 'Lega Regionale'],
+  ],
+  jpn: [['Super League', 'Challenge League', 'Regional League', 'Prefectural League', 'Local League']],
+  kor: [['Super League', 'Challenge League', 'Regional League', 'Local League', 'Amateur League']],
+  tha: [['Super League', 'League One', 'League Two', 'League Three', 'Regional League']],
+};
+const CUP_SETS = {
+  eng: ['Challenge Cup', 'National Cup', 'Union Cup', 'Federation Trophy', 'Football Cup'],
+  spa: ['Copa de la Federación', 'Copa Nacional', 'Copa del Rey Fundador', 'Copa de Campeones'],
+  por: ['Taça da Federação', 'Taça Nacional', 'Taça de Portugal Nova', 'Taça dos Campeões'],
+  bra: ['Copa da Federação', 'Copa Nacional', 'Copa Brasileira Nova', 'Copa dos Campeões'],
+  ger: ['Verbandspokal', 'Nationalpokal', 'Meisterpokal', 'Bundespokal Neu'],
+  nld: ['Federatiebeker', 'Nationale Beker', 'Landsbeker', 'Kampioensbeker'],
+  fra: ['Coupe de la Fédération', 'Coupe Nationale', 'Coupe des Champions de France', 'Coupe de l’Union'],
+  ita: ['Coppa della Federazione', 'Coppa Nazionale', 'Coppa dei Campioni d’Italia', 'Coppa dell’Unione'],
+};
+for (const [k, more] of Object.entries(NICK_MORE)) LANG[k].misc.push(...more.map((w) => w.replace(/_/g, ' ')));
+for (const k of Object.keys(LANG)) LANG[k].key = k;
+const langKey = (L) => L.key;
+// The division names of a nation: the language's usual set, or one of its alternatives (r: a seeded random)
+export const tiersFor = (L, r) => {
+  const sets = [L.tiers, ...(TIER_SETS[langKey(L)] || [])];
+  return sets[Math.floor(r() * sets.length)];
+};
+// Alternative club-name patterns a language adds to its usual ones (worldgen uses them for a share of the clubs)
+export const clubMoreFor = (L) => CLUB_MORE[langKey(L)] || [];
+export const cupFor = (L, r) => {
+  const sets = [L.cup, ...(CUP_SETS[langKey(L)] || []).filter((c) => c !== L.cup)];
+  return sets[Math.floor(r() * sets.length)];
+};
+// An alternative nickname for a colour, where the language has some ("Red Devils", "Bluebirds")
+export const colourAltFor = (L) => COLOUR_ALT[langKey(L)];
+const COLOUR_ALT = {
+  eng: {
+    red: ['Red Devils', 'Crimsons', 'Scarlets', 'Reds'],
+    blue: ['Bluebirds', 'Royals', 'Blue Army', 'Blues'],
+    white: ['Lilywhites', 'Magpies', 'Whites', 'Seagulls'],
+    black: ['Blackcats', 'Panthers', 'Blacks', 'Dark Horses'],
+    yellow: ['Canaries', 'Hornets', 'Yellows', 'Bees'],
+    green: ['Gladiators', 'Greens', 'Emeralds', 'Robins'],
+    orange: ['Tangerines', 'Oranges', 'Foxes', 'Flames'],
+    claret: ['Clarets', 'Maroons', 'Wine Reds', 'Burgundies'],
+    sky: ['Sky Blues', 'Cityzens', 'Azure', 'Skyhawks'],
+    navy: ['Navy', 'Mariners', 'Admirals', 'Navy Blues'],
+  },
+};
 export const TIERS_BY = {
   CZE: ['První Liga', 'Druhá Liga', 'Třetí Liga', 'Čtvrtá Liga'],
   SVK: ['První Liga', 'Druhá Liga', 'Třetí Liga'],
@@ -914,7 +1071,63 @@ export const CUP_BY = {
   GRE: 'Federation Kypello',
   ROU: 'Cupa Federației',
 };
-export const langOf = (nat) => Object.values(LANG).find((l) => l.nations.split(' ').includes(nat)) || LANG.eng;
+// Nations that share a language but not a landscape get building blocks of their own: Scottish, Welsh and Irish
+// towns, American and Australian ones, instead of one English list with different spellings
+const NATION_L = {
+  SCO: {
+    ...LANG.eng,
+    a: words(
+      `Aber Auch Bal Bannock Blair Cal Clack Craig Cumb Dal Drum Dun Fal Glen Inver Kil Kin Kirk Lang Loch Mon Nairn Pit Strath
+      Tay Torry Tulli Dun Fraser Gal Haw Innes Jed Kel Lin Lock Moff Peeb Ros Selk Stran`,
+    ),
+    b: words('burgh ness dee ie more ray rie ock wick mouth loch kirk side bridge ton land shiels'),
+    pre: ['Upper', 'Nether', 'Easter', 'Wester', 'Mid', 'Kirk'],
+    joins: ['-on-Tay', '-on-Spey', '-by-the-Sea', ' of the Glens', '-on-Forth'],
+  },
+  WAL: {
+    ...LANG.eng,
+    a: words(
+      `Aber Bala Bangor Caer Carn Clyn Cors Cwm Dyff Fish Glyn Llan Llang Llwyn Mach Pen Pont Porth Rhos Rhyd Tal Tre Ysgy
+      Brec Conw Dolg Harl Mol Neat Ogm Rhay Tenb Ystrad`,
+    ),
+    b: words('wyn ydd fa ni dre oed dy gwyn ogg fan bach llyn nant ach ant ddu'),
+    pre: ['Llan', 'Pen', 'Aber', 'Caer', 'Porth'],
+    preGap: '',
+    joins: [' Bach', ' Fawr', '-y-Bont', ' Uchaf'],
+  },
+  IRL: {
+    ...LANG.eng,
+    a: words(
+      `Bally Ard Bun Carrick Clon Cor Dun Drom Glen Kil Kin Lis Mal Mon Naa New Rath Ros Slig Tul Tub Ath Bal Cas Dro Enn
+      Glin Kell Lim Mull Oran Port Tram Wick`,
+    ),
+    b: words('more agh drum town gar garvan lough mullen na kenny bridge ford ard ree glass dara'),
+    pre: ['Upper', 'Lower', 'Old', 'Little', 'Castle', 'Port'],
+    joins: [' Cross', '-on-Shannon', ' Bridge', ' Upper'],
+  },
+  USA: {
+    ...LANG.eng,
+    a: words(
+      `Spring Lake Fort Port Oak River Pine Cedar Maple Elk Bear Eagle Red Blue White Rock Silver Golden Sun Green Mill Bay
+      Cherry Walnut Hickory Prairie Mesa Canyon Harbor Summit Willow Aspen Cypress`,
+    ),
+    b: words('field ville port ton burg wood dale ford view haven falls springs ridge bluff creek hills grove'),
+    pre: ['New', 'Port', 'Fort', 'Lake', 'Mount', 'San', 'Santa', 'El', 'North', 'South', 'West', 'East'],
+    joins: [' Heights', ' Springs', ' Falls', ' Park', ' Beach'],
+  },
+  AUS: {
+    ...LANG.eng,
+    a: words(
+      `Bunda Bun Carn Cob Dub Geral Gin Gol Kal Katoo Kyne Mand Mor Nar Now Wag Wall War Yarr Wodo Albu Bal Tam
+      Mil Port Coff Cess Echu Gym Hayl Yas`,
+    ),
+    b: words('bool dah gong nup bin ton ra by ville lea wa ooka dale ford more cannon nunda'),
+    pre: ['Port', 'Mount', 'North', 'South', 'East', 'West', 'Lake', 'New'],
+    joins: [' Heights', ' Bay', ' Beach', ' Creek', ' Plains'],
+  },
+};
+export const langOf = (nat) =>
+  NATION_L[nat] || Object.values(LANG).find((l) => l.nations.split(' ').includes(nat)) || LANG.eng;
 
 // ---------------------------------------------------------------- town names
 // Stems and endings are joined with the sounds kept tidy (no clashing vowels where the language elides, no triple
@@ -940,3 +1153,87 @@ export function placeName(L, r) {
   } else if (roll < 0.15 && L.joins.length) s += r.pick(L.joins);
   return s;
 }
+
+// ---------------------------------------------------------------- checks on a generated name
+// A name must not sound like a real town or club, be hard to say, or run long.
+const fold2 = (t) =>
+  String(t)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z]/g, '');
+const lev = (a, b) => {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++)
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+};
+const prefixLen = (a, b) => {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
+};
+// realTowns / realClubs: the real names to keep clear of ("Chelington" is fine, "Chelsington" is too close to Chelsea)
+export function nameChecks(realTowns, realClubs) {
+  const towns = [...new Set(realTowns.map(fold2))].filter((x) => x.length >= 5),
+    clubs = [...new Set(realClubs.map(fold2))].filter((x) => x.length >= 6);
+  return {
+    closeToTown(town) {
+      const t = fold2(town);
+      if (t.length < 5) return false;
+      return towns.some((r) => {
+        if (r === t) return true;
+        const pl = prefixLen(t, r);
+        if (pl >= 5 && pl >= 0.7 * Math.min(t.length, r.length)) return true;
+        return Math.abs(t.length - r.length) <= 1 && t[0] === r[0] && lev(t, r) <= 2;
+      });
+    },
+    closeToClub(name) {
+      const t = fold2(name);
+      if (t.length < 6) return false;
+      return clubs.some((r) => r === t || (Math.abs(t.length - r.length) <= 2 && t[0] === r[0] && lev(t, r) <= 2));
+    },
+  };
+}
+const MAX_CONSONANTS = { spa: 4, por: 4, bra: 4, mex: 4, arg: 4, ita: 4, fra: 4, jpn: 3, kor: 3, tha: 3 };
+// Three or more consonants in a row are fine where the language has them; past its limit the name is hard to say
+export const hardToSay = (text, L) => {
+  const max = MAX_CONSONANTS[L.key] || 5;
+  return String(text)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .split(/[^a-z]+/)
+    .some((w) => (w.match(/[^aeiouy]+/g) || []).some((run) => run.length > max));
+};
+export const tooLong = (name, max = 26) => String(name).length > max;
+// Words that make a small club's town sound smaller and older ("North Litworth Wanderers")
+const QUIRK = {
+  eng: ['North', 'South', 'East', 'West', 'Upper', 'Lower', 'Old', 'New', 'Great', 'Little', 'Market', 'Church'],
+  spa: ['Nueva', 'Villa', 'San', 'Santa', 'Alto', 'Bajo'],
+  ger: ['Alt', 'Neu', 'Bad', 'Ober', 'Unter', 'Groß', 'Klein'],
+  fra: ['Saint-', 'Mont-', 'Villeneuve-', 'Château-'],
+  ita: ['Borgo', 'Castel', 'Monte', 'Porto', 'San'],
+  por: ['Vila', 'São', 'Santa', 'Alto'],
+  nld: ['Oud', 'Nieuw', 'Groot', 'Klein'],
+};
+export const quirkFor = (L) => QUIRK[L.key] || [];
+// A club name is "simple" when it is the town and one short word (big clubs get those)
+export const isSimpleClub = (t) => !/[0-9&]/.test(t) && t.replace('{c}', 'X').split(' ').length <= 2;
+// Fictional league sponsors ("Aurum Top Division")
+export const SPONSORS = words(
+  `Aurum Nordbank Kaizen Vantage Meridian Helix Orbis Solara Tandem Zenith Polaris Cobalt Argent Ironwood Lumen Quanta
+  Verity Summit Halcyon Brightway Northgate Calder Redwater Evergreen Pinnacle Harbor Crestline Sable Monarch Beacon
+  Altura Bluepeak Corvane Dunmore Elmstead Fairhaven Glenrock Hartwell Ivorygate Juniper Kestrel Lakeshore Marlowe
+  Northwind Oakridge Parkhurst Quillon Ravenscar Silverlake Thornfield Umberton Valemont Whitcombe Yarrow Zephyr
+  Ashgrove Bramwell Cinder Driftwood Eastgate Foxmoor Granite Highmark Ironbridge Jadestone Kingsley Lionheart
+  Mapleton Nightjar Orchard Primrose Quarry Riverstone Stonebridge Tidewater Upland Vanguard Westbrook Alderwood
+  Birchfield Copperfield Dovedale Emberline Fernhill Goldcrest Heathmoor Inkwell Jasper Kiln Larchmont Millstone
+  Nettlefield Opaline Pennant Quickwater Rosewood Saltmarsh Tarnside Urbane Verdant Wrenfield Axiom Borealis Cascade
+  Deltaline Equinox Fulcrum Gravitas Horizon Insignia Keystone Landmark Momentum Nexus Optima Paragon Quorum
+  Radiant Sterling Trident Unity Vertex Windward Xenith Yonder Zinc Apex Banner Crown Dynasty Empire Frontier`,
+);

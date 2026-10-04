@@ -226,7 +226,7 @@
         ? `<button class="btn block" style="margin-top:10px" data-act="ngAgentTerms">Take the agent's proposal: ${U.money(o.counterTerms.wage)}/wk, rest unchanged</button>`
         : '';
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)}</span></div>${p.clubId && !renew ? C.crest(CL(p.clubId), 26) : renew ? '<span class="pill acc">Renewal</span>' : '<span class="pill">Free agent</span>'}</div>
-      <div class="small dim" style="margin-top:6px">${renew ? `Current: ${U.money(p.wage)}/wk until ${p.contract}` : `Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}`}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${dir.ability}/20)`}</div>
+      <div class="small dim" style="margin-top:6px">${renew ? `Current: ${U.money(p.wage)}/wk until ${p.contract}` : `Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}`}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${U.staffText(dir.ability)})`}</div>
       <div class="card flat row" style="margin-top:10px;padding:10px 12px"><span style="font-size:22px">${ag.icon}</span><div class="grow"><div class="small b">${esc(ag.name)} · ${esc(ag.firm)}</div><div class="tiny dim">${esc(ag.style)} — ${esc(ag.desc)} Agent fee ${Math.round(ag.fee * 100)}%.</div></div><div class="tiny dim" style="text-align:right">Patience<br>${Co.blocked(p) ? '<b style="color:var(--bad)">Walked out</b>' : dots(pat.left, ag.patience)}</div></div>
       ${o.mode !== 'loan' ? talksLine(p) : ''}${extraLines}${tabs}${body}
       ${msg ? `<div class="reply" style="margin-top:12px">${esc(msg)}</div>` : ''}${agentBtn}
@@ -481,7 +481,7 @@
     const tac = W.isUser(id) ? s.user.tactic : c.tactic;
     const sq = W.squad(id).sort((a, b) => b.ca - a.ca);
     const { xi } = W.pickXI(id, tac);
-    const avg = Math.round(U.avg(xi.filter(Boolean), (p) => p.ca));
+    const avg = U.avg(xi.filter(Boolean), (p) => p.ca); // (shown as stars)
     // This season's league rounds (for the matchday labels) and cup and continental ties
     const mine = (f) => f && (f.h === id || f.a === id);
     const leagueFx = comp ? comp.fixtures.map((rd, i) => ({ f: rd.find(mine), i })).filter((x) => x.f) : [];
@@ -589,9 +589,9 @@
             : '';
         })
         .join('')}`;
-    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${Math.round(c.rep)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
+    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
       ${W.isUser(id) ? `<button class="btn block" style="margin-bottom:10px" data-act="clubGoMine">This is your club → Club tab</button>` : `<div class="row" style="margin-bottom:10px"><span class="grow"></span>${UI.followBtn('club', id)}</div>`}
-      <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg || '—'}</div><div class="l">XI rating</div></div></div>
+      <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg ? C.starText(avg) : '—'}</div><div class="l">XI rating</div></div></div>
       <div class="card"><div class="row small"><span class="grow muted">Manager</span><b>${W.isUser(id) ? `${s.user.nat ? C.flag(s.user.nat) + ' ' : ''}${esc(s.user.name)}` : mgr ? `${C.flag(mgr.nat)} ${esc(mgr.fn + ' ' + mgr.ln)}` : '—'}</b></div>
         ${!W.isUser(id) && mgr && FM.Records.managerLine(mgr, id) ? `<div class="tiny dim" style="text-align:right;margin-top:2px">${esc(FM.Records.managerLine(mgr, id))}</div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">System</span><b>${tac.formation} · ${tac.buildup} · ${tac.press}</b></div>
@@ -819,6 +819,36 @@
           `<tr class="tap ${i < mark ? 'zone-up' : ''} ${r.id === hl ? 'me' : ''}" data-act="nation" data-id="${r.id}"><td>${i + 1}</td><td class="l"><span class="ellip">${C.flag(T(r.id).code)} ${esc(T(r.id).name)}</span></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td></tr>`,
       )
       .join('')}</table>`;
+  // The manager's overview of the national job: what the federation wants and how it feels, what is coming up, the
+  // last results, and players you could win over
+  const ntOverview = (t) => {
+    const I = FM.Intl,
+      u = S().user,
+      obj = I.objective(),
+      conf = Math.round(u.ntConf ?? 65),
+      up = I.upcoming(),
+      recent = I.recent(),
+      elig = I.eligibleSwitch(t.code).filter((p) => !I.nationOf(p) || I.nationOf(p) !== t.code);
+    const g = obj && obj.group,
+      pos = g ? W.sortedTable(g).findIndex((r) => r.id === u.nation) + 1 : 0;
+    const res = (r) => {
+      const home = r.h === u.nation,
+        gf = home ? r.hg : r.ag,
+        ga = home ? r.ag : r.hg,
+        opp = T(home ? r.a : r.h),
+        w = gf > ga || (r.pens && (home ? r.pens[0] > r.pens[1] : r.pens[1] > r.pens[0]));
+      return `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="wdl" style="background:${w ? 'var(--good)' : gf < ga || r.pens ? 'var(--bad)' : 'var(--warn)'};width:22px;height:22px;font-size:12px">${w ? 'W' : gf < ga || r.pens ? 'L' : 'D'}</span><span class="grow ellip">${home ? 'v' : 'at'} ${C.flag(opp.code)} ${esc(opp.name)}</span><b>${gf}–${ga}</b></div>`;
+    };
+    return `<div class="card"><div class="h3">The federation</div>
+      <div class="row small" style="margin-top:8px;gap:10px"><span class="dim" style="width:84px">Confidence</span><div class="grow">${C.bar(conf, C.moodColor(conf))}</div><b style="width:36px;text-align:right">${conf}%</b></div>
+      ${obj ? `<div class="small" style="margin-top:10px">🎯 ${esc(obj.text)}${pos ? ` — you are ${U.ordinal(pos)}` : ''}.</div>` : ''}
+      ${up.length ? `<div class="small b dim" style="margin-top:12px">COMING UP</div>${up.map((x) => `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:60px">in ${x.in}d</span><span class="grow ellip">${x.opp ? `${x.home ? 'v' : 'at'} ${C.flag(x.opp.code)} ${esc(x.opp.name)}` : 'Opponent drawn on the day'}</span><span class="tiny dim">${esc(x.label)}</span></div>`).join('')}` : ''}
+      ${recent.length ? `<div class="small b dim" style="margin-top:12px">RECENT</div>${recent.map(res).join('')}` : ''}
+      ${elig.length ? `<button class="btn sm block" style="margin-top:12px" data-act="ntSquad" data-tab="eligible">🌍 ${elig.length} eligible player${elig.length === 1 ? '' : 's'} you could win over</button>` : ''}</div>`;
+  };
+  // A card that folds away behind its title (what the player chose is kept: UI._cupsOpen, as on the Cups screen)
+  const nfold = (id, summary, body, open, cls = 'card') =>
+    `<details class="${cls} cupfold" data-cup="${id}" ${((UI._cupsOpen || {})[id] ?? open) ? 'open' : ''}><summary>${summary}</summary>${body}</details>`;
   const origIntl = UI.intlView;
   UI.intlView = function () {
     const s = S(),
@@ -830,7 +860,7 @@
       const next = s.calendar.slice(s.day).findIndex((d) => d.type === 'intl' || d.type === 'tourn');
       top += `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:44px">${C.flag(t.code)}</div><div class="grow"><div class="tag">Your national team</div><div class="h2" style="margin-top:4px">${esc(t.name)}</div><div class="small" style="opacity:.9">World #${rank} · Coefficient ${t.coef.toFixed(1)} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''}</div></div></div>
         <div class="small" style="margin-top:8px;opacity:.9">${next >= 0 ? `Next international match in ${next} day${next === 1 ? '' : 's'}.` : 'No more internationals this season.'} ${t.picks ? `${t.picks.length} players hand-picked.` : 'Squad auto-picked (best available).'}</div>
-        <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="ntSquad">👕 Squad & tactics</button><button class="btn sm grow danger" data-act="ntResign">Resign</button></div></div>`;
+        <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="ntSquad">👕 Squad & tactics</button><button class="btn sm grow danger" data-act="ntResign">Resign</button></div></div>${ntOverview(t)}`;
     } else {
       top += `<div class="card"><div class="row"><div class="h3 grow">National team vacancies</div><span class="tiny dim">refreshed each season</span></div>${
         (s.ntJobs || [])
@@ -844,18 +874,21 @@
     }
     if (s.tourns) {
       top += s.tourns
-        .map(
-          (
-            tn,
-          ) => `<div class="card"><div class="row"><div class="h3 grow">🏆 ${esc(tn.name)}</div>${tn.winner ? `<span class="pill acc">${C.flag(T(tn.winner).code)} ${esc(T(tn.winner).name)}</span>` : ''}</div>${tn.groups.map((g) => `<div class="small b dim" style="margin:10px 0 2px">${tn.groups.length > 1 ? 'GROUP ' + g.name : 'GROUP'}</div>${miniTable(g.table, g.teams, tn.groups.length > 1 ? 2 : 2, u.nation)}`).join('')}
+        .map((tn) => {
+          const summary = `<div class="row"><div class="h3 grow">🏆 ${esc(tn.name)}</div>${tn.winner ? `<span class="pill acc">${C.flag(T(tn.winner).code)} ${esc(T(tn.winner).name)}</span>` : ''}</div>`;
+          const body = `${tn.groups.map((g) => `<div class="small b dim" style="margin:10px 0 2px">${tn.groups.length > 1 ? 'GROUP ' + g.name : 'GROUP'}</div>${miniTable(g.table, g.teams, 2, u.nation)}`).join('')}
         ${[...tn.ko.qf, ...tn.ko.sf, tn.ko.final]
           .filter(Boolean)
           .map(
             (f) =>
               `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">${UI.stagePill(f.po.split(' · ').pop())}</span><span class="grow ellip" style="text-align:right" data-act="nation" data-id="${f.h}">${esc(T(f.h).name)} ${C.flag(T(f.h).code)}</span><b style="min-width:44px;text-align:center">${f.res ? `${f.res.hg}–${f.res.ag}` : 'v'}</b><span class="grow ellip" data-act="nation" data-id="${f.a}">${C.flag(T(f.a).code)} ${esc(T(f.a).name)}</span></div>${f.res && f.res.pens ? `<div class="tiny dim center">pens ${f.res.pens[0]}–${f.res.pens[1]}</div>` : ''}`,
           )
-          .join('')}</div>`,
-        )
+          .join(
+            '',
+          )}${tn.awards ? `<div class="small b dim" style="margin:14px 0 0">AWARDS</div>${UI.awardsHTML(tn.awards)}` : ''}`;
+          // open for a tournament your nation is in (or the only one), folded away for the rest
+          return nfold('tn_' + tn.id, summary, body, s.tourns.length === 1 || tn.teams.includes(u.nation));
+        })
         .join('');
     } else if (s.quals && s.quals.groups.length) {
       const q = s.quals,
@@ -871,7 +904,7 @@
                 .join(' ')}`
             : ''
         }</div>
-        ${mineFirst.map((g) => `<div class="card flat" style="padding:6px 10px"><div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>${miniTable(g.table, g.teams, 1, u.nation)}</div>`).join('')}`;
+        ${mineFirst.map((g) => nfold('q_' + g.name, `<div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>`, miniTable(g.table, g.teams, 1, u.nation), g.teams.includes(u.nation), 'card flat')).join('')}`;
     }
     return top + origIntl();
   };
@@ -887,30 +920,100 @@
     UI.save();
     UI.render();
   };
-  UI.acts.ntSquad = () => UI.ntSquadSheet();
+  UI.acts.ntSquad = (d) => {
+    if (d && d.tab) UI._ntTab = d.tab;
+    UI.ntSquadSheet();
+  };
+  UI._ntTab = 'squad';
   UI.ntSquadSheet = function () {
     const s = S(),
       t = T(s.user.nation);
     if (!t) return;
-    const pool = FM.Intl.pool(t.code),
-      picked = new Set(FM.Intl.squad(t.code).map((p) => p.id));
+    const I = FM.Intl,
+      tab = UI._ntTab || 'squad';
+    const pool = I.pool(t.code),
+      squad = I.squad(t.code),
+      picked = new Set(squad.map((p) => p.id));
     const Tc = t.tactic;
     const seg = (k, vals) =>
       `<div class="seg" style="margin-top:6px">${vals.map((v) => `<button class="${Tc[k] === v ? 'on' : ''}" data-act="ntTac" data-k="${k}" data-v="${v}">${v.replace(' Press', '').replace(' Block', '')}</button>`).join('')}</div>`;
-    const html = `<div class="h3">Formation</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${Object.keys(
-      D.FORMATIONS,
-    )
-      .map(
-        (f) =>
-          `<button class="chip ${Tc.formation === f ? 'on' : ''}" data-act="ntTac" data-k="formation" data-v="${f}">${f}</button>`,
-      )
-      .join('')}</div>
-      <div class="h3" style="margin-top:8px">Build-up</div>${seg('buildup', D.BUILDUP)}<div class="h3" style="margin-top:10px">Pressing</div>${seg('press', D.PRESS)}
-      <div class="row" style="margin-top:14px"><div class="h3 grow">Call-ups <span class="dim small">${picked.size}/23</span></div><button class="btn sm" data-act="ntAuto">Auto-pick</button></div>
-      <div class="tiny dim" style="margin:4px 0 6px">The best ${pool.length} ${esc(D.NATIONS[t.code].name)} players. Tap to call up or drop. Injured players can't be picked.</div>
-      <div class="list">${pool.map((p) => `<div class="prow tap" data-act="ntPick" data-id="${p.id}" style="${picked.has(p.id) ? '' : 'opacity:.55'}">${C.pos(p)}<div class="grow"><div class="b ellip">${picked.has(p.id) ? '✅ ' : ''}${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps${!W.available(p) ? ' · 🚑 unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b></div>`).join('')}</div>`;
+    const sub = (k, l) =>
+      `<button class="chip ${tab === k ? 'on' : ''}" data-act="ntSquad" data-tab="${k}">${l}</button>`;
+    const sel = (k, label, cur) =>
+      `<div class="row small" style="margin-top:6px;gap:8px"><span class="dim" style="width:84px">${label}</span><select data-input="ntRole" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><option value="">Automatic</option>${squad.map((p) => `<option value="${p.id}" ${cur === p.id ? 'selected' : ''}>${esc(W.short(p))} (${p.pos})</option>`).join('')}</select></div>`;
+    const form = (p) => (p.form && p.form.length ? U.avg(p.form.slice(-5)).toFixed(1) : '—');
+    const row = (p, click, extra = '') =>
+      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✅ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].short) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps · form ${form(p)}${!W.available(p) ? ' · 🚑 unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
+    let body;
+    if (tab === 'eligible') {
+      const el = I.eligibleSwitch(t.code);
+      body = `<div class="tiny dim" style="margin:4px 0 6px">Players eligible for ${esc(t.name)} through birth or family who have not yet played for a senior national team. Open one to ask him to commit. A player who has been capped is tied to that nation for good.</div>
+        <div class="list">${
+          el
+            .map((p) =>
+              row(
+                p,
+                'player',
+                `<span class="tiny dim" style="margin-left:6px">${Math.round(I.persuadeChance(p) * 100)}%</span>`,
+              ),
+            )
+            .join('') || '<div class="empty">Nobody eligible right now.</div>'
+        }</div>`;
+    } else {
+      const groups = [
+        ['GK', 'Goalkeepers'],
+        ['DEF', 'Defenders'],
+        ['MID', 'Midfielders'],
+        ['ATT', 'Attackers'],
+      ];
+      body = `<div class="row" style="margin-top:14px"><div class="h3 grow">Roles</div></div>
+        ${sel('capt', 'Captain', t.capt)}${sel('pen', 'Penalties', Tc.sp && Tc.sp.pen)}${sel('fk', 'Free kicks', Tc.sp && Tc.sp.fk)}${sel('cor', 'Corners', Tc.sp && Tc.sp.cor)}
+        <div class="row" style="margin-top:14px"><div class="h3 grow">Call-ups <span class="dim small">${picked.size}/23</span></div><button class="btn sm" data-act="ntAuto">Auto-pick</button></div>
+        <div class="tiny dim" style="margin:4px 0 6px">The best ${pool.length} ${esc(D.NATIONS[t.code].name)} players. Tap to call up or drop. Injured players can't be picked.</div>
+        ${groups
+          .map(([g, l]) => {
+            const ps = pool.filter((p) => D.POS_GROUP[p.pos] === g);
+            return ps.length
+              ? `<div class="small b dim" style="margin:10px 0 2px">${l.toUpperCase()} · ${ps.filter((p) => picked.has(p.id)).length}/${ps.length}</div><div class="list">${ps.map((p) => row(p, 'ntPick')).join('')}</div>`
+              : '';
+          })
+          .join('')}`;
+    }
+    const html = `<div class="chips" style="margin-bottom:6px">${sub('squad', 'Squad & tactics')}${sub('eligible', 'Eligible players')}</div>
+      ${
+        tab === 'squad'
+          ? `<div class="h3">Formation</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${Object.keys(
+              D.FORMATIONS,
+            )
+              .map(
+                (f) =>
+                  `<button class="chip ${Tc.formation === f ? 'on' : ''}" data-act="ntTac" data-k="formation" data-v="${f}">${f}</button>`,
+              )
+              .join(
+                '',
+              )}</div><div class="h3" style="margin-top:8px">Build-up</div>${seg('buildup', D.BUILDUP)}<div class="h3" style="margin-top:10px">Pressing</div>${seg('press', D.PRESS)}`
+          : ''
+      }${body}`;
     if (document.querySelector('.sheet-wrap .nt-sheet')) UI.refreshSheet(`<div class="nt-sheet">${html}</div>`);
     else UI.sheet(`<div class="nt-sheet">${html}</div>`, { title: `${t.name} squad` });
+  };
+  UI.acts.ntRole = (d, el) => {
+    const t = T(S().user.nation),
+      v = el.value || null;
+    if (d.k === 'capt') t.capt = v;
+    else {
+      t.tactic.sp = t.tactic.sp || {};
+      if (v) t.tactic.sp[d.k] = v;
+      else delete t.tactic.sp[d.k];
+    }
+    UI.save();
+  };
+  UI.acts.ntPersuade = (d) => {
+    const r = FM.Intl.persuade(d.id);
+    UI.toast(r.msg, 4500);
+    UI.save();
+    UI.render();
+    if (document.querySelector('.sheet-wrap')) UI.acts.player({ id: d.id });
   };
   UI.acts.ntTac = (d) => {
     const t = T(S().user.nation);

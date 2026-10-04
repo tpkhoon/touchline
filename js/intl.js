@@ -111,10 +111,14 @@
   };
   // The ranking is a coefficient: points (about 50 for an average nation, 90 and over for the best) that every
   // match moves, by how much it was worth and how surprising the result was (the Elo method, on a smaller scale)
+  // Who a player plays for: his nationality, or the other nation he is eligible for if he has chosen it (p.alleg).
+  // The first cap ties him to that nation for good.
+  I.nationOf = (p) => p.alleg || p.nat;
+  I.uncapped = (p) => !(p.intl && p.intl.caps > 0);
   I.repFromCoef = (c) => U.clamp(Math.round(60 + ((c - 50) * 10) / 12), 30, 97);
   I.pool = (code) =>
     Object.values(S().players)
-      .filter((p) => p.nat === code && !p.retired && W.age(p) >= 17)
+      .filter((p) => I.nationOf(p) === code && !p.retired && W.age(p) >= 17)
       .sort((a, b) => b.ca - a.ca)
       .slice(0, 30);
   I.rating = (code) => {
@@ -127,7 +131,7 @@
     if (t && t.picks && W.isUserNation(t.id)) {
       const picked = t.picks
         .map((id) => S().players[id])
-        .filter((p) => p && !p.retired && p.nat === code && W.available(p));
+        .filter((p) => p && !p.retired && I.nationOf(p) === code && W.available(p));
       if (picked.length >= 16) return picked.slice(0, 26);
       return picked.concat(I.pool(code).filter((p) => W.available(p) && !picked.includes(p))).slice(0, 23);
     }
@@ -195,6 +199,7 @@
       // A nation can't be in two qualifying groups at once (the World Championship takes priority)
       s.quals = q;
     }
+    I.allegianceTick();
     I.refreshJobs();
   };
 
@@ -417,6 +422,8 @@
         const p = s.players[pid];
         p.intl = p.intl || { caps: 0, goals: 0, first: s.year };
         const first = p.intl.caps === 0;
+        if (tourn && sd.rating && sd.rating[pid] != null) FM.Records.noteComp('T_' + fx.tid, p, sd.rating[pid]);
+        if (first) p.alleg = sd.club.code;
         p.intl.caps++;
         (p.intl.by = p.intl.by || {})[s.year] = (p.intl.by[s.year] || 0) + 1;
         // a goalkeeper's record is clean sheets, not goals: kept for a full game (an hour or more) without conceding
@@ -434,6 +441,7 @@
     r.goals.forEach((g) => {
       const p = s.players[g.pid];
       if (p && p.intl) p.intl.goals++;
+      if (tourn) FM.Records.noteGoal(fx, g, 'T_' + fx.tid);
     });
     // Coefficient update (qualifiers and finals count for more than friendlies)
     const exp = 1 / (1 + Math.pow(10, ((A.club.coef - H.club.coef) * 10 - (fx.neutral ? 0 : 60)) / 400));
@@ -486,6 +494,7 @@
       runner = T(w === fin.h ? fin.a : fin.h);
     t.winner = champ.id;
     t.runnerUp = runner.id;
+    const awards = FM.Records.finishTournament(t); // its awards and team of the tournament
     champ.titles[t.id] = (champ.titles[t.id] || 0) + 1;
     const goals = {};
     t.games.forEach((g) => g.goals.forEach((x) => (goals[x.pid] = (goals[x.pid] || 0) + 1)));
@@ -504,6 +513,7 @@
       runnerUp: runner.id,
       final: `${wg}–${lg}${fin.res.pens ? ` (${hw ? fin.res.pens[0] : fin.res.pens[1]}–${hw ? fin.res.pens[1] : fin.res.pens[0]} pens)` : ''}`,
       games: t.games.length,
+      awards,
       topScorer:
         top && s.players[top[0]]
           ? { pid: top[0], name: W.name(s.players[top[0]]), goals: top[1], nat: s.players[top[0]].nat }
@@ -545,7 +555,7 @@
       why: !badgeOk
         ? `Requires a ${I.badgeNeeded(t)} licence`
         : !repOk
-          ? `Your reputation (${Math.round(u.rep)}) is too low — they want ${need}+`
+          ? `Your reputation (${U.repText(u.rep)}) is too low — they want ${U.repText(need)} or better`
           : '',
     };
   };
@@ -576,6 +586,7 @@
     if (u.nation) I.leaveNational('resigned');
     u.nation = id;
     u.ntStats = { games: 0, w: 0, d: 0, l: 0 };
+    u.ntConf = 65;
     u.ntHistory.push({ nation: id, from: s.year, to: null });
     s.ntJobs = s.ntJobs.filter((x) => x !== id);
     t.picks = null;
@@ -641,6 +652,7 @@
     const st = I.stageReached(t, id),
       rank = ['Group stage', 'Quarter-finals', 'Semi-finals', 'Final', 'Winners'].indexOf(st);
     const target = seed ? (t.teams.length >= 8 ? 2 : 3) : t.teams.length >= 16 ? 1 : t.teams.length >= 8 ? 2 : 3;
+    u.ntConf = U.clamp((u.ntConf ?? 65) + (st === 'Winners' ? 25 : rank >= target ? 12 : -10), 0, 100);
     if (st === 'Winners') {
       u.rep = Math.min(99, u.rep + 10);
       u.stats.trophies++;
@@ -657,6 +669,149 @@
             ? 'The federation is pleased with the campaign.'
             : 'Not quite what the federation hoped for — but your job is safe.',
       });
+  };
+  // ---------- Switching allegiance ----------
+  // A player with two nationalities who has never been capped may choose either nation. Each new season those who
+  // are nowhere near their own nation's squad but good enough for the other's may switch; the manager of a national
+  // team can also ask an eligible player to commit to his side (I.persuade).
+  const switchTo = function (p, code, why) {
+    const was = I.nationOf(p);
+    p.alleg = code;
+    const s = S(),
+      nt = s.nteams && s.nteams['n_' + code];
+    if (!nt) return;
+    if (W.isUser(p.clubId) || (s.user && s.user.nation === 'n_' + code) || p.ca >= 68)
+      FM.News.add({
+        type: 'club',
+        title: `${W.name(p)} chooses to play for ${nt.name}`,
+        body: `${why || `${W.short(p)} has switched allegiance from ${D.NATIONS[was] ? D.NATIONS[was].name : was}`} before winning a senior cap.`,
+        pid: p.id,
+        clubId: p.clubId || undefined,
+      });
+  };
+  I.allegianceTick = function () {
+    const s = S(),
+      cut = {};
+    const info = (code) =>
+      (cut[code] =
+        cut[code] ||
+        (() => {
+          const pool = I.pool(code);
+          return { ids: new Set(pool.slice(0, 23).map((p) => p.id)), c23: pool[22] ? pool[22].ca : 0 };
+        })());
+    for (const p of Object.values(s.players)) {
+      if (!p.nat2 || p.retired || !I.uncapped(p) || W.age(p) < 18) continue;
+      const cur = I.nationOf(p),
+        other = cur === p.nat ? p.nat2 : p.nat;
+      if (!s.nteams['n_' + other] || !s.nteams['n_' + cur] || info(cur).ids.has(p.id)) continue;
+      if (p.ca >= info(other).c23 - 3 && Math.random() < 0.5) switchTo(p, other);
+    }
+  };
+  // Eligible for this nation through his family or birth, but playing for (or free to play for) another, uncapped
+  I.eligibleSwitch = (code) =>
+    Object.values(S().players)
+      .filter(
+        (p) =>
+          !p.retired &&
+          W.age(p) >= 17 &&
+          (p.nat === code || p.nat2 === code) &&
+          I.nationOf(p) !== code &&
+          I.uncapped(p),
+      )
+      .sort((a, b) => b.ca - a.ca)
+      .slice(0, 12);
+  // The chance an eligible, uncapped player says yes: better if he is not in his own nation's squad, if we are the
+  // stronger side, if we are a bigger name; an ambitious one goes where the better team is
+  I.persuadeChance = function (p) {
+    const s = S(),
+      u = s.user,
+      ours = u.nation && T(u.nation);
+    if (!ours) return 0;
+    const cur = T('n_' + I.nationOf(p)),
+      rank = I.pool(I.nationOf(p)).indexOf(p);
+    const gap = ours.coef - (cur ? cur.coef : 40);
+    return U.clamp(
+      0.25 +
+        (rank < 0 || rank >= 23 ? 0.25 : 0) +
+        (rank < 0 ? 0.1 : 0) +
+        U.clamp(gap / 40, -0.2, 0.2) +
+        (u.rep - 50) / 250 +
+        (p.hid.amb >= 14 ? (gap > 0 ? 0.1 : -0.1) : 0),
+      0.05,
+      0.9,
+    );
+  };
+  I.persuade = function (pid) {
+    const s = S(),
+      u = s.user,
+      p = s.players[pid],
+      ours = u.nation && T(u.nation);
+    if (!ours || !p) return { ok: false, msg: 'You are not managing a national team.' };
+    if (p.nat !== ours.code && p.nat2 !== ours.code)
+      return { ok: false, msg: `${W.name(p)} is not eligible for ${ours.name}.` };
+    if (I.nationOf(p) === ours.code) return { ok: false, msg: `${W.short(p)} already plays for ${ours.name}.` };
+    if (!I.uncapped(p))
+      return { ok: false, msg: `${W.short(p)} has played for ${D.NATIONS[I.nationOf(p)].name} and is tied to them.` };
+    if (p.askY === s.year) return { ok: false, msg: `You have already asked ${W.short(p)} this year.` };
+    p.askY = s.year;
+    const chance = I.persuadeChance(p);
+    if (Math.random() < chance) {
+      switchTo(p, ours.code, `${W.short(p)} accepted ${u.name}'s call and commits to ${ours.name}`);
+      return { ok: true, msg: `${W.name(p)} will play for ${ours.name}!` };
+    }
+    return {
+      ok: false,
+      msg: `${W.name(p)} wants to keep his options open and turns you down. Ask again next season.`,
+    };
+  };
+
+  // ---------- The federation ----------
+  // What the federation wants this season, how it feels about you (0-100), and what is coming up
+  I.objective = function () {
+    const s = S(),
+      id = s.user.nation,
+      t = id && T(id);
+    if (!t) return null;
+    if (s.tourns) return { text: 'Do well at the finals: the federation expects at least the knockout stage' };
+    const g = s.quals && s.quals.groups.find((x) => x.teams.includes(id));
+    if (g)
+      return {
+        text: `Qualify for the ${s.quals.kind === 'world' ? 'World Championship' : 'continental championships'}: ${g.slots} place${g.slots === 1 ? '' : 's'} from ${g.name.trim()}`,
+        group: g,
+      };
+    if (s.quals && Object.values(s.quals.direct).flat().includes(id))
+      return { text: 'Already qualified for the finals: use the friendlies to build the side' };
+    return { text: 'No qualifying this year: friendlies only, a chance to build for the next campaign' };
+  };
+  // Upcoming international matches for your nation (qualifiers named, friendlies drawn on the day)
+  I.upcoming = function () {
+    const s = S(),
+      id = s.user.nation;
+    if (!id) return [];
+    const out = [];
+    const g = s.quals && s.quals.groups.find((x) => x.teams.includes(id));
+    const played = g ? g.table[id].p : 0;
+    let ix = 0;
+    s.calendar.slice(s.day).forEach((d, k) => {
+      if (d.type !== 'intl') return;
+      const md = MD[d.tag] ?? 0;
+      const fx = g && md >= played && (g.rounds[md] || []).find((f) => f.h === id || f.a === id);
+      out.push({
+        in: k,
+        md: ++ix,
+        opp: fx ? T(fx.h === id ? fx.a : fx.h) : null,
+        home: fx ? fx.h === id : null,
+        label: fx ? `${I.TNAME[g.tn]} qualifier` : 'Friendly',
+      });
+    });
+    return out.slice(0, 4);
+  };
+  I.recent = () => (S().intlLog || []).filter((g) => g.h === S().user.nation || g.a === S().user.nation).slice(0, 5);
+  I.userResult_conf = function (u, won, lost, fx) {
+    // the federation: wins please them, defeats (above all in competitive games) do not
+    const w = fx.kind === 'friendly' ? 0.5 : 1;
+    u.ntConf = U.clamp((u.ntConf ?? 65) + (won ? 2.5 : lost ? -3.5 : -0.5) * w, 0, 100);
+    if (u.ntConf <= 8) I.sackNational('The federation has lost patience after the run of results.');
   };
   I.userResult = function (fx, m, side) {
     const u = S().user,
@@ -682,6 +837,7 @@
           : `${t.name} held by ${op.club.name}`,
       body: `${fx.po}. ${m.sides[0].club.name} ${r.hg}–${r.ag}${r.pens ? ` (${r.pens[0]}–${r.pens[1]} pens)` : ''} ${m.sides[1].club.name}.${m.motm ? ` Player of the match: ${W.name(S().players[m.motm])}.` : ''}`,
     });
+    I.userResult_conf(u, won, lost, fx);
     u.lastMatch = { fxId: fx.id, comp: 'INTL' };
   };
 })();

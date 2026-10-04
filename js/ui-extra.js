@@ -58,7 +58,7 @@
     const inXI = W.pickXI(club().id, S().user.tactic).xi.some((q) => q && q.id === p.id);
     if (p.loan)
       return `<div class="warnline">On loan from ${esc(CL(p.loan.from).name)} until the end of the season. You pay ${Math.round(p.loan.share * 100)}% of his wages.</div>`;
-    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button><button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button>${!inXI ? `<button class="btn sm grow" data-act="loanOut" data-id="${p.id}">Loan out</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
+    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button>${!inXI ? `<button class="btn sm grow" data-act="loanOut" data-id="${p.id}">Loan out</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
   };
 
   UI.acts.loanOut = (d) => {
@@ -236,7 +236,7 @@
         <div class="small dim" style="margin-top:6px">A fee of ~5% of his value (${U.money(p.value * 0.05)}) makes his club more flexible on wages. He returns at the end of the season.</div>`;
     }
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)}</span></div>${p.clubId ? C.crest(CL(p.clubId), 26) : '<span class="pill">Free agent</span>'}</div>
-      <div class="small dim" style="margin-top:6px">Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${dir.ability}/20)`}</div>
+      <div class="small dim" style="margin-top:6px">Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${U.staffText(dir.ability)})`}</div>
       ${tabs}${body}
       ${msg ? `<div class="reply" style="margin-top:12px">${esc(msg)}</div>` : ''}
       <button class="btn pri block" style="margin-top:16px" data-act="submitOffer">${o.mode === 'loan' ? 'Propose loan' : p.clubId ? 'Submit offer' : 'Offer contract'}</button>`;
@@ -294,12 +294,24 @@
     const a = FM.Advice.assistant();
     const out = Object.values(S().players).filter((p) => p.loan && W.isUser(p.loan.from));
     const notes = `<div class="card"><div class="row"><div style="font-size:26px">🗒️</div><div class="grow"><div class="h3">${esc(a.who)}'s notes</div><div class="tiny dim">${a.role}${a.personality ? ' · ' + esc(a.personality) : ''}</div></div></div>
-      ${a.notes.map((n) => `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${n.act.label}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`).join('')}</div>`;
+      ${a.notes
+        .slice(0, UI._notesAll ? 99 : 2)
+        .map(
+          (n) =>
+            `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${n.act.label}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:40px;height:40px;font-size:14px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`,
+        )
+        .join(
+          '',
+        )}${a.notes.length > 2 ? `<button class="btn sm block" style="margin-top:8px" data-act="notesMore">${UI._notesAll ? 'Show fewer' : `Show ${a.notes.length - 2} more`}</button>` : ''}</div>`;
     const loans = out.length
       ? `<div class="sec"><div class="h3">Out on loan</div><span class="dim small">${out.length}</span></div><div class="card flat list" style="padding:4px 12px">${out.map((p) => C.playerRow(p, ` · at ${esc(CL(p.clubId).short)} · ${p.season.apps} apps${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) : ''}`)).join('')}</div>`
       : '';
     const i = html.indexOf('<div class="row small dim"');
     return html.slice(0, i) + notes + html.slice(i) + loans;
+  };
+  UI.acts.notesMore = () => {
+    UI._notesAll = !UI._notesAll;
+    UI.render();
   };
   // Acting on a note (or ticking it off) removes it from the assistant's list
   UI.acts.noteAct = (d) => {
@@ -349,7 +361,7 @@
     const card = (st, role, key) => {
       const r = D.STAFF_ROLES[role];
       return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? '🪑' : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
-        <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${st.judge || st.ability}/20</b></div>
+        <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
         ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div>` : ''}
         <div class="small" style="margin-top:6px">⚡ ${esc(FM.Staff.IMPACT[key](st.ability).text)}</div>${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">📋 On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
         <div class="tiny dim" style="margin-top:4px">${r.effect}${st.vacant ? '' : ` · contract to ${st.contract}`}</div>
@@ -375,7 +387,7 @@
             (
               st,
             ) => `<div class="card"><div class="row"><div style="font-size:24px">${C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(st.personality)} · age ${st.age}</div></div><b>${U.money(st.wage)}/wk</b></div>
-      <div class="row small" style="margin-top:8px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar(((st.judge || st.ability) / 20) * 100)}</div><b style="margin-left:8px">${st.judge || st.ability}/20</b></div>
+      <div class="row small" style="margin-top:8px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar(((st.judge || st.ability) / 20) * 100)}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
       ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note)}</div>` : ''}
       <button class="btn sm pri block" style="margin-top:10px" data-act="staffHire" data-id="${st.id}">Hire · ${U.money(U.roundMoney(st.wage * 4))} fee</button></div>`,
           )
@@ -445,7 +457,7 @@
       opts = FM.Season.friendlyOptions();
     UI.sheet(
       `<div class="h3">Friendly</div><div class="small dim" style="margin:4px 0 8px">Home games earn gate money; away tours earn an appearance fee. Stronger opponents test you harder.</div>
-      ${opts.map((c) => `<div class="card row">${C.crest(c, 32)}<div class="grow"><div class="b">${C.flag(c.nat)} ${esc(c.name)}</div><div class="small dim">${c.comp ? esc(S().comps[c.comp].name) : D.NATIONS[c.nat].name} · rep ${Math.round(c.rep)}</div></div><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="1">Home</button><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="0">Away</button></div>`).join('')}
+      ${opts.map((c) => `<div class="card row">${C.crest(c, 32)}<div class="grow"><div class="b">${C.flag(c.nat)} ${esc(c.name)}</div><div class="small dim">${c.comp ? esc(S().comps[c.comp].name) : D.NATIONS[c.nat].name} · rep ${U.repText(c.rep)}</div></div><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="1">Home</button><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="0">Away</button></div>`).join('')}
       <div class="h3" style="margin-top:14px">Camp</div>
       ${Object.entries(D.CAMPS)
         .map(
@@ -536,7 +548,7 @@
   const reportRow = (p, v, extra = '', dismiss = false) => {
     const c = p.clubId && CL(p.clubId);
     const clause = p.clubId && v.k >= 40 && p.deal && p.deal.release ? ` · 🔓 ${U.money(p.deal.release)}` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flag(p.nat)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:10px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">⚖️</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:10px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">⚖️</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
   };
   function hubView() {
     const s = S();
@@ -550,10 +562,21 @@
           .slice(0, 2)
           .map(([k]) => D.REGIONS[k])
           .join(', ');
-        return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${sc.judge}/20</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
+        return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${U.staffText(sc.judge)}</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
       })
       .join('');
-    return `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
+    const listed = W.squad(club().id).filter((p) => p.listed && !p.loan);
+    const listCard = listed.length
+      ? `<div class="card"><div class="row"><div class="h3 grow">Your transfer list</div><span class="tiny dim">${listed.length} listed</span></div>${listed
+          .map(
+            (p) =>
+              `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button></div>`,
+          )
+          .join('')}</div>`
+      : '';
+    return (
+      listCard +
+      `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Assignments</div><button class="btn sm" data-act="goStaff">Hire scouts</button></div>${asg}</div>
       <div class="card"><div class="h3">Scouting knowledge</div><div class="small dim" style="margin:4px 0 8px">Your network's best coverage per region</div>${Object.entries(
         D.REGIONS,
@@ -562,7 +585,8 @@
           const b = Math.max(...s.user.scouts.map((id) => s.staff[id].regions[k] || 0));
           return `<div class="row tiny" style="margin:5px 0"><span style="width:96px" class="dim">${l}</span><div class="grow">${C.bar(b * 100, b >= 0.8 ? 'var(--good)' : b >= 0.45 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="width:34px;text-align:right">${Math.round(b * 100)}%</b></div>`;
         })
-        .join('')}</div>`;
+        .join('')}</div>`
+    );
   }
   UI.acts.goStaff = () => {
     UI.sub.club = 'staff';
@@ -599,7 +623,7 @@
         : [...new Set(s.comps[a.comp].clubs.flatMap((id) => W.squad(id).map((p) => p.nat)))]
     ).sort((x, y) => D.NATIONS[x].name.localeCompare(D.NATIONS[y].name));
     if (a.nat !== 'any' && !natOpts.includes(a.nat)) a.nat = 'any';
-    const html = `<div class="row small" style="margin-bottom:6px">${C.flag(sc.nat)} <b>${esc(sc.fn + ' ' + sc.ln)}</b><span class="dim">· judging ${sc.judge}/20</span></div>
+    const html = `<div class="row small" style="margin-bottom:6px">${C.flag(sc.nat)} <b>${esc(sc.fn + ' ' + sc.ln)}</b><span class="dim">· judging ${U.staffText(sc.judge)}</span></div>
       <div class="seg">${[
         ['region', 'By region'],
         ['league', 'By league'],
@@ -711,11 +735,12 @@
     comp: 'any',
     avail: 'any',
     more: false,
+    sort: 'default',
   };
   const SF_AGE = { any: [0, 99], u19: [0, 19], u21: [0, 21], u23: [0, 23], prime: [24, 29], vet: [30, 99] };
   const SF_PRICE = { any: Infinity, m1: 1e6, m5: 5e6, m20: 2e7 };
   const SF_WAGE = { any: Infinity, k10: 1e4, k25: 2.5e4, k50: 5e4, k100: 1e5 };
-  const sfActive = () => Object.entries(UI._sf).filter(([k, v]) => k !== 'more' && v !== 'any').length;
+  const sfActive = () => Object.entries(UI._sf).filter(([k, v]) => k !== 'more' && k !== 'sort' && v !== 'any').length;
   // Your XI's level: "a starter for us" means at least that
   const myLevel = () => {
     const c = club();
@@ -755,6 +780,28 @@
       return true;
     });
   }
+  // Sorting a list of players by what you know of them: his ability or potential as your scouts judge it (a range's
+  // middle; unknown last), or his value. 'default' keeps each list's own order.
+  const SF_SORTS = [
+    ['default', 'Best known'],
+    ['ca', 'Ability'],
+    ['pa', 'Potential'],
+    ['value', 'Value'],
+  ];
+  const sfSortRow = () =>
+    `<div class="chips noswipe" style="margin-top:6px"><span class="chip-lbl">Sort</span>${SF_SORTS.map(([v, l]) => `<button class="chip ${UI._sf.sort === v ? 'on' : ''}" data-act="sf" data-k="sort" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const sfSort = (list, getP, base) => {
+    const k = UI._sf.sort;
+    if (k === 'default') return base ? list.sort(base) : list;
+    const key = (x) => {
+      const p = getP(x),
+        v = FM.Scouting.view(p);
+      return k === 'value'
+        ? p.value
+        : (mid(k === 'ca' ? v.ca : v.pa) ?? (v.own ? (k === 'ca' ? p.ca : p.pa) : null) ?? -1);
+    };
+    return list.sort((a, b) => key(b) - key(a));
+  };
   function sfPanel() {
     const f = UI._sf,
       n = sfActive();
@@ -788,27 +835,34 @@
       : '';
     return `<div class="card flat" style="padding:8px 10px;margin-bottom:8px">
       ${row('pos', [['any', 'All'], ...D.POS.map((x) => [x, x])])}
-      ${row('age', [
-        ['any', 'Any age'],
-        ['u19', '≤19'],
-        ['u21', '≤21'],
-        ['u23', '≤23'],
-        ['prime', '24–29'],
-        ['vet', '30+'],
-      ])}
-      ${row('level', [
-        ['any', 'Any level'],
-        ['starter', 'Would start for us'],
-        ['squad', 'Squad player'],
-        ['prospect', 'Prospect'],
-      ])}
-      ${row('price', [
-        ['any', 'Any fee'],
-        ['budget', 'Within budget'],
-        ['m1', `≤ ${U.money(1e6)}`],
-        ['m5', `≤ ${U.money(5e6)}`],
-        ['m20', `≤ ${U.money(2e7)}`],
-      ])}
+      ${sfSortRow()}
+      ${
+        f.more
+          ? [
+              row('age', [
+                ['any', 'Any age'],
+                ['u19', '≤19'],
+                ['u21', '≤21'],
+                ['u23', '≤23'],
+                ['prime', '24–29'],
+                ['vet', '30+'],
+              ]),
+              row('level', [
+                ['any', 'Any level'],
+                ['starter', 'Would start for us'],
+                ['squad', 'Squad player'],
+                ['prospect', 'Prospect'],
+              ]),
+              row('price', [
+                ['any', 'Any fee'],
+                ['budget', 'Within budget'],
+                ['m1', `≤ ${U.money(1e6)}`],
+                ['m5', `≤ ${U.money(5e6)}`],
+                ['m20', `≤ ${U.money(2e7)}`],
+              ]),
+            ].join('')
+          : ''
+      }
       ${more}
       <div class="row" style="margin-top:6px;gap:6px"><button class="btn sm" data-act="sfMore">${f.more ? 'Fewer filters ▴' : 'More filters ▾'}</button><span class="grow"></span>${n ? `<button class="btn sm" data-act="sfReset">Clear ${n} filter${n === 1 ? '' : 's'}</button>` : ''}</div></div>`;
   }
@@ -825,9 +879,11 @@
     UI.render();
   };
   UI.acts.sfReset = () => {
-    const more = UI._sf.more;
+    const more = UI._sf.more,
+      sort = UI._sf.sort;
     Object.keys(UI._sf).forEach((k) => (UI._sf[k] = 'any'));
     UI._sf.more = more;
+    UI._sf.sort = sort;
     UI.render();
   };
 
@@ -847,6 +903,8 @@
       newest: (a, b) => b.r.year - a.r.year || b.r.day - a.r.day,
       fee: (a, b) => (a.v.fee || 0) - (b.v.fee || 0),
       age: (a, b) => W.age(a.p) - W.age(b.p),
+      ability: (a, b) => (mid(b.v.ca) ?? -1) - (mid(a.v.ca) ?? -1),
+      potential: (a, b) => (mid(b.v.pa) ?? -1) - (mid(a.v.pa) ?? -1),
     };
     reps.sort(sorts[f.sort]);
     const disList = Object.keys(s.user.dismissed || {})
@@ -863,6 +921,8 @@
       ${chipRow('rf', 'sort', f.sort, [
         ['grade', 'Sort: grade'],
         ['newest', 'Newest'],
+        ['ability', 'Ability'],
+        ['potential', 'Potential'],
         ['fee', 'Cheapest'],
         ['age', 'Youngest'],
       ])}
@@ -896,9 +956,13 @@
       );
     if (q.region !== 'any') ps = ps.filter((p) => FM.Scouting.region(p) === q.region);
     // the cheap filters first, so the scouting estimates are worked out only for what's left
-    ps = sfApply(ps).sort((a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value);
+    ps = sfSort(
+      sfApply(ps),
+      (p) => p,
+      (a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value,
+    );
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
-      ${chipRow('q', 'region', q.region, [['any', 'Everywhere'], ...Object.entries(D.REGIONS)])}
+      <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
       ${sfPanel()}
       <div class="card flat list" style="padding:4px 12px">${
         ps
@@ -915,7 +979,11 @@
   UI._fq = { pos: 'any' };
   function freeView() {
     let ps = sfApply(Object.values(S().players).filter((p) => !p.clubId && !p.retired));
-    ps = ps.map((p) => ({ p, v: FM.Scouting.view(p) })).sort((a, b) => b.v.score - a.v.score || b.p.ca - a.p.ca);
+    ps = sfSort(
+      ps.map((p) => ({ p, v: FM.Scouting.view(p) })),
+      (x) => x.p,
+      (a, b) => b.v.score - a.v.score || b.p.ca - a.p.ca,
+    );
     return `<div class="small muted" style="margin:0 2px 8px">Out-of-contract players can sign any time, window open or not — no fee, but they want a signing-on bonus and slightly higher wages. Scout them to see what you're getting.</div>
       ${sfPanel()}
       <div class="card flat list" style="padding:4px 12px">${
@@ -930,9 +998,9 @@
     UI.render();
   };
   function shortlistView() {
-    const sl = S().user.shortlist.filter(P);
+    const sl = sfSort(S().user.shortlist.filter(P).slice(), (id) => P(id));
     return sl.length
-      ? `<div class="card flat list" style="padding:4px 12px">${sl.map((id) => reportRow(P(id), FM.Scouting.view(P(id)))).join('')}</div>`
+      ? `${sfSortRow()}<div class="card flat list" style="padding:4px 12px">${sl.map((id) => reportRow(P(id), FM.Scouting.view(P(id)))).join('')}</div>`
       : '<div class="empty">Your shortlist is empty. Tap ☆ on a player card.</div>';
   }
   UI._mk = 'all';
@@ -1032,7 +1100,7 @@
     if (t === 'stats') body.innerHTML = MV.statTable(me) + MV.statTable(op, true);
     if (t === 'insights') {
       const a = FM.Staff.get('analyst');
-      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px">📊</span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${a.ability}/20</div></div></div>${MV.insights(
+      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px">📊</span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${U.staffText(a.ability)}</div></div></div>${MV.insights(
         m,
       )
         .map(
@@ -1350,7 +1418,7 @@
     // (out of work there is no squad of your own: only the national-team side of the screen)
     const own = uc ? W.squad(uc.id) : [];
     const mine = own.filter((p) => p.intl && p.intl.caps).sort((a, b) => b.intl.caps - a.intl.caps);
-    const called = new Set(own.filter((p) => FM.Intl.squad(p.nat).includes(p)).map((p) => p.id));
+    const called = new Set(own.filter((p) => FM.Intl.squad(FM.Intl.nationOf(p)).includes(p)).map((p) => p.id));
     const ranked = FM.Intl.ranked();
     const history = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
     return `<div class="card"><div class="row"><span style="font-size:26px">🌍</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
@@ -1361,7 +1429,7 @@
               .slice(0, 12)
               .map(
                 (p) =>
-                  `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${C.flag(p.nat)} ${esc(W.name(p))} ${called.has(p.id) ? '<span class="pill acc">In squad</span>' : ''}</div><div class="tiny dim">${esc(D.NATIONS[p.nat].name)} · since ${p.intl.first}</div></div><b>${p.intl.caps}</b><span class="dim tiny" style="margin-left:4px">caps · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} cs` : `${p.intl.goals} gls`}</span></div>`,
+                  `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} ${called.has(p.id) ? '<span class="pill acc">In squad</span>' : ''}</div><div class="tiny dim">${esc(D.NATIONS[p.nat].name)} · since ${p.intl.first}</div></div><b>${p.intl.caps}</b><span class="dim tiny" style="margin-left:4px">caps · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} cs` : `${p.intl.goals} gls`}</span></div>`,
               )
               .join('')
           : '<div class="empty">None of your players have been capped yet.</div>'

@@ -816,6 +816,10 @@
     if (!bidders.length) return;
     const b = U.pick(bidders);
     if (S.news.some((n) => n.type === 'bid' && n.data.pid === target.id && n.data.status === 'open')) return;
+    T.makeBid(target, b);
+  };
+  // A club's bid for one of your players, put in your inbox
+  T.makeBid = function (target, b) {
     // A club short at his position (or buying on deadline day) bids higher and has more room to go up
     const urg = FM.Market.urgency(b, target.pos);
     // a good sporting director gets more out of the clubs bidding for your players
@@ -835,6 +839,41 @@
       clubId: b.id,
       data: { pid: target.id, from: b.id, fee, status: 'open', max, deal, rounds: 0 },
     });
+  };
+  // Offer a transfer-listed player to clubs: up to three that could afford him respond with bids at once (instead of
+  // waiting for them to come in over the days), then he is left alone for a few days
+  T.offerToClubs = function (p) {
+    const S = FM.S,
+      uc = W.userClub();
+    if (!p || !W.ownPlayer(p) || p.loan) return { ok: false, msg: 'He cannot be offered to clubs.' };
+    if (!p.listed) return { ok: false, msg: 'Put him on the transfer list first.' };
+    if (!FM.Season.windowOpen())
+      return { ok: false, msg: 'The transfer window is closed: offers can only be made while it is open.' };
+    if (p.shopYear === S.year && S.day - p.shopDay < 3)
+      return { ok: false, msg: `You have only just offered ${W.short(p)} around: give the clubs a few days.` };
+    const open = new Set(
+      S.news.filter((n) => n.type === 'bid' && n.data.pid === p.id && n.data.status === 'open').map((n) => n.data.from),
+    );
+    const bidders = U.shuffle(
+      Object.values(S.clubs).filter(
+        (c) =>
+          (c.sim === 'full' || c.sim === 'light') &&
+          !W.isUserSide(c.id) &&
+          !open.has(c.id) &&
+          c.rep >= uc.rep - 20 &&
+          c.budget >= p.value * 0.8,
+      ),
+    ).slice(0, 3);
+    p.shopYear = S.year;
+    p.shopDay = S.day;
+    if (!bidders.length)
+      return { ok: false, msg: `No club can afford ${W.short(p)} at his value right now. Try again in a few days.` };
+    bidders.forEach((b) => T.makeBid(p, b));
+    return {
+      ok: true,
+      n: bidders.length,
+      msg: `${W.short(p)} has been offered around: ${bidders.length} club${bidders.length === 1 ? ' has' : 's have'} bid. See your inbox.`,
+    };
   };
 
   T.respondBid = function (n, accept) {

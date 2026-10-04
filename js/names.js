@@ -579,9 +579,38 @@
     }
   };
   D.widenNames();
-  // Pools of a heritage (a region may draw on several cultures)
+  // Pools of a heritage (a region may draw on several cultures); the last pool's key is kept (D.lastPoolKey) so a
+  // player's second nationality can match the culture his name came from
   D.heritagePool = function (key, rnd) {
     const keys = D.HERITAGE_POOL[key] || [key];
-    return D.NAME_POOLS[keys[Math.floor(rnd() * keys.length)]] || null;
+    D.lastPoolKey = keys[Math.floor(rnd() * keys.length)];
+    return D.NAME_POOLS[D.lastPoolKey] || null;
+  };
+  // The nations a heritage can make a player eligible for (by his name's culture where that is known)
+  D.POOL_NATS = {
+    caribbean: ['JAM'],
+    nigerian: ['NGA'],
+    ghanaian: ['GHA'],
+    senegalese: ['SEN'],
+    ivorian: ['CIV'],
+    centralafrican: ['COD', 'CMR', 'ANG'],
+    maghrebi: ['MAR', 'ALG', 'TUN'],
+    turkish: ['TUR'],
+    southslav: ['SRB', 'CRO', 'BIH'],
+    pacific: ['NZL'],
+    latin: ['ARG', 'COL', 'CHI', 'PAR', 'ECU', 'PER', 'VEN'],
+    spanish: ['ESP'],
+    italian: ['ITA'],
+    portuguese: ['POR'],
+    greek: ['GRE'],
+    polish: ['POL'],
+    french: ['FRA'],
+    irish: ['IRL'],
+    english: ['ENG'],
+    german: ['GER'],
+    dutch: ['NED'],
+    korean: ['KOR'],
+    chinese: ['CHN'],
+    japanese: ['JPN'],
   };
 })();

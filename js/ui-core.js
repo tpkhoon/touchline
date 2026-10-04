@@ -170,6 +170,29 @@
       ? `<span class="tap pname" data-act="player" data-id="${p.id}">${esc(text != null ? text : W.short(p))}</span>`
       : '—';
   C.pos = (p) => `<span class="pos ${D.POS_GROUP[p.pos]}">${W.posLabel(p)}</span>`;
+  // The name without its trailing "United", "Town", "Victoria"... when the full one is too long for the room
+  const TAIL = new Set(
+    'fc cf afc united city town athletic rovers albion wanderers rangers county borough victoria alexandra harriers orient argyle wednesday villa balompié'.split(
+      ' ',
+    ),
+  );
+  C.shortName = (club, max = 14) => {
+    const words = String(club.name).split(' ');
+    while (words.join(' ').length > max && words.length > 1 && TAIL.has(words[words.length - 1].toLowerCase()))
+      words.pop();
+    return words.join(' ');
+  };
+  // His flag, and a smaller one beside it for a second nationality he is eligible for
+  C.flags = (p) => {
+    const mine = (FM.Intl && FM.Intl.nationOf(p)) || p.nat,
+      other = mine === p.nat ? p.nat2 : p.nat;
+    return (
+      C.flag(mine) +
+      (p.nat2 && D.NATIONS[other]
+        ? `<span class="flag2" title="Also eligible for ${esc(D.NATIONS[other].name)}">${C.flag(other)}</span>`
+        : '')
+    );
+  };
   C.flag = (nat) => (D.NATIONS[nat] ? D.NATIONS[nat].flag : '🏳️');
   // The manager's avatar (older careers without one get a neutral face)
   C.avatar = (user, size = 40) => {
@@ -244,7 +267,7 @@
     const f = own && FM.People ? FM.People.moodFactors(p)[0] : null;
     const why =
       f && (Math.abs(f.d) >= 8 || p.morale <= 50) ? ` · ${esc(f.t)} (${f.d > 0 ? '+' : '−'}${Math.abs(f.d)})` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${p.clubId && p.no ? `<span class="sqno">${p.no}</span>` : ''}${C.flag(p.nat)} ${esc(W.name(p))} ${tags.join(' ')}</div><div class="small dim ellip">${W.age(p)} yrs · ${own ? `${me} ${ml}${why}` : club ? esc(club.name) : 'Free agent'}${extra}</div></div><div class="col" style="align-items:flex-end;gap:4px"><div class="row" style="gap:6px">${C.playerStars(p)}${own && Math.round(p.lastGrowth || 0) ? `<span class="tiny b" title="Grown or slipped this season" style="color:${p.lastGrowth > 0 ? 'var(--good)' : 'var(--bad)'}">${p.lastGrowth > 0 ? '▲' : '▼'}</span>` : ''}</div>${own ? C.fitTag(p.fitness) : ''}${right}</div></div>`;
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${p.clubId && p.no ? `<span class="sqno">${p.no}</span>` : ''}${C.flags(p)} ${esc(W.name(p))} ${tags.join(' ')}</div><div class="small dim ellip">${W.age(p)} yrs · ${own ? `${me} ${ml}${why}` : club ? esc(club.name) : 'Free agent'}${extra}</div></div><div class="col" style="align-items:flex-end;gap:4px"><div class="row" style="gap:6px">${C.playerStars(p)}${own && Math.round(p.lastGrowth || 0) ? `<span class="tiny b" title="Grown or slipped this season" style="color:${p.lastGrowth > 0 ? 'var(--good)' : 'var(--bad)'}">${p.lastGrowth > 0 ? '▲' : '▼'}</span>` : ''}</div>${own ? C.fitTag(p.fitness) : ''}${right}</div></div>`;
   };
   C.heat = function (canvas, grid, cols = 12, rows = 8, color = [61, 200, 255]) {
     const ctx = canvas.getContext('2d'),
@@ -480,7 +503,8 @@
   const TABS = [
     ['home', '🏠', 'Home'],
     ['squad', '👕', 'Squad'],
-    ['scout', '🔭', 'Scouting'],
+    ['scout', '🔭', 'Scout'],
+    ['transfers', '🔁', 'Transfers'],
     ['league', '🏆', 'League'],
     ['intl', '🌍', 'Nations'],
     ['club', '🏟️', 'Club'],
@@ -519,7 +543,7 @@
     );
   };
   UI.noClubView = (tab) =>
-    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '👕' : '🔭'}<br><b>No club, no ${tab === 'squad' ? 'squad' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
+    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '👕' : tab === 'transfers' ? '🔁' : '🔭'}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
   // Going to a tab slides it in from the side of the tab you tapped; the same tab again just fades
   UI.go = function (tab, anim) {
     if (!anim) {
@@ -577,7 +601,8 @@
       ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><div class="money">${U.money(club.balance)}</div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">⚙️</button>`
       : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${md} · <span style="color:var(--warn)">Out of work</span>${nt ? ` · ${esc(nt.name)}` : ''}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">⚙️</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
-    const html = !club && ['squad', 'scout'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
+    const html =
+      !club && ['squad', 'scout', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
     $('#main').innerHTML = `<div class="screen ${anim || ''}">${html}</div>`;
     UI.afterRender && UI.afterRender();
   };
@@ -868,7 +893,7 @@
         <div class="swatches">${W.AVATAR_BG.map((bg) => `<button class="swatch ${NG.avatar.bg === bg ? 'on' : ''}" style="background:${bg}" data-act="ngAvatarBg" data-bg="${bg}" aria-label="Avatar background"></button>`).join('')}</div>
         <div class="ng-label">Save slot</div>
         <div class="seg">${FM.Save.SLOTS.map((n) => `<button class="${NG.slot === n ? 'on' : ''}" data-act="ngSlot" data-n="${n}">Slot ${n}${UI.slotMeta(n) ? ' (overwrite)' : ''}</button>`).join('')}</div>
-        <div class="actions"><button class="btn pri block" data-act="ngNext">Choose your club →</button><button class="btn block" data-act="ngBack">Back</button></div>`;
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngNext">Choose your club →</button></div>`;
     } else if (NG.step === 1) {
       const row = (r, div) => {
         const [name, short, , c1, c2, idt, rep] = r;
@@ -905,21 +930,21 @@
       body = `<div class="h1" style="margin-top:2vh">Pick your club</div><div class="tag">Every club has an identity. The board and fans will judge you by it.</div><div class="sp"></div>
         <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${D.LEAGUE_CLUBS.map(([cid, , nat]) => `<option value="${cid}" ${NG.lg === cid ? 'selected' : ''}>${D.NATIONS[nat].flag} ${esc(D.LEAGUES.find((l) => l.id === cid).name)}</option>`).join('')}</select></div>
         <div id="ng-list">${UI._ngList()}</div>
-        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}>${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</button></div>`;
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
     } else {
       // Your world: what's in it and the rules it plays by (each competition's real ones; not chosen here)
-      body = `<div class="h1" style="margin-top:4vh">Your world</div><div class="tag">Real football, played by its real rules.</div>
+      body = `<div class="h1" style="margin-top:4vh">Your world</div><div class="tag">Real league structures and rules, simplified where the game needs it.</div>
         ${(() => {
           const code = NG.club && NG.club !== 'none' ? String(NG.club).replace(/^c_/, '') : null;
           const lg = code && D.LEAGUES.find((l) => D[l.clubs].some((r) => r[1] === code));
           return lg
-            ? `<div class="tiny" style="color:#6f7f96;margin-top:14px">The rules of the league you will manage in, as in real life:</div>${UI.leagueRules(lg)}`
+            ? `<details style="margin-top:14px"><summary class="small b" style="color:#c8ff3d;cursor:pointer;padding:6px 0">${esc(lg.name)} — format, relegation, cups and squad rules</summary>${UI.leagueRules(lg)}</details>`
             : '<div class="small" style="color:#c9d4e3;margin-top:16px;line-height:1.6">Three points for a win and five substitutions, as everywhere today. Each league has its own promotion and relegation, continental places and foreign-player rules; you will see your league\'s when you take a job. Knockout ties go to extra time and penalties, with no away-goals rule.</div>';
         })()}
         ${UI.simSetup()}
         <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${D.facts().clubs} clubs in ${D.facts().leagues} leagues across ${D.facts().nations} nations, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
         ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
-        <div class="actions"><button class="btn pri block" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button><button class="btn block" data-act="ngBack">Back</button></div>`;
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button></div>`;
     }
     app.innerHTML = `<div class="title">${body}</div>`;
     const simBox = $('#ng-sim');

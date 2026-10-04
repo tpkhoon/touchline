@@ -361,7 +361,7 @@
       const f = form5(club);
       if (f.length) {
         const pts = f.reduce((t, r) => t + (r === 1 ? 3 : r === 0.5 ? 1 : 0), 0);
-        lines.push(`Recent form: ${pts} points from the last ${f.length} games.`);
+        lines.push(`Recent form: ${U.pts(pts)} from the last ${f.length === 1 ? 'game' : `${f.length} games`}.`);
       }
     }
     lines.push(

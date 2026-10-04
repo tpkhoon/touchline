@@ -7,8 +7,9 @@
 
   // ---------------- Player model ----------------
   W.age = (p) => FM.S.year - p.born;
-  W.name = (p) => `${p.fn} ${p.ln}`;
-  W.short = (p) => `${p.fn[0]}. ${p.ln}`;
+  // (a one-word name, like a Brazilian footballer's, has no first name: his single name is in ln)
+  W.name = (p) => (p.fn ? `${p.fn} ${p.ln}` : p.ln);
+  W.short = (p) => (p.fn ? `${p.fn[0]}. ${p.ln}` : p.ln);
 
   W.calcCA = function (p, pos = p.pos) {
     // a natural wing-back is judged on wing-back weights; anyone else in a wing-back slot as a full-back (the slot
@@ -271,7 +272,6 @@
     if (h.prof >= 16 && h.amb >= 13) return 'Model Professional';
     if (h.loy >= 16) return 'Loyal Servant';
     if (h.amb >= 16 && h.loy <= 8) return 'Mercenary';
-    if (h.lead >= 16) return 'Born Leader';
     if (h.temp <= 5) return 'Volatile';
     if (h.prof <= 6) return 'Laid Back';
     if (h.amb >= 16) return 'Ambitious';
@@ -507,6 +507,79 @@
     if (pool) return { fn: U.pick(pool.fn), ln: Math.random() < 0.7 ? U.pick(pool.ln) : U.pick(N.ln) };
     return { fn: U.pick(N.fn), ln: U.pick(N.ln) };
   };
+  // A second nationality he is eligible for through his family (most players of a heritage have one): the nation his
+  // name's culture belongs to, never his own. null when there is none.
+  W.dualNat = function (nat, heritage, poolKey) {
+    if (!heritage || Math.random() > 0.7) return null;
+    if (!poolKey) poolKey = D.HERITAGE_POOL[heritage] ? U.pick(D.HERITAGE_POOL[heritage]) : heritage;
+    const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.NATIONS[n]);
+    return list.length ? U.pick(list) : null;
+  };
+  // One-word names, as Brazilian and Portuguese players often have: a diminutive or a nickname made from his first name
+  // ("Rafael" → "Rafinha", "Pedro" → "Pedrinho", "Carlos" → "Cacá"), never one of the famous ones
+  const MONO_RATE = { BRA: 0.16, POR: 0.05 };
+  const MONO_BLOCK = new Set(
+    `kaka pepe nani raphinha dudu juninho fred hulk oscar willian ronaldinho rivaldo romario bebeto cafu ederson alisson
+    fabinho casemiro marquinhos richarlison rafinha rafinho neymar pele zico socrates garrincha jo rodrygo vinicius
+    antony vitinho pedrinho gabigol bruninho paulinho robinho adriano elano denilson edmilson dida taffarel claudinho
+    firmino lulinha danilo thiago bernard bruno everton hernanes ramires lucio fernandinho kleber dede cacau`.split(
+      /\s+/,
+    ),
+  );
+  const plain = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const ACCENT = { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú' };
+  W.mononym = function (first) {
+    const base = plain(String(first).split(' ')[0]);
+    if (base.length < 3) return null;
+    const vowel = (c) => 'aeiou'.includes(c.toLowerCase());
+    let i = 3;
+    while (i < base.length && vowel(base[i - 1])) i++; // the first syllable up to a consonant: Raf, Heit, Pedr
+    const clip = base.slice(0, i).replace(/[aeiou]+$/i, ''), // (Caio → Ca: too short for a suffix)
+      open = base.slice(0, i + 1); // ... and the vowel after it: Rafa, Pedro
+    const hard = (stem) => (/g$/i.test(stem) ? stem + 'u' : /c$/i.test(stem) ? stem.slice(0, -1) + 'qu' : stem); // Marc → Marquinho
+    const r = Math.random();
+    let out = null;
+    if (r < 0.45 && clip.length >= 3 && !/h$/i.test(clip)) out = hard(clip) + 'inho';
+    else if (r < 0.65 && clip.length >= 3) out = hard(clip) + 'ão';
+    else if (r < 0.8) {
+      // a doubled syllable, the last accented: Cacá, Dedé, Zezé
+      const m = base.match(/^([^aeiou]*)([aeiou])/i);
+      out = m && m[1].length === 1 ? m[1] + m[2] + m[1] + ACCENT[m[2].toLowerCase()] : null;
+    } else if (/[ao]$/i.test(open) && open.length >= 4 && open.length < base.length) out = open; // Rafa, Duda
+    if (!out || out.length < 3) return null;
+    out = out.charAt(0).toUpperCase() + out.slice(1).toLowerCase();
+    return MONO_BLOCK.has(plain(out).toLowerCase()) ? null : out;
+  };
+  // Youth years for a player made with the world: the nation he grew up in (his own, now and then where he plays now if
+  // he moved young) and the club there that trained him (for a young player often his current club; B teams belong to
+  // their parent). A nation with no club in this world leaves the club empty.
+  let youthPool = { S: null, n: 0, by: {} };
+  W.assignYouth = function (p, clubId) {
+    const S = FM.S,
+      age = W.age(p),
+      here = clubId && S.clubs[clubId];
+    if (youthPool.S !== S || youthPool.n !== Object.keys(S.clubs).length) {
+      const by = {};
+      for (const c of Object.values(S.clubs))
+        if (c.comp && !c.parent && c.sim !== 'nation') (by[c.nat] = by[c.nat] || []).push(c);
+      youthPool = { S, n: Object.keys(S.clubs).length, by };
+    }
+    if (p.youth && S.clubs[p.youth]) {
+      p.homeNat = S.clubs[p.youth].nat;
+      p.trainedAt = p.youth;
+      return;
+    }
+    let home = p.nat;
+    if (here && here.nat !== p.nat && age <= 24 && Math.random() < 0.12) home = here.nat; // moved abroad as a teenager
+    p.homeNat = home;
+    const pool = youthPool.by[home] || [];
+    const own = here && (here.parent ? S.clubs[here.parent] : here);
+    if (own && own.nat === home && age <= 22 && Math.random() < 0.6) p.trainedAt = own.id;
+    else if (pool.length) {
+      let r = Math.random() * pool.reduce((t, c) => t + c.rep, 0);
+      p.trainedAt = (pool.find((c) => (r -= c.rep) < 0) || pool[0]).id;
+    } else p.trainedAt = null;
+  };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
     const heritage = W.pickHeritage(nat),
@@ -543,6 +616,14 @@
       cult: 0,
       derbyGoals: 0,
     };
+    // a share of Brazilians and Portuguese go by one name
+    if (!heritage && Math.random() < (MONO_RATE[nat] || 0)) {
+      const one = W.mononym(nm.fn);
+      if (one && !REAL_NAMES.has(one) && !W.nameTaken(` ${one}`)) {
+        p.fn = '';
+        p.ln = one;
+      }
+    }
     W.genAlt(p);
     // Unique names (and never a famous real player). Retry combinations, then fall back to a second surname.
     let tries = 0;
@@ -556,7 +637,10 @@
       p.ln = D.TWO_SURNAMES.includes(nat) ? `${p.ln.split(' ')[0]} ${second}` : `${p.ln.split('-')[0]}-${second}`;
     }
     W.claimName(`${p.fn} ${p.ln}`);
-    if (heritage) p.heritage = heritage;
+    if (heritage) {
+      p.heritage = heritage;
+      p.nat2 = W.dualNat(nat, heritage, D.lastPoolKey);
+    }
     p.traits = genTraits(p);
     p.personality = W.personality(hid);
     // Plausible prior career for older players (so "600 games" veterans can exist)
@@ -670,7 +754,7 @@
       list = p.side === 'L' || p.foot === 'Left' ? [3, 2, ...list] : [2, 3, ...list];
     const senior = W.age(p) > 18;
     if (senior) for (const n of list) if (!taken.has(n)) return n;
-    let n = senior ? 2 : 30;
+    let n = senior ? 12 : 30; // (past the shirts the positions want: a spare winger is not number 9)
     while (taken.has(n)) n++;
     return n;
   };
@@ -977,6 +1061,7 @@
       FM.S.players[p.id] = p;
       mine.push(p);
     }
+    mine.forEach((p) => (p.no = 0)); // (numbers handed out as each player was made go back: the best choose first)
     W.numberSquad(mine);
     W.rosterVer++; // (these players went straight into the club: any squad index built before now is out of date)
   }
@@ -1560,7 +1645,7 @@
       wbPos: 2, // wing-backs are a position from the start (older saves convert theirs on load)
       wmPos: 1, // so are wide midfielders (LM/RM)
       compRules: 2, // and each league's real promotion, relegation and play-off rules
-      clubAbbr: 1, // clubs show their real abbreviations and nicknames
+      clubAbbr: 2, // clubs show their real abbreviations and nicknames
       rules: {
         win: opts.win || 3,
         subs: opts.subs || 5,
@@ -1708,6 +1793,7 @@
       p.contract = S.year;
       S.players[p.id] = p;
     }
+    for (const id in S.players) W.assignYouth(S.players[id], S.players[id].clubId); // where each grew up and who trained him
     FM.Contracts.seedWorld();
     W.leagues().forEach(W.setupSeasonFixtures);
     FM.Intl.setup();

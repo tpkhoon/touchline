@@ -17,6 +17,88 @@
     return n === 1 ? '⏰ Deadline day' : n ? `Window open · ${n} days left` : 'Window closed';
   };
 
+  // ======================= The Transfers tab =======================
+  // One place for the market: the window, offers waiting for your answer, your transfer list, loans, payments to come, your
+  // deals this season and the biggest deals elsewhere, with a way into search, free agents, the shortlist and the Transfer Centre
+  UI.screens.transfers = function () {
+    const s = S(),
+      c = W.userClub(),
+      win = FM.Season.windowOpen();
+    const CL = (id) => FM.clubOf(id);
+    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${win ? '🟢' : '🔴'}</span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14. Until then only free agents can sign.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
+    const links = `<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">${[
+      ['search', '🔎 Search players'],
+      ['free', '🆓 Free agents'],
+      ['shortlist', '⭐ Shortlist'],
+      ['market', '🌍 Transfer Centre'],
+    ]
+      .map(([v, l]) => `<button class="btn sm grow" data-act="trGo" data-v="${v}">${l}</button>`)
+      .join('')}</div>`;
+    // offers for your players
+    const bids = s.news.filter((n) => n.type === 'bid' && n.data && n.data.status === 'open');
+    const offers = bids.length
+      ? `<div class="sec"><div class="h3">Offers for your players</div><span class="dim small">${bids.length}</span></div>${bids
+          .map(
+            (n) =>
+              `<div class="card"><div class="b">${esc(n.title)}</div><div class="small dim" style="margin-top:4px">${esc(n.body)}</div>${UI.bidButtons(n)}</div>`,
+          )
+          .join('')}`
+      : `<div class="card flat small dim">No offers waiting. List a player (Squad → his profile → Transfer list) to invite bids.</div>`;
+    // your transfer list
+    const listed = W.squad(c.id).filter((p) => p.listed && !p.loan);
+    const list = listed.length
+      ? `<div class="sec"><div class="h3">Your transfer list</div><span class="dim small">${listed.length}</span></div><div class="card flat" style="padding:2px 12px">${listed
+          .map(
+            (p) =>
+              `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button></div>`,
+          )
+          .join('')}</div>`
+      : '';
+    // loans
+    const loansIn = W.squad(c.id).filter((p) => p.loan),
+      loansOut = Object.values(s.players).filter((p) => p.loan && p.loan.from === c.id && p.clubId !== c.id);
+    const loanRow = (p, out) =>
+      `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="grow ellip">${C.flags(p)} ${esc(W.name(p))}</span><span class="tiny dim">${out ? `at ${esc(CL(p.clubId).short)}` : `from ${esc(CL(p.loan.from).short)}`} · ${p.season.apps} apps</span></div>`;
+    const loans =
+      loansIn.length || loansOut.length
+        ? `<div class="sec"><div class="h3">Loans</div></div><div class="card flat" style="padding:2px 12px">${loansIn.map((p) => loanRow(p, false)).join('')}${loansOut.map((p) => loanRow(p, true)).join('')}</div>`
+        : '';
+    // payments
+    const led = M.ledger(c.id),
+      owe = U.sum(led.owe, (x) => x.amt),
+      owed = U.sum(led.owed, (x) => x.amt);
+    const pays =
+      led.owe.length || led.owed.length
+        ? `<div class="card flat small"><div class="h3" style="margin-bottom:6px">Payments to come</div>${led.owe.length ? `<div class="row"><span class="grow">You owe in instalments and add-ons</span><b>${U.money(owe)}</b></div>` : ''}${led.owed.length ? `<div class="row" style="margin-top:4px"><span class="grow">Owed to you</span><b>${U.money(owed)}</b></div>` : ''}</div>`
+        : '';
+    // your deals
+    const mine = s.seasonLog.transfers.filter((t) => W.isUser(t.to) || W.isUser(t.from)).reverse();
+    const deal = (t) => {
+      const buy = W.isUser(t.to),
+        other = buy ? t.from && CL(t.from) : CL(t.to);
+      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><span style="width:20px">${buy ? '🟢' : '🔴'}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''}</div><div class="tiny dim">${buy ? 'from' : 'to'} ${other ? esc(other.name) : 'free agency'}</div></div><b>${t.fee ? U.money(t.fee) : 'Free'}</b></div>`;
+    };
+    const deals = `<div class="sec"><div class="h3">Your deals this season</div><span class="dim small">${mine.length}</span></div><div class="card flat" style="padding:2px 12px">${mine.slice(0, 10).map(deal).join('') || '<div class="empty">No deals yet this season.</div>'}</div>`;
+    // the biggest elsewhere
+    const big = s.seasonLog.transfers
+      .filter((t) => !W.isUser(t.to) && !W.isUser(t.from) && !t.loan)
+      .sort((a, b) => b.fee - a.fee)
+      .slice(0, 5);
+    const elsewhere = big.length
+      ? `<div class="sec"><div class="h3">Biggest deals elsewhere</div><button class="btn sm" data-act="trGo" data-v="market">All deals</button></div><div class="card flat" style="padding:2px 12px">${big
+          .map(
+            (t) =>
+              `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)}</div><div class="tiny dim ellip">${t.from && CL(t.from) ? esc(CL(t.from).short) : '—'} → ${esc(CL(t.to).short)}</div></div><b>${U.money(t.fee)}</b></div>`,
+          )
+          .join('')}</div>`
+      : '';
+    return head + links + offers + list + loans + pays + deals + elsewhere;
+  };
+  UI.acts.trGo = (d) => {
+    UI.sub.scout = d.v;
+    UI.go('scout');
+  };
+
   // ---------- Desk decisions ----------
   UI.deskChoices = (n) =>
     n.resolved
