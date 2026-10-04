@@ -495,12 +495,12 @@
         comp = s.comps[c.comp],
         obj = FM.Season.objectives(c)[0],
         days = Math.max(1, o.until - now);
-      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${D.IDENTITY[c.identity].label}</div></div><span class="pill">Rep ${Math.round(c.rep)}</span></div>
+      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${D.IDENTITY[c.identity].label}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
         <div class="small muted" style="margin-top:8px;line-height:1.5">${o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.'}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
         <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">Offer open for about ${days} day${days === 1 ? '' : 's'}</span><button class="btn sm" data-act="clubView" data-id="${c.id}">Look closer</button><button class="btn sm pri" data-act="takeJob" data-id="${c.id}">Accept</button></div></div>`;
     };
     return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
-        <div class="small" style="opacity:.75;margin-top:8px">Reputation ${Math.round(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
+        <div class="small" style="opacity:.75;margin-top:8px">Reputation ${U.repText(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
         <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Wait for an offer</button>'}</div></div>
       <div class="sec"><div class="h3">Job offers</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
       ${offers.map(card).join('') || '<div class="empty">No offers right now. Keep waiting — clubs in your range will call.</div>'}
@@ -1609,7 +1609,7 @@
             : a.type === 'region'
               ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.pos === 'any' ? 'all' : a.pos} · ≤${a.maxAge}</span>`
               : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${a.weeks}w</span>`;
-          return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${sc.judge}/20 · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
+          return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${U.staffText(sc.judge)} · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
         <div class="small muted" style="margin:10px 0 6px">${esc(sc.note)}</div>
         ${Object.entries(D.REGIONS)
           .map(
@@ -2387,7 +2387,7 @@
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
-    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${Math.round(c.rep)}</span></div></div></div></div>
+    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span></div></div></div></div>
       <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${I.icon}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
         ${c.rival ? `<div class="phrase"><span>⚔️</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
         <div class="row small" style="margin-top:10px"><span style="width:90px" class="dim">Fan mood</span><div class="grow">${C.bar(c.fanMood, C.moodColor(c.fanMood))}</div></div>
@@ -2606,7 +2606,7 @@
     if (st.sold >= 3) tags.push(['💼', 'Wheeler-Dealer']);
     const fav = u.favClub && S().clubs[u.favClub];
     return `<div class="card"><div class="row" style="gap:12px">${C.avatar(u, 52)}<div class="grow"><div class="h2">${u.nat ? C.flag(u.nat) + ' ' : ''}${esc(u.name)}</div><div class="small dim">${esc(u.badges)} licence · ${club() ? `Manager of ${esc(club().name)}` : 'Out of work'}${fav ? ` · ❤️ ${esc(fav.name)}` : ''}</div></div></div>
-      <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.bar(u.rep)}</div><b style="margin-left:8px">${Math.round(u.rep)}</b></div>
+      <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.bar(u.rep)}</div><b style="margin-left:8px">${U.repText(u.rep)}</b></div>
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
       ${teamTalkCard(u)}
       ${UI.careerExtras()}

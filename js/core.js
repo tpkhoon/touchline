@@ -95,6 +95,13 @@
         v = n % 100;
       return n + (s[(v - 20) % 10] || s[v] || s[0]);
     },
+    // Reputations and staff abilities are numbers inside the game; players see them as stars like everything else.
+    // A reputation of about 30 is half a star, 95 is five; staff abilities run 1-20.
+    repStars: (rep) => Math.min(5, Math.max(0.5, Math.round((0.5 + ((rep - 30) / 65) * 4.5) * 2) / 2)),
+    repText(rep) {
+      return `${U.repStars(rep)}★`;
+    },
+    staffText: (v) => `${Math.min(5, Math.max(0.5, Math.round((v / 4) * 2) / 2))}★`,
     // "1 pt", "3 pts"
     pts: (n) => `${n} pt${Math.abs(n) === 1 ? '' : 's'}`,
     hash(str) {

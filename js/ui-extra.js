@@ -236,7 +236,7 @@
         <div class="small dim" style="margin-top:6px">A fee of ~5% of his value (${U.money(p.value * 0.05)}) makes his club more flexible on wages. He returns at the end of the season.</div>`;
     }
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)}</span></div>${p.clubId ? C.crest(CL(p.clubId), 26) : '<span class="pill">Free agent</span>'}</div>
-      <div class="small dim" style="margin-top:6px">Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${dir.ability}/20)`}</div>
+      <div class="small dim" style="margin-top:6px">Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${U.staffText(dir.ability)})`}</div>
       ${tabs}${body}
       ${msg ? `<div class="reply" style="margin-top:12px">${esc(msg)}</div>` : ''}
       <button class="btn pri block" style="margin-top:16px" data-act="submitOffer">${o.mode === 'loan' ? 'Propose loan' : p.clubId ? 'Submit offer' : 'Offer contract'}</button>`;
@@ -361,7 +361,7 @@
     const card = (st, role, key) => {
       const r = D.STAFF_ROLES[role];
       return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? '🪑' : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
-        <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${st.judge || st.ability}/20</b></div>
+        <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
         ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div>` : ''}
         <div class="small" style="margin-top:6px">⚡ ${esc(FM.Staff.IMPACT[key](st.ability).text)}</div>${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">📋 On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
         <div class="tiny dim" style="margin-top:4px">${r.effect}${st.vacant ? '' : ` · contract to ${st.contract}`}</div>
@@ -387,7 +387,7 @@
             (
               st,
             ) => `<div class="card"><div class="row"><div style="font-size:24px">${C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(st.personality)} · age ${st.age}</div></div><b>${U.money(st.wage)}/wk</b></div>
-      <div class="row small" style="margin-top:8px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar(((st.judge || st.ability) / 20) * 100)}</div><b style="margin-left:8px">${st.judge || st.ability}/20</b></div>
+      <div class="row small" style="margin-top:8px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar(((st.judge || st.ability) / 20) * 100)}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
       ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note)}</div>` : ''}
       <button class="btn sm pri block" style="margin-top:10px" data-act="staffHire" data-id="${st.id}">Hire · ${U.money(U.roundMoney(st.wage * 4))} fee</button></div>`,
           )
@@ -457,7 +457,7 @@
       opts = FM.Season.friendlyOptions();
     UI.sheet(
       `<div class="h3">Friendly</div><div class="small dim" style="margin:4px 0 8px">Home games earn gate money; away tours earn an appearance fee. Stronger opponents test you harder.</div>
-      ${opts.map((c) => `<div class="card row">${C.crest(c, 32)}<div class="grow"><div class="b">${C.flag(c.nat)} ${esc(c.name)}</div><div class="small dim">${c.comp ? esc(S().comps[c.comp].name) : D.NATIONS[c.nat].name} · rep ${Math.round(c.rep)}</div></div><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="1">Home</button><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="0">Away</button></div>`).join('')}
+      ${opts.map((c) => `<div class="card row">${C.crest(c, 32)}<div class="grow"><div class="b">${C.flag(c.nat)} ${esc(c.name)}</div><div class="small dim">${c.comp ? esc(S().comps[c.comp].name) : D.NATIONS[c.nat].name} · rep ${U.repText(c.rep)}</div></div><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="1">Home</button><button class="btn sm" data-act="bookF" data-i="${i}" data-id="${c.id}" data-h="0">Away</button></div>`).join('')}
       <div class="h3" style="margin-top:14px">Camp</div>
       ${Object.entries(D.CAMPS)
         .map(
@@ -562,7 +562,7 @@
           .slice(0, 2)
           .map(([k]) => D.REGIONS[k])
           .join(', ');
-        return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${sc.judge}/20</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
+        return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${U.staffText(sc.judge)}</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
       })
       .join('');
     return `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
@@ -611,7 +611,7 @@
         : [...new Set(s.comps[a.comp].clubs.flatMap((id) => W.squad(id).map((p) => p.nat)))]
     ).sort((x, y) => D.NATIONS[x].name.localeCompare(D.NATIONS[y].name));
     if (a.nat !== 'any' && !natOpts.includes(a.nat)) a.nat = 'any';
-    const html = `<div class="row small" style="margin-bottom:6px">${C.flag(sc.nat)} <b>${esc(sc.fn + ' ' + sc.ln)}</b><span class="dim">· judging ${sc.judge}/20</span></div>
+    const html = `<div class="row small" style="margin-bottom:6px">${C.flag(sc.nat)} <b>${esc(sc.fn + ' ' + sc.ln)}</b><span class="dim">· judging ${U.staffText(sc.judge)}</span></div>
       <div class="seg">${[
         ['region', 'By region'],
         ['league', 'By league'],
@@ -1050,7 +1050,7 @@
     if (t === 'stats') body.innerHTML = MV.statTable(me) + MV.statTable(op, true);
     if (t === 'insights') {
       const a = FM.Staff.get('analyst');
-      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px">📊</span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${a.ability}/20</div></div></div>${MV.insights(
+      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px">📊</span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${U.staffText(a.ability)}</div></div></div>${MV.insights(
         m,
       )
         .map(
@@ -1384,7 +1384,7 @@
               .join('')
           : '<div class="empty">None of your players have been capped yet.</div>'
       }</div>
-      <div class="sec"><div class="h3">World ranking</div><span class="dim small">Coefficient</span></div>
+      <div class="sec"><div class="h3">World ranking</div><span class="dim small">Rating</span></div>
       <div class="card flat" style="padding:6px 10px"><table class="t">${ranked
         .map(
           (t, i) =>
@@ -1397,7 +1397,7 @@
                     ),
                   )}</span>`
                 : ''
-            }</div></td><td class="b">${t.coef.toFixed(1)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
+            }</div></td><td class="b">${U.repText(t.rep)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
         )
         .join('')}</table></div>
       <div class="sec"><div class="h3">Recent results</div></div>
@@ -1417,7 +1417,7 @@
     const games = s.intlLog.filter((g) => g.h === t.id || g.a === t.id).slice(0, 8);
     const rank = FM.Intl.ranked().indexOf(t) + 1;
     UI.sheet(
-      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
+      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · ${U.repText(t.rep)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
         ${
           Object.keys(t.titles).length
             ? `<div class="small" style="margin-top:8px">${Object.entries(t.titles)

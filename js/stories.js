@@ -404,7 +404,7 @@
       St.share({
         kicker: 'UPSET',
         title: `${club.name} shock ${opp.name}`,
-        sub: `${score} — a ${opp.rep - club.rep}-point reputation gap overturned.`,
+        sub: `${score} — ${opp.rep - club.rep >= 25 ? 'a huge' : 'a big'} reputation gap overturned.`,
         big: `${gf}–${ga}`,
         clubId: club.id,
       });

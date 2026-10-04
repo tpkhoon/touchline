@@ -551,7 +551,7 @@
       why: !badgeOk
         ? `Requires a ${I.badgeNeeded(t)} licence`
         : !repOk
-          ? `Your reputation (${Math.round(u.rep)}) is too low — they want ${need}+`
+          ? `Your reputation (${U.repText(u.rep)}) is too low — they want ${U.repText(need)} or better`
           : '',
     };
   };

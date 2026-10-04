@@ -404,7 +404,7 @@
     FM.News.add({
       type: 'club',
       title: `${st.fn} ${st.ln} appointed ${st.role}`,
-      body: `${D.NATIONS[st.nat].flag} ${st.personality}, ability ${st.ability}/20. ${D.STAFF_ROLES[st.role].effect}.`,
+      body: `${D.NATIONS[st.nat].flag} ${st.personality}, ability ${U.staffText(st.ability)}. ${D.STAFF_ROLES[st.role].effect}.`,
       clubId: c.id,
     });
     return { ok: true, msg: `${st.fn} ${st.ln} joins as ${st.role}. Signing-on fee ${U.money(fee)}.` };
