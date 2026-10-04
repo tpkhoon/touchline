@@ -2257,3 +2257,11 @@ details.cupfold:not([open]) > summary > .row::after {
 .sheet .sh-foot .btn.pri {
   flex: 1.6;
 }
+
+/* the second flag of a dual national: smaller, tucked against the first */
+.flag2 {
+  font-size: 0.72em;
+  margin-left: -2px;
+  opacity: 0.9;
+  vertical-align: 0.1em;
+}

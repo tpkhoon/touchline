@@ -171,9 +171,11 @@
     // abbreviations come from the club's own name now (many carried the codes of its old, real-life name: CHE3, CON)
     if (s.clubAbbr !== 2 && s.clubs && FM.D.CLUB_INFO) {
       s.clubAbbr = 2;
+      // (only where the club still has the name the abbreviation was made from)
+      const named = new Map(FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || []).map((r) => [r[1], r[0]]));
       for (const [id, c] of Object.entries(s.clubs)) {
         const info = FM.D.CLUB_INFO[id.slice(2)];
-        if (info && info[0]) c.short = info[0];
+        if (info && info[0] && named.get(id.slice(2)) === c.name) c.short = info[0];
       }
     }
     // England's divisions were labelled D1–D4 ("D1" read as the First Division, which is D2): ENG1–ENG4
@@ -182,6 +184,10 @@
         const c = s.comps[l.id];
         if (c && /^D\d$/.test(c.short) && l.short !== c.short) c.short = l.short;
       }
+    // second nationalities (through family heritage) for players made before they existed
+    if (s.players && FM.W && FM.D.POOL_NATS)
+      for (const p of Object.values(s.players))
+        if (p.heritage && p.nat2 === undefined) p.nat2 = FM.W.dualNat(p.nat, p.heritage, null);
     // scouts made while the county-cup data overwrote the scouting regions have numbered regions: new profiles, and
     // any assignment to a region that does not exist is cleared
     if (s.staff && FM.W && FM.D.REGIONS) {

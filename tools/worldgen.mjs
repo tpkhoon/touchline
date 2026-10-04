@@ -8,7 +8,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { langOf, placeName, stem, TIERS_BY, CUP_BY, isRude } from './namelib.mjs';
+import {
+  langOf,
+  placeName,
+  stem,
+  TIERS_BY,
+  CUP_BY,
+  isRude,
+  tiersFor,
+  cupFor,
+  clubMoreFor,
+  colourAltFor,
+} from './namelib.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -169,8 +180,9 @@ export function generate(real, seed = 1) {
   const surname = (L, r) => stem(L, r);
   const nickOf = (c, r, L, taken) => {
     // most clubs are known by their colours; some by an animal or a trade
-    const [c1, c2] = [colourName(c.row[3]), colourName(c.row[4])];
-    const byColour = L.colours[c1] === L.colours[c2] ? L.colours[c1] : L.colours[c1];
+    const c1 = colourName(c.row[3]);
+    const alt = colourAltFor(L);
+    const byColour = alt && alt[c1] ? r.pick(alt[c1]) : L.colours[c1];
     let n = r() < 0.62 ? byColour : r.pick(L.misc);
     if (taken.has(n)) n = r.pick(L.misc);
     return n;
@@ -214,6 +226,13 @@ export function generate(real, seed = 1) {
       name = L.club[(Math.floor(r() * L.club.length) + (k - 1) * 3 + tries) % L.club.length].replace('{c}', base);
       tries++;
     } while ((usedName.has(name) || isRude(name)) && tries < L.club.length * 2);
+    // a share of the clubs take one of the language's other patterns ("Hotspur", "Rot-Weiß", "Olympique")
+    const more = clubMoreFor(L),
+      ra = rngOf(`${seed}|altname|${code}`);
+    if (more.length && ra() < 0.3) {
+      const alt = ra.pick(more).replace('{c}', base);
+      if (!usedName.has(alt) && !isRude(alt)) name = alt;
+    }
     if (usedName.has(name)) name = `${place} ${k + 1}`;
     usedName.add(name);
     let ground,
@@ -274,7 +293,7 @@ export function generate(real, seed = 1) {
   // leagues and cups keep their ids, formats and rules; only the name changes
   for (const [id, l] of Object.entries(out.leagues)) {
     const dem = DEMONYM[l.nat] || real.nations[l.nat] || l.nat,
-      tiers = TIERS_BY[l.nat] || langOf(l.nat).tiers;
+      tiers = TIERS_BY[l.nat] || tiersFor(langOf(l.nat), rngOf(`${seed}|tiers|${l.nat}`));
     l.name = `${dem} ${tiers[l.tier - 1] || `Division ${l.tier}`}`;
     l.short = /^D\d$/.test(id) ? `${l.nat}${l.tier}` : id; // ("D1" read as England's first division, which is D2)
   }
@@ -286,7 +305,7 @@ export function generate(real, seed = 1) {
     c.short = `${CONTINENT_SHORT[c.region] || c.region.slice(0, 3).toUpperCase()}${c.tier}`;
   }
   for (const c of Object.values(out.cups)) {
-    c.name = `${DEMONYM[c.nat] || real.nations[c.nat] || c.nat} ${CUP_BY[c.nat] || langOf(c.nat).cup}`;
+    c.name = `${DEMONYM[c.nat] || real.nations[c.nat] || c.nat} ${CUP_BY[c.nat] || cupFor(langOf(c.nat), rngOf(`${seed}|cup|${c.nat}`))}`;
     c.short = `${c.nat}C`;
   }
   // county cups and state championships take the name of the area's biggest club's town

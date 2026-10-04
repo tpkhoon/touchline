@@ -23,6 +23,28 @@
   const P = (id) => FM.S.players[id];
 
   // ---------------- Preview ----------------
+  // The opposition's likely XI, line by line (from the same pick the match will use for them, unless they have
+  // injuries or suspensions by then), with the danger man starred and who they are missing
+  MV.predictedXI = function (opp, key) {
+    const t = opp.tactic,
+      slots = D.FORMATIONS[t.formation] || [];
+    const { xi } = W.pickXI(opp.id, t);
+    const line = (g) =>
+      xi
+        .map((p, i) => (p && slots[i] && D.POS_GROUP[slots[i].t] === g ? p : null))
+        .filter(Boolean)
+        .map(
+          (p) =>
+            `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p === key ? ' <span title="Danger man">★</span>' : ''}`,
+        )
+        .join(' · ');
+    const out = W.squad(opp.id).filter((p) => !W.available(p));
+    const row = (l, g) =>
+      `<div class="row small" style="margin-top:6px;gap:8px;align-items:flex-start"><span class="dim" style="width:34px">${l}</span><span class="grow" style="line-height:1.7">${line(g)}</span></div>`;
+    return `<div class="card"><div class="row"><div class="h3 grow">Predicted XI</div><span class="tiny dim">${esc(t.formation)}</span></div>
+      ${row('GK', 'GK')}${row('DEF', 'DEF')}${row('MID', 'MID')}${row('ATT', 'ATT')}
+      ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(p.ln) + (p.inj ? ' (injured)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
+  };
   const DANGER_POS = { ST: 1, W: 0.96, AM: 0.96, WM: 0.9, CM: 0.82, WB: 0.74, FB: 0.7, DM: 0.68, CB: 0.6, GK: 0.2 };
   MV.preview = function () {
     const fx = FM.Season.userFixture();
@@ -74,6 +96,7 @@
         <div class="row small" style="margin-top:6px"><span class="grow dim">System</span><b>${opp.tactic.formation} · ${opp.tactic.buildup} · ${opp.tactic.press}</b></div>
         <div class="row small" style="margin-top:6px"><span class="grow dim">Danger man</span><b class="tap" data-act="player" data-id="${key.id}">${C.flag(key.nat)} ${esc(W.name(key))} (${key.pos})</b></div>
         <div class="q" style="margin-top:10px;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13px;border-left:3px solid var(--acc2)"><b class="tiny dim" style="display:block">${esc(asst.fn + ' ' + asst.ln)} · Assistant</b>“${tip}”</div></div>
+      ${MV.predictedXI(opp, key)}
       ${MV.conditions(fx, me, opp, nt)}
       ${f1 && f1.res ? `<div class="warnline" style="margin-bottom:8px">Second leg. First leg: ${esc(CL(f1.h).name)} ${f1.res.hg}–${f1.res.ag} ${esc(CL(f1.a).name)}${s.rules.awayGoals ? ' · away goals count' : ''}. Level on aggregate after 90 minutes → extra time${s.rules.awayGoals ? ' (unless away goals decide it)' : ''}.</div>` : fx.leg === 1 ? '<div class="warnline" style="margin-bottom:8px">First leg — no extra time tonight. The tie is decided in the return match.</div>' : ''}
       <div class="card"><div class="row"><div class="h3 grow">Your XI · ${myTactic.formation}</div><button class="btn sm" data-act="${nt ? 'goNation' : 'goTactics'}">${nt ? 'Squad' : 'Tactics'}</button></div>

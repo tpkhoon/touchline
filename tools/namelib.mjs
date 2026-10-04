@@ -917,6 +917,141 @@ export const LANG = {
     cup: 'Champions Cup',
   },
 };
+// ---------------------------------------------------------------- more variety
+// Extra nickname words, club-name patterns, division names and cup names, so the world is not 700 "Town", "United" and
+// "Premier Division". Nations that share a language each draw their own division and cup names (worldgen, by seed).
+const NICK_MORE = {
+  eng: words(
+    `Bluebirds Canaries Magpies Saints Pilgrims Shrimpers Seagulls Hornets Swans Potters Tykes Cobblers Millers Posh
+    Imps Gulls Grecians Stags Terriers Bantams Lilywhites Royals Robins Cherries Clarets Owls Blades Foxes Seahawks
+    Warriors Knights Smiths Dockers Weavers Brewers Colliers Anglers Shepherds Tinners Bees Bulldogs Cats Wasps
+    Eagles Panthers Kings Pioneers Harriers Thistles Dragons Comets Rockets Lancers Archers Yeomen Wanderers`,
+  ),
+  spa: words('Halcones Cóndores Zorros Osos Gladiadores Corsarios Marineros Cruzados Leñadores Pastores Titanes Rayos'),
+  por: words('Gladiadores Corsários Pescadores Cavaleiros Pioneiros Dragões Raposas Ursos Foguetes Pastores'),
+  bra: words('Gladiadores Corsários Pescadores Cavaleiros Raposas Ursos Foguetes Pioneiros Bandeirantes Capivaras'),
+  mex: words('Gladiadores Corsarios Pescadores Charros Zorros Osos Rayos Titanes Cruzados Pioneros'),
+  arg: words('Gladiadores Corsarios Pescadores Zorros Osos Rayos Titanes Cruzados Pioneros Ñandúes'),
+  ger: words('Gladiatoren Seeadler Raben Kicker Kumpel Stahlwerker Brauer Pioniere Schwarzbären Rothirsche Wikinger'),
+  nld: words('Gladiatoren Zeemeeuwen Raven Kasteelheren Vissers Brouwers Pioniers Beren Herten Vikingen'),
+  nor: words('Gladiatorer Måker Ravner Fiskere Bryggere Pionerer Bjørner Hjorter Soldater Kometer'),
+  fra: words('Gladiateurs Mouettes Corbeaux Pêcheurs Brasseurs Pionniers Ours Chevaliers Renards Comètes'),
+  ita: words('Gladiatori Gabbiani Corvi Pescatori Birrai Pionieri Orsi Cavalieri Volpi Comete'),
+  pol: words('Gladiatorzy Mewy Kruki Rybacy Piwosze Pionierzy Niedźwiedzie Rycerze Lisy Komety'),
+  cze: words('Gladiátoři Racci Havrani Rybáři Sládci Průkopníci Medvědi Rytíři Lišky Komety'),
+  hun: words('Gladiátorok Sirályok Hollók Halászok Sörfőzők Úttörők Medvék Lovagok Rókák Üstökösök'),
+  gre: words('Gladiátores Lárioi Korákia Psarádes Pioníri Arkoúdes Ippótes Alepoúdes Kometes'),
+  slav: words('Gladijatori Galebovi Vrane Ribari Pivari Pioniri Vitezovi Lisice Komete'),
+  tur: words('Gladyatörler Martılar Kargalar Balıkçılar Öncüler Ayılar Şövalyeler Tilkiler Kuyruklu_Yıldızlar'),
+  jpn: words('Falcons Sharks Foxes Stags Ravens Comets Knights Pioneers Rockets Lancers'),
+  kor: words('Sharks Foxes Stags Ravens Comets Knights Pioneers Rockets Lancers Cranes'),
+  tha: words('Sharks Foxes Stags Ravens Comets Knights Pioneers Rockets Crocodiles Buffaloes'),
+};
+const CLUB_MORE = {
+  eng: [
+    '{c} Hotspur',
+    '{c} Vale',
+    '{c} Stanley',
+    '{c} North End',
+    '{c} Royals',
+    '{c} Swifts',
+    '{c} Olympic',
+    '{c} Corinthians',
+    '{c} Dynamo',
+    '{c} Sporting',
+    'FC {c}',
+    'AFC {c}',
+    '{c} & District',
+  ],
+  spa: ['Racing {c}', 'Real {c}', 'Unión {c}', '{c} Balompié', 'Juventud {c}', 'Estudiantes de {c}'],
+  ger: [
+    'SV {c}',
+    'TuS {c}',
+    'Rot-Weiß {c}',
+    'Blau-Weiß {c}',
+    'SC {c} 1901',
+    'Hertha {c}',
+    'Borussia {c}',
+    'Arminia {c}',
+  ],
+  fra: ['Olympique {c}', 'AS {c}', 'Racing {c}', 'Union {c}', 'Sporting {c}', 'FC {c}', 'Stade {c}', 'Étoile {c}'],
+  ita: ['Virtus {c}', 'Unione {c}', 'Audace {c}', 'Atletico {c}', 'Pro {c}', 'Juventus {c}', 'Sporting {c}'],
+  por: ['Sporting {c}', 'Académico {c}', 'União {c}', 'Os Belenenses de {c}', 'Naval {c}', 'Desportivo {c}'],
+  nld: ['SV {c}', 'FC {c}', 'VV {c}', 'Sparta {c}', 'Go Ahead {c}', 'RKC {c}', 'ADO {c}'],
+};
+// Division and cup names a nation of that language may take instead of the first set
+const TIER_SETS = {
+  eng: [
+    ['Super League', 'Challenge League', 'Second League', 'Third League', 'Fourth League'],
+    ['Top Division', 'Division One', 'Division Two', 'Division Three', 'Division Four'],
+    ['Elite Division', 'Challenge Division', 'Premier Division B', 'Union Division', 'Regional Division'],
+    ['Premier Union', 'Union One', 'Union Two', 'Union Three', 'Union Four'],
+  ],
+  spa: [
+    ['Liga Suprema', 'Liga Nacional', 'Segunda Federal', 'Tercera Federal', 'Liga Regional'],
+    ['Primera Honor', 'Segunda Honor', 'Tercera Honor', 'Cuarta Honor', 'Quinta Honor'],
+  ],
+  por: [['Superliga', 'Liga Nacional', 'Liga Federal', 'Liga Regional', 'Liga Distrital']],
+  bra: [['Série Nacional', 'Série Acesso', 'Série Federal', 'Série Estadual', 'Série Regional']],
+  mex: [['Liga Premier', 'Liga de Plata', 'Liga Nacional', 'Liga Regional', 'Liga Estatal']],
+  arg: [['Superliga', 'Primera Nacional', 'Primera Federal', 'Primera Regional', 'Liga Provincial']],
+  ger: [
+    ['Spitzenliga', 'Zweitliga', 'Drittliga', 'Viertliga', 'Fünftliga'],
+    ['Meisterliga', 'Aufstiegsliga', 'Nordliga', 'Regionalliga', 'Landesliga'],
+  ],
+  nld: [['Hoofdklasse', 'Eerste Divisie', 'Tweede Divisie', 'Derde Divisie', 'Vierde Divisie']],
+  nor: [['Elitserien', 'Første Divisjon', 'Andre Divisjon', 'Tredje Divisjon', 'Fjerde Divisjon']],
+  fra: [
+    ['Ligue Nationale', 'Ligue Deux', 'Nationale', 'Régional', 'Départemental'],
+    ['Championnat de France', 'Division Deux', 'Division Trois', 'Régional Un', 'Régional Deux'],
+  ],
+  ita: [
+    ['Serie Nazionale', 'Serie Cadetta', 'Serie C', 'Serie D', 'Eccellenza'],
+    ['Lega Nazionale', 'Lega Cadetta', 'Lega Terza', 'Lega Quarta', 'Lega Regionale'],
+  ],
+  jpn: [['Super League', 'Challenge League', 'Regional League', 'Prefectural League', 'Local League']],
+  kor: [['Super League', 'Challenge League', 'Regional League', 'Local League', 'Amateur League']],
+  tha: [['Super League', 'League One', 'League Two', 'League Three', 'Regional League']],
+};
+const CUP_SETS = {
+  eng: ['Challenge Cup', 'National Cup', 'Union Cup', 'Federation Trophy', 'Football Cup'],
+  spa: ['Copa de la Federación', 'Copa Nacional', 'Copa del Rey Fundador', 'Copa de Campeones'],
+  por: ['Taça da Federação', 'Taça Nacional', 'Taça de Portugal Nova', 'Taça dos Campeões'],
+  bra: ['Copa da Federação', 'Copa Nacional', 'Copa Brasileira Nova', 'Copa dos Campeões'],
+  ger: ['Verbandspokal', 'Nationalpokal', 'Meisterpokal', 'Bundespokal Neu'],
+  nld: ['Federatiebeker', 'Nationale Beker', 'Landsbeker', 'Kampioensbeker'],
+  fra: ['Coupe de la Fédération', 'Coupe Nationale', 'Coupe des Champions de France', 'Coupe de l’Union'],
+  ita: ['Coppa della Federazione', 'Coppa Nazionale', 'Coppa dei Campioni d’Italia', 'Coppa dell’Unione'],
+};
+for (const [k, more] of Object.entries(NICK_MORE)) LANG[k].misc.push(...more.map((w) => w.replace(/_/g, ' ')));
+const langKey = (L) => Object.keys(LANG).find((k) => LANG[k] === L);
+// The division names of a nation: the language's usual set, or one of its alternatives (r: a seeded random)
+export const tiersFor = (L, r) => {
+  const sets = [L.tiers, ...(TIER_SETS[langKey(L)] || [])];
+  return sets[Math.floor(r() * sets.length)];
+};
+// Alternative club-name patterns a language adds to its usual ones (worldgen uses them for a share of the clubs)
+export const clubMoreFor = (L) => CLUB_MORE[langKey(L)] || [];
+export const cupFor = (L, r) => {
+  const sets = [L.cup, ...(CUP_SETS[langKey(L)] || []).filter((c) => c !== L.cup)];
+  return sets[Math.floor(r() * sets.length)];
+};
+// An alternative nickname for a colour, where the language has some ("Red Devils", "Bluebirds")
+export const colourAltFor = (L) => COLOUR_ALT[langKey(L)];
+const COLOUR_ALT = {
+  eng: {
+    red: ['Red Devils', 'Crimsons', 'Scarlets', 'Reds'],
+    blue: ['Bluebirds', 'Royals', 'Blue Army', 'Blues'],
+    white: ['Lilywhites', 'Magpies', 'Whites', 'Seagulls'],
+    black: ['Blackcats', 'Panthers', 'Blacks', 'Dark Horses'],
+    yellow: ['Canaries', 'Hornets', 'Yellows', 'Bees'],
+    green: ['Gladiators', 'Greens', 'Emeralds', 'Robins'],
+    orange: ['Tangerines', 'Oranges', 'Foxes', 'Flames'],
+    claret: ['Clarets', 'Maroons', 'Wine Reds', 'Burgundies'],
+    sky: ['Sky Blues', 'Cityzens', 'Azure', 'Skyhawks'],
+    navy: ['Navy', 'Mariners', 'Admirals', 'Navy Blues'],
+  },
+};
 export const TIERS_BY = {
   CZE: ['První Liga', 'Druhá Liga', 'Třetí Liga', 'Čtvrtá Liga'],
   SVK: ['První Liga', 'Druhá Liga', 'Třetí Liga'],

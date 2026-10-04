@@ -506,6 +506,14 @@
     if (pool) return { fn: U.pick(pool.fn), ln: Math.random() < 0.7 ? U.pick(pool.ln) : U.pick(N.ln) };
     return { fn: U.pick(N.fn), ln: U.pick(N.ln) };
   };
+  // A second nationality he is eligible for through his family (most players of a heritage have one): the nation his
+  // name's culture belongs to, never his own. null when there is none.
+  W.dualNat = function (nat, heritage, poolKey) {
+    if (!heritage || Math.random() > 0.7) return null;
+    if (!poolKey) poolKey = D.HERITAGE_POOL[heritage] ? U.pick(D.HERITAGE_POOL[heritage]) : heritage;
+    const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.NATIONS[n]);
+    return list.length ? U.pick(list) : null;
+  };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
     const heritage = W.pickHeritage(nat),
@@ -555,7 +563,10 @@
       p.ln = D.TWO_SURNAMES.includes(nat) ? `${p.ln.split(' ')[0]} ${second}` : `${p.ln.split('-')[0]}-${second}`;
     }
     W.claimName(`${p.fn} ${p.ln}`);
-    if (heritage) p.heritage = heritage;
+    if (heritage) {
+      p.heritage = heritage;
+      p.nat2 = W.dualNat(nat, heritage, D.lastPoolKey);
+    }
     p.traits = genTraits(p);
     p.personality = W.personality(hid);
     // Plausible prior career for older players (so "600 games" veterans can exist)
