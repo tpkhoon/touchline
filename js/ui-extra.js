@@ -294,12 +294,24 @@
     const a = FM.Advice.assistant();
     const out = Object.values(S().players).filter((p) => p.loan && W.isUser(p.loan.from));
     const notes = `<div class="card"><div class="row"><div style="font-size:26px">🗒️</div><div class="grow"><div class="h3">${esc(a.who)}'s notes</div><div class="tiny dim">${a.role}${a.personality ? ' · ' + esc(a.personality) : ''}</div></div></div>
-      ${a.notes.map((n) => `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${n.act.label}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`).join('')}</div>`;
+      ${a.notes
+        .slice(0, UI._notesAll ? 99 : 2)
+        .map(
+          (n) =>
+            `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${n.act.label}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:40px;height:40px;font-size:14px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`,
+        )
+        .join(
+          '',
+        )}${a.notes.length > 2 ? `<button class="btn sm block" style="margin-top:8px" data-act="notesMore">${UI._notesAll ? 'Show fewer' : `Show ${a.notes.length - 2} more`}</button>` : ''}</div>`;
     const loans = out.length
       ? `<div class="sec"><div class="h3">Out on loan</div><span class="dim small">${out.length}</span></div><div class="card flat list" style="padding:4px 12px">${out.map((p) => C.playerRow(p, ` · at ${esc(CL(p.clubId).short)} · ${p.season.apps} apps${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) : ''}`)).join('')}</div>`
       : '';
     const i = html.indexOf('<div class="row small dim"');
     return html.slice(0, i) + notes + html.slice(i) + loans;
+  };
+  UI.acts.notesMore = () => {
+    UI._notesAll = !UI._notesAll;
+    UI.render();
   };
   // Acting on a note (or ticking it off) removes it from the assistant's list
   UI.acts.noteAct = (d) => {

@@ -88,8 +88,7 @@
       ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
       ${MV.talkCard(fx)}
-      <button class="btn pri block" data-act="kickoff" style="margin-top:4px">▶ Watch live</button>
-      <button class="btn block" data-act="instant" style="margin-top:8px">⚡ Instant result</button>`,
+      <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">⚡ Instant</button></div>`,
       { title: fx.po || (FM.S.comps[fx.comp] ? FM.S.comps[fx.comp].name : 'International') },
     );
   };
@@ -123,7 +122,7 @@
   const TALK_SHORT = {
     calm: 'Calm',
     focus: 'Focus',
-    free: 'Enjoy it',
+    free: 'Relax',
     fire: 'Fire up',
     pressure: 'Demand',
     tactics: 'Tactics',

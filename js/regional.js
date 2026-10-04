@@ -12,7 +12,7 @@
   const S = () => FM.S;
 
   // [id, nation, format ('ko' knockout, 'rr' league phase and a final), name, short, club codes]
-  D.REGIONS = [
+  D.AREAS = [
     [
       'ENG_LON',
       'ENG',
@@ -45,7 +45,7 @@
 
   // Saves and new worlds both get the competitions; their clubs and draws are made each season
   Rg.ensure = function (s) {
-    for (const r of D.REGIONS) {
+    for (const r of D.AREAS) {
       const id = compId(r);
       if (!s.comps[id])
         s.comps[id] = {
@@ -63,7 +63,7 @@
         };
     }
   };
-  const def = (c) => D.REGIONS.find((r) => r[0] === c.region);
+  const def = (c) => D.AREAS.find((r) => r[0] === c.region);
   // The clubs of a region that play in this world (fully or lightly simulated; the minimal leagues have no squads)
   Rg.members = function (c) {
     const r = def(c);

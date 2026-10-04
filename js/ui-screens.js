@@ -712,12 +712,12 @@
     const extra = (p) =>
       `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
     const list = sq.filter((p) => SQ_FILTER[q.filter][1](p, starters)).sort(SQ_SORT[q.sort][1]);
-    const chipsRow = (act, cur, map) =>
-      `<div class="chips noswipe">${Object.entries(map)
+    const chipsRow = (act, cur, map, label = '', more = '') =>
+      `<div class="chips noswipe">${label ? `<span class="chip-lbl">${label}</span>` : ''}${Object.entries(map)
         .map(
           ([k, [l]]) => `<button class="chip ${cur === k ? 'on' : ''}" data-act="${act}" data-v="${k}">${l}</button>`,
         )
-        .join('')}</div>`;
+        .join('')}${more}</div>`;
     const body =
       q.sort === 'pos'
         ? groups
@@ -731,8 +731,7 @@
         : `<div class="card flat list" style="padding:4px 12px">${list.map((p) => C.playerRow(p, extra(p), contractTag(p, q.sort === 'contract'))).join('')}</div>`;
     return `<div class="row small dim" style="margin:0 2px 8px"><span>${sq.length} players</span><span>·</span><span>Wages ${U.money(U.sum(sq, (p) => p.wage))}/wk</span><span class="grow"></span><span>Foreign ${foreign}${FM.Reg.real() ? '' : ` (${W.foreignLimitText()} in squad)`}</span></div>${UI.regLine(club())}
       ${expiring ? `<button class="warnline tap" style="width:100%;text-align:left;border:0" data-act="sqFilter" data-v="expiring">⏳ ${expiring} contract${expiring === 1 ? '' : 's'} expire this season — unsigned players leave on a free. Show them ›</button>` : ''}
-      <div class="small b dim" style="margin:4px 2px 0">SORT</div>${chipsRow('sqSort', q.sort, SQ_SORT)}<div class="small b dim" style="margin:0 2px">SHOW</div>${chipsRow('sqFilter', q.filter, SQ_FILTER)}
-      <div class="chips noswipe"><button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Standout stat in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button></div>
+      ${chipsRow('sqSort', q.sort, SQ_SORT, 'Sort')}${chipsRow('sqFilter', q.filter, SQ_FILTER, 'Show', `<button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Stats in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button>`)}
       ${list.length ? body : '<div class="empty">No players match this filter.</div>'}`;
   }
   function academyView() {
