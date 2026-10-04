@@ -481,7 +481,7 @@
     const tac = W.isUser(id) ? s.user.tactic : c.tactic;
     const sq = W.squad(id).sort((a, b) => b.ca - a.ca);
     const { xi } = W.pickXI(id, tac);
-    const avg = Math.round(U.avg(xi.filter(Boolean), (p) => p.ca));
+    const avg = U.avg(xi.filter(Boolean), (p) => p.ca); // (shown as stars)
     // This season's league rounds (for the matchday labels) and cup and continental ties
     const mine = (f) => f && (f.h === id || f.a === id);
     const leagueFx = comp ? comp.fixtures.map((rd, i) => ({ f: rd.find(mine), i })).filter((x) => x.f) : [];
@@ -591,7 +591,7 @@
         .join('')}`;
     const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
       ${W.isUser(id) ? `<button class="btn block" style="margin-bottom:10px" data-act="clubGoMine">This is your club → Club tab</button>` : `<div class="row" style="margin-bottom:10px"><span class="grow"></span>${UI.followBtn('club', id)}</div>`}
-      <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg || '—'}</div><div class="l">XI rating</div></div></div>
+      <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg ? C.starText(avg) : '—'}</div><div class="l">XI rating</div></div></div>
       <div class="card"><div class="row small"><span class="grow muted">Manager</span><b>${W.isUser(id) ? `${s.user.nat ? C.flag(s.user.nat) + ' ' : ''}${esc(s.user.name)}` : mgr ? `${C.flag(mgr.nat)} ${esc(mgr.fn + ' ' + mgr.ln)}` : '—'}</b></div>
         ${!W.isUser(id) && mgr && FM.Records.managerLine(mgr, id) ? `<div class="tiny dim" style="text-align:right;margin-top:2px">${esc(FM.Records.managerLine(mgr, id))}</div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">System</span><b>${tac.formation} · ${tac.buildup} · ${tac.press}</b></div>
@@ -846,6 +846,9 @@
       ${recent.length ? `<div class="small b dim" style="margin-top:12px">RECENT</div>${recent.map(res).join('')}` : ''}
       ${elig.length ? `<button class="btn sm block" style="margin-top:12px" data-act="ntSquad" data-tab="eligible">🌍 ${elig.length} eligible player${elig.length === 1 ? '' : 's'} you could win over</button>` : ''}</div>`;
   };
+  // A card that folds away behind its title (what the player chose is kept: UI._cupsOpen, as on the Cups screen)
+  const nfold = (id, summary, body, open, cls = 'card') =>
+    `<details class="${cls} cupfold" data-cup="${id}" ${((UI._cupsOpen || {})[id] ?? open) ? 'open' : ''}><summary>${summary}</summary>${body}</details>`;
   const origIntl = UI.intlView;
   UI.intlView = function () {
     const s = S(),
@@ -871,18 +874,19 @@
     }
     if (s.tourns) {
       top += s.tourns
-        .map(
-          (
-            tn,
-          ) => `<div class="card"><div class="row"><div class="h3 grow">🏆 ${esc(tn.name)}</div>${tn.winner ? `<span class="pill acc">${C.flag(T(tn.winner).code)} ${esc(T(tn.winner).name)}</span>` : ''}</div>${tn.groups.map((g) => `<div class="small b dim" style="margin:10px 0 2px">${tn.groups.length > 1 ? 'GROUP ' + g.name : 'GROUP'}</div>${miniTable(g.table, g.teams, tn.groups.length > 1 ? 2 : 2, u.nation)}`).join('')}
+        .map((tn) => {
+          const summary = `<div class="row"><div class="h3 grow">🏆 ${esc(tn.name)}</div>${tn.winner ? `<span class="pill acc">${C.flag(T(tn.winner).code)} ${esc(T(tn.winner).name)}</span>` : ''}</div>`;
+          const body = `${tn.groups.map((g) => `<div class="small b dim" style="margin:10px 0 2px">${tn.groups.length > 1 ? 'GROUP ' + g.name : 'GROUP'}</div>${miniTable(g.table, g.teams, 2, u.nation)}`).join('')}
         ${[...tn.ko.qf, ...tn.ko.sf, tn.ko.final]
           .filter(Boolean)
           .map(
             (f) =>
               `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">${UI.stagePill(f.po.split(' · ').pop())}</span><span class="grow ellip" style="text-align:right" data-act="nation" data-id="${f.h}">${esc(T(f.h).name)} ${C.flag(T(f.h).code)}</span><b style="min-width:44px;text-align:center">${f.res ? `${f.res.hg}–${f.res.ag}` : 'v'}</b><span class="grow ellip" data-act="nation" data-id="${f.a}">${C.flag(T(f.a).code)} ${esc(T(f.a).name)}</span></div>${f.res && f.res.pens ? `<div class="tiny dim center">pens ${f.res.pens[0]}–${f.res.pens[1]}</div>` : ''}`,
           )
-          .join('')}</div>`,
-        )
+          .join('')}`;
+          // open for a tournament your nation is in (or the only one), folded away for the rest
+          return nfold('tn_' + tn.id, summary, body, s.tourns.length === 1 || tn.teams.includes(u.nation));
+        })
         .join('');
     } else if (s.quals && s.quals.groups.length) {
       const q = s.quals,
@@ -898,7 +902,7 @@
                 .join(' ')}`
             : ''
         }</div>
-        ${mineFirst.map((g) => `<div class="card flat" style="padding:6px 10px"><div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>${miniTable(g.table, g.teams, 1, u.nation)}</div>`).join('')}`;
+        ${mineFirst.map((g) => nfold('q_' + g.name, `<div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>`, miniTable(g.table, g.teams, 1, u.nation), g.teams.includes(u.nation), 'card flat')).join('')}`;
     }
     return top + origIntl();
   };

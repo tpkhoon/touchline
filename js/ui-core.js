@@ -503,7 +503,8 @@
   const TABS = [
     ['home', '🏠', 'Home'],
     ['squad', '👕', 'Squad'],
-    ['scout', '🔭', 'Scouting'],
+    ['scout', '🔭', 'Scout'],
+    ['transfers', '🔁', 'Transfers'],
     ['league', '🏆', 'League'],
     ['intl', '🌍', 'Nations'],
     ['club', '🏟️', 'Club'],
@@ -542,7 +543,7 @@
     );
   };
   UI.noClubView = (tab) =>
-    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '👕' : '🔭'}<br><b>No club, no ${tab === 'squad' ? 'squad' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
+    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '👕' : tab === 'transfers' ? '🔁' : '🔭'}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
   // Going to a tab slides it in from the side of the tab you tapped; the same tab again just fades
   UI.go = function (tab, anim) {
     if (!anim) {
@@ -600,7 +601,8 @@
       ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><div class="money">${U.money(club.balance)}</div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">⚙️</button>`
       : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${md} · <span style="color:var(--warn)">Out of work</span>${nt ? ` · ${esc(nt.name)}` : ''}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">⚙️</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
-    const html = !club && ['squad', 'scout'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
+    const html =
+      !club && ['squad', 'scout', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
     $('#main').innerHTML = `<div class="screen ${anim || ''}">${html}</div>`;
     UI.afterRender && UI.afterRender();
   };

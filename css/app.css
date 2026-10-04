@@ -165,7 +165,7 @@ main::-webkit-scrollbar {
   left: 0;
   right: 0;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: stretch;
   background: color-mix(in srgb, var(--bg) 97%, transparent);
   backdrop-filter: blur(14px);
@@ -2264,4 +2264,9 @@ details.cupfold:not([open]) > summary > .row::after {
   margin-left: -2px;
   opacity: 0.9;
   vertical-align: 0.1em;
+}
+
+/* seven tabs on a phone: a touch smaller labels */
+.nav button {
+  font-size: 10px;
 }
