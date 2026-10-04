@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-272 features are playable in the web prototype today. Build = the build that added it.
+275 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -301,6 +301,9 @@ Every feature from the game design document, with what is playable in the protot
 | Season | A half-played matchday (left on the full-time screen) is finished as the save loads | Playtest round 4 |
 | Tactics | Auto pick prefers natural and accomplished players over improvised ones | Playtest round 4 |
 | UI | "Next match" says why it stopped and opens the Needs reply list | Playtest round 4 |
+| Competitions | The American league is built like MLS: two conferences (East and West) with their own tables and an overall table for the Supporters' Shield, a 34-game schedule weighted to the conference (a double round-robin within it, the odd club out meeting the other conference, four more cross-conference rounds), and seven clubs per conference in the playoffs: the top seed skips Round One, single matches through the Conference Semifinals and Finals to the MLS Cup, hosted by the better seed. The MLS Cup winner is the champion; the champion and the Shield winner head the CONCACAF places | Playtest round 10 |
+| Transfers | A college draft each winter for leagues that have one (the American league): three rounds, clubs that missed the playoffs picking first and the champions last, from a class of generated prospects kept out of the player pool until picked. The AI picks as the clock reaches it; you pick on the Draft board (a card on Home while you are on the clock, a Draft button on the Transfers tab) or let your assistant finish; undrafted prospects leave the game | Playtest round 10 |
+| Tools | Name generator: `npm run names` (`tools/namegen.mjs`) and a Names tab in the developer dashboard make player, town, club, ground, nickname, league and sponsor names by nation and seed, flagging names the world generator's checks would reject (rude, hard to say, too long, close to a real town or club) | Playtest round 10 |
 
 ## Yet to be added
 
