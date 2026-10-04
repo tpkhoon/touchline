@@ -1443,6 +1443,14 @@
     UI.refreshSheet(playerHTML(p));
     UI.save();
   };
+  UI.acts.offerClubs = (d) => {
+    const p = P(d.id),
+      r = FM.Transfers.offerToClubs(p);
+    UI.toast(r.msg, 4000);
+    UI.save();
+    UI.render();
+    if (document.querySelector('.sheet-wrap') && P(d.id)) UI.refreshSheet(playerHTML(p));
+  };
   UI.acts.renew = (d) => {
     const p = P(d.id),
       c = club();

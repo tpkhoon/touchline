@@ -58,7 +58,7 @@
     const inXI = W.pickXI(club().id, S().user.tactic).xi.some((q) => q && q.id === p.id);
     if (p.loan)
       return `<div class="warnline">On loan from ${esc(CL(p.loan.from).name)} until the end of the season. You pay ${Math.round(p.loan.share * 100)}% of his wages.</div>`;
-    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button><button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button>${!inXI ? `<button class="btn sm grow" data-act="loanOut" data-id="${p.id}">Loan out</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
+    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button>${!inXI ? `<button class="btn sm grow" data-act="loanOut" data-id="${p.id}">Loan out</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
   };
 
   UI.acts.loanOut = (d) => {
@@ -565,7 +565,18 @@
         return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${U.staffText(sc.judge)}</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
       })
       .join('');
-    return `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
+    const listed = W.squad(club().id).filter((p) => p.listed && !p.loan);
+    const listCard = listed.length
+      ? `<div class="card"><div class="row"><div class="h3 grow">Your transfer list</div><span class="tiny dim">${listed.length} listed</span></div>${listed
+          .map(
+            (p) =>
+              `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button></div>`,
+          )
+          .join('')}</div>`
+      : '';
+    return (
+      listCard +
+      `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Assignments</div><button class="btn sm" data-act="goStaff">Hire scouts</button></div>${asg}</div>
       <div class="card"><div class="h3">Scouting knowledge</div><div class="small dim" style="margin:4px 0 8px">Your network's best coverage per region</div>${Object.entries(
         D.REGIONS,
@@ -574,7 +585,8 @@
           const b = Math.max(...s.user.scouts.map((id) => s.staff[id].regions[k] || 0));
           return `<div class="row tiny" style="margin:5px 0"><span style="width:96px" class="dim">${l}</span><div class="grow">${C.bar(b * 100, b >= 0.8 ? 'var(--good)' : b >= 0.45 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="width:34px;text-align:right">${Math.round(b * 100)}%</b></div>`;
         })
-        .join('')}</div>`;
+        .join('')}</div>`
+    );
   }
   UI.acts.goStaff = () => {
     UI.sub.club = 'staff';
