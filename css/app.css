@@ -2199,3 +2199,22 @@ main {
 .attr.na {
   opacity: 0.45;
 }
+
+/* a tournament's card on the Cups screen folds away behind its title */
+details.cupfold > summary {
+  cursor: pointer;
+  list-style: none;
+  display: block;
+}
+details.cupfold > summary::-webkit-details-marker {
+  display: none;
+}
+details.cupfold > summary > .row::after {
+  content: '▾';
+  margin-left: 8px;
+  color: var(--ink3);
+  transition: transform 0.15s;
+}
+details.cupfold:not([open]) > summary > .row::after {
+  transform: rotate(-90deg);
+}

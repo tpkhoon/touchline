@@ -1224,6 +1224,7 @@
           .join('')}
         ${p.intl && p.intl.caps ? `<div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${natLink(`${C.flag(p.nat)} ${p.intl.caps} caps · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goals`}`)}</b></div>` : ''}
         ${p.honours && p.honours.length ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Honours</span><b>${honoursLine(p)}</b></div>` : ''}
+        ${trainedRows(p)}
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
       ${bioCard(p)}
       ${UI.seasonsCard(p, history)}
@@ -1294,6 +1295,28 @@
       <table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${head.map((h) => `<th>${h}</th>`).join('')}</tr>
       ${history.map(row).join('')}
       <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}</tr></table></div>`;
+  };
+  // Where he counts as trained and for whom he is homegrown (the registration rules read the same record)
+  const trainedRows = (p) => {
+    const R = FM.Reg,
+      t = R.trained(p);
+    const nat = (code) => (D.NATIONS[code] ? `${C.flag(code)} ${esc(D.NATIONS[code].name)}` : esc(code));
+    const where = t.club
+      ? `${C.crest(t.club, 16)} ${esc(t.club.name)} (${nat(t.club.nat)})`
+      : `${nat(p.nat)} <span class="dim" style="font-weight:400">(no youth record: counted where he was born)</span>`;
+    const how =
+      t.why === 'academy'
+        ? 'came through its academy'
+        : t.why === 'record'
+          ? `${t.seasons} season${t.seasons > 1 ? 's' : ''} there between 15 and 21`
+          : '';
+    const hg = t.nations.length
+      ? t.nations.map(nat).join(', ')
+      : '<span class="dim" style="font-weight:400">no nation</span>';
+    const own = p.clubId && CL(p.clubId) && CL(p.clubId).nat;
+    const need = own && R.rulesFor(CL(p.clubId)) && R.rulesFor(CL(p.clubId)).squad;
+    return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}${how ? `<div class="tiny dim" style="font-weight:400">${how}</div>` : ''}</b></div>
+        <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown for</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
   };
   // His story in words, from what the game has recorded: where he started, each move and what it cost, his totals,
   // caps, honours and his worst injury. (A long career shows the first move and the latest few.)
@@ -2000,6 +2023,21 @@
     UI.render();
   };
   UI._cupsView = 'mine';
+  UI._cupsOpen = {}; // which tournaments the player has opened or folded away (competition id → open)
+  // a tournament's card folds and opens; what the player chose is remembered across redraws
+  document.addEventListener(
+    'toggle',
+    (e) => {
+      const d = e.target;
+      if (d && d.matches && d.matches('details.cupfold')) UI._cupsOpen[d.dataset.cup] = d.open;
+    },
+    true,
+  );
+  UI.acts.cupsFold = (d) => {
+    const all = [...W.cups(), ...W.continentals(), ...W.worldCups(), ...FM.Regional.regionals()];
+    for (const c of all) UI._cupsOpen[c.id] = d.v === 'open';
+    UI.render();
+  };
   UI.acts.cupsView = (d) => {
     UI._cupsView = d.v;
     UI.render();
@@ -2018,6 +2056,20 @@
       .map(([k, l]) => `<button class="chip ${v === k ? 'on' : ''}" data-act="cupsView" data-v="${k}">${l}</button>`)
       .join('')}</div>`;
     const inIt = (c) => c.clubs.includes(uc);
+    // each tournament folds away: open by default for those you are in (and the lone Club World Cup), as you left the rest
+    const isOpen = (id) => UI._cupsOpen[id] ?? (!!S().comps[id] && (S().comps[id].clubs.includes(uc) || v === 'world'));
+    const foldAll = (html) =>
+      html
+        .split(/(?=<div class="card" data-cupid=")/)
+        .map((card) => {
+          const m = card.match(
+            /^<div class="card" data-cupid="([^"]+)">(<div class="row">[\s\S]*?<div class="h3 grow">[\s\S]*?<\/div>(?:<span class="pill acc">[\s\S]*?<\/span>)?<\/div>)([\s\S]*)<\/div>$/,
+          );
+          return m
+            ? `<details class="card cupfold" data-cup="${m[1]}" ${isOpen(m[1]) ? 'open' : ''}><summary>${m[2]}</summary>${m[3]}</details>`
+            : card;
+        })
+        .join('');
     const legs = s.rules.twoLegs
       ? 'two-legged knockouts' + (s.rules.awayGoals ? ' (away goals)' : '')
       : 'single-leg knockouts';
@@ -2026,7 +2078,7 @@
       .map(
         (
           c,
-        ) => `<div class="card"><div class="row"><div class="h3 grow">🌍 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">Last season's continental finalists · neutral venues · played mid-season</div>
+        ) => `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🌍 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">Last season's continental finalists · neutral venues · played mid-season</div>
       <div class="chips" style="flex-wrap:wrap;margin-top:8px">${c.clubs.map((id) => `<span class="chip" style="${W.isUser(id) ? 'border-color:var(--acc)' : ''}">${C.flag(CL(id).nat)} ${esc(CL(id).short)}</span>`).join('')}</div>
       ${FM.Cups.koList(c).length ? FM.Cups.koList(c).map(fxLine).join('') : '<div class="small dim" style="margin-top:8px">The quarter-finals are drawn after matchday 10.</div>'}</div>`,
       )
@@ -2053,7 +2105,7 @@
             ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
             : '');
         const ko = FM.Cups.koList(c);
-        return `<div class="card"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · top 2 in each group reach the ${c.groups.length >= 4 ? 'quarter-finals' : 'semi-finals'} · ${legs} · neutral final</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · top 2 in each group reach the ${c.groups.length >= 4 ? 'quarter-finals' : 'semi-finals'} · ${legs} · neutral final</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them
@@ -2094,13 +2146,13 @@
                     .map(fxLine)
                     .join('')
                 : '');
-        return `<div class="card"><div class="row"><div class="h3 grow">🏅 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🏅 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
       })
       .join('');
     const dom = W.cups()
       .filter((c) => v === 'domestic' || (v === 'mine' && inIt(c)))
       .map((c) => {
-        return `<div class="card"><div class="row"><div class="h3 grow">🏆 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · single-leg knockout · extra time & penalties</div>
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🏆 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · single-leg knockout · extra time & penalties</div>
         ${
           c.rounds
             .slice()
@@ -2118,7 +2170,10 @@
       .join('');
     return (
       tabs +
-      (wc + cont + dom + regional ||
+      (((cards) =>
+        cards
+          ? `<div class="row" style="gap:8px;margin:8px 0 4px"><button class="btn sm grow" data-act="cupsFold" data-v="open">Open all</button><button class="btn sm grow" data-act="cupsFold" data-v="close">Fold all</button></div>${cards}`
+          : '')(foldAll(wc + cont + dom + regional)) ||
         `<div class="empty">${v === 'mine' ? "Your club isn't in any cup competitions right now." : 'Nothing here yet.'}</div>`)
     );
   }
