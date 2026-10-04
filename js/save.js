@@ -182,6 +182,25 @@
         const c = s.comps[l.id];
         if (c && /^D\d$/.test(c.short) && l.short !== c.short) c.short = l.short;
       }
+    // scouts made while the county-cup data overwrote the scouting regions have numbered regions: new profiles, and
+    // any assignment to a region that does not exist is cleared
+    if (s.staff && FM.W && FM.D.REGIONS) {
+      for (const st of Object.values(s.staff))
+        if (st.role === 'Scout' && st.regions && Object.keys(st.regions).some((k) => !FM.D.REGIONS[k]))
+          Object.assign(st, FM.W.scoutProfile(st.nat in FM.D.NATIONS ? st.nat : 'ENG', st.ability || 12));
+      if (s.user && s.user.assignments)
+        s.user.assignments = s.user.assignments.filter((a) => a.region == null || FM.D.REGIONS[a.region]);
+    }
+    // three clubs were renamed when the name generator learned to avoid rude words ("Cabrona FC")
+    if (s.clubs && FM.D.LEAGUES)
+      for (const row of FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || [])) {
+        const c = s.clubs['c_' + row[1]];
+        if (c && ['Cabrona FC', 'FC Unter Furtbach', 'FC Unter Neckarhafen'].includes(c.name)) {
+          c.name = row[0];
+          c.city = row[2];
+          if (row[7] && c.stadium) c.stadium.name = row[7];
+        }
+      }
     // "Born Leader" duplicated the Leader trait: the personality is read from the other hidden traits now
     if (s.players && FM.W)
       for (const p of Object.values(s.players))
