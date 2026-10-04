@@ -24,7 +24,7 @@ import {
   tooLong,
   quirkFor,
   isSimpleClub,
-  SPONSORS,
+  sponsorsFor,
 } from './namelib.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -107,6 +107,8 @@ const PALETTE = {
   sky: [108, 171, 221],
   navy: [20, 35, 90],
 };
+// England and Nigeria keep "Premier Division" for the top flight (no sponsor in front of it)
+const FIXED_TIERS = new Set(['ENG', 'NGA']);
 const colourName = (hex) => {
   const v = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
   let best = 'white',
@@ -324,12 +326,15 @@ export function generate(real, seed = 1) {
   // leagues and cups keep their ids, formats and rules; only the name changes
   for (const [id, l] of Object.entries(out.leagues)) {
     const dem = DEMONYM[l.nat] || real.nations[l.nat] || l.nat,
-      tiers = TIERS_BY[l.nat] || tiersFor(langOf(l.nat), rngOf(`${seed}|tiers|${l.nat}`));
+      tiers =
+        TIERS_BY[l.nat] ||
+        (FIXED_TIERS.has(l.nat) ? langOf(l.nat).tiers : tiersFor(langOf(l.nat), rngOf(`${seed}|tiers|${l.nat}`)));
     const tierName = tiers[l.tier - 1] || `Division ${l.tier}`,
       rs = rngOf(`${seed}|sponsor|${id}`);
     // the top two divisions often carry a sponsor's name ("Aurum Top Division")
     let name = `${dem} ${tierName}`;
-    if (l.tier <= 2 && rs() < (l.tier === 1 ? 0.55 : 0.3)) {
+    if (!(FIXED_TIERS.has(l.nat) && l.tier === 1) && l.tier <= 2 && rs() < (l.tier === 1 ? 0.55 : 0.3)) {
+      const SPONSORS = sponsorsFor(l.nat);
       const free = SPONSORS.filter((x) => !sponsorsUsed.has(x)),
         spon = rs.pick(free.length ? free : SPONSORS),
         sp = `${spon} ${tierName}`;

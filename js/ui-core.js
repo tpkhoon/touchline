@@ -188,7 +188,7 @@
       other = mine === p.nat ? p.nat2 : p.nat;
     return (
       C.flag(mine) +
-      (p.nat2 && D.NATIONS[other]
+      (p.nat2 && D.NATIONS[other] && (!FM.Intl || FM.Intl.uncapped(p)) // (capped: tied to his nation, so no second flag)
         ? `<span class="flag2" title="Also eligible for ${esc(D.NATIONS[other].name)}">${C.flag(other)}</span>`
         : '')
     );

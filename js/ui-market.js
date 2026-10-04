@@ -108,11 +108,30 @@
           )
           .join('')}</div>`
       : '';
-    return head + links + offers + list + loans + pays + deals + elsewhere;
+    const sub = UI.sub.transfers || 'overview';
+    const tabs = `<div class="chips">${[
+      ['overview', 'Overview'],
+      ['free', 'Free agents'],
+      ['market', 'Transfer Centre'],
+    ]
+      .map(([v, l]) => `<button class="chip ${sub === v ? 'on' : ''}" data-act="trSub" data-v="${v}">${l}</button>`)
+      .join('')}</div>`;
+    if (sub === 'free' || sub === 'market') return head + tabs + UI.views[sub]();
+    return head + tabs + links + offers + list + loans + pays + deals + elsewhere;
   };
+  UI.acts.trSub = (d) => {
+    UI.sub.transfers = d.v;
+    UI.render();
+  };
+  // the shortcuts: search and the shortlist live in Scout, free agents and the Transfer Centre here
   UI.acts.trGo = (d) => {
-    UI.sub.scout = d.v;
-    UI.go('scout');
+    if (d.v === 'free' || d.v === 'market') {
+      UI.sub.transfers = d.v;
+      UI.render();
+    } else {
+      UI.sub.scout = d.v;
+      UI.go('scout');
+    }
   };
 
   // ---------- Desk decisions ----------
@@ -265,8 +284,8 @@
   UI.acts.ddGo = (d) => {
     UI.closeAllSheets();
     if (d.v === 'market') {
-      UI.sub.scout = 'market';
-      UI.go('scout');
+      UI.sub.transfers = 'market';
+      UI.go('transfers');
     } else {
       UI.sub.feed = 'reply';
       UI.go('home');

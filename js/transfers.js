@@ -130,6 +130,7 @@
       loan: true,
     });
     FM.Stories.loan(p, from, to, share);
+    T.closeBids(p, `${to.name} on loan`);
   };
   // AI clubs interested in taking one of the user's players on loan
   // Clubs that would take your player on loan, and make sense for him: he would start or rotate in his position, at
@@ -265,6 +266,15 @@
 
   // flags.deal: a structured fee (instalments, add-on, sell-on: FM.Market). Only the first instalment changes hands
   // now; the buyer's budget also sets aside half of what is still to pay.
+  // Once a player has gone (sold, or out on loan), every other offer for him that is still waiting for your answer is
+  // withdrawn on the spot: the bids are rejected with a note saying where he went
+  T.closeBids = function (p, where) {
+    for (const n of FM.S.news)
+      if (n.type === 'bid' && n.data && n.data.pid === p.id && n.data.status === 'open') {
+        n.data.status = 'rejected';
+        n.reply = `Withdrawn: ${W.short(p)} has joined ${where}.`;
+      }
+  };
   T.execute = function (p, toId, fee, wage, flags = {}) {
     const icon = W.ownPlayer(p) && FM.Season.isIcon(p);
     const S = FM.S,
@@ -333,6 +343,7 @@
       age: W.age(p),
     });
     FM.Stories.transfer(p, from, to, fee, { ...flags, intl });
+    T.closeBids(p, to.name);
     if (W.isUser(toId) || (from && W.isUser(from.id))) FM.Market.reactions(p, from, to, fee, flags);
   };
 

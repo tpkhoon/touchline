@@ -748,36 +748,36 @@
     ['Arreda FC', 'RIE', 'Arrano', '#000000', '#FFFFFF', 'fan', 53, 'Estadio Miro', 3000],
   ];
   FM.D.CLUBS_US1 = [
-    ['Aspenview City', 'MIA', 'Aspenview', '#F7B5CD', '#231F20', 'oil', 67, 'The Cherrygrove Stadium', 21550],
-    ['Silverfield Victoria', 'LAF', 'Silverfield', '#000000', '#C39E6D', 'oil', 66, 'Mapleton Park', 22000],
-    ['Silverfield Albion', 'LAG', 'Silverfield', '#FFFFFF', '#00245D', 'historic', 65, 'Cypressdale Green', 27000],
-    ['Sunfield Wanderers', 'SEA', 'Sunfield', '#5D9741', '#005595', 'fan', 64, 'Springsprings Park', 37722],
-    ['Goldenville Sporting', 'CIN', 'Goldenville', '#003087', '#FE5000', 'youth', 63, 'Riverwood Lane', 26000],
-    ['Cherryford Wednesday', 'CLB', 'Cherryford', '#FEDD00', '#000000', 'historic', 62, 'Oakville Park', 20371],
-    ['Millgrove Rangers', 'PHI', 'Millgrove', '#071B2C', '#B19B69', 'youth', 62, 'Millgrove Park', 18500],
-    ['Fort Summiton Harriers', 'NYC', 'Fort Summiton', '#6CACE4', '#041E42', 'oil', 62, 'Cypresshills Lane', 28743],
-    ['Lakegrove Olympic', 'ATL', 'Lakegrove', '#80000A', '#A19060', 'fan', 61, 'Lakehaven Park', 42500],
-    ['AFC Fort Summiton', 'NYR', 'Fort Summiton', '#FFFFFF', '#BA0C2F', 'oil', 60, 'Canyonhills Park', 25000],
-    ['Fortview Albion', 'NSH', 'Fortview', '#ECE83A', '#1F1646', 'fan', 60, 'Elkdale Green', 30000],
-    ['Springridge City', 'ORL', 'Springridge', '#633492', '#FDE192', 'fan', 60, 'Whitefalls Road', 25500],
-    ['Eaglefield Beach Town', 'VAN', 'Eaglefield Beach', '#FFFFFF', '#00245E', 'youth', 60, 'Cypressville Lane', 22120],
-    ['Bluehills Rovers', 'PTI', 'Bluehills', '#00482B', '#D69A00', 'fan', 59, 'Bluehills Park', 25218],
-    ['Hickoryridge Villa', 'MIN', 'Hickoryridge', '#585958', '#8CD2F4', 'fan', 58, 'Springville Green', 19400],
-    ['Cedarville Town', 'SDG', 'Cedarville', '#1B1F23', '#6E4C9F', 'oil', 58, 'Goldenhills Green', 35000],
-    ['Bearville United', 'RSL', 'Bearville', '#B30838', '#013A81', 'youth', 58, 'Bearville Park', 20213],
-    ['Athletic Club Pineridge', 'DAL', 'Pineridge', '#E81F3E', '#2A4076', 'youth', 58, 'Harborhaven Green', 20500],
-    ['Whitedale Rangers', 'CLT', 'Whitedale', '#1A85C8', '#000000', 'fan', 57, 'The Greenfalls Stadium', 38000],
-    ['Aspenhaven Athletic', 'HOU', 'Aspenhaven', '#FF6B00', '#101820', 'fan', 57, 'Aspenhaven Ground', 22039],
-    ['Goldenburg Wednesday', 'SKC', 'Goldenburg', '#91B0D5', '#002F65', 'fan', 57, 'Bearidge Field', 18467],
-    ['Canyonhaven Villa', 'STL', 'Canyonhaven', '#DD004A', '#0A1E2C', 'fan', 57, 'The Lakeford Stadium', 22423],
-    ['Mapleford & District', 'RAP', 'Mapleford', '#960A2C', '#9CC2EA', 'youth', 56, 'Mapleford Ground', 18061],
-    ['Bluewood City', 'AUS', 'Bluewood', '#00B140', '#000000', 'fan', 56, 'Elkwood Field', 20738],
-    ['Sunsprings United', 'CHI', 'Sunsprings', '#7CCDEF', '#FF0000', 'fan', 56, 'Oakwood Lane', 61500],
-    ['Pinefield Argyle', 'DCU', 'Pinefield', '#000000', '#EF3E42', 'fan', 56, 'Pinefield Park', 20000],
-    ['Summitfalls Corinthians', 'NER', 'Summitfalls', '#0A2240', '#CE0E2D', 'fan', 56, 'Summitfalls Park', 65878],
-    ['New Redcreek Albion', 'TRT', 'New Redcreek', '#B81137', '#455560', 'fan', 57, 'Cypresston Park', 30991],
-    ['Greencreek Olympic', 'MTL', 'Greencreek', '#000000', '#0033A1', 'fan', 55, 'Fortsprings Park', 19619],
-    ['Prairiedale County', 'SJE', 'Prairiedale', '#0067B1', '#000000', 'fan', 55, 'Whitecreek Park', 18000],
+    ['Aspenview SC', 'MIA', 'Aspenview', '#F7B5CD', '#231F20', 'oil', 67, 'Aspenview Arena', 21550],
+    ['Silverfield Surge', 'LAF', 'Silverfield', '#000000', '#C39E6D', 'oil', 66, 'Mesafield Field', 22000],
+    ['Silverfield City FC', 'LAG', 'Silverfield', '#FFFFFF', '#00245D', 'historic', 65, 'Summitville Field', 27000],
+    ['Sunfield City FC', 'SEA', 'Sunfield', '#5D9741', '#005595', 'fan', 64, 'Sunfield Field', 37722],
+    ['Goldenville Revolution', 'CIN', 'Goldenville', '#003087', '#FE5000', 'youth', 63, 'Riverwood Field', 26000],
+    ['Cherryford Mustangs', 'CLB', 'Cherryford', '#FEDD00', '#000000', 'historic', 62, 'Cherryford Field', 20371],
+    ['Millgrove Athletic', 'PHI', 'Millgrove', '#071B2C', '#B19B69', 'youth', 62, 'Millgrove Stadium', 18500],
+    ['Fort Summiton Rockets', 'NYC', 'Fort Summiton', '#6CACE4', '#041E42', 'oil', 62, 'Cypresshills Park', 28743],
+    ['Lakegrove Union Club', 'ATL', 'Lakegrove', '#80000A', '#A19060', 'fan', 61, 'Lakegrove Field', 42500],
+    ['Fort Summiton Revolution', 'NYR', 'Fort Summiton', '#FFFFFF', '#BA0C2F', 'oil', 60, 'Canyonburg Field', 25000],
+    ['Fortview City FC', 'NSH', 'Fortview', '#ECE83A', '#1F1646', 'fan', 60, 'Eagleview Field', 30000],
+    ['Springridge SC', 'ORL', 'Springridge', '#633492', '#FDE192', 'fan', 60, 'Whitefalls Field', 25500],
+    ['FC Eaglefield Beach', 'VAN', 'Eaglefield Beach', '#FFFFFF', '#00245E', 'youth', 60, 'Cypressville Field', 22120],
+    ['Real Bluehills', 'PTI', 'Bluehills', '#00482B', '#D69A00', 'fan', 59, 'Bluehills Stadium', 25218],
+    ['Hickoryridge Stallions', 'MIN', 'Hickoryridge', '#585958', '#8CD2F4', 'fan', 58, 'Aspenhaven Field', 19400],
+    ['Cedarville FC', 'SDG', 'Cedarville', '#1B1F23', '#6E4C9F', 'oil', 58, 'Bayfalls Field', 35000],
+    ['Bearville FC', 'RSL', 'Bearville', '#B30838', '#013A81', 'youth', 58, 'Bearville Stadium', 20213],
+    ['Pineridge Fire', 'DAL', 'Pineridge', '#E81F3E', '#2A4076', 'youth', 58, 'Cedardale Field', 20500],
+    ['Whitedale Thunder', 'CLT', 'Whitedale', '#1A85C8', '#000000', 'fan', 57, 'Whitedale Arena', 38000],
+    ['Sporting Aspenhaven', 'HOU', 'Aspenhaven', '#FF6B00', '#101820', 'fan', 57, 'Bluehills Park', 22039],
+    ['Goldenburg Pioneers', 'SKC', 'Goldenburg', '#91B0D5', '#002F65', 'fan', 57, 'Goldenburg Field', 18467],
+    ['Canyonhaven Stallions', 'STL', 'Canyonhaven', '#DD004A', '#0A1E2C', 'fan', 57, 'Canyonhaven Arena', 22423],
+    ['Mapleford Revolution', 'RAP', 'Mapleford', '#960A2C', '#9CC2EA', 'youth', 56, 'Walnutgrove Park', 18061],
+    ['Bluewood SC', 'AUS', 'Bluewood', '#00B140', '#000000', 'fan', 56, 'Bluewood Field', 20738],
+    ['Sunsprings FC', 'CHI', 'Sunsprings', '#7CCDEF', '#FF0000', 'fan', 56, 'Oakwood Park', 61500],
+    ['Pinefield Fury', 'DCU', 'Pinefield', '#000000', '#EF3E42', 'fan', 56, 'Pinefield Stadium', 20000],
+    ['Summitfalls Union Club', 'NER', 'Summitfalls', '#0A2240', '#CE0E2D', 'fan', 56, 'Summitfalls Stadium', 65878],
+    ['AC New Redcreek', 'TRT', 'New Redcreek', '#B81137', '#455560', 'fan', 57, 'New Redcreek Field', 30991],
+    ['Greencreek Union Club', 'MTL', 'Greencreek', '#000000', '#0033A1', 'fan', 55, 'Sungrove Stadium', 19619],
+    ['Prairiedale Storm', 'SJE', 'Prairiedale', '#0067B1', '#000000', 'fan', 55, 'Summitburg Stadium', 18000],
   ];
   FM.D.CLUBS_JP1 = [
     [
@@ -1086,33 +1086,42 @@
     ['Teutonia Bruchstadt 1953', 'THU', 'Bruchstadt', '#E30613', '#FFFFFF', 'fan', 49, 'Waldstadion Bruchstadt'],
   ];
   FM.D.CLUBS_SC1 = [
-    ['Strathshiels Town', 'CEL2', 'Strathshiels', '#00843D', '#FFFFFF', 'giant', 70, 'Rosock Road'],
-    ['Strathshiels City', 'RAN2', 'Strathshiels', '#1B458F', '#FFFFFF', 'giant', 68, 'The Lindee Stadium'],
-    ['Upper Moffock Victoria', 'HEA', 'Upper Moffock', '#8A1538', '#FFFFFF', 'historic', 56, 'The Stranwick Stadium'],
-    ['Langock Orient', 'ABE', 'Langock', '#E30613', '#FFFFFF', 'historic', 56, 'Calrie Field'],
-    ['Upper Moffock Dynamo', 'HIB', 'Upper Moffock', '#00843D', '#FFFFFF', 'historic', 55, 'Tulliloch Park'],
-    ['Balness Dynamo', 'MOT2', 'Balness', '#FFB81C', '#8A1538', 'fan', 50, 'Dunland Road'],
-    ['Mid Kilness United', 'DUN2', 'Mid Kilness', '#F47920', '#000000', 'fan', 51, 'Peebside Lane'],
-    ['Kirkie Hotspur', 'KIL', 'Kirkie', '#003DA5', '#FFFFFF', 'fan', 50, 'Roside Lane'],
-    ['Jedland United', 'SMI', 'Jedland', '#000000', '#FFFFFF', 'fan', 50, 'Hawrie Lane'],
-    ['Mid Kilness Stanley', 'DND', 'Mid Kilness', '#0B1F4B', '#FFFFFF', 'fan', 49, 'Fraserbridge Road'],
-    ['Tayloch Rangers', 'LIV2', 'Tayloch', '#FFDD00', '#000000', 'fan', 47, 'Jedee Park'],
-    ['Kilrie-on-Forth Villa', 'FAL', 'Kilrie-on-Forth', '#0B1F4B', '#FFFFFF', 'fan', 47, 'Auchshiels Road'],
+    ['Strathshiels United', 'CEL2', 'Strathshiels', '#00843D', '#FFFFFF', 'giant', 70, 'Rosock Park'],
+    ['Strathshiels Athletic', 'RAN2', 'Strathshiels', '#1B458F', '#FFFFFF', 'giant', 68, 'Lindee Green'],
+    ['Upper Moffock Vale', 'HEA', 'Upper Moffock', '#8A1538', '#FFFFFF', 'historic', 56, 'Stranwick Green'],
+    ['Langock Academical', 'ABE', 'Langock', '#E30613', '#FFFFFF', 'historic', 56, 'Langock Muir'],
+    ['Inter Upper Moffock', 'HIB', 'Upper Moffock', '#00843D', '#FFFFFF', 'historic', 55, 'Nairnkirk Road'],
+    ['Inter Balness', 'MOT2', 'Balness', '#FFB81C', '#8A1538', 'fan', 50, 'Balness Park'],
+    ['Mid Kilness Town', 'DUN2', 'Mid Kilness', '#F47920', '#000000', 'fan', 51, 'Mid Kilness Gardens'],
+    ['Kirkie Burgh', 'KIL', 'Kirkie', '#003DA5', '#FFFFFF', 'fan', 50, 'Roside Park'],
+    ['Jedland Town', 'SMI', 'Jedland', '#000000', '#FFFFFF', 'fan', 50, 'Hawrie Park'],
+    ['Mid Kilness Burgh', 'DND', 'Mid Kilness', '#0B1F4B', '#FFFFFF', 'fan', 49, 'Fraserbridge Park'],
+    ['Tayloch Thistle', 'LIV2', 'Tayloch', '#FFDD00', '#000000', 'fan', 47, 'Jedee Brae'],
+    ['Inter Kilrie-on-Forth', 'FAL', 'Kilrie-on-Forth', '#0B1F4B', '#FFFFFF', 'fan', 47, 'Kilrie-on-Forth Park'],
   ];
 
   FM.D.CLUBS_AU1 = [
-    ['Wodoville Wanderers', 'MCY', 'Wodoville', '#6CABDD', '#FFFFFF', 'oil', 57, 'Cesswa Park'],
-    ['Geralnup Argyle', 'SYD', 'Geralnup', '#6CACE4', '#0B1F4B', 'giant', 57, 'Geralnup Ground'],
-    ['Wodoville Town', 'MVC', 'Wodoville', '#0B1F4B', '#FFFFFF', 'giant', 55, 'Wodoville Ground'],
-    ['Geralnup Victoria', 'WSW', 'Geralnup', '#E30613', '#000000', 'fan', 53, 'Narcannon Road'],
-    ['Mount Bundawa Athletic', 'CCM', 'Mount Bundawa', '#FFDD00', '#0B1F4B', 'youth', 52, 'Gymby Green'],
-    ['Mount Bundaooka Orient', 'BRQ', 'Mount Bundaooka', '#F47920', '#000000', 'historic', 51, 'Mandnunda Field'],
-    ['Cofflea Stanley', 'AUC', 'Cofflea', '#0B1F4B', '#00A3E0', 'oil', 51, 'The Milbool Stadium'],
-    ['Nowlea Olympic', 'ADU', 'Nowlea', '#E30613', '#FFFFFF', 'fan', 50, 'Milooka Field'],
-    ['New Tamford Albion', 'WPX', 'Tamford', '#FFDD00', '#000000', 'fan', 49, 'Dubwa Park'],
-    ['Balnup Borough', 'MAF', 'Balnup', '#000000', '#FFFFFF', 'selling', 48, 'Balnup Park'],
-    ['Portcannon Albion', 'NJE', 'Portcannon', '#003DA5', '#E30613', 'fan', 48, 'Wagbin Park'],
-    ['Cobnup Alexandra', 'PGL', 'Cobnup', '#6A1B9A', '#FFFFFF', 'fallen', 47, 'Geralcannon Lane'],
+    ['Wodoville United', 'MCY', 'Wodoville', '#6CABDD', '#FFFFFF', 'oil', 57, 'Cesswa Field'],
+    ['Geralnup Strikers', 'SYD', 'Geralnup', '#6CACE4', '#0B1F4B', 'giant', 57, 'Geralnup Stadium'],
+    ['Wodoville City', 'MVC', 'Wodoville', '#0B1F4B', '#FFFFFF', 'giant', 55, 'Wodoville Stadium'],
+    ['Geralnup United', 'WSW', 'Geralnup', '#E30613', '#000000', 'fan', 53, 'Narton Reserve'],
+    ['Mount Bundawa United', 'CCM', 'Mount Bundawa', '#FFDD00', '#0B1F4B', 'youth', 52, 'Gymby Field'],
+    [
+      'Mount Bundaooka Strikers',
+      'BRQ',
+      'Mount Bundaooka',
+      '#F47920',
+      '#000000',
+      'historic',
+      51,
+      'Mount Bundaooka Sportsground',
+    ],
+    ['Cofflea Rovers', 'AUC', 'Cofflea', '#0B1F4B', '#00A3E0', 'oil', 51, 'Cofflea Stadium'],
+    ['Nowlea Rovers', 'ADU', 'Nowlea', '#E30613', '#FFFFFF', 'fan', 50, 'Nowlea Sportsground'],
+    ['West Tamford Wanderers', 'WPX', 'Tamford', '#FFDD00', '#000000', 'fan', 49, 'Narby Reserve'],
+    ['Balnup Wanderers', 'MAF', 'Balnup', '#000000', '#FFFFFF', 'selling', 48, 'Balnup Oval'],
+    ['Portcannon Wanderers', 'NJE', 'Portcannon', '#003DA5', '#E30613', 'fan', 48, 'Wagbin Field'],
+    ['Cobnup Roar', 'PGL', 'Cobnup', '#6A1B9A', '#FFFFFF', 'fallen', 47, 'Geralcannon Park'],
   ];
   FM.D.CLUBS_HU1 = [
     ['Barahegy AC', 'FTC', 'Barahegy', '#00843D', '#FFFFFF', 'giant', 62, 'Barahegy Sportpálya'],
@@ -1129,30 +1138,30 @@
     ['Orsavár SC', 'KTE', 'Orsavár', '#E30613', '#FFFFFF', 'fan', 46, 'Bakert Aréna'],
   ];
   FM.D.CLUBS_IE1 = [
-    ['Lisbridge United', 'SHL', 'Lisbridge', '#E30613', '#FFFFFF', 'historic', 51, 'The Glentown Stadium'],
-    ['Lisbridge Victoria', 'SRO', 'Lisbridge', '#00843D', '#FFFFFF', 'giant', 51, 'The Glengarvan Stadium'],
-    ['Oranglass Swifts', 'DRY', 'Oranglass', '#E30613', '#FFFFFF', 'fan', 48, 'Monlough Lane'],
+    ['Lisbridge United', 'SHL', 'Lisbridge', '#E30613', '#FFFFFF', 'historic', 51, 'Glentown Road'],
+    ['Lisbridge Wanderers', 'SRO', 'Lisbridge', '#00843D', '#FFFFFF', 'giant', 51, 'Glengarvan Road'],
+    ['Inter Oranglass', 'DRY', 'Oranglass', '#E30613', '#FFFFFF', 'fan', 48, 'Monlough Park'],
     ['Corard United', 'BHI', 'Lisbridge', '#E30613', '#000000', 'fan', 47, 'Lisbridge Park'],
-    ['Newree Argyle', 'SPAT', 'Lisbridge', '#E30613', '#FFFFFF', 'fan', 47, 'Rosglass Field'],
-    ['Port Carrickree Rovers', 'DRO', 'Port Carrickree', '#003DA5', '#FFFFFF', 'fan', 44, 'The Limdara Stadium'],
-    ['Athgarvan Hotspur', 'GAU', 'Athgarvan', '#8A1538', '#FFFFFF', 'fan', 43, 'Glengarvan Green'],
-    ['Sligtown County', 'SLR', 'Sligtown', '#E30613', '#FFFFFF', 'fan', 43, 'Sligtown Ground'],
-    ['Newlough Orient', 'WFI', 'Newlough', '#003DA5', '#FFFFFF', 'fan', 42, 'Balmullen Green'],
-    ['Castle Kilough Royals', 'DDK', 'Castle Kilough', '#FFFFFF', '#000000', 'fallen', 44, 'Castle Kilough Park'],
+    ['Newree Gaels', 'SPAT', 'Lisbridge', '#E30613', '#FFFFFF', 'fan', 47, 'Rosglass Street'],
+    ['Port Carrickree Gaels', 'DRO', 'Port Carrickree', '#003DA5', '#FFFFFF', 'fan', 44, 'Limdara Road'],
+    ['Athgarvan Bohs', 'GAU', 'Athgarvan', '#8A1538', '#FFFFFF', 'fan', 43, 'Athgarvan Lawn'],
+    ['Sligtown Celtic', 'SLR', 'Sligtown', '#E30613', '#FFFFFF', 'fan', 43, 'Sligtown Showgrounds'],
+    ['Newlough Wanderers', 'WFI', 'Newlough', '#003DA5', '#FFFFFF', 'fan', 42, 'Newlough Lawn'],
+    ['Castle Kilough Bohs', 'DDK', 'Castle Kilough', '#FFFFFF', '#000000', 'fallen', 44, 'Castle Kilough Park'],
   ];
   FM.D.CLUBS_WA1 = [
-    ['Talbach Vale', 'TNS', 'Talbach', '#00843D', '#FFFFFF', 'oil', 49, 'The Aberllyn Stadium'],
-    ['Llangnant Rangers', 'BAL', 'Llangnant', '#FFFFFF', '#000000', 'fan', 42, 'Llangnant Park'],
-    ['West Dolgwyn Stanley', 'CQN', 'Dolgwyn', '#FFFFFF', '#003DA5', 'fan', 41, 'Dolgfa Field'],
-    ['East Clyngwyn Rovers', 'PEN', 'Clyngwyn', '#E30613', '#FFFFFF', 'fan', 41, 'Dolgydd Road'],
-    ['West Aberach City', 'HAV', 'Aberach', '#003DA5', '#FFFFFF', 'fan', 40, 'Rhosogg Green'],
-    ['Caerwyn Sporting', 'BTU', 'Caerwyn', '#FFDD00', '#000000', 'fan', 40, 'Corsfa Green'],
-    ['Balanant Athletic', 'CMU', 'Balanant', '#FFDD00', '#000000', 'youth', 40, 'Llangwyn Road'],
-    ['Balawyn Rangers', 'LLA', 'Balawyn', '#E30613', '#FFFFFF', 'fan', 38, 'Llanwyn Green'],
-    ['Market Ogmant Athletic', 'CAE', 'Ogmant', '#E30613', '#FFFFFF', 'fan', 38, 'Porthach Park'],
-    ['Tenbach Rovers', 'NEW2', 'Tenbach', '#E30613', '#FFFFFF', 'fan', 38, 'Tenbach Ground'],
-    ['Bangorni Albion', 'COL2', 'Bangorni', '#FFDD00', '#003DA5', 'fan', 38, 'Trenant Road'],
-    ['Bangorddu & District', 'FLI', 'Bangorddu', '#FFFFFF', '#E30613', 'fan', 37, 'Fishwyn Park'],
+    ['Talbach Cymru', 'TNS', 'Talbach', '#00843D', '#FFFFFF', 'oil', 49, 'Stadiwm Talbach'],
+    ['Llangnant Athletic', 'BAL', 'Llangnant', '#FFFFFF', '#000000', 'fan', 42, 'Llangnant Park'],
+    ['Lower Dolgwyn Cymru', 'CQN', 'Dolgwyn', '#FFFFFF', '#003DA5', 'fan', 41, 'Dolgfa Field'],
+    ['Lower Clyngwyn Rovers', 'PEN', 'Clyngwyn', '#E30613', '#FFFFFF', 'fan', 41, 'Parc Dolgydd'],
+    ['Lower Aberach Town', 'HAV', 'Aberach', '#003DA5', '#FFFFFF', 'fan', 40, 'Maes Rhosogg'],
+    ['Caerwyn Hotspur', 'BTU', 'Caerwyn', '#FFDD00', '#000000', 'fan', 40, 'Maes Corsfa'],
+    ['Balanant Rovers', 'CMU', 'Balanant', '#FFDD00', '#000000', 'youth', 40, 'Parc Llangwyn'],
+    ['Balawyn Athletic', 'LLA', 'Balawyn', '#E30613', '#FFFFFF', 'fan', 38, 'Maes Llanwyn'],
+    ['Pen Ogmant United', 'CAE', 'Ogmant', '#E30613', '#FFFFFF', 'fan', 38, 'Porthach Field'],
+    ['Tenbach Welfare', 'NEW2', 'Tenbach', '#E30613', '#FFFFFF', 'fan', 38, 'Rhayfa Road'],
+    ['Bangorni Rovers', 'COL2', 'Bangorni', '#FFDD00', '#003DA5', 'fan', 38, 'Bangorni Park'],
+    ['Bangorddu Hotspur', 'FLI', 'Bangorddu', '#FFFFFF', '#E30613', 'fan', 37, 'Fishwyn Field'],
   ];
 
   // Real-life abbreviations (as on the league's broadcasts) and nicknames, by the club's code (the part of its id
@@ -1528,36 +1537,36 @@ BAR|FRI|Rojos|1912
 CCD|TLA|Negros|1923
 SAR|COL|Verdes|1949
 RIE|ADA|Ñandúes|1938
-MIA|ASP|Foxes|1993
-LAF|SIL|Thistles|1938
-LAG|SID|Lions|1929
-SEA|SUN|Lancers|1942
-CIN|GOL|Gulls|1935
-CLB|CHD|Canaries|1907
-PHI|MIE|Lilywhites|1921
-NYC|FOR|Skyhawks|1961
-ATL|LAK|Clarets|1952
-NYR|FOT|Seagulls|1963
-NSH|FOW|Foxes|1977
-ORL|SPR|Burgundies|1938
-VAN|EAG|Lilywhites|1973
-PTI|BLU|Dark Horses|1914
-MIN|HIC|Bluebirds|1941
-SDG|CED|Blackcats|1975
-RSL|BLE|Lions|1985
-DAL|PIN|Red Devils|1927
-CLT|WHI|Posh|1979
-HOU|ASN|Brewers|1920
-SKC|GOG|Rockets|1948
-STL|CEN|Clarets|1928
+MIA|ASP|Whites|1993
+LAF|SIL|Fire|1938
+LAG|SID|Dragons|1929
+SEA|SUN|Voyagers|1942
+CIN|GOL|Comets|1935
+CLB|CHD|Yellows|1907
+PHI|MIE|Voyagers|1921
+NYC|FOR|Lightning|1961
+ATL|LAK|Maroons|1952
+NYR|FOT|Pioneers|1963
+NSH|FOW|Yellows|1977
+ORL|SPR|Rockets|1938
+VAN|EAG|Whites|1973
+PTI|BLU|Rockets|1914
+MIN|HIC|Maroons|1941
+SDG|CED|Blacks|1975
+RSL|BLE|Reds|1985
+DAL|PIN|Reds|1927
+CLT|WHI|Fire|1979
+HOU|ASN|Oranges|1920
+SKC|GOG|Dragons|1948
+STL|CEN|Reds|1928
 RAP|MAP|Maroons|2001
-AUS|BLD|Dragons|1979
-CHI|SUS|Cityzens|1960
-DCU|PID|Panthers|1920
-NER|SUM|Mariners|1961
-TRT|REK|Reds|1968
-MTL|GRK|Wasps|1989
-SJE|PRA|Lions|1968
+AUS|BLD|Greens|1979
+CHI|SUS|Sky Blues|1960
+DCU|PID|Blacks|1920
+NER|SUM|Navy|1961
+TRT|REK|Storm|1968
+MTL|GRK|Blacks|1989
+SJE|PRA|Blues|1968
 VIS|NIS|Wolves|1932
 KAS|KIT|Ravens|1908
 URA|SAK|Reds|1937
@@ -1810,30 +1819,30 @@ LS|HCH|Gladiatoren|1927
 SIO|OER|Weißen|1914
 WIN|BEB|Roten|1877
 THU|BDT|Stahlwerker|1953
-CEL2|STS|Royals|1864
-RAN2|SLS|Knights|1890
-HEA|MOF|Burgundies|1870
-ABE|LCK|Crimsons|1864
-HIB|MOK|Greens|1873
-MOT2|BAL|Canaries|1877
-DUN2|MID|Rams|1898
-KIL|KIE|Bluebirds|1901
-SMI|JED|Magpies|1902
+CEL2|STS|Greens|1864
+RAN2|SLS|Fishermen|1890
+HEA|MOF|Clansmen|1870
+ABE|LCK|Reds|1864
+HIB|INT|Greens|1873
+MOT2|INR|Yellows|1877
+DUN2|MID|Oranges|1898
+KIL|KIE|Blues|1901
+SMI|JED|Fishermen|1902
 DND|MIK|Navy|1918
-LIV2|TAY|Bees|1920
-FAL|KIO|Knights|1919
-MCY|WOD|Wolves|1958
-SYD|GER|Azure|1934
-MVC|WOE|Mariners|1918
-WSW|GEP|Red Devils|1945
-CCM|MOU|Bees|1932
-BRQ|MOT|Flames|1901
-AUC|COF|Mariners|1972
-ADU|NOA|Gulls|1942
-WPX|TAM|Seagulls|1978
-MAF|BAP|Drovers|1988
-NJE|PAL|Bluebirds|1954
-PGL|COB|Clarets|1924
+LIV2|TAY|Pipers|1920
+FAL|IER|Navy|1919
+MCY|WOD|Miners|1958
+SYD|GER|Sky Blues|1934
+MVC|WOE|Navy|1918
+WSW|GEP|Reds|1945
+CCM|MOU|Magpies|1932
+BRQ|MOT|Koalas|1901
+AUC|COF|Navy|1972
+ADU|NOA|Reds|1942
+WPX|TAM|Emus|1978
+MAF|BAL|Crocs|1988
+NJE|POW|Blues|1954
+PGL|COB|Maroons|1924
 FTC|BAR|Zöldek|1932
 PAK|GYO|Úttörők|1944
 ETO|DUK|Zöldek|1926
@@ -1846,28 +1855,28 @@ KIS|KAD|Vörösök|1933
 MTK|ZZA|Gladiátorok|1919
 NYI|NAY|Vörösök|1931
 KTE|ORR|Vörösök|1979
-SHL|LIS|Reds|1881
-SRO|LIV|Weavers|1884
-DRY|OSS|Shepherds|1950
-BHI|COD|Stags|1941
-SPAT|NEW|Grecians|1929
-DRO|PRT|Otters|1946
-GAU|ATH|Wine Reds|1939
-SLR|SLI|Robins|1883
-WFI|NEH|Royals|1891
-DDK|CAK|Whites|1898
-TNS|TAL|Grecians|1931
-BAL|LLA|Comets|1900
-CQN|DON|Lilywhites|1930
-PEN|CLY|Reds|1886
-HAV|ABE|Stags|1878
+SHL|LIS|Harps|1881
+SRO|LIW|Greens|1884
+DRY|INO|Reds|1950
+BHI|COD|Clansmen|1941
+SPAT|NEW|Reds|1929
+DRO|PRT|Hurlers|1946
+GAU|ATH|Gaels|1939
+SLR|SLI|Corsairs|1883
+WFI|NEH|Blues|1891
+DDK|CAK|Rebels|1898
+TNS|TAL|Choristers|1931
+BAL|LLA|Ravens|1900
+CQN|DON|Whites|1930
+PEN|CLY|Quarrymen|1886
+HAV|ABE|Choristers|1878
 BTU|CYN|Yellows|1947
-CMU|BAT|Magpies|1902
-LLA|BYN|Knights|1952
-CAE|MET|Eagles|1926
-NEW2|TEH|Lancers|1916
-COL2|BAI|Yellows|1892
-FLI|BDU|Stags|1911`
+CMU|BAT|Yellows|1902
+LLA|BYN|Reds|1952
+CAE|PEO|Choristers|1926
+NEW2|TEH|Choristers|1916
+COL2|BAI|Harpers|1892
+FLI|BDU|Drovers|1911`
       .split('\n')
       .map((l) => l.split('|'))
       .map(([code, abbr, nick, founded]) => [code, [abbr, nick, founded ? +founded : null]]),
