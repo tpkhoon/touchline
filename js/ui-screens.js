@@ -2007,7 +2007,7 @@
                     e.worldXI
                       ? `<div class="small b dim" style="margin-top:8px">WORLD BEST XI${e.worldXI.best ? ` · player of the year ${esc(e.worldXI.best.name)}` : ''}</div>${UI.xiLines(e.worldXI.xi)}`
                       : ''
-                  }${e.comps[cur] && e.comps[cur].awards ? `<div class="small b dim" style="margin-top:12px">${esc(e.comps[cur].name.toUpperCase())}</div>${UI.awardsHTML(e.comps[cur].awards)}` : ''}</details>`,
+                  }${e.comps[cur] && e.comps[cur].awards ? `<div class="small b dim" style="margin-top:12px">${esc(e.comps[cur].name.toUpperCase())}</div>${UI.awardsHTML(e.comps[cur].awards, 'TEAM OF THE SEASON')}` : ''}</details>`,
               )
               .join('')}`
           : ''
