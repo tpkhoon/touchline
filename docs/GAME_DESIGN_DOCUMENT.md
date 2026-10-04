@@ -146,7 +146,7 @@ Players are remembered for who they are, not their rating. Personality is what c
 | Field | Notes |
 | --- | --- |
 | Key attributes | Pace, vision, dribbling, stamina and others |
-| Rating | Stars, no overall number, measured against the league you manage in: three and a half is a typical starter there and five is among its best, so a Championship regular is two stars in the Premier League and four and a half in League Two |
+| Rating | Stars, no overall number, measured against the league you manage in: three and a half is a typical starter there and five is among its best, so a Championship regular is two stars in the Premier League and four and a half in League Two. The rating behind it is a weighted mean of attributes whose weights per position are measured from the match engine rather than guessed |
 | Potential | Shown as a range; certainty depends on scouting |
 | Heritage | Where a player's family comes from when that differs from the nation he plays for (a Frenchman of Algerian descent), which shapes his name; shown on his profile |
 | Morale | Driven by results, minutes, bids, team talks, press |
