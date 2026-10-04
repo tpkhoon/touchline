@@ -44,16 +44,32 @@
           )
           .join('')}`
       : `<div class="card flat small dim">No offers waiting. List a player (Squad → his profile → Transfer list) to invite bids.</div>`;
-    // your transfer list
-    const listed = W.squad(c.id).filter((p) => p.listed && !p.loan);
-    const list = listed.length
-      ? `<div class="sec"><div class="h3">Your transfer list</div><span class="dim small">${listed.length}</span></div><div class="card flat" style="padding:2px 12px">${listed
-          .map(
-            (p) =>
-              `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button></div>`,
-          )
-          .join('')}</div>`
-      : '';
+    // your transfer list and loan list: always shown, so you can see who is on them and offer them around
+    const listCard = (title, players, act, empty) =>
+      `<div class="sec"><div class="h3">${title}</div><span class="dim small">${players.length}</span></div><div class="card flat" style="padding:2px 12px">${
+        players.length
+          ? players
+              .map(
+                (p) =>
+                  `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="${act}" data-id="${p.id}">📣 Offer</button></div>`,
+              )
+              .join('')
+          : `<div class="small dim" style="padding:10px 0">${empty}</div>`
+      }</div>`;
+    const sqd = W.squad(c.id);
+    const list =
+      listCard(
+        'Your transfer list',
+        sqd.filter((p) => p.listed && !p.loan),
+        'offerClubs',
+        'Nobody listed for sale. Open a player and tap Transfer list.',
+      ) +
+      listCard(
+        'Your loan list',
+        sqd.filter((p) => p.loanListed && !p.loan),
+        'offerLoan',
+        'Nobody listed for loan. Open a player and tap Loan list.',
+      );
     // loans
     const loansIn = W.squad(c.id).filter((p) => p.loan),
       loansOut = Object.values(s.players).filter((p) => p.loan && p.loan.from === c.id && p.clubId !== c.id);

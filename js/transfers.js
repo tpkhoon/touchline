@@ -109,6 +109,7 @@
     if (sp) sp.to = S.year;
     p.loan = { from: from.id, share, fee, year: S.year, wg: FM.Season.gamesPlayed(toId), wa: 0 }; // wg/wa: minutes watch
     p.team = undefined; // out on loan he plays for the borrower's first team, not a youth side
+    p.loanListed = false;
     W.startSpell(p, toId);
     W.spell(p).loan = true;
     W.spell(p).signed = true;

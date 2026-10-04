@@ -257,6 +257,7 @@
       tags.push('<span class="pill warn" title="Just back from injury: higher risk of a setback">🩹</span>');
     if (p.susp) tags.push(`<span class="pill warn">🟥 ${p.susp}</span>`);
     if (p.listed) tags.push(`<span class="pill">Listed</span>`);
+    if (p.loanListed) tags.push(`<span class="pill">Loan list</span>`);
     if (own && p.unreg)
       tags.push(
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',

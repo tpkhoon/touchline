@@ -58,7 +58,7 @@
     const inXI = W.pickXI(club().id, S().user.tactic).xi.some((q) => q && q.id === p.id);
     if (p.loan)
       return `<div class="warnline">On loan from ${esc(CL(p.loan.from).name)} until the end of the season. You pay ${Math.round(p.loan.share * 100)}% of his wages.</div>`;
-    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button>${!inXI ? `<button class="btn sm grow" data-act="loanOut" data-id="${p.id}">Loan out</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
+    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button>${!inXI ? `<button class="btn sm grow" data-act="loanOut" data-id="${p.id}">Loan out</button>` : ''}<button class="btn sm grow" data-act="loanList" data-id="${p.id}">${p.loanListed ? 'Loan list ✓' : 'Loan list'}</button>${p.loanListed ? `<button class="btn sm grow pri" data-act="offerLoan" data-id="${p.id}">📣 Offer loan</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
   };
 
   UI.acts.loanOut = (d) => {

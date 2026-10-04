@@ -1444,6 +1444,23 @@
     UI.refreshSheet(playerHTML(p));
     UI.save();
   };
+  UI.acts.loanList = (d) => {
+    const p = P(d.id);
+    p.loanListed = !p.loanListed;
+    UI.toast(
+      p.loanListed ? 'Loan listed: clubs will ask for him when the window is open' : 'Removed from the loan list',
+    );
+    UI.refreshSheet(playerHTML(p));
+    UI.save();
+  };
+  UI.acts.offerLoan = (d) => {
+    const p = P(d.id),
+      r = FM.Market.offerLoan(p);
+    UI.toast(r.msg, 4000);
+    UI.save();
+    UI.render();
+    if (document.querySelector('.sheet-wrap') && P(d.id)) UI.refreshSheet(playerHTML(p));
+  };
   UI.acts.offerClubs = (d) => {
     const p = P(d.id),
       r = FM.Transfers.offerToClubs(p);

@@ -1560,6 +1560,7 @@
           p.clubId = null;
           p.team = undefined; // a free agent is in no youth side
           p.listed = false;
+          p.loanListed = false;
           if (S.user.tactic.lineup) S.user.tactic.lineup = S.user.tactic.lineup.map((x) => (x === p.id ? null : x));
         } else if (Sea.aiRenews(p, c)) {
           p.contract = S.year + (W.age(p) >= 31 ? 1 : U.randi(1, 3));

@@ -989,10 +989,24 @@
         p.season.apps <= Math.max(2, games * 0.3) &&
         !s.news.some((n) => n.type === 'bid' && n.data.pid === p.id && n.data.status === 'open'),
     );
-    const p = cands.length && U.wpick(cands, (q) => (W.age(q) <= 22 ? 2 : 1) * (q.pa - q.ca + 5));
+    // players on your loan list are the ones they ask about first
+    const listed = W.squad(uc.id).filter(
+      (p) =>
+        p.loanListed &&
+        !p.loan &&
+        !s.news.some((n) => n.type === 'bid' && n.data.pid === p.id && n.data.status === 'open'),
+    );
+    const p = listed.length
+      ? U.pick(listed)
+      : cands.length && U.wpick(cands, (q) => (W.age(q) <= 22 ? 2 : 1) * (q.pa - q.ca + 5));
     if (!p) return;
     const dest = M.loanTarget(p);
     if (!dest) return;
+    M.makeLoanBid(p, dest);
+  };
+  // A club's request to borrow one of your players: the wage share, the minutes promised, sometimes an option to buy
+  M.makeLoanBid = function (p, dest) {
+    const s = S();
     const starts = W.levelFor(dest.rep) <= p.ca + 2;
     const share = Math.min(1, Math.round((0.5 + Math.random() * 0.4 + (starts ? 0.1 : 0)) * 20) / 20);
     const buy = W.age(p) >= 21 && Math.random() < 0.35 ? U.roundMoney(p.value * U.rand(1.05, 1.3)) : 0;
@@ -1005,14 +1019,43 @@
       data: { pid: p.id, from: dest.id, fee: 0, status: 'open', loan: { share, starts, buy } },
     });
   };
+  // Offer a loan-listed player to clubs: up to two that would use him ask for him at once; then he is left alone for a
+  // few days
+  M.offerLoan = function (p) {
+    const s = S();
+    if (!p || !W.ownPlayer(p) || p.loan) return { ok: false, msg: 'He cannot be offered on loan.' };
+    if (!p.loanListed) return { ok: false, msg: 'Put him on the loan list first.' };
+    if (!FM.Season.windowOpen())
+      return { ok: false, msg: 'The transfer window is closed: loans can only be offered while it is open.' };
+    if (p.loanShopYear === s.year && s.day - p.loanShopDay < 3)
+      return { ok: false, msg: `You have only just offered ${W.short(p)} on loan: give the clubs a few days.` };
+    p.loanShopYear = s.year;
+    p.loanShopDay = s.day;
+    const dests = [];
+    for (let i = 0; i < 2; i++) {
+      const d = M.loanTarget(
+        p,
+        dests.map((x) => x.id),
+      );
+      if (d) dests.push(d);
+    }
+    if (!dests.length) return { ok: false, msg: `No club has a place for ${W.short(p)} on loan right now.` };
+    dests.forEach((d) => M.makeLoanBid(p, d));
+    return {
+      ok: true,
+      msg: `${W.short(p)} has been offered on loan: ${dests.length} club${dests.length === 1 ? ' wants' : 's want'} him. See your inbox.`,
+    };
+  };
+
   // Where a player would go on loan: a smaller club where he'd start or rotate, at a level that stretches him,
   // in the strongest league that fits
-  M.loanTarget = function (p) {
+  M.loanTarget = function (p, skip = []) {
     const s = S(),
       parent = s.clubs[p.clubId],
       g = D.POS_GROUP[p.pos];
     const fits = Object.values(s.clubs).filter((c) => {
-      if ((c.sim !== 'full' && c.sim !== 'light') || c.id === p.clubId || W.isUserSide(c.id)) return false;
+      if ((c.sim !== 'full' && c.sim !== 'light') || c.id === p.clubId || W.isUserSide(c.id) || skip.includes(c.id))
+        return false;
       if (c.rep >= parent.rep - 3) return false;
       const lvl = W.levelFor(c.rep);
       if (p.ca < lvl - 6 || p.ca > lvl + 10) return false;
