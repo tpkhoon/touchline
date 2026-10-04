@@ -689,7 +689,49 @@
         clubId: p.clubId || undefined,
       });
   };
+  // ---------- Naturalisation ----------
+  // Years lived abroad count from 18 (p.res: nation -> seasons at its clubs, kept up each year). A federation that wants
+  // a player who qualifies pushes his citizenship through (D.NATURALISE), and he becomes eligible as a second nation.
+  I.naturalRule = (code, from) => {
+    const r = D.NATURALISE[code] || D.NATURALISE_DEFAULT;
+    if (r.never) return null;
+    return { ...D.NATURALISE_DEFAULT, ...r, need: r.fast && r.fast.from.includes(from) ? r.fast.years : r.years };
+  };
+  I.residence = (p, code) => (p.res && p.res[code]) || 0;
+  I.naturalisationTick = function () {
+    const s = S(),
+      done = {},
+      cut = {};
+    const bar = (code) => (cut[code] === undefined ? (cut[code] = (I.pool(code)[22] || { ca: 0 }).ca) : cut[code]);
+    for (const p of U.shuffle(Object.values(s.players))) {
+      if (p.retired || !p.clubId || W.age(p) < 18) continue;
+      const club = s.clubs[p.clubId],
+        host = club && club.nat;
+      if (!host || host === p.nat || host === p.nat2 || !D.NATIONS[host]) continue;
+      p.res = p.res || {};
+      // a foreigner already at his club when the save began is assumed to have been there a while
+      if (p.res[host] === undefined) p.res[host] = U.randi(0, Math.min(8, W.age(p) - 18));
+      else p.res[host]++;
+      if (p.nat2 || !I.uncapped(p) || !s.nteams['n_' + host]) continue;
+      const rule = I.naturalRule(host, p.nat);
+      if (!rule || p.res[host] < rule.need || (done[host] || 0) >= rule.cap) continue;
+      // the federation wants players who would make its squad
+      if (p.ca < bar(host) - 3 || Math.random() > rule.rate) continue;
+      p.nat2 = host;
+      p.natur = { code: host, year: s.year };
+      done[host] = (done[host] || 0) + 1;
+      if (W.isUser(p.clubId) || p.ca >= 68 || (s.user && s.user.nation === 'n_' + host))
+        FM.News.add({
+          type: 'club',
+          title: `${W.name(p)} granted ${D.NATIONS[host].name} citizenship`,
+          body: `After ${p.res[host]} years in ${D.NATIONS[host].name}, ${W.short(p)} becomes eligible to play for them${I.nationOf(p) === p.nat ? ` (he may still choose ${D.NATIONS[p.nat] ? D.NATIONS[p.nat].name : p.nat}, as he has not been capped)` : ''}.`,
+          pid: p.id,
+          clubId: p.clubId,
+        });
+    }
+  };
   I.allegianceTick = function () {
+    I.naturalisationTick();
     const s = S(),
       cut = {};
     const info = (code) =>

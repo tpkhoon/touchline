@@ -95,6 +95,16 @@ quality of the selling club among them); the structure and the automatic thresho
 signing says how far short he fell.
 - Other leagues have no foreign-player limit in the game.
 
+## Naturalisation (`D.NATURALISE` in `js/data.js`)
+
+A player who has lived in a country for a number of seasons after turning 18 can be granted its citizenship.
+
+- **Residence:** FIFA's own minimum of five years is the default. Spain asks 10 years, but 2 for players from Argentina, Uruguay, Colombia, Mexico and Portugal. Portugal asks 6, or 3 for Brazilians. Italy asks 10, or 4 for EU citizens. France asks 5 and Germany 8.
+- **Never allowed:** Japan, Korea, Thailand, Nigeria, Ghana, Senegal and the Ivory Coast do not naturalise players.
+- **Rate and cap:** each country has a yearly chance that its federation pushes a player through and a cap on how many it naturalises in a season.
+- **Who:** only uncapped players the federation wants, meaning players good enough for its squad.
+- **Result:** he becomes eligible as a second nation (a second flag, and "Naturalised in <year>" on his profile), with news for notable cases. He may switch allegiance as other dual nationals do.
+
 ## Where the game simplifies
 
 - The UEFA cups have 16 clubs in four groups, not the 36-club league phase with play-offs, and a league's places are

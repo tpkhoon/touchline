@@ -2,11 +2,17 @@
 
 Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/dcc1d812-21cc-47af-86dd-67235bca8506)
 
+## Contents
+
+- [In the game](#in-the-game)
+- [Yet to be added](#yet-to-be-added)
+
+
 Every feature from the game design document, with what is playable in the prototype today and what is still to come. Status and phase match [ROADMAP.md](ROADMAP.md).
 
 ## In the game
 
-270 features are playable in the web prototype today. Build = the build that added it.
+272 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -286,6 +292,8 @@ Every feature from the game design document, with what is playable in the protot
 | Players | Ability formula measured from the engine: the weights of each position's rating come from regressing goal difference on every attribute over 150,000 simulated matches (21% more of a result explained than the hand-made table, 96% of the possible), with a constant per position that keeps ratings, values and wages on the same scale; saves are re-rated on load | Alpha 2 |
 | Players | A profile shows where he counts as trained (his academy, or the club where he spent most of his years between 15 and 21, or the country of his birth when there is no youth record) and the nations he is homegrown for, with whether that counts under his league's squad-list rule | Alpha 2 |
 | Competitions | Every tournament on the Cups screen folds away behind its title (yours start open), with Open all and Fold all | Alpha 2 |
+| International | Naturalisation: a player who has lived in a country for a number of seasons after 18 (FIFA minimum 5 years by default; Spain 10, or 2 for Argentina, Uruguay, Colombia, Mexico and Portugal; Portugal 6, or 3 for Brazil; Italy 10, or 4 for EU; France 5; Germany 8; never in Japan, Korea, Thailand, Nigeria, Ghana, Senegal and the Ivory Coast) can be granted its citizenship, at a yearly rate and cap per country and only if uncapped and good enough for its squad; he becomes eligible as a second nation (second flag, "Naturalised in <year>" on the profile, news for notable cases) and may switch allegiance like other dual nationals | Playtest round 10 |
+| Youth | Youth and B-team simulation review: youth leagues are less one-sided (a gentler strength gap and a good or bad year for each side, so top academies no longer win nearly everything; table spread roughly top ~85 points, median ~50, bottom ~25 of 114); B teams verified: stocked at 22, light-sim, never promoted level with their parent, rebalanced for AI parents | Playtest round 10 |
 | Media | A Press room under Club: five outlets (tabloid, broadsheet, local paper, television panel, radio phone-in) with their own voices report on your matches, runs, signings, sales and seasons, each with a view of you that moves at its own speed; a Press filter in the feed; the press mood moves the board and fans a little every match | Playtest round 8 |
 | Settings | Club colours: use your club's colours as the app's accent, or switch it off for the standard accent | Playtest round 8 |
 | UI | Bottom bar: six equal columns, icons and labels on one line (International is Nations) | Playtest round 7 |

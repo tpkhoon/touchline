@@ -5,6 +5,51 @@
 
   FM.D = {};
 
+  // ---------- Naturalisation ----------
+  // A player who has lived in a country for `years` seasons after turning 18 can be granted its citizenship, and with it
+  // the right to play for its national team (if he has never been capped). `fast` shortens the wait for citizens of
+  // related nations, `rate` is the chance a year that a federation pushes through a player it wants, `cap` how many
+  // it will naturalise in a season, and `never` marks countries that do not allow a second citizenship. Anywhere
+  // not listed follows FIFA's own minimum of five years.
+  FM.D.NATURALISE_DEFAULT = { years: 5, rate: 0.12, cap: 1 };
+  FM.D.NATURALISE = {
+    ESP: { years: 10, rate: 0.4, cap: 2, fast: { years: 2, from: ['ARG', 'URU', 'COL', 'MEX', 'POR'] } },
+    POR: { years: 6, rate: 0.4, cap: 2, fast: { years: 3, from: ['BRA'] } },
+    ITA: {
+      years: 10,
+      rate: 0.3,
+      cap: 2,
+      fast: {
+        years: 4,
+        from: ['FRA', 'ESP', 'POR', 'GER', 'NED', 'BEL', 'IRL', 'GRE', 'POL', 'AUT', 'CRO', 'CZE', 'HUN', 'DEN'],
+      },
+    },
+    FRA: { years: 5, rate: 0.35, cap: 2 },
+    GER: { years: 8, rate: 0.2, cap: 1 },
+    NED: { years: 5, rate: 0.25, cap: 1 },
+    BEL: { years: 5, rate: 0.3, cap: 2 },
+    TUR: { years: 5, rate: 0.35, cap: 2 },
+    SUI: { years: 10, rate: 0.2, cap: 1 },
+    AUT: { years: 10, rate: 0.2, cap: 1 },
+    DEN: { years: 9, rate: 0.1, cap: 1 },
+    NOR: { years: 7, rate: 0.1, cap: 1 },
+    USA: { years: 5, rate: 0.2, cap: 2 },
+    MEX: { years: 5, rate: 0.3, cap: 2, fast: { years: 2, from: ['ARG', 'URU', 'COL', 'BRA'] } },
+    AUS: { years: 4, rate: 0.2, cap: 1 },
+    ENG: { years: 5, rate: 0.15, cap: 1 },
+    SCO: { years: 5, rate: 0.15, cap: 1 },
+    WAL: { years: 5, rate: 0.15, cap: 1 },
+    IRL: { years: 5, rate: 0.2, cap: 1 },
+    MAR: { years: 5, rate: 0.05, cap: 1 },
+    JPN: { never: true },
+    KOR: { never: true },
+    THA: { never: true },
+    NGA: { never: true },
+    GHA: { never: true },
+    SEN: { never: true },
+    CIV: { never: true },
+  };
+
   // ---------- Attributes (1–20 scale, FM-style) ----------
   FM.D.ATTRS = [
     'pace',
