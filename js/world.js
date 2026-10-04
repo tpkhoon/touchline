@@ -7,8 +7,9 @@
 
   // ---------------- Player model ----------------
   W.age = (p) => FM.S.year - p.born;
-  W.name = (p) => `${p.fn} ${p.ln}`;
-  W.short = (p) => `${p.fn[0]}. ${p.ln}`;
+  // (a one-word name, like a Brazilian footballer's, has no first name: his single name is in ln)
+  W.name = (p) => (p.fn ? `${p.fn} ${p.ln}` : p.ln);
+  W.short = (p) => (p.fn ? `${p.fn[0]}. ${p.ln}` : p.ln);
 
   W.calcCA = function (p, pos = p.pos) {
     // a natural wing-back is judged on wing-back weights; anyone else in a wing-back slot as a full-back (the slot
@@ -514,6 +515,41 @@
     const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.NATIONS[n]);
     return list.length ? U.pick(list) : null;
   };
+  // One-word names, as Brazilian and Portuguese players often have: a diminutive or a nickname made from his first name
+  // ("Rafael" → "Rafinha", "Pedro" → "Pedrinho", "Carlos" → "Cacá"), never one of the famous ones
+  const MONO_RATE = { BRA: 0.16, POR: 0.05 };
+  const MONO_BLOCK = new Set(
+    `kaka pepe nani raphinha dudu juninho fred hulk oscar willian ronaldinho rivaldo romario bebeto cafu ederson alisson
+    fabinho casemiro marquinhos richarlison rafinha rafinho neymar pele zico socrates garrincha jo rodrygo vinicius
+    antony vitinho pedrinho gabigol bruninho paulinho robinho adriano elano denilson edmilson dida taffarel claudinho
+    firmino lulinha danilo thiago bernard bruno everton hernanes ramires lucio fernandinho kleber dede cacau`.split(
+      /\s+/,
+    ),
+  );
+  const plain = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const ACCENT = { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú' };
+  W.mononym = function (first) {
+    const base = plain(String(first).split(' ')[0]);
+    if (base.length < 3) return null;
+    const vowel = (c) => 'aeiou'.includes(c.toLowerCase());
+    let i = 3;
+    while (i < base.length && vowel(base[i - 1])) i++; // the first syllable up to a consonant: Raf, Heit, Pedr
+    const clip = base.slice(0, i).replace(/[aeiou]+$/i, ''), // (Caio → Ca: too short for a suffix)
+      open = base.slice(0, i + 1); // ... and the vowel after it: Rafa, Pedro
+    const hard = (stem) => (/g$/i.test(stem) ? stem + 'u' : /c$/i.test(stem) ? stem.slice(0, -1) + 'qu' : stem); // Marc → Marquinho
+    const r = Math.random();
+    let out = null;
+    if (r < 0.45 && clip.length >= 3 && !/h$/i.test(clip)) out = hard(clip) + 'inho';
+    else if (r < 0.65 && clip.length >= 3) out = hard(clip) + 'ão';
+    else if (r < 0.8) {
+      // a doubled syllable, the last accented: Cacá, Dedé, Zezé
+      const m = base.match(/^([^aeiou]*)([aeiou])/i);
+      out = m && m[1].length === 1 ? m[1] + m[2] + m[1] + ACCENT[m[2].toLowerCase()] : null;
+    } else if (/[ao]$/i.test(open) && open.length >= 4 && open.length < base.length) out = open; // Rafa, Duda
+    if (!out || out.length < 3) return null;
+    out = out.charAt(0).toUpperCase() + out.slice(1).toLowerCase();
+    return MONO_BLOCK.has(plain(out).toLowerCase()) ? null : out;
+  };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
     const heritage = W.pickHeritage(nat),
@@ -550,6 +586,14 @@
       cult: 0,
       derbyGoals: 0,
     };
+    // a share of Brazilians and Portuguese go by one name
+    if (!heritage && Math.random() < (MONO_RATE[nat] || 0)) {
+      const one = W.mononym(nm.fn);
+      if (one && !REAL_NAMES.has(one) && !W.nameTaken(` ${one}`)) {
+        p.fn = '';
+        p.ln = one;
+      }
+    }
     W.genAlt(p);
     // Unique names (and never a famous real player). Retry combinations, then fall back to a second surname.
     let tries = 0;

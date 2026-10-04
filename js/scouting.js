@@ -440,7 +440,7 @@
               : v.grade === 'C'
                 ? 'Monitor'
                 : 'Avoid';
-      const name = p.fn;
+      const name = p.fn || p.ln;
       const Q = {
         A: [
           `${name} is the real deal. I'd move now before someone else does.`,

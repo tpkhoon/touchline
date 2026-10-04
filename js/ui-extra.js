@@ -1368,7 +1368,7 @@
     // (out of work there is no squad of your own: only the national-team side of the screen)
     const own = uc ? W.squad(uc.id) : [];
     const mine = own.filter((p) => p.intl && p.intl.caps).sort((a, b) => b.intl.caps - a.intl.caps);
-    const called = new Set(own.filter((p) => FM.Intl.squad(p.nat).includes(p)).map((p) => p.id));
+    const called = new Set(own.filter((p) => FM.Intl.squad(FM.Intl.nationOf(p)).includes(p)).map((p) => p.id));
     const ranked = FM.Intl.ranked();
     const history = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
     return `<div class="card"><div class="row"><span style="font-size:26px">🌍</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>

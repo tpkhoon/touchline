@@ -383,7 +383,7 @@
       .concat(
         (s.retired || []).map((r) => ({
           id: r.id,
-          name: r.fn + ' ' + r.ln,
+          name: W.name(r),
           nat: r.nat,
           pos: r.pos,
           youth: r.youth,

@@ -183,11 +183,16 @@
     return words.join(' ');
   };
   // His flag, and a smaller one beside it for a second nationality he is eligible for
-  C.flags = (p) =>
-    C.flag(p.nat) +
-    (p.nat2 && D.NATIONS[p.nat2]
-      ? `<span class="flag2" title="Also eligible for ${esc(D.NATIONS[p.nat2].name)}">${C.flag(p.nat2)}</span>`
-      : '');
+  C.flags = (p) => {
+    const mine = (FM.Intl && FM.Intl.nationOf(p)) || p.nat,
+      other = mine === p.nat ? p.nat2 : p.nat;
+    return (
+      C.flag(mine) +
+      (p.nat2 && D.NATIONS[other]
+        ? `<span class="flag2" title="Also eligible for ${esc(D.NATIONS[other].name)}">${C.flag(other)}</span>`
+        : '')
+    );
+  };
   C.flag = (nat) => (D.NATIONS[nat] ? D.NATIONS[nat].flag : '🏳️');
   // The manager's avatar (older careers without one get a neutral face)
   C.avatar = (user, size = 40) => {

@@ -332,7 +332,7 @@
   M.addPundit = function (p, entry) {
     const S = FM.S,
       st = M.state(),
-      name = `${p.fn} ${p.ln}`;
+      name = W.name(p);
     if (st.pundits.some((q) => q.name === name)) return;
     const cids = {};
     for (const sp of entry.spells) cids[sp.c] = (cids[sp.c] || 0) + sp.apps;

@@ -872,7 +872,7 @@
     const r = FM.S.retired
       .filter((x) => x.spells.some((s) => s.c === clubId && s.apps >= 80))
       .sort((a, b) => b.cult - a.cult)[0];
-    if (r) return `${r.fn} ${r.ln}`;
+    if (r) return FM.W.name(r);
     return c.legends && c.legends.length ? c.legends[0].name : null;
   };
 
@@ -944,7 +944,9 @@
       .filter(
         (p) =>
           p.intl &&
-          S.intlLog.slice(0, games.length).some((g) => g.h === 'n_' + p.nat || g.a === 'n_' + p.nat) &&
+          S.intlLog
+            .slice(0, games.length)
+            .some((g) => g.h === 'n_' + FM.Intl.nationOf(p) || g.a === 'n_' + FM.Intl.nationOf(p)) &&
           p.intl.caps > 0,
       )
       .slice(0, 12);
@@ -1005,7 +1007,7 @@
     const mine = !W.employed()
       ? []
       : W.squad(W.userClub().id).filter(
-          (p) => p.nat === champ.code && p.intl && p.intl.caps && FM.Intl.squad(champ.code).includes(p),
+          (p) => FM.Intl.nationOf(p) === champ.code && p.intl && p.intl.caps && FM.Intl.squad(champ.code).includes(p),
         );
     if (mine.length)
       FM.News.add({

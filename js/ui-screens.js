@@ -78,7 +78,9 @@
     } else if (cal) {
       const others = FM.Season.dayFixtures();
       const away =
-        cal.type === 'intl' ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(p.nat).includes(p)) : [];
+        cal.type === 'intl'
+          ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(FM.Intl.nationOf(p)).includes(p))
+          : [];
       const what =
         cal.type === 'intl'
           ? `International break. ${
@@ -1193,12 +1195,14 @@
       .map((r) => ({ ...r, now: true }));
     const history = current.concat((p.history || []).slice().reverse());
     // The nation opens its national-team overview (nations without a national team in the world stay plain text)
-    const nt = S().nteams && S().nteams['n_' + p.nat];
+    const playsFor = FM.Intl.nationOf(p),
+      otherNat = playsFor === p.nat ? p.nat2 : p.nat;
+    const nt = S().nteams && S().nteams['n_' + playsFor];
     const natLink = (html) =>
       nt
         ? `<span class="tap" data-act="nation" data-id="${nt.id}" style="text-decoration:underline dotted">${html}</span>`
         : html;
-    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${esc(p.fn)}<br>${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(p.nat)} ${D.NATIONS[p.nat].name}`)}${p.nat2 && D.NATIONS[p.nat2] ? ` · <span title="Eligible through family">${C.flag(p.nat2)} ${D.NATIONS[p.nat2].name} (eligible)</span>` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''} · ${age} yrs${c ? ' · ' + esc(c.name) : ''}</div></div>${c ? C.crest(c, 48) : ''}</div>
+    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${D.NATIONS[playsFor].name}`)}${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : 'Eligible through family'}">${C.flag(otherNat)} ${D.NATIONS[otherNat].name} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''} · ${age} yrs${c ? ' · ' + esc(c.name) : ''}</div></div>${c ? C.crest(c, 48) : ''}</div>
       <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].short || S().comps[W.refComp()].name)}${own || v.k >= 40 ? ` · ${C.posOveralls(p)}` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${me} ${ml}</b></div>` : ''}</div></div>
       <div class="sp"></div>
       ${ownActions}
@@ -1225,6 +1229,7 @@
         ${p.honours && p.honours.length ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Honours</span><b>${honoursLine(p)}</b></div>` : ''}
         ${trainedRows(p)}
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
+      ${persuadeCard(p)}
       ${bioCard(p)}
       ${UI.seasonsCard(p, history)}
       ${injuryCard(p)}`;
@@ -1336,6 +1341,22 @@
     return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}${how ? `<div class="tiny dim" style="font-weight:400">${how}</div>` : ''}</b></div>
         <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown for</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
   };
+  // As national team manager: a player eligible for your nation who plays for another (or has not chosen) can be asked
+  // to commit, if he has not yet been capped
+  function persuadeCard(p) {
+    const s = S(),
+      t = s.user.nation && s.nteams[s.user.nation];
+    if (!t || (p.nat !== t.code && p.nat2 !== t.code) || FM.Intl.nationOf(p) === t.code) return '';
+    const live = FM.Intl.uncapped(p) && p.askY !== s.year,
+      ch = FM.Intl.persuadeChance(p);
+    return `<div class="card"><div class="h3">🌍 Play for ${esc(t.name)}?</div>
+      <div class="small muted" style="margin:6px 0 10px">${
+        !FM.Intl.uncapped(p)
+          ? `${esc(W.short(p))} has played for ${esc(D.NATIONS[FM.Intl.nationOf(p)].name)} and is tied to them.`
+          : `${esc(W.short(p))} is eligible for ${esc(t.name)} and has not been capped. Chances of winning him over: <b>${ch >= 0.6 ? 'good' : ch >= 0.35 ? 'fair' : 'slim'}</b>.${p.askY === s.year ? ' You have asked him this year.' : ''}`
+      }</div>
+      ${live ? `<button class="btn pri block" data-act="ntPersuade" data-id="${p.id}">Ask him to commit to ${esc(t.name)}</button>` : ''}</div>`;
+  }
   // His story in words, from what the game has recorded: where he started, each move and what it cost, his totals,
   // caps, honours and his worst injury. (A long career shows the first move and the latest few.)
   function bioCard(p) {

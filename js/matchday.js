@@ -38,7 +38,8 @@
   };
   // The armband on the pitch: the club captain if he plays, otherwise the best leader on the field
   Md.armband = function (sd, onPitch) {
-    const club = sd.club.sim === 'nation' ? null : Md.captainOf(sd.club.id);
+    const nc = sd.club.sim === 'nation' && sd.club.capt && P(sd.club.capt); // a national manager's pick
+    const club = sd.club.sim === 'nation' ? nc || null : Md.captainOf(sd.club.id);
     const on = onPitch.map((o) => o.p);
     if (club && on.includes(club)) return club;
     return on.slice().sort((a, b) => Md.captainScore(b) - Md.captainScore(a))[0] || null;
