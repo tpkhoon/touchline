@@ -34,7 +34,7 @@ flowchart TB
 
 ## Shipped
 
-The web prototype runs on a phone browser with no build step, covering 710 real clubs in 40 real leagues across 31 nations in three simulation tiers, and 85 national teams. Newest build first.
+The web prototype runs on a phone browser with no build step, covering 710 real clubs in 40 real leagues across 31 nations in three simulation tiers, and 90 national teams. Newest build first.
 
 ### Playtest feedback, round 10
 
@@ -78,6 +78,7 @@ The web prototype runs on a phone browser with no build step, covering 710 real 
 - Fourteen more player traits, each with a real effect: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick and Needs Game Time. Older saves are given the ones their players qualify for.
 - Every league can be managed: the new-career screen lists all 40 leagues (grouped by nation in the league picker, the random pick draws from all of them), not just the first eight. A club in a minimal or light league gets a full squad, because your league and the ones just above and below it always run in the full simulation. Checked by starting a career in every league and playing the first six matchdays.
 - Naming rules built from how clubs were founded (docs/NAMING_RULES.md): works, colliery, railway and church names in England; Hansa, Schwarz-Weiß and Eintracht in Germany; SD, Real Unión and Sporting in Iberia; SS, Fidelis and Polisportiva in Italy; Olympique, Athletic Club and Sporting Club in France; Excelsior and Vitesse in the Netherlands; Royal, KV, KRC and Standard in Belgium; Dinamo, Rapid and Partizan in the Balkans, with the Soviet-era Lokomotiv and Spartak only on old clubs; Mexican university, cooperative, trade and animal names; Japanese place + foreign-word names; Korean city + company + nickname; American foundry and lumber names; Australian migrant-club names; Thai United clubs; Nigerian, Ghanaian, West African and Moroccan clubs with their own towns and patterns. Checks reject names that mix cultures ("Real Hamburg"), read like fantasy, or let one suffix take over a league, and a Colliery side are the Miners. The world's club names were regenerated with the new library. Russia, Ukraine and Belarus have naming libraries of their own, apart from the Balkan one (Russian, Ukrainian and Belarusian towns, FK/FC clubs, Soviet-era sports-society and industry names only on old clubs, their own nicknames, divisions and cups); the Names tab lists them as library-only nations.
+- Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), each with a name culture, a style, colours and the leagues its players move to, and eligible as a second nation for players of that heritage.
 
 ### Playtest feedback, round 9
 

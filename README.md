@@ -12,7 +12,7 @@ A playable vertical slice: **710 real clubs in 40 real leagues (at their real si
 
 Your own league and the leagues just above and below it always run in the full engine.
 
-Around the leagues: B teams and U21/U18 sides, eleven domestic cups, ten continental cups (Europa League, Conference League, Copa Sudamericana, AFC Champions League Two and the CAF Confederation Cup included), a Club World Cup, international football with 85 national teams and qualifiers, a live match engine, and the story-driven world around it.
+Around the leagues: B teams and U21/U18 sides, eleven domestic cups, ten continental cups (Europa League, Conference League, Copa Sudamericana, AFC Champions League Two and the CAF Confederation Cup included), a Club World Cup, international football with 90 national teams and qualifiers, a live match engine, and the story-driven world around it.
 
 ## Contents
 
@@ -248,7 +248,7 @@ Touchline is an installable web app: it has a manifest, app icons and a service 
 | **Stories** | Feed of newspaper headlines, fan social posts (with rival fans on derby day), press conferences with choices, dressing-room events. Instagram-style **shareable story cards** export as 1080×1350 PNG ("26-year-old Brazilian winger scores on debut"). |
 | **Living world** | AI sackings, takeovers, administration and points deductions, stadium expansions, rule changes (subs, homegrown rules, TV deals), retirements, legends returning as managers. |
 | **People** | One-to-one talks (praise, criticism, promises of minutes, a new contract, a debut, not being sold, or permission to leave). Promises are tracked, kept or broken, and move morale and squad trust. Players ask for meetings when unhappy or underpaid. Board meetings (transfer funds, owner-funded facilities, patience, a youth project), a mid-season review and five-game ultimatums. |
-| **International** | 85 national teams, coefficient ranking, qualifying groups in the season before a tournament, two double-header breaks, and the summer finals played as calendar days. Take a national team job alongside your club: pick call-ups, set tactics, play the matches live; failing to qualify ends it. Coaching licences (B → A → Pro) unlock bigger jobs. |
+| **International** | 90 national teams, coefficient ranking, qualifying groups in the season before a tournament, two double-header breaks, and the summer finals played as calendar days. Take a national team job alongside your club: pick call-ups, set tactics, play the matches live; failing to qualify ends it. Coaching licences (B → A → Pro) unlock bigger jobs. |
 | **Career** | Create your manager: first and last name, country, favourite club and avatar (your country knows you; your boyhood club is a homecoming). Start with a club or start unemployed. Out of work (from the start or after a sacking), the world keeps playing and clubs in your reputation range make offers that come and go; a national team job carries on. |
 | **Legacy** | Hall of Fame (top scorers, appearances, academy graduates, cult heroes, biggest sales + seeded historic legends), Football Archive per season, manager identity tags (Youth Developer, Giant Killer…), sacking and job offers. |
 | **Real rules** | Every career plays by each competition's real rules: three points, five substitutions, each league's foreign-player rules, two-legged continental knockouts and play-off semi-finals, no away goals. Competitions use data-driven rules (`promote`/`relegate`/`playoff` relationships in `js/world.js`), not hardcoded leagues. |

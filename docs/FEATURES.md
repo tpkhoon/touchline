@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-281 features are playable in the web prototype today. Build = the build that added it.
+282 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -310,6 +310,7 @@ Every feature from the game design document, with what is playable in the protot
 | Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
 | Career | Start a career in any of the 40 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
+| International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 
 ## Yet to be added
 
