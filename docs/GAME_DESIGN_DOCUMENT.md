@@ -333,7 +333,7 @@ Every major footballing nation is represented, but simulation depth is tiered ra
 
 | Tier | Scope | Depth |
 | --- | --- | --- |
-| Full simulation | Top 30–40 leagues | Full match engine, finances, transfers |
+| Full simulation | Top 30–42 leagues | Full match engine, finances, transfers |
 | Light simulation | Smaller leagues | Every fixture played by a statistical model from team strength; per-match goals, assists, cards and ratings for real players; clubs buy and sell |
 | Minimal simulation | Rest of the world | Scores from reputation; squads and players exist for scouting and the market |
 
@@ -429,7 +429,7 @@ Gameplay updates are free.
 
 ## Prototype status and roadmap
 
-Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 710 real clubs in 40 real leagues across 31 nations in three simulation tiers, B teams and U21/U18 sides, eleven domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 90 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
+Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 746 real clubs in 42 real leagues across 32 nations in three simulation tiers, B teams and U21/U18 sides, twelve domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 90 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
 
 The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
 
@@ -443,7 +443,7 @@ The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROAD
 | Youth and training | Nation-shaped intakes, facility and coach-driven development; U21 and U18 sides with youth leagues; B teams in Spain and Germany; training focus, intensity and individual training | University draft, scholarships, overseas trials; national youth pathways |
 | Club | Identities, fan culture, facilities, finances by country, attendance, wage pressure up to administration, staff whose ability has real effects, assistant notes, board meetings and ultimatums, club records, stadium history; analytics of your season | Club philosophy, deeper staff, deeper economics |
 | Season | Preview, pre-season friendlies and camps, weekly matchday digest | — |
-| Competitions | 40 leagues in 31 nations across full, light and minimal tiers (your league and its neighbours always full); 5 domestic cups; 7 continental cups (incl. Europa League and Copa Sudamericana) and a Club World Cup; playoffs; two-legged ties with optional away goals | A third-tier continental cup (Conference style); more nations |
+| Competitions | 42 leagues in 32 nations across full, light and minimal tiers (your league and its neighbours always full); 5 domestic cups; 7 continental cups (incl. Europa League and Copa Sudamericana) and a Club World Cup; playoffs; two-legged ties with optional away goals | A third-tier continental cup (Conference style); more nations |
 | World and stories | 35 nations, living world, story feed, shareable cards, World News filters, rivalries that emerge and cool, managers who move between clubs, record-breaking news | Podcasts and richer press; historical eras; scenarios; Football World screen |
 | Legacy and career | Hall of Fame, Archive, legends as managers, reputation, job offers, start unemployed or play on after a sacking, coaching licences, national team jobs, all-time head-to-heads, team-talk record | Retired players as owners and pundits |
 | Platform | Installable offline web app, save upgrades, compressed backups, background simulation, native-app projects (Android, iOS) | Device builds, cloud saves |

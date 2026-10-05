@@ -335,6 +335,30 @@
     return c.ko[key];
   }
   // Winners of a finished knockout round (null while any tie is unresolved)
+  // How far a club got in a cup this season, in words (null if it was not in it)
+  Cu.runOf = function (c, id) {
+    if (c.winner === id) return 'Winners';
+    if (c.runnerUp === id) return 'Runners-up';
+    if (c.type === 'cup') {
+      for (let i = (c.rounds || []).length - 1; i >= 0; i--) {
+        const r = c.rounds[i];
+        if (
+          (r.byes || []).includes(id) ||
+          [...(r.ties || []), ...(r.ties2 || [])].some((f) => f.h === id || f.a === id)
+        )
+          return r.name;
+      }
+      return c.clubs && c.clubs.includes(id) ? 'First round' : null;
+    }
+    if (c.type === 'continental') {
+      const ko = c.ko || {},
+        inR = (a) => (a || []).some((f) => f && (f.h === id || f.a === id));
+      if (inR(ko.sf) || inR(ko.sf2)) return 'Semi-finals';
+      if (inR(ko.qf) || inR(ko.qf2)) return 'Quarter-finals';
+      return c.clubs && c.clubs.includes(id) ? 'Group stage' : null;
+    }
+    return null;
+  };
   Cu.roundWinners = function (c, key) {
     const dec = c.ko[key + '2'] && c.ko[key + '2'].length ? c.ko[key + '2'] : c.ko[key];
     if (!dec || !dec.length || dec.some((f) => !f.res || !Cu.decides(f))) return null;

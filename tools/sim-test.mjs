@@ -232,6 +232,11 @@ for (let s = 0; s < SEASONS; s++) {
     const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
     check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
   }
+  // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it)
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy)) {
+    const odd = W.squad(c.id).filter((p) => p.heritage !== c.policy.heritage);
+    check(odd.length === 0, `season ${s + 1}: ${c.short} (${c.policy.label}-only) has ${odd.length} other players`);
+  }
   // naturalised players hold the citizenship they were granted, and no federation that bars it granted one
   {
     const bad = Object.values(FM.S.players).filter(

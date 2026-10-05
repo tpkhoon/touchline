@@ -58,11 +58,18 @@
           ? 'GBP'
           : ['ESP', 'GER', 'FRA', 'ITA', 'POR', 'NED', 'BEL', 'IRL', 'AUT', 'GRE', 'CRO'].includes(nat)
             ? 'EUR'
-            : 'USD';
+            : nat === 'KSA'
+              ? 'SAR'
+              : 'USD';
       }
       return FM.U.CURRENCIES[k] || FM.U.CURRENCIES.USD;
     },
-    CURRENCIES: { USD: { sym: '$', rate: 1 }, GBP: { sym: '£', rate: 0.79 }, EUR: { sym: '€', rate: 0.92 } },
+    CURRENCIES: {
+      USD: { sym: '$', rate: 1 },
+      GBP: { sym: '£', rate: 0.79 },
+      EUR: { sym: '€', rate: 0.92 },
+      SAR: { sym: 'SR ', rate: 3.75 },
+    },
     // Money with enough precision to tell $6.35M from $6.4M
     money(v) {
       const s = v < 0 ? '-' : '',

@@ -232,6 +232,7 @@ A name feels real when the rest matches:
 | No fantasy names | Words such as Dragonheart or Shadowfang are rejected in club names (`isFantasy`) |
 | No single suffix style | No pattern may pass about a fifth of a nation's clubs ("Town" and "United" cannot take over a league) |
 | Nicknames follow the name | A Colliery club are the Miners, an Ironworks side the Ironmen (`nameNick`) |
+| Gulf and Arab clubs | A library of its own (Saudi Arabia, Qatar, the UAE, Iraq): Al + a concept (Al Fajr, Al Saqr, Al Wahat), with the town for the rest; the marker word Al is rejected in other nations |
 | Believable places | Town names follow each language's building blocks and are checked against real towns and clubs, rude words, hard consonant runs and length |
 | Quirkier towns for smaller clubs | Small clubs sometimes get a prefix such as "North" or "Upper"; big clubs get short plain names |
 

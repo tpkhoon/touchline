@@ -73,6 +73,7 @@ const DEMONYM = {
   SRB: 'Serbian',
   BEL: 'Belgian',
   TUR: 'Turkish',
+  KSA: 'Saudi',
   CZE: 'Czech',
   GRE: 'Greek',
   NOR: 'Norwegian',

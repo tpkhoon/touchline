@@ -10,6 +10,15 @@
 
   // ---------- Name pools for the cultures the first set did not cover ----------
   Object.assign(D.NAME_POOLS, {
+    // Spain's own regional cultures: players with a Basque or Catalan family (the clubs that sign only them are in D.CLUB_POLICY)
+    basque: P(
+      `Iker Aitor Unai Xabier Mikel Gorka Asier Ander Jon Iñigo Oier Beñat Eneko Julen Markel Haritz Imanol Koldo Peru Ibai Aimar Ekain Gaizka Josu Urko Igor Endika Gari Joseba Aritz Kepa`,
+      `Etxeberria Goikoetxea Iturbe Larrañaga Zubizarreta Aguirre Urrutia Mendizabal Arrieta Echevarría Olazabal Zabala Garmendia Irigoyen Lasa Ugarte Uriarte Aranburu Elorza Ibarra Otegi Berasategi Agirre Altuna Beitia Bengoetxea Galdos Idiakez Lekue Mendiola Oyarzabal Sagarna Zugasti`,
+    ),
+    catalan: P(
+      `Jordi Pau Marc Oriol Arnau Roger Pol Joan Xavi Sergi Albert Genís Guillem Ferran Biel Aleix Adrià Cesc Èric Joel Lluc Nil Quim Ramon Bernat Eduard Jaume Martí Narcís Raül Sebastià`,
+      `Puig Soler Serra Vila Ferrer Roca Mas Pujol Vidal Casals Torrent Camps Ribas Font Bosch Carbonell Casanovas Castells Costa Fabregat Girbau Grau Jover Marsal Molins Planas Prat Riera Rovira Sala Subirats Vallès Vendrell`,
+    ),
     eastslavic: P(
       `Oleksandr Andriy Serhiy Dmytro Vitaliy Mykola Ivan Artem Bohdan Yaroslav Roman Taras Vasyl Maksym Denys Yuriy Ihor Oleh Pavlo Viktor Volodymyr Anatoliy Danylo Kyrylo Mykhailo Stanislav Vladyslav Yevhen Zakhar Alexei Sergei Dmitri Nikolai Vladimir Andrei Pavel Mikhail Igor Artyom Ilya Kirill Maxim Evgeny Konstantin Anton Vyacheslav Gleb Daniil Timofei Egor Ruslan Rostislav Valentin Boris Leonid Oleg Grigory Fyodor Semyon Arseniy Matvey Lev Timur Stepan Gennady Vasily`,
       `Ivanov Petrov Smirnov Kuznetsov Popov Sokolov Lebedev Kozlov Novikov Morozov Volkov Solovyov Vasiliev Zaitsev Pavlov Semyonov Golubev Vinogradov Bogdanov Vorobyov Fyodorov Mikhailov Belyaev Tarasov Belov Komarov Orlov Kiselyov Makarov Andreev Kovalev Ilyin Gusev Titov Kuzmin Kudryavtsev Baranov Kulikov Alekseev Stepanov Yakovlev Sorokin Sergeev Romanov Zakharov Borisov Korolev Gerasimov Ponomarev Grigoriev Lazarev Medvedev Ershov Nikitin Sobolev Ryabov Polyakov Tsvetkov Danilov Zhukov Frolov Zhuravlev Nikolaev Krylov Maksimov Sidorov Osipov Belousov Fedotov Dorofeev Egorov Matveev Bobrov Kovalenko Bondarenko Tkachenko Kravchenko Boyko Melnyk Shevchuk Kovalchuk Polishchuk Savchenko Rudenko Lysenko Marchenko Petrenko Moroz Pavlenko Kharchenko Koval Oliynyk Sydorenko Zaporozhets Hrytsenko Havrylenko Honcharenko Ivashchenko Klymenko Kuzmenko Lytvynenko Martynenko Nesterenko Panchenko Romanenko Semenenko Tereshchenko Vasylenko Yaremenko`,

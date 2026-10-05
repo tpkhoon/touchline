@@ -25,6 +25,7 @@
     ARG: { tv: 0.7, com: 0.8, gate: 1, sell: 0.8 },
     USA: { tv: 0.9, com: 1.2, gate: 1.05 }, // salary-capped, commercially strong
     MEX: { tv: 1, com: 1, gate: 0.95 },
+    KSA: { tv: 1.3, com: 1.6, gate: 0.6, sell: 0.35 }, // state and owner money, small crowds, clubs buy more than they sell
   };
   F.mix = (c) => ({ ...F.MIX._, ...(F.MIX[c.nat] || {}) });
   F.SHARE = { tv: 0.33, com: 0.25, gate: 0.42 };

@@ -71,6 +71,8 @@
     KR1: { foreign: 6 },
     TH1: { foreign: 7 },
     TR1: { foreign: 14 },
+    SA1: { foreign: 10 }, // ten foreign players on the squad list
+    SA2: { foreign: 4 },
   };
   // In words: what a league's registration rules ask of a squad (for the new-career screen and the rules pages)
   R.describe = function (id) {
@@ -252,7 +254,15 @@
   };
   const U = FM.U;
   R.PERMIT_NEED = 15;
+  // A club's signing policy (Basque-only, Catalan-only): who it will not take
+  R.policy = function (c, p) {
+    const pol = c && c.policy;
+    if (!pol || p.heritage === pol.heritage) return { ok: true };
+    return { ok: false, why: `${c.name} only signs ${pol.label} players: it fields players of ${pol.label} heritage.` };
+  };
   R.canSign = function (c, p, st) {
+    const pc = R.policy(c, p);
+    if (!pc.ok) return pc;
     st = st || R.status(c, p.id);
     if (!st) return { ok: true };
     const r = st.r;

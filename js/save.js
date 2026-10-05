@@ -168,6 +168,11 @@
             .filter((t, i, a) => a.indexOf(t) === i)
             .slice(0, 3);
     }
+    // clubs with a signing policy (Eibar: Basque players only; Andorra: Catalan): older saves get the policy
+    if (!s.policyV1 && s.clubs && FM.D.CLUB_POLICY) {
+      s.policyV1 = 1;
+      for (const [id, c] of Object.entries(s.clubs)) if (!c.policy) c.policy = FM.D.CLUB_POLICY[id.slice(2)] || null;
+    }
     // real-life club abbreviations and nicknames (the id keeps the club's code)
     if (!s.clubAbbr && s.clubs && FM.D.CLUB_INFO) {
       s.clubAbbr = 1;

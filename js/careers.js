@@ -89,6 +89,49 @@
     if (age <= 30 && y < A.meteor + (p.hid.prof >= 14 ? A.ageless : A.agelessPlain)) return (p.arc = { k: 'ageless' });
     return null;
   };
+  // ---------- Dynamic potential ----------
+  // A young player's potential is an estimate that moves as he grows up (it used to be fixed at birth). Each summer, up
+  // to 25, it shifts with how he did against his curve, his rating and game time, the club's academy and training, a long
+  // injury and a little luck: now and then a teenager surges (+4 to +9) or stalls (−3 to −7). The changes average out, so
+  // the world's supply of talent stays what the calibration expects, but no regen's ceiling is certain.
+  Sea.POT = { surge: 0.025, slump: 0.06, perf: 1.0, fac: 0.25, noise: 1.2, bias: -0.5, cap: 97 };
+  Sea.shiftPotential = function (p) {
+    const S = FM.S,
+      P = Sea.POT,
+      a = W.age(p);
+    if (a < 15 || a > 25) return;
+    const club = p.clubId && S.clubs[p.clubId],
+      apps = p.season.apps + (p.season.yapps || 0) * 0.4;
+    let d = U.gauss(0, P.noise) + (a <= 20 ? P.bias : 0);
+    if (p.season.apps >= 6) d += (p.season.rsum / p.season.apps - 6.8) * P.perf;
+    if (a >= 18 && apps < 4)
+      d -= 0.8; // no football
+    else if (p.season.apps >= 25) d += 0.4;
+    // against the curve: growing faster than a player of his age normally does lifts the ceiling
+    d += U.clamp(((p.lastGrowth || 0) - Sea.growthCurve(p)) * 0.3, -2, 2);
+    if (club && a <= 21) d += ((club.facilities.academy || 2) + (club.facilities.training || 2) - 5) * P.fac;
+    if (p.inj && (p.inj.out || 0) >= 8) d -= 1.5;
+    if (a <= 20) {
+      const r = Math.random();
+      // (a surge is rarer the higher his ceiling already is: the world's wonderkids stay rare)
+      if (r < P.surge * Math.max(0.2, 1 - Math.max(0, p.pa - 72) / 30)) d += U.rand(3, 7);
+      else if (r > 1 - P.slump && p.pa - p.ca >= 8) d -= U.rand(3, 7);
+    }
+    d *= a <= 20 ? 1 : a <= 23 ? 0.7 : 0.4;
+    const was = p.pa,
+      now = Math.round(U.clamp(was + d, p.ca, P.cap));
+    if (p.pa0 === undefined) p.pa0 = was; // (what he was thought to be when we first saw him)
+    p.pa = now;
+    if (P.trace) (P.trace[a] = P.trace[a] || []).push([d, now - was, p.pa - p.ca]);
+    if (now !== was && Math.abs(now - was) >= 5 && W.ownPlayer(p))
+      FM.News.add({
+        type: 'club',
+        title: `${W.name(p)}'s potential has ${now > was ? 'risen' : 'fallen'}`,
+        body: `${now > was ? 'He has taken a step beyond what the staff expected' : 'He has not developed as hoped'}: he is now judged to have a ceiling of ${W.stars(now, p.pos)}★ (was ${W.stars(was, p.pos)}★).`,
+        pid: p.id,
+        clubId: p.clubId,
+      });
+  };
   // How far a club's training ground can take a player: its level and the club's standing (a big club's coaching and
   // players pull a young player along beyond what the pitches alone would)
   Sea.devCap = (c) => Math.round(50 + ((c.facilities && c.facilities.training) || 2) * 7 + (c.rep - 60) * 0.35);

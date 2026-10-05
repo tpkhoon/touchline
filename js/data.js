@@ -5,6 +5,15 @@
 
   FM.D = {};
 
+  // ---------- Clubs with a signing policy ----------
+  // Like Athletic Club in real life: a club that fields only players of one regional heritage. By club code. Eibar sign
+  // only Basque players, Andorra only Catalan ones; neither can sign anyone else (transfer, loan, free agent or
+  // pre-contract) and their academies and squads are made of them.
+  FM.D.CLUB_POLICY = {
+    EIB: { heritage: 'basque', label: 'Basque' },
+    AND: { heritage: 'catalan', label: 'Catalan' },
+  };
+
   // ---------- Naturalisation ----------
   // A player who has lived in a country for `years` seasons after turning 18 can be granted its citizenship, and with it
   // the right to play for its national team (if he has never been capped). `fast` shortens the wait for citizens of
@@ -42,6 +51,7 @@
     IRL: { years: 5, rate: 0.2, cap: 1 },
     MAR: { years: 5, rate: 0.05, cap: 1 },
     JPN: { never: true },
+    KSA: { never: true },
     KOR: { never: true },
     THA: { never: true },
     NGA: { never: true },
@@ -1547,7 +1557,7 @@
   FM.D.CLIMATE = {
     wet: ['ENG', 'SCO', 'WAL', 'IRL', 'NED', 'BEL', 'NOR', 'DEN', 'GER'],
     cold: ['NOR', 'DEN', 'POL', 'CZE', 'AUT', 'SUI', 'SRB', 'GER', 'KOR', 'SCO', 'USA', 'HUN'],
-    warm: ['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'MAR', 'ARG', 'URU', 'USA', 'JPN', 'KOR', 'FRA', 'AUS'],
+    warm: ['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'MAR', 'ARG', 'URU', 'USA', 'JPN', 'KOR', 'FRA', 'AUS', 'KSA'],
     tropical: ['BRA', 'THA', 'NGA', 'MEX', 'COL', 'GHA', 'CIV', 'SEN'],
   };
 
@@ -2378,6 +2388,30 @@
         },
       },
     },
+    // Saudi Arabia: a league of owners with oil money (most of the clubs are Oil-Backed, as the Public Investment Fund's four
+    // are in real life), foreign stars on big wages, and the first division below it
+    {
+      id: 'SA1',
+      nat: 'KSA',
+      name: 'Saudi Premier League',
+      short: 'SA1',
+      tier: 1,
+      sim: 'light',
+      clubs: 'CLUBS_SA1',
+      repBand: [72, 50],
+      rules: { qualify: { to: 'AC', n: 6 }, relegate: { to: 'SA2', n: 3 } },
+    },
+    {
+      id: 'SA2',
+      nat: 'KSA',
+      name: 'Harmony Digital First Division',
+      short: 'SA2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_SA2',
+      repBand: [47, 40],
+      rules: { promote: { to: 'SA1', auto: 3 } },
+    },
   ];
   FM.D.CONTINENTALS = [
     { id: 'CC', region: 'Europe', name: 'European Champions Cup', short: 'EUR1', prize: 15e6 },
@@ -2532,6 +2566,7 @@
     ['CUPARG', 'ARG', 'Argentine Copa de la Federación', 'ARGC', { neutral: 'all' }], // every tie at a neutral ground
     ['CUPUSA', 'USA', 'American Liberty Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
     ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2] }],
+    ['CUPKSA', 'KSA', "Saudi King's Trophy", 'KSAC', { neutral: [2] }],
   ];
   // Club World Cup: last season's continental finalists (winners only from Africa and North America)
   // [competition, 0 = winner / 1 = runner-up], in seed order
@@ -2848,6 +2883,26 @@
       CIV: 1,
     },
     WA1: { WAL: 70, ENG: 20, IRL: 3, SCO: 2, NGA: 1, GHA: 1, ESP: 1, POR: 1, FRA: 1 },
+    SA1: {
+      KSA: 58,
+      BRA: 7,
+      ARG: 3,
+      POR: 3,
+      FRA: 3,
+      MAR: 4,
+      EGY: 3,
+      TUN: 3,
+      SEN: 2,
+      NGA: 2,
+      CIV: 2,
+      ALG: 2,
+      SRB: 2,
+      ENG: 2,
+      ESP: 2,
+      COL: 1,
+      URU: 1,
+    },
+    SA2: { KSA: 72, EGY: 5, TUN: 4, MAR: 4, BRA: 3, ALG: 3, NGA: 2, SEN: 2, SRB: 1, CIV: 1, ARG: 1, POR: 1, ESP: 1 },
   });
 
   // ---------- Alpha 1: contracts, agents, promises, badges ----------

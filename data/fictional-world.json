@@ -2677,9 +2677,9 @@
    "league": "ES3",
    "nat": "ESP",
    "row": [
-    "Unión Alcala",
+    "Unión Navejo",
     "MUR",
-    "Alcala",
+    "Navejo",
     "#C8102E",
     "#FFFFFF",
     "fallen",
@@ -2687,7 +2687,7 @@
     "Estadio La Ribón",
     31179
    ],
-   "short": "ALA",
+   "short": "NAO",
    "nick": "Cruzados",
    "founded": 1882
   },
@@ -5624,7 +5624,7 @@
     "Estádio Nova Ferrães",
     13277
    ],
-   "short": "AAL",
+   "short": "ALA",
    "nick": "Rubro-Negros",
    "founded": 1927
   },
@@ -6172,9 +6172,9 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Sportivo Arrano",
+    "Sportivo Busteda",
     "RIV",
-    "Arrano",
+    "Busteda",
     "#FFFFFF",
     "#E30613",
     "giant",
@@ -6182,7 +6182,7 @@
     "Estadio Lavo",
     85018
    ],
-   "short": "ARO",
+   "short": "BUS",
    "nick": "Albos",
    "founded": 1882
   },
@@ -6190,17 +6190,17 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Atlético Arrano",
+    "Atlético Busteda",
     "BOC",
-    "Arrano",
+    "Busteda",
     "#0033A0",
     "#FFD100",
     "giant",
     78,
-    "Estadio Municipal de Arrano",
+    "Estadio Municipal de Busteda",
     54000
    ],
-   "short": "ANO",
+   "short": "BUA",
    "nick": "Azules",
    "founded": 1892
   },
@@ -6264,7 +6264,7 @@
    "row": [
     "Club Atlético Lezo",
     "SLO",
-    "Arrano",
+    "Busteda",
     "#0033A0",
     "#E30613",
     "historic",
@@ -6282,7 +6282,7 @@
    "row": [
     "Independiente Franas",
     "VEL",
-    "Arrano",
+    "Busteda",
     "#FFFFFF",
     "#0033A0",
     "youth",
@@ -6334,17 +6334,17 @@
    "league": "AR1",
    "nat": "ARG",
    "row": [
-    "Club Deportivo Domas",
+    "Puerto Franez FC",
     "LAN",
-    "Domas",
+    "Puerto Franez",
     "#8A1538",
     "#FFFFFF",
     "selling",
     63,
-    "Estadio Molas",
+    "Estadio Monumental Torero",
     47027
    ],
-   "short": "DOS",
+   "short": "PUE",
    "nick": "Toros",
    "founded": 1956
   },
@@ -6354,7 +6354,7 @@
    "row": [
     "Atlético Velilla",
     "ARJ",
-    "Arrano",
+    "Busteda",
     "#E30613",
     "#FFFFFF",
     "youth",
@@ -6390,7 +6390,7 @@
    "row": [
     "Defensores de Pelleda",
     "HUR",
-    "Arrano",
+    "Busteda",
     "#FFFFFF",
     "#E30613",
     "fan",
@@ -6452,7 +6452,7 @@
     "Estadio Monumental Lezini",
     24544
    ],
-   "short": "NAO",
+   "short": "NOR",
    "nick": "Leones",
    "founded": 1944
   },
@@ -6606,12 +6606,12 @@
    "row": [
     "Club Atlético Franui",
     "BAR",
-    "Arrano",
+    "Busteda",
     "#E30613",
     "#FFFFFF",
     "fan",
     55,
-    "Cancha de Arrano",
+    "Cancha de Busteda",
     4500
    ],
    "short": "FRI",
@@ -6660,7 +6660,7 @@
    "row": [
     "Club Atlético Arreda",
     "RIE",
-    "Arrano",
+    "Busteda",
     "#000000",
     "#FFFFFF",
     "fan",
@@ -10526,7 +10526,7 @@
     48,
     "Nordnyø Arena"
    ],
-   "short": "NOR",
+   "short": "NOY",
    "nick": "De Blå",
    "founded": 1892
   },
@@ -12501,6 +12501,654 @@
    "short": "BDU",
    "nick": "Drovers",
    "founded": 1911
+  },
+  "HIL": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Janub",
+    "HIL",
+    "Ain Jubis",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    72,
+    "Ain Jubis Club Stadium",
+    60000
+   ],
+   "short": "ALL",
+   "nick": "Horsemen",
+   "founded": 1946
+  },
+  "NSR": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Sahil",
+    "NSR",
+    "Ain Jubis",
+    "#FFD100",
+    "#00247D",
+    "oil",
+    71,
+    "Dirum Arena",
+    25000
+   ],
+   "short": "AAL",
+   "nick": "Yellows",
+   "founded": 1973
+  },
+  "ITT": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Yasmin",
+    "ITT",
+    "Yanik",
+    "#FFD100",
+    "#000000",
+    "oil",
+    69,
+    "Damis Arena",
+    62000
+   ],
+   "short": "ALY",
+   "nick": "Yellows",
+   "founded": 2001
+  },
+  "AHL": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Sarh",
+    "AHL",
+    "Yanik",
+    "#006C35",
+    "#FFFFFF",
+    "oil",
+    67,
+    "Yanik Club Stadium",
+    27000
+   ],
+   "short": "AL2",
+   "nick": "Greens",
+   "founded": 1962
+  },
+  "QAD": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Fursan",
+    "QAD",
+    "Rasma",
+    "#FFD100",
+    "#CE1126",
+    "oil",
+    62,
+    "King Najaydah Sports City",
+    20000
+   ],
+   "short": "ALF",
+   "nick": "Horsemen",
+   "founded": 1962
+  },
+  "SHB": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Wafaa",
+    "SHB",
+    "Ain Jubis",
+    "#FFFFFF",
+    "#CE1126",
+    "historic",
+    60,
+    "Ain Jubis Sports City",
+    20000
+   ],
+   "short": "ALW",
+   "nick": "Tigers",
+   "founded": 1905
+  },
+  "ETF": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Haqiqa",
+    "ETF",
+    "Shamaah",
+    "#006C35",
+    "#FFFFFF",
+    "oil",
+    59,
+    "King Dirayma Sports City",
+    35000
+   ],
+   "short": "ALH",
+   "nick": "Gazelles",
+   "founded": 1935
+  },
+  "NEO": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Ufuq",
+    "NEO",
+    "Jubabah",
+    "#00B2A9",
+    "#FFFFFF",
+    "oil",
+    58,
+    "Prince Tabma Stadium",
+    20000
+   ],
+   "short": "ALU",
+   "nick": "Lions",
+   "founded": 1921
+  },
+  "KHO": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Rayyan",
+    "KHO",
+    "Ulat",
+    "#CE1126",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Zulis Stadium",
+    15000
+   ],
+   "short": "ALR",
+   "nick": "Reds",
+   "founded": 1939
+  },
+  "FAT": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Ibda",
+    "FAT",
+    "Ain Tabuf",
+    "#00A9E0",
+    "#FFFFFF",
+    "fan",
+    56,
+    "Jubik Stadium",
+    20000
+   ],
+   "short": "ALI",
+   "nick": "Sky Blues",
+   "founded": 1989
+  },
+  "DAM": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Saqr",
+    "DAM",
+    "Khamaah",
+    "#8A1538",
+    "#FFFFFF",
+    "oil",
+    55,
+    "Haalif Stadium",
+    20000
+   ],
+   "short": "AL3",
+   "nick": "Knights",
+   "founded": 1919
+  },
+  "TAA": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Sanabil",
+    "TAA",
+    "Shaydah",
+    "#FFD100",
+    "#CE1126",
+    "fan",
+    55,
+    "Dira Stadium",
+    25000
+   ],
+   "short": "AL4",
+   "nick": "Yellows",
+   "founded": 1936
+  },
+  "RIY": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Taqaddum",
+    "RIY",
+    "Ain Jubis",
+    "#0057B8",
+    "#FFD100",
+    "oil",
+    54,
+    "Tura Stadium",
+    22000
+   ],
+   "short": "ATA",
+   "nick": "Sandstorm",
+   "founded": 1971
+  },
+  "FYH": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Hadaf",
+    "FYH",
+    "Wadi Bahabah",
+    "#CE1126",
+    "#FFD100",
+    "youth",
+    53,
+    "Hofayma Arena",
+    15000
+   ],
+   "short": "AHA",
+   "nick": "Reds",
+   "founded": 1985
+  },
+  "KHA": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Aseel",
+    "KHA",
+    "Ras Ulamaah",
+    "#CE1126",
+    "#FFFFFF",
+    "fan",
+    52,
+    "Haira Stadium",
+    18000
+   ],
+   "short": "AAS",
+   "nick": "Reds",
+   "founded": 1928
+  },
+  "RAE": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Dhib",
+    "RAE",
+    "Shaydah",
+    "#CE1126",
+    "#FFFFFF",
+    "historic",
+    52,
+    "Shaydah Club Stadium",
+    25000
+   ],
+   "short": "ADH",
+   "nick": "Reds",
+   "founded": 1898
+  },
+  "OKH": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Riayma",
+    "OKH",
+    "Riayma",
+    "#00A9E0",
+    "#FFFFFF",
+    "fan",
+    50,
+    "Ulara Stadium",
+    15000
+   ],
+   "short": "ARI",
+   "nick": "Falcons",
+   "founded": 1946
+  },
+  "ORO": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al Nakhil",
+    "ORO",
+    "Bahabah",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    50,
+    "Ainud Stadium",
+    12000
+   ],
+   "short": "ALN",
+   "nick": "Tigers",
+   "founded": 1982
+  },
+  "HAZ": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Zaman",
+    "HAZ",
+    "Ulat",
+    "#FFD100",
+    "#CE1126",
+    "fan",
+    47,
+    "Rafan Arena",
+    15000
+   ],
+   "short": "ALZ",
+   "nick": "Yellows",
+   "founded": 1970
+  },
+  "NAJ": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Tafawuq",
+    "NAJ",
+    "Wadi Buruf",
+    "#FFD100",
+    "#CE1126",
+    "oil",
+    46,
+    "Wadi Buruf Sports City",
+    10000
+   ],
+   "short": "AL5",
+   "nick": "Yellows",
+   "founded": 1916
+  },
+  "ABH": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Qamar",
+    "ABH",
+    "Haaydah",
+    "#FFD100",
+    "#0057B8",
+    "oil",
+    46,
+    "Prince Ainaydah Stadium",
+    20000
+   ],
+   "short": "ALQ",
+   "nick": "Horsemen",
+   "founded": 1942
+  },
+  "WEH": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Zahra",
+    "WEH",
+    "Bahayma",
+    "#CE1126",
+    "#FFFFFF",
+    "historic",
+    46,
+    "Ula Arena",
+    38000
+   ],
+   "short": "AZA",
+   "nick": "Tigers",
+   "founded": 1936
+  },
+  "ADA": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Ain Tabuf Club",
+    "ADA",
+    "Ain Tabuf",
+    "#00A9E0",
+    "#FFFFFF",
+    "oil",
+    45,
+    "Ain Tabuf Club Stadium",
+    20000
+   ],
+   "short": "AAI",
+   "nick": "Eagles",
+   "founded": 1966
+  },
+  "ARB": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Wadi Buruf SC",
+    "ARB",
+    "Wadi Buruf",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Wadi Buruf Club Stadium",
+    10000
+   ],
+   "short": "WAD",
+   "nick": "Eagles",
+   "founded": 1986
+  },
+  "JBL": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Tatwir",
+    "JBL",
+    "Ain Jubik",
+    "#006C35",
+    "#FFD100",
+    "oil",
+    44,
+    "King Mahra Sports City",
+    15000
+   ],
+   "short": "AL6",
+   "nick": "Greens",
+   "founded": 1967
+  },
+  "BTN": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Ras Zulik",
+    "BTN",
+    "Ras Zulik",
+    "#006C35",
+    "#FFFFFF",
+    "oil",
+    44,
+    "Prince Riat Stadium",
+    10000
+   ],
+   "short": "AL7",
+   "nick": "Greens",
+   "founded": 1997
+  },
+  "FSL": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Shuja",
+    "FSL",
+    "Riuf",
+    "#CE1126",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Riuf Sports City",
+    10000
+   ],
+   "short": "ASH",
+   "nick": "Reds",
+   "founded": 1912
+  },
+  "TAI": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Karama",
+    "TAI",
+    "Ain Jubik",
+    "#FFD100",
+    "#CE1126",
+    "fan",
+    43,
+    "Prince Hofmaah Stadium",
+    18000
+   ],
+   "short": "AL8",
+   "nick": "Hawks",
+   "founded": 1941
+  },
+  "ZUL": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Tahaddi",
+    "ZUL",
+    "Umm Rafaydah",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Sakat Arena",
+    8000
+   ],
+   "short": "AL9",
+   "nick": "Greens",
+   "founded": 1980
+  },
+  "JAN": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Wadi",
+    "JAN",
+    "Ulayma",
+    "#CE1126",
+    "#FFFFFF",
+    "fan",
+    42,
+    "King Burud Sports City",
+    8000
+   ],
+   "short": "AL10",
+   "nick": "Reds",
+   "founded": 1920
+  },
+  "DIR": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Mawj",
+    "DIR",
+    "Tabaydah",
+    "#FFD100",
+    "#006C35",
+    "oil",
+    42,
+    "Prince Hofum Stadium",
+    12000
+   ],
+   "short": "AMA",
+   "nick": "Yellows",
+   "founded": 1983
+  },
+  "AIN": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Qimma",
+    "AIN",
+    "Najis",
+    "#CE1126",
+    "#FFFFFF",
+    "oil",
+    41,
+    "Najis Club Stadium",
+    8000
+   ],
+   "short": "AQI",
+   "nick": "Horsemen",
+   "founded": 1930
+  },
+  "QAI": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Nimr",
+    "QAI",
+    "Abhis",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    41,
+    "King Turir Sports City",
+    8000
+   ],
+   "short": "ANI",
+   "nick": "Gazelles",
+   "founded": 1972
+  },
+  "ANW": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Asad",
+    "ANW",
+    "Jubaydah",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Jubaydah Sports City",
+    8000
+   ],
+   "short": "AL11",
+   "nick": "Greens",
+   "founded": 1948
+  },
+  "BUK": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Nour",
+    "BUK",
+    "Yana",
+    "#006C35",
+    "#FFD100",
+    "oil",
+    40,
+    "Bahayma Arena",
+    6000
+   ],
+   "short": "ANO",
+   "nick": "Greens",
+   "founded": 1967
+  },
+  "JED": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al Khalid",
+    "JED",
+    "Yanik",
+    "#0057B8",
+    "#CE1126",
+    "oil",
+    40,
+    "Majuf Arena",
+    10000
+   ],
+   "short": "AKH",
+   "nick": "Blues",
+   "founded": 1999
   }
  },
  "leagues": {
@@ -12743,6 +13391,18 @@
    "tier": 1,
    "name": "Welsh Uwch Division",
    "short": "WA1"
+  },
+  "SA1": {
+   "nat": "KSA",
+   "tier": 1,
+   "name": "Saudi Premier League",
+   "short": "SA1"
+  },
+  "SA2": {
+   "nat": "KSA",
+   "tier": 2,
+   "name": "Harmony Digital First Division",
+   "short": "SA2"
   }
  },
  "continentals": {
@@ -12862,6 +13522,11 @@
    "nat": "JPN",
    "name": "Japanese National Cup",
    "short": "JPNC"
+  },
+  "CUPKSA": {
+   "nat": "KSA",
+   "name": "Saudi King's Trophy",
+   "short": "KSAC"
   }
  },
  "rivals": [
@@ -13238,7 +13903,7 @@
   [
    "RIV",
    "BOC",
-   "Arrano Derby"
+   "Busteda Derby"
   ],
   [
    "RAC",
@@ -13253,7 +13918,7 @@
   [
    "SLO",
    "HUR",
-   "Arrano Derby"
+   "Busteda Derby"
   ],
   [
    "ELP",
@@ -13268,7 +13933,7 @@
   [
    "LAN",
    "BAN",
-   "Domas–Quirona Derby"
+   "Puerto Franez–Quirona Derby"
   ],
   [
    "GOD",
@@ -13539,6 +14204,41 @@
    "CQN",
    "FLI",
    "Dolgwyn–Bangorddu Derby"
+  ],
+  [
+   "HIL",
+   "NSR",
+   "Ain Jubis Derby"
+  ],
+  [
+   "ITT",
+   "AHL",
+   "Yanik Derby"
+  ],
+  [
+   "HIL",
+   "ITT",
+   "Ain Jubis–Yanik Derby"
+  ],
+  [
+   "SHB",
+   "RIY",
+   "Ain Jubis Derby"
+  ],
+  [
+   "TAA",
+   "RAE",
+   "Shaydah Derby"
+  ],
+  [
+   "FAT",
+   "KHA",
+   "Ain Tabuf–Ras Ulamaah Derby"
+  ],
+  [
+   "WEH",
+   "ITT",
+   "Bahayma–Yanik Derby"
   ]
  ],
  "nations": {

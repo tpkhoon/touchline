@@ -611,7 +611,10 @@
   };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
-    const heritage = W.pickHeritage(nat),
+    // a club with a heritage policy (Basque-only, Catalan-only) fields players of that heritage and its own nation
+    const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
+    if (pol) nat = FM.S.clubs[clubId].nat;
+    const heritage = pol ? pol.heritage : W.pickHeritage(nat),
       nm = W.rollName(nat, heritage);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(
@@ -1863,6 +1866,7 @@
       wbPos: 2, // wing-backs are a position from the start (older saves convert theirs on load)
       wmPos: 1, // so are wide midfielders (LM/RM)
       traitsV2: 1,
+      policyV1: 1,
       compRules: 3, // and each league's real promotion, relegation and play-off rules
       clubAbbr: 2, // clubs show their real abbreviations and nicknames
       rules: {
@@ -1930,6 +1934,7 @@
         nat,
         colors: [c1, c2],
         identity,
+        policy: D.CLUB_POLICY[code] || null, // who the club will sign (the Basque and Catalan clubs of Spain's second division)
         rep,
         parent,
         stadium: { name: stadium, cap, cap0: cap },

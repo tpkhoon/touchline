@@ -1201,7 +1201,7 @@
       sq.forEach((p) => (counts[p.pos] = (counts[p.pos] || 0) + 1));
       const pos = Object.keys(want).find((k) => (counts[k] || 0) < want[k]) || U.pick(D.POS);
       const fa = Object.values(S.players)
-        .filter((p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= level - 18)
+        .filter((p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= level - 18 && FM.Reg.policy(c, p).ok)
         .sort((a, b) => b.ca - a.ca)[0];
       let p = fa;
       if (p) {
@@ -1633,6 +1633,27 @@
           runnerUp: c.runnerUp,
           awards: c.awards || null, // its awards and team of the tournament
         };
+    // Each club's season in the archive beside the tables: its manager, top scorer and cup runs
+    {
+      const topBy = {};
+      for (const p of Object.values(S.players)) {
+        if (p.retired || !p.clubId || !(p.season.goals > 0)) continue;
+        if (!topBy[p.clubId] || p.season.goals > topBy[p.clubId].g)
+          topBy[p.clubId] = { g: p.season.goals, n: W.name(p) };
+      }
+      const cups = Object.values(S.comps).filter((c) => c.type === 'cup' || c.type === 'continental');
+      entry.clubInfo = {};
+      for (const c of Object.values(S.clubs)) {
+        if (!c.comp || !S.comps[c.comp] || c.sim === 'nation') continue;
+        const m = W.isUser(c.id) ? null : c.manager && S.staff[c.manager],
+          runs = cups.map((x) => [x.name, FM.Cups.runOf(x, c.id)]).filter((x) => x[1]);
+        entry.clubInfo[c.id] = {
+          m: W.isUser(c.id) ? S.user.name : m ? `${m.fn} ${m.ln}` : '',
+          t: topBy[c.id] ? [topBy[c.id].n, topBy[c.id].g] : null,
+          c: runs,
+        };
+      }
+    }
     // Apply promotion/relegation relationships (then put any B team now level with its parent back down)
     const applyMove = ([id, from, to]) => {
       const c = S.clubs[id];
@@ -1794,6 +1815,7 @@
       if (rows.length) p.history = (p.history || []).concat(rows);
       delete p.splits;
       Sea.rustPositions(p);
+      Sea.shiftPotential(p); // young players' potential moves with how the season went
       p.season = W.blankSeason();
       p.flagMinutes = false;
       p.lastGrowth = 0;

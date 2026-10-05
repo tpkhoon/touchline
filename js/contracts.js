@@ -305,8 +305,8 @@
         ok: false,
         msg: `That exceeds your transfer budget of ${U.money(club.budget)}${deal && deal.inst > 1 ? ' (the board sets aside half of the later instalments)' : ''}.`,
       };
-    if (FM.Reg.real() && !FM.Reg.canSign(club, p).ok)
-      return { ok: false, msg: `You can't register him: ${FM.Reg.canSign(club, p).why}` };
+    const rc = FM.Reg.real() ? FM.Reg.canSign(club, p) : FM.Reg.policy(club, p);
+    if (!rc.ok) return { ok: false, msg: `You can't register him: ${rc.why}` };
     if (FM.Finance.frozen(t.wage))
       return {
         ok: false,
