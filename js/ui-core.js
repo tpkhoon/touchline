@@ -590,7 +590,11 @@
                   ? 'Playoff final'
                   : cal.stage === 'F2'
                     ? 'Playoff final · 2nd leg'
-                    : 'Playoff semis';
+                    : cal.stage === 'M4'
+                      ? 'Playoff final'
+                      : /^M/.test(cal.stage)
+                        ? 'Playoffs'
+                        : 'Playoff semis';
     // On a cup, continental or international day, still show how far the league season has got
     const lc = club && S.comps[club.comp];
     const mdAll =

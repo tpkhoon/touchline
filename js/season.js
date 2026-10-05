@@ -270,7 +270,7 @@
           const i = M.seeds[n].indexOf(id);
           if (i >= 0) return i;
         }
-        return M.extra && M.extra[id] !== undefined ? M.extra[id] : 99;
+        return 99;
       },
       rank = (id) => seedOf(id) * 1000 + table.indexOf(id),
       best = (x, y) => (rank(x) <= rank(y) ? [x, y] : [y, x]),
@@ -349,10 +349,8 @@
             .filter(([h, a]) => h && a)
             .map(([h, a]) => tie(h, a));
         else if (stage === 'M2') {
-          // the top six and the two play-in winners (7th and 8th seeds), 1 v 8, 2 v 7, 3 v 6, 4 v 5
-          const w = win('M1');
-          M.extra = { [w[0]]: 6, [w[1]]: 7 };
-          M.M2 = reseed([...s.slice(0, 6), ...w]);
+          // the top six and the two play-in winners, best against worst: 1 v 8, 2 v 7, 3 v 6, 4 v 5 (by original seed)
+          M.M2 = reseed([...s.slice(0, 6), ...win('M1')]);
         } else if (stage === 'M3') M.M3 = reseed(win('M2'));
         else if (stage === 'M4') M.M4 = Sea.koFinal(c, M, win('M3'), tie, table);
       } else if (type === 'zones') {

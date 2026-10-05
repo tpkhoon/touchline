@@ -1558,13 +1558,16 @@
     B.forEach((id) => (comp.zones[id] = 'B'));
     const rrA = W.roundRobin(A),
       rrB = W.roundRobin(B),
-      h = Math.max(rrA.length, rrB.length) / 2;
+      hA = rrA.length / 2,
+      hB = rrB.length / 2,
+      h = Math.max(hA, hB);
     const cross = A.slice(0, Math.min(A.length, B.length)).map((a, i) => (Math.random() < 0.5 ? [a, B[i]] : [B[i], a]));
     const t1 = [],
       t2 = [];
+    // (each zone's two halves from its own length, so zones of different sizes keep their second half)
     for (let r = 0; r < h; r++) {
-      t1.push([...(rrA[r] || []), ...(rrB[r] || [])]);
-      t2.push([...(rrA[h + r] || []), ...(rrB[h + r] || [])]);
+      t1.push([...(rrA[r] && r < hA ? rrA[r] : []), ...(rrB[r] && r < hB ? rrB[r] : [])]);
+      t2.push([...(r < hA ? rrA[hA + r] || [] : []), ...(r < hB ? rrB[hB + r] || [] : [])]);
     }
     t1.push(cross);
     t2.push(cross.map(([x, y]) => [y, x]));
@@ -1588,6 +1591,7 @@
     let rounds = R.conferences ? W.conferenceRounds(comp) : R.zones ? W.zoneRounds(comp) : W.roundRobin(comp.clubs);
     if (R.rounds) rounds = rounds.slice(0, R.rounds); // formats shorter than a double round-robin
     comp.groupOf = null;
+    comp.groups = null;
     comp.split = null;
     if (R.split) {
       // a regular season of `after` rounds (a third time round for the 33-game leagues), then the split
@@ -1637,7 +1641,7 @@
         (rds[j] || []).map(([h, a]) => ({ id: FM.nextId('f'), comp: c.id, round: sp.after + j, h, a, res: null })),
       );
     c.split.done = true;
-    const uc = W.userClub();
+    const uc = FM.S.user && W.userClub(); // (a world with no manager yet, as in the developer tools, has none)
     if (uc && uc.comp === c.id)
       FM.News.add({
         type: 'world',
@@ -1808,9 +1812,8 @@
     for (let r = 0; r < rounds; r++) {
       cal.push({ type: 'league', round: r });
       // the first tournament's knockouts follow its last round
-      for (const c of mid)
-        if (c.onDay[r] === c.torneoHalf - 1)
-          for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 0 });
+      if (mid.some((c) => c.onDay[r] === c.torneoHalf - 1))
+        for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 0 });
       let st = CC[r];
       if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF)1$/, '$1');
       if (st && W.continentals().length) cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: st });

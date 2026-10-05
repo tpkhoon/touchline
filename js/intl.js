@@ -757,7 +757,9 @@
   I.naturalisationTick = function () {
     const s = S(),
       done = {},
-      cut = {};
+      cut = {},
+      seed = !s.resSeeded; // (once, when the world begins: foreigners already abroad are given the years they would have had)
+    s.resSeeded = true;
     const bar = (code) => (cut[code] === undefined ? (cut[code] = (I.pool(code)[22] || { ca: 0 }).ca) : cut[code]);
     for (const p of U.shuffle(Object.values(s.players))) {
       if (p.retired || !p.clubId || W.age(p) < 18) continue;
@@ -766,7 +768,8 @@
       if (!host || host === p.nat || host === p.nat2 || !D.NATIONS[host]) continue;
       p.res = p.res || {};
       // a foreigner already at his club when the save began is assumed to have been there a while
-      if (p.res[host] === undefined) p.res[host] = U.randi(0, Math.min(8, W.age(p) - 18));
+      if (p.res[host] === undefined)
+        p.res[host] = seed ? U.randi(0, Math.min(8, W.age(p) - 18)) : 0; // a new host starts at 0
       else p.res[host]++;
       if (p.nat2 || !I.uncapped(p) || !s.nteams['n_' + host]) continue;
       const rule = I.naturalRule(host, p.nat);
