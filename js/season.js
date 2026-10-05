@@ -270,7 +270,7 @@
           const i = M.seeds[n].indexOf(id);
           if (i >= 0) return i;
         }
-        return M.extra && M.extra[id] !== undefined ? M.extra[id] : 99;
+        return 99;
       },
       rank = (id) => seedOf(id) * 1000 + table.indexOf(id),
       best = (x, y) => (rank(x) <= rank(y) ? [x, y] : [y, x]),
@@ -349,10 +349,8 @@
             .filter(([h, a]) => h && a)
             .map(([h, a]) => tie(h, a));
         else if (stage === 'M2') {
-          // the top six and the two play-in winners (7th and 8th seeds), 1 v 8, 2 v 7, 3 v 6, 4 v 5
-          const w = win('M1');
-          M.extra = { [w[0]]: 6, [w[1]]: 7 };
-          M.M2 = reseed([...s.slice(0, 6), ...w]);
+          // the top six and the two play-in winners, best against worst: 1 v 8, 2 v 7, 3 v 6, 4 v 5 (by original seed)
+          M.M2 = reseed([...s.slice(0, 6), ...win('M1')]);
         } else if (stage === 'M3') M.M3 = reseed(win('M2'));
         else if (stage === 'M4') M.M4 = Sea.koFinal(c, M, win('M3'), tie, table);
       } else if (type === 'zones') {
@@ -1203,7 +1201,7 @@
       sq.forEach((p) => (counts[p.pos] = (counts[p.pos] || 0) + 1));
       const pos = Object.keys(want).find((k) => (counts[k] || 0) < want[k]) || U.pick(D.POS);
       const fa = Object.values(S.players)
-        .filter((p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= level - 18)
+        .filter((p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= level - 18 && FM.Reg.policy(c, p).ok)
         .sort((a, b) => b.ca - a.ca)[0];
       let p = fa;
       if (p) {
@@ -1635,6 +1633,27 @@
           runnerUp: c.runnerUp,
           awards: c.awards || null, // its awards and team of the tournament
         };
+    // Each club's season in the archive beside the tables: its manager, top scorer and cup runs
+    {
+      const topBy = {};
+      for (const p of Object.values(S.players)) {
+        if (p.retired || !p.clubId || !(p.season.goals > 0)) continue;
+        if (!topBy[p.clubId] || p.season.goals > topBy[p.clubId].g)
+          topBy[p.clubId] = { g: p.season.goals, n: W.name(p) };
+      }
+      const cups = Object.values(S.comps).filter((c) => c.type === 'cup' || c.type === 'continental');
+      entry.clubInfo = {};
+      for (const c of Object.values(S.clubs)) {
+        if (!c.comp || !S.comps[c.comp] || c.sim === 'nation') continue;
+        const m = W.isUser(c.id) ? null : c.manager && S.staff[c.manager],
+          runs = cups.map((x) => [x.name, FM.Cups.runOf(x, c.id)]).filter((x) => x[1]);
+        entry.clubInfo[c.id] = {
+          m: W.isUser(c.id) ? S.user.name : m ? `${m.fn} ${m.ln}` : '',
+          t: topBy[c.id] ? [topBy[c.id].n, topBy[c.id].g] : null,
+          c: runs,
+        };
+      }
+    }
     // Apply promotion/relegation relationships (then put any B team now level with its parent back down)
     const applyMove = ([id, from, to]) => {
       const c = S.clubs[id];
@@ -1796,6 +1815,7 @@
       if (rows.length) p.history = (p.history || []).concat(rows);
       delete p.splits;
       Sea.rustPositions(p);
+      Sea.shiftPotential(p); // young players' potential moves with how the season went
       p.season = W.blankSeason();
       p.flagMinutes = false;
       p.lastGrowth = 0;

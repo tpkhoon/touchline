@@ -4,6 +4,7 @@
 const words = (s) => s.trim().split(/\s+/);
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const rep = (list, n) => Array.from({ length: n }, () => list).flat(); // (weights: a pattern listed twice is twice as likely)
+const cross = (tpl, list) => words(list).map((w) => tpl.replace('{w}', w));
 const VOWELS = 'aeiouyáéíóúàèìòùâêîôûäöüåæøãõ';
 const isVowel = (c) => VOWELS.includes((c || '').toLowerCase());
 
@@ -884,7 +885,7 @@ export const LANG = {
     cup: 'National Cup',
   },
   tha: {
-    nations: 'THA IND IDN VIE MYS UZB IRN KSA QAT UAE IRQ',
+    nations: 'THA IND IDN VIE MYS UZB IRN',
     a: words('Ban Chiang Nakhon Sri Phra Lam Pak Ubon Sing Mae Nong Kao Phu Tha Wang Khao Bang Rat Sak Tak'),
     b: words('buri pur mai nong kaeo chan ra sai yai thong lek nam'),
     elide: false,
@@ -915,6 +916,54 @@ export const LANG = {
     misc: words('Elephants Tigers Eagles Dragons Cobras Hornbills Lions Panthers'),
     tiers: ['Premier League', 'Division 1', 'Division 2', 'Division 3', 'Regional League'],
     cup: 'Champions Cup',
+  },
+  // The Gulf and the Arab world: "Al" ("the") and a concept — a quality, a bird, a direction, a hope: Al Fajr (dawn).
+  // Clubs are named for the idea and then the town; the club's own story decides which (a company, a prince, a tribe).
+  arab: {
+    nations: 'KSA QAT UAE IRQ',
+    a: words(
+      'Bur Hof Maj Kha Naj Tab Sak Abh Yan Qas Jub Ras Sha Tur Ula Diri Zul Mah Ain Bah Dam Jed Riy Hai Taim Bish Raf',
+    ),
+    b: words('aydah uf maah is an ik at ra ma a um ayma ud abah alif ir'),
+    elide: true,
+    pre: ['Ras', 'Umm', 'Ain', 'Wadi'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...cross(
+        'Al {w}',
+        `Fajr Saqr Wahat Rimal Nakhil Qamar Shams Sahab Bahr Zahra Majd Izz Wafaa Tahaddi Taqaddum Burj Jabal Wadi Sahil Dhahab
+        Ward Yasmin Aseel Basil Shuja Fursan Nimr Asad Dhib Ghazal Nawras Sanabil Mawj Ufuq Raya Sharq Janub Shamal Gharb Sarh
+        Qimma Hadaf Tafawuq Ibda Tatwir Watan Hurriya Karama Ihsan Nahda Nour Falah Salam Yaqin Haqiqa Tarab Rayyan Zaman Khalid`,
+      ),
+      'Al {c}',
+      '{c} SC',
+      'Al {c} Club',
+    ],
+    ground: [
+      '{x} Stadium',
+      'Prince {x} Stadium',
+      'King {x} Sports City',
+      '{c} Sports City',
+      '{x} Arena',
+      '{c} Club Stadium',
+    ],
+    colours: {
+      red: 'Reds',
+      blue: 'Blues',
+      white: 'Whites',
+      black: 'Blacks',
+      yellow: 'Yellows',
+      green: 'Greens',
+      orange: 'Oranges',
+      claret: 'Maroons',
+      sky: 'Sky Blues',
+      navy: 'Navy',
+    },
+    misc: words('Falcons Knights Lions Eagles Tigers Gazelles Foxes Sandstorm Camels Hawks Horsemen'),
+    tiers: ['Premier League', 'First Division', 'Second Division', 'Third Division', 'Regional League'],
+    cup: "King's Trophy",
+    quirk: ['Ras', 'Umm', 'Wadi'],
   },
 };
 // ---------------------------------------------------------------- more variety
@@ -1075,7 +1124,6 @@ export const CUP_BY = {
 // Real clubs take their names from how they began: a works team, a church, a merger, a university, a migrant community, a
 // company. These patterns follow that, region by region (see docs/NAMING_RULES.md). A pattern is a template: {c} is the
 // town. Nothing here is a real club's name, only the words real clubs are built from.
-const cross = (tpl, list) => words(list).map((w) => tpl.replace('{w}', w));
 // England and the British Isles: works teams, collieries, railways, churches and mergers
 CLUB_MORE.eng.push(
   '{c} Works',
@@ -1919,6 +1967,10 @@ export const SPONSORS = words(
   Verity Summit Halcyon Brightway Northgate Calder Redwater Evergreen Pinnacle Harbor Crestline Sable Monarch Beacon`,
 );
 const SPONSORS_NAT = {
+  KSA: words(
+    `Najd_Telecom Riyadh_Capital Red_Sea_Energy Gulf_Petrochemical Desert_Rose_Bank Sahara_Holding Tihama_Insurance
+    Jeddah_Port Harmony_Digital Al_Wasl_Estates Oasis_Mutual Falcon_Aviation Nakheel_Foods Dhahran_Steel`,
+  ),
   ENG: words(
     `Brightway Northgate Calder Redwater Ironbridge Thornfield Kingsley Alderwood Stonebridge Westbrook Highmark Foxmoor
     Heathmoor Millstone Whitcombe Parkhurst Marlowe Ravenscar Dunmore Elmstead Fairhaven Bluepeak Lakeshore Oakridge`,

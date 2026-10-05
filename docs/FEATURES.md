@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-283 features are playable in the web prototype today. Build = the build that added it.
+287 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -254,7 +254,7 @@ Every feature from the game design document, with what is playable in the protot
 | Squad | Left and right positions: LB/RB and LW/RW with a natural side | Playtest round 6 |
 | Squad | Wing-backs as a position (LWB/RWB), with their own attribute weights | Playtest round 6 |
 | Tools | Transfer realism test, with a mode for testing a player you describe | Playtest round 6 |
-| Competitions | Four more leagues: the A-League Men (Australia, with Auckland and Wellington), the Hungarian NB I, the League of Ireland Premier Division and the Cymru Premier, two new nations (Australia, Hungary), derbies and nationality mixes (710 clubs in 40 leagues; the Serbian SuperLiga was already in) | Playtest round 7 |
+| Competitions | Four more leagues: the A-League Men (Australia, with Auckland and Wellington), the Hungarian NB I, the League of Ireland Premier Division and the Cymru Premier, two new nations (Australia, Hungary), derbies and nationality mixes (746 clubs in 42 leagues; the Serbian SuperLiga was already in) | Playtest round 7 |
 | Squad | Wide midfielders as a position (LM/RM): own attribute weights, roles (Wide Mid, Defensive Winger, Wide Playmaker, Inverted Wide Mid), the flat-four flanks of 4-4-2, 4-4-1-1, 4-1-4-1 and 5-4-1; squads split their wide places between wingers and wide midfielders by formation; older saves convert | Playtest round 7 |
 | Squad | Position versatility: second positions come from the neighbouring positions' table fits (a third of players, one in eight a utility player with up to three), players say everywhere they can play (LWB, LM, ...), the young and utility players learn new positions faster, and a player's natural position changes as his game does (a winger who loses pace becomes a wide midfielder) | Playtest round 7 |
 | Tactics | Selection: every club's XI is improved by swapping places while the team's total rises, and the bench covers centre-back, full-back, central midfield, the flanks and striker by who can play there, not just by group | Playtest round 7 |
@@ -308,7 +308,11 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
 | Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
 | Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
-| Career | Start a career in any of the 40 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
+| Career | Start a career in any of the 42 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
+| Players | Basque and Catalan heritage: players of Basque and Catalan families with their own name cultures; Eibar sign only Basque players and Andorra only Catalan ones (the Athletic Club policy), for transfers, loans, free agents, pre-contracts and trials, by you and the AI | Playtest round 10 |
+| Competitions | The Saudi Pro League and First Division (18 clubs each, most of them Oil-Backed), the King's Cup, six Asian Champions Cup places, ten foreign players a squad, riyals as a display currency | Playtest round 10 |
+| Players | Dynamic potential: a young player's potential moves each summer until 25 with his performance against his curve, ratings and game time, the academy and training, injuries and luck; news and a profile trend arrow for your players | Playtest round 10 |
+| Clubs | Club season by season: each season's league, position, record, goals and points with the manager, top scorer, cup runs and honours, and an All seasons view | Playtest round 10 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |

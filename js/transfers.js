@@ -78,6 +78,7 @@
     if (!FM.Season.windowOpen()) return { ok: false, msg: 'Loans can only be agreed while the window is open.' };
     if (!p.clubId) return { ok: false, msg: 'He is a free agent — just offer him a contract.' };
     if (p.loan) return { ok: false, msg: `He's already on loan at ${S.clubs[p.clubId].name}.` };
+    if (!FM.Reg.policy(club, p).ok) return { ok: false, msg: FM.Reg.policy(club, p).why };
     const t = T.loanTerms(p);
     if (!t.available)
       return { ok: false, msg: `${S.clubs[p.clubId].name} won't loan him out — he's too important to them.` };
@@ -467,10 +468,10 @@
   T.regCheck = function (c) {
     if (FM.Reg.real()) {
       const st = FM.Reg.status(c);
-      return st ? (p) => FM.Reg.canSign(c, p, st).ok : () => true;
+      return st ? (p) => FM.Reg.canSign(c, p, st).ok : (p) => FM.Reg.policy(c, p).ok;
     }
     const full = T.foreignCount(c) >= FM.S.rules.foreignLimit + 3;
-    return (p) => !(full && p.nat !== c.nat);
+    return (p) => FM.Reg.policy(c, p).ok && !(full && p.nat !== c.nat);
   };
   T.canRegister = (c, p) => T.regCheck(c)(p);
   // Squad planning by age: a starter past his best (31+, keepers 33+) with no heir in the squad is replaced now,
@@ -823,6 +824,7 @@
         (c.sim === 'full' || c.sim === 'light') &&
         !W.isUserSide(c.id) &&
         c.rep >= uc.rep - (target.listed ? 20 : 4) &&
+        FM.Reg.policy(c, target).ok &&
         c.budget >= target.value * 0.8,
     );
     if (!bidders.length) return;
@@ -873,6 +875,7 @@
           !W.isUserSide(c.id) &&
           !open.has(c.id) &&
           c.rep >= uc.rep - 20 &&
+          FM.Reg.policy(c, p).ok &&
           c.budget >= p.value * 0.8,
       ),
     ).slice(0, 3);

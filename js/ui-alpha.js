@@ -219,7 +219,7 @@
           <div class="tiny dim" style="margin-top:6px">Bonuses are what he'd earn at his expected appearances and goals; the first season includes the agent's fee (${U.money(Co.agentFee(p, o.fee, t.wage, mode))}). Your wage bill would be ${Math.round(cost.ratio * 100)}% of revenue${cost.ratio >= FM.Finance.LIMIT.cut ? ` — over the ${Math.round(FM.Finance.LIMIT.cut * 100)}% where the board cut budgets` : ''}.${t.release ? ` A club paying ${U.money(t.release)} can take him.` : ''}</div></div>`;
     }
     const rivals = !renew && o.mode !== 'loan' ? FM.Market.rivals(p) : [];
-    const reg = !renew && FM.Reg.real() ? FM.Reg.canSign(c, p) : { ok: true };
+    const reg = !renew ? (FM.Reg.real() ? FM.Reg.canSign(c, p) : FM.Reg.policy(c, p)) : { ok: true };
     const extraLines = `${rivals.length ? `<div class="warnline" style="margin-top:10px">⚔️ Also in for him: <b>${rivals.map((x) => esc(x.name)).join(', ')}</b>. Once everything is agreed he'll weigh up the league, the club, playing time, wages and home.</div>` : ''}${reg.ok ? '' : `<div class="warnline" style="margin-top:10px;color:var(--bad)">📋 ${esc(reg.why)}</div>`}`;
     const agentBtn =
       o.counterTerms && o.mode !== 'loan'
@@ -442,8 +442,9 @@
 
   // ======================= Team overview (from league and group tables) =======================
   UI.acts.clubView = (d) => UI.clubSheet(d.id);
-  // The club's seasons from the archive: league, position, record, points, and what it won, went up or down
-  UI.clubSeasonsCard = function (id) {
+  // The club's seasons from the archive: league, position, record, goals, points, and what it won, went up or down; and
+  // under each season its manager, top scorer and cup runs (kept from the season the game began recording them)
+  UI.clubSeasons = function (id) {
     const s = S(),
       rows = [];
     for (const e of (s.archive || []).slice().reverse()) {
@@ -452,24 +453,46 @@
         const c = e.comps[cid],
           i = (c.table || []).findIndex((r) => r.id === id);
         if (i < 0) continue;
-        const r = c.table[i];
-        line = { e, c, pos: i + 1, r };
+        line = { e, c, pos: i + 1, r: c.table[i], cid };
         break;
       }
       if (!line) continue;
+      const tn = (line.c.torneos || []).map((t, k) => (t.champion === id ? t.name : '')).filter(Boolean);
       const won = Object.values(e.cups || {})
         .filter((x) => x.winner === id)
         .map((x) => x.name);
-      if (line.c.champion === id) won.unshift(line.c.name);
+      if (line.c.champion === id || (line.c.champions || []).includes(id))
+        won.unshift(tn.length ? `${line.c.name} (${tn.join(' and ')})` : line.c.name);
+      if (line.c.shield === id) won.push("Supporters' Shield");
       const move = (e.promoted || []).includes(id) ? '⬆️' : (e.relegated || []).includes(id) ? '⬇️' : '';
-      rows.push(
-        `<tr><td class="l">${esc(e.label || String(e.year))}</td><td class="l"><span class="ellip" style="max-width:120px;display:inline-block">${esc(line.c.name)}</span></td><td>${U.ordinal(line.pos)}${move}</td><td>${line.r.w != null ? `${line.r.w}-${line.r.d}-${line.r.l}` : '—'}</td><td>${line.r.pts}</td></tr>${won.length ? `<tr><td></td><td class="l tiny" colspan="4">🏆 ${won.map(esc).join(', ')}</td></tr>` : ''}`,
-      );
+      const info = e.clubInfo && e.clubInfo[id];
+      rows.push({ e, ...line, won, move, info });
     }
-    return rows.length
-      ? `<div class="card"><div class="h3">Season by season</div><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">League</th><th>Pos</th><th>W-D-L</th><th>Pts</th></tr>${rows.join('')}</table></div>`
-      : '';
+    return rows;
   };
+  UI.clubSeasonsCard = function (id, all) {
+    const rows = UI.clubSeasons(id);
+    if (!rows.length) return '';
+    const lines = (all ? rows : rows.slice(0, 8)).map(
+      ({ e, c, pos, r, won, move, info }) =>
+        `<tr><td class="l">${esc(e.label || String(e.year))}</td><td class="l"><span class="ellip" style="max-width:120px;display:inline-block">${esc(c.name)}</span></td><td>${U.ordinal(pos)}${move}</td><td style="white-space:nowrap">${r.w != null ? `${r.w}-${r.d}-${r.l}` : '—'}</td><td style="white-space:nowrap">${r.gf != null ? `${r.gf}–${r.ga}` : '—'}</td><td class="b">${r.pts}</td></tr>${
+          won.length || info
+            ? `<tr><td colspan="6" class="l tiny dim" style="padding:0 0 6px">${[
+                won.length ? `🏆 ${esc(won.join(', '))}` : '',
+                info && info.m ? `Manager ${esc(info.m)}` : '',
+                info && info.t ? `Top scorer ${esc(info.t[0])} (${info.t[1]})` : '',
+                ...((info && info.c) || []).map(([n, run]) => `${esc(n)}: ${esc(run)}`),
+              ]
+                .filter(Boolean)
+                .join(' · ')}</td></tr>`
+            : ''
+        }`,
+    );
+    const titles = rows.filter((x) => x.won.length).length;
+    return `<div class="card"><div class="h3">Season by season</div><div class="tiny dim" style="margin-top:2px">${rows.length} season${rows.length === 1 ? '' : 's'} on record${titles ? ` · ${titles} with a trophy` : ''}</div><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">League</th><th>Pos</th><th style="white-space:nowrap">W-D-L</th><th style="white-space:nowrap">GF–GA</th><th>Pts</th></tr>${lines.join('')}</table>${!all && rows.length > 8 ? `<button class="btn sm block" style="margin-top:8px" data-act="clubHistory" data-id="${id}">All ${rows.length} seasons</button>` : ''}</div>`;
+  };
+  UI.acts.clubHistory = (d) =>
+    UI.sheet(UI.clubSeasonsCard(d.id, true), { title: `${esc(S().clubs[d.id].name)} · history`, full: true });
   UI.clubSheet = function (id) {
     const s = S(),
       c = s.clubs[id];
@@ -597,6 +620,7 @@
         <div class="row small" style="margin-top:6px"><span class="grow muted">System</span><b>${tac.formation} · ${tac.buildup} · ${tac.press}</b></div>
         ${c.founded ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Founded</span><b>${c.founded}</b></div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">Stadium</span><b>${esc(c.stadium ? c.stadium.name : '—')}${c.stadium ? ` · ${c.stadium.cap.toLocaleString()}${c.sim === 'full' ? ` · opened ${FM.Records.stadium(c).opened}` : ''}` : ''}</b></div>
+        ${c.policy ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Signing policy</span><b>Only ${esc(c.policy.label)} players</b></div>` : ''}
         ${c.rival ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Rival</span><b class="tap" data-act="clubView" data-id="${c.rival}">⚔️ ${esc(s.clubs[c.rival].name)}</b></div>` : ''}
         ${rivalTag ? `<div class="row small" style="margin-top:6px"><span class="grow muted">With your club</span><b>${rivalTag}</b></div>` : ''}
         ${row ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Form</span>${C.form(row.form)}</div>` : ''}

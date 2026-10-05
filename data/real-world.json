@@ -11501,6 +11501,654 @@
    ],
    "short": "",
    "nick": "Silkmen"
+  },
+  "HIL": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Hilal",
+    "HIL",
+    "Riyadh",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    72,
+    "Kingdom Arena",
+    60000
+   ],
+   "short": "",
+   "nick": "The Blue Waves",
+   "founded": 1957
+  },
+  "NSR": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Nassr",
+    "NSR",
+    "Riyadh",
+    "#FFD100",
+    "#00247D",
+    "oil",
+    71,
+    "Al-Awwal Park",
+    25000
+   ],
+   "short": "",
+   "nick": "The Yellow Waves",
+   "founded": 1955
+  },
+  "ITT": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Ittihad",
+    "ITT",
+    "Jeddah",
+    "#FFD100",
+    "#000000",
+    "oil",
+    69,
+    "King Abdullah Sports City",
+    62000
+   ],
+   "short": "",
+   "nick": "The Tigers",
+   "founded": 1927
+  },
+  "AHL": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Ahli",
+    "AHL",
+    "Jeddah",
+    "#006C35",
+    "#FFFFFF",
+    "oil",
+    67,
+    "Prince Abdullah Al-Faisal Stadium",
+    27000
+   ],
+   "short": "",
+   "nick": "The Royal",
+   "founded": 1937
+  },
+  "QAD": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Qadsiah",
+    "QAD",
+    "Khobar",
+    "#FFD100",
+    "#CE1126",
+    "oil",
+    62,
+    "Prince Saud bin Jalawi Stadium",
+    20000
+   ],
+   "short": "",
+   "nick": "The Knights",
+   "founded": 1967
+  },
+  "SHB": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Shabab",
+    "SHB",
+    "Riyadh",
+    "#FFFFFF",
+    "#CE1126",
+    "historic",
+    60,
+    "Al-Shabab Club Stadium",
+    20000
+   ],
+   "short": "",
+   "nick": "The Lions",
+   "founded": 1947
+  },
+  "ETF": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Ettifaq",
+    "ETF",
+    "Dammam",
+    "#006C35",
+    "#FFFFFF",
+    "oil",
+    59,
+    "EGA Arena",
+    35000
+   ],
+   "short": "",
+   "nick": "The Knights of the East",
+   "founded": 1945
+  },
+  "NEO": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "NEOM SC",
+    "NEO",
+    "Tabuk",
+    "#00B2A9",
+    "#FFFFFF",
+    "oil",
+    58,
+    "King Khalid Stadium",
+    20000
+   ],
+   "short": "",
+   "nick": "The Visionaries",
+   "founded": 2021
+  },
+  "KHO": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Kholood",
+    "KHO",
+    "Ar Rass",
+    "#CE1126",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Al-Hazem Club Stadium",
+    15000
+   ],
+   "short": "",
+   "nick": "The Eternals",
+   "founded": 1985
+  },
+  "FAT": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Fateh",
+    "FAT",
+    "Al-Hasa",
+    "#00A9E0",
+    "#FFFFFF",
+    "fan",
+    56,
+    "Prince Abdullah bin Jalawi Stadium",
+    20000
+   ],
+   "short": "",
+   "nick": "The Conquerors",
+   "founded": 1946
+  },
+  "DAM": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Damac",
+    "DAM",
+    "Khamis Mushait",
+    "#8A1538",
+    "#FFFFFF",
+    "oil",
+    55,
+    "Prince Sultan bin Abdulaziz Stadium",
+    20000
+   ],
+   "short": "",
+   "nick": "The Red Wall",
+   "founded": 1972
+  },
+  "TAA": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Taawoun",
+    "TAA",
+    "Buraidah",
+    "#FFD100",
+    "#CE1126",
+    "fan",
+    55,
+    "King Abdullah Sport City Stadium",
+    25000
+   ],
+   "short": "",
+   "nick": "The Yellow Cavalry",
+   "founded": 1956
+  },
+  "RIY": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Riyadh",
+    "RIY",
+    "Riyadh",
+    "#0057B8",
+    "#FFD100",
+    "oil",
+    54,
+    "Prince Faisal bin Fahd Stadium",
+    22000
+   ],
+   "short": "",
+   "nick": "The Capital Club",
+   "founded": 1954
+  },
+  "FYH": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Fayha",
+    "FYH",
+    "Al Majmaah",
+    "#CE1126",
+    "#FFD100",
+    "youth",
+    53,
+    "Al-Majma'ah Sports City",
+    15000
+   ],
+   "short": "",
+   "nick": "The Green Valley",
+   "founded": 1954
+  },
+  "KHA": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Khaleej",
+    "KHA",
+    "Saihat",
+    "#CE1126",
+    "#FFFFFF",
+    "fan",
+    52,
+    "Prince Mohammed bin Fahd Stadium",
+    18000
+   ],
+   "short": "",
+   "nick": "The Gulf Club",
+   "founded": 1945
+  },
+  "RAE": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Raed",
+    "RAE",
+    "Buraidah",
+    "#CE1126",
+    "#FFFFFF",
+    "historic",
+    52,
+    "King Abdullah Sport City",
+    25000
+   ],
+   "short": "",
+   "nick": "The Pioneers",
+   "founded": 1954
+  },
+  "OKH": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Okhdood",
+    "OKH",
+    "Najran",
+    "#00A9E0",
+    "#FFFFFF",
+    "fan",
+    50,
+    "Prince Hathloul bin Abdulaziz Stadium",
+    15000
+   ],
+   "short": "",
+   "nick": "The Trench",
+   "founded": 1976
+  },
+  "ORO": {
+   "league": "SA1",
+   "nat": "KSA",
+   "row": [
+    "Al-Orobah",
+    "ORO",
+    "Sakaka",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    50,
+    "Al-Orobah Club Stadium",
+    12000
+   ],
+   "short": "",
+   "nick": "The Arabs",
+   "founded": 1957
+  },
+  "HAZ": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Hazem",
+    "HAZ",
+    "Ar Rass",
+    "#FFD100",
+    "#CE1126",
+    "fan",
+    47,
+    "Al-Hazem Club Stadium",
+    15000
+   ],
+   "short": "",
+   "nick": "The Stubborn",
+   "founded": 1957
+  },
+  "NAJ": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Najma",
+    "NAJ",
+    "Unaizah",
+    "#FFD100",
+    "#CE1126",
+    "oil",
+    46,
+    "Al-Najma Club Stadium",
+    10000
+   ],
+   "short": "",
+   "nick": "The Stars",
+   "founded": 1956
+  },
+  "ABH": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Abha",
+    "ABH",
+    "Abha",
+    "#FFD100",
+    "#0057B8",
+    "oil",
+    46,
+    "Prince Sultan bin Abdulaziz Sports City",
+    20000
+   ],
+   "short": "",
+   "nick": "The Mountain Club",
+   "founded": 1966
+  },
+  "WEH": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Wehda",
+    "WEH",
+    "Mecca",
+    "#CE1126",
+    "#FFFFFF",
+    "historic",
+    46,
+    "King Abdulaziz Stadium",
+    38000
+   ],
+   "short": "",
+   "nick": "The Unity",
+   "founded": 1945
+  },
+  "ADA": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Adalah",
+    "ADA",
+    "Al-Hasa",
+    "#00A9E0",
+    "#FFFFFF",
+    "oil",
+    45,
+    "Prince Abdullah bin Jalawi Stadium",
+    20000
+   ],
+   "short": "",
+   "nick": "The Justice",
+   "founded": 1980
+  },
+  "ARB": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Arabi",
+    "ARB",
+    "Unaizah",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Al-Arabi Club Stadium",
+    10000
+   ],
+   "short": "",
+   "nick": "The Arabs",
+   "founded": 1957
+  },
+  "JBL": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Jabalain",
+    "JBL",
+    "Hail",
+    "#006C35",
+    "#FFD100",
+    "oil",
+    44,
+    "Prince Abdulaziz bin Musaed Stadium",
+    15000
+   ],
+   "short": "",
+   "nick": "The Twin Mountains",
+   "founded": 1966
+  },
+  "BTN": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Batin",
+    "BTN",
+    "Hafar Al-Batin",
+    "#006C35",
+    "#FFFFFF",
+    "oil",
+    44,
+    "Al-Batin Club Stadium",
+    10000
+   ],
+   "short": "",
+   "nick": "The Inland",
+   "founded": 1967
+  },
+  "FSL": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Faisaly",
+    "FSL",
+    "Harmah",
+    "#CE1126",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Al-Faisaly Club Stadium",
+    10000
+   ],
+   "short": "",
+   "nick": "The Prince",
+   "founded": 1954
+  },
+  "TAI": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Tai",
+    "TAI",
+    "Hail",
+    "#FFD100",
+    "#CE1126",
+    "fan",
+    43,
+    "Prince Abdulmohsen Stadium",
+    18000
+   ],
+   "short": "",
+   "nick": "The Mountain Men",
+   "founded": 1961
+  },
+  "ZUL": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Zulfi",
+    "ZUL",
+    "Az Zulfi",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Al-Zulfi Sports City",
+    8000
+   ],
+   "short": "",
+   "nick": "The Zulfi Club",
+   "founded": 1963
+  },
+  "JAN": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Jandal",
+    "JAN",
+    "Dumat Al-Jandal",
+    "#CE1126",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Al-Jandal Stadium",
+    8000
+   ],
+   "short": "",
+   "nick": "The Fortress",
+   "founded": 1977
+  },
+  "DIR": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Diriyah",
+    "DIR",
+    "Diriyah",
+    "#FFD100",
+    "#006C35",
+    "oil",
+    42,
+    "Diriyah Stadium",
+    12000
+   ],
+   "short": "",
+   "nick": "The Founders",
+   "founded": 1990
+  },
+  "AIN": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Ain",
+    "AIN",
+    "Al-Bahah",
+    "#CE1126",
+    "#FFFFFF",
+    "oil",
+    41,
+    "Al-Ain Club Stadium",
+    8000
+   ],
+   "short": "",
+   "nick": "The Spring",
+   "founded": 1966
+  },
+  "QAI": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Qaisumah",
+    "QAI",
+    "Qaisumah",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    41,
+    "Al-Qaisumah Stadium",
+    8000
+   ],
+   "short": "",
+   "nick": "The Border Club",
+   "founded": 1981
+  },
+  "ANW": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Anwar",
+    "ANW",
+    "Medina",
+    "#006C35",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Al-Anwar Stadium",
+    8000
+   ],
+   "short": "",
+   "nick": "The Lights",
+   "founded": 1976
+  },
+  "BUK": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Al-Bukayriyah",
+    "BUK",
+    "Al Bukayriyah",
+    "#006C35",
+    "#FFD100",
+    "oil",
+    40,
+    "Al-Bukayriyah Stadium",
+    6000
+   ],
+   "short": "",
+   "nick": "The Orchard",
+   "founded": 1972
+  },
+  "JED": {
+   "league": "SA2",
+   "nat": "KSA",
+   "row": [
+    "Jeddah Club",
+    "JED",
+    "Jeddah",
+    "#0057B8",
+    "#CE1126",
+    "oil",
+    40,
+    "Jeddah Club Stadium",
+    10000
+   ],
+   "short": "",
+   "nick": "The Red Sea",
+   "founded": 2010
   }
  },
  "leagues": {
@@ -11743,6 +12391,18 @@
    "tier": 1,
    "name": "Cymru Premier",
    "short": "CP"
+  },
+  "SA1": {
+   "nat": "KSA",
+   "tier": 1,
+   "name": "Saudi Pro League",
+   "short": "SPL"
+  },
+  "SA2": {
+   "nat": "KSA",
+   "tier": 2,
+   "name": "Saudi First Division League",
+   "short": "FDL"
   }
  },
  "continentals": {
@@ -11862,6 +12522,11 @@
    "nat": "JPN",
    "name": "Emperor's Cup",
    "short": "EMP"
+  },
+  "CUPKSA": {
+   "nat": "KSA",
+   "name": "King's Cup of Champions",
+   "short": "KCC"
   }
  },
  "rivals": [
@@ -12539,6 +13204,41 @@
    "CQN",
    "FLI",
    "Deeside derby"
+  ],
+  [
+   "HIL",
+   "NSR",
+   "Riyadh Derby"
+  ],
+  [
+   "ITT",
+   "AHL",
+   "Jeddah Derby"
+  ],
+  [
+   "HIL",
+   "ITT",
+   "The Big Four Clash"
+  ],
+  [
+   "SHB",
+   "RIY",
+   "Capital Derby"
+  ],
+  [
+   "TAA",
+   "RAE",
+   "Buraidah Derby"
+  ],
+  [
+   "FAT",
+   "KHA",
+   "Eastern Derby"
+  ],
+  [
+   "WEH",
+   "ITT",
+   "Holy Cities Clash"
   ]
  ],
  "nations": {

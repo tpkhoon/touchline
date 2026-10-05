@@ -257,6 +257,8 @@
     ghanaian: 'Ghanaian',
     senegalese: 'Senegalese',
     ivorian: 'Ivorian',
+    basque: 'Basque',
+    catalan: 'Catalan',
   };
   // heritage keys that name a region rather than a pool map to one of the pools above
   D.HERITAGE_POOL = {
@@ -318,7 +320,9 @@
       ['polish', 0.5],
     ],
     ESP: [
-      ['native', 88],
+      ['native', 76],
+      ['catalan', 10],
+      ['basque', 5],
       ['latin', 4],
       ['westafrican', 2],
       ['maghrebi', 2.5],

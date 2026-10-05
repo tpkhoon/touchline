@@ -225,6 +225,18 @@ for (let s = 0; s < SEASONS; s++) {
     !FM.S.nteams || Object.keys(FM.S.nteams).length === Object.keys(FM.D.NATIONS).length,
     `season ${s + 1}: ${Object.keys(FM.S.nteams || {}).length} national teams for ${Object.keys(FM.D.NATIONS).length} nations`,
   );
+  // a new season starts clean: no split yet (last year's groups gone), and each title-playoff day is on the calendar once
+  {
+    const stale = W.leagues().filter((c) => c.rules.split && c.split && !c.split.done && c.groups);
+    check(stale.length === 0, `season ${s + 1}: ${stale.map((c) => c.id)} still has last season's split groups`);
+    const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
+    check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
+  }
+  // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it)
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy)) {
+    const odd = W.squad(c.id).filter((p) => p.heritage !== c.policy.heritage);
+    check(odd.length === 0, `season ${s + 1}: ${c.short} (${c.policy.label}-only) has ${odd.length} other players`);
+  }
   // naturalised players hold the citizenship they were granted, and no federation that bars it granted one
   {
     const bad = Object.values(FM.S.players).filter(

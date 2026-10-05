@@ -86,6 +86,16 @@ Germany (Bundesliga and 2. Bundesliga) and France (Ligue 1): the club above the 
 non-promoted club of the division below over two legs. Italy, Spain and England have none in the real top flights;
 Serie B's play-out has nowhere to send the loser (there is no Serie C in the game).
 
+## Saudi Arabia and clubs with a signing policy
+
+- **Saudi Pro League (18 clubs):** the top three of the First Division go up and the bottom three go down; the top six
+  take Asian Champions Cup places (the real league sends fewer, here it fills the 16-club draw). Ten foreign players per
+  squad. Most of the clubs are Oil-Backed, with budgets and ambitions to match. The King's Cup is the domestic cup.
+- **Saudi First Division League (18 clubs):** three up; four foreign players.
+- **Signing policy (Athletic Club):** Eibar sign only players of Basque heritage and Andorra only Catalan ones. They
+  cannot buy, borrow, take on a free transfer, agree a pre-contract with or trial anyone else, and their youth teams and
+  squads are made of such players. Other clubs may sign Basque and Catalan players freely.
+
 ## Domestic cups
 
 Single matches with extra time and penalties, the lower-division club at home in the real draws (here: random

@@ -187,6 +187,7 @@
     const c = W.userClub();
     if (!c) return { ok: false, msg: 'You need a club to run trials.' };
     if (p.clubId) return { ok: false, msg: 'Only free agents come on trial.' };
+    if (!FM.Reg.policy(c, p).ok) return { ok: false, msg: FM.Reg.policy(c, p).why };
     if (M.onTrial(p)) return { ok: false, msg: `${W.name(p)} is already on trial with you.` };
     if (M.trials().length >= M.MAX_TRIALS)
       return { ok: false, msg: `You already have ${M.MAX_TRIALS} trialists. Decide on one of them first.` };
@@ -785,6 +786,8 @@
     if (!M.preOpen()) return { ok: false, msg: 'Pre-contracts open with the mid-season window (matchday 12).' };
     if (p.pre)
       return { ok: false, msg: `${W.name(p)} has already agreed to join ${s.clubs[p.pre.c].name} in the summer.` };
+    const pc = FM.Reg.policy(W.userClub(), p);
+    if (!pc.ok) return { ok: false, msg: pc.why };
     return { ok: true };
   };
   // Agree a pre-contract with full terms (the agent haggles as for a free agent; other clubs may compete)
@@ -869,7 +872,10 @@
         const suitor = Object.values(s.clubs)
           .filter(
             (c) =>
-              (c.sim === 'full' || c.sim === 'light') && !W.isUserSide(c.id) && Math.abs(W.levelFor(c.rep) - p.ca) <= 8,
+              (c.sim === 'full' || c.sim === 'light') &&
+              !W.isUserSide(c.id) &&
+              FM.Reg.policy(c, p).ok &&
+              Math.abs(W.levelFor(c.rep) - p.ca) <= 8,
           )
           .sort((a, b) => b.rep - a.rep)[0];
         if (!suitor) continue;
@@ -1056,7 +1062,7 @@
     const fits = Object.values(s.clubs).filter((c) => {
       if ((c.sim !== 'full' && c.sim !== 'light') || c.id === p.clubId || W.isUserSide(c.id) || skip.includes(c.id))
         return false;
-      if (c.rep >= parent.rep - 3) return false;
+      if (c.rep >= parent.rep - 3 || !FM.Reg.policy(c, p).ok) return false;
       const lvl = W.levelFor(c.rep);
       if (p.ca < lvl - 6 || p.ca > lvl + 10) return false;
       const best = W.squad(c.id)

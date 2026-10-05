@@ -85,6 +85,7 @@
     BRA: 'Brazilian',
     ARG: 'Argentine',
     JPN: 'Japanese',
+    KSA: 'Saudi',
     KOR: 'Korean',
     THA: 'Thai',
     SRB: 'Serbian',

@@ -58,7 +58,7 @@
             europe > places
               ? { t: europe, text: `a ${second.region === 'Europe' ? 'European' : second.name} place (top ${europe})` }
               : { t: places + 2, text: `top ${places + 2}` }));
-      else if (europe && exp <= europe + 1)
+      else if (second && europe && exp <= europe + 1)
         ((aim = {
           t: europe,
           text: `Qualify for ${second.region === 'Europe' ? 'Europe' : second.name} (top ${europe})`,

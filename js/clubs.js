@@ -313,7 +313,7 @@
     ['Deportivo Sepúlval', 'PON', 'Sepúlval', '#003DA5', '#FFFFFF', 'fan', 41, 'Estadio La Medero', 8400],
     ['Torrilla Balompié', 'NAS', 'Torrilla', '#C8102E', '#000000', 'historic', 41, 'Ciudad Deportiva Torrilla', 14591],
     ['Juventud Fresnero', 'ALC', 'Fresnero', '#FFD700', '#003DA5', 'fan', 39, 'Estadio Rondino', 5100],
-    ['Unión Alcala', 'MUR', 'Alcala', '#C8102E', '#FFFFFF', 'fallen', 42, 'Estadio La Ribón', 31179],
+    ['Unión Navejo', 'MUR', 'Navejo', '#C8102E', '#FFFFFF', 'fallen', 42, 'Estadio La Ribón', 31179],
     ['CD Castador', 'HERC', 'Castador', '#0033A0', '#FFFFFF', 'fallen', 40, 'Nuevo Estadio Castador', 30000],
     ['Atlético Elchanes', 'IBI', 'Elchanes', '#0057B8', '#FFFFFF', 'oil', 40, 'Estadio Gandejo', 4500],
     ['Club Osuneda', 'CDLU', 'Osuneda', '#E2001A', '#FFFFFF', 'fan', 38, 'Estadio La Benero', 7840],
@@ -509,6 +509,13 @@
   FM.D.allClubRows = () => FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs]); // every club of every league
 
   FM.D.RIVALS = [
+    ['HIL', 'NSR', 'Ain Jubis Derby'],
+    ['ITT', 'AHL', 'Yanik Derby'],
+    ['HIL', 'ITT', 'Ain Jubis–Yanik Derby'],
+    ['SHB', 'RIY', 'Ain Jubis Derby'],
+    ['TAA', 'RAE', 'Shaydah Derby'],
+    ['FAT', 'KHA', 'Ain Tabuf–Ras Ulamaah Derby'],
+    ['WEH', 'ITT', 'Bahayma–Yanik Derby'],
     ['MCI', 'MUN', 'Baywick Derby'],
     ['LIV', 'EVE', 'Clifwold Derby'],
     ['ARS', 'TOT', 'Chelington Derby'],
@@ -583,13 +590,13 @@
     ['SPR', 'EXC', 'Zaanhorst Derby'],
     ['BEN', 'SCP', 'Porteiro Derby'],
     ['VSC', 'SCB', 'Penura–Santinha Derby'],
-    ['RIV', 'BOC', 'Arrano Derby'],
+    ['RIV', 'BOC', 'Busteda Derby'],
     ['RAC', 'IND', 'Dorrez Derby'],
     ['ROS', 'NOB', 'Quirez Derby'],
-    ['SLO', 'HUR', 'Arrano Derby'],
+    ['SLO', 'HUR', 'Busteda Derby'],
     ['ELP', 'GLP', 'Ortini Derby'],
     ['TAL', 'BEL', 'Domeda Derby'],
-    ['LAN', 'BAN', 'Domas–Quirona Derby'],
+    ['LAN', 'BAN', 'Puerto Franez–Quirona Derby'],
     ['GOD', 'IRI', 'Garero del Plata Derby'],
     ['LAG', 'LAF', 'Silverfield Derby'],
     ['SEA', 'PTI', 'Sunfield–Bluehills Derby'],
@@ -718,19 +725,29 @@
     ['Leirais FC', 'TON', 'Leirais', '#FFD100', '#00843D', 'fan', 53, 'Estádio Nova Tavirura', 5000],
   ];
   FM.D.CLUBS_AR1 = [
-    ['Sportivo Arrano', 'RIV', 'Arrano', '#FFFFFF', '#E30613', 'giant', 79, 'Estadio Lavo', 85018],
-    ['Atlético Arrano', 'BOC', 'Arrano', '#0033A0', '#FFD100', 'giant', 78, 'Estadio Municipal de Arrano', 54000],
+    ['Sportivo Busteda', 'RIV', 'Busteda', '#FFFFFF', '#E30613', 'giant', 79, 'Estadio Lavo', 85018],
+    ['Atlético Busteda', 'BOC', 'Busteda', '#0033A0', '#FFD100', 'giant', 78, 'Estadio Municipal de Busteda', 54000],
     ['Nacional Dorrez', 'RAC', 'Dorrez', '#6CACE4', '#FFFFFF', 'historic', 70, 'Cancha de Dorrez', 51389],
     ['Gimnasia de Dorrez', 'IND', 'Dorrez', '#E30613', '#FFFFFF', 'fallen', 67, 'Estadio Monumental Pellona', 48069],
     ['Independiente Ortini', 'ELP', 'Ortini', '#E30613', '#FFFFFF', 'youth', 66, 'Estadio Municipal de Ortini', 30018],
-    ['Club Atlético Lezo', 'SLO', 'Arrano', '#0033A0', '#E30613', 'historic', 65, 'Estadio Monumental Rodilla', 47964],
-    ['Independiente Franas', 'VEL', 'Arrano', '#FFFFFF', '#0033A0', 'youth', 64, 'Estadio Herero', 49540],
+    ['Club Atlético Lezo', 'SLO', 'Busteda', '#0033A0', '#E30613', 'historic', 65, 'Estadio Monumental Rodilla', 47964],
+    ['Independiente Franas', 'VEL', 'Busteda', '#FFFFFF', '#0033A0', 'youth', 64, 'Estadio Herero', 49540],
     ['Atlético Domeda', 'TAL', 'Domeda', '#0033A0', '#FFFFFF', 'selling', 63, 'Estadio Garilla', 57000],
     ['Atlético Quirez', 'ROS', 'Quirez', '#003DA5', '#FFD100', 'fan', 63, 'Estadio Municipal de Quirez', 41654],
-    ['Club Deportivo Domas', 'LAN', 'Domas', '#8A1538', '#FFFFFF', 'selling', 63, 'Estadio Molas', 47027],
-    ['Atlético Velilla', 'ARJ', 'Arrano', '#E30613', '#FFFFFF', 'youth', 62, 'Estadio Ortia', 26000],
+    [
+      'Puerto Franez FC',
+      'LAN',
+      'Puerto Franez',
+      '#8A1538',
+      '#FFFFFF',
+      'selling',
+      63,
+      'Estadio Monumental Torero',
+      47027,
+    ],
+    ['Atlético Velilla', 'ARJ', 'Busteda', '#E30613', '#FFFFFF', 'youth', 62, 'Estadio Ortia', 26000],
     ['Club de Regatas Quirez', 'NOB', 'Quirez', '#E30613', '#000000', 'fan', 61, 'Estadio Pellez', 42000],
-    ['Defensores de Pelleda', 'HUR', 'Arrano', '#FFFFFF', '#E30613', 'fan', 60, 'Estadio Monumental Quirui', 48314],
+    ['Defensores de Pelleda', 'HUR', 'Busteda', '#FFFFFF', '#E30613', 'fan', 60, 'Estadio Monumental Quirui', 48314],
     ['Defensores de Dorrui', 'DYJ', 'Dorrui', '#FFD100', '#00843D', 'selling', 60, 'Cancha de Dorrui', 20000],
     ['Racing de Domeda', 'BEL', 'Domeda', '#6CACE4', '#FFFFFF', 'fan', 60, 'Cancha de Domeda', 30000],
     ['Nacional Ortini', 'GLP', 'Ortini', '#FFFFFF', '#1B2C5A', 'fan', 58, 'Estadio Monumental Lezini', 24544],
@@ -762,7 +779,7 @@
     ],
     ['Nacional Castas', 'ATU', 'Castas', '#6CACE4', '#FFFFFF', 'fan', 56, 'Cancha de Castas', 35200],
     ['Club Atlético Pellez', 'PLA', 'Pellez', '#FFFFFF', '#6B3F1F', 'fan', 56, 'Cancha de Pellez', 28530],
-    ['Club Atlético Franui', 'BAR', 'Arrano', '#E30613', '#FFFFFF', 'fan', 55, 'Cancha de Arrano', 4500],
+    ['Club Atlético Franui', 'BAR', 'Busteda', '#E30613', '#FFFFFF', 'fan', 55, 'Cancha de Busteda', 4500],
     ['Club Atlético Torilla', 'CCD', 'Torilla', '#000000', '#FFFFFF', 'fan', 55, 'Cancha de Torilla', 30000],
     [
       'Atlético Coronel Franero',
@@ -775,7 +792,7 @@
       'Estadio Monumental Belia',
       22000,
     ],
-    ['Club Atlético Arreda', 'RIE', 'Arrano', '#000000', '#FFFFFF', 'fan', 53, 'Estadio Miro', 3000],
+    ['Club Atlético Arreda', 'RIE', 'Busteda', '#000000', '#FFFFFF', 'fan', 53, 'Estadio Miro', 3000],
   ];
   FM.D.CLUBS_US1 = [
     ['Aspenview FC', 'MIA', 'Aspenview', '#F7B5CD', '#231F20', 'oil', 67, 'Aspenview Arena', 21550],
@@ -1242,6 +1259,46 @@
 
   // Real-life abbreviations (as on the league's broadcasts) and nicknames, by the club's code (the part of its id
   // after c_). An empty abbreviation keeps the code; no nickname means there is no widely used one.
+  FM.D.CLUBS_SA1 = [
+    ['Al Janub', 'HIL', 'Ain Jubis', '#0057B8', '#FFFFFF', 'oil', 72, 'Ain Jubis Club Stadium', 60000],
+    ['Al Sahil', 'NSR', 'Ain Jubis', '#FFD100', '#00247D', 'oil', 71, 'Dirum Arena', 25000],
+    ['Al Yasmin', 'ITT', 'Yanik', '#FFD100', '#000000', 'oil', 69, 'Damis Arena', 62000],
+    ['Al Sarh', 'AHL', 'Yanik', '#006C35', '#FFFFFF', 'oil', 67, 'Yanik Club Stadium', 27000],
+    ['Al Fursan', 'QAD', 'Rasma', '#FFD100', '#CE1126', 'oil', 62, 'King Najaydah Sports City', 20000],
+    ['Al Wafaa', 'SHB', 'Ain Jubis', '#FFFFFF', '#CE1126', 'historic', 60, 'Ain Jubis Sports City', 20000],
+    ['Al Haqiqa', 'ETF', 'Shamaah', '#006C35', '#FFFFFF', 'oil', 59, 'King Dirayma Sports City', 35000],
+    ['Al Ufuq', 'NEO', 'Jubabah', '#00B2A9', '#FFFFFF', 'oil', 58, 'Prince Tabma Stadium', 20000],
+    ['Al Rayyan', 'KHO', 'Ulat', '#CE1126', '#FFFFFF', 'oil', 56, 'Zulis Stadium', 15000],
+    ['Al Ibda', 'FAT', 'Ain Tabuf', '#00A9E0', '#FFFFFF', 'fan', 56, 'Jubik Stadium', 20000],
+    ['Al Saqr', 'DAM', 'Khamaah', '#8A1538', '#FFFFFF', 'oil', 55, 'Haalif Stadium', 20000],
+    ['Al Sanabil', 'TAA', 'Shaydah', '#FFD100', '#CE1126', 'fan', 55, 'Dira Stadium', 25000],
+    ['Al Taqaddum', 'RIY', 'Ain Jubis', '#0057B8', '#FFD100', 'oil', 54, 'Tura Stadium', 22000],
+    ['Al Hadaf', 'FYH', 'Wadi Bahabah', '#CE1126', '#FFD100', 'youth', 53, 'Hofayma Arena', 15000],
+    ['Al Aseel', 'KHA', 'Ras Ulamaah', '#CE1126', '#FFFFFF', 'fan', 52, 'Haira Stadium', 18000],
+    ['Al Dhib', 'RAE', 'Shaydah', '#CE1126', '#FFFFFF', 'historic', 52, 'Shaydah Club Stadium', 25000],
+    ['Al Riayma', 'OKH', 'Riayma', '#00A9E0', '#FFFFFF', 'fan', 50, 'Ulara Stadium', 15000],
+    ['Al Nakhil', 'ORO', 'Bahabah', '#006C35', '#FFFFFF', 'fan', 50, 'Ainud Stadium', 12000],
+  ];
+  FM.D.CLUBS_SA2 = [
+    ['Al Zaman', 'HAZ', 'Ulat', '#FFD100', '#CE1126', 'fan', 47, 'Rafan Arena', 15000],
+    ['Al Tafawuq', 'NAJ', 'Wadi Buruf', '#FFD100', '#CE1126', 'oil', 46, 'Wadi Buruf Sports City', 10000],
+    ['Al Qamar', 'ABH', 'Haaydah', '#FFD100', '#0057B8', 'oil', 46, 'Prince Ainaydah Stadium', 20000],
+    ['Al Zahra', 'WEH', 'Bahayma', '#CE1126', '#FFFFFF', 'historic', 46, 'Ula Arena', 38000],
+    ['Al Ain Tabuf Club', 'ADA', 'Ain Tabuf', '#00A9E0', '#FFFFFF', 'oil', 45, 'Ain Tabuf Club Stadium', 20000],
+    ['Wadi Buruf SC', 'ARB', 'Wadi Buruf', '#006C35', '#FFFFFF', 'fan', 44, 'Wadi Buruf Club Stadium', 10000],
+    ['Al Tatwir', 'JBL', 'Ain Jubik', '#006C35', '#FFD100', 'oil', 44, 'King Mahra Sports City', 15000],
+    ['Al Ras Zulik', 'BTN', 'Ras Zulik', '#006C35', '#FFFFFF', 'oil', 44, 'Prince Riat Stadium', 10000],
+    ['Al Shuja', 'FSL', 'Riuf', '#CE1126', '#FFFFFF', 'historic', 44, 'Riuf Sports City', 10000],
+    ['Al Karama', 'TAI', 'Ain Jubik', '#FFD100', '#CE1126', 'fan', 43, 'Prince Hofmaah Stadium', 18000],
+    ['Al Tahaddi', 'ZUL', 'Umm Rafaydah', '#006C35', '#FFFFFF', 'fan', 42, 'Sakat Arena', 8000],
+    ['Al Wadi', 'JAN', 'Ulayma', '#CE1126', '#FFFFFF', 'fan', 42, 'King Burud Sports City', 8000],
+    ['Al Mawj', 'DIR', 'Tabaydah', '#FFD100', '#006C35', 'oil', 42, 'Prince Hofum Stadium', 12000],
+    ['Al Qimma', 'AIN', 'Najis', '#CE1126', '#FFFFFF', 'oil', 41, 'Najis Club Stadium', 8000],
+    ['Al Nimr', 'QAI', 'Abhis', '#0057B8', '#FFFFFF', 'oil', 41, 'King Turir Sports City', 8000],
+    ['Al Asad', 'ANW', 'Jubaydah', '#006C35', '#FFFFFF', 'fan', 40, 'Jubaydah Sports City', 8000],
+    ['Al Nour', 'BUK', 'Yana', '#006C35', '#FFD100', 'oil', 40, 'Bahayma Arena', 6000],
+    ['Al Khalid', 'JED', 'Yanik', '#0057B8', '#CE1126', 'oil', 40, 'Majuf Arena', 10000],
+  ];
   FM.D.CLUB_INFO = Object.fromEntries(
     `MCI|BAY|Cats|1893
 LIV|CLI|Canaries|1865
@@ -1391,7 +1448,7 @@ CTG|MAY|Negros|1897
 PON|SEP|Cóndores|1932
 NAS|TOA|Alacranes|1885
 ALC|FRE|Zorros|1931
-MUR|ALA|Cruzados|1882
+MUR|NAO|Cruzados|1882
 HERC|CAC|Azules|1884
 IBI|ELC|Azules|1943
 CDLU|OSA|Rojos|1939
@@ -1554,7 +1611,7 @@ FCP|POM|Onças|1863
 SCP|POO|Ursos|1893
 SCB|SAN|Mineiros|1940
 VSC|PEN|Brancos|1955
-SCL|AAL|Rubro-Negros|1927
+SCL|ALA|Rubro-Negros|1927
 FAM|GUG|Dragões|1934
 EST|COV|Amarelos|1913
 GIL|GOU|Rubro-Negros|1897
@@ -1585,8 +1642,8 @@ HER|WAG|Zwarten|1891
 VOL|LAZ|Oranjes|1930
 EXC|HOO|Vikingen|1878
 TEL|ZWO|Witten|1922
-RIV|ARO|Albos|1882
-BOC|ANO|Azules|1892
+RIV|BUS|Albos|1882
+BOC|BUA|Azules|1892
 RAC|NAL|Celestes|1922
 IND|DOZ|Rojos|1884
 ELP|ORT|Ñandúes|1947
@@ -1594,13 +1651,13 @@ SLO|LEZ|Pescadores|1912
 VEL|FRS|Pampas|1953
 TAL|DOM|Toros|1955
 ROS|QUZ|Azules|1928
-LAN|DOS|Toros|1956
+LAN|PUE|Toros|1956
 ARJ|VEL|Matadores|1957
 NOB|REG|Osos|1911
 HUR|PEL|Cóndores|1965
 DYJ|DOI|Amarillos|1978
 BEL|DOA|Leones|1917
-GLP|NAO|Leones|1944
+GLP|NOR|Leones|1944
 GOD|GAR|Azules|1944
 TIG|URQ|Azules|1972
 UNI|CAST|Halcones|1910
@@ -1836,7 +1893,7 @@ TIL|HAV|De Røde|1900
 SAF2|STD|De Blå|1880
 KFU|SND|Rever|1895
 HAM|FJO|Ulve|1910
-KBK|NOR|De Blå|1892
+KBK|NOY|De Blå|1892
 VIF|SNS|De Blå|1880
 BRY|RIN|Pionerer|1898
 SIF|NES|Vikinger|1897
@@ -1952,7 +2009,43 @@ LLA|BYN|Reds|1952
 CAE|PEO|Choristers|1926
 NEW2|TEH|Choristers|1916
 COL2|BAI|Harpers|1892
-FLI|BDU|Drovers|1911`
+FLI|BDU|Drovers|1911
+HIL|ALL|Horsemen|1946
+NSR|AAL|Yellows|1973
+ITT|ALY|Yellows|2001
+AHL|AL2|Greens|1962
+QAD|ALF|Horsemen|1962
+SHB|ALW|Tigers|1905
+ETF|ALH|Gazelles|1935
+NEO|ALU|Lions|1921
+KHO|ALR|Reds|1939
+FAT|ALI|Sky Blues|1989
+DAM|AL3|Knights|1919
+TAA|AL4|Yellows|1936
+RIY|ATA|Sandstorm|1971
+FYH|AHA|Reds|1985
+KHA|AAS|Reds|1928
+RAE|ADH|Reds|1898
+OKH|ARI|Falcons|1946
+ORO|ALN|Tigers|1982
+HAZ|ALZ|Yellows|1970
+NAJ|AL5|Yellows|1916
+ABH|ALQ|Horsemen|1942
+WEH|AZA|Tigers|1936
+ADA|AAI|Eagles|1966
+ARB|WAD|Eagles|1986
+JBL|AL6|Greens|1967
+BTN|AL7|Greens|1997
+FSL|ASH|Reds|1912
+TAI|AL8|Hawks|1941
+ZUL|AL9|Greens|1980
+JAN|AL10|Reds|1920
+DIR|AMA|Yellows|1983
+AIN|AQI|Horsemen|1930
+QAI|ANI|Gazelles|1972
+ANW|AL11|Greens|1948
+BUK|ANO|Greens|1967
+JED|AKH|Blues|1999`
       .split('\n')
       .map((l) => l.split('|'))
       .map(([code, abbr, nick, founded]) => [code, [abbr, nick, founded ? +founded : null]]),
