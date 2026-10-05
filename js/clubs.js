@@ -475,7 +475,7 @@
     ['Athlétic Sarières', 'USB', 'Sarières', '#E2001A', '#000000', 'fan', 44, 'Complexe Paulac', 9534],
     ['Union Chaens', 'ETA', 'Chaens', '#005CA9', '#FFFFFF', 'fallen', 50, 'Stade Municipal de Chaens', 21877],
   ];
-  // League list: [compId, clubs, nation] — the world builder reads this
+  // The first eight leagues (the original game): [compId, clubs, nation]. Every league in FM.D.LEAGUES can be managed.
   FM.D.LEAGUE_CLUBS = [
     ['D1', 'CLUBS_D1', 'ENG'],
     ['D2', 'CLUBS_D2', 'ENG'],
@@ -486,7 +486,7 @@
     ['FR1', 'CLUBS_FR1', 'FRA'],
     ['BR1', 'CLUBS_BR1', 'BRA'],
   ];
-  FM.D.allClubRows = () => FM.D.LEAGUE_CLUBS.flatMap(([, k]) => FM.D[k]);
+  FM.D.allClubRows = () => FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs]); // every club of every league
 
   FM.D.RIVALS = [
     ['MCI', 'MUN', 'Baywick Derby'],

@@ -954,18 +954,29 @@
         const tier = Object.fromEntries(D.LEAGUES.map((l) => [l.id, `Tier ${l.tier}`]));
         const cols = ['#c8ff3d', '#3de0ff', '#a78bfa', '#ffb347', '#fbbf24', '#f87171', '#60a5fa', '#34d399'];
         const q = plain(NG.q.trim());
-        const html = D.LEAGUE_CLUBS.map(([cid, key, nat], i) => {
+        const html = D.LEAGUES.map(({ id: cid, clubs: key, nat }, i) => {
           if (NG.lg !== 'all' && NG.lg !== cid) return '';
           // B teams (row[9] names the parent) aren't yours to manage: their players belong to the parent club
           const rows = D[key].filter((r) => !r[9] && (!q || plain(r[0]).includes(q) || plain(r[2] || '').includes(q)));
           return rows.length
-            ? `<div class="small b" style="color:${cols[i]};margin:16px 0 8px;letter-spacing:1px">${D.NATIONS[nat].flag} ${names[cid].toUpperCase()} · ${D.NATIONS[nat].name.toUpperCase()}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
+            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 8px;letter-spacing:1px">${D.NATIONS[nat].flag} ${names[cid].toUpperCase()} · ${D.NATIONS[nat].name.toUpperCase()}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
             : '';
         }).join('');
         return html || '<div class="empty">No club matches that search.</div>';
       };
       body = `<div class="h1" style="margin-top:2vh">Pick your club</div><div class="tag">Every club has an identity. The board and fans will judge you by it.</div><div class="sp"></div>
-        <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${D.LEAGUE_CLUBS.map(([cid, , nat]) => `<option value="${cid}" ${NG.lg === cid ? 'selected' : ''}>${D.NATIONS[nat].flag} ${esc(D.LEAGUES.find((l) => l.id === cid).name)}</option>`).join('')}</select></div>
+        <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${[
+          ...new Set(D.LEAGUES.map((l) => l.nat)),
+        ]
+          .map(
+            (nat) =>
+              `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}">${D.LEAGUES.filter(
+                (l) => l.nat === nat,
+              )
+                .map((l) => `<option value="${l.id}" ${NG.lg === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
+                .join('')}</optgroup>`,
+          )
+          .join('')}</select></div>
         <div id="ng-list">${UI._ngList()}</div>
         <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
     } else {

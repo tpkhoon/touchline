@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-279 features are playable in the web prototype today. Build = the build that added it.
+280 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -308,6 +308,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
 | Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
 | Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
+| Career | Start a career in any of the 40 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
 
 ## Yet to be added
 
