@@ -1867,15 +1867,25 @@
       })
       .forEach((p) => Sea.retire(p));
     // Unattached for a whole season: he has left professional football (a notable career still gets its farewell)
+    const intl = S.nteams ? FM.Intl.squadIds() : new Set(); // (an international without a club is kept)
     Object.values(S.players)
-      .filter((p) => !p.clubId && !p.retired && p.freeSince != null && p.freeSince < (S.year - 1) * 1000)
+      .filter(
+        (p) => !p.clubId && !p.retired && p.freeSince != null && p.freeSince < (S.year - 1) * 1000 && !intl.has(p.id),
+      )
       .forEach((p) => (p.career.apps >= 380 ? Sea.retire(p) : delete S.players[p.id]));
     // Keep the pool a sensible size: the least employable (weakest, bar young players with a future) drop out first
     const worthFA = (p) => p.ca + (W.age(p) <= 21 ? (p.pa - p.ca) * 0.4 : 0);
     const pool = Object.values(S.players)
       .filter((p) => !p.clubId && !p.retired)
       .sort((a, b) => worthFA(a) - worthFA(b));
-    while (pool.length > 150) delete S.players[pool.shift().id];
+    // (the pool is trimmed from the weakest up, bar players in a national squad)
+    while (pool.length > 150 && pool.some((p) => !intl.has(p.id))) {
+      const gone = pool.splice(
+        pool.findIndex((p) => !intl.has(p.id)),
+        1,
+      )[0];
+      delete S.players[gone.id];
+    }
     // A thin market gets a few unattached pros from leagues outside the game (only when needed, never a flood)
     for (let i = pool.length; i < 40; i++) {
       const age = U.randi(22, 31),

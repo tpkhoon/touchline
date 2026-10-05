@@ -220,6 +220,11 @@ for (let s = 0; s < SEASONS; s++) {
       else if (e.playoffs) check(e.playoffs.M4.length === 1, `season ${s + 1}: ${id} has no final`);
     }
   }
+  // every nation keeps a national team (a thin one is topped up with unattached players), and unattached internationals stay
+  check(
+    !FM.S.nteams || Object.keys(FM.S.nteams).length === Object.keys(FM.D.NATIONS).length,
+    `season ${s + 1}: ${Object.keys(FM.S.nteams || {}).length} national teams for ${Object.keys(FM.D.NATIONS).length} nations`,
+  );
   // naturalised players hold the citizenship they were granted, and no federation that bars it granted one
   {
     const bad = Object.values(FM.S.players).filter(
