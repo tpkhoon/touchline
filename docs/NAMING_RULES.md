@@ -67,6 +67,23 @@ nicknamed "The Miners", wearing black and amber, playing at "The Pithead Ground"
 - Many come from factories, rail workers, mining, the military or police. Soviet-era "sports society" names are very
   recognisable, so they do not go on a modern-founded club.
 
+### Russia, Belarus and Ukraine
+
+Each has a library of its own, apart from the Balkan one: Latin transliterations of Russian, Ukrainian and Belarusian,
+and the names the Soviet years left behind.
+
+- **Modern clubs** are plain: FK or FC + the town (the town ending in -sk, -ov, -ovo, -grad in Russia; -ivka, -opil,
+  -ychi in Ukraine; -ichy, -ovichy, -shchyna in Belarus).
+- **Soviet-era names** belong only to clubs old enough to have been founded then: the sports societies (Dinamo,
+  Spartak, Lokomotiv, Torpedo, CSKA, Zenit, Trud) and the industry names (Metallurg, Shakhtyor, Khimik, Shinnik,
+  Neftyanik; in Ukraine Dynamo, Shakhtar, Metalist, Metalurh, Naftovyk, Hirnyk, Avanhard).
+- **Region and landmark names:** Russia Krylia, Fakel, Luch, Baltika, Volga, Ural, Sibir; Ukraine Zorya, Karpaty,
+  Chornomorets, Volyn, Polissia, Bukovyna, Kolos; Belarus Neman, Naftan, Belshina, Isloch, Dnepr, Granit.
+- **Spelling follows the country:** Dinamo and Lokomotiv in Russia and Belarus, Dynamo and Lokomotyv in Ukraine; each
+  country's marker words are rejected in the others.
+- **Nicknames and colours** come from each language (Volki, Orly, Kozaki; Hirnyky, Haidamaky; Zubry, Busly), and each has
+  its own division and cup names.
+
 ### South America
 
 - Club Atlético, Sport Club, Esporte Clube, Clube de Regatas, Independiente, Racing, Unión, Defensores, Nacional.
@@ -210,7 +227,7 @@ A name feels real when the rest matches:
 | --- | --- |
 | Region patterns | Every nation has its own club patterns, grounds, nicknames and division and cup names; nations that share a language but not a landscape (Scotland, Wales, Ireland, the USA, Australia, Nigeria, Ghana, Senegal, Ivory Coast, Morocco, Belgium, Thailand) have libraries of their own |
 | Founding origins | English works, colliery, railway, foundry and church patterns; Mexican university, cooperative, trade and animal names (Cementeros, Mineros, Venados); Japanese place + foreign-word names; Korean city + company + nickname; American foundry and lumber names; Australian migrant-club names (Hellas, Olympic, Knights); West African and Moroccan French structure with local words |
-| Soviet-era names only on old clubs | Lokomotiv, Spartak, Torpedo, Dukla, Gwardia and the like are only given to clubs with a historic, giant, fallen or fan identity |
+| Soviet-era names only on old clubs | Lokomotiv, Spartak, Torpedo, Dukla, Gwardia and the like are only given to clubs with a historic, giant, fallen or fan identity; Russia, Ukraine and Belarus have libraries of their own for this, apart from the Balkan one |
 | No mixed cultures | A marker word (Real, Olympique, Eintracht, Dinamo, Al, Royal ...) is rejected in a nation whose language does not use it (`crossCulture` in `tools/namelib.mjs`) |
 | No fantasy names | Words such as Dragonheart or Shadowfang are rejected in club names (`isFantasy`) |
 | No single suffix style | No pattern may pass about a fifth of a nation's clubs ("Town" and "United" cannot take over a league) |
@@ -218,5 +235,5 @@ A name feels real when the rest matches:
 | Believable places | Town names follow each language's building blocks and are checked against real towns and clubs, rude words, hard consonant runs and length |
 | Quirkier towns for smaller clubs | Small clubs sometimes get a prefix such as "North" or "Upper"; big clubs get short plain names |
 
-The dashboard's Names tab flags any generated club name that mixes cultures or reads like fantasy, next to the existing
+The dashboard's Names tab also lists the nations the library can name but the game does not have yet (Russia, Ukraine, Belarus and others, marked "library only"); player names need a nation in the game. It flags any generated club name that mixes cultures or reads like fantasy, next to the existing
 checks (rude, hard to say, too long, close to a real town or club).
