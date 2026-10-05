@@ -2,7 +2,7 @@
 
 **The deepest football management experience built for mobile. Your club. Your stories. Your history.**
 
-Full design: [docs/GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/FEATURES.md](docs/FEATURES.md) · [docs/COMPETITION_RULES.md](docs/COMPETITION_RULES.md).
+Full design: [docs/GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/FEATURES.md](docs/FEATURES.md) · [docs/COMPETITION_RULES.md](docs/COMPETITION_RULES.md) · [docs/NAMING_RULES.md](docs/NAMING_RULES.md).
 
 A playable vertical slice: **710 real clubs in 40 real leagues (at their real sizes) across 31 nations, in three simulation tiers**:
 

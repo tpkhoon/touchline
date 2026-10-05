@@ -23,6 +23,8 @@ import {
   cupFor,
   TIERS_BY,
   sponsorsFor,
+  crossCulture,
+  isFantasy,
 } from './namelib.mjs';
 import { loadSim } from './harness.mjs';
 
@@ -71,6 +73,11 @@ export function flagsFor(name, L, kind) {
   if (kind === 'clubs' || kind === 'leagues' ? tooLong(name) : tooLong(name, 16)) out.push('too long');
   const c = realChecks();
   if (kind === 'towns' && c.closeToTown(name)) out.push('close to a real town');
+  if (kind === 'clubs') {
+    const w = crossCulture(name, L);
+    if (w) out.push(`“${w}” belongs to another culture`);
+    if (isFantasy(name)) out.push('reads like fantasy');
+  }
   if (kind === 'clubs' && c.closeToClub(name)) out.push('close to a real club');
   return out;
 }
