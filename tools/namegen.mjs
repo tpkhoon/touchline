@@ -23,6 +23,9 @@ import {
   cupFor,
   TIERS_BY,
   sponsorsFor,
+  libraryNations,
+  crossCulture,
+  isFantasy,
 } from './namelib.mjs';
 import { loadSim } from './harness.mjs';
 
@@ -68,9 +71,15 @@ export function flagsFor(name, L, kind) {
   const out = [];
   if (isRude(name)) out.push('rude word');
   if (hardToSay(name, L)) out.push('hard to say');
-  if (kind === 'clubs' || kind === 'leagues' ? tooLong(name) : tooLong(name, 16)) out.push('too long');
+  if (kind === 'clubs' || kind === 'leagues' || kind === 'grounds' ? tooLong(name) : tooLong(name, 16))
+    out.push('too long');
   const c = realChecks();
   if (kind === 'towns' && c.closeToTown(name)) out.push('close to a real town');
+  if (kind === 'clubs') {
+    const w = crossCulture(name, L);
+    if (w) out.push(`“${w}” belongs to another culture`);
+    if (isFantasy(name)) out.push('reads like fantasy');
+  }
   if (kind === 'clubs' && c.closeToClub(name)) out.push('close to a real club');
   return out;
 }
@@ -87,9 +96,16 @@ function simFor(seed) {
   return sims.get(seed);
 }
 
+// Every nation the library can name: the game's nations, then the ones it only has a library for
 export function nations() {
-  const FM = simFor(1);
-  return Object.entries(FM.D.NATIONS).map(([code, n]) => ({ code, name: n.name }));
+  const FM = simFor(1),
+    game = Object.entries(FM.D.NATIONS).map(([code, n]) => ({ code, name: n.name }));
+  const have = new Set(game.map((n) => n.code));
+  return game.concat(
+    libraryNations()
+      .filter((c) => !have.has(c))
+      .map((code) => ({ code, name: `${code} (library only)` })),
+  );
 }
 
 export function generateNames({ kind = 'clubs', nat = 'ENG', count = 20, seed = 1, size = 'any' } = {}) {

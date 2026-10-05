@@ -735,7 +735,7 @@ export const LANG = {
     cup: 'Federation Kypello',
   },
   slav: {
-    nations: 'SRB ROU SVK SVN BUL CRO BIH UKR RUS',
+    nations: 'SRB ROU SVK SVN BUL CRO BIH',
     a: words(
       `Bor Dra Gor Kra Lub Mal Nov Pol Rad Sla Tar Vel Zag Bel Ples Brat Kos Mir Zel Bog Doln Hrad Jas Kam Lipt Mik Ost
       Pet Ryb Slav Tur Vys`,
@@ -1071,6 +1071,227 @@ export const CUP_BY = {
   GRE: 'Federation Kypello',
   ROU: 'Cupa Federației',
 };
+// ---------------------------------------------------------------- how clubs were founded
+// Real clubs take their names from how they began: a works team, a church, a merger, a university, a migrant community, a
+// company. These patterns follow that, region by region (see docs/NAMING_RULES.md). A pattern is a template: {c} is the
+// town. Nothing here is a real club's name, only the words real clubs are built from.
+const cross = (tpl, list) => words(list).map((w) => tpl.replace('{w}', w));
+// England and the British Isles: works teams, collieries, railways, churches and mergers
+CLUB_MORE.eng.push(
+  '{c} Works',
+  '{c} Ironworks',
+  '{c} Colliery Athletic',
+  '{c} Railway',
+  '{c} Foundry',
+  "{c} St. Mary's",
+  "{c} St. Luke's",
+  '{c} Trinity',
+  '{c} Bohemians',
+  '{c} & Hallam',
+);
+// Germany and its neighbours
+CLUB_MORE.ger.push(
+  'Hansa {c}',
+  'Schwarz-Weiß {c}',
+  'Rot-Weiss {c}',
+  'Fortuna {c}',
+  'Eintracht {c}',
+  'Concordia {c}',
+  'Alemannia {c}',
+  'Preußen {c}',
+  'Kickers {c}',
+  'Energie {c}',
+);
+// Spain and Portugal
+CLUB_MORE.spa.push(
+  'SD {c}',
+  'Real Unión {c}',
+  'Real Club Deportivo {c}',
+  'Sporting {c}',
+  'Racing Club {c}',
+  'Atlético {c}',
+);
+CLUB_MORE.por.push('GD {c}', 'SC {c}', 'Sporting Clube de {c}', 'Clube Desportivo {c}', 'Atlético Clube {c}');
+// Italy
+CLUB_MORE.ita.push(
+  'SS {c}',
+  'Associazione Calcio {c}',
+  'Polisportiva {c}',
+  'Fidelis {c}',
+  'Libertas {c}',
+  'Robur {c}',
+  'Vis {c}',
+);
+// France: Olympique, Stade, Racing, Athletic Club, Sporting Club
+CLUB_MORE.fra.push(
+  'Olympique de {c}',
+  'Sporting Club de {c}',
+  'Athletic Club {c}',
+  'Stade de {c}',
+  'Racing Club de {c}',
+  'Union Sportive {c}',
+);
+// The Netherlands: Latin ideals and the old sportclubs
+CLUB_MORE.nld.push('Excelsior {c}', 'Vitesse {c}', 'Fortuna {c}', 'Sportclub {c}', 'Concordia {c}', 'DVC {c}');
+// South America: rowing clubs, neighbourhood clubs, "Independiente" and "Nacional"
+LANG.bra.club.push('Clube de Regatas {c}', 'Nacional {c}', 'Sport Club {c}', 'Clube Atlético {c}');
+LANG.arg.club.push('Club de Regatas {c}', 'Club Sportivo {c}', 'Nacional {c}', 'Club Atlético Unión {c}');
+// Eastern Europe: Dinamo, Rapid, Partizan, Radnički (workers); the Soviet-era sports societies only for clubs old enough
+LANG.slav.clubMore = [
+  'Dinamo {c}',
+  'Rapid {c}',
+  'Partizan {c}',
+  'Radnički {c}',
+  'Rudar {c}',
+  'Železničar {c}',
+  'Mladost {c}',
+];
+LANG.slav.oldClub = [
+  'Lokomotiv {c}',
+  'Spartak {c}',
+  'Torpedo {c}',
+  'Metalac {c}',
+  'Zenit {c}',
+  'Dinamo {c}',
+  'Sloga {c}',
+];
+LANG.pol.oldClub = ['Gwardia {c}', 'Włókniarz {c}', 'Budowlani {c}', 'Stal {c}'];
+LANG.cze.oldClub = ['Dukla {c}', 'Spartak {c}', 'Železárny {c}', 'Sparta {c}'];
+// Mexico: companies and cooperatives, universities, trades and animals (Cementeros, Mineros, Venados, Zorros)
+LANG.mex.club.push(
+  'Universidad de {c}',
+  'Club Universidad {c}',
+  'Cooperativa {c}',
+  'Mineros de {c}',
+  'Petroleros de {c}',
+  'Cementeros de {c}',
+  'Azucareros de {c}',
+  'Venados de {c}',
+  'Zorros de {c}',
+  'Toros de {c}',
+  'Lobos {c}',
+  'Club Deportivo {c}',
+);
+LANG.mex.misc.push(...words('Zorros Venados Cementeros Petroleros Azucareros Cobras Guerreros Pumas'));
+// Japan: the hometown, then a foreign word for something local (cherry tree, arrow, deer): Italian, Spanish, Latin, English
+LANG.jpn.club.push(
+  ...cross(
+    '{c} {w}',
+    'Albatros Falcons Kestrels Kingfishers Aurora Stella Vento Lumina Nova Cometa Sol Rayo Mare Fiore Riverside Bluewave Verdant Pino',
+  ),
+  'FC {c} Riverside',
+);
+LANG.jpn.misc.push(...words('Albatros Kingfishers Falcons Stella Aurora Vento Cranes Deer'));
+// South Korea and China: the city, the owning company's trade and a nickname
+LANG.kor.club.push(
+  ...cross(
+    '{c} {w}',
+    'Steel_Mariners Dynamics_FC Motors_FC Shipbuilders_FC Electric_Tigers Chemical_Dolphins Heavy_Eagles Silk_Dragons Petroleum_FC Copper_Phoenix',
+  ).map((x) => x.replace(/_/g, ' ')),
+);
+// Thailand: United above all, with a province or a company
+LANG.tha.club.push('{c} Rapids United', '{c} Port', 'Muang {c} United', '{c} Provincial United');
+// The way a club's name hints at its nickname: a Colliery side are the Miners
+const NAME_NICK = {
+  Colliery: 'Miners',
+  Ironworks: 'Ironmen',
+  Foundry: 'Foundrymen',
+  Railway: 'Railwaymen',
+  Works: 'Workmen',
+  Mineros: 'Mineros',
+  Cementeros: 'Cementeros',
+  Petroleros: 'Petroleros',
+  Steel: 'Steelmen',
+  Shipbuilders: 'Shipwrights',
+  Lumberjacks: 'Lumberjacks',
+  Silk: 'Silkmen',
+};
+// Words that mark a culture: a club named with one is flagged when it turns up in a nation whose language doesn't use it
+// ("Real Hamburg", "Dinamo Cardiff", an Al- club in Turkey). word -> the language groups that may use it.
+const MARKERS = {
+  Real: ['spa', 'mex'],
+  Deportivo: ['spa', 'mex', 'arg'],
+  Olympique: ['fra'],
+  Stade: ['fra'],
+  Eintracht: ['ger'],
+  Borussia: ['ger'],
+  Hansa: ['ger'],
+  Viktoria: ['ger', 'cze'],
+  Teutonia: ['ger'],
+  Germania: ['ger'],
+  Arminia: ['ger'],
+  Hertha: ['ger'],
+  Alemannia: ['ger'],
+  Preußen: ['ger'],
+  Fortuna: ['ger', 'nld', 'pol', 'por'],
+  Dinamo: ['slav', 'pol', 'cze', 'hun', 'gre', 'eng', 'rus', 'blr'],
+  Dynamo: ['slav', 'pol', 'cze', 'hun', 'gre', 'eng', 'ger', 'ukr'],
+  Lokomotiv: ['slav', 'cze', 'pol', 'rus', 'blr'],
+  Lokomotyv: ['ukr'],
+  Lokomotiva: ['slav', 'cze', 'pol'],
+  Spartak: ['slav', 'cze', 'pol', 'rus', 'blr', 'ukr'],
+  Torpedo: ['slav', 'rus', 'blr', 'ukr'],
+  Zenit: ['slav', 'rus'],
+  CSKA: ['rus'],
+  Krylia: ['rus'],
+  Zvezda: ['rus'],
+  Shinnik: ['rus'],
+  Shakhtyor: ['rus', 'blr'],
+  Shakhtar: ['ukr'],
+  Metalist: ['ukr'],
+  Metalurh: ['ukr'],
+  Karpaty: ['ukr'],
+  Chornomorets: ['ukr'],
+  Zorya: ['ukr'],
+  Naftovyk: ['ukr'],
+  Hirnyk: ['ukr'],
+  Neman: ['blr'],
+  Naftan: ['blr'],
+  Belshina: ['blr'],
+  Isloch: ['blr'],
+  Partizan: ['slav'],
+  Al: ['arab'],
+  Royal: ['nld'],
+  Koninklijke: ['nld'],
+  Unione: ['ita'],
+  Calcio: ['ita'],
+  Esporte: ['por', 'bra'],
+  Clube: ['por', 'bra'],
+  Grêmio: ['por', 'bra'],
+  Gimnasia: ['arg'],
+  Estudiantes: ['arg', 'spa'],
+  Defensores: ['arg'],
+  Belediyespor: ['tur'],
+  Górnik: ['pol'],
+  Zagłębie: ['pol'],
+  Slavia: ['cze', 'slav', 'blr'],
+  Slavoj: ['cze', 'slav'],
+  Sokol: ['cze', 'slav', 'pol'],
+  Panathlitikos: ['gre'],
+  Ethnikos: ['gre'],
+  Apollon: ['gre'],
+};
+// the first marker word in a name that its nation's language does not use, else null
+export const crossCulture = (name, L) => {
+  for (const w of String(name).split(/[\s-]+/)) {
+    const ok = MARKERS[w];
+    if (ok && !ok.includes(L.key) && !(L.markersOk || []).includes(w)) return w;
+  }
+  return null;
+};
+// Fantasy names read as parody on a football club (Dragonheart FC): these words are kept out of club names
+const FANTASY = words(
+  'dragonheart shadowfang doomhammer wraith inferno skullcrusher reaper venom bloodfang ironfist stormborn nightblade hellfire',
+);
+export const isFantasy = (name) => {
+  const t = plain(name).replace(/[^a-z]/g, '');
+  return FANTASY.some((w) => t.includes(w));
+};
+export const nameNick = (name) => {
+  for (const [w, n] of Object.entries(NAME_NICK)) if (String(name).split(/\s+/).includes(w)) return n;
+  return null;
+};
+
 // Nations that share a language but not a landscape get building blocks of their own: Scottish, Welsh and Irish
 // towns, American and Australian ones, instead of one English list with different spellings
 const NATION_L = {
@@ -1190,6 +1411,11 @@ const NATION_L = {
       'AC {c}',
       '{c} City FC',
       '{c} Athletic',
+      // company towns and old industry: Foundry, Lumber, Ironworks, Brewers
+      '{c} Foundry United',
+      '{c} Lumberjacks',
+      '{c} Ironworks SC',
+      '{c} Brewers',
       ...[
         'Thunder',
         'Storm',
@@ -1210,6 +1436,7 @@ const NATION_L = {
       'Wolves Mustangs Eagles Bison Pioneers Thunder Storm Lightning Rockets Stallions Comets Voyagers Dragons Foxes Crush Fire',
     ),
     colourAlt: null,
+    markersOk: ['Real'],
     clubMore: ['{c} Rapids', '{c} Union Club', '{c} Revolution'],
     tiers: ['Major League', 'Championship League', 'Division Two', 'Division Three', 'Regional League'],
     tierSets: [['Super League', 'Challenge League', 'Open Division', 'Amateur Division', 'Regional League']],
@@ -1235,6 +1462,14 @@ const NATION_L = {
       '{c} Roar',
       '{c} Heart',
       'Sporting {c}',
+      // one-word city nicknames, and the migrant communities' clubs (Hellas, Olympic, Knights)
+      '{c} Victory',
+      '{c} Jets',
+      '{c} Mariners',
+      '{c} Hellas',
+      '{c} Olympic',
+      '{c} Knights',
+      '{c} Azzurri',
     ],
     ground: ['{c} Oval', '{x} Park', '{c} Stadium', '{x} Reserve', '{c} Sportsground', '{x} Field'],
     misc: words('Kookaburras Koalas Wallabies Dingoes Sharks Stingers Roos Magpies Emus Crocs Drovers Miners'),
@@ -1245,7 +1480,339 @@ const NATION_L = {
     cups: ['National Cup', 'Federation Cup', 'Southern Cross Cup'],
     quirk: ['North', 'South', 'East', 'West', 'Port', 'Mount'],
   },
+  BEL: {
+    ...LANG.nld,
+    // Belgium: Royal and Koninklijke (KV, KRC, KSC, RSC), Standard, Union, Racing
+    club: [
+      ...rep(['KV {c}', 'KRC {c}', 'FC {c}'], 2),
+      'KSC {c}',
+      'RSC {c}',
+      'Royal {c}',
+      'Standard {c}',
+      'Union {c}',
+      'Racing {c}',
+      'KFC {c}',
+      'KAA {c}',
+      'SK {c}',
+    ],
+    clubMore: ['Sporting {c}', 'Koninklijke {c}', 'Royal Union {c}', 'Excelsior {c}'],
+    ground: ['Stedelijk Stadion {c}', 'Stade Communal de {c}', '{x} Stadion', 'Gemeentelijk Stadion {c}', 'Stade {x}'],
+  },
+  THA: {
+    ...LANG.tha,
+    // Thailand: United above all, with a province or a company
+    club: [
+      ...rep(['{c} United'], 5),
+      'FC {c}',
+      '{c} City',
+      '{c} Rapids United',
+      '{c} Port',
+      'Muang {c} United',
+      '{c} Provincial United',
+      '{c} Athletic',
+      '{c} FC',
+    ],
+  },
+  NGA: {
+    ...LANG.eng,
+    a: words('Ib Kan Ab Ow En Il Kad Jos Mai Uy Ad Sag Ogb Awk Nsu Umu Osh Ake Ond Ika Bad Ede'),
+    b: words('adan ano a erri ugu orin una ri ara yo ure ede ibo ozo wa gun uko'),
+    elide: true,
+    pre: [],
+    joins: [],
+    // Nigerian clubs: United, Stars, Rangers, Pillars, Warriors; township stadiums
+    club: [
+      ...rep(['{c} United', '{c} Stars', '{c} Rangers'], 2),
+      '{c} FC',
+      '{c} City',
+      '{c} Warriors',
+      '{c} Pillars',
+      '{c} Lions',
+      '{c} Wolves',
+      'Sunshine {c}',
+      'Shooting {c}',
+      '{c} Heartland',
+      '{c} Eagles',
+      '{c} Rovers',
+    ],
+    ground: ['{x} Stadium', '{c} Township Stadium', '{c} Sports Complex', '{x} Arena', '{c} Independence Stadium'],
+    misc: words('Pillars Lions Eagles Elephants Wolves Warriors Stars Porcupines Leopards Chiefs'),
+    colourAlt: null,
+    clubMore: ['{c} Pillars FC', '{c} Giants', 'Union {c}'],
+    cup: 'Federation Cup',
+    cups: ['National Cup', 'Challenge Cup', 'Independence Cup'],
+    quirk: ['Old', 'New', 'Upper', 'Lower'],
+  },
+  GHA: {
+    ...LANG.eng,
+    a: words('Ak Ku Ta Ho Sek Ko Ba Ad Wa Su Ber Tem Tak Yen Ana Bol Dun Eff Nko'),
+    b: words('ra masi male ho ondi ase adi umu ofu ora kam'),
+    elide: true,
+    pre: [],
+    joins: [],
+    // Ghanaian clubs: United, Stars, Hearts, Lions; animal and spirit nicknames
+    club: [
+      ...rep(['{c} United', '{c} Stars'], 3),
+      '{c} FC',
+      '{c} Hearts',
+      '{c} Lions',
+      '{c} Heroes',
+      '{c} Gold Stars',
+      'Real {c}',
+      '{c} Porcupines',
+      '{c} Mighty United',
+    ],
+    ground: ['{x} Stadium', '{c} Sports Stadium', '{c} Park', '{x} Arena', '{c} Cultural Stadium'],
+    misc: words('Porcupines Lions Stars Hearts Elephants Eagles Leopards Antelopes Buffaloes'),
+    colourAlt: null,
+    markersOk: ['Real'],
+    clubMore: ['{c} Hearts of Oak', '{c} Great United', 'Union {c}'],
+    cup: 'Federation Cup',
+    cups: ['National Cup', 'Challenge Cup', 'Independence Cup'],
+    quirk: ['Old', 'New', 'Upper', 'Lower'],
+  },
+  SEN: {
+    ...LANG.fra,
+    a: words('Dak Thi Zig Kao Lou Tamb Kol Mbo Fat Sed Bak Bou Yam Dal San Kor Man Odi Gag Dab'),
+    b: words('ar ès inchor lack ack ouo ra oro dougou kro ssou ké ma gou'),
+    elide: false,
+    pre: [],
+    joins: [],
+    // West African clubs on the French pattern: AS, ASC, US, Stade, Étoile, Jeunesse, with animal nicknames
+    club: [
+      ...rep(['AS {c}', 'ASC {c}', 'US {c}'], 2),
+      'Stade de {c}',
+      'Étoile de {c}',
+      'Union Sportive de {c}',
+      'Jeunesse Sportive {c}',
+      'Racing {c}',
+      'Sporting {c}',
+      'Olympique de {c}',
+      '{c} FC',
+    ],
+    clubMore: ['Académie {c}', 'AS {c} Mimosas', 'Union {c}'],
+    ground: ['Stade {x}', 'Stade Municipal de {c}', 'Stade de la Paix {c}', 'Stade {p}', 'Complexe Sportif {c}'],
+    misc: words('Lions Éléphants Panthères Aigles Mimosas Gazelles Crocodiles Buffles'),
+    quirk: [],
+  },
+  MAR: {
+    ...LANG.fra,
+    a: words('Ben Sid Tif Ouj Ber Taz Kha Mek Saf Ag Tan Tet Ned Nad Oul Mid Ifr Sal Azr'),
+    b: words('ane ar at ira ouan ine ad et ali oun ia ek'),
+    elide: false,
+    pre: ['Sidi', 'Ain', 'Bir', 'Oued', 'Ben', 'Beni'],
+    preGap: ' ',
+    joins: ['-el-Kebir', ' el Jadida'],
+    // Moroccan clubs: the French pattern (US, Étoile Sportive, Olympique) with Arabic words (Chabab, Najah, Amal, Nahda)
+    club: [
+      ...rep(['US {c}', 'Union Sportive {c}', 'Chabab {c}'], 2),
+      'Étoile Sportive de {c}',
+      'Olympique {c}',
+      'Association Sportive {c}',
+      'Racing {c}',
+      'Najah {c}',
+      'Amal {c}',
+      'Itihad {c}',
+      'Nahda {c}',
+      '{c} FC',
+      'SC {c}',
+      'Hilal {c}',
+    ],
+    clubMore: ['Union {c}', 'Sporting {c}'],
+    ground: ['Stade {x}', 'Stade Municipal de {c}', 'Complexe Sportif {c}', 'Stade {p}', 'Grand Stade de {c}'],
+    misc: words('Lions Atlas Aigles Faucons Gazelles Léopards Fennecs Cèdres'),
+    quirk: ['Sidi', 'Ain', 'Oued', 'Ben'],
+  },
+  // The East Slavic nations each have a library of their own, apart from the Balkan one: Latin transliterations of
+  // Russian, Ukrainian and Belarusian, the sports societies of the Soviet years (kept for older clubs) and the
+  // factory, mine and railway names that came with them
+  RUS: {
+    ...LANG.slav,
+    key: 'rus',
+    nations: 'RUS',
+    a: words(
+      `Bel Vor Kras Svet Tul Ryaz Kal Yar Smol Tver Per Sar Kurs Orl Bry Vlad Chel Kem Tom Irk Khab Pesk Lug Ust Bor Dmit
+      Zar Kol Mur Pod Nar Zvon Lip Ros Yel Sort Kin Arz`,
+    ),
+    b: words('grad sk ov ino insk ovsk ka ovo evo ensk gorsk burg bor'),
+    elide: false,
+    pre: ['Novo', 'Staro', 'Verkhne', 'Nizhne', 'Sredne'],
+    preGap: '',
+    joins: ['-na-Mere', '-na-Sine', '-na-Ladge'],
+    // modern clubs are FK or FC; the Soviet-era names (Dinamo, Spartak, Lokomotiv, Torpedo, CSKA, industry) only on old ones
+    club: [
+      ...rep(['FK {c}', 'FC {c}'], 4),
+      '{c} FK',
+      'Akademiya {c}',
+      'Olimp {c}',
+      'Atlant {c}',
+      'Sibir {c}',
+      'Ural {c}',
+      'Volga {c}',
+    ],
+    clubMore: ['Krylia {c}', 'Fakel {c}', 'Luch {c}', 'Znamya {c}', 'Avangard {c}', 'Energiya {c}', 'Baltika {c}'],
+    oldClub: [
+      'Dinamo {c}',
+      'Spartak {c}',
+      'Lokomotiv {c}',
+      'Torpedo {c}',
+      'Zenit {c}',
+      'CSKA {c}',
+      'Trud {c}',
+      'Metallurg {c}',
+      'Shakhtyor {c}',
+      'Khimik {c}',
+      'Shinnik {c}',
+      'Neftyanik {c}',
+      'Zvezda {c}',
+    ],
+    ground: [
+      'Stadion {c}',
+      'Tsentralny Stadion {c}',
+      '{x} Arena',
+      'Stadion imeni {p}',
+      'Stadion {x}',
+      'Stadion Dinamo {c}',
+    ],
+    colours: {
+      red: 'Krasnye',
+      blue: 'Siniye',
+      white: 'Belye',
+      black: 'Chernye',
+      yellow: 'Zheltye',
+      green: 'Zelenye',
+      orange: 'Oranzhevye',
+      claret: 'Vinnye',
+      sky: 'Golubye',
+      navy: 'Temno-sinie',
+    },
+    misc: words('Volki Medvedi Orly Sokoly Kozaki Gusary Shakhtyory Metallurgi Neftyaniki Kosmonavty Zhuravli'),
+    tiers: ['Vysshaya Liga', 'Pervaya Liga', 'Vtoraya Liga', 'Tretya Liga', 'Zonalnaya Liga'],
+    tierSets: [['Premier Divizion', 'Pervyy Divizion', 'Vtoroy Divizion', 'Tretiy Divizion', 'Zonalny Divizion']],
+    cup: 'Kubok Federatsii',
+    cups: ['Kubok Natsii', 'Kubok Rossii Novy', 'Kubok Soyuza'],
+    quirk: ['Novo-', 'Staro-', 'Verkhne-', 'Nizhne-'],
+  },
+  UKR: {
+    ...LANG.slav,
+    key: 'ukr',
+    nations: 'UKR',
+    a: words(
+      `Bor Cher Dru Hlu Hor Kal Kre Lyu Mal Okh Pol Rov Sum Tern Vin Zap Zhov Mar Kov Shep Yav Bil Han Kam Pry Sta Tros
+      Dub Rad Khm Nem`,
+    ),
+    b: words('ivka ychi ove yne ivtsi opil yska ske ska ets ychi ka ivske'),
+    elide: false,
+    pre: ['Nova', 'Stara', 'Verkhnia', 'Nyzhnia', 'Velyka', 'Mala'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...rep(['FK {c}', 'FC {c}'], 4),
+      '{c} FK',
+      'Akademiia {c}',
+      'Olimpik {c}',
+      'Veres {c}',
+      'Kolos {c}',
+      'Prykarpattia {c}',
+      'Podillia {c}',
+    ],
+    clubMore: [
+      'Zorya {c}',
+      'Karpaty {c}',
+      'Chornomorets {c}',
+      'Volyn {c}',
+      'Polissia {c}',
+      'Bukovyna {c}',
+      'Skala {c}',
+    ],
+    oldClub: [
+      'Dynamo {c}',
+      'Shakhtar {c}',
+      'Metalist {c}',
+      'Metalurh {c}',
+      'Spartak {c}',
+      'Lokomotyv {c}',
+      'Torpedo {c}',
+      'Naftovyk {c}',
+      'Hirnyk {c}',
+      'Avanhard {c}',
+    ],
+    ground: ['Stadion {c}', 'Mis’kyi Stadion {c}', '{x} Arena', 'Stadion imeni {p}', 'Stadion {x}', 'Olimpiiskyi {c}'],
+    colours: {
+      red: 'Chervoni',
+      blue: 'Syni',
+      white: 'Bili',
+      black: 'Chorni',
+      yellow: 'Zhovti',
+      green: 'Zeleni',
+      orange: 'Pomaranchevi',
+      claret: 'Vyshnevi',
+      sky: 'Blakytni',
+      navy: 'Temno-syni',
+    },
+    misc: words('Hirnyky Metalurhy Orly Vovky Kozaky Zubry Lvy Sokoly Haidamaky Charivnyky'),
+    tiers: ['Vyshcha Liha', 'Persha Liha', 'Druha Liha', 'Tretia Liha', 'Oblasna Liha'],
+    tierSets: [['Premier Dyvizion', 'Persha Dyvizion', 'Druha Dyvizion', 'Tretia Dyvizion', 'Oblasna Dyvizion']],
+    cup: 'Kubok Federatsii',
+    cups: ['Kubok Natsii', 'Kubok Nezalezhnosti', 'Kubok Soiuzu'],
+    quirk: ['Nova', 'Stara', 'Verkhnia', 'Nyzhnia'],
+  },
+  BLR: {
+    ...LANG.slav,
+    key: 'blr',
+    nations: 'BLR',
+    a: words(
+      `Bar Maz Ras Pin Lid Mol Slon Bab Zhod Svet Vil Kobr Orsh Kar Mikh Nesv Sma Hlyb Brag Dok Kas Chas Rak Dzy Pruz Lah`,
+    ),
+    b: words('ichy ava ovka ensk ka ilovichy shchyna ovichy yn ets'),
+    elide: false,
+    pre: ['Novy', 'Stary', 'Vyalikaya', 'Malaya'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...rep(['FK {c}', 'FC {c}'], 4),
+      '{c} FK',
+      'Slavia {c}',
+      'Isloch {c}',
+      'Neman {c}',
+      'Naftan {c}',
+      'Belshina {c}',
+    ],
+    clubMore: ['Granit {c}', 'Energetik {c}', 'Dnepr {c}', 'Smena {c}', 'Vedrich {c}'],
+    oldClub: [
+      'Dinamo {c}',
+      'Torpedo {c}',
+      'Lokomotiv {c}',
+      'Shakhtyor {c}',
+      'Spartak {c}',
+      'Traktor {c}',
+      'Khimik {c}',
+    ],
+    ground: ['Stadyen {c}', 'Haradski Stadyen {c}', '{x} Arena', 'Stadyen {x}', 'Stadyen Dinamo {c}'],
+    colours: {
+      red: 'Chyrvonyya',
+      blue: 'Siniya',
+      white: 'Belyya',
+      black: 'Chornyya',
+      yellow: 'Zholtyya',
+      green: 'Zyalenyya',
+      orange: 'Aranzhavyya',
+      claret: 'Vishnyovyya',
+      sky: 'Blakitnyya',
+      navy: 'Cyomna-siniya',
+    },
+    misc: words('Zubry Busly Vauki Miadzvedzi Arly Rybaki Konnitsa Hrenadzery'),
+    tiers: ['Vysheyshaya Liga', 'Pershaya Liga', 'Druhaya Liga', 'Treciaya Liga', 'Rehyyanalnaya Liga'],
+    tierSets: [['Premier Dyvizion', 'Pershy Dyvizion', 'Druhi Dyvizion', 'Treci Dyvizion', 'Rehyyanalny Dyvizion']],
+    cup: 'Kubak Federatsii',
+    cups: ['Kubak Natsyi', 'Kubak Svabody', 'Kubak Soyuza'],
+    quirk: ['Novy', 'Stary', 'Vyalikaya', 'Malaya'],
+  },
 };
+NATION_L.CIV = NATION_L.SEN; // (the two share the West African French pattern)
+// every nation code the library can write names for (some are not in the game yet)
+export const libraryNations = () =>
+  [...new Set([...Object.values(LANG).flatMap((l) => l.nations.split(' ')), ...Object.keys(NATION_L)])].sort();
 export const langOf = (nat) =>
   NATION_L[nat] || Object.values(LANG).find((l) => l.nations.split(' ').includes(nat)) || LANG.eng;
 

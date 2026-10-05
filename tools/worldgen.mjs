@@ -25,6 +25,9 @@ import {
   quirkFor,
   isSimpleClub,
   sponsorsFor,
+  crossCulture,
+  isFantasy,
+  nameNick,
 } from './namelib.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -137,7 +140,23 @@ export function generate(real, seed = 1) {
     usedPlace.has(name) || isRude(name) || hardToSay(name, L) || name.length > 16 || checks.closeToTown(name);
   // a club name the same, and not too long or too like a real club
   const clubBad = (name, L) =>
-    usedName.has(name) || isRude(name) || hardToSay(name, L) || tooLong(name) || checks.closeToClub(name);
+    usedName.has(name) ||
+    isRude(name) ||
+    hardToSay(name, L) ||
+    tooLong(name) ||
+    checks.closeToClub(name) ||
+    isFantasy(name) ||
+    crossCulture(name, L); // (a word from another culture: "Real Hamburg")
+  // A nation does not name a quarter of its clubs "Town" or "United": no pattern may pass a share of the clubs' names
+  const clubsOf = {},
+    skel = {};
+  for (const c of Object.values(real.clubs)) if (!c.row[9]) clubsOf[c.nat] = (clubsOf[c.nat] || 0) + 1;
+  const tooCommon = (name, base, nat) =>
+    (skel[nat]?.[name.replace(base, '{c}')] || 0) >= Math.max(3, Math.ceil(0.22 * (clubsOf[nat] || 10)));
+  const noteSkeleton = (name, base, nat) => {
+    const k = name.replace(base, '{c}');
+    (skel[nat] = skel[nat] || {})[k] = (skel[nat][k] || 0) + 1;
+  };
   const placeFor = new Map(),
     perPlace = {},
     done = {};
@@ -197,12 +216,14 @@ export function generate(real, seed = 1) {
     }
   };
   const surname = (L, r) => stem(L, r);
-  const nickOf = (c, r, L, taken) => {
+  const nickOf = (c, r, L, taken, name) => {
     // most clubs are known by their colours; some by an animal or a trade
     const c1 = colourName(c.row[3]);
     const alt = colourAltFor(L);
     const byColour = alt && alt[c1] ? r.pick(alt[c1]) : L.colours[c1];
     let n = r() < 0.62 ? byColour : r.pick(L.misc);
+    const hint = nameNick(name); // a Colliery side are the Miners
+    if (hint && r() < 0.7) n = hint;
     if (taken.has(n)) n = r.pick(L.misc);
     return n;
   };
@@ -256,16 +277,22 @@ export function generate(real, seed = 1) {
       name = patterns[(Math.floor(r() * patterns.length) + (k - 1) * 3 + tries) % patterns.length].replace('{c}', base);
       if (year && !/[0-9]/.test(name) && rq() < 0.3) name += ` ${year}`;
       tries++;
-    } while (clubBad(name, L) && tries < patterns.length * 2);
+    } while ((clubBad(name, L) || tooCommon(name, base, c.nat)) && tries < patterns.length * 2);
     // a share of the clubs take one of the language's other patterns ("Hotspur", "Rot-Weiß", "Olympique")
     const more = clubMoreFor(L),
       ra = rngOf(`${seed}|altname|${code}`);
     if (rep < 70 && more.length && ra() < 0.3) {
       const alt = ra.pick(more).replace('{c}', base);
-      if (!clubBad(alt, L)) name = alt;
+      if (!clubBad(alt, L) && !tooCommon(alt, base, c.nat)) name = alt;
+    }
+    // the Soviet-era sports societies (Lokomotiv, Spartak, Dukla ...) only for clubs old enough to have been founded then
+    if (L.oldClub && ['historic', 'giant', 'fallen', 'fan'].includes(row[5]) && ra() < 0.3) {
+      const alt = ra.pick(L.oldClub).replace('{c}', base);
+      if (!clubBad(alt, L) && !tooCommon(alt, base, c.nat)) name = alt;
     }
     if (usedName.has(name)) name = `${place} ${k + 1}`;
     usedName.add(name);
+    noteSkeleton(name, base, c.nat);
     let ground,
       gt = 0;
     do ground = r.pick(L.ground).replace('{c}', place).replace('{x}', surname(L, r)).replace('{p}', surname(L, r));
@@ -307,7 +334,7 @@ export function generate(real, seed = 1) {
     const L = langOf(c.nat),
       place = done[code].city,
       taken = (nickTaken[`${c.nat}|${place}`] = nickTaken[`${c.nat}|${place}`] || new Set());
-    done[code].nick = nickOf(c, rngOf(`${seed}|nick|${code}`), L, taken);
+    done[code].nick = nickOf(c, rngOf(`${seed}|nick|${code}`), L, taken, done[code].name);
     taken.add(done[code].nick);
   }
   for (const code of Object.keys(out.clubs)) {

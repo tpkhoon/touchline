@@ -1,4 +1,4 @@
-// More nationalities: 47 further nations whose players turn up in the world's squads and play for their own national
+// More nationalities: 52 further nations whose players turn up in the world's squads and play for their own national
 // teams (js/intl.js builds a team for every nation that has enough players). None of them has a league in the game;
 // their players are spread through the existing leagues by where emigrants really go (France and Belgium for the
 // French-speaking African nations, Germany and Austria for the Balkans, Spain and Italy for the Latin Americans ...).
@@ -675,6 +675,66 @@
       0.12,
       ['THA', 'ENG', 'USA', 'JPN'],
       ['#0038A8', '#CE1126'],
+    ),
+    N(
+      'BLR',
+      'Belarus',
+      '🇧🇾',
+      'EUR',
+      'Disciplined and physical',
+      { strength: 1.2, stamina: 1, workRate: 1 },
+      'eastslavic',
+      0.3,
+      ['GER', 'POL', 'TUR', 'ENG', 'CZE'],
+      ['#CF101A', '#007C30'],
+    ),
+    N(
+      'BOL',
+      'Bolivia',
+      '🇧🇴',
+      'SAM',
+      'Hardy at altitude',
+      { stamina: 1.5, strength: 1, workRate: 1 },
+      'latin',
+      0.3,
+      ['ARG', 'ESP', 'BRA', 'MEX', 'POR'],
+      ['#007934', '#F9E300'],
+    ),
+    N(
+      'IND',
+      'India',
+      '🇮🇳',
+      'ASIA',
+      'Quick and technical',
+      { technique: 1.2, pace: 1, dribbling: 1.2 },
+      'southasian',
+      0.3,
+      ['ENG', 'ESP', 'POR', 'JPN', 'KOR', 'AUS'],
+      ['#FF9933', '#138808'],
+    ),
+    N(
+      'QAT',
+      'Qatar',
+      '🇶🇦',
+      'ASIA',
+      'Technical and well-drilled',
+      { technique: 1.5, passing: 1, composure: 1 },
+      'mashriq',
+      0.3,
+      ['ESP', 'POR', 'BEL', 'TUR'],
+      ['#8A1538', '#FFFFFF'],
+    ),
+    N(
+      'UAE',
+      'United Arab Emirates',
+      '🇦🇪',
+      'ASIA',
+      'Fast and attacking',
+      { pace: 1.2, technique: 1.2, dribbling: 1 },
+      'mashriq',
+      0.3,
+      ['ESP', 'POR', 'ENG', 'BEL'],
+      ['#CE1126', '#FFFFFF'],
     ),
   ];
 

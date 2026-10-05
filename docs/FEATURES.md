@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-279 features are playable in the web prototype today. Build = the build that added it.
+283 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -308,6 +308,10 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
 | Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
 | Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
+| Career | Start a career in any of the 40 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
+| Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
+| International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
+| International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
 
 ## Yet to be added
 

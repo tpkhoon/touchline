@@ -50,10 +50,65 @@
     AS: 'Asia-Pacific Nations Cup',
   }; // Asia and North America share one tournament here, so it keeps its own name
 
+  // Every nation can field a team. A nation whose players the world didn't happen to give enough of (Malaysia, the
+  // Philippines, a small Balkan side) is topped up with players who play outside the game's leagues: unattached, so they
+  // show as free agents (any club can sign them) but still play for their country. Run at the start of a world and each
+  // summer, as retirements thin a squad.
+  I.MIN_POOL = 18;
+  const SLOTS = [
+    'GK',
+    'GK',
+    'CB',
+    'CB',
+    'FB',
+    'FB',
+    'DM',
+    'CM',
+    'CM',
+    'AM',
+    'W',
+    'W',
+    'ST',
+    'ST',
+    'CB',
+    'CM',
+    'FB',
+    'ST',
+    'W',
+    'DM',
+  ];
+  I.topUp = function (all) {
+    const s = S();
+    for (const code in D.NATIONS) {
+      if (!all && !(s.nteams && s.nteams['n_' + code])) continue; // (a world's later summers: only nations that have a team)
+      const have = I.pool(code).length;
+      if (have >= I.MIN_POOL) continue;
+      for (let i = 0; i < I.MIN_POOL - have; i++) {
+        const age = U.randi(20, 33),
+          ca = Math.round(U.clamp(U.gauss(50, 5), 38, 62)),
+          p = W.genPlayer({ nat: code, pos: SLOTS[i % SLOTS.length], age, ca, pa: W.potentialFor(ca, age) });
+        p.contract = s.year;
+        p.freeSince = FM.Season.dayIndex();
+        s.players[p.id] = p;
+      }
+    }
+  };
+  // Everyone in a national squad (the top 23 of each nation's pool), whether or not he has a club: unattached
+  // internationals are not cleared out with the other free agents
+  I.squadIds = () =>
+    new Set(
+      Object.values(S().nteams || {}).flatMap((t) =>
+        I.pool(t.code)
+          .slice(0, 23)
+          .map((p) => p.id),
+      ),
+    );
+
   I.setup = function () {
     const s = S();
     s.nteams = {};
     s.intlLog = [];
+    I.topUp(true);
     for (const code in D.NATIONS) {
       const N = D.NATIONS[code];
       // a nation too thin in players to field a squad has no national team in this world (its players still play)
@@ -199,6 +254,7 @@
       // A nation can't be in two qualifying groups at once (the World Championship takes priority)
       s.quals = q;
     }
+    I.topUp();
     I.allegianceTick();
     I.refreshJobs();
   };
