@@ -21,6 +21,7 @@
     "test:realstats": "node tools/realstats.mjs --test",
     "test:worlddef": "node tools/worlddef.mjs --test",
     "test:import": "node tools/import-history.mjs --test",
+    "test:dbimport": "node tools/dbimport.mjs --test",
     "import:history": "node tools/import-history.mjs",
     "docs:sync-status": "node tools/docsync.mjs",
     "docs:synced": "node tools/docsync.mjs --mark",

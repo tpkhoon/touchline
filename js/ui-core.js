@@ -616,7 +616,7 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest)|matchReport|share|clearRead|roundupAll|currency|statsComp|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
@@ -730,6 +730,7 @@
     view: null, // club picker: 'ask' (three questions), 'rec' (suggestions) or 'browse' (every club)
     want: { diff: 'balanced', project: 'underdog', where: 'any' },
     recs: [],
+    db: null, // an imported database (FM.DbImport.import result) the world is built from, or null for the built-in world
     slot: 1,
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
@@ -1095,6 +1096,7 @@
             ? `<details style="margin-top:14px"><summary class="small b" style="color:#c8ff3d;cursor:pointer;padding:6px 0">${esc(lg.name)} — format, relegation, cups and squad rules</summary>${UI.leagueRules(lg)}</details>`
             : '<div class="small" style="color:#c9d4e3;margin-top:16px;line-height:1.6">Three points for a win and five substitutions, as everywhere today. Each league has its own promotion and relegation, continental places and foreign-player rules; you will see your league\'s when you take a job. Knockout ties go to extra time and penalties, with no away-goals rule.</div>';
         })()}
+        ${UI.dbCard()}
         ${UI.simSetup()}
         <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${D.facts().clubs} clubs in ${D.facts().leagues} leagues across ${D.facts().nations} nations, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
         ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
@@ -1180,6 +1182,50 @@
     NG.step++;
     UI.newCareer();
   };
+  // Database: the built-in world, or one imported from a file (FM.DbImport reads the formats it has adapters for)
+  UI.dbCard = function () {
+    const r = NG.db;
+    const list = FM.DbImport.adapters()
+      .map((a) => esc(a.name))
+      .join(', ');
+    const body = !r
+      ? `<div class="tiny" style="color:#9fb0c5;margin-top:6px;line-height:1.5">Start in the built-in world, or load a database of your own (${list}). A database can rename clubs, change ratings, add players and bring past seasons.</div><button class="btn sm" style="margin-top:10px" data-act="ngDbPick">📂 Import a database…</button>`
+      : r.ok
+        ? `<div class="small b" style="margin-top:6px;color:#c8ff3d">✅ ${esc(r.summary.name)}${r.summary.author ? ` <span style="color:#9fb0c5;font-weight:400">by ${esc(r.summary.author)}</span>` : ''}</div>
+          ${r.summary.description ? `<div class="tiny" style="color:#c9d4e3;margin-top:4px">${esc(r.summary.description)}</div>` : ''}
+          <div class="tiny" style="color:#9fb0c5;margin-top:6px">${r.summary.clubs} clubs · ${r.summary.leagues} leagues · ${r.summary.playerRows} players · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
+          ${
+            r.warnings.length
+              ? `<details style="margin-top:6px"><summary class="tiny" style="color:#fbbf24;cursor:pointer">${r.warnings.length} warning${r.warnings.length > 1 ? 's' : ''}</summary>${r.warnings
+                  .slice(0, 12)
+                  .map((w) => `<div class="tiny" style="color:#9fb0c5;margin-top:3px">• ${esc(w)}</div>`)
+                  .join('')}</details>`
+              : ''
+          }
+          <button class="btn sm" style="margin-top:10px" data-act="ngDbClear">Use the built-in world instead</button>`
+        : '';
+    const err =
+      NG.dbErr && NG.dbErr.length
+        ? `<div class="tiny" style="color:#f87171;margin-top:8px;line-height:1.5">${NG.dbErr
+            .slice(0, 6)
+            .map((e) => `• ${esc(e)}`)
+            .join('<br>')}</div>`
+        : '';
+    return `<div class="card" style="margin-top:16px;padding:12px 14px"><div class="small b">🗄️ Database</div>${body}${err}</div>`;
+  };
+  UI.acts.ngDbPick = async () => {
+    const bytes = await FM.Native.pickFile(FM.DbImport.accept());
+    if (!bytes) return;
+    const r = FM.DbImport.import([{ name: 'database', text: FM.DbImport.decode(bytes) }]);
+    NG.db = r.ok ? r : null;
+    NG.dbErr = r.ok ? [] : r.errors;
+    UI.newCareer();
+  };
+  UI.acts.ngDbClear = () => {
+    NG.db = null;
+    NG.dbErr = [];
+    UI.newCareer();
+  };
   UI.acts.ngWant = (d) => {
     NG.want[d.k] = d.v;
     UI.newCareer();
@@ -1232,7 +1278,17 @@
       // your league and the two next to it are fully simulated whatever else was chosen
       const sims = { ...NG.sims };
       lockedLeagues().forEach((id) => (sims[id] = 'full'));
-      W.newWorld({ ...W.REAL_RULES, sims });
+      let built = false;
+      if (NG.db && NG.db.ok) {
+        try {
+          FM.DbImport.build(NG.db.def, { ...W.REAL_RULES, sims });
+          built = true;
+        } catch (e) {
+          console.warn(e);
+          UI.toast('⚠️ The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
+        }
+      }
+      if (!built) W.newWorld({ ...W.REAL_RULES, sims });
       FM.S.settings = theme;
       FM.Season.init();
       if (NG.club === 'none') {
