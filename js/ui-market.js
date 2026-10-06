@@ -95,7 +95,7 @@
     const deal = (t) => {
       const buy = W.isUser(t.to),
         other = buy ? t.from && CL(t.from) : CL(t.to);
-      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><span style="width:20px">${buy ? '🟢' : '🔴'}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''}</div><div class="tiny dim">${buy ? 'from' : 'to'} ${other ? esc(other.name) : 'free agency'}</div></div><b>${t.fee ? U.money(t.fee) : 'Free'}</b></div>`;
+      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><span style="width:20px">${buy ? '🟢' : '🔴'}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''}</div><div class="tiny dim">${buy ? 'from' : 'to'} ${other ? esc(other.name) : 'free agency'}</div></div><div style="text-align:right"><b>${t.fee ? U.money(t.fee) : 'Free'}</b>${t.inst ? `<div class="tiny dim">total · ${t.inst} instalments</div>` : ''}</div></div>`;
     };
     const deals = `<div class="sec"><div class="h3">Your deals this season</div><span class="dim small">${mine.length}</span></div><div class="card flat" style="padding:2px 12px">${mine.slice(0, 10).map(deal).join('') || '<div class="empty">No deals yet this season.</div>'}</div>`;
     // the biggest elsewhere

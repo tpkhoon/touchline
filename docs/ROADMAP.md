@@ -86,6 +86,8 @@ The web prototype runs on a phone browser with no build step, covering 746 real 
 - Dynamic potential: a player's potential now moves each summer until 25 (it was fixed at birth): with how he did against his curve, his ratings and game time, the club's academy and training, a long injury, and a little luck (now and then a teenager surges or stalls). The changes average out, so the world's supply of talent is what the calibration expects. Your players' news says when potential rises or falls, and the profile shows a ▲ or ▼ trend.
 - Club season by season: every club's season is kept in the archive with its manager, top scorer and cup runs (Winners, Runners-up, Semi-finals, Group stage ...), and the club page shows each season with its league, position, record, goals, points and honours, with an All seasons view.
 - Choosing a club in a world you don't know: every club gets a difficulty (Relaxed, Balanced, Tough, Brutal) from its squad rank in the league, its money and the board's likely expectations, with the reason. The club step opens with three questions (how hard, what kind of project, where) and suggests three clubs with a one-line reason each; Browse all, Random and No club remain, and the list filters by difficulty. Each league opens with a card, and the club you pick shows its story: a hook, tags, the likely objective, ground, money, founding year, rival and derby, and tradition. The first season keeps introducing the world: a rival manager's welcome, a derby-week preview, a card for each new opponent, and the league's star and wonderkid. Still to do: club histories (past champions, legends), a world primer, curated first clubs and story starts.
+- Round-10 fixes: no sporting-director emergency cover (a warning in the feed instead of a goalkeeper or squad top-up signed for you; only a squad under 11 is filled with academy call-ups); instalment deals show and add up to the total fee; a transfer-listed player's tag stays visible beside a long name; realistic agency names; the suggested clubs show country, league and tier.
+- Database import framework: a Database card on the new-career screen loads a world-definition file (clubs, ratings, players, past seasons), shows what is in it and any warnings, and builds the world from it; formats are adapters (`FM.DbImport.register`), so more can be added without touching the screen.
 
 ### Playtest feedback, round 9
 
@@ -519,7 +521,7 @@ Priority order. Principle: make what the game already has remember what happened
 - [ ] Club, manager and player relationships
 - [ ] Club, player and world records
 - [ ] Deeper economics and different financial models by country
-- [ ] Database and scenario export / import (community infrastructure)
+- [ ] Database and scenario export / import (community infrastructure) — framework done: `FM.DbImport` with pluggable format adapters, a Database card on the new-career screen, a command-line check and a self-test; the world-definition JSON adapter is built in. Still to do: an adapter for the CSV historical importer, replacing every player, adding whole clubs and leagues, an in-app export, and picker clubs that follow the imported names
 
 **Living world backlog (after Alpha 2; items can be pulled forward)**
 

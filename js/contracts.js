@@ -26,9 +26,16 @@
           Rookie: age <= 20 ? 3 : 0.3,
         })[k],
     );
+    const fn = U.pick(D.NATIONS[p.nat].fn),
+      ln = U.pick(D.NATIONS[p.nat].ln);
+    // a family member acts for him; otherwise an agency: a brand, or the agent's own name in his country's style
     const firm =
-      style === 'Family' ? `${U.pick(['Brother', 'Father', 'Uncle', 'Cousin'])} (${p.ln})` : U.pick(D.AGENT_FIRMS);
-    p.agent = { style, firm, name: `${U.pick(D.NATIONS[p.nat].fn)} ${U.pick(D.NATIONS[p.nat].ln)}` };
+      style === 'Family'
+        ? `${U.pick(['Brother', 'Father', 'Uncle', 'Cousin'])} (${p.ln})`
+        : U.chance(0.3)
+          ? U.pick(D.AGENT_FIRMS)
+          : U.pick(D.AGENT_FIRM_STYLES[D.AGENT_FIRM_LANG[p.nat] || 'en']).replace('{ln}', ln);
+    p.agent = { style, firm, name: `${fn} ${ln}` };
     return p.agent;
   };
   Co.agentInfo = (p) => ({ ...Co.agentOf(p), ...D.AGENTS[Co.agentOf(p).style] });

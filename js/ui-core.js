@@ -256,8 +256,8 @@
     else if (own && p.injRisk)
       tags.push('<span class="pill warn" title="Just back from injury: higher risk of a setback">🩹</span>');
     if (p.susp) tags.push(`<span class="pill warn">🟥 ${p.susp}</span>`);
-    if (p.listed) tags.push(`<span class="pill">Listed</span>`);
-    if (p.loanListed) tags.push(`<span class="pill">Loan list</span>`);
+    if (p.listed) tags.push(`<span class="pill acc" title="On the transfer list">💰 Listed</span>`);
+    if (p.loanListed) tags.push(`<span class="pill acc" title="On the loan list">🔁 Loan list</span>`);
     if (own && p.unreg)
       tags.push(
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',
@@ -268,7 +268,7 @@
     const f = own && FM.People ? FM.People.moodFactors(p)[0] : null;
     const why =
       f && (Math.abs(f.d) >= 8 || p.morale <= 50) ? ` · ${esc(f.t)} (${f.d > 0 ? '+' : '−'}${Math.abs(f.d)})` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${p.clubId && p.no ? `<span class="sqno">${p.no}</span>` : ''}${C.flags(p)} ${esc(W.name(p))} ${tags.join(' ')}</div><div class="small dim ellip">${W.age(p)} yrs · ${own ? `${me} ${ml}${why}` : club ? esc(club.name) : 'Free agent'}${extra}</div></div><div class="col" style="align-items:flex-end;gap:4px"><div class="row" style="gap:6px">${C.playerStars(p)}${own && Math.round(p.lastGrowth || 0) ? `<span class="tiny b" title="Grown or slipped this season" style="color:${p.lastGrowth > 0 ? 'var(--good)' : 'var(--bad)'}">${p.lastGrowth > 0 ? '▲' : '▼'}</span>` : ''}</div>${own ? C.fitTag(p.fitness) : ''}${right}</div></div>`;
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b prow-name"><span class="ellip" style="min-width:0">${p.clubId && p.no ? `<span class="sqno">${p.no}</span>` : ''}${C.flags(p)} ${esc(W.name(p))}</span>${tags.length ? `<span class="prow-tags">${tags.join(' ')}</span>` : ''}</div><div class="small dim ellip">${W.age(p)} yrs · ${own ? `${me} ${ml}${why}` : club ? esc(club.name) : 'Free agent'}${extra}</div></div><div class="col" style="align-items:flex-end;gap:4px"><div class="row" style="gap:6px">${C.playerStars(p)}${own && Math.round(p.lastGrowth || 0) ? `<span class="tiny b" title="Grown or slipped this season" style="color:${p.lastGrowth > 0 ? 'var(--good)' : 'var(--bad)'}">${p.lastGrowth > 0 ? '▲' : '▼'}</span>` : ''}</div>${own ? C.fitTag(p.fitness) : ''}${right}</div></div>`;
   };
   C.heat = function (canvas, grid, cols = 12, rows = 8, color = [61, 200, 255]) {
     const ctx = canvas.getContext('2d'),
@@ -616,7 +616,7 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest)|matchReport|share|clearRead|roundupAll|currency|statsComp|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
@@ -730,6 +730,7 @@
     view: null, // club picker: 'ask' (three questions), 'rec' (suggestions) or 'browse' (every club)
     want: { diff: 'balanced', project: 'underdog', where: 'any' },
     recs: [],
+    db: null, // an imported database (FM.DbImport.import result) the world is built from, or null for the built-in world
     slot: 1,
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
@@ -977,13 +978,13 @@
           <div class="tiny" style="color:#6f7f96;margin-top:6px">Tradition: ${esc(G.tradition(code))}.</div>
         </div>`;
       };
-      const row = (r, div, note) => {
+      const row = (r, div, note, where) => {
         const [name, short, , c1, c2, idt] = r;
         const fake = { id: 'c_' + short, short, colors: [c1, c2] };
         const I = D.IDENTITY[idt],
           d = G.diff(short),
           on = NG.club === fake.id;
-        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div><div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
+        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
       };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
       // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each
@@ -1050,7 +1051,13 @@
           ${foot('')}`;
       } else if (view === 'rec') {
         body = `<div class="h1" style="margin-top:2vh">Three clubs for you</div><div class="tag">Tap one to see its story. ${NG.recs.length ? '' : 'Nothing matches that: loosen a question.'}</div><div class="sp"></div>
-          ${NG.recs.map((x) => row(rowOf(x.code), G.entry(x.code).l.short, x.reason)).join('')}
+          ${NG.recs
+            .map((x) => {
+              const l = G.entry(x.code).l,
+                n = D.NATIONS[l.nat];
+              return row(rowOf(x.code), `Tier ${l.tier}`, x.reason, `${n.flag} ${esc(n.name)} · ${esc(l.name)}`);
+            })
+            .join('')}
           <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="ngSuggest">Three others</button><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button><button class="btn sm" data-act="ngView" data-v="browse">Browse all</button></div>
           ${foot('')}`;
       } else {
@@ -1089,6 +1096,7 @@
             ? `<details style="margin-top:14px"><summary class="small b" style="color:#c8ff3d;cursor:pointer;padding:6px 0">${esc(lg.name)} — format, relegation, cups and squad rules</summary>${UI.leagueRules(lg)}</details>`
             : '<div class="small" style="color:#c9d4e3;margin-top:16px;line-height:1.6">Three points for a win and five substitutions, as everywhere today. Each league has its own promotion and relegation, continental places and foreign-player rules; you will see your league\'s when you take a job. Knockout ties go to extra time and penalties, with no away-goals rule.</div>';
         })()}
+        ${UI.dbCard()}
         ${UI.simSetup()}
         <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${D.facts().clubs} clubs in ${D.facts().leagues} leagues across ${D.facts().nations} nations, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
         ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
@@ -1174,6 +1182,50 @@
     NG.step++;
     UI.newCareer();
   };
+  // Database: the built-in world, or one imported from a file (FM.DbImport reads the formats it has adapters for)
+  UI.dbCard = function () {
+    const r = NG.db;
+    const list = FM.DbImport.adapters()
+      .map((a) => esc(a.name))
+      .join(', ');
+    const body = !r
+      ? `<div class="tiny" style="color:#9fb0c5;margin-top:6px;line-height:1.5">Start in the built-in world, or load a database of your own (${list}). A database can rename clubs, change ratings, add players and bring past seasons.</div><button class="btn sm" style="margin-top:10px" data-act="ngDbPick">📂 Import a database…</button>`
+      : r.ok
+        ? `<div class="small b" style="margin-top:6px;color:#c8ff3d">✅ ${esc(r.summary.name)}${r.summary.author ? ` <span style="color:#9fb0c5;font-weight:400">by ${esc(r.summary.author)}</span>` : ''}</div>
+          ${r.summary.description ? `<div class="tiny" style="color:#c9d4e3;margin-top:4px">${esc(r.summary.description)}</div>` : ''}
+          <div class="tiny" style="color:#9fb0c5;margin-top:6px">${r.summary.clubs} clubs · ${r.summary.leagues} leagues · ${r.summary.playerRows} players · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
+          ${
+            r.warnings.length
+              ? `<details style="margin-top:6px"><summary class="tiny" style="color:#fbbf24;cursor:pointer">${r.warnings.length} warning${r.warnings.length > 1 ? 's' : ''}</summary>${r.warnings
+                  .slice(0, 12)
+                  .map((w) => `<div class="tiny" style="color:#9fb0c5;margin-top:3px">• ${esc(w)}</div>`)
+                  .join('')}</details>`
+              : ''
+          }
+          <button class="btn sm" style="margin-top:10px" data-act="ngDbClear">Use the built-in world instead</button>`
+        : '';
+    const err =
+      NG.dbErr && NG.dbErr.length
+        ? `<div class="tiny" style="color:#f87171;margin-top:8px;line-height:1.5">${NG.dbErr
+            .slice(0, 6)
+            .map((e) => `• ${esc(e)}`)
+            .join('<br>')}</div>`
+        : '';
+    return `<div class="card" style="margin-top:16px;padding:12px 14px"><div class="small b">🗄️ Database</div>${body}${err}</div>`;
+  };
+  UI.acts.ngDbPick = async () => {
+    const bytes = await FM.Native.pickFile(FM.DbImport.accept());
+    if (!bytes) return;
+    const r = FM.DbImport.import([{ name: 'database', text: FM.DbImport.decode(bytes) }]);
+    NG.db = r.ok ? r : null;
+    NG.dbErr = r.ok ? [] : r.errors;
+    UI.newCareer();
+  };
+  UI.acts.ngDbClear = () => {
+    NG.db = null;
+    NG.dbErr = [];
+    UI.newCareer();
+  };
   UI.acts.ngWant = (d) => {
     NG.want[d.k] = d.v;
     UI.newCareer();
@@ -1226,7 +1278,17 @@
       // your league and the two next to it are fully simulated whatever else was chosen
       const sims = { ...NG.sims };
       lockedLeagues().forEach((id) => (sims[id] = 'full'));
-      W.newWorld({ ...W.REAL_RULES, sims });
+      let built = false;
+      if (NG.db && NG.db.ok) {
+        try {
+          FM.DbImport.build(NG.db.def, { ...W.REAL_RULES, sims });
+          built = true;
+        } catch (e) {
+          console.warn(e);
+          UI.toast('⚠️ The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
+        }
+      }
+      if (!built) W.newWorld({ ...W.REAL_RULES, sims });
       FM.S.settings = theme;
       FM.Season.init();
       if (NG.club === 'none') {

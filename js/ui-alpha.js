@@ -284,6 +284,7 @@
           [0.2, '20%'],
         ],
       )}
+      ${deal && deal.inst > 1 ? `<div class="small" style="margin-top:8px">Total fee ${U.money(o.fee)}: ${U.money(FM.Market.cashNow(o.fee, deal))} now${deal.inst > 1 ? ` + ${deal.inst - 1} × ${U.money(FM.Market.instPart(o.fee, deal))} a year apart` : ''}${deal.addOn ? `, plus up to ${U.money(deal.addOn)} in add-ons` : ''}</div>` : ''}
       <div class="tiny dim" style="margin-top:8px">Worth ${U.money(worth)} to ${esc(seller.name)} today${st ? ` · they want ${U.money(st.ask)}${st.rounds ? ` (after ${st.rounds} counter${st.rounds === 1 ? '' : 's'})` : ''}` : ''}. Money later is worth less to them; add-ons count for half, a sell-on more on a young player.${deal ? ` You pay: ${FM.Market.describeDeal(o.fee, deal)}.` : ''}</div>`;
   }
   UI.acts.ofDeal = (d) => {

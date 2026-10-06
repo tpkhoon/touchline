@@ -2270,3 +2270,22 @@ details.cupfold:not([open]) > summary > .row::after {
 .nav button {
   font-size: 10px;
 }
+
+/* a player row's name shrinks with an ellipsis; its tags (listed, injured, suspended...) always stay visible */
+.prow-name {
+  display: flex;
+  flex-wrap: wrap; /* a long name keeps its line and the tags drop beneath it, instead of crowding it out */
+  align-items: center;
+  gap: 2px 6px;
+  min-width: 0;
+}
+.prow-name .ellip {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+.prow-tags {
+  flex: none;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}

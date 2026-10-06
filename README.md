@@ -62,6 +62,7 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | `npm run test:realstats`                                                | Tests for the real-stats converter.                                                                                                                      |
 | `npm run test:worlddef`                                                 | Tests for the world definition.                                                                                                                          |
 | `npm run test:import`                                                   | Tests for the historical importer.                                                                                                                       |
+| `npm run test:dbimport`                                                 | Tests for the database import framework.          |
 | `npm run import:history -- --dir data/samples/history --out world.json` | Run the historical importer on a folder of data.                                                                                                         |
 | `npm run dev-tools`                                                     | Start the developer dashboard on http://localhost:5190.                                                                                                  |
 | `npm run names -- --kind clubs --nat SCO --count 20 --seed 3`           | Name generator (`tools/namegen.mjs`): players, towns, clubs, grounds, nicknames, leagues and sponsors by nation and seed, flagging names that would be rejected. |
@@ -133,6 +134,7 @@ These serve the editor and club packs (`npm run test:realstats`, `test:worlddef`
 - **Real-stats converter:** `js/realstats.js`, command line `tools/realstats.mjs players.csv`. Turns a real player's numbers into attributes and ability.
 - **World definition:** `js/worlddef.js`, command line `tools/worlddef.mjs --export world.json`. The world as data, apart from a save: export, validation, an editing API and loading onto a new world.
 - **Historical importer:** `tools/import-history.mjs`. Reads season tables, player stats and club details into a definition through the converter; a synthetic sample is in `data/samples/history`.
+- **Database import:** `js/dbimport.js` (`FM.DbImport`) and `tools/dbimport.mjs` (`--check file.json`, `--test`). The in-app framework for starting a career in a database of your own: adapters turn a file format into a world definition, `read`, `check` and `build` do the rest, and the new-career screen's Database card runs it. The built-in adapter reads world-definition JSON (`node tools/worlddef.mjs --export`); more formats register with `FM.DbImport.register`.
 
 ### Name generator
 

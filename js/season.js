@@ -1041,7 +1041,7 @@
     if (S.day % 8 === 0) FM.Finance.weekly(); // interest on debt, the board on the wage bill
     Sea.minimalSimWeek();
     Sea.freeAgents();
-    if (employed) Sea.ensureUserSquad(14);
+    if (employed) Sea.ensureUserSquad(11);
     Sea.ensureKeepers();
     Sea.finances();
     if (employed) {
@@ -1147,7 +1147,23 @@
       const need = Math.max(c.sim === 'full' ? 3 : 2, keepers.some(W.available) ? 0 : keepers.length + 1);
       let n = keepers.length;
       if (n >= need) continue;
-      const user = W.isUser(c.id),
+      // your own club is never covered for you: the feed warns you, once a fortnight, and the signing is yours to make
+      if (W.isUser(c.id)) {
+        const u = S.user;
+        if (W.employed() && (keepers.length < 2 || !keepers.some(W.available)) && !(u.gkWarn > Sea.dayIndex() - 14)) {
+          u.gkWarn = Sea.dayIndex();
+          FM.News.add({
+            type: 'club',
+            title: keepers.length ? 'No fit goalkeeper' : 'You have no goalkeeper',
+            body: keepers.length
+              ? 'Every keeper on the books is injured or banned, and an outfield player will have to go in goal. Find cover in the free agents or on loan.'
+              : 'There is not a goalkeeper on the books, and an outfield player will have to go in goal. Find one in the free agents or on loan.',
+            clubId: c.id,
+          });
+        }
+        continue;
+      }
+      const user = false,
         signed = [];
       while (n < need) {
         if (!freeGK) freeGK = Object.values(S.players).filter((p) => !p.clubId && !p.retired && p.pos === 'GK');
@@ -1187,11 +1203,19 @@
 
   // The user's club never runs out of players: under `min` (18 for a new season, 14 at any time), the sporting
   // director signs free agents on one-year deals, or promotes youngsters when none fit, and says so in the feed
-  Sea.ensureUserSquad = function (min) {
+  Sea.ensureUserSquad = function (min, warn) {
     const S = FM.S,
       c = S.user && !S.user.sacked && W.userClub();
     if (!c) return;
     const sq = W.squad(c.id);
+    // a thin squad is yours to fix: the feed says so when the season starts (the floor below only keeps a team on the pitch)
+    if (warn && sq.length >= min && sq.length < warn)
+      FM.News.add({
+        type: 'club',
+        title: `Thin squad: ${sq.length} players`,
+        body: `You start the season with ${sq.length} players under contract. Injuries and suspensions will bite: add depth in the transfer window or the free agents.`,
+        clubId: c.id,
+      });
     if (sq.length >= min) return;
     const want = D.SQUAD_TIER.full,
       level = W.levelFor(c.rep),
@@ -1225,7 +1249,7 @@
     }
     FM.News.add({
       type: 'club',
-      title: `Sporting director makes up the numbers: ${signed.length} signing${signed.length === 1 ? '' : 's'}`,
+      title: `Too few players to field a team: ${signed.length} call-up${signed.length === 1 ? '' : 's'}`,
       body: `With only ${sq.length - signed.length} players under contract, the club has added ${signed.map((p) => `${W.name(p)} (${p.pos}${p.youth === c.id ? ', academy' : ''})`).join(', ')} on one-year deals. Renew contracts before they expire to keep control of your squad.`,
       clubId: c.id,
       pids: signed.map((p) => p.id),
@@ -1921,7 +1945,7 @@
       p.freeSince = Sea.dayIndex();
       S.players[p.id] = p;
     }
-    Sea.ensureUserSquad(18);
+    Sea.ensureUserSquad(11, 18);
     // squads replenish (AI)
     Object.values(S.clubs).forEach((c) => {
       if (W.isUser(c.id)) return;

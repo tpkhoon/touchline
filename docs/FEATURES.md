@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-291 features are playable in the web prototype today. Build = the build that added it.
+297 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -317,6 +317,12 @@ Every feature from the game design document, with what is playable in the protot
 | Career | Choose your club in three questions (how hard, what kind of project, where), then three suggested clubs with a one-line reason each and "Three others"; Browse all, Random and No club stay; the browse list filters by difficulty and each league opens with a card (clubs, continental places, promotion and relegation, rich clubs, strongest club) | Playtest round 10 |
 | Career | The story of a club before you choose it: a hook, tags, the likely board objective, stadium, money and founding year, the rival and the derby, and the club tradition (now fixed by the club) | Playtest round 10 |
 | World | The first season introduces the world: a rival manager's welcome, a derby-week preview, a card for each club you meet for the first time, and the league's best player and best young player | Playtest round 10 |
+| Squad | No sporting-director emergency cover: nobody signs goalkeepers or fills a thin squad for you; the feed warns you (no fit keeper, a thin squad at the start of the season) and only a squad under 11 players is topped up with academy call-ups so a team can take the pitch | Playtest round 10 |
+| Transfers | Instalment deals tally with the total: the offer shows "Total fee £34m: £17m now + 1 × £17m a year apart", offers and counters read "£34m in all: £17m now + 1 × £17m yearly", the parts always add up to the fee (the first takes any rounding) and your deals list shows the total with its instalments | Playtest round 10 |
+| Squad | A clearer transfer-list marker: a long name is cut short with an ellipsis while the Listed, Loan list, injury and suspension tags stay in view beside it | Playtest round 10 |
+| Transfers | Realistic agency names: surname firms in the agent's own country style (Gestión Deportiva, Sportmanagement, Agence, & Partners) beside a wider set of brand names | Playtest round 10 |
+| Career | The suggested clubs show each club's country (with flag), league and tier | Playtest round 10 |
+| Career | Database import (framework): a Database card on the new-career screen loads a world-definition file, shows its clubs, leagues, players, past seasons and any warnings or errors, and starts the career in that world; formats are pluggable adapters and the world remembers its database | Playtest round 10 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
