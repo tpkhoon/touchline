@@ -256,8 +256,8 @@
     else if (own && p.injRisk)
       tags.push('<span class="pill warn" title="Just back from injury: higher risk of a setback">🩹</span>');
     if (p.susp) tags.push(`<span class="pill warn">🟥 ${p.susp}</span>`);
-    if (p.listed) tags.push(`<span class="pill">Listed</span>`);
-    if (p.loanListed) tags.push(`<span class="pill">Loan list</span>`);
+    if (p.listed) tags.push(`<span class="pill acc" title="On the transfer list">💰 Listed</span>`);
+    if (p.loanListed) tags.push(`<span class="pill acc" title="On the loan list">🔁 Loan list</span>`);
     if (own && p.unreg)
       tags.push(
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',
@@ -268,7 +268,7 @@
     const f = own && FM.People ? FM.People.moodFactors(p)[0] : null;
     const why =
       f && (Math.abs(f.d) >= 8 || p.morale <= 50) ? ` · ${esc(f.t)} (${f.d > 0 ? '+' : '−'}${Math.abs(f.d)})` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${p.clubId && p.no ? `<span class="sqno">${p.no}</span>` : ''}${C.flags(p)} ${esc(W.name(p))} ${tags.join(' ')}</div><div class="small dim ellip">${W.age(p)} yrs · ${own ? `${me} ${ml}${why}` : club ? esc(club.name) : 'Free agent'}${extra}</div></div><div class="col" style="align-items:flex-end;gap:4px"><div class="row" style="gap:6px">${C.playerStars(p)}${own && Math.round(p.lastGrowth || 0) ? `<span class="tiny b" title="Grown or slipped this season" style="color:${p.lastGrowth > 0 ? 'var(--good)' : 'var(--bad)'}">${p.lastGrowth > 0 ? '▲' : '▼'}</span>` : ''}</div>${own ? C.fitTag(p.fitness) : ''}${right}</div></div>`;
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b prow-name"><span class="ellip" style="min-width:0">${p.clubId && p.no ? `<span class="sqno">${p.no}</span>` : ''}${C.flags(p)} ${esc(W.name(p))}</span>${tags.length ? `<span class="prow-tags">${tags.join(' ')}</span>` : ''}</div><div class="small dim ellip">${W.age(p)} yrs · ${own ? `${me} ${ml}${why}` : club ? esc(club.name) : 'Free agent'}${extra}</div></div><div class="col" style="align-items:flex-end;gap:4px"><div class="row" style="gap:6px">${C.playerStars(p)}${own && Math.round(p.lastGrowth || 0) ? `<span class="tiny b" title="Grown or slipped this season" style="color:${p.lastGrowth > 0 ? 'var(--good)' : 'var(--bad)'}">${p.lastGrowth > 0 ? '▲' : '▼'}</span>` : ''}</div>${own ? C.fitTag(p.fitness) : ''}${right}</div></div>`;
   };
   C.heat = function (canvas, grid, cols = 12, rows = 8, color = [61, 200, 255]) {
     const ctx = canvas.getContext('2d'),
@@ -977,13 +977,13 @@
           <div class="tiny" style="color:#6f7f96;margin-top:6px">Tradition: ${esc(G.tradition(code))}.</div>
         </div>`;
       };
-      const row = (r, div, note) => {
+      const row = (r, div, note, where) => {
         const [name, short, , c1, c2, idt] = r;
         const fake = { id: 'c_' + short, short, colors: [c1, c2] };
         const I = D.IDENTITY[idt],
           d = G.diff(short),
           on = NG.club === fake.id;
-        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div><div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
+        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
       };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
       // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each
@@ -1050,7 +1050,13 @@
           ${foot('')}`;
       } else if (view === 'rec') {
         body = `<div class="h1" style="margin-top:2vh">Three clubs for you</div><div class="tag">Tap one to see its story. ${NG.recs.length ? '' : 'Nothing matches that: loosen a question.'}</div><div class="sp"></div>
-          ${NG.recs.map((x) => row(rowOf(x.code), G.entry(x.code).l.short, x.reason)).join('')}
+          ${NG.recs
+            .map((x) => {
+              const l = G.entry(x.code).l,
+                n = D.NATIONS[l.nat];
+              return row(rowOf(x.code), `Tier ${l.tier}`, x.reason, `${n.flag} ${esc(n.name)} · ${esc(l.name)}`);
+            })
+            .join('')}
           <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="ngSuggest">Three others</button><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button><button class="btn sm" data-act="ngView" data-v="browse">Browse all</button></div>
           ${foot('')}`;
       } else {

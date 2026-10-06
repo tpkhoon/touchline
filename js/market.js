@@ -488,13 +488,16 @@
       step = U.moneyStep(raw);
     return Math.ceil(raw / step) * step;
   };
-  M.cashNow = (fee, deal) => (deal && deal.inst > 1 ? U.roundMoney(fee / deal.inst) : fee);
+  // An instalment deal pays the fee in equal parts (the first now, the rest a year apart); the first part takes any
+  // rounding, so the parts always add up to the fee
+  M.instPart = (fee, deal) => (deal && deal.inst > 1 ? U.roundMoney(fee / deal.inst) : fee);
+  M.cashNow = (fee, deal) => (deal && deal.inst > 1 ? fee - M.instPart(fee, deal) * (deal.inst - 1) : fee);
   M.describeDeal = function (fee, deal) {
     if (!deal) return U.money(fee);
     const bits = [];
     bits.push(
       deal.inst > 1
-        ? `${U.money(M.cashNow(fee, deal))} now + ${deal.inst - 1} × ${U.money(M.cashNow(fee, deal))} yearly`
+        ? `${U.money(fee)} in all: ${U.money(M.cashNow(fee, deal))} now + ${deal.inst - 1} × ${U.money(M.instPart(fee, deal))} yearly`
         : `${U.money(fee)} up front`,
     );
     if (deal.addOn) bits.push(`${U.money(deal.addOn)} after ${deal.addApps || 25} appearances`);
@@ -532,7 +535,7 @@
       delete p.sellOn;
     }
     if (!deal) return;
-    const per = M.cashNow(fee, deal);
+    const per = M.instPart(fee, deal);
     for (let k = 1; k < (deal.inst || 1); k++)
       payments().push({ pid: p.id, from: to.id, to: from.id, amt: per, due: now() + 1000 * k, why: 'inst' });
     if (deal.addOn)

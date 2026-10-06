@@ -339,6 +339,7 @@
       from: from && from.id,
       to: toId,
       fee,
+      inst: deal && deal.inst > 1 ? deal.inst : 0, // paid in this many instalments (fee is the total)
       intl,
       day: S.day,
       age: W.age(p),
