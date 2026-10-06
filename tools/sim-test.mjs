@@ -2,6 +2,7 @@
 // app uses (our matches applied first, the rest of each day simulated after a JSON round trip, exactly
 // like the Web Worker), then checks invariants, save packing and save migrations.
 //   node tools/sim-test.mjs [--seasons 2] [--seed 7]
+import fs from 'node:fs';
 import vm from 'node:vm';
 import { parseArgs, loadSim } from './harness.mjs';
 
@@ -36,6 +37,32 @@ const cid = Object.values(FM.S.clubs).find((c) => c.comp === 'D1' && c.rep < 75)
 W.takeCharge(cid, 'Test Manager');
 W.seedLegends();
 FM.Stories.welcome();
+// the club guide (UI-only, so loaded here by hand): every club has a difficulty, all four labels are used, each league
+// has a card, and the strongest club of a league is never rated harder than its weakest
+vm.runInContext(fs.readFileSync(new URL('../js/clubguide.js', import.meta.url), 'utf8'), ctx);
+{
+  const G = FM.Guide,
+    all = FM.D.allClubRows().filter((r) => !r[9]);
+  const keys = new Set(all.map((r) => G.diffKey(r[1])));
+  check(
+    all.every((r) => G.diff(r[1]) && G.hook(r[1]) && G.objective(r[1])),
+    'club guide: a club has no difficulty, hook or objective',
+  );
+  check(keys.size === 4, `club guide: only ${[...keys]} difficulty labels are used`);
+  for (const l of FM.D.LEAGUES) {
+    check(G.leagueCard(l).length > 20, `club guide: ${l.id} has no league card`);
+    const rows = FM.D[l.clubs].filter((r) => !r[9]).sort((a, b) => b[6] - a[6]);
+    check(
+      G.score(rows[0][1]) <= G.score(rows[rows.length - 1][1]),
+      `club guide: ${l.id}'s best club is rated harder than its worst`,
+    );
+  }
+  const recs = G.recommend({ diff: 'fight', project: 'rebuild', where: 'any' });
+  check(
+    recs.length === 3 && recs.every((x) => x.reason),
+    'club guide: suggestions did not return three clubs with reasons',
+  );
+}
 check(FM.S.version === FM.SAVE_VERSION, `new world has version ${FM.S.version}, expected ${FM.SAVE_VERSION}`);
 
 // ---- play seasons ----
@@ -232,6 +259,12 @@ for (let s = 0; s < SEASONS; s++) {
     const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
     check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
   }
+  // the first season introduced the world: a rival manager, a star and a wonderkid
+  if (s === 0)
+    check(
+      FM.S.intro && FM.S.intro.n === 3,
+      `season 1: the world introductions stopped at ${FM.S.intro && FM.S.intro.n} of 3`,
+    );
   // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it)
   for (const c of Object.values(FM.S.clubs).filter((x) => x.policy)) {
     const odd = W.squad(c.id).filter((p) => p.heritage !== c.policy.heritage);

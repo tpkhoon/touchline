@@ -616,7 +616,7 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg)|matchReport|share|clearRead|roundupAll|currency|statsComp|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest)|matchReport|share|clearRead|roundupAll|currency|statsComp|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
@@ -726,6 +726,10 @@
     club: null,
     q: '', // club picker search
     lg: 'all', // club picker league filter
+    df: 'all', // club picker difficulty filter
+    view: null, // club picker: 'ask' (three questions), 'rec' (suggestions) or 'browse' (every club)
+    want: { diff: 'balanced', project: 'underdog', where: 'any' },
+    recs: [],
     slot: 1,
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
@@ -936,53 +940,145 @@
         <div class="seg">${FM.Save.SLOTS.map((n) => `<button class="${NG.slot === n ? 'on' : ''}" data-act="ngSlot" data-n="${n}">Slot ${n}${UI.slotMeta(n) ? ' (overwrite)' : ''}</button>`).join('')}</div>
         <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngNext">Choose your club →</button></div>`;
     } else if (NG.step === 1) {
-      const row = (r, div) => {
-        const [name, short, , c1, c2, idt, rep] = r;
-        const fake = { id: 'c_' + short, short, colors: [c1, c2] };
-        const I = D.IDENTITY[idt];
-        const diff =
-          rep >= 80
-            ? 'Expectations: huge'
-            : rep >= 65
-              ? 'Expectations: high'
-              : rep >= 55
-                ? 'Expectations: moderate'
-                : 'Expectations: patient';
-        return `<button class="clubpick ${NG.club === fake.id ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div><div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · ${diff}</div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(I.fans)}</div></div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
+      const G = FM.Guide;
+      const view = NG.view || (NG.club ? 'browse' : 'ask');
+      const money = (idt) =>
+        idt.budget >= 1.6
+          ? 'Deep pockets'
+          : idt.budget >= 1.1
+            ? 'Healthy budget'
+            : idt.budget >= 0.9
+              ? 'Modest budget'
+              : 'Tight budget';
+      // The story of a club, from the static data: shown on the chosen card so the choice can be made before the career starts
+      const story = (r) => {
+        const code = r[1],
+          e = G.entry(code),
+          d = G.diff(code),
+          I = D.IDENTITY[r[5]],
+          rv = G.rival(code),
+          inf = G.info(code);
+        if (!e) return '';
+        const rvFake = rv && { id: 'c_' + rv.code, short: rv.code, colors: [rv.row[3], rv.row[4]] };
+        return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #223044;line-height:1.5">
+          <div class="small" style="color:#e6edf6">${esc(G.hook(code))}</div>
+          <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">${G.tags(code)
+            .slice(1)
+            .map(
+              (t) =>
+                `<span class="tiny" style="padding:2px 8px;border-radius:99px;background:#1a2433;color:#c9d4e3">${esc(t)}</span>`,
+            )
+            .join('')}</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:8px"><b style="color:${d.color}">${d.label}</b>: ${esc(d.why)}.</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:4px">The board will likely ask: ${esc(G.objective(code))}.</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(r[7] || `${r[2]} Stadium`)}, ${G.capOf(r).toLocaleString()} seats · ${money(I)}${inf.founded ? ` · founded ${inf.founded}` : ''}${inf.nick ? ` · "${esc(inf.nick)}"` : ''}</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(I.fans)}</div>
+          ${rv ? `<div class="row tiny" style="gap:8px;align-items:center;color:#c9d4e3;margin-top:8px">${C.crest(rvFake, 22)}<span>The ${esc(rv.derby)} against ${esc(rv.name)}</span></div>` : ''}
+          <div class="tiny" style="color:#6f7f96;margin-top:6px">Tradition: ${esc(G.tradition(code))}.</div>
+        </div>`;
       };
-      // The list, filtered by the search box (club or city, accents ignored) and the league picker; redrawn on its own
-      // as you type so the keyboard stays up
+      const row = (r, div, note) => {
+        const [name, short, , c1, c2, idt] = r;
+        const fake = { id: 'c_' + short, short, colors: [c1, c2] };
+        const I = D.IDENTITY[idt],
+          d = G.diff(short),
+          on = NG.club === fake.id;
+        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div><div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
+      };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+      // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each
+      // league opens with a card that says what it is like. Redrawn on its own as you type so the keyboard stays up
       UI._ngList = () => {
         const names = Object.fromEntries(D.LEAGUES.map((l) => [l.id, l.name]));
         const tier = Object.fromEntries(D.LEAGUES.map((l) => [l.id, `Tier ${l.tier}`]));
         const cols = ['#c8ff3d', '#3de0ff', '#a78bfa', '#ffb347', '#fbbf24', '#f87171', '#60a5fa', '#34d399'];
         const q = plain(NG.q.trim());
-        const html = D.LEAGUES.map(({ id: cid, clubs: key, nat }, i) => {
+        const html = D.LEAGUES.map((l, i) => {
+          const { id: cid, clubs: key, nat } = l;
           if (NG.lg !== 'all' && NG.lg !== cid) return '';
           // B teams (row[9] names the parent) aren't yours to manage: their players belong to the parent club
-          const rows = D[key].filter((r) => !r[9] && (!q || plain(r[0]).includes(q) || plain(r[2] || '').includes(q)));
+          const rows = D[key].filter(
+            (r) =>
+              !r[9] &&
+              (NG.df === 'all' || G.diffKey(r[1]) === NG.df) &&
+              (!q || plain(r[0]).includes(q) || plain(r[2] || '').includes(q)),
+          );
           return rows.length
-            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 8px;letter-spacing:1px">${D.NATIONS[nat].flag} ${names[cid].toUpperCase()} · ${D.NATIONS[nat].name.toUpperCase()}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
+            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 4px;letter-spacing:1px">${D.NATIONS[nat].flag} ${names[cid].toUpperCase()} · ${D.NATIONS[nat].name.toUpperCase()}</div><div class="tiny" style="color:#6f7f96;margin-bottom:8px;line-height:1.45">${esc(G.leagueCard(l))}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
             : '';
         }).join('');
         return html || '<div class="empty">No club matches that search.</div>';
       };
-      body = `<div class="h1" style="margin-top:2vh">Pick your club</div><div class="tag">Every club has an identity. The board and fans will judge you by it.</div><div class="sp"></div>
-        <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${[
-          ...new Set(D.LEAGUES.map((l) => l.nat)),
-        ]
+      const seg = (key, opts) =>
+        `<div class="seg" style="margin-top:6px">${opts
+          .map(
+            ([v, t]) =>
+              `<button class="${NG.want[key] === v ? 'on' : ''}" data-act="ngWant" data-k="${key}" data-v="${v}">${t}</button>`,
+          )
+          .join('')}</div>`;
+      const foot = (extra) =>
+        `<div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button>${extra}<button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
+      const rowOf = (code) => D.allClubRows().find((r) => r[1] === code);
+      if (view === 'ask') {
+        const leagueOpts = [...new Set(D.LEAGUES.map((l) => l.nat))]
           .map(
             (nat) =>
-              `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}">${D.LEAGUES.filter(
+              `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}"><option value="nat:${nat}" ${NG.want.where === 'nat:' + nat ? 'selected' : ''}>Anywhere in ${esc(D.NATIONS[nat].name)}</option>${D.LEAGUES.filter(
                 (l) => l.nat === nat,
               )
-                .map((l) => `<option value="${l.id}" ${NG.lg === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
+                .map(
+                  (l) => `<option value="${l.id}" ${NG.want.where === l.id ? 'selected' : ''}>${esc(l.name)}</option>`,
+                )
                 .join('')}</optgroup>`,
           )
-          .join('')}</select></div>
-        <div id="ng-list">${UI._ngList()}</div>
-        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
+          .join('');
+        body = `<div class="h1" style="margin-top:4vh">Choose your club</div><div class="tag">Don't know the clubs yet? Three questions and we'll suggest three.</div>
+          <div class="ng-label">How hard?</div>${seg('diff', [
+            ['relaxed', 'Relaxed'],
+            ['balanced', 'Balanced'],
+            ['fight', 'A real fight'],
+          ])}
+          <div class="tiny" style="color:#6f7f96;margin-top:6px">${{ relaxed: 'A strong, well-funded club that is expected to win.', balanced: 'Mid-table, with room to grow.', fight: 'Expected to struggle with little money, up to relegation favourites.' }[NG.want.diff]}</div>
+          <div class="ng-label">What kind of project?</div>${seg('project', [
+            ['trophies', 'Win trophies now'],
+            ['rebuild', 'Rebuild a giant'],
+            ['youth', 'Develop youth'],
+            ['underdog', 'Underdog climb'],
+          ])}
+          <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
+          <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${D.facts().clubs} clubs</button></div>
+          ${foot('')}`;
+      } else if (view === 'rec') {
+        body = `<div class="h1" style="margin-top:2vh">Three clubs for you</div><div class="tag">Tap one to see its story. ${NG.recs.length ? '' : 'Nothing matches that: loosen a question.'}</div><div class="sp"></div>
+          ${NG.recs.map((x) => row(rowOf(x.code), G.entry(x.code).l.short, x.reason)).join('')}
+          <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="ngSuggest">Three others</button><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button><button class="btn sm" data-act="ngView" data-v="browse">Browse all</button></div>
+          ${foot('')}`;
+      } else {
+        body = `<div class="h1" style="margin-top:2vh">Browse all clubs</div><div class="tag">Every club has an identity and a difficulty. The board and fans will judge you by them.</div><div class="sp"></div>
+          <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${[
+            ...new Set(D.LEAGUES.map((l) => l.nat)),
+          ]
+            .map(
+              (nat) =>
+                `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}">${D.LEAGUES.filter(
+                  (l) => l.nat === nat,
+                )
+                  .map((l) => `<option value="${l.id}" ${NG.lg === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
+                  .join('')}</optgroup>`,
+            )
+            .join('')}</select></div>
+          <div class="seg" style="margin:0 0 4px">${[
+            ['all', 'Any'],
+            ['relaxed', 'Relaxed'],
+            ['balanced', 'Balanced'],
+            ['tough', 'Tough'],
+            ['brutal', 'Brutal'],
+          ]
+            .map(([v, t]) => `<button class="${NG.df === v ? 'on' : ''}" data-act="ngDiff" data-v="${v}">${t}</button>`)
+            .join('')}</div>
+          <div id="ng-list">${UI._ngList()}</div>
+          ${foot('<button class="btn sm" data-act="ngView" data-v="ask" aria-label="Questions">❓</button>')}`;
+      }
     } else {
       // Your world: what's in it and the rules it plays by (each competition's real ones; not chosen here)
       body = `<div class="h1" style="margin-top:4vh">Your world</div><div class="tag">Real league structures and rules, simplified where the game needs it.</div>
@@ -1009,6 +1105,8 @@
     const clearNameError = () => {
       if (!$('#ng-err').hidden) nameError();
     };
+    const ngWhere = $('#ng-where');
+    if (ngWhere) ngWhere.addEventListener('change', () => (NG.want.where = ngWhere.value));
     const ngQ = $('#ng-q'),
       ngLg = $('#ng-lg');
     if (ngQ)
@@ -1076,6 +1174,25 @@
     NG.step++;
     UI.newCareer();
   };
+  UI.acts.ngWant = (d) => {
+    NG.want[d.k] = d.v;
+    UI.newCareer();
+  };
+  UI.acts.ngDiff = (d) => {
+    NG.df = d.v;
+    UI.newCareer();
+  };
+  UI.acts.ngView = (d) => {
+    NG.view = d.v;
+    UI.newCareer();
+  };
+  UI.acts.ngSuggest = () => {
+    const seen = NG.view === 'rec' ? NG.recs.map((x) => x.code) : [];
+    NG.recs = FM.Guide.recommend(NG.want, seen);
+    if (!NG.recs.length) NG.recs = FM.Guide.recommend(NG.want, []);
+    NG.view = 'rec';
+    UI.newCareer();
+  };
   UI.acts.ngUnemployed = () => {
     NG.club = 'none';
     NG.step = 2;
@@ -1094,6 +1211,7 @@
       .map((r) => 'c_' + r[1])
       .filter((id) => id !== NG.club);
     NG.club = U.pick(all);
+    Object.assign(NG, { view: 'browse', q: '', lg: 'all', df: 'all' });
     UI.newCareer();
     const el = document.querySelector(`[data-act=ngClub][data-id="${NG.club}"]`);
     if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });

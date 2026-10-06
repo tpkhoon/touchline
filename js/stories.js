@@ -583,12 +583,89 @@
   };
   // Before a big game (a derby, a knockout tie, a top side): the pre-match press conference. Mind games can
   // lift your players or fire up theirs (FM.Match reads S.user.preMatch).
+  // Meeting the world: in your first season the feed explains what a new manager does not know yet, one thing at a time.
+  // The first derby gets a preview, a club you meet for the first time gets a card, and the early weeks put one star
+  // and one wonderkid of the league in front of you
+  St.introMatch = function (c, opp) {
+    const s = FM.S,
+      it = s.intro;
+    if (!it || it.year !== s.year || !opp || opp.sim === 'nation') return;
+    const asst = FM.Staff.get('assistant');
+    const founded = (id) => (D.CLUB_INFO[id.slice(2)] || [])[2];
+    if (c.rival === opp.id) {
+      if (it.derby) return;
+      it.derby = true;
+      const a = founded(c.id),
+        b = founded(opp.id);
+      FM.News.add({
+        type: 'club',
+        title: `Derby week: the ${c.derby}`,
+        body: `${opp.name} are ${U.ordinal(W.position(opp.id))} in the table, you are ${U.ordinal(W.position(c.id))}, and neither will care. ${a && b ? `The clubs were founded in ${a} and ${b}, and the towns have been arguing ever since. ` : ''}Win it and the fans forgive a lot; lose it and they remember for years.\n\n${asst.fn} ${asst.ln}: "They raise their game against us every time. Don't let the crowd decide it."`,
+        clubId: c.id,
+      });
+      return;
+    }
+    if (it.met[opp.id] || Object.keys(it.met).length >= 8) return;
+    it.met[opp.id] = 1;
+    const I = D.IDENTITY[opp.identity],
+      mgr = opp.manager && s.staff[opp.manager];
+    FM.News.add({
+      type: 'club',
+      title: `Meet ${opp.name}: ${I.icon} ${I.label}`,
+      body: `${I.fans} They play at ${opp.stadium.name} (${opp.stadium.cap.toLocaleString()}), ${U.ordinal(W.position(opp.id))} in the table.${mgr ? ` ${mgr.fn} ${mgr.ln} is in charge.` : ''}`,
+      clubId: opp.id,
+    });
+  };
+  St.intro = function () {
+    const s = FM.S,
+      c = W.employed() && W.userClub(),
+      it = s.intro;
+    if (!c || !it || it.year !== s.year || it.n > 2 || s.day < [3, 7, 12][it.n]) return;
+    const comp = s.comps[c.comp];
+    if (!comp) return;
+    const others = comp.clubs
+      .filter((id) => id !== c.id && s.clubs[id] && s.clubs[id].sim === 'full')
+      .map((id) => s.clubs[id]);
+    const i = it.n++;
+    if (i === 0) {
+      // a rival manager introduces himself: the derby rival if there is one, else the strongest side
+      const rv = (c.rival && s.clubs[c.rival]) || others.slice().sort((a, b) => b.rep - a.rep)[0];
+      const mgr = rv && rv.manager && s.staff[rv.manager];
+      if (mgr)
+        FM.News.add({
+          type: 'world',
+          title: `${mgr.fn} ${mgr.ln}, ${rv.name}: "We know who you are"`,
+          body: `The ${rv.name} manager welcomes you to the ${comp.name}${c.rival === rv.id ? ` and says the ${c.derby} is the date he has circled` : ' and says his side expect to finish above yours'}. "Every new face gets the same welcome. We'll see how long you last."`,
+          clubId: rv.id,
+        });
+      return;
+    }
+    const pool = others.flatMap((x) => W.squad(x.id).map((p) => ({ p, x })));
+    if (!pool.length) return;
+    const pick =
+      i === 1
+        ? pool.sort((a, b) => b.p.ca - a.p.ca)[0]
+        : pool.filter((e) => W.age(e.p) <= 20).sort((a, b) => b.p.pa - a.p.pa)[0];
+    if (!pick) return;
+    const { p, x } = pick;
+    FM.News.add({
+      type: 'world',
+      title: i === 1 ? `One to watch: ${W.name(p)} of ${x.name}` : `Wonderkid: ${W.name(p)}, ${W.age(p)}, ${x.name}`,
+      body:
+        i === 1
+          ? `The best player in the ${comp.name} right now, the pundits say: a ${p.pos} for ${x.name}. Expect your assistant to put him on the scouting list.`
+          : `A ${W.age(p)}-year-old ${p.pos} at ${x.name} that every scout in the league is writing about. Worth knowing the name before your rivals buy him.`,
+      clubId: x.id,
+      pid: p.id,
+    });
+  };
   St.preMatchPress = function () {
     const s = FM.S,
       c = W.employed() && W.userClub(),
       fx = c && FM.Season.userFixture();
     if (!fx || fx.intl || s.news.some((n) => n.type === 'press' && !n.resolved && n.pre)) return;
     const opp = FM.clubOf(fx.h === c.id ? fx.a : fx.h);
+    St.introMatch(c, opp);
     const big = c.rival === opp.id || fx.ko || fx.first || opp.rep >= 80;
     if (!big || (s.user.preMatch && s.user.preMatch.day === s.day && s.user.preMatch.year === s.year)) return;
     const mgr = opp.manager && s.staff[opp.manager];
@@ -697,6 +774,7 @@
   // ---------- daily world chatter ----------
   St.daily = function () {
     const S = FM.S;
+    St.intro();
     // Mid-season sackings
     if (S.day >= 8 && S.day <= 18 && Math.random() < 0.18) {
       for (const comp of W.leagues()) {

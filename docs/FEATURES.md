@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-287 features are playable in the web prototype today. Build = the build that added it.
+291 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -313,6 +313,10 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | The Saudi Pro League and First Division (18 clubs each, most of them Oil-Backed), the King's Cup, six Asian Champions Cup places, ten foreign players a squad, riyals as a display currency | Playtest round 10 |
 | Players | Dynamic potential: a young player's potential moves each summer until 25 with his performance against his curve, ratings and game time, the academy and training, injuries and luck; news and a profile trend arrow for your players | Playtest round 10 |
 | Clubs | Club season by season: each season's league, position, record, goals and points with the manager, top scorer, cup runs and honours, and an All seasons view | Playtest round 10 |
+| Career | Club difficulty on every club: Relaxed, Balanced, Tough or Brutal, from the squad's rank in its league, the money and what the board will expect, with the reason shown (for example "19th of 20 on squad strength, a healthy budget") | Playtest round 10 |
+| Career | Choose your club in three questions (how hard, what kind of project, where), then three suggested clubs with a one-line reason each and "Three others"; Browse all, Random and No club stay; the browse list filters by difficulty and each league opens with a card (clubs, continental places, promotion and relegation, rich clubs, strongest club) | Playtest round 10 |
+| Career | The story of a club before you choose it: a hook, tags, the likely board objective, stadium, money and founding year, the rival and the derby, and the club tradition (now fixed by the club) | Playtest round 10 |
+| World | The first season introduces the world: a rival manager's welcome, a derby-week preview, a card for each club you meet for the first time, and the league's best player and best young player | Playtest round 10 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
