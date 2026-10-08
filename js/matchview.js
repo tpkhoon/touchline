@@ -1045,6 +1045,17 @@
     document.querySelectorAll('#postChips .chip').forEach((c) => c.classList.toggle('on', c.dataset.v === d.v));
     MV.renderPost();
   };
+  // The post-match card that reads the result: the headline and the causes behind it (FM.Matchday.why)
+  MV.whyCard = function (m) {
+    const w = FM.Matchday.why(m, MV.us);
+    const col = { good: 'var(--good)', bad: 'var(--bad)', luck: 'var(--warn)', neutral: 'var(--ink2)' };
+    return `<div class="card"><div class="h3">Why it went this way</div><div class="small b" style="margin:6px 0 2px;color:${col[w.tone]}">${esc(w.headline)}</div>${w.causes
+      .map(
+        (c) =>
+          `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span style="font-size:18px;width:24px">${c.icon}</span><div class="grow"><div class="b" style="color:${col[c.kind]}">${esc(c.title)}</div><div class="dim" style="line-height:1.4">${esc(c.text)}</div></div></div>`,
+      )
+      .join('')}${w.causes.length ? '' : '<div class="tiny dim">Nothing stood out: an ordinary match.</div>'}</div>`;
+  };
   MV.renderPost = function () {
     const m = MV.m,
       res = m.result(),
@@ -1082,6 +1093,7 @@
           : '';
       body.innerHTML = `${motm ? `<div class="card row">${C.pos(motm)}<div class="grow"><div class="tiny dim b">PLAYER OF THE MATCH</div><div class="b">${C.pname(motm, W.name(motm))}</div></div>${C.rating(m.sides.find((s) => s.rating[motm.id] != null).rating[motm.id])}</div>` : ''}
         <div class="card">${sbar('Possession', res.poss[0], res.poss[1], (v) => v + '%')}${sbar('Expected goals (xG)', res.xg[0], res.xg[1], (v) => v.toFixed(2))}${sbar('Shots', res.shots[0], res.shots[1])}${sbar('On target', res.sot[0], res.sot[1])}${spg[0].length + spg[1].length ? sbar('Set-piece goals', spg[0].length, spg[1].length) + spNote : ''}${sbar('Passes', m.passStats(0).total, m.passStats(1).total)}${sbar('Pass accuracy', m.passStats(0).acc, m.passStats(1).acc, (v) => v + '%')}${sbar('Yellow cards', Object.keys(H.yc).length, Object.keys(A.yc).length)}</div>
+        ${MV.whyCard(m)}
         <div class="card"><div class="h3" style="margin-bottom:6px">Key moments</div>${m.events
           .filter((e) => ['goal', 'red', 'injury', 'sub', 'pens'].includes(e.k) || (e.k === 'chance' && e.big))
           .map(

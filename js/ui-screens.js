@@ -1347,6 +1347,7 @@
     const own = p.clubId && CL(p.clubId) && CL(p.clubId).nat;
     const need = own && R.rulesFor(CL(p.clubId)) && R.rulesFor(CL(p.clubId)).squad;
     return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}<div class="tiny dim" style="font-weight:400">${how}</div></b></div>
+        ${p.draftClub && CL(p.draftClub) ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Drafted</span><b>${p.draftYear} · ${esc(CL(p.draftClub).name)}</b></div>` : ''}
         <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown in</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
   };
   // As national team manager: a player eligible for your nation who plays for another (or has not chosen) can be asked

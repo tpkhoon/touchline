@@ -548,7 +548,9 @@
     // tacklers and readers of the game. A tackler wins it with his tackling, an interceptor with his positioning;
     // a high press makes more tackles, a low block more interceptions. Each one counts in his stats and rating.
     defend(k) {
-      if (Math.random() >= CAL.defActs) return;
+      // a high press goes in more often, a deep block waits for the ball to come to it
+      if (Math.random() >= CAL.defActs * ({ 'High Press': 1.12, 'Low Block': 0.95 }[this.sides[k].tactic.press] || 1))
+        return;
       const sd = this.sides[k],
         on = this.onPitch(sd);
       if (!on.length) return;
@@ -658,6 +660,7 @@
         w.longshot += 0.05;
       }
       if (T.buildup === 'Counter') w.counter += 0.18;
+      if (T.press === 'Low Block') w.counter += 0.07; // a deep block wins it back with the opposition stretched: its chances come on the break
       if (T.buildup === 'Possession' || T.buildup === 'Short') {
         w.cutback += 0.08;
         w.through += 0.05;
@@ -1053,8 +1056,6 @@
       });
     }
 
-    // The assistant's call on a tactical moment (FM.Prompts): the staff's recommended option, which comes first;
-    // a substitution it calls for is made with the best fit on the bench
     // ---------- Shouts: a call from the touchline ----------
     // A shout moves the side for a few minutes (att, mid, def and cards, put back when it ends) and may say something to the
     // players. How well it lands depends on the captain's leadership and the squad's mood, and a manager who shouts all the
@@ -1104,6 +1105,8 @@
     shoutTick(sd) {
       if (sd.shoutExp && this.minute >= sd.shoutExp.until) this.shoutEnd(sd);
     }
+    // The assistant's call on a tactical moment (FM.Prompts): the staff's recommended option, which comes first;
+    // a substitution it calls for is made with the best fit on the bench
     assistantDecides(tl) {
       const sd = this.sides.find((s) => s.user);
       if (!sd) return;

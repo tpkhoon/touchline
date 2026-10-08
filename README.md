@@ -2,7 +2,7 @@
 
 **The deepest football management experience built for mobile. Your club. Your stories. Your history.**
 
-Full design: [docs/GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/FEATURES.md](docs/FEATURES.md) · [docs/COMPETITION_RULES.md](docs/COMPETITION_RULES.md) · [docs/NAMING_RULES.md](docs/NAMING_RULES.md).
+Full design: [docs/GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) · [docs/SYSTEMS.md](docs/SYSTEMS.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/FEATURES.md](docs/FEATURES.md) · [docs/COMPETITION_RULES.md](docs/COMPETITION_RULES.md) · [docs/NAMING_RULES.md](docs/NAMING_RULES.md).
 
 A playable vertical slice: **746 fictional clubs in 42 leagues across 32 nations, in three simulation tiers**. The world is made up (clubs, towns, grounds, nicknames, leagues, cups and derbies all have invented names, and so do the players), but it keeps the real thing's structure: each nation's leagues at their real sizes, with real promotion and relegation, real cup and continental places, real registration rules and kit colours. Club identities and ratings are the game's own. (The real names are kept apart, in `data/real-world.json`, and can come back as an optional pack; see [The world and its names](#the-world-and-its-names).)
 
@@ -65,6 +65,8 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | `npm run test:realstats`                                                | Tests for the real-stats converter.                                                                                                                      |
 | `npm run test:worlddef`                                                 | Tests for the world definition.                                                                                                                          |
 | `npm run test:import`                                                   | Tests for the historical importer.                                                                                                                       |
+| `npm run test:tactics`                                                  | Tactic-response test: a high press, a low block, build-up, width and the opponent's press must change possession, ball-winning, stamina and chances by type, and the post-match reading must name them. |
+| `npm run sysmap`                                                        | Systems map: how each system uses the others, the closed loops checked hop by hop, and state nothing reads (writes docs/SYSTEMS.md). |
 | `npm run test:dbimport`                                                 | Tests for the database import framework.          |
 | `npm run import:history -- --dir data/samples/history --out world.json` | Run the historical importer on a folder of data.                                                                                                         |
 | `npm run dev-tools`                                                     | Start the developer dashboard on http://localhost:5190.                                                                                                  |
@@ -317,7 +319,7 @@ js/stories.js    news feed, story cards, living-world events
 js/ui-*.js       shell, components, screens
 js/matchview.js  live pitch renderer + post-match analysis
 js/ui-alpha.js   negotiation, talks, boardroom, licences, national team screens
-js/matchday.js   captain, set-piece takers, pressure before a match, pre-match team talk, matchday digest
+js/matchday.js   captain, set-piece takers, pressure before a match, pre-match team talk, why it went that way, matchday digest
 js/records.js    club records, head-to-heads, rivalry heat, Player of the Month, injury history, manager moves, stadiums
 js/injuries.js   injury catalogue and risk model, training injuries, recovery, medical decisions (surgery, risk him?)
 js/save.js       save format, migrations, storage backends (files / IndexedDB), backup export/import

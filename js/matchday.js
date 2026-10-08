@@ -152,6 +152,245 @@
     const sd = m.sides.find((s) => s.user);
     if (sd && Md.WARMUPS[kind]) sd.warm = kind;
   };
+  // ---------- Why it went that way ----------
+  // After a match: what decided it, from what the engine counted, set against what each tactic is supposed to do. Each cause
+  // names the tactic or the event behind it (a high press and the counters it left room for, a low block and the chances it
+  // starved, tired legs, a narrow shape against crosses, a red card, finishing) with the numbers, so a result can be read
+  // and a tactic judged. Returns { headline, tone, causes: [{ tag, kind, icon, title, text }] }, the strongest first.
+  Md.why = function (m, us) {
+    const me = m.sides[us],
+      op = m.sides[1 - us],
+      res = m.result();
+    const T = me.tactic || {},
+      OT = op.tactic || {};
+    const poss = res.poss[us];
+    const ty = (s, t) => (s.types && s.types[t]) || [0, 0, 0];
+    const shots = (s, ...ts) => ts.reduce((n, t) => n + ty(s, t)[0], 0);
+    const xgOf = (s, ...ts) => ts.reduce((n, t) => n + ty(s, t)[2], 0);
+    const f2 = (v) => v.toFixed(2);
+    const winsOf = (s) => U.sum(Object.values(s.ps || {}), (p) => (p.tk || 0) + (p.ic || 0));
+    const minute = (e) => parseInt(String(e.min || '0'), 10) || 0;
+    const causes = [];
+    const add = (tag, kind, icon, weight, title, text) => causes.push({ tag, kind, icon, weight, title, text });
+    const dx = me.xg - op.xg,
+      gd = me.goals - op.goals;
+
+    // finishing and luck
+    if (me.goals - me.xg >= 1.2)
+      add(
+        'finishing',
+        'good',
+        '🎯',
+        1 + (me.goals - me.xg) * 0.5,
+        'Clinical',
+        `${me.goals} goals from ${f2(me.xg)} expected: you took what you made.`,
+      );
+    else if (me.goals - me.xg <= -1.2)
+      add(
+        'finishing',
+        'bad',
+        '🧤',
+        1 + (me.xg - me.goals) * 0.5,
+        'Wasteful',
+        `${me.goals} goal${me.goals === 1 ? '' : 's'} from ${f2(me.xg)} expected: the chances were there.`,
+      );
+    if (op.goals - op.xg >= 1.2)
+      add(
+        'finishing',
+        'bad',
+        '🎯',
+        1 + (op.goals - op.xg) * 0.5,
+        'They took everything',
+        `${op.goals} goals from ${f2(op.xg)} expected: hard to defend against.`,
+      );
+    else if (op.goals - op.xg <= -1.2)
+      add(
+        'finishing',
+        'good',
+        '🧤',
+        1 + (op.xg - op.goals) * 0.5,
+        'They wasted it',
+        `${op.goals} goal${op.goals === 1 ? '' : 's'} from ${f2(op.xg)} expected: a bit of fortune, or a good keeper.`,
+      );
+
+    // pressing and the block
+    const counterAg = shots(op, 'counter'),
+      counterFor = shots(me, 'counter');
+    if (T.press === 'High Press') {
+      if (counterAg >= 2)
+        add(
+          'press',
+          'bad',
+          '↩️',
+          1.2 + xgOf(op, 'counter') * 2,
+          'Space behind the press',
+          `Their ${counterAg} counter-attack chances (${f2(xgOf(op, 'counter'))} xG) came in the space your press left.`,
+        );
+      else if (poss >= 54)
+        add(
+          'press',
+          'good',
+          '🔥',
+          1 + (poss - 50) / 10,
+          'The press worked',
+          `${poss}% of the ball and ${winsOf(me)} tackles and interceptions: they had no time on it.`,
+        );
+    } else if (T.press === 'Low Block') {
+      const theirPoss = 100 - poss,
+        central = shots(op, 'through', 'cutback');
+      if (op.xg < 1 && theirPoss >= 55)
+        add(
+          'block',
+          'good',
+          '🧱',
+          1.3,
+          'The block held',
+          `They had ${theirPoss}% of the ball but only ${f2(op.xg)} xG and ${central} central chance${central === 1 ? '' : 's'}.`,
+        );
+      else if (op.xg >= 1.8 || central >= 6)
+        add(
+          'block',
+          'bad',
+          '🕳️',
+          1.2 + op.xg * 0.3,
+          'The block was broken',
+          `${central} through balls and cutbacks (${f2(xgOf(op, 'through', 'cutback'))} xG): sitting deep was not enough.`,
+        );
+      if (counterFor >= 2)
+        add(
+          'block',
+          'good',
+          '⚡',
+          1 + counterFor * 0.2,
+          'Chances on the break',
+          `${counterFor} counter-attack chances (${f2(xgOf(me, 'counter'))} xG) from winning it back deep.`,
+        );
+    }
+    if (OT.press === 'High Press' && poss <= 42)
+      add(
+        'press',
+        'bad',
+        '🔥',
+        1.2,
+        'Pressed out of the game',
+        `Their high press left you ${poss}% of the ball: hard to play out.`,
+      );
+    if (OT.press === 'High Press' && counterFor >= 2)
+      add(
+        'press',
+        'good',
+        '⚡',
+        1.2 + xgOf(me, 'counter') * 2,
+        'Behind their press',
+        `${counterFor} counter-attack chances (${f2(xgOf(me, 'counter'))} xG) in the space they left.`,
+      );
+
+    // legs
+    const xi = me.xi.filter(Boolean),
+      tired = xi.length ? U.avg(xi, (p) => me.st[p.id] ?? 100) : 100;
+    const late = m.events.filter((e) => e.k === 'goal' && e.side === 1 - us && minute(e) >= 70).length;
+    if (tired < 58 && (late || T.press === 'High Press'))
+      add(
+        'fatigue',
+        'bad',
+        '🪫',
+        1.1 + (60 - tired) / 20 + late * 0.4,
+        'The legs went',
+        `Your players finished on ${Math.round(tired)}%${late ? ` and ${late} goal${late === 1 ? '' : 's'} went in after the 70th minute` : ''}${T.press === 'High Press' ? ': a high press is expensive' : ''}.`,
+      );
+
+    // width and style
+    if (T.width === 'Narrow' && shots(op, 'cross') >= 4)
+      add(
+        'width',
+        'bad',
+        '↔️',
+        1 + shots(op, 'cross') * 0.12,
+        'The flanks were open',
+        `A narrow shape: they crossed it ${shots(op, 'cross')} times (${f2(xgOf(op, 'cross'))} xG).`,
+      );
+    if (T.width === 'Wide' && shots(me, 'cross') >= 5 && xgOf(me, 'cross') < 0.6)
+      add(
+        'width',
+        'bad',
+        '↔️',
+        1,
+        'Plenty of crosses, little threat',
+        `${shots(me, 'cross')} crosses for ${f2(xgOf(me, 'cross'))} xG: the delivery was not enough.`,
+      );
+    if (T.width === 'Narrow' && shots(me, 'through', 'cutback') >= 6)
+      add(
+        'width',
+        'good',
+        '↔️',
+        1,
+        'Through the middle',
+        `${shots(me, 'through', 'cutback')} chances through the centre (${f2(xgOf(me, 'through', 'cutback'))} xG) with a narrow shape.`,
+      );
+    if ((T.buildup === 'Possession' || T.buildup === 'Short') && poss >= 58 && me.xg < 1)
+      add(
+        'style',
+        'bad',
+        '🔁',
+        1.2,
+        'Possession without penetration',
+        `${poss}% of the ball, but only ${f2(me.xg)} xG: nothing behind their back line.`,
+      );
+    if (T.buildup === 'Counter' && poss <= 42 && counterFor === 0)
+      add('style', 'bad', '⚡', 1, 'No counters came', `You gave them the ball and then did not get a break on it.`);
+    if (T.buildup === 'Direct' && shots(me, 'cross', 'longshot') >= 8 && me.xg < 1)
+      add(
+        'style',
+        'bad',
+        '🚀',
+        1,
+        'Direct, but low quality',
+        `${shots(me, 'cross', 'longshot')} crosses and long shots for ${f2(me.xg)} xG.`,
+      );
+
+    // red cards, injuries, dead balls
+    for (const e of m.events) {
+      if (e.k === 'red')
+        add(
+          'discipline',
+          e.side === us ? 'bad' : 'good',
+          '🟥',
+          e.side === us ? 1.6 : 1.4,
+          e.side === us ? 'Down to ten' : 'They were down to ten',
+          `${e.side === us ? 'Your' : 'Their'} player was sent off in the ${minute(e)}th minute.`,
+        );
+      if (e.k === 'injury' && e.side === us && minute(e) < 45)
+        add(
+          'injury',
+          'bad',
+          '🚑',
+          0.9,
+          'An early injury',
+          `A key player went down in the ${minute(e)}th minute and the plan changed.`,
+        );
+    }
+    const dead = (side) =>
+      m.events.filter((e) => e.k === 'goal' && e.side === side && (e.sp || e.type === 'penalty')).length;
+    if (dead(us) >= 2)
+      add('setpiece', 'good', '🚩', 1, 'Dead balls', `${dead(us)} goals from set pieces and penalties.`);
+    if (dead(1 - us) >= 2)
+      add('setpiece', 'bad', '🚩', 1, 'Set pieces', `They scored ${dead(1 - us)} from dead balls.`);
+
+    const won = gd > 0 || (m.pens && m.pens[us] > m.pens[1 - us]),
+      lost = gd < 0 || (m.pens && m.pens[us] < m.pens[1 - us]);
+    let headline, tone;
+    if (won && dx >= 0.4) [headline, tone] = ['Deserved: you created more.', 'good'];
+    else if (won && dx < -0.6) [headline, tone] = ['A fortunate win: they had the better chances.', 'luck'];
+    else if (won) [headline, tone] = ['A narrow, even win.', 'good'];
+    else if (lost && dx >= 0.6) [headline, tone] = ['Unlucky: you made the better chances.', 'luck'];
+    else if (lost && dx <= -0.4) [headline, tone] = ['Beaten on chances.', 'bad'];
+    else if (lost) [headline, tone] = ['A close defeat.', 'bad'];
+    else if (dx >= 0.6) [headline, tone] = ['A draw you should have won.', 'luck'];
+    else if (dx <= -0.6) [headline, tone] = ['A draw you were lucky to get.', 'luck'];
+    else [headline, tone] = ['An even draw.', 'neutral'];
+    causes.sort((a, b) => b.weight - a.weight);
+    return { headline, tone, dx, causes: causes.slice(0, 4) };
+  };
   // Pressure before a match: an opponent in form, or a full house at their ground, weighs on a squad (nervy players most; a
   // big-game player or a veteran hardly notices). Returns what weighs and by how many morale points for a steady player.
   Md.pressure = function (fx) {

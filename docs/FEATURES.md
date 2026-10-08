@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-309 features are playable in the web prototype today. Build = the build that added it.
+313 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -335,15 +335,21 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Invitational international tournaments in the international windows: the Kirin Cup, King's Cup and Nehru Cup in turn, a host and three invited nations with semi-finals, a final and a third-place match | Playtest round 11 |
 | Matchday | Shouts: seven calls from the touchline (Push up, Hold shape, Get stuck in, Calm down, Concentrate, Encourage, Slow it down) that move the side for a few minutes; how well they land depends on the captain and the mood, and too many are tuned out | Playtest round 11 |
 | Competitions | MLS roster and salary rules for the American league: a $5.2M salary budget over the 20 biggest wage charges, a $700K maximum charge, three Designated Players, a 30-man senior roster and eight international slots; signings and renewals that break them are refused with the reason, the budget shows on the squad screen, and the AI's clubs are kept within it | Playtest round 11 |
+| Tools | Systems map: how each system uses the others, worked out from the code (tier, size, uses, used by), the closed loops of the design checked hop by hop, and state that is written and never read (`npm run sysmap`, written to docs/SYSTEMS.md) | Systems 1 |
+| Tools | Tactic-response test: 20 expectations on a high press, a low block, build-up, width and the opponent's press, measured over hundreds of matches, and on the post-match reading (`npm run test:tactics`) | Systems 1 |
+| Match | Tactics do what football says: a low block now wins it back deep and breaks (more counter-attack chances), a high press goes in more often, and each shows in possession, stamina and chances by type | Systems 1 |
+| Match | "Why it went this way" on the post-match summary: a headline (deserved, unlucky, fortunate, beaten on chances) and up to four causes with numbers, naming the tactic or event behind them | Systems 1 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
 
 ## Yet to be added
 
-41 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+67 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
+
+The **Systems** rows come from a review of how the systems feed one another (see [SYSTEMS.md](SYSTEMS.md), `npm run sysmap`): Systems 1 (done) is the map and the tactic tests, Systems 2 the simulation's long-run believability and club identity, Systems 3 tactics and scouting, Systems 4 the Asian and lower-league identity.
 
 Design principle from here: don't make the game deeper by adding more screens â€” make the things it already has remember what happened. Transfers, managers' successes, clubs that keep fighting for trophies, youngsters who become legends and rule changes all leave a trace the world can refer back to.
 
@@ -390,3 +396,29 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Business | Store listing: screenshots, description, age rating, privacy policy | 1.0 |
 | Community | Sharing databases, leagues, scenarios and graphics | Post-launch |
 | DLC | Historical database packs | Post-launch |
+| Match | Opposition report before the match: the patterns the other side will play, worked out from its tactic, roles and players (overloads on one flank, a striker who drops deep, aggressive full-backs) | Systems 3 |
+| Match | Match instructions that answer the report: up to three (stay wider on the right, hold the line against the drifting striker, counter into the space behind their full-backs), each with an engine effect | Systems 3 |
+| Match | Half-time prompts that point at what happened in the first half (shots from one channel, a full-back out of position, a tired midfield) | Systems 3 |
+| Match | Press and block animations that match the engine: forwards visibly press, the line drops, space opens behind a press | Systems 3 |
+| Scouting | Second opinions: a second scout can disagree with the first, and each scout has blind spots (a physical bias, a technical bias) | Systems 3 |
+| Scouting | Three prices for a target: the analytics estimate, the agent's ask and the sporting director's view side by side | Systems 3 |
+| Scouting | Recommendations that depend on your squad's needs and budget, not a green button on the best player | Systems 3 |
+| World | Per-club attributes: city size, supporter base, stadium and financial ceilings, youth catchment, regional pull and ownership type | Systems 2 |
+| World | A club's long-run reputation target from those attributes and its history, in place of the pull toward its league's band | Systems 2 |
+| World | Events with causes: takeovers, collapses and dynasties follow from a club's attributes, with capped rise and fall rates | Systems 2 |
+| Tools | 30-year stability test: how much club rankings move over decades, how often a small club becomes a dynasty or a giant collapses without a cause | Systems 2 |
+| Club | Identity drives recruitment: the players AI clubs target, and what your board thinks of buying against developing | Systems 2 |
+| Club | Identity drives the fans: the style they expect and how they react to your football | Systems 2 |
+| Club | Identity drives players' willingness to join, and the manager's job security (the board's patience) | Systems 2 |
+| Club | Identity drives revenue: fan-owned gates, oil-backed sponsors, selling-club income | Systems 2 |
+| Career | Manager profile that is discovered, not picked: slow-moving axes (youth against buying, attacking against pragmatic, stable against tinkering) that boards, players and the job market react to | Systems 2 |
+| Career | Manager reputation by league and country, and the stepping stones between them | Systems 2 |
+| Career | Start-anywhere challenge starts and story starts (a giant awakens, last chance at promotion), and a short list of good first clubs | Systems 4 |
+| Career | A skippable world primer: the leagues, how promotion works and which competitions matter, linked from the screens | Systems 4 |
+| History | Club histories before the save: past champions, famous finals and a hall of fame, seeded to be believable and consistent with the club's ceiling | Systems 4 |
+| World | Nations missing from the world: Singapore, Malaysia, Vietnam, Indonesia, the Philippines and South Africa, with leagues, rules and name cultures | Systems 4 |
+| Lower leagues | Lower-league realism: part-time squads, tiny budgets, no scouting network, community-club jobs | Systems 4 |
+| Asia | Japan's university route into the J.League, with designated players and the draft of graduates | Systems 4 |
+| Asia | Korea's military service interrupting careers | Systems 4 |
+| Asia | AFC foreign-player slots (three plus one Asian place) and ASEAN recruitment rules | Systems 4 |
+| Asia | Gulf spending that distorts the market: superstar recruitment, naturalisation and the effect on Asian competitions | Systems 4 |
