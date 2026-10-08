@@ -429,7 +429,7 @@ Gameplay updates are free.
 
 ## Prototype status and roadmap
 
-Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 746 real clubs in 42 real leagues across 32 nations in three simulation tiers, B teams and U21/U18 sides, twelve domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 90 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
+Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 746 fictional clubs in 42 leagues (the real structure under invented names) across 32 nations in three simulation tiers, B teams and U21/U18 sides, twelve domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 90 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
 
 The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
 
@@ -449,4 +449,4 @@ The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROAD
 | Platform | Installable offline web app, save upgrades, compressed backups, background simulation, native-app projects (Android, iOS) | Device builds, cloud saves |
 | Editor | Every career plays by each competition's real rules | Full database and rules editor; database export/import and community sharing |
 
-**Decision:** the game ships with fictional leagues, clubs and competitions, keeping the real structure, sizes, formats and rules; real names become optional packs. The prototype still uses real club, league and competition names (with its own ratings) and fictional players.
+**Decision:** the game ships with fictional leagues, clubs and competitions, keeping the real structure, sizes, formats and rules; real names become optional packs. The prototype now runs on the fictional set (generated names over the real structure; the real names are kept in data/real-world.json for optional packs) and fictional players.

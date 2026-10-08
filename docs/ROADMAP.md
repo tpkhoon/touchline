@@ -34,7 +34,7 @@ flowchart TB
 
 ## Shipped
 
-The web prototype runs on a phone browser with no build step, covering 746 real clubs in 42 real leagues across 32 nations in three simulation tiers, and 90 national teams. Newest build first.
+The web prototype runs on a phone browser with no build step, covering 746 fictional clubs in 42 leagues (the real structure under invented names) across 32 nations in three simulation tiers, and 90 national teams. Newest build first.
 
 ### Playtest feedback, round 10
 

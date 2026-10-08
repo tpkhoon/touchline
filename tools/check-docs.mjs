@@ -14,9 +14,9 @@ const word = (n) =>
 // [pattern, what it must say, which fact]
 const RULES = [
   [
-    /(\d+) real clubs in (\d+) real leagues(?: \(at their real sizes\))? across (\d+) nations/g,
+    /(\d+) (?:real |fictional )?clubs in (\d+) (?:real |fictional )?leagues(?: \(at their real sizes\))? across (\d+) nations/g,
     (m) => [+m[1] === F.clubs, +m[2] === F.leagues, +m[3] === F.nations].every(Boolean),
-    `${F.clubs} real clubs in ${F.leagues} real leagues across ${F.nations} nations`,
+    `${F.clubs} fictional clubs in ${F.leagues} leagues across ${F.nations} nations`,
   ],
   [/(\d+) national teams/g, (m) => +m[1] === F.nationalTeams, `${F.nationalTeams} national teams`],
   [
