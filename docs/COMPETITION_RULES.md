@@ -77,6 +77,13 @@ champions.
 
 - **MLS (USA):** see the American league above: seven a conference, the top seed skipping Round One, ending in the
   MLS Cup; the best record wins the Supporters' Shield.
+- **MLS roster and salary rules (USA):** a salary budget of $5.2M a year, counted over a club's 20 biggest wage
+  charges; no player counts for more than $700K (the maximum charge); up to three Designated Players may earn more than
+  that and are charged only that much, and nobody else may earn above it; a senior roster of at most 30; eight
+  international slots; a three-round college draft. A signing or renewal that would break any of these is refused, with
+  the reason (and a hint when a Designated Player place would fix it); the AI's clubs are trimmed back within the budget
+  every week and at the start of a season. Not in the game: allocation money, Generation adidas and the
+  under-22 initiative.
 - **A-League (Australia):** the top six play off: 3rd v 6th and 4th v 5th (elimination finals), semi-finals (1st and
   2nd against the survivors) and the Grand Final, all single matches hosted by the better seed.
 

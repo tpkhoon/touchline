@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-308 features are playable in the web prototype today. Build = the build that added it.
+309 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -334,6 +334,7 @@ Every feature from the game design document, with what is playable in the protot
 | Clubs | Club history reworked: each season keeps its top scorer and the player with most appearances, a Club legends card lists the all-time top five scorers and appearance makers (with how far each squad member is from the next), and every club's legends come from its own country and from the years it existed | Playtest round 11 |
 | Competitions | Invitational international tournaments in the international windows: the Kirin Cup, King's Cup and Nehru Cup in turn, a host and three invited nations with semi-finals, a final and a third-place match | Playtest round 11 |
 | Matchday | Shouts: seven calls from the touchline (Push up, Hold shape, Get stuck in, Calm down, Concentrate, Encourage, Slow it down) that move the side for a few minutes; how well they land depends on the captain and the mood, and too many are tuned out | Playtest round 11 |
+| Competitions | MLS roster and salary rules for the American league: a $5.2M salary budget over the 20 biggest wage charges, a $700K maximum charge, three Designated Players, a 30-man senior roster and eight international slots; signings and renewals that break them are refused with the reason, the budget shows on the squad screen, and the AI's clubs are kept within it | Playtest round 11 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |

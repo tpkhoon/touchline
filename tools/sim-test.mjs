@@ -288,6 +288,14 @@ for (let s = 0; s < SEASONS; s++) {
     const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
     check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
   }
+  // MLS clubs keep to the salary budget (the AI's are brought within it) and nobody but a Designated Player earns above the maximum
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.comp === 'US1' && !W.isUser(x.id))) {
+    const st = FM.Reg.mlsStatus(c);
+    check(
+      st.illegal === 0 && st.charge <= st.m.cap * 1.02,
+      `season ${s + 1}: ${c.short} has a salary charge of ${Math.round(st.charge / 1e3)}k with ${st.illegal} illegal wages`,
+    );
+  }
   // the season's invitational tournament (when its host was free) was played to a winner
   check(!lastInvite || lastInvite.winner, `season ${s + 1}: the ${lastInvite && lastInvite.name} never finished`);
   if (lastInvite) console.log(`  invitational: ${lastInvite.name}, won by ${FM.S.nteams[lastInvite.winner].name}`);
