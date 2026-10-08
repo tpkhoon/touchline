@@ -10,6 +10,7 @@
 
   let IDX = null;
   // Clubs ranked by reputation inside their league (B teams aren't yours to manage and are left out)
+  G.reset = () => (IDX = null); // the data changed (a database was staged or removed)
   G.index = function () {
     if (IDX) return IDX;
     IDX = { byCode: {}, leagues: {} };

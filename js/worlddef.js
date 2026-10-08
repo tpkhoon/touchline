@@ -43,6 +43,7 @@
     players: [],
     managers: [],
     competitions: [],
+    rivals: [], // [club id, club id, derby name]
     history: { seasons: [] },
   });
 
@@ -51,6 +52,7 @@
     const def = WD.blank(opts.name || 'Exported world');
     def.meta.startYear = S.year;
     def.meta.base = 'export';
+    if (opts.replace && opts.players !== false) def.meta.players = 'replace'; // the file's players are all of them
     def.rules = {
       ...def.rules,
       win: S.rules.win,
@@ -88,14 +90,18 @@
         rep: c.rep,
         league: c.comp,
         parent: c.parent || null,
+        founded: c.founded || null,
         stadium: { name: c.stadium.name, cap: c.stadium.cap0 || c.stadium.cap },
       });
+      if (c.rival && c.id < c.rival) def.rivals.push([c.id, c.rival, c.derby || 'Derby']);
       const m = c.manager && S.staff[c.manager];
       if (m) def.managers.push({ club: c.id, fn: m.fn, ln: m.ln, nat: m.nat, age: m.age, ability: m.ability });
     }
     if (opts.players !== false)
       for (const p of Object.values(S.players)) {
         if (p.retired) continue;
+        // (attributes are kept to one decimal, which can move his ability a point: potential never falls below it)
+        const attrs = Object.fromEntries(D.ATTRS.map((k) => [k, Math.round(p.attrs[k] * 10) / 10]));
         def.players.push({
           id: 'dp_' + p.id,
           fn: p.fn,
@@ -104,8 +110,8 @@
           born: p.born,
           pos: p.pos,
           foot: p.foot,
-          attrs: Object.fromEntries(D.ATTRS.map((k) => [k, Math.round(p.attrs[k] * 10) / 10])),
-          pa: p.pa,
+          attrs,
+          pa: Math.max(p.pa, W.calcCA({ attrs }, p.pos)),
           club: p.clubId || null,
           contract: p.contract,
         });
@@ -122,6 +128,216 @@
         ),
       });
     return def;
+  };
+
+  // ---------- The static world: leagues and clubs as the game's data has them ----------
+  // A world is built from D.LEAGUES and the club rows (js/data.js, js/clubs.js). A database that adds clubs or leagues, or
+  // renames them, changes those rows before the world is made, so the club picker, the world generator and everything else
+  // that reads them see the database. The change is a PATCH: only what differs, small enough to keep in the save (a world
+  // from a database needs it again on every load, and in the simulation worker) and to undo when another world is chosen.
+  const codeOf = (id) => String(id).replace(/^c_/, '');
+  const staticClubs = () => {
+    const by = new Map();
+    for (const l of D.LEAGUES) for (const r of D[l.clubs] || []) by.set(r[1], { row: r, league: l });
+    return by;
+  };
+  const infoOf = (code) => D.CLUB_INFO[code] || [];
+  const rowToClub = (r, l) => {
+    const info = infoOf(r[1]);
+    return {
+      id: 'c_' + r[1],
+      name: r[0],
+      short: info[0] || r[1],
+      nick: info[1] || '',
+      city: r[2],
+      nat: l.nat,
+      colors: [r[3], r[4]],
+      identity: r[5],
+      rep: r[6],
+      league: l.id,
+      parent: r[9] ? 'c_' + r[9] : null,
+      founded: info[2] || null,
+      stadium: { name: r[7] || `${r[2]} Stadium`, cap: r[8] || Math.round((8000 + (r[6] - 40) * 900) / 500) * 500 },
+    };
+  };
+  // The definition of the game's own data: no world needed (what the in-app importers match their files against)
+  WD.fromStatic = function (opts = {}) {
+    const def = WD.blank(opts.name || 'Built-in data');
+    def.meta.startYear = D.SEASON_START;
+    def.meta.base = 'static';
+    for (const l of D.LEAGUES) {
+      def.leagues.push({
+        id: l.id,
+        name: l.name,
+        short: l.short,
+        nat: l.nat,
+        tier: l.tier,
+        sim: l.sim,
+        repBand: l.repBand.slice(),
+        rules: JSON.parse(JSON.stringify(l.rules || {})),
+      });
+      for (const r of D[l.clubs] || []) def.clubs.push(rowToClub(r, l));
+    }
+    return def;
+  };
+
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  // What a definition changes in the static data: { leagues: [...], clubs: [...], rivals: [...] }, empty when nothing
+  WD.patchOf = function (def) {
+    const patch = { leagues: [], clubs: [], rivals: [] };
+    const known = staticClubs();
+    const leagueIds = new Set(D.LEAGUES.map((l) => l.id));
+    for (const l of def.leagues || []) {
+      const cur = D.LEAGUES.find((x) => x.id === l.id);
+      if (!cur) {
+        patch.leagues.push({
+          id: l.id,
+          nat: l.nat,
+          name: l.name,
+          short: l.short || l.id,
+          tier: l.tier || 1,
+          sim: l.sim || 'full',
+          repBand: l.repBand ? l.repBand.slice() : [70, 45],
+          rules: JSON.parse(JSON.stringify(l.rules || {})),
+          isNew: true,
+        });
+        continue;
+      }
+      const d = { id: l.id };
+      for (const k of ['name', 'short', 'tier', 'sim', 'repBand', 'rules'])
+        if (l[k] != null && !same(l[k], cur[k] || (k === 'rules' ? {} : undefined))) d[k] = l[k];
+      if (Object.keys(d).length > 1) patch.leagues.push(d);
+    }
+    const leagueNat = (id) =>
+      ((def.leagues || []).find((l) => l.id === id) || D.LEAGUES.find((l) => l.id === id) || {}).nat;
+    for (const c of def.clubs || []) {
+      const code = codeOf(c.id),
+        cur = known.get(code);
+      const base = cur ? rowToClub(cur.row, cur.league) : null;
+      const m = { ...(base || { city: c.name, identity: 'historic', stadium: {}, colors: [] }), ...c };
+      m.stadium = { ...((base && base.stadium) || {}), ...(c.stadium || {}) };
+      const lg = c.league || (base && base.league);
+      const row = [
+        m.name,
+        code,
+        m.city || m.name,
+        (m.colors || [])[0],
+        (m.colors || [])[1],
+        m.identity || 'historic',
+        m.rep,
+        m.stadium.name || `${m.city || m.name} Stadium`,
+        m.stadium.cap,
+      ];
+      if (m.parent) row.push(codeOf(m.parent));
+      const info = [m.short || code, m.nick || '', m.founded || 0];
+      if (cur) {
+        const pick = (x) => ({
+          n: x.name,
+          s: x.short,
+          k: x.nick || '',
+          c: x.city,
+          col: x.colors,
+          i: x.identity,
+          r: x.rep,
+          p: x.parent || null,
+          f: x.founded || 0,
+          sn: x.stadium.name,
+          sc: x.stadium.cap,
+        });
+        const cand = { ...m, short: info[0], city: row[2], identity: row[5], parent: m.parent || null };
+        if (same(pick(base), pick(cand)) && cur.league.id === lg) continue;
+      }
+      if (!cur && !leagueIds.has(lg) && !patch.leagues.some((l) => l.id === lg)) continue; // (validation reports it)
+      patch.clubs.push({ code, league: lg, row, info, nat: leagueNat(lg), isNew: !cur });
+    }
+    for (const [a, b, name] of def.rivals || []) {
+      const x = codeOf(a),
+        y = codeOf(b);
+      if (!D.RIVALS.some((r) => (r[0] === x && r[1] === y) || (r[0] === y && r[1] === x)))
+        patch.rivals.push([x, y, name || 'Derby']);
+    }
+    return patch;
+  };
+  // Stage a definition: the static data becomes the game's own plus what it changes (the club picker then shows it)
+  WD.stage = function (def) {
+    WD.useStatic(null);
+    const patch = WD.patchOf(def);
+    WD.useStatic(patch);
+    return patch;
+  };
+  WD.patchIsEmpty = (p) => !p || !(p.leagues.length || p.clubs.length || p.rivals.length);
+
+  // Put a patch into the static data; returns what undoes it
+  function applyPatch(patch) {
+    const keys = D.LEAGUES.map((l) => l.clubs);
+    const snap = {
+      leagues: D.LEAGUES.map((l) => ({
+        o: l,
+        c: { ...l, repBand: l.repBand.slice() },
+        rules: JSON.parse(JSON.stringify(l.rules || {})),
+      })),
+      rows: keys.map((k) => ({ k, rows: D[k].map((r) => r.slice()) })),
+      info: { ...D.CLUB_INFO },
+      rivals: D.RIVALS.length,
+      mix: new Set(Object.keys(D.NAT_MIX)),
+    };
+    for (const l of patch.leagues) {
+      let cur = D.LEAGUES.find((x) => x.id === l.id);
+      if (!cur) {
+        cur = { id: l.id, nat: l.nat, clubs: 'CLUBS_' + l.id };
+        D.LEAGUES.push(cur);
+        D[cur.clubs] = [];
+        const twin = D.LEAGUES.find((x) => x !== cur && x.nat === l.nat && D.NAT_MIX[x.id]);
+        if (twin && !D.NAT_MIX[l.id]) D.NAT_MIX[l.id] = { ...D.NAT_MIX[twin.id] };
+      }
+      for (const k of ['name', 'short', 'tier', 'sim', 'repBand', 'rules', 'nat'])
+        if (l[k] != null) cur[k] = JSON.parse(JSON.stringify(l[k]));
+    }
+    const by = staticClubs();
+    for (const c of patch.clubs) {
+      const where = by.get(c.code);
+      const target = D.LEAGUES.find((l) => l.id === c.league);
+      if (!target) continue;
+      if (where && where.league !== target) {
+        where.row.splice(0, where.row.length); // moved: leaves its old league's list
+        D[where.league.clubs].splice(D[where.league.clubs].indexOf(where.row), 1);
+      }
+      if (where && where.league === target) where.row.splice(0, where.row.length, ...c.row);
+      else {
+        const row = c.row.slice();
+        D[target.clubs].push(row);
+        by.set(c.code, { row, league: target });
+      }
+      D.CLUB_INFO[c.code] = c.info.slice();
+    }
+    for (const r of patch.rivals) D.RIVALS.push(r.slice());
+    return function undo() {
+      D.LEAGUES.length = 0;
+      for (const s of snap.leagues) {
+        for (const k of Object.keys(s.o)) delete s.o[k];
+        Object.assign(s.o, s.c, { rules: s.rules });
+        D.LEAGUES.push(s.o);
+      }
+      for (const { k, rows } of snap.rows) D[k].splice(0, D[k].length, ...rows);
+      for (const k of Object.keys(D))
+        if (/^CLUBS_/.test(k) && !snap.rows.some((x) => x.k === k) && k !== 'CLUBS_OVERSEAS') delete D[k];
+      for (const k of Object.keys(D.CLUB_INFO)) if (!(k in snap.info)) delete D.CLUB_INFO[k];
+      Object.assign(D.CLUB_INFO, snap.info);
+      D.RIVALS.length = snap.rivals;
+      for (const k of Object.keys(D.NAT_MIX)) if (!snap.mix.has(k)) delete D.NAT_MIX[k];
+    };
+  }
+  // The static data now: the built-in data plus this patch (null: the built-in data alone). Whatever was patched before is undone first.
+  WD._undo = null;
+  WD._key = '';
+  WD.useStatic = function (patch) {
+    const key = WD.patchIsEmpty(patch) ? '' : JSON.stringify(patch);
+    if (key === WD._key) return; // already so (the simulation worker asks before every day)
+    if (WD._undo) WD._undo();
+    WD._undo = null;
+    WD._key = key;
+    if (key) WD._undo = applyPatch(patch);
+    if (FM.Guide && FM.Guide.reset) FM.Guide.reset();
   };
 
   // ---------- Validation ----------
@@ -141,15 +357,13 @@
     if (c.nat && !D.NATIONS[c.nat]) e.push(`${at}: unknown nation "${c.nat}"`);
     if (ctx.leagues && c.league && !ctx.leagues.has(c.league))
       e.push(`${at}: league "${c.league}" is not in the definition`);
-    if (ctx.baseClubs && !ctx.baseClubs.has(c.id))
-      e.push(`${at}: new clubs are not supported yet (only the base world's clubs can be changed)`);
     return { errors: e, warnings: w };
   };
   WD.validatePlayer = function (p, ctx = {}) {
     const e = [],
       w = [];
     const at = `player ${p.id || (p.fn || '') + ' ' + (p.ln || '')}`;
-    if (!p.fn || !p.ln) e.push(`${at}: needs a first and a last name`);
+    if (!(p.fn || '').trim() && !(p.ln || '').trim()) e.push(`${at}: needs a name`); // (one name is enough: some players go by one)
     if (!D.NATIONS[p.nat]) e.push(`${at}: unknown nation "${p.nat}"`);
     if (!D.POS.includes(p.pos)) e.push(`${at}: unknown position "${p.pos}"`);
     if (!isInt(p.born) || (ctx.year && (ctx.year - p.born < 15 || ctx.year - p.born > 45)))
@@ -183,19 +397,12 @@
     for (const k of ['meta', 'rules', 'leagues', 'clubs', 'players', 'managers', 'competitions', 'history'])
       if (def[k] == null) errors.push(`Missing section "${k}"`);
     if (errors.length) return { errors, warnings };
-    if (def.meta.players !== 'overlay')
-      errors.push(
-        `meta.players "${def.meta.players}": only "overlay" is supported yet (replacing every player is the next step)`,
-      );
+    if (!['overlay', 'replace'].includes(def.meta.players))
+      errors.push(`meta.players "${def.meta.players}": must be "overlay" (add to the world's players) or "replace"`);
     const year = def.meta.startYear || (S && S.year) || D.SEASON_START;
-    const baseClubs = S ? new Set(Object.keys(S.clubs)) : null,
-      baseLeagues = S
-        ? new Set(
-            Object.values(S.comps)
-              .filter((c) => c.type === 'league')
-              .map((c) => c.id),
-          )
-        : null;
+    // what the game's data already has: a definition can leave out what it does not change (and refer to it)
+    const staticLeagues = new Set(D.LEAGUES.map((l) => l.id)),
+      staticClubIds = new Set([...staticClubs().keys()].map((c) => 'c_' + c));
     const seen = (list, what, key = 'id') => {
       const ids = new Set();
       for (const x of list) {
@@ -204,9 +411,27 @@
       }
       return ids;
     };
-    const leagues = seen(def.leagues, 'leagues');
+    const defLeagues = seen(def.leagues, 'leagues');
+    const leagues = new Set([...defLeagues, ...staticLeagues]);
+    const perLeague = {};
+    for (const c of def.clubs) perLeague[c.league] = (perLeague[c.league] || 0) + 1;
     for (const l of def.leagues) {
-      if (baseLeagues && !baseLeagues.has(l.id)) errors.push(`league ${l.id}: new leagues are not supported yet`);
+      if (!staticLeagues.has(l.id)) {
+        // a league the game does not have: it needs everything the built-in ones have
+        if (!/^[A-Za-z0-9]{2,6}$/.test(l.id)) errors.push(`league ${l.id}: a new league's id is 2–6 letters or digits`);
+        if (!D.NATIONS[l.nat])
+          errors.push(`league ${l.id}: a new league needs a nation the game has (${l.nat || 'none given'})`);
+        if (!(l.tier >= 1)) errors.push(`league ${l.id}: a new league needs a tier`);
+        if (!l.repBand) errors.push(`league ${l.id}: a new league needs a repBand [high, low]`);
+        if ((perLeague[l.id] || 0) < 6)
+          errors.push(`league ${l.id}: a new league needs at least 6 clubs (it has ${perLeague[l.id] || 0})`);
+        const r = l.rules || {};
+        for (const k of ['promote', 'relegate'])
+          if (r[k] && !leagues.has(r[k].to))
+            errors.push(`league ${l.id}: ${k} goes to "${r[k].to}", which is not a league`);
+        if (r.qualify && !D.CONTINENTALS.some((c) => c.id === r.qualify.to))
+          errors.push(`league ${l.id}: qualify goes to "${r.qualify.to}", which is not a continental competition`);
+      }
       if (!l.name) errors.push(`league ${l.id}: no name`);
       if (l.sim && !SIMS.includes(l.sim)) errors.push(`league ${l.id}: sim must be full, light or minimal`);
       if (l.tier != null && !(isInt(l.tier) && l.tier >= 1 && l.tier <= 6))
@@ -214,10 +439,14 @@
       if (l.repBand && !(Array.isArray(l.repBand) && l.repBand[0] >= l.repBand[1]))
         errors.push(`league ${l.id}: repBand must be [high, low]`);
     }
-    const clubs = seen(def.clubs, 'clubs');
+    const defClubs = seen(def.clubs, 'clubs');
+    const clubs = new Set([...defClubs, ...staticClubIds]);
     const names = new Set();
     for (const c of def.clubs) {
-      push(WD.validateClub(c, { leagues, baseClubs }));
+      push(WD.validateClub(c, { leagues }));
+      if (!staticClubIds.has(c.id) && !/^c_[A-Za-z0-9]{2,6}$/.test(c.id))
+        errors.push(`club ${c.id}: a new club's id is c_ and 2–6 letters or digits`);
+      if (!c.league && !staticClubIds.has(c.id)) errors.push(`club ${c.id}: a new club needs a league`);
       if (names.has(c.name)) warnings.push(`club ${c.id}: the name "${c.name}" is used twice`);
       names.add(c.name);
     }
@@ -227,8 +456,13 @@
       push(WD.validatePlayer(p, { clubs, year }));
       if (p.club) perClub[p.club] = (perClub[p.club] || 0) + 1;
     }
+    if (def.meta.players === 'replace') {
+      if (!def.players.length) errors.push('meta.players is "replace" but the definition has no players');
+      for (const [id, n] of Object.entries(perClub))
+        if (n < 18 && n >= 11) warnings.push(`club ${id}: ${n} defined players; the rest of the squad is made up`);
+    }
     for (const [id, n] of Object.entries(perClub))
-      if (n > 12)
+      if (def.meta.players !== 'replace' && n > 12)
         warnings.push(
           `club ${id}: ${n} defined players join it on top of its squad (the weakest at each position make room)`,
         );
@@ -325,10 +559,25 @@
       if (m.ability) st.ability = m.ability;
       rep.managers++;
     }
-    // players: each makes room by taking the place of the weakest first-team player in his position group
+    // players. "replace": every club the file gives a squad (11 or more players) loses its generated players first, and the
+    // gaps in the squad it gets are made up; clubs with fewer keep their own and take the file's players as extras
+    const replace = def.meta.players === 'replace',
+      covered = new Set();
+    if (replace) {
+      const per = {};
+      for (const d of def.players) if (d.club) per[d.club] = (per[d.club] || 0) + 1;
+      for (const [id, n] of Object.entries(per)) if (n >= 11 && S.clubs[id]) covered.add(id);
+      for (const p of Object.values(S.players))
+        if (p.clubId && covered.has(p.clubId)) {
+          delete S.players[p.id];
+          rep.playersReplaced++;
+        }
+      W.rosterVer++;
+    }
+    // overlay: each makes room by taking the place of the weakest first-team player in his position group
     for (const d of def.players) {
       const age = S.year - d.born;
-      if (d.club && S.clubs[d.club]) {
+      if (d.club && S.clubs[d.club] && !covered.has(d.club)) {
         const group = D.POS_GROUP[d.pos],
           sq = W.squad(d.club).filter((p) => !p.team && !p.youth && !p.loan && D.POS_GROUP[p.pos] === group);
         const out = sq.sort((a, b) => a.ca - b.ca)[0];
@@ -366,6 +615,7 @@
       if (d.club && S.clubs[d.club]) W.startSpell(p, d.club);
       rep.playersAdded++;
     }
+    for (const id of covered) W.genSquad(S.clubs[id], W.squad(id)); // the gaps in a squad the file left short
     // past seasons go to the archive, oldest first, before anything the new world has played
     const past = def.history.seasons
       .slice()
@@ -402,14 +652,22 @@
     return rep;
   };
   WD.load = function (def, rules = {}) {
+    WD.useStatic(null); // (judged against the game's own data, not against a database staged before)
     const v = WD.validate(def, null);
     // (references to the base world are checked again by apply, once there is a world to check against)
-    const fatal = v.errors.filter(
-      (x) => !/new clubs are not supported|new leagues are not supported|is not in the definition/.test(x),
-    );
-    if (fatal.length) throw new Error('The world definition has errors:\n' + fatal.slice(0, 12).join('\n'));
-    W.newWorld({ ...def.rules, ...rules, startYear: def.meta.startYear || undefined });
-    return WD.apply(def);
+    if (v.errors.length) throw new Error('The world definition has errors:\n' + v.errors.slice(0, 12).join('\n'));
+    // what the file adds to or changes in the game's leagues and clubs goes into the static data first, then the world is built from it
+    const patch = WD.patchOf(def);
+    try {
+      WD.useStatic(patch);
+      W.newWorld({ ...def.rules, ...rules, startYear: def.meta.startYear || undefined });
+      const rep = WD.apply(def);
+      rep.patch = patch;
+      return rep;
+    } catch (e) {
+      WD.useStatic(null);
+      throw e;
+    }
   };
 
   // ---------- Editing ----------

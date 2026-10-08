@@ -22,6 +22,7 @@ const FILES = [
   './js/realstats.js',
   './js/worlddef.js',
   './js/dbimport.js',
+  './js/histimport.js',
   './js/engine.js',
   './js/season.js',
   './js/careers.js',

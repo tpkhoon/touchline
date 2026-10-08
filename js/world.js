@@ -1036,17 +1036,23 @@
         ? club.nat
         : U.pick(Object.keys(D.NATIONS));
 
-  function genSquad(club) {
+  // A squad for a club. `have`: players it already has (a database that fixes some of them): only the gaps are filled
+  function genSquad(club, have = []) {
     const lvl = W.levelFor(club.rep);
     const positions = randomPos(W.squadWant(club));
+    for (const h of have) {
+      const i = positions.indexOf(h.pos);
+      if (i >= 0 && !h.youth) positions.splice(i, 1);
+    }
     const made = []; // nationality and age of each player so far: the squad starts within its league's rules
+    have.forEach((h) => made.push({ nat: h.nat, age: W.age(h) }));
     const nat = (age, pick) => {
       const n = FM.Reg.genNat(club, made, age, pick);
       made.push({ nat: n, age });
       return n;
     };
     const sidesMade = {},
-      mine = [];
+      mine = have.slice();
     positions.forEach((pos, i) => {
       // a B team is a young side: mostly 18 to 23, with a few older heads
       const age = club.parent ? (Math.random() < 0.85 ? U.randi(18, 23) : U.randi(24, 27)) : pickAge(pos);
@@ -1077,7 +1083,7 @@
       mine.push(p);
     });
     // Academy prospects
-    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2); i++) {
+    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length; i++) {
       const age = U.randi(17, 19),
         pos = U.pick(['CB', 'CM', 'W', 'ST', 'FB', 'AM', 'WB', 'WM']);
       const ca = Math.round(lvl - U.randi(12, 20));
@@ -1097,6 +1103,8 @@
     W.numberSquad(mine);
     W.rosterVer++; // (these players went straight into the club: any squad index built before now is out of date)
   }
+
+  W.genSquad = genSquad;
 
   // Squads come from an index rebuilt whenever someone joins a club (W.startSpell bumps rosterVer).
   // Leavers, retirees and deleted players are filtered out on read, so the index never goes stale.
