@@ -2303,33 +2303,42 @@
   };
 
   // Fictional historic legends so every club has a past before your save writes its future
+  // Every club's own history before the save: five legends, from the years the club existed, with names of its own
+  // country (or heritage), two of them forwards so the club has a scorer to beat
   W.seedLegends = function () {
     const notes = [
       'Captained the club to its last title',
       'Club record goalscorer',
-      'Cult hero — scored in five straight derbies',
+      'Cult hero: scored in five straight derbies',
       'One-club man, 17 seasons',
       'The greatest free signing in club history',
       'Academy graduate turned legend',
       'Scored the goal that saved the club from relegation',
     ];
+    const now = FM.S.year;
     Object.values(FM.S.clubs)
-      .filter((c) => c.sim === 'full')
+      .filter((c) => c.comp && c.sim !== 'nation')
       .forEach((c) => {
-        c.legends = [0, 1, 2]
+        const first = Math.max(c.founded || 1950, 1950),
+          pool = c.policy && D.NAME_POOLS[c.policy.heritage];
+        const poss = ['ST', 'W', 'ST', 'AM', 'CM', 'CB', 'GK', 'CM', 'FB'];
+        c.legends = [0, 1, 2, 3, 4]
           .map((i) => {
-            const nat = Math.random() < 0.8 ? 'ENG' : U.pick(Object.keys(D.NATIONS));
-            const from = U.randi(1962, 2008),
-              yrs = U.randi(7, 16),
-              pos = U.pick(['ST', 'CM', 'CB', 'W', 'GK', 'AM']);
+            const nat = U.chance(0.88) ? c.nat : U.pick(Object.keys(D.NATIONS));
+            const yrs = U.randi(7, 16),
+              from = U.randi(first, Math.max(first, Math.min(2012, now - yrs - 1))),
+              pos = i < 2 ? U.pick(['ST', 'ST', 'W', 'AM']) : U.pick(poss);
             const apps = yrs * U.randi(28, 40);
+            const nm = pool
+              ? [U.pick(pool.fn), U.pick(pool.ln)]
+              : [U.pick(D.NATIONS[nat].fn), U.pick(D.NATIONS[nat].ln)];
             return {
-              name: `${U.pick(D.NATIONS[nat].fn)} ${U.pick(D.NATIONS[nat].ln)}`,
-              nat,
+              name: `${nm[0]} ${nm[1]}`,
+              nat: pool ? c.nat : nat,
               pos,
               era: `${from}–${from + yrs}`,
               apps,
-              goals: Math.round(apps * ({ ST: 0.45, W: 0.2, AM: 0.22, CM: 0.1 }[pos] || 0.03)),
+              goals: Math.round(apps * ({ ST: 0.5, W: 0.24, AM: 0.26, CM: 0.1, FB: 0.04, CB: 0.05 }[pos] || 0.005)),
               note: notes[(U.hash(c.id) + i) % notes.length],
             };
           })

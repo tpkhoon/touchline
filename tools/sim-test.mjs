@@ -63,7 +63,36 @@ vm.runInContext(fs.readFileSync(new URL('../js/clubguide.js', import.meta.url), 
     'club guide: suggestions did not return three clubs with reasons',
   );
 }
+// shouts: a call changes the side for a few minutes and puts it back; the next needs a pause
+{
+  const [h, a] = Object.values(FM.S.clubs).filter((c) => c.comp === 'D1');
+  const m = new FM.Match({ h: h.id, a: a.id, comp: 'D1' });
+  for (let i = 0; i < 12; i++) m.step();
+  const sd = m.sides[0],
+    before = JSON.stringify(sd.mods);
+  const r1 = m.shout(sd, 'push');
+  check((r1.ok && JSON.stringify(sd.mods) !== before) || (r1.ok && !r1.heard), 'a shout did not change the side');
+  check(!m.shout(sd, 'hold').ok, 'a second shout straight away was allowed');
+  while (!m.finished) m.step();
+  check(
+    Math.abs(sd.mods.att) < 1e-9 && Math.abs(sd.mods.def) < 1e-9,
+    `a shout was not taken back: ${JSON.stringify(sd.mods)}`,
+  );
+  // pressure: an opponent in form weighs on the squad
+  const opp = [h, a].find((c) => c.id !== FM.S.user.clubId);
+  opp.form = ['W', 'W', 'W', 'W', 'D'];
+  const pr = FM.Matchday.pressure({ h: FM.S.user.clubId, a: opp.id, comp: 'D1' });
+  check(pr.d < 0 && pr.notes.length, 'an opponent in form brought no pressure');
+}
 check(FM.S.version === FM.SAVE_VERSION, `new world has version ${FM.S.version}, expected ${FM.SAVE_VERSION}`);
+
+// the invitational of the season just ended (the season roll plans the next one)
+let lastInvite = null;
+const newIntl = FM.Intl.newSeason;
+FM.Intl.newSeason = function () {
+  lastInvite = FM.S.invite || null;
+  return newIntl.call(this);
+};
 
 // ---- play seasons ----
 const stats = { matches: 0, goals: 0, userMatches: 0, days: 0 };
@@ -259,6 +288,9 @@ for (let s = 0; s < SEASONS; s++) {
     const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
     check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
   }
+  // the season's invitational tournament (when its host was free) was played to a winner
+  check(!lastInvite || lastInvite.winner, `season ${s + 1}: the ${lastInvite && lastInvite.name} never finished`);
+  if (lastInvite) console.log(`  invitational: ${lastInvite.name}, won by ${FM.S.nteams[lastInvite.winner].name}`);
   // the first season introduced the world: a rival manager, a star and a wonderkid
   if (s === 0)
     check(

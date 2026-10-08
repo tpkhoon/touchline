@@ -94,7 +94,16 @@ Serie B's play-out has nowhere to send the loser (there is no Serie C in the gam
 - **Saudi First Division League (18 clubs):** three up; four foreign players.
 - **Signing policy (Athletic Club):** Eibar sign only players of Basque heritage and Andorra only Catalan ones. They
   cannot buy, borrow, take on a free transfer, agree a pre-contract with or trial anyone else, and their youth teams and
-  squads are made of such players. Other clubs may sign Basque and Catalan players freely.
+  squads are made of such players. Other clubs may sign Basque and Catalan players freely. Their scouts, the search and the
+  suggestions also leave out everyone they could not sign.
+
+## Invitational tournaments
+
+- One a season, in turn: the Kirin Cup (Japan hosts), the King's Cup (Thailand) and the Nehru Cup (India). The host and three
+  invited nations from different parts of the world, none of whom has a qualifier on the days it is played, play semi-finals on
+  the first day of the second international window and a final and a third-place match on the second; ties go to penalties.
+  They count as friendlies for fitness and call-ups and a little more than a friendly for the national-team coefficient.
+  The winner is recorded with the season's international results.
 
 ## Domestic cups
 

@@ -155,9 +155,9 @@
     ['Real Olmero', 'SPG', 'Olmero', '#E30613', '#FFFFFF', 'historic', 53, 'Estadio La Salama', 29371],
     ['Club Marbejo', 'RSA', 'Marbejo', '#FFFFFF', '#00843D', 'historic', 53, 'Campo de Marbejo', 22222],
     ['Club Pedera', 'CAD', 'Pedera', '#FFE400', '#0045A7', 'fan', 53, 'Campo de Pedera', 20724],
-    ['Deportivo Valdero', 'EIB', 'Valdero', '#004F9F', '#A6192E', 'youth', 51, 'Estadio Aranjino', 8164],
+    ['Arrasti Kirol Elkartea', 'EIB', 'Arrasti', '#004F9F', '#A6192E', 'youth', 51, 'Aldapa Zelaia', 8164],
     ['Deportivo Sorana', 'CAS', 'Sorana', '#FFFFFF', '#000000', 'oil', 51, 'Estadio Salamena', 15500],
-    ['Roblón CF', 'AND', 'Roblón', '#0038A8', '#FEDD00', 'oil', 50, 'Nuevo Estadio Roblón', 3306],
+    ['CE Serrallac', 'AND', 'Serrallac', '#0038A8', '#FEDD00', 'oil', 50, 'Estadi Camp de la Vall', 3306],
     ['Juventud Fuentena', 'HUE', 'Fuentena', '#003DA5', '#A6192E', 'youth', 49, 'Estadio Quintino', 9128],
     ['Segoval Balompié', 'ALB', 'Segoval', '#FFFFFF', '#000000', 'fan', 49, 'Estadio La Talador', 17524],
     ['Moralero Atlético', 'BGS', 'Moralero', '#FFFFFF', '#000000', 'fan', 48, 'Estadio Municipal de Moralero', 12200],
@@ -554,7 +554,7 @@
     ['MAL', 'GRA', 'El de Calatosa–Montino Derby'],
     ['LPA', 'TEN', 'Segovón–Rondiel Derby'],
     ['ZAR', 'HUE', 'La de Aranjero–Fuentena Derby'],
-    ['ALA', 'EIB', 'Villa Roblón–Valdero Derby'],
+    ['ALA', 'EIB', 'Villa Roblón–Arrasti Derby'],
     ['VLD', 'BGS', 'Benavete–Moralero Derby'],
     ['BAY', 'BVB', 'Dillhafen–Althof im Tal Derby'],
     ['B04', 'KOE', 'Unter Felswald–Branhafen Derby'],
@@ -1423,9 +1423,9 @@ GRA|MOO|Rojos|1974
 SPG|OLO|Rojos|1888
 RSA|MAR|Blancos|1898
 CAD|PED|Leñadores|1916
-EIB|VAO|Azules|1956
+EIB|AKE|Urdinak|1921
 CAS|SOA|Blancos|1887
-AND|RON|Azules|1896
+AND|SRL|Els Blaus|1904
 HUE|FUE|Titanes|1968
 ALB|SEB|Blancos|1948
 BGS|MOR|Cóndores|1912

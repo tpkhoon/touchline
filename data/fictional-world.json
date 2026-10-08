@@ -2218,19 +2218,19 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Deportivo Valdero",
+    "Arrasti Kirol Elkartea",
     "EIB",
-    "Valdero",
+    "Arrasti",
     "#004F9F",
     "#A6192E",
     "youth",
     51,
-    "Estadio Aranjino",
+    "Aldapa Zelaia",
     8164
    ],
-   "short": "VAO",
-   "nick": "Azules",
-   "founded": 1956
+   "short": "AKE",
+   "nick": "Urdinak",
+   "founded": 1921
   },
   "CAS": {
    "league": "ES2",
@@ -2254,19 +2254,19 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Roblón CF",
+    "CE Serrallac",
     "AND",
-    "Roblón",
+    "Serrallac",
     "#0038A8",
     "#FEDD00",
     "oil",
     50,
-    "Nuevo Estadio Roblón",
+    "Estadi Camp de la Vall",
     3306
    ],
-   "short": "RON",
-   "nick": "Azules",
-   "founded": 1896
+   "short": "SRL",
+   "nick": "Els Blaus",
+   "founded": 1904
   },
   "HUE": {
    "league": "ES2",
@@ -13723,7 +13723,7 @@
   [
    "ALA",
    "EIB",
-   "Villa Roblón–Valdero Derby"
+   "Villa Roblón–Arrasti Derby"
   ],
   [
    "VLD",

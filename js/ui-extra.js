@@ -939,7 +939,7 @@
   function searchView() {
     const q = UI._q,
       s = S();
-    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p));
+    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p) && FM.Scouting.scoutable(p));
     if (q.text)
       ps = ps.filter((p) =>
         (W.name(p) + ' ' + (p.clubId ? CL(p.clubId).name : '') + ' ' + D.NATIONS[p.nat].name)
@@ -956,6 +956,7 @@
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
       <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
       ${sfPanel()}
+      ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">🏛️ ${esc(W.userClub().name)} only sign ${esc(W.userClub().policy.label)} players, so only they are scouted and listed.</div>` : ''}
       <div class="card flat list" style="padding:4px 12px">${
         ps
           .slice(0, 50)
@@ -970,7 +971,7 @@
 
   UI._fq = { pos: 'any' };
   function freeView() {
-    let ps = sfApply(Object.values(S().players).filter((p) => !p.clubId && !p.retired));
+    let ps = sfApply(Object.values(S().players).filter((p) => !p.clubId && !p.retired && FM.Scouting.scoutable(p)));
     ps = sfSort(
       ps.map((p) => ({ p, v: FM.Scouting.view(p) })),
       (x) => x.p,

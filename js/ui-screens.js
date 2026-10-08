@@ -1044,7 +1044,7 @@
               : inXI >= 0
                 ? 'In XI (swap)'
                 : '';
-          return `<div class="prow tap" data-act="pickSlot" data-i="${i}" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))} ${cur && cur.id === p.id ? '✓' : ''}</div><div class="small dim">${fit >= 1 ? 'Natural' : fit >= 0.8 ? 'Accomplished' : fit >= 0.6 ? 'Awkward' : 'Unfamiliar'}${tag ? ' · ' + tag : ''}</div></div>${C.fitTag(p.fitness)}<div class="b" style="width:26px;text-align:right">${Math.round(W.effAt(p, s.t, s, T.roles[i]))}</div></div>`;
+          return `<div class="prow tap" data-act="pickSlot" data-i="${i}" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))} ${cur && cur.id === p.id ? '✓' : ''}</div><div class="small dim">${fit >= 1 ? 'Natural' : fit >= 0.8 ? 'Accomplished' : fit >= 0.6 ? 'Awkward' : 'Unfamiliar'}${tag ? ' · ' + tag : ''}</div></div>${C.fitTag(p.fitness)}<div class="b" style="min-width:40px;text-align:right">${C.starText(W.effAt(p, s.t, s, T.roles[i]), s.t)}</div></div>`;
         })
         .join('')}</div>`,
       { title: `${D.slotLabel(s)} · ${D.POS_NAME[s.t] || s.t}` },
@@ -1505,6 +1505,10 @@
     );
   };
   UI.acts.doScoutPlayer = (d) => {
+    if (!FM.Scouting.scoutable(P(d.id))) {
+      UI.closeSheet();
+      return UI.toast(`${W.userClub().name} only look at ${W.userClub().policy.label} players`, 3500);
+    }
     FM.Scouting.assign(d.s, { type: 'player', pid: d.id });
     UI.save();
     UI.closeSheet();
@@ -1721,7 +1725,7 @@
   function searchView() {
     const q = UI._q,
       s = S();
-    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p));
+    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p) && FM.Scouting.scoutable(p));
     if (q.text)
       ps = ps.filter((p) =>
         (W.name(p) + ' ' + (p.clubId ? CL(p.clubId).name : '')).toLowerCase().includes(q.text.toLowerCase()),

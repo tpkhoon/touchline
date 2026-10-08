@@ -233,6 +233,7 @@ A name feels real when the rest matches:
 | No single suffix style | No pattern may pass about a fifth of a nation's clubs ("Town" and "United" cannot take over a league) |
 | Nicknames follow the name | A Colliery club are the Miners, an Ironworks side the Ironmen (`nameNick`) |
 | Gulf and Arab clubs | A library of its own (Saudi Arabia, Qatar, the UAE, Iraq): Al + a concept (Al Fajr, Al Saqr, Al Wahat), with the town for the rest; the marker word Al is rejected in other nations |
+| Basque and Catalan clubs | The two Spanish second-division clubs with a signing policy are named in their own languages: a Basque club (Arrasti Kirol Elkartea, the Urdinak) and a Catalan one (CE Serrallac, Els Blaus), with a ground to match; their players, and their club legends, draw on the Basque and Catalan name pools (about 80 first names and 70 surnames each) |
 | Believable places | Town names follow each language's building blocks and are checked against real towns and clubs, rude words, hard consonant runs and length |
 | Quirkier towns for smaller clubs | Small clubs sometimes get a prefix such as "North" or "Upper"; big clubs get short plain names |
 

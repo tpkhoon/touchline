@@ -50,6 +50,18 @@
     AS: 'Asia-Pacific Nations Cup',
   }; // Asia and North America share one tournament here, so it keeps its own name
 
+  // Invitational tournaments in the international windows: a host and three invited nations play semi-finals on the first day
+  // of the second window and a final and third-place match on the second, like the Kirin Cup. One a season, in turn, if
+  // the host and the invited nations have no qualifier those days.
+  I.INVITES = [
+    { id: 'KIR', name: 'Kirin Cup', host: 'JPN' },
+    { id: 'KGC', name: "King's Cup", host: 'THA' },
+    { id: 'NEH', name: 'Nehru Cup', host: 'IND' },
+  ];
+  I.TNAME.KIR = 'Kirin Cup';
+  I.TNAME.KGC = "King's Cup";
+  I.TNAME.NEH = 'Nehru Cup';
+
   // Every nation can field a team. A nation whose players the world didn't happen to give enough of (Malaysia, the
   // Philippines, a small Balkan side) is topped up with players who play outside the game's leagues: unattached, so they
   // show as free agents (any club can sign them) but still play for their country. Run at the start of a world and each
@@ -254,9 +266,118 @@
       // A nation can't be in two qualifying groups at once (the World Championship takes priority)
       s.quals = q;
     }
+    s.invite = I.planInvite();
     I.topUp();
     I.allegianceTick();
     I.refreshJobs();
+  };
+
+  // The season's invitational: the host and three guests from different parts of the world, none of whom has a qualifier on
+  // the days it is played (null when the host is busy or the world has too few nations)
+  I.planInvite = function () {
+    const s = S(),
+      spec = I.INVITES[((s.year % I.INVITES.length) + I.INVITES.length) % I.INVITES.length];
+    const host = Object.values(s.nteams || {}).find((t) => t.code === spec.host);
+    if (!host) return null;
+    const busy = new Set();
+    ((s.quals && s.quals.groups) || []).forEach((g) =>
+      [2, 3].forEach((md) => (g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
+    );
+    if (busy.has(host.id)) return null;
+    const pool = U.shuffle(
+      I.ranked()
+        .slice(0, 45)
+        .filter((t) => t !== host && !busy.has(t.id)),
+    );
+    const guests = [],
+      regions = new Set([I.region(host.code)]);
+    for (const t of pool) {
+      if (guests.length === 3) break;
+      if (!regions.has(I.region(t.code))) (guests.push(t), regions.add(I.region(t.code)));
+    }
+    for (const t of pool) if (guests.length < 3 && !guests.includes(t)) guests.push(t);
+    if (guests.length < 3) return null;
+    // seeded by rating: the best guest meets the host's side of the draw last
+    const teams = [host, ...guests].sort((a, b) => b.coef - a.coef).map((t) => t.id);
+    return {
+      id: spec.id,
+      name: spec.name,
+      host: host.id,
+      teams,
+      sf: null,
+      third: null,
+      final: null,
+      winner: null,
+      runnerUp: null,
+    };
+  };
+  // Its fixtures for the window day: semi-finals on the first, the final and the third-place match on the second
+  I.inviteDay = function (tag, busy) {
+    const s = S(),
+      inv = s.invite,
+      out = [];
+    if (!inv || inv.winner) return out;
+    const mk = (a, b, label, extra = {}) => {
+      // the host plays at home; the rest meet on neutral ground
+      const [h, aw] = b === inv.host ? [b, a] : [a, b];
+      busy.add(h);
+      busy.add(aw);
+      return mkFx(h, aw, `${inv.name} · ${label}`, {
+        kind: 'invite',
+        iid: inv.id,
+        ko: true,
+        neutral: h !== inv.host,
+        ...extra,
+      });
+    };
+    const T = inv.teams;
+    if (tag === 'I2a' && !inv.sf) {
+      inv.sf = [mk(T[0], T[3], 'Semi-final'), mk(T[1], T[2], 'Semi-final')];
+      FM.News.add({
+        type: 'world',
+        title: `${inv.name}: ${s.nteams[inv.host].name} host ${T.filter((id) => id !== inv.host)
+          .map((id) => s.nteams[id].name)
+          .join(', ')}`,
+        body: `An invitational in the international window: semi-finals now, the final and the third-place match next.`,
+      });
+      out.push(...inv.sf);
+    } else if (tag === 'I2a' && inv.sf) out.push(...inv.sf.filter((f) => !f.res));
+    else if (tag === 'I2b' && inv.sf && inv.sf.every((f) => f.res) && !inv.final) {
+      const w = inv.sf.map((f) => FM.Season.winnerOf(f)),
+        l = inv.sf.map((f) => (f.h === FM.Season.winnerOf(f) ? f.a : f.h));
+      inv.final = mk(w[0], w[1], 'Final', { final: true });
+      inv.third = mk(l[0], l[1], 'Third place', { third: true });
+      out.push(inv.final, inv.third);
+    } else if (tag === 'I2b' && inv.final) out.push(...[inv.final, inv.third].filter((f) => f && !f.res));
+    return out;
+  };
+  // A match of the invitational is over: the final names the winner
+  I.inviteResult = function (fx) {
+    const s = S(),
+      inv = s.invite;
+    if (!inv || !fx.final) return;
+    inv.winner = FM.Season.winnerOf(fx);
+    inv.runnerUp = fx.h === inv.winner ? fx.a : fx.h;
+    const w = s.nteams[inv.winner];
+    const r = fx.res,
+      hw = fx.h === inv.winner;
+    s.intlSeason = (s.intlSeason || []).concat([
+      {
+        id: inv.id,
+        name: inv.name,
+        year: s.year,
+        winner: inv.winner,
+        runnerUp: inv.runnerUp,
+        final: `${hw ? r.hg : r.ag}–${hw ? r.ag : r.hg}${r.pens ? ' pens' : ''}`,
+        invite: true,
+      },
+    ]);
+    FM.News.add({
+      type: 'world',
+      title: `${w.name} win the ${inv.name}`,
+      body: `${w.name} beat ${s.nteams[inv.runnerUp].name} in the final of the invitational.`,
+      big: W.isUserNation(inv.winner),
+    });
   };
 
   // Teams through from a pool, ranked group winners first, then runners-up, and so on
@@ -308,6 +429,12 @@
         s.tourns.forEach((t) => [...t.ko.qf, ...t.ko.sf, t.ko.final].filter(Boolean).forEach((f) => byId.set(f.id, f)));
         s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
       }
+      if (cal.type !== 'tourn' && s.invite) {
+        const byId = new Map(
+          [...(s.invite.sf || []), s.invite.third, s.invite.final].filter(Boolean).map((f) => [f.id, f]),
+        );
+        s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
+      }
       return s.intlDay.fx;
     }
     const fx = cal.type === 'tourn' ? I.tournamentDay(cal.stage) : I.breakDay(cal.tag);
@@ -329,6 +456,8 @@
         });
       });
     }
+    // The season's invitational, in the second window
+    fx.push(...I.inviteDay(tag, busy));
     // Everyone else plays a friendly against a similarly ranked side
     const free = I.ranked().filter((t) => !busy.has(t.id)),
       order = [];
@@ -503,7 +632,8 @@
     const exp = 1 / (1 + Math.pow(10, ((A.club.coef - H.club.coef) * 10 - (fx.neutral ? 0 : 60)) / 400));
     const score = r.hg > r.ag ? 1 : r.hg < r.ag ? 0 : r.pens ? (r.pens[0] > r.pens[1] ? 0.6 : 0.4) : 0.5;
     const gd = Math.abs(r.hg - r.ag),
-      K = (tourn ? 45 : fx.kind === 'qual' ? 35 : 22) * (gd <= 1 ? 1 : gd === 2 ? 1.5 : 1.75);
+      K =
+        (tourn ? 45 : fx.kind === 'qual' ? 35 : fx.kind === 'invite' ? 28 : 22) * (gd <= 1 ? 1 : gd === 2 ? 1.5 : 1.75);
     const delta = (K * (score - exp)) / 10;
     H.club.coef = Math.round((H.club.coef + delta) * 10) / 10;
     A.club.coef = Math.round((A.club.coef - delta) * 10) / 10;
@@ -528,6 +658,7 @@
       t.games.push(rec);
       if (fx.group) FM.Season.updTable(t.groups.find((g) => g.name === fx.group).table, fx, r);
     } else s.intlBreak.push(rec);
+    if (fx.kind === 'invite') I.inviteResult(fx);
     if (W.isUserNation(H.club.id) || W.isUserNation(A.club.id)) I.userResult(fx, m, W.isUserNation(H.club.id) ? 0 : 1);
     return rec;
   };

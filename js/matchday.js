@@ -152,6 +152,79 @@
     const sd = m.sides.find((s) => s.user);
     if (sd && Md.WARMUPS[kind]) sd.warm = kind;
   };
+  // Pressure before a match: an opponent in form, or a full house at their ground, weighs on a squad (nervy players most; a
+  // big-game player or a veteran hardly notices). Returns what weighs and by how many morale points for a steady player.
+  Md.pressure = function (fx) {
+    const home = W.isMine(fx.h),
+      me = FM.clubOf(home ? fx.h : fx.a),
+      opp = FM.clubOf(home ? fx.a : fx.h);
+    const out = { notes: [], d: 0, opp };
+    if (!opp || fx.intl || fx.friendly || opp.sim === 'nation') return out;
+    const f = opp.form || [],
+      wins = f.filter((r) => r === 'W').length;
+    if (f.length >= 4 && wins >= 4) {
+      out.d -= 2.5;
+      out.notes.push(`${opp.name} are flying: ${wins} wins in their last ${f.length}`);
+    } else if (f.length >= 4 && wins >= 3 && !f.includes('L')) {
+      out.d -= 1.2;
+      out.notes.push(`${opp.name} are unbeaten and in form`);
+    }
+    if (!home && !fx.neutral && opp.stadium) {
+      const fill = FM.Finance.attendance(opp, me, me.rival === opp.id || opp.rival === me.id).fill;
+      if (fill >= 0.93) {
+        const big = opp.stadium.cap >= 40000 ? 1.5 : opp.stadium.cap >= 20000 ? 1 : 0.5;
+        out.d -= 1 + big;
+        out.crowd = Math.round(fill * opp.stadium.cap);
+        out.notes.push(`a full house of ${out.crowd.toLocaleString()} at ${opp.stadium.name}`);
+      }
+    }
+    return out;
+  };
+  // How much of that one player feels
+  Md.pressureFeel = function (p) {
+    let k = 1;
+    if (p.hid.big <= 7 && !W.hasTrait(p, 'Big Game Player')) k *= 1.7;
+    if (W.hasTrait(p, 'Big Game Player') || W.hasTrait(p, 'Clutch')) k *= 0.3;
+    if (W.hasTrait(p, 'Big-Match Nerves')) k *= 1.4;
+    if (p.hid.temp <= 6) k *= 1.2;
+    if (W.age(p) >= 30) k *= 0.7;
+    else if (W.age(p) <= 20) k *= 1.2;
+    return k;
+  };
+  // Once per fixture, on the morning of your match: the squad feels it, and the feed says why
+  Md.pregame = function () {
+    const S = FM.S,
+      c = W.employed() && W.userClub(),
+      fx = c && FM.Season.userFixture();
+    if (!fx || fx.intl) return;
+    const key = `${S.year}:${S.day}`;
+    if (S.user.pressureDay === key) return;
+    S.user.pressureDay = key;
+    const pr = Md.pressure(fx);
+    if (!pr.d) return;
+    const hit = [];
+    for (const p of W.squad(c.id)) {
+      if (p.loan && p.loan.from === c.id) continue;
+      const d = Math.round(pr.d * Md.pressureFeel(p) * 2) / 2;
+      if (!d) continue;
+      p.morale = U.clamp(p.morale + d, 0, 100);
+      if (d <= -3) hit.push(p);
+    }
+    const asst = FM.Staff.get('assistant');
+    FM.News.add({
+      type: 'dressing',
+      title: 'Nerves in the dressing room',
+      body: `${pr.notes.join('; ')}, and it shows.${
+        hit.length
+          ? ` ${hit
+              .slice(0, 3)
+              .map((p) => W.short(p))
+              .join(', ')}${hit.length > 3 ? ' and others' : ''} look${hit.length === 1 ? 's' : ''} rattled.`
+          : ''
+      } A calm word before kick-off would help.\n\n${asst.fn} ${asst.ln}: "Remind them who they are."`,
+      clubId: c.id,
+    });
+  };
   // Context the talk lands in: our chance of winning and how big the occasion is
   Md.talkContext = function (fx) {
     const S = FM.S,
@@ -163,15 +236,36 @@
     const pw = FM.Season.matchOdds(me, opp, home, str(me), str(opp), fx.neutral, derby);
     const comp = S.comps[fx.comp];
     const big = derby || !!fx.ko || !!fx.first || !!fx.intl || opp.rep >= 80 || (comp && comp.type === 'continental');
-    return { pw, fav: pw >= 0.5, under: pw < 0.33, big, derby, fam: (S.user.tactic && S.user.tactic.fam) || 55 };
+    const pr = Md.pressure(fx);
+    return {
+      pw,
+      fav: pw >= 0.5,
+      under: pw < 0.33,
+      big,
+      derby,
+      pressure: pr.d,
+      notes: pr.notes,
+      fam: (S.user.tactic && S.user.tactic.fam) || 55,
+    };
   };
-  Md.suggestTalk = (ctx) => (ctx.derby ? 'fire' : ctx.under ? 'free' : ctx.fav ? 'focus' : ctx.big ? 'fire' : 'calm');
+  Md.suggestTalk = (ctx) =>
+    ctx.pressure <= -2
+      ? 'calm'
+      : ctx.derby
+        ? 'fire'
+        : ctx.under
+          ? 'free'
+          : ctx.fav
+            ? 'focus'
+            : ctx.big
+              ? 'fire'
+              : 'calm';
   // Per-player reaction to a talk (morale points)
   Md.talkReaction = function (p, kind, ctx) {
     const volatile = p.hid.temp <= 6 || W.hasTrait(p, 'Temperamental');
     const nervy = p.hid.big <= 7 && !W.hasTrait(p, 'Big Game Player');
     let d = 0;
-    if (kind === 'calm') d = nervy || volatile ? 3 : ctx.big ? -1 : 1;
+    if (kind === 'calm') d = (nervy || volatile ? 3 : ctx.big ? -1 : 1) + (ctx.pressure < 0 ? 1.5 : 0); // a calm word lifts the weight of the occasion
     if (kind === 'focus') d = (ctx.fav ? 3 : ctx.under ? -2 : 1) + (p.hid.prof >= 14 ? 1 : 0);
     if (kind === 'free') d = (ctx.under ? 4 : ctx.fav ? -3 : 1) + (nervy ? 1 : 0);
     if (kind === 'fire')
