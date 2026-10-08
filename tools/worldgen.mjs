@@ -352,8 +352,22 @@ export function generate(real, seed = 1) {
   // The two clubs of Spain's second division that sign only Basque or only Catalan players (D.CLUB_POLICY) are named in
   // their own languages, with a town, ground and nickname to match
   const REGIONAL = {
-    EIB: { name: 'Arrasti Kirol Elkartea', city: 'Arrasti', stadium: 'Aldapa Zelaia', short: 'AKE', nick: 'Urdinak', founded: 1921 },
-    AND: { name: 'CE Serrallac', city: 'Serrallac', stadium: 'Estadi Camp de la Vall', short: 'SRL', nick: 'Els Blaus', founded: 1904 },
+    EIB: {
+      name: 'Arrasti Kirol Elkartea',
+      city: 'Arrasti',
+      stadium: 'Aldapa Zelaia',
+      short: 'AKE',
+      nick: 'Urdinak',
+      founded: 1921,
+    },
+    AND: {
+      name: 'CE Serrallac',
+      city: 'Serrallac',
+      stadium: 'Estadi Camp de la Vall',
+      short: 'SRL',
+      nick: 'Els Blaus',
+      founded: 1904,
+    },
   };
   for (const [code, r] of Object.entries(REGIONAL)) {
     const c = out.clubs[code];
