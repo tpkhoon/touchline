@@ -68,7 +68,7 @@
     const winner = res.hg > res.ag ? hc : res.ag > res.hg ? ac : null;
     if (winner) {
       const loser = winner === hc ? ac : hc;
-      if (loser.rep - winner.rep >= 14) winner.rep = Math.min(99, winner.rep + 0.5);
+      if (loser.rep - winner.rep >= 14) FM.W.nudgeRep(winner, 0.5);
     }
   };
 

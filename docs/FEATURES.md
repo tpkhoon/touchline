@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-313 features are playable in the web prototype today. Build = the build that added it.
+321 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -339,17 +339,25 @@ Every feature from the game design document, with what is playable in the protot
 | Tools | Tactic-response test: 20 expectations on a high press, a low block, build-up, width and the opponent's press, measured over hundreds of matches, and on the post-match reading (`npm run test:tactics`) | Systems 1 |
 | Match | Tactics do what football says: a low block now wins it back deep and breaks (more counter-attack chances), a high press goes in more often, and each shows in possession, stamina and chances by type | Systems 1 |
 | Match | "Why it went this way" on the post-match summary: a headline (deserved, unlucky, fortunate, beaten on chances) and up to four causes with numbers, naming the tactic or event behind them | Systems 1 |
+| World | Every club has a market, supporters, a youth catchment and an owner, and a ceiling that its reputation cannot pass without a cause; the club sheet shows them and what the club can grow to | Systems 2 |
+| World | Reputation moves toward what the season's standing and the club's history support, by a capped step: a small club cannot become a giant in a few years, nor a giant a nobody; success grows the supporters and the ceiling | Systems 2 |
+| World | Takeovers have a reason: a big market with a club short of money or below its history, never a healthy fan-owned club; the owner raises the ceiling and the news says why | Systems 2 |
+| Tools | 30-year stability test: how much of the pecking order survives, whether small clubs become giants or giants fall without a cause, dynasties, and clubs outside their bounds (`npm run test:longrun`) | Systems 2 |
+| Club | Identity drives recruitment: a youth club looks for youngsters, a selling club for young players it can sell on, a fan-owned club for its own countrymen, oil-backed and giant clubs for stars, a fallen giant for experience; the board questions a signing that goes against it | Systems 2 |
+| Club | Identity drives the fans (the style they expect: a giant dislikes a low block, a fan-owned club wants attack), the board's patience (oil-backed clubs lose it fastest, fan-owned and youth clubs wait), players' willingness to join, and revenue (sponsors, gates, sales) | Systems 2 |
+| Career | A manager profile that is discovered, not picked: four axes (youth, attack, spending, stability) learned from who plays, the tactic, the eleven and the big deals, shown on your profile after ten matches; boards, players and the job market react to it | Systems 2 |
+| Career | Standing by country: a name made in one country carries less in another, and clubs judge you first by your standing in their own | Systems 2 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
 
 ## Yet to be added
 
-67 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+58 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
-The **Systems** rows come from a review of how the systems feed one another (see [SYSTEMS.md](SYSTEMS.md), `npm run sysmap`): Systems 1 (done) is the map and the tactic tests, Systems 2 the simulation's long-run believability and club identity, Systems 3 tactics and scouting, Systems 4 the Asian and lower-league identity.
+The **Systems** rows come from a review of how the systems feed one another (see [SYSTEMS.md](SYSTEMS.md), `npm run sysmap`): Systems 1 (done) is the map and the tactic tests, Systems 2 (done, bar collapses) the simulation's long-run believability and club identity, Systems 3 tactics and scouting, Systems 4 the Asian and lower-league identity.
 
 Design principle from here: don't make the game deeper by adding more screens â€” make the things it already has remember what happened. Transfers, managers' successes, clubs that keep fighting for trophies, youngsters who become legends and rule changes all leave a trace the world can refer back to.
 
@@ -396,6 +404,7 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Business | Store listing: screenshots, description, age rating, privacy policy | 1.0 |
 | Community | Sharing databases, leagues, scenarios and graphics | Post-launch |
 | DLC | Historical database packs | Post-launch |
+| World | Collapses with causes: clubs that overspend can go into administration (none do in a 20-season quiet world today), with the wage ratio and debt visible beforehand | Systems 2 |
 | Match | Opposition report before the match: the patterns the other side will play, worked out from its tactic, roles and players (overloads on one flank, a striker who drops deep, aggressive full-backs) | Systems 3 |
 | Match | Match instructions that answer the report: up to three (stay wider on the right, hold the line against the drifting striker, counter into the space behind their full-backs), each with an engine effect | Systems 3 |
 | Match | Half-time prompts that point at what happened in the first half (shots from one channel, a full-back out of position, a tired midfield) | Systems 3 |
@@ -403,16 +412,6 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Scouting | Second opinions: a second scout can disagree with the first, and each scout has blind spots (a physical bias, a technical bias) | Systems 3 |
 | Scouting | Three prices for a target: the analytics estimate, the agent's ask and the sporting director's view side by side | Systems 3 |
 | Scouting | Recommendations that depend on your squad's needs and budget, not a green button on the best player | Systems 3 |
-| World | Per-club attributes: city size, supporter base, stadium and financial ceilings, youth catchment, regional pull and ownership type | Systems 2 |
-| World | A club's long-run reputation target from those attributes and its history, in place of the pull toward its league's band | Systems 2 |
-| World | Events with causes: takeovers, collapses and dynasties follow from a club's attributes, with capped rise and fall rates | Systems 2 |
-| Tools | 30-year stability test: how much club rankings move over decades, how often a small club becomes a dynasty or a giant collapses without a cause | Systems 2 |
-| Club | Identity drives recruitment: the players AI clubs target, and what your board thinks of buying against developing | Systems 2 |
-| Club | Identity drives the fans: the style they expect and how they react to your football | Systems 2 |
-| Club | Identity drives players' willingness to join, and the manager's job security (the board's patience) | Systems 2 |
-| Club | Identity drives revenue: fan-owned gates, oil-backed sponsors, selling-club income | Systems 2 |
-| Career | Manager profile that is discovered, not picked: slow-moving axes (youth against buying, attacking against pragmatic, stable against tinkering) that boards, players and the job market react to | Systems 2 |
-| Career | Manager reputation by league and country, and the stepping stones between them | Systems 2 |
 | Career | Start-anywhere challenge starts and story starts (a giant awakens, last chance at promotion), and a short list of good first clubs | Systems 4 |
 | Career | A skippable world primer: the leagues, how promotion works and which competitions matter, linked from the screens | Systems 4 |
 | History | Club histories before the save: past champions, famous finals and a hall of fame, seeded to be believable and consistent with the club's ceiling | Systems 4 |

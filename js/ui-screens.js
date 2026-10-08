@@ -2836,6 +2836,7 @@
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
       ${teamTalkCard(u)}
       ${UI.careerExtras()}
+      ${UI.styleCard()}
       <div class="kpis"><div class="kpi"><div class="v">${st.games}</div><div class="l">Games</div></div><div class="kpi"><div class="v">${st.games ? Math.round((st.w / st.games) * 100) : 0}%</div><div class="l">Win rate</div></div><div class="kpi"><div class="v">${st.trophies}</div><div class="l">Trophies</div></div></div>
       <div class="card flat small"><div class="row"><span class="grow dim">W / D / L</span><b>${st.w} / ${st.d} / ${st.l}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Youth debuts</span><b>${st.youthDebuts}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Giant-killings</span><b>${st.giantKills}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Signings / sales</span><b>${st.bought} / ${st.sold}</b></div></div>
       <div class="sec"><div class="h3">Career</div></div><div class="card flat">${

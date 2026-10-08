@@ -28,6 +28,7 @@
     'tiers',
     'contracts',
     'people',
+    'mstyle',
     'scouting',
     'transfers',
     'registration',

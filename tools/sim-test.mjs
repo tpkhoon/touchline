@@ -94,6 +94,9 @@ FM.Intl.newSeason = function () {
   return newIntl.call(this);
 };
 
+// the reputation each club starts with (its ceiling may only be passed by a cause)
+const startRep = Object.fromEntries(Object.values(FM.S.clubs).map((c) => [c.id, c.rep]));
+
 // ---- play seasons ----
 const stats = { matches: 0, goals: 0, userMatches: 0, days: 0 };
 const origApply = Sea.apply;
@@ -288,6 +291,24 @@ for (let s = 0; s < SEASONS; s++) {
     const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
     check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
   }
+  // every club has what it can become, and keeps within it: reputation between its floor and its ceiling (or where it started)
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.comp && x.sim !== 'nation')) {
+    const a = c.attr;
+    check(
+      a && a.ceil >= a.floor && a.market >= 1 && a.market <= 10,
+      `season ${s + 1}: ${c.short} has no sound attributes`,
+    );
+    if (a)
+      check(
+        c.rep <= Math.max(a.ceil, startRep[c.id]) + 0.01,
+        `season ${s + 1}: ${c.short} is above its ceiling (${c.rep.toFixed(1)} against ${a.ceil.toFixed(1)})`,
+      );
+  }
+  // the manager's style has been learning from the matches, and the standing in the club's country has a record
+  check(
+    FM.S.user.style && FM.S.user.style.n > 0 && FM.S.user.repNat,
+    `season ${s + 1}: the manager's style recorded nothing`,
+  );
   // MLS clubs keep to the salary budget (the AI's are brought within it) and nobody but a Designated Player earns above the maximum
   for (const c of Object.values(FM.S.clubs).filter((x) => x.comp === 'US1' && !W.isUser(x.id))) {
     const st = FM.Reg.mlsStatus(c);

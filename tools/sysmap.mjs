@@ -44,7 +44,7 @@ const TIERS = [
     '2 · Human layer',
     {
       Scouting: ['scouting.js'],
-      'People and morale': ['people.js', 'matchday.js'],
+      'People and morale': ['people.js', 'matchday.js', 'mstyle.js'],
       'Board and fans': ['board.js'],
       'Stories and media': ['stories.js', 'media.js'],
       'Advice and analytics': ['advice.js', 'analytics.js'],
@@ -150,8 +150,36 @@ const LOOPS = [
       ['The youth intake follows it', 'careers.js', /identity/],
       ['Selling prices follow it', 'transfers.js', /IDENTITY/],
       ['The budget starts from it', 'world.js', /idt\.budget/],
-      ['Recruitment preferences follow it', 'transfers.js', /identity.*prefer|prefer.*identity/i],
-      ['Fans’ style expectations follow it', 'board.js', /identity.*style|style.*identity/i],
+      ['Recruitment preferences follow it', 'transfers.js', /identityFit/],
+      ['Players’ willingness to join follows it', 'market.js', /identityAppeal/],
+      ['The board’s patience follows it', 'board.js', /B\.patience/],
+      ['Revenue follows it', 'finance.js', /IDMIX/],
+      ['Fans’ style expectations follow it', 'board.js', /styleFit/],
+    ],
+  ],
+  [
+    'What a club can become',
+    [
+      ['A club has a market, supporters, a youth catchment and an owner', 'world.js', /W\.clubAttr = /],
+      ['They set a ceiling its reputation cannot pass', 'world.js', /W\.repCeiling/],
+      [
+        'Each season’s reputation moves toward what standing and history support, by a capped step',
+        'season.js',
+        /driftRep/,
+      ],
+      ['Success grows the supporters, and with them the ceiling', 'season.js', /growClub/],
+      ['The market sets commercial revenue', 'finance.js', /clubAttr/],
+      ['Takeovers need a reason in the club’s attributes', 'stories.js', /clubAttr/],
+    ],
+  ],
+  [
+    'The manager you turn out to be',
+    [
+      ['Who plays, the tactic, the eleven and the big deals shape a profile', 'mstyle.js', /St\.afterMatch/],
+      ['The profile is learned from your matches', 'season.js', /Style\.afterMatch/],
+      ['The board of a club of your kind gains or loses confidence in you', 'mstyle.js', /St\.seasonEnd/],
+      ['Players are drawn to, or put off by, how you manage', 'market.js', /Style\.appealFor/],
+      ['The job market looks at your standing in its country and at your kind', 'season.js', /Style\.effectiveRep/],
     ],
   ],
   [

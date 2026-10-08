@@ -1292,19 +1292,39 @@
               'A disappointing season ends in change.',
             );
       });
-    // Takeover
+    // Takeover. It needs a reason: a consortium looks for a big market with a club that is short of money or has fallen short
+    // of its own history, and a healthy fan-owned club is almost never for sale. The owner raises what the club can become.
     // (a small or heavily trimmed world can run out of clubs a consortium could buy: then there is no takeover)
-    const buyable = full.filter((x) => !W.isUser(x.id) && x.identity !== 'oil');
-    if (Math.random() < 0.5 && buyable.length) {
-      const c = U.pick(buyable);
+    const Sea = FM.Season;
+    const stressed = (x) => x.admin || x.balance < Sea.revenuePotential(x) * 0.15;
+    const prey = full
+      .filter((x) => !W.isUser(x.id) && x.identity !== 'oil')
+      .map((x) => {
+        const a = W.clubAttr(x),
+          slipped = x.rep < a.hist - 3;
+        return {
+          c: x,
+          why: stressed(x) ? 'short of money' : slipped ? 'below where its history says it belongs' : null,
+          w:
+            Math.pow(a.market / 10, 2) *
+            (stressed(x) ? 3 : 1) *
+            (slipped ? 1.8 : 1) *
+            (a.own === 'fans' && !stressed(x) ? 0.05 : 1),
+        };
+      });
+    if (Math.random() < 0.35 && prey.length) {
+      const { c, why } = U.wpick(prey, (x) => x.w);
+      const a = W.clubAttr(c);
       c.identity = 'oil';
-      c.balance += FM.Season.revenuePotential(c) * 2;
+      a.own = 'sovereign';
+      a.ceil = Math.min(99, a.ceil + 12); // new money raises the ceiling
+      c.balance += Sea.revenuePotential(c) * 2;
       c.budget = Math.round(c.balance * 0.5);
-      c.rep = Math.min(99, c.rep + 4);
+      W.nudgeRep(c, 4);
       FM.News.add({
         type: 'world',
         title: `Consortium completes takeover of ${c.name}`,
-        body: `A sovereign-wealth-backed group promises "a new era". Fans are divided. Transfer budget tripled.`,
+        body: `A sovereign-wealth-backed group buys a club ${why ? `${why}, in a ` : 'in a '}${a.market >= 6 ? 'big' : 'modest'} market, and promises "a new era". Fans are divided. Transfer budget tripled.`,
         clubId: c.id,
         big: true,
       });

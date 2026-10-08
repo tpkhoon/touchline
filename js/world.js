@@ -1017,6 +1017,81 @@
     const gap = age >= 26 ? AGE_GAP[Math.min(age, 26)] || 0 : AGE_GAP[Math.max(18, age)] + Math.max(0, 18 - age) * 2;
     return ca + Math.max(0, Math.round(gap + U.gauss(0, 1.5 + gap * 0.4)));
   };
+  // ---------- What a club can become: its attributes and its ceiling ----------
+  // A club's reputation is not free to go anywhere. Each club has a market (the size of its city and its catchment), a support
+  // base, a youth catchment and an owner, worked out from its ground, its standing and its identity (and kept on the club, so a
+  // database can set them). They give it a historical reputation that moves slowly, a ceiling it cannot rise above without a
+  // cause (a takeover, years of success growing its support) and a floor it does not sink below at once. Rises and falls in
+  // a season are also capped, so a small club does not become a giant in a few years, or a giant a nobody.
+  W.REP_STEP = 4.5; // the most a club's reputation moves in a season from its results
+  W.REP_STANDING = 0.8; // how much of its yearly target comes from this season's standing (the rest from its history)
+  W.REP_HEAD = 1.8; // a multiplier on the headroom its market, supporters and owner allow
+  W.REP_SLACK = 1.6; // a multiplier on how far below its history a club may sink
+  const BIG_NATION = {
+    ENG: 1,
+    ESP: 1,
+    GER: 1,
+    FRA: 1,
+    ITA: 1,
+    BRA: 1,
+    USA: 1,
+    JPN: 0.5,
+    MEX: 0.5,
+    TUR: 0.5,
+    ARG: 0.5,
+    KSA: 0.4,
+    NED: 0.2,
+    POR: 0.2,
+    RUS: 0.6,
+  };
+  const SUPPORT_BY_IDENTITY = { giant: 2, fan: 1.5, historic: 1, fallen: 1.5, oil: -1, selling: -0.5, youth: 0 };
+  W.clubAttr = function (c) {
+    if (c.attr) return c.attr;
+    const h = U.hash(c.id),
+      cap = (c.stadium && (c.stadium.cap0 || c.stadium.cap)) || 15000;
+    const scale = (Math.log(cap) - Math.log(3000)) / (Math.log(80000) - Math.log(3000));
+    const market = U.clamp(1 + scale * 7.5 + ((h % 5) - 2) * 0.35 + (BIG_NATION[c.nat] || 0) * 0.8, 1, 10);
+    const support = U.clamp(market * 0.6 + (c.rep - 40) / 12 + (SUPPORT_BY_IDENTITY[c.identity] || 0), 1, 10);
+    const catchment = U.clamp(market * 0.7 + (c.identity === 'youth' ? 1.5 : 0) + (((h >> 3) % 3) - 1) * 0.5, 1, 10);
+    const own = { oil: 'sovereign', fan: 'fans', selling: 'investors' }[c.identity] || 'private';
+    const a = { market, support, catchment, own, hist: c.rep };
+    a.ceil = W.repCeiling(a, c.rep);
+    a.floor = Math.max(20, c.rep - (6 + market * 0.8) * W.REP_SLACK);
+    c.attr = a;
+    return a;
+  };
+  // The most a club can be: its standing now (it is never above its own ceiling), plus what its market, supporters and owner allow
+  W.repCeiling = (a, rep) =>
+    Math.min(
+      99,
+      rep +
+        (1.5 + 1.9 * a.market + 1.1 * a.support) * W.REP_HEAD +
+        (a.own === 'sovereign' ? 8 : a.own === 'fans' ? -1.5 : 0),
+    );
+  // A change to a club's reputation, held to its ceiling and floor (national teams and clubs outside the leagues have none)
+  W.nudgeRep = function (c, d) {
+    if (!c || !c.comp || c.sim === 'nation') {
+      if (c) c.rep = U.clamp(c.rep + d, 20, 99);
+      return;
+    }
+    const a = W.clubAttr(c);
+    c.rep = U.clamp(c.rep + d, a.floor, Math.max(a.ceil, c.rep));
+  };
+  // A season ends: the club's reputation moves toward what its standing and its history support, by a capped step, and its
+  // history follows slowly. Success also grows the club (supporters, then the ceiling); a long slump shrinks it.
+  W.driftRep = function (c, standing) {
+    const a = W.clubAttr(c);
+    const target = U.clamp(W.REP_STANDING * standing + (1 - W.REP_STANDING) * a.hist, a.floor, a.ceil);
+    c.rep = U.clamp(c.rep + U.clamp((target - c.rep) * 0.18, -W.REP_STEP, W.REP_STEP), 20, Math.max(a.ceil, c.rep));
+    a.hist += (c.rep - a.hist) * 0.05;
+    a.floor = Math.max(20, Math.min(a.floor + 0.2, a.hist - (6 + a.market * 0.8) * W.REP_SLACK));
+  };
+  W.growClub = function (c, d) {
+    const a = W.clubAttr(c);
+    a.support = U.clamp(a.support + d, 1, 10);
+    a.ceil = Math.min(99, a.ceil + d * 3);
+  };
+
   W.levelFor = (rep) => 25 + rep * 0.58;
   // Ability of an unattached player the world invents (a new world's free agents, a thin summer market): mostly
   // lower-league standard; only rarely someone good enough for a top flight
@@ -1982,6 +2057,7 @@
       };
       S.clubs[id] = club;
       S.comps[compId].clubs.push(id);
+      W.clubAttr(club);
       genSquad(club);
       return club;
     };
