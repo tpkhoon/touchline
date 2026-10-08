@@ -83,6 +83,7 @@
     const s = S();
     for (const c of Object.values(s.clubs)) {
       if (c.sim !== 'full') continue;
+      if (!W.isUser(c.id) && FM.Reg.real() && FM.Reg.mls(c)) FM.Reg.mlsComply(c); // an MLS club keeps within its salary budget
       if (c.balance < 0) {
         const i = Math.round(-c.balance * F.LIMIT.interest);
         c.balance -= i;

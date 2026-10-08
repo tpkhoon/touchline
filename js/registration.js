@@ -63,7 +63,9 @@
     ES2: { nonEU: 3, quasi: true },
     FR1: { nonEU: 4, quasi: true },
     AU1: { foreign: 5 }, // five visa players
-    US1: { foreign: 8 },
+    // MLS: eight international slots, a salary budget with a maximum charge per player and three Designated Players above it, and a
+    // senior roster of at most 30 (amounts are annual wages; the budget counts the 20 biggest charges)
+    US1: { foreign: 8, mls: { cap: 5.2e6, maxCharge: 7e5, dp: 3, roster: 30, counted: 20 } },
     BR1: { matchday: 9 },
     JP1: { matchday: 5, exempt: ['THA'] },
     AR1: { foreign: 6, matchday: 5 },
@@ -96,6 +98,10 @@
     if (r.foreign)
       out.push(`At most ${r.foreign} ${id === 'US1' ? 'international slots' : 'foreign players'} on the books.`);
     if (r.matchday) out.push(`No more than ${r.matchday} foreign players in a matchday squad.`);
+    if (r.mls)
+      out.push(
+        `Salary budget: the 20 biggest wage charges add up to at most ${U.money(r.mls.cap)} a year. No player counts for more than ${U.money(r.mls.maxCharge)}, and up to ${r.mls.dp} Designated Players may earn above that and still count only that much; nobody else may earn more. A senior roster of at most ${r.mls.roster}.`,
+      );
     if (r.exempt) out.push(`Players from ${r.exempt.map(nm).join(', ')} do not count as foreign.`);
     return out;
   };
@@ -260,6 +266,72 @@
     if (!pol || p.heritage === pol.heritage) return { ok: true };
     return { ok: false, why: `${c.name} only signs ${pol.label} players: it fields players of ${pol.label} heritage.` };
   };
+  // ---------- MLS: the salary budget, Designated Players and the roster ----------
+  const WKS = () => D.WAGE_WEEKS;
+  R.mls = (c) => {
+    const r = R.rulesFor(c);
+    return r && r.mls ? r.mls : null;
+  };
+  // Wage charges for a list of annual wages: the top earners above the maximum count as Designated Players (up to the limit)
+  // and are charged the maximum; anyone else above it is illegal and counts in full. The budget is the biggest 20 charges.
+  R.mlsCharges = function (m, wages) {
+    const w = wages.slice().sort((a, b) => b - a);
+    const charges = w.map((x, i) => (i < m.dp && x > m.maxCharge ? m.maxCharge : x));
+    return {
+      dps: w.filter((x, i) => i < m.dp && x > m.maxCharge).length,
+      illegal: w.filter((x, i) => i >= m.dp && x > m.maxCharge + 1).length,
+      charge: U.sum(charges.sort((a, b) => b - a).slice(0, m.counted), (x) => x),
+    };
+  };
+  R.mlsStatus = function (c, swap) {
+    const m = R.mls(c);
+    if (!m) return null;
+    const sq = W.squad(c.id).filter((p) => !p.team && !(p.loan && p.loan.from === c.id));
+    const wages = sq.filter((p) => !swap || p.id !== swap.id).map((p) => p.wage * WKS());
+    return { m, roster: sq.length, wages, ...R.mlsCharges(m, wages) };
+  };
+  // Would signing (or renewing) him on this annual wage keep the club within the rules? renew: he is already on the books
+  R.mlsCheck = function (c, p, annual, renew) {
+    const m = R.mls(c);
+    if (!m) return { ok: true };
+    const st = R.mlsStatus(c, renew ? p : null);
+    if (!renew && st.roster >= m.roster)
+      return { ok: false, why: `The senior roster is full: ${st.roster} of ${m.roster}.` };
+    const after = R.mlsCharges(m, st.wages.concat([annual]));
+    const dpLeft = m.dp - st.dps;
+    if (after.illegal)
+      return {
+        ok: false,
+        why: `Only ${m.dp} Designated Players may earn more than ${U.money(m.maxCharge)} a year (${st.dps} are on the books). He would need to earn less.`,
+      };
+    if (after.charge > m.cap)
+      return {
+        ok: false,
+        why: `The salary budget would be ${U.money(after.charge)}, over the ${U.money(m.cap)} limit${annual > m.maxCharge && dpLeft <= 0 ? '' : annual > m.maxCharge ? '' : dpLeft > 0 ? `. A Designated Player (${st.dps} of ${m.dp} used) counts for only ${U.money(m.maxCharge)}` : ''}.`,
+      };
+    return { ok: true };
+  };
+  // An AI club's squad brought within the rules: anyone above the maximum who is not a Designated Player is cut to it, and if the
+  // budget is still over, the rest are trimmed in proportion
+  R.mlsComply = function (c) {
+    const m = R.mls(c);
+    if (!m) return;
+    const sq = W.squad(c.id)
+      .filter((p) => !p.team && !(p.loan && p.loan.from === c.id))
+      .sort((a, b) => b.wage - a.wage);
+    const WK = WKS();
+    sq.forEach((p, i) => {
+      if (i >= m.dp && p.wage * WK > m.maxCharge) p.wage = Math.floor(m.maxCharge / WK);
+    });
+    let over = R.mlsStatus(c).charge - m.cap;
+    for (let k = 0; over > 0 && k < 6; k++) {
+      const body = sq.filter((p, i) => !(i < m.dp && p.wage * WK > m.maxCharge));
+      const sum = U.sum(body.slice(0, m.counted), (p) => p.wage * WK);
+      const f = Math.max(0.5, (sum - over) / sum);
+      body.forEach((p) => (p.wage = Math.max(1, Math.floor(p.wage * f))));
+      over = R.mlsStatus(c).charge - m.cap;
+    }
+  };
   R.canSign = function (c, p, st) {
     const pc = R.policy(c, p);
     if (!pc.ok) return pc;
@@ -291,6 +363,7 @@
       return { ok: false, why: `Too many foreign players for the ${r.matchday}-a-matchday rule.` };
     if (r.nonEUSign && !R.isEU(p) && p.clubId && FM.S.clubs[p.clubId].nat !== c.nat && st.nonEUSigned >= r.nonEUSign)
       return { ok: false, why: `The ${r.nonEUSign} non-EU signings from abroad allowed this season have been made.` };
+    if (r.mls) return R.mlsCheck(c, p, W.wageFor(p) * WKS(), false);
     return { ok: true };
   };
   // World generation: a nationality for a new squad member that keeps the club within its league's rules.
@@ -350,6 +423,14 @@
     if (r.nonEU) bits.push(`non-EU ${st.nonEU}/${r.nonEU}`);
     if (r.foreign) bits.push(`${c.comp === 'US1' ? 'international slots' : 'foreigners'} ${st.foreign}/${r.foreign}`);
     if (r.nonEUSign) bits.push(`non-EU signings from abroad ${st.nonEUSigned}/${r.nonEUSign}`);
+    if (r.mls) {
+      const ms = R.mlsStatus(c);
+      bits.push(
+        `salary budget ${U.money(ms.charge)} of ${U.money(r.mls.cap)}`,
+        `Designated Players ${ms.dps}/${r.mls.dp}`,
+        `roster ${ms.roster}/${r.mls.roster}`,
+      );
+    }
     if (r.permit) bits.push('work permits for players from outside the British Isles');
     if (r.matchday) bits.push(`max ${r.matchday} foreigners in a matchday squad`);
     return bits.join(' · ');
@@ -402,5 +483,12 @@
         big: true,
       });
     return out;
+  };
+  // A new season: the AI's MLS clubs start it within the salary budget (contracts were renewed on the way)
+  const newSeason = FM.Season.newSeason;
+  FM.Season.newSeason = function (entry) {
+    const r = newSeason.call(this, entry);
+    if (R.real()) for (const c of Object.values(FM.S.clubs)) if (c.comp && !W.isUser(c.id) && R.mls(c)) R.mlsComply(c);
+    return r;
   };
 })();

@@ -16,7 +16,9 @@ self.onmessage = function (e) {
   if (d.type !== 'run') return;
   const FM = self.FM,
     Sea = FM.Season;
-  FM.S = FM.Save.relink(JSON.parse(d.json)); // JSON is ~2.5× cheaper than structured clone for a world this size
+  const state = JSON.parse(d.json); // JSON is ~2.5× cheaper than structured clone for a world this size
+  FM.DbImport.restore(state); // a world from a database has its own clubs and leagues in the game's data
+  FM.S = FM.Save.relink(state);
   const progress = (n, label) => self.postMessage({ type: 'progress', id: d.id, n, label });
   try {
     let out;

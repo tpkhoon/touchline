@@ -18,6 +18,7 @@
     'realstats',
     'worlddef',
     'dbimport',
+    'histimport',
     'engine',
     'season',
     'careers',

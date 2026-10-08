@@ -11,6 +11,12 @@
     if (c) return c.nat === 'ENG' ? 'ENG' : D.NATIONS[c.nat].region;
     return D.NATIONS[p.nat].region;
   };
+  // A club with a signing policy (the Basque and Catalan clubs) only looks at players it could sign: its scouts, search and
+  // suggestions leave everyone else out
+  Sc.scoutable = function (p) {
+    const c = FM.S.user && FM.S.user.clubId && FM.S.clubs[FM.S.user.clubId];
+    return !c || !c.policy || FM.Reg.policy(c, p).ok;
+  };
   Sc.know = (pid) => FM.S.user.knowledge[pid] || 0;
   // Average ability of the user's current XI (cached per matchday — used on every report render)
   Sc.level = function () {
@@ -240,6 +246,7 @@
             !p.retired &&
             p.clubId !== u.clubId &&
             !dis[p.id] &&
+            Sc.scoutable(p) &&
             (a.type === 'league' ? p.clubId && S.clubs[p.clubId].comp === a.comp : Sc.region(p) === a.region) &&
             (a.pos === 'any' || D.POS_GROUP[p.pos] === a.pos) &&
             (!a.nat || a.nat === 'any' || p.nat === a.nat) &&
@@ -536,7 +543,7 @@
       c = W.userClub();
     return Object.keys(S.user.reports)
       .map((id) => S.players[id])
-      .filter((p) => p && !W.ownPlayer(p) && !p.retired)
+      .filter((p) => p && !W.ownPlayer(p) && !p.retired && Sc.scoutable(p))
       .map((p) => ({ p, v: Sc.view(p) }))
       .filter(
         ({ v, p }) =>

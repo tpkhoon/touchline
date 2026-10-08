@@ -314,6 +314,8 @@
       };
     const rc = FM.Reg.real() ? FM.Reg.canSign(club, p) : FM.Reg.policy(club, p);
     if (!rc.ok) return { ok: false, msg: `You can't register him: ${rc.why}` };
+    const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, false) : { ok: true };
+    if (!mc.ok) return { ok: false, msg: mc.why };
     if (FM.Finance.frozen(t.wage))
       return {
         ok: false,
@@ -394,6 +396,8 @@
         ok: false,
         msg: `The board have frozen the wage bill: a renewal can't pay him more than his ${U.money(p.wage)}/wk now.`,
       };
+    const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, true) : { ok: true };
+    if (!mc.ok) return { ok: false, msg: mc.why };
     const ev = Co.evaluate(p, club, t, 'renew');
     if (!ev.ok) {
       if (!ev.hard) Co.logDemand(p, ev, t);

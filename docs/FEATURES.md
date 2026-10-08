@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-297 features are playable in the web prototype today. Build = the build that added it.
+309 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -323,6 +323,18 @@ Every feature from the game design document, with what is playable in the protot
 | Transfers | Realistic agency names: surname firms in the agent's own country style (Gestión Deportiva, Sportmanagement, Agence, & Partners) beside a wider set of brand names | Playtest round 10 |
 | Career | The suggested clubs show each club's country (with flag), league and tier | Playtest round 10 |
 | Career | Database import (framework): a Database card on the new-career screen loads a world-definition file, shows its clubs, leagues, players, past seasons and any warnings or errors, and starts the career in that world; formats are pluggable adapters and the world remembers its database | Playtest round 10 |
+| Career | Database import reads historical CSV tables (tables.csv, optionally players.csv and clubs.csv, picked together): past seasons for the archive, club edits, and players converted from their statistics, matched against the game's own clubs | Playtest round 10 |
+| Career | A database can add clubs and whole leagues (their rules, tier, size, derbies) and rename or recolour the game's own; the club picker shows the imported clubs and leagues before you choose, and the world, its saves and the simulation keep them | Playtest round 10 |
+| Career | A database can replace every player: a club given a squad of 11 or more players loses its generated ones, and any gaps in the squad are made up | Playtest round 10 |
+| Career | Export the world you play as a database file from Settings, with the clubs alone or with every player, to share or edit and start a career in again | Playtest round 10 |
+| Matchday | Pressure before a match: an opponent in form (four wins in five, or unbeaten and winning) or a full house at their ground drags squad morale down, nervy players and teenagers most and big-game players and veterans least; the feed says why, the team-talk card names it, and a calm word lifts it | Playtest round 11 |
+| Squad | The tactics screen and in-match substitutions show stars, not numbers, when you choose a player for a slot | Playtest round 11 |
+| Players | Basque and Catalan names: wider name pools, a Basque and a Catalan name for the two policy clubs (town, ground, nickname) and legends of their own culture | Playtest round 11 |
+| Scouting | A club with a signing policy only scouts, searches for and is recommended players it could sign | Playtest round 11 |
+| Clubs | Club history reworked: each season keeps its top scorer and the player with most appearances, a Club legends card lists the all-time top five scorers and appearance makers (with how far each squad member is from the next), and every club's legends come from its own country and from the years it existed | Playtest round 11 |
+| Competitions | Invitational international tournaments in the international windows: the Kirin Cup, King's Cup and Nehru Cup in turn, a host and three invited nations with semi-finals, a final and a third-place match | Playtest round 11 |
+| Matchday | Shouts: seven calls from the touchline (Push up, Hold shape, Get stuck in, Calm down, Concentrate, Encourage, Slow it down) that move the side for a few minutes; how well they land depends on the captain and the mood, and too many are tuned out | Playtest round 11 |
+| Competitions | MLS roster and salary rules for the American league: a $5.2M salary budget over the 20 biggest wage charges, a $700K maximum charge, three Designated Players, a 30-man senior roster and eight international slots; signings and renewals that break them are refused with the reason, the budget shows on the squad screen, and the AI's clubs are kept within it | Playtest round 11 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |

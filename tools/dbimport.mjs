@@ -77,7 +77,126 @@ if ('test' in args) {
     `a registered adapter was not used: ${x.errors}`,
   );
   check(DB.accept().includes('.tst') && DB.accept().includes('.json'), 'accept() misses a format');
-  check(DB.adapters().length === 2, 'adapters() should list two');
+  check(DB.adapters().length === 3, 'adapters() should list three');
+
+  // ---- new clubs and leagues, staged into the game's data, built, saved and restored ----
+  const D = FM.D;
+  const nLeagues = D.LEAGUES.length,
+    nRows = D.allClubRows().length;
+  const sdef = WD.fromStatic({ name: 'Extra league' });
+  sdef.meta.author = 'test';
+  sdef.leagues.push({
+    id: 'XL1',
+    name: 'Test Premier',
+    short: 'TST',
+    nat: 'ENG',
+    tier: 5,
+    sim: 'full',
+    repBand: [40, 30],
+    rules: {},
+  });
+  for (let i = 1; i <= 8; i++)
+    sdef.clubs.push({
+      id: 'c_TL' + i,
+      name: `Testville ${i}`,
+      short: 'TL' + i,
+      nick: 'Testers',
+      city: `Testville ${i}`,
+      colors: ['#112233', '#ffeedd'],
+      identity: 'historic',
+      rep: 36,
+      league: 'XL1',
+      stadium: { name: `Test Park ${i}`, cap: 6000 },
+    });
+  sdef.clubs.find((c) => c.id === 'c_MCI').name = 'Renamed City';
+  const sr = DB.import([{ name: 's.json', text: WD.stringify(sdef) }]);
+  check(sr.ok, `a world with a new league did not import: ${sr.errors}`);
+  DB.stage(sr);
+  check(
+    D.LEAGUES.length === nLeagues + 1 && D.allClubRows().length === nRows + 8,
+    'staging did not add the league and its clubs',
+  );
+  check(sr.summary.newLeagues === 1 && sr.summary.newClubs === 8, `summary: ${JSON.stringify(sr.summary)}`);
+  check(
+    D.allClubRows().some((r) => r[0] === 'Renamed City'),
+    'the staged data lacks the renamed club',
+  );
+  DB.clear();
+  check(D.LEAGUES.length === nLeagues && D.allClubRows().length === nRows, 'clearing did not undo the staging');
+  check(
+    !D.allClubRows().some((r) => r[0] === 'Renamed City') && !D.CLUB_INFO.TL1,
+    'clearing left the rename or the new club info',
+  );
+  DB.stage(DB.import([{ name: 's.json', text: WD.stringify(sdef) }]));
+  DB.build(sdef, W.REAL_RULES);
+  FM.Season.init();
+  check(FM.S.comps.XL1 && FM.S.comps.XL1.clubs.length === 8, 'the new league has no clubs in the world');
+  check(
+    FM.S.clubs.c_TL1 && FM.S.clubs.c_TL1.name === 'Testville 1' && W.squad('c_TL1').length >= 18,
+    'the new club has no squad',
+  );
+  check(FM.S.clubs.c_MCI.name === 'Renamed City', 'the rename did not reach the world');
+  check(FM.S.database.patch && FM.S.database.patch.leagues.length === 1, 'the world did not keep the patch');
+  W.takeCharge('c_TL1', 'Test Manager');
+  W.seedLegends();
+  for (let d = 0; d < 12; d++) FM.Season.advance(null); // football in the new league
+  // a saved world brings its data back on load, and a world without a database puts the built-in data back
+  const saved = JSON.parse(JSON.stringify(FM.S));
+  DB.clear();
+  DB.restore(saved);
+  check(D.LEAGUES.length === nLeagues + 1 && D.CLUB_INFO.TL1, 'restoring a save did not bring its leagues back');
+  DB.restore({ ...saved, database: undefined });
+  check(
+    D.LEAGUES.length === nLeagues && D.allClubRows().length === nRows,
+    'restoring a plain save did not put the built-in data back',
+  );
+  // exporting the world you play gives a file that imports
+  DB.restore(saved);
+  const ex = DB.import([{ name: 'e.json', text: DB.export({ withPlayers: false }) }]);
+  check(
+    ex.ok && ex.summary.clubs === nRows + 8,
+    `the export did not import: ${ex.errors} ${ex.summary && ex.summary.clubs}`,
+  );
+  DB.clear();
+
+  // ---- replacing every player ----
+  W.newWorld(W.REAL_RULES);
+  FM.Season.init();
+  const pdef = WD.fromState(FM.S, { name: 'Players', players: true, replace: true });
+  check(pdef.meta.players === 'replace', 'the export with players is not in replace mode');
+  const some = pdef.clubs[3].id;
+  let n = 0;
+  pdef.players = pdef.players.filter((p) => p.club !== some || n++ % 3 !== 0); // a club left with a short squad
+  const firstP = pdef.players.find((p) => p.club === some);
+  firstP.fn = 'Replaced';
+  firstP.ln = 'Player';
+  const pr = DB.import([{ name: 'p.json', text: WD.stringify(pdef) }]);
+  check(pr.ok, `a replace definition did not import: ${pr.errors}`);
+  DB.build(pr.def, W.REAL_RULES);
+  const sq = W.squad(some);
+  check(
+    sq.some((p) => p.fn === 'Replaced' && p.defId),
+    'the defined player is not in the squad',
+  );
+  check(sq.length >= 18, `the short squad was not made up: ${sq.length}`);
+  check(
+    sq.filter((p) => p.defId).length === pdef.players.filter((p) => p.club === some).length,
+    'the club kept generated players beside the defined ones',
+  );
+  DB.clear();
+
+  // ---- the CSV adapter ----
+  const csv = ['season,league,pos,club,p,w,d,l,gf,ga,pts']
+    .concat(
+      D.CLUBS_D1.map((r, i) => `2023,D1,${i + 1},c_${r[1]},38,${20 - i},8,${10 + i},${60 - i},${40 + i},${68 - 3 * i}`),
+    )
+    .join('\n');
+  const cr = DB.import([{ name: 'tables.csv', text: csv }]);
+  check(
+    cr.ok && cr.adapter === 'history-csv' && cr.summary.seasons === 1,
+    `the CSV tables did not import: ${cr.errors} ${cr.adapter}`,
+  );
+  check(!DB.import([{ name: 'x.csv', text: 'a,b\n1,2' }]).ok, 'an unknown CSV was not refused');
 
   console.log(
     fails.length

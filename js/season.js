@@ -1077,6 +1077,7 @@
     else if (!summary) FM.Injury.riskHim(Sea.userFixture()); // a key man nearly fit before a big game
     if (!summary) {
       FM.Market.newDay(); // deadline, trials, loanees, payments
+      FM.Matchday.pregame(); // an opponent in form, a full house away: the squad feels it
       FM.Stories.preMatchPress(); // a big game today: the press want a word first
     }
     W.numberAll(S.players); // squad numbers for anyone the day brought in (academy intakes, regens)
@@ -1659,11 +1660,16 @@
         };
     // Each club's season in the archive beside the tables: its manager, top scorer and cup runs
     {
-      const topBy = {};
+      // the club's top scorer, and the man with most appearances, over every competition of the season
+      const topBy = {},
+        appsBy = {};
       for (const p of Object.values(S.players)) {
-        if (p.retired || !p.clubId || !(p.season.goals > 0)) continue;
-        if (!topBy[p.clubId] || p.season.goals > topBy[p.clubId].g)
-          topBy[p.clubId] = { g: p.season.goals, n: W.name(p) };
+        if (p.retired || !p.clubId) continue;
+        const g = p.season.goals || 0,
+          a = p.season.apps || 0;
+        if (g > 0 && (!topBy[p.clubId] || g > topBy[p.clubId].g || (g === topBy[p.clubId].g && a < topBy[p.clubId].a)))
+          topBy[p.clubId] = { g, a, n: W.name(p), id: p.id };
+        if (a > 0 && (!appsBy[p.clubId] || a > appsBy[p.clubId].a)) appsBy[p.clubId] = { a, n: W.name(p), id: p.id };
       }
       const cups = Object.values(S.comps).filter((c) => c.type === 'cup' || c.type === 'continental');
       entry.clubInfo = {};
@@ -1673,7 +1679,8 @@
           runs = cups.map((x) => [x.name, FM.Cups.runOf(x, c.id)]).filter((x) => x[1]);
         entry.clubInfo[c.id] = {
           m: W.isUser(c.id) ? S.user.name : m ? `${m.fn} ${m.ln}` : '',
-          t: topBy[c.id] ? [topBy[c.id].n, topBy[c.id].g] : null,
+          t: topBy[c.id] ? [topBy[c.id].n, topBy[c.id].g, topBy[c.id].id] : null,
+          a: appsBy[c.id] ? [appsBy[c.id].n, appsBy[c.id].a, appsBy[c.id].id] : null,
           c: runs,
         };
       }

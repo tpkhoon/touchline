@@ -77,6 +77,13 @@ champions.
 
 - **MLS (USA):** see the American league above: seven a conference, the top seed skipping Round One, ending in the
   MLS Cup; the best record wins the Supporters' Shield.
+- **MLS roster and salary rules (USA):** a salary budget of $5.2M a year, counted over a club's 20 biggest wage
+  charges; no player counts for more than $700K (the maximum charge); up to three Designated Players may earn more than
+  that and are charged only that much, and nobody else may earn above it; a senior roster of at most 30; eight
+  international slots; a three-round college draft. A signing or renewal that would break any of these is refused, with
+  the reason (and a hint when a Designated Player place would fix it); the AI's clubs are trimmed back within the budget
+  every week and at the start of a season. Not in the game: allocation money, Generation adidas and the
+  under-22 initiative.
 - **A-League (Australia):** the top six play off: 3rd v 6th and 4th v 5th (elimination finals), semi-finals (1st and
   2nd against the survivors) and the Grand Final, all single matches hosted by the better seed.
 
@@ -94,7 +101,16 @@ Serie B's play-out has nowhere to send the loser (there is no Serie C in the gam
 - **Saudi First Division League (18 clubs):** three up; four foreign players.
 - **Signing policy (Athletic Club):** Eibar sign only players of Basque heritage and Andorra only Catalan ones. They
   cannot buy, borrow, take on a free transfer, agree a pre-contract with or trial anyone else, and their youth teams and
-  squads are made of such players. Other clubs may sign Basque and Catalan players freely.
+  squads are made of such players. Other clubs may sign Basque and Catalan players freely. Their scouts, the search and the
+  suggestions also leave out everyone they could not sign.
+
+## Invitational tournaments
+
+- One a season, in turn: the Kirin Cup (Japan hosts), the King's Cup (Thailand) and the Nehru Cup (India). The host and three
+  invited nations from different parts of the world, none of whom has a qualifier on the days it is played, play semi-finals on
+  the first day of the second international window and a final and a third-place match on the second; ties go to penalties.
+  They count as friendlies for fitness and call-ups and a little more than a friendly for the national-team coefficient.
+  The winner is recorded with the season's international results.
 
 ## Domestic cups
 

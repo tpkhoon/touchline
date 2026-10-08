@@ -1044,7 +1044,7 @@
               : inXI >= 0
                 ? 'In XI (swap)'
                 : '';
-          return `<div class="prow tap" data-act="pickSlot" data-i="${i}" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))} ${cur && cur.id === p.id ? '✓' : ''}</div><div class="small dim">${fit >= 1 ? 'Natural' : fit >= 0.8 ? 'Accomplished' : fit >= 0.6 ? 'Awkward' : 'Unfamiliar'}${tag ? ' · ' + tag : ''}</div></div>${C.fitTag(p.fitness)}<div class="b" style="width:26px;text-align:right">${Math.round(W.effAt(p, s.t, s, T.roles[i]))}</div></div>`;
+          return `<div class="prow tap" data-act="pickSlot" data-i="${i}" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))} ${cur && cur.id === p.id ? '✓' : ''}</div><div class="small dim">${fit >= 1 ? 'Natural' : fit >= 0.8 ? 'Accomplished' : fit >= 0.6 ? 'Awkward' : 'Unfamiliar'}${tag ? ' · ' + tag : ''}</div></div>${C.fitTag(p.fitness)}<div class="b" style="min-width:40px;text-align:right">${C.starText(W.effAt(p, s.t, s, T.roles[i]), s.t)}</div></div>`;
         })
         .join('')}</div>`,
       { title: `${D.slotLabel(s)} · ${D.POS_NAME[s.t] || s.t}` },
@@ -1505,6 +1505,10 @@
     );
   };
   UI.acts.doScoutPlayer = (d) => {
+    if (!FM.Scouting.scoutable(P(d.id))) {
+      UI.closeSheet();
+      return UI.toast(`${W.userClub().name} only look at ${W.userClub().policy.label} players`, 3500);
+    }
     FM.Scouting.assign(d.s, { type: 'player', pid: d.id });
     UI.save();
     UI.closeSheet();
@@ -1721,7 +1725,7 @@
   function searchView() {
     const q = UI._q,
       s = S();
-    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p));
+    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p) && FM.Scouting.scoutable(p));
     if (q.text)
       ps = ps.filter((p) =>
         (W.name(p) + ' ' + (p.clubId ? CL(p.clubId).name : '')).toLowerCase().includes(q.text.toLowerCase()),
@@ -2907,6 +2911,8 @@
       <div class="card"><div class="row"><div class="grow"><div class="h3">Save slot ${UI.slot}</div><div class="small dim">Autosaves after every matchday and whenever you leave the app · ${esc(FM.Save.backend())}</div></div><button class="btn sm" data-act="saveNow">Save now</button></div>
         <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="exportSave">⬆️ Export backup</button><button class="btn sm grow" data-act="importSave">⬇️ Import backup</button></div>
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">${backupLine(s)} A backup is one compressed .touchline file. Keep it somewhere safe, or move your career to another device.</div></div>
+      <div class="card"><div class="h3">Database</div><div class="small dim" style="margin-top:4px;line-height:1.5">Take this world out as a database file: its leagues, clubs, colours, ratings and stadiums, and optionally every player. Anyone can start a career in it from the new-career screen, or edit it first.${s.database ? ` This world came from <b>${esc(s.database.name)}</b>.` : ''}</div>
+        <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="exportDb" data-p="0">🗄️ Export clubs</button><button class="btn sm grow" data-act="exportDb" data-p="1">🗄️ Export with players</button></div></div>
       <div class="card"><div class="h3">Help</div><div class="small dim" style="margin-top:4px">Something wrong, or an idea? Tell us — a report carries your game's version and a copy of your save, nothing else.</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="reportProblem">🐞 Report a problem</button><button class="btn sm grow" data-act="sendFeedback">💬 Send feedback</button></div>
         <button class="btn sm block" style="margin-top:8px" data-act="whatsNew">🆕 What's new</button>${UI.helpExtras()}${FM.Dev ? '<button class="btn sm block" style="margin-top:8px" data-act="devPanel">🛠 Developer tools</button>' : ''}</div>
@@ -3044,6 +3050,29 @@
       { title: "What's new", full: true },
     );
   // ---------- Backups ----------
+  // The world as a database file (a world definition: FM.DbImport reads it back)
+  UI.acts.exportDb = async (d) => {
+    try {
+      const withPlayers = d.p === '1';
+      const bytes = new TextEncoder().encode(FM.DbImport.export({ withPlayers }));
+      const name = `touchline-database-${S().year}${withPlayers ? '-players' : ''}.json`;
+      const r = await FM.Native.shareFile({
+        bytes,
+        name,
+        type: 'application/json',
+        title: 'Touchline database',
+        preferShare: matchMedia('(pointer: coarse)').matches,
+      });
+      if (r !== 'cancelled')
+        UI.toast(
+          `Database ${r === 'saved' ? 'saved' : 'ready'}: ${name} (${Math.max(1, Math.round(bytes.length / 1024))} KB)`,
+          3500,
+        );
+    } catch (e) {
+      console.warn(e);
+      UI.toast('⚠️ ' + (e.message || 'Export failed'), 4000);
+    }
+  };
   UI.acts.exportSave = async () => {
     try {
       await FM.Save.write(UI.slot, S());

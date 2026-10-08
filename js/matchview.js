@@ -173,6 +173,7 @@
         )
         .join('')}</div>
       <div class="small muted" id="talkDesc" style="margin-top:8px;line-height:1.45">${MV.talkDesc(sugg)}</div>
+      ${ctx.notes && ctx.notes.length ? `<div class="tiny" style="margin-top:6px;color:var(--warn)">😬 Weighing on the players: ${esc(ctx.notes.join('; '))}.</div>` : ''}
       ${capt ? `<div class="tiny dim" style="margin-top:6px">© ${esc(W.name(capt))} leads the team out${W.hasTrait(capt, 'Leader') ? ' — a Leader keeps heads level if the message misses' : ''}.</div>` : ''}</div>
       <div class="card"><div class="h3">Warm-up</div>
       <div class="seg" style="margin-top:8px">${Object.entries(Md.WARMUPS)
@@ -275,7 +276,7 @@
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
       <div class="m-mom"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>
       <div class="m-ticker${text ? ' m-feed' : ''}" id="mTicker"><div>The teams are out${capt ? `, ${esc(W.short(capt))} wearing the armband` : ''}. ${esc(H.club.name)} vs ${esc(A.club.name)}.</div>${talkMsg ? `<div>🗣️ ${esc(talkMsg)}</div>` : ''}</div>
-      <div class="m-ctrl"><button id="mPause" data-act="mPause">⏸</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mSubs">Subs</button><button data-act="mSim">⏭ End</button></div>`;
+      <div class="m-ctrl"><button id="mPause" data-act="mPause">⏸</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mShout">📣 Shout</button><button data-act="mSubs">Subs</button><button data-act="mSim">⏭ End</button></div>`;
     document.getElementById('app').appendChild(ov);
     MV.st = {
       paused: false,
@@ -847,6 +848,38 @@
     st.paused = true;
     MV.tacticsSheet();
   };
+  // Shouts: a call from the touchline (engine: Match.shout); one at a time, with a few minutes between
+  UI.acts.mShout = () => {
+    MV.st.paused = true;
+    MV.shoutSheet();
+  };
+  MV.shoutSheet = function () {
+    const m = MV.m,
+      sd = m.sides[MV.us],
+      min = m.minute,
+      wait = sd.shoutNext != null && min < sd.shoutNext ? sd.shoutNext - min : 0,
+      on = sd.shoutExp;
+    const html = `<div class="small muted" style="margin-bottom:10px;line-height:1.5">A call from the touchline lasts a few minutes. How well it lands depends on the captain and the mood of the players, and a manager who shouts all game is tuned out.${on ? ` <b>Now: ${esc(FM.Match.SHOUTS[on.kind].label)} (${Math.max(0, on.until - min)} min left).</b>` : ''}</div>
+      <div class="list">${Object.entries(FM.Match.SHOUTS)
+        .map(
+          ([k, x]) =>
+            `<div class="prow tap ${wait ? 'dim' : ''}" data-act="mShoutDo" data-k="${k}"><span style="font-size:22px;width:32px">${x.icon}</span><div class="grow"><div class="b">${esc(x.label)}</div><div class="small dim">${esc(x.tip)} · ${x.dur} min</div></div></div>`,
+        )
+        .join('')}</div>
+      ${wait ? `<div class="tiny dim" style="margin-top:8px">The last call needs ${wait} more minute${wait === 1 ? '' : 's'} to sink in.</div>` : ''}
+      <button class="btn pri block" style="margin-top:14px" data-act="mResume">Resume</button>`;
+    if (document.querySelector('.sheet-wrap')) UI.refreshSheet(html);
+    else UI.sheet(html, { title: '📣 Shouts', onClose: () => (MV.st.paused = false) });
+  };
+  UI.acts.mShoutDo = (d) => {
+    const r = MV.m.shout(MV.m.sides[MV.us], d.k);
+    if (!r.ok) {
+      UI.toast(r.msg, 2500);
+      return MV.shoutSheet();
+    }
+    MV.ticker(`📣 ${r.msg}`);
+    UI.acts.mResume();
+  };
   MV.tacticsSheet = function () {
     const sd = MV.m.sides[MV.us],
       T = sd.tactic;
@@ -908,7 +941,7 @@
       const bench = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id));
       return `<div class="small muted">Subs left: <b>${sd.subsLeft}</b> of ${FM.S.rules.subs}</div>
         <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? '🚑' : ''}${sd.yc[p.id] ? '🟨' : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
-        <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + Math.round(W.effAt(p, sd.slots[MV._subOut].t)) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
+        <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + C.starText(W.effAt(p, sd.slots[MV._subOut].t), sd.slots[MV._subOut].t) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
         <button class="btn block" style="margin-top:12px" data-act="mResume">Done</button>`;
     };
     MV._subRender = render;

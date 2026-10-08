@@ -16,9 +16,10 @@
 //     parse: (files) => ({ def, notes: [] }),                  // a world definition, and anything worth telling the player
 //   });
 //
-// Only the touchline-world JSON adapter is built in. The CSV importer for historical data (tools/import-history.mjs)
-// is the next adapter to bring into the app; until then it runs from the command line and writes a definition that
-// this adapter reads.
+// Two adapters come with the game: the touchline-world JSON (below) and the historical CSV tables (js/histimport.js).
+// A definition can change the game's leagues and clubs, add new ones and replace every player; the changes to the game's data
+// (FM.WorldDef.patchOf / useStatic) are staged here as soon as a database is chosen, so the club picker shows them, and a
+// world built from a database keeps them in its save (S.database.patch), restored on load (restore) and in the worker.
 (function () {
   const FM = window.FM,
     WD = FM.WorldDef;
@@ -84,6 +85,7 @@
 
   // Files in, a verdict out: never throws, so a screen can show the reason
   DB.import = function (files) {
+    WD.useStatic(null); // an import is judged against the game's own data (whatever was staged before is dropped)
     try {
       const r = DB.read(files);
       return { ...r, ...DB.check(r.def) };
@@ -92,12 +94,43 @@
     }
   };
 
-  // The world a database describes (call FM.Season.init() after, as with a new world). The world remembers its source.
+  // Stage an imported database: the club picker and the league cards then show its clubs and leagues, as the world will have them
+  DB.stage = function (res) {
+    res.patch = WD.stage(res.def);
+    Object.assign(res.summary, {
+      newLeagues: res.patch.leagues.filter((l) => l.isNew).length,
+      newClubs: res.patch.clubs.filter((c) => c.isNew).length,
+      changedClubs: res.patch.clubs.filter((c) => !c.isNew).length,
+    });
+    return res.patch;
+  };
+  DB.clear = () => WD.useStatic(null);
+  // The world a database describes (call FM.Season.init() after, as with a new world). The world remembers its source, and
+  // the changes the database made to the game's leagues and clubs (a save needs them again when it is loaded, and the
+  // simulation worker when it runs a day).
   DB.build = function (def, rules = {}) {
     const rep = WD.load(def, rules);
     const m = def.meta || {};
     FM.S.database = { name: m.name || 'Imported database', author: m.author || '', version: m.version || null };
+    if (!WD.patchIsEmpty(rep.patch)) FM.S.database.patch = rep.patch;
     return rep;
+  };
+  // A loaded save: the game's data is put as that world had it (the built-in data for a world that has no database)
+  DB.restore = (state) => WD.useStatic((state && state.database && state.database.patch) || null);
+
+  // The world you are playing as a database file: JSON text of a world definition. withPlayers: every player too (the file
+  // then replaces the players of any club it gives a squad)
+  DB.export = function (opts = {}) {
+    const S = FM.S,
+      c = S.user && S.clubs[S.user.clubId];
+    const def = WD.fromState(S, {
+      name: (S.database && S.database.name) || `${c ? c.name : 'My'} world`,
+      players: !!opts.withPlayers,
+      replace: !!opts.withPlayers,
+    });
+    def.meta.author = (S.user && S.user.name) || '';
+    def.meta.description = `Exported from a career, ${S.year}${opts.withPlayers ? ', with players' : ''}.`;
+    return WD.stringify(def);
   };
 
   // The built-in format: a world definition as JSON

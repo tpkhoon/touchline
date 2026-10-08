@@ -14,7 +14,8 @@
 // clubs.csv    club, name, short, nick, city, colour1, colour2, rep, stadium, capacity     changes to clubs already in the world
 //
 // Clubs are matched against the base world's clubs; whatever cannot be matched is listed and left out. The result is
-// validated before it is written. Nothing here invents data: every number comes from the files.
+// validated before it is written. Nothing here invents data: every number comes from the files. The code is
+// js/histimport.js, which the game also uses to import the same CSV files from the new-career screen.
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs, loadSim } from './harness.mjs';
@@ -25,127 +26,9 @@ const W = FM.W,
   WD = FM.WorldDef,
   R = FM.RealStats;
 
-const norm = (s) =>
-  String(s || '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/\b(fc|afc|cf|sc|ac|as|ssc|sv|fk|bk|the)\b/g, '')
-    .replace(/[^a-z0-9]/g, '');
-
-// The importer: texts in, { def, report } out. `base` is the world it matches clubs and leagues against.
-export function importHistory({ tables, players, clubs, name = 'Imported world' }, S = FM.S) {
-  const def = WD.fromState(S, { name, players: false });
-  def.meta.base = 'import';
-  const E = WD.editor(def, S);
-  const rep = { seasons: 0, rows: 0, players: 0, clubEdits: 0, unmatched: new Set(), skipped: [], errors: [] };
-  const byKey = new Map();
-  for (const c of def.clubs) for (const k of [c.id, c.name, c.short, c.nick]) if (k) byKey.set(norm(k), c);
-  const club = (x) => byKey.get(norm(x)) || byKey.get(norm(String(x).replace(/^c_/, '')));
-  const leagueOf = (x) => {
-    const n = norm(x);
-    return def.leagues.find((l) => norm(l.id) === n || norm(l.name) === n || norm(l.short) === n);
-  };
-
-  // tables → past seasons
-  const seasons = new Map();
-  for (const row of (tables || []).map(R.clean)) {
-    const lg = leagueOf(row.league),
-      c = club(row.club);
-    if (!lg) {
-      rep.skipped.push(`table row ${row.season} ${row.league}: unknown league`);
-      continue;
-    }
-    if (!c) {
-      rep.unmatched.add(row.club);
-      continue;
-    }
-    const key = `${row.season}|${lg.id}`;
-    if (!seasons.has(key)) seasons.set(key, { year: +row.season, league: lg.id, rows: [] });
-    const p = row.p ?? row.w + row.d + row.l;
-    seasons.get(key).rows.push({
-      id: c.id,
-      pos: +row.pos || 0,
-      p,
-      w: row.w,
-      d: row.d,
-      l: row.l,
-      gf: row.gf,
-      ga: row.ga,
-      pts: row.pts ?? row.w * def.rules.win + row.d,
-      gd: row.gf - row.ga,
-    });
-    rep.rows++;
-  }
-  const byYear = new Map();
-  for (const s of seasons.values()) {
-    s.rows.sort((a, b) => a.pos - b.pos || b.pts - a.pts || b.gd - a.gd);
-    s.rows.forEach((r) => delete r.pos);
-    if (!byYear.has(s.year))
-      byYear.set(s.year, { year: s.year, label: `${s.year}/${String(s.year + 1).slice(2)}`, comps: {} });
-    byYear.get(s.year).comps[s.league] = { champion: s.rows[0].id, runnerUp: s.rows[1] && s.rows[1].id, table: s.rows };
-  }
-  for (const s of [...byYear.values()].sort((a, b) => a.year - b.year)) {
-    const r = E.addSeason(s);
-    if (r.ok) rep.seasons++;
-    else rep.errors.push(...r.errors.map((e) => `season ${s.year}: ${e}`));
-  }
-
-  // clubs → edits
-  for (const row of (clubs || []).map(R.clean)) {
-    const c = club(row.club);
-    if (!c) {
-      rep.unmatched.add(row.club);
-      continue;
-    }
-    const patch = {};
-    for (const k of ['name', 'short', 'nick', 'city']) if (row[k]) patch[k] = row[k];
-    if (row.colour1 && row.colour2) patch.colors = [row.colour1, row.colour2];
-    if (row.rep) patch.rep = row.rep;
-    if (row.stadium || row.capacity)
-      patch.stadium = { ...(row.stadium ? { name: row.stadium } : {}), ...(row.capacity ? { cap: row.capacity } : {}) };
-    const r = E.setClub(c.id, patch);
-    if (r.ok) rep.clubEdits++;
-    else rep.errors.push(...r.errors);
-  }
-
-  // players → converted
-  const converted = [];
-  for (const row of (players || []).map(R.clean)) {
-    const c = club(row.club);
-    if (!c) {
-      rep.unmatched.add(row.club);
-      continue;
-    }
-    try {
-      const lg = def.leagues.find((l) => l.id === c.league);
-      const x = R.convert({
-        ...row,
-        league: row.league ?? (lg && lg.id) ?? 50,
-        age: row.age ?? (row.born ? S.year - row.born : undefined),
-      });
-      converted.push({
-        name: row.name,
-        nat: row.nat,
-        born: row.born ?? S.year - row.age,
-        club: c.id,
-        foot: row.foot || 'Right',
-        contract: row.contract,
-        ...x,
-      });
-    } catch (e) {
-      converted.push({ name: row.name, error: e.message });
-    }
-  }
-  const r = E.importPlayers(converted);
-  rep.players = r.added;
-  rep.errors.push(...r.errors);
-  rep.unmatched = [...rep.unmatched];
-  const v = WD.validate(def, S);
-  rep.errors.push(...v.errors);
-  rep.warnings = v.warnings;
-  return { def, report: rep };
-}
+// The importer itself is js/histimport.js (FM.HistImport), shared with the app's database import; here it matches against the loaded world.
+const importHistory = (x, S = FM.S) => FM.HistImport.import(x, S);
+export { importHistory };
 
 const readTable = (f) => {
   const t = fs.readFileSync(f, 'utf8');

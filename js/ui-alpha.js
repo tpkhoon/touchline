@@ -481,7 +481,8 @@
             ? `<tr><td colspan="6" class="l tiny dim" style="padding:0 0 6px">${[
                 won.length ? `🏆 ${esc(won.join(', '))}` : '',
                 info && info.m ? `Manager ${esc(info.m)}` : '',
-                info && info.t ? `Top scorer ${esc(info.t[0])} (${info.t[1]})` : '',
+                info && info.t ? `⚽ ${esc(info.t[0])} ${info.t[1]}` : '',
+                info && info.a ? `👟 ${esc(info.a[0])} ${info.a[1]} apps` : '',
                 ...((info && info.c) || []).map(([n, run]) => `${esc(n)}: ${esc(run)}`),
               ]
                 .filter(Boolean)
@@ -492,8 +493,29 @@
     const titles = rows.filter((x) => x.won.length).length;
     return `<div class="card"><div class="h3">Season by season</div><div class="tiny dim" style="margin-top:2px">${rows.length} season${rows.length === 1 ? '' : 's'} on record${titles ? ` · ${titles} with a trophy` : ''}</div><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">League</th><th>Pos</th><th style="white-space:nowrap">W-D-L</th><th style="white-space:nowrap">GF–GA</th><th>Pts</th></tr>${lines.join('')}</table>${!all && rows.length > 8 ? `<button class="btn sm block" style="margin-top:8px" data-act="clubHistory" data-id="${id}">All ${rows.length} seasons</button>` : ''}</div>`;
   };
+  // The club's all-time leaders, from the squad, those who have retired and the club's legends: the top five scorers and
+  // appearance makers, with the years they played and (for the current squad) how far from the next one up
+  UI.clubLegendsCard = function (id) {
+    const at = FM.Records.allTime(id);
+    if (!at.all.length) return '';
+    const five = (title, list, val, unit) => {
+      const top = list.slice(0, 5);
+      return `<div class="small b dim" style="margin:10px 0 2px">${title}</div>${top
+        .map((x, i) => {
+          const live = x.id && S().players[x.id] && S().players[x.id].clubId === id;
+          const chase =
+            live && i > 0 ? ` · ${val(top[i - 1]) - val(x) + 1} to pass ${esc(top[i - 1].name.split(' ').pop())}` : '';
+          return `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:18px">${i + 1}</span><div class="grow" style="min-width:0"><div class="b ellip ${x.id && S().players[x.id] ? 'tap' : ''}" ${x.id && S().players[x.id] ? `data-act="player" data-id="${x.id}"` : ''}>${esc(x.name)}${live ? ' <span class="pill acc">Squad</span>' : ''}</div><div class="tiny dim">${esc(x.pos || '')}${x.era ? ' · ' + esc(x.era) : ''}${chase}</div></div><b>${val(x)} ${unit}</b></div>`;
+        })
+        .join('')}`;
+    };
+    return `<div class="card"><div class="h3">Club legends</div>${five('TOP SCORERS', at.scorers, (x) => x.goals, 'goals')}${five('MOST APPEARANCES', at.apps, (x) => x.apps, 'games')}</div>`;
+  };
   UI.acts.clubHistory = (d) =>
-    UI.sheet(UI.clubSeasonsCard(d.id, true), { title: `${esc(S().clubs[d.id].name)} · history`, full: true });
+    UI.sheet(UI.clubSeasonsCard(d.id, true) + UI.clubLegendsCard(d.id), {
+      title: `${esc(S().clubs[d.id].name)} · history`,
+      full: true,
+    });
   UI.clubSheet = function (id) {
     const s = S(),
       c = s.clubs[id];
@@ -632,6 +654,7 @@
       ${h2h.length ? `<div class="card"><div class="row"><div class="h3 grow">Head-to-head this season</div>${h2hRec}</div>${h2h.map((f) => `<div class="tiny dim" style="padding-top:6px">${esc(fxWhere(f))}</div>${f.res ? UI.fxLine(f) : `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span class="grow ellip" style="text-align:right">${esc(s.clubs[f.h].name)}</span><b style="min-width:44px;text-align:center">v</b><span class="grow ellip">${esc(s.clubs[f.a].name)}</span></div>`}`).join('')}</div>` : ''}
       ${allTimeCard}
       ${UI.clubSeasonsCard(id)}
+      ${UI.clubLegendsCard(id)}
       ${UI.honoursCard(c)}`;
     UI.sheet(html, { full: true, title: esc(c.name) });
   };

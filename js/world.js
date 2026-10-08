@@ -1036,17 +1036,23 @@
         ? club.nat
         : U.pick(Object.keys(D.NATIONS));
 
-  function genSquad(club) {
+  // A squad for a club. `have`: players it already has (a database that fixes some of them): only the gaps are filled
+  function genSquad(club, have = []) {
     const lvl = W.levelFor(club.rep);
     const positions = randomPos(W.squadWant(club));
+    for (const h of have) {
+      const i = positions.indexOf(h.pos);
+      if (i >= 0 && !h.youth) positions.splice(i, 1);
+    }
     const made = []; // nationality and age of each player so far: the squad starts within its league's rules
+    have.forEach((h) => made.push({ nat: h.nat, age: W.age(h) }));
     const nat = (age, pick) => {
       const n = FM.Reg.genNat(club, made, age, pick);
       made.push({ nat: n, age });
       return n;
     };
     const sidesMade = {},
-      mine = [];
+      mine = have.slice();
     positions.forEach((pos, i) => {
       // a B team is a young side: mostly 18 to 23, with a few older heads
       const age = club.parent ? (Math.random() < 0.85 ? U.randi(18, 23) : U.randi(24, 27)) : pickAge(pos);
@@ -1077,7 +1083,7 @@
       mine.push(p);
     });
     // Academy prospects
-    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2); i++) {
+    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length; i++) {
       const age = U.randi(17, 19),
         pos = U.pick(['CB', 'CM', 'W', 'ST', 'FB', 'AM', 'WB', 'WM']);
       const ca = Math.round(lvl - U.randi(12, 20));
@@ -1097,6 +1103,8 @@
     W.numberSquad(mine);
     W.rosterVer++; // (these players went straight into the club: any squad index built before now is out of date)
   }
+
+  W.genSquad = genSquad;
 
   // Squads come from an index rebuilt whenever someone joins a club (W.startSpell bumps rosterVer).
   // Leavers, retirees and deleted players are filtered out on read, so the index never goes stale.
@@ -2295,33 +2303,42 @@
   };
 
   // Fictional historic legends so every club has a past before your save writes its future
+  // Every club's own history before the save: five legends, from the years the club existed, with names of its own
+  // country (or heritage), two of them forwards so the club has a scorer to beat
   W.seedLegends = function () {
     const notes = [
       'Captained the club to its last title',
       'Club record goalscorer',
-      'Cult hero — scored in five straight derbies',
+      'Cult hero: scored in five straight derbies',
       'One-club man, 17 seasons',
       'The greatest free signing in club history',
       'Academy graduate turned legend',
       'Scored the goal that saved the club from relegation',
     ];
+    const now = FM.S.year;
     Object.values(FM.S.clubs)
-      .filter((c) => c.sim === 'full')
+      .filter((c) => c.comp && c.sim !== 'nation')
       .forEach((c) => {
-        c.legends = [0, 1, 2]
+        const first = Math.max(c.founded || 1950, 1950),
+          pool = c.policy && D.NAME_POOLS[c.policy.heritage];
+        const poss = ['ST', 'W', 'ST', 'AM', 'CM', 'CB', 'GK', 'CM', 'FB'];
+        c.legends = [0, 1, 2, 3, 4]
           .map((i) => {
-            const nat = Math.random() < 0.8 ? 'ENG' : U.pick(Object.keys(D.NATIONS));
-            const from = U.randi(1962, 2008),
-              yrs = U.randi(7, 16),
-              pos = U.pick(['ST', 'CM', 'CB', 'W', 'GK', 'AM']);
+            const nat = U.chance(0.88) ? c.nat : U.pick(Object.keys(D.NATIONS));
+            const yrs = U.randi(7, 16),
+              from = U.randi(first, Math.max(first, Math.min(2012, now - yrs - 1))),
+              pos = i < 2 ? U.pick(['ST', 'ST', 'W', 'AM']) : U.pick(poss);
             const apps = yrs * U.randi(28, 40);
+            const nm = pool
+              ? [U.pick(pool.fn), U.pick(pool.ln)]
+              : [U.pick(D.NATIONS[nat].fn), U.pick(D.NATIONS[nat].ln)];
             return {
-              name: `${U.pick(D.NATIONS[nat].fn)} ${U.pick(D.NATIONS[nat].ln)}`,
-              nat,
+              name: `${nm[0]} ${nm[1]}`,
+              nat: pool ? c.nat : nat,
               pos,
               era: `${from}–${from + yrs}`,
               apps,
-              goals: Math.round(apps * ({ ST: 0.45, W: 0.2, AM: 0.22, CM: 0.1 }[pos] || 0.03)),
+              goals: Math.round(apps * ({ ST: 0.5, W: 0.24, AM: 0.26, CM: 0.1, FB: 0.04, CB: 0.05 }[pos] || 0.005)),
               note: notes[(U.hash(c.id) + i) % notes.length],
             };
           })

@@ -52,7 +52,10 @@ if ('test' in args) {
   check(WD.validate({}, S0).errors.length > 0, 'an empty object was accepted');
   const bad = JSON.parse(JSON.stringify(def));
   bad.clubs[0].colors = ['red', 'blue'];
-  bad.clubs.push({ ...bad.clubs[1], id: 'c_NEWCLUB', name: 'Brand New FC' });
+  bad.clubs.push(
+    { ...bad.clubs[1], id: 'c_NEWFC', name: 'Brand New FC' },
+    { ...bad.clubs[1], id: 'bad id', name: 'Bad Id FC' },
+  );
   bad.meta.players = 'replace';
   const vb = WD.validate(bad, S0);
   check(
@@ -60,8 +63,8 @@ if ('test' in args) {
     'bad colours were accepted',
   );
   check(
-    vb.errors.some((e) => /new clubs are not supported/.test(e)),
-    'a new club was accepted',
+    !vb.errors.some((e) => /c_NEWFC/.test(e)) && vb.errors.some((e) => /bad id.*new club's id/.test(e)),
+    'a good new club was refused, or a bad id accepted',
   );
   check(
     vb.errors.some((e) => /replace/.test(e)),

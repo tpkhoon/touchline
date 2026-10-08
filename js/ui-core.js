@@ -399,6 +399,8 @@
     if (!raw) return false;
     try {
       const { state, from } = FM.Save.unpack(raw);
+      FM.DbImport.restore(state); // the game's clubs and leagues as this world has them (a database's, or the built-in ones)
+      NG.db = null;
       FM.S = state;
       UI.slot = n;
       if (from < FM.Save.VERSION) {
@@ -1048,6 +1050,7 @@
           ])}
           <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
           <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${D.facts().clubs} clubs</button></div>
+          ${UI.dbCard()}
           ${foot('')}`;
       } else if (view === 'rec') {
         body = `<div class="h1" style="margin-top:2vh">Three clubs for you</div><div class="tag">Tap one to see its story. ${NG.recs.length ? '' : 'Nothing matches that: loosen a question.'}</div><div class="sp"></div>
@@ -1193,7 +1196,7 @@
       : r.ok
         ? `<div class="small b" style="margin-top:6px;color:#c8ff3d">✅ ${esc(r.summary.name)}${r.summary.author ? ` <span style="color:#9fb0c5;font-weight:400">by ${esc(r.summary.author)}</span>` : ''}</div>
           ${r.summary.description ? `<div class="tiny" style="color:#c9d4e3;margin-top:4px">${esc(r.summary.description)}</div>` : ''}
-          <div class="tiny" style="color:#9fb0c5;margin-top:6px">${r.summary.clubs} clubs · ${r.summary.leagues} leagues · ${r.summary.playerRows} players · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:6px">${r.summary.clubs} clubs${r.summary.newClubs ? ` (${r.summary.newClubs} new)` : ''} · ${r.summary.leagues} leagues${r.summary.newLeagues ? ` (${r.summary.newLeagues} new)` : ''} · ${r.summary.playerRows} players · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
           ${
             r.warnings.length
               ? `<details style="margin-top:6px"><summary class="tiny" style="color:#fbbf24;cursor:pointer">${r.warnings.length} warning${r.warnings.length > 1 ? 's' : ''}</summary>${r.warnings
@@ -1213,16 +1216,30 @@
         : '';
     return `<div class="card" style="margin-top:16px;padding:12px 14px"><div class="small b">🗄️ Database</div>${body}${err}</div>`;
   };
+  // The clubs and leagues the picker lists just changed (a database came or went): a club chosen before may be gone, and
+  // the filters and suggestions were made against the old list
+  const ngDataChanged = () => {
+    const there = NG.club && NG.club !== 'none' && D.allClubRows().some((r) => 'c_' + r[1] === NG.club);
+    if (NG.club !== 'none' && !there) {
+      NG.club = null;
+      NG.step = Math.min(NG.step, 1);
+    }
+    Object.assign(NG, { recs: [], lg: 'all', df: 'all', q: '' });
+  };
   UI.acts.ngDbPick = async () => {
-    const bytes = await FM.Native.pickFile(FM.DbImport.accept());
-    if (!bytes) return;
-    const r = FM.DbImport.import([{ name: 'database', text: FM.DbImport.decode(bytes) }]);
+    const picked = await FM.Native.pickFiles(FM.DbImport.accept());
+    if (!picked.length) return;
+    const r = FM.DbImport.import(picked.map((f) => ({ name: f.name, text: FM.DbImport.decode(f.bytes) })));
+    if (r.ok) FM.DbImport.stage(r); // the club picker now shows the database's clubs
     NG.db = r.ok ? r : null;
+    if (r.ok) ngDataChanged();
     NG.dbErr = r.ok ? [] : r.errors;
     UI.newCareer();
   };
   UI.acts.ngDbClear = () => {
+    FM.DbImport.clear();
     NG.db = null;
+    ngDataChanged();
     NG.dbErr = [];
     UI.newCareer();
   };
