@@ -46,6 +46,7 @@
     rivals: [], // [club id, club id, derby name]
     removeRivals: [], // [club id, club id]: derbies of the game's own the world does without
     removeClubs: [], // ids of the game's own clubs the world does without
+    intl: {}, // international football: { cycle, tourns: { id: { name, slots } }, invites: [{ id, name, host }] }
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
     nations: [], // national teams: { code, name, short, colors, coef }
     history: { seasons: [] },
@@ -89,7 +90,20 @@
         });
     }
     for (const t of Object.values(S.nteams || {}))
-      def.nations.push({ code: t.code, name: t.name, short: t.short, colors: t.colors.slice(0, 2), coef: t.coef });
+      def.nations.push({
+        code: t.code,
+        name: t.name,
+        short: t.short,
+        colors: t.colors.slice(0, 2),
+        coef: t.coef,
+        tactic: {
+          formation: t.tactic.formation,
+          buildup: t.tactic.buildup,
+          press: t.tactic.press,
+          width: t.tactic.width,
+        },
+      });
+    def.intl = WD.intlNow();
     for (const c of Object.values(S.clubs)) {
       def.clubs.push({
         id: c.id,
@@ -197,6 +211,61 @@
     return e;
   };
 
+  // ---------- International football ----------
+  // The summer tournaments (names, and the World Championship's places for each part of the world), the year of the four in
+  // which the World Championship falls, and the invitational tournaments (name and host). The data lives in FM.Intl, so a
+  // definition that changes it goes into the patch like a cup format does.
+  const I = () => FM.Intl;
+  const tournList = () => Object.values(I().TOURNS).flat();
+  WD.intlNow = () => ({
+    cycle: I().CYCLE,
+    tourns: Object.fromEntries(tournList().map((tn) => [tn.id, { name: tn.name, slots: tn.pools.map(([, n]) => n) }])),
+    invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host })),
+  });
+  WD.validateIntl = function (x) {
+    const e = [];
+    if (!x || typeof x !== 'object') return e;
+    if (x.cycle != null && !(Number.isInteger(x.cycle) && x.cycle >= 0 && x.cycle <= 3))
+      e.push('international: the World Championship year is 0–3 of the four');
+    for (const [id, v] of Object.entries(x.tourns || {})) {
+      const tn = tournList().find((t) => t.id === id);
+      if (!tn) {
+        e.push(`international: the game has no tournament "${id}"`);
+        continue;
+      }
+      if (v.name != null && !String(v.name).trim()) e.push(`tournament ${id}: needs a name`);
+      if (v.slots) {
+        if (
+          !Array.isArray(v.slots) ||
+          v.slots.length !== tn.pools.length ||
+          !v.slots.every((n) => Number.isInteger(n) && n >= 0)
+        )
+          e.push(`tournament ${id}: one number of places for each part of the world`);
+        else if (tn.pools.length && v.slots.reduce((a, n) => a + n, 0) !== tn.size)
+          e.push(`tournament ${id}: the places add up to ${v.slots.reduce((a, n) => a + n, 0)}, not ${tn.size}`);
+      }
+    }
+    for (const v of x.invites || []) {
+      if (!I().INVITES.some((o) => o.id === v.id)) e.push(`international: the game has no invitational "${v.id}"`);
+      if (!String(v.name || '').trim()) e.push(`invitational ${v.id}: needs a name`);
+      if (!D.NATIONS[v.host]) e.push(`invitational ${v.id}: unknown host nation "${v.host}"`);
+    }
+    return e;
+  };
+  const applyIntl = (x) => {
+    if (x.cycle != null) I().CYCLE = x.cycle;
+    for (const [id, v] of Object.entries(x.tourns || {})) {
+      const tn = tournList().find((t) => t.id === id);
+      if (!tn) continue;
+      if (v.name) ((tn.name = v.name), (I().TNAME[id] = v.name));
+      if (v.slots) tn.pools.forEach((p, i) => (p[1] = v.slots[i]));
+    }
+    for (const v of x.invites || []) {
+      const o = I().INVITES.find((i) => i.id === v.id);
+      if (o) ((o.name = v.name), (o.host = v.host), (I().TNAME[v.id] = v.name));
+    }
+  };
+
   // ---------- The static world: leagues and clubs as the game's data has them ----------
   // A world is built from D.LEAGUES and the club rows (js/data.js, js/clubs.js). A database that adds clubs or leagues, or
   // renames them, changes those rows before the world is made, so the club picker, the world generator and everything else
@@ -245,6 +314,7 @@
       });
       for (const r of D[l.clubs] || []) def.clubs.push(rowToClub(r, l));
     }
+    def.intl = WD.intlNow();
     const have = new Set(def.clubs.map((c) => c.id));
     for (const [a, b, name] of D.RIVALS)
       if (have.has('c_' + a) && have.has('c_' + b)) def.rivals.push(['c_' + a, 'c_' + b, name]);
@@ -254,7 +324,7 @@
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   // What a definition changes in the static data: { leagues: [...], clubs: [...], rivals: [...] }, empty when nothing
   WD.patchOf = function (def) {
-    const patch = { leagues: [], clubs: [], rivals: [], removeRivals: [], removed: [], cups: [] };
+    const patch = { leagues: [], clubs: [], rivals: [], removeRivals: [], removed: [], cups: [], intl: null };
     const known = staticClubs();
     const removed = new Set((def.removeClubs || []).map(codeOf).filter((code) => known.has(code)));
     patch.removed = [...removed];
@@ -342,6 +412,20 @@
       if (!WD.validateFormat(c.id, c.format).length && !same(c.format, cupNow(c.id)))
         patch.cups.push({ id: c.id, kind: WD.cupKind(c.id), format: JSON.parse(JSON.stringify(c.format)) });
     }
+    if (
+      def.intl &&
+      Object.keys(def.intl).length &&
+      !WD.validateIntl(def.intl).length &&
+      !same(def.intl, WD.intlNow())
+    ) {
+      // (only what differs from the game's own)
+      const cur = WD.intlNow(),
+        d = { tourns: {}, invites: [] };
+      if (def.intl.cycle != null && def.intl.cycle !== cur.cycle) d.cycle = def.intl.cycle;
+      for (const [id, v] of Object.entries(def.intl.tourns || {})) if (!same(v, cur.tourns[id])) d.tourns[id] = v;
+      for (const v of def.intl.invites || []) if (!cur.invites.some((o) => same(o, v))) d.invites.push(v);
+      if (d.cycle != null || Object.keys(d.tourns).length || d.invites.length) patch.intl = d;
+    }
     return patch;
   };
   // Stage a definition: the static data becomes the game's own plus what it changes (the club picker then shows it)
@@ -359,7 +443,8 @@
       p.rivals.length ||
       (p.removed || []).length ||
       (p.removeRivals || []).length ||
-      (p.cups || []).length
+      (p.cups || []).length ||
+      p.intl
     );
 
   // Put a patch into the static data; returns what undoes it
@@ -383,6 +468,7 @@
         prize: c.prize,
       })),
       euroPrize: (D.EURO_CUPS || []).map((c) => c.prize),
+      intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE }),
     };
     for (const l of patch.leagues) {
       let cur = D.LEAGUES.find((x) => x.id === l.id);
@@ -428,6 +514,7 @@
       if (cur) cur[2] = r[2];
       else D.RIVALS.push(r.slice());
     }
+    if (patch.intl) applyIntl(patch.intl);
     for (const c of patch.cups || []) {
       if (c.kind === 'cont') {
         const d = D.CONTINENTALS.find((x) => x.id === c.id);
@@ -454,6 +541,22 @@
       for (const k of Object.keys(D.CLUB_INFO)) if (!(k in snap.info)) delete D.CLUB_INFO[k];
       Object.assign(D.CLUB_INFO, snap.info);
       D.RIVALS.splice(0, D.RIVALS.length, ...snap.rivals.map((r) => r.slice()));
+      {
+        const o = JSON.parse(snap.intl);
+        for (const [key, val] of [
+          ['TOURNS', o.t],
+          ['TNAME', o.n],
+          ['INVITES', o.v],
+        ]) {
+          const target = I()[key];
+          if (Array.isArray(target)) target.splice(0, target.length, ...val);
+          else {
+            for (const k of Object.keys(target)) delete target[k];
+            Object.assign(target, val);
+          }
+        }
+        I().CYCLE = o.c;
+      }
       D.DOMESTIC_CUPS.forEach((c, i) => (c[4] = JSON.parse(snap.cups[i])));
       (D.EURO_CUPS || []).forEach((c, i) => ((c.opts = JSON.parse(snap.euro[i])), (c.prize = snap.euroPrize[i])));
       D.CONTINENTALS.forEach((c, i) => {
@@ -665,6 +768,7 @@
       }
     }
     for (const c of def.competitions || []) if (c.format) errors.push(...WD.validateFormat(c.id, c.format));
+    errors.push(...WD.validateIntl(def.intl));
     const ROLES = [
       'Assistant Manager',
       'First-Team Coach',
@@ -701,6 +805,13 @@
       if (n.coef != null && !(n.coef >= 20 && n.coef <= 100))
         errors.push(`${at}: ranking points must be between 20 and 100`);
       if (n.name != null && !String(n.name).trim()) errors.push(`${at}: a national team needs a name`);
+      if (n.tactic) {
+        const k = n.tactic;
+        if (!D.FORMATIONS[k.formation]) errors.push(`${at}: unknown formation "${k.formation}"`);
+        if (!D.BUILDUP.includes(k.buildup)) errors.push(`${at}: unknown build-up "${k.buildup}"`);
+        if (!D.PRESS.includes(k.press)) errors.push(`${at}: unknown press "${k.press}"`);
+        if (!D.WIDTH.includes(k.width)) errors.push(`${at}: unknown width "${k.width}"`);
+      }
       if (n.short != null && (!String(n.short).trim() || String(n.short).length > 4))
         errors.push(`${at}: the short name is 1–4 characters`);
     }
@@ -710,6 +821,15 @@
       else if (s.year >= year) errors.push(`season ${s.year}: past seasons must be before the start year ${year}`);
       if (years.has(s.year)) errors.push(`Two past seasons for ${s.year}`);
       years.add(s.year);
+      for (const [id, c] of Object.entries(s.intl || {})) {
+        if (!tournList().some((t) => t.id === id) && !I().INVITES.some((v) => v.id === id))
+          errors.push(`season ${s.year}: "${id}" is not an international tournament the game has`);
+        if (!D.NATIONS[c.winner]) errors.push(`season ${s.year} ${id}: winner "${c.winner}" is not a nation`);
+        if (c.runnerUp && !D.NATIONS[c.runnerUp])
+          errors.push(`season ${s.year} ${id}: runner-up "${c.runnerUp}" is not a nation`);
+        if (c.runnerUp && c.runnerUp === c.winner)
+          errors.push(`season ${s.year} ${id}: the winner and the runner-up are one nation`);
+      }
       for (const [id, c] of Object.entries(s.cups || {})) {
         if (!D.DOMESTIC_CUPS.some((x) => x[0] === id))
           errors.push(`season ${s.year}: "${id}" is not a domestic cup the game has`);
@@ -816,6 +936,10 @@
       if (!tm) continue;
       if (n.name) ((tm.name = n.name), (tm.city = n.name));
       if (n.short) tm.short = n.short;
+      if (n.tactic) {
+        const k = n.tactic;
+        tm.tactic = W.newTactic(k.formation, k.buildup, k.press, k.width);
+      }
       if (n.colors) tm.colors = n.colors.slice(0, 2);
       if (n.coef != null) {
         tm.coef = Math.round(n.coef * 10) / 10;
@@ -910,6 +1034,19 @@
             ];
           }),
         ),
+        intl: Object.entries(s.intl || {})
+          .filter(([, c]) => S.nteams && S.nteams['n_' + c.winner] && (!c.runnerUp || S.nteams['n_' + c.runnerUp]))
+          .map(([id, c]) => ({
+            id,
+            name: I().TNAME[id] || id,
+            year: s.year,
+            winner: 'n_' + c.winner,
+            runnerUp: c.runnerUp ? 'n_' + c.runnerUp : 'n_' + c.winner,
+            final: c.final || '—',
+            games: 0,
+            awards: null,
+            topScorer: null,
+          })),
         cups: Object.fromEntries(
           Object.entries(s.cups || {}).map(([id, c]) => [
             id,
@@ -928,6 +1065,11 @@
       for (const [id, c] of Object.entries(e.comps)) {
         const club = S.clubs[c.champion];
         if (club) ((club.titles = club.titles || {}), (club.titles[id] = (club.titles[id] || 0) + 1));
+      }
+    for (const e of past)
+      for (const r of e.intl) {
+        const t = S.nteams[r.winner];
+        if (t) ((t.titles = t.titles || {}), (t.titles[r.id] = (t.titles[r.id] || 0) + 1));
       }
     for (const e of past)
       for (const [id, c] of Object.entries(e.cups)) {
@@ -1234,6 +1376,19 @@
         if (errs.length) return result(errs);
         if (cur) Object.assign(cur, next);
         else def.nations.push(next);
+        return result([]);
+      },
+      // international football: the World Championship year, a tournament's name and places, an invitational's name and host
+      setIntl(patch) {
+        const cur = def.intl && Object.keys(def.intl).length ? def.intl : WD.intlNow();
+        const next = {
+          cycle: patch.cycle != null ? patch.cycle : cur.cycle,
+          tourns: { ...cur.tourns, ...(patch.tourns || {}) },
+          invites: patch.invites || cur.invites,
+        };
+        const errs = WD.validateIntl(next);
+        if (errs.length) return result(errs);
+        def.intl = next;
         return result([]);
       },
       clearNation(code) {

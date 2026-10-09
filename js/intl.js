@@ -212,8 +212,13 @@
   // A World Championship every fourth year, continental championships two years on, and in the year before each World
   // Championship the Continental Champions Trophy (the structure of the Confederations Cup: the continental champions, the
   // world champions and a host)
-  I.tournamentFor = (year) =>
-    year % 4 === 2 ? 'world' : year % 4 === 0 ? 'continental' : year % 4 === 1 ? 'confed' : null;
+  // (I.CYCLE: the year of the four, counted from 0, in which the World Championship is played; the continental championships
+  // follow two years on and the Trophy comes the year before. A world definition can move it.)
+  I.CYCLE = 2;
+  I.tournamentFor = (year) => {
+    const k = (((year - I.CYCLE) % 4) + 4) % 4;
+    return k === 0 ? 'world' : k === 2 ? 'continental' : k === 3 ? 'confed' : null;
+  };
   I.kindName = (kind) =>
     ({ world: 'World Cup', continental: 'continental championships', confed: 'Continental Champions Trophy' })[kind];
   I.nextTournament = function () {

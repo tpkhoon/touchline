@@ -360,7 +360,7 @@
       ${[
         ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names and formats`],
         ['staff', '🧑‍🏫 Coaches and scouts', `${(ED.def.staff || []).length} made`],
-        ['nations', '🌍 National teams', `${(ED.def.nations || []).length} changed`],
+        ['intl', '🌍 International football', `tournaments, national teams and their history`],
         [
           'history',
           '📜 History',
@@ -1099,10 +1099,97 @@
       <div class="actions ng-foot"><button class="btn sm" data-act="edStaff" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveStaff">Save</button></div>`;
   };
 
+  // ---------- International football ----------
+  // The summer tournaments, the year of the cycle the World Championship falls in, the invitationals, and links to the national
+  // teams and their history
+  const intlNow = () => (ED.def.intl && Object.keys(ED.def.intl).length ? ED.def.intl : WD.intlNow());
+  const tName = (id) => {
+    const i = intlNow();
+    return (i.tourns[id] || i.invites.find((v) => v.id === id) || {}).name || '';
+  };
+  const REGION = { EUR: 'Europe', SAM: 'South America', AFR: 'Africa', ASIA: 'Asia', NAM: 'North America' };
+  UI.acts.edSaveIntl = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const now = WD.intlNow(),
+      tourns = {};
+    for (const tn of Object.values(FM.Intl.TOURNS).flat()) {
+      const slots =
+        tn.pools.length > 1 ? tn.pools.map((_, i) => Math.round(+v(`islot-${tn.id}-${i}`))) : now.tourns[tn.id].slots;
+      tourns[tn.id] = {
+        name: (v('iname-' + tn.id) || '').trim(),
+        slots,
+      };
+    }
+    const invites = FM.Intl.INVITES.map((o) => ({
+      id: o.id,
+      name: (v('iname-' + o.id) || '').trim(),
+      host: v('ihost-' + o.id),
+    }));
+    const r = WD.editor(ED.def, null).setIntl({ cycle: Math.round(+v('icycle')), tourns, invites });
+    ED.err = r.ok ? [] : r.errors;
+    if (r.ok) UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  const intlView = () => {
+    const cur = intlNow(),
+      nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const kinds = {
+      world: 'Every four years',
+      continental: 'Two years on',
+      confed: 'The year before the World Championship',
+    };
+    return `<div class="h1" style="margin-top:2vh">International football</div><div class="tag">The summer tournaments, the national teams and their history.</div>
+      ${errBox()}
+      <div class="ng-label">The World Championship is played in</div>
+      <select id="ed-icycle">${[0, 1, 2, 3]
+        .map(
+          (k) =>
+            `<option value="${k}" ${cur.cycle === k ? 'selected' : ''}>${k === 0 ? 'The first year of the four' : ['', 'The second', 'The third', 'The fourth'][k] + ' year of the four'}</option>`,
+        )
+        .join('')}</select>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Counted from the year 0 of each four (a year that divides by four). The continental championships follow two years on, and the Continental Champions Trophy comes the year before the World Championship. Your first season plays the qualifiers for whichever is next.</div>
+      <div class="ng-label">Tournaments</div>
+      ${Object.entries(FM.Intl.TOURNS)
+        .map(([kind, list]) =>
+          list
+            .map((tn) => {
+              const v = cur.tourns[tn.id] || { name: tn.name, slots: tn.pools.map(([, n]) => n) };
+              return `<div class="tiny dim" style="margin:12px 0 4px">${kinds[kind]} · ${tn.size} nations</div><input type="text" id="ed-iname-${tn.id}" maxlength="48" value="${esc(v.name)}">${
+                tn.pools.length > 1
+                  ? `<div class="tiny dim" style="margin:6px 0 4px">Places by part of the world (they add up to ${tn.size})</div><div class="ng-names" style="margin-top:0;flex-wrap:wrap">${tn.pools
+                      .map(
+                        ([regions], i) =>
+                          `<div style="flex:1;min-width:84px"><div class="tiny dim">${esc(regions.map((r) => REGION[r] || r).join(' + '))}</div><input type="number" id="ed-islot-${tn.id}-${i}" min="0" max="${tn.size}" inputmode="numeric" value="${v.slots[i]}"></div>`,
+                      )
+                      .join('')}</div>`
+                  : ''
+              }`;
+            })
+            .join(''),
+        )
+        .join('')}
+      <div class="ng-label">Invitational tournaments <span class="tiny dim">· one a season, in turn: a host and three guests</span></div>
+      ${cur.invites
+        .map(
+          (v) =>
+            `<div class="ng-names" style="margin-top:6px"><input type="text" id="ed-iname-${v.id}" maxlength="40" value="${esc(v.name)}"><select id="ed-ihost-${v.id}" style="max-width:150px">${nations
+              .map(
+                ([k, n]) => `<option value="${k}" ${v.host === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`,
+              )
+              .join('')}</select></div>`,
+        )
+        .join('')}
+      <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveIntl">Save the tournaments</button></div>
+      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="nations"><div class="row"><div class="grow"><div class="small b">National teams</div><div class="tiny dim">${(ED.def.nations || []).length} changed · name, colours, ranking points, how they play</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:6px 0 0;padding:10px 12px" data-act="edView" data-v="history"><div class="row"><div class="grow"><div class="small b">Past tournaments</div><div class="tiny dim">Who won each one is entered with the past seasons</div></div><span class="dim">›</span></div></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+
   // ---------- National teams ----------
   // The name, short name, colours and ranking points a national team starts with (a nation too thin in players to field a team
   // keeps none; its entry is ignored)
   const ntOf = (code) => (ED.def.nations || []).find((n) => n.code === code);
+  const NT_TACTIC = { formation: '4-3-3', buildup: 'Short', press: 'Mid Block', width: 'Balanced' }; // (how the game sets a national team up)
   const sameColours = (a, b) =>
     a.length === b.length && a.every((x, i) => String(x).toLowerCase() === String(b[i]).toLowerCase());
   UI.acts.edNation = (d) => {
@@ -1120,7 +1207,9 @@
       short: (v('nshort') || '').trim().toUpperCase(),
       colors: [v('nc1'), v('nc2')],
       coef: +v('ncoef') === 50 ? null : Math.round(+v('ncoef') * 10) / 10, // (50: the game works the points out)
+      tactic: { formation: v('nform'), buildup: v('nbuild'), press: v('npress'), width: v('nwidth') },
     };
+    if (JSON.stringify(patch.tactic) === JSON.stringify(NT_TACTIC)) patch.tactic = null;
     const r = E.setNation(ED.code, patch);
     if (!r.ok) {
       ED.err = r.errors;
@@ -1130,6 +1219,7 @@
       patch.name === N.name &&
       patch.short === ED.code &&
       patch.coef == null &&
+      !patch.tactic &&
       sameColours(patch.colors, D.NT_COLORS[ED.code] || ['#ffffff', '#000000'])
     )
       E.clearNation(ED.code);
@@ -1159,14 +1249,15 @@
               .join('')}`,
         )
         .join('')}
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
   };
   const nationView = () => {
     const N = D.NATIONS[ED.code];
     if (!N) return nationsView();
     const o = ntOf(ED.code) || {},
       cols = o.colors || D.NT_COLORS[ED.code] || ['#ffffff', '#000000'],
-      coef = o.coef != null ? o.coef : 50;
+      coef = o.coef != null ? o.coef : 50,
+      tac = o.tactic || NT_TACTIC;
     return `<div class="h1" style="margin-top:2vh">${N.flag} ${esc(o.name || N.name)}</div><div class="tag">The national team of ${esc(N.name)}.</div>
       ${errBox()}
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Name</div><input type="text" id="ed-nname" maxlength="32" value="${esc(o.name || N.name)}"></div><div style="flex:1;max-width:100px"><div class="ng-label" style="margin-top:0">Short</div><input type="text" id="ed-nshort" maxlength="4" value="${esc(o.short || ED.code)}"></div></div>
@@ -1175,6 +1266,13 @@
       <div class="ng-label">Ranking points <b id="ed-ncoefv" style="color:#e6edf6">${coef}</b> <span class="tiny dim">(about 50 for an average nation, 90 and over for the best; every match moves them)</span></div>
       <input type="range" id="ed-ncoef" min="20" max="100" step="0.5" value="${coef}" style="width:100%">
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Left at 50 the game works the points out from the nation's players, as it does without the editor.</div>
+      <div class="ng-label">How they play</div>
+      <div class="ng-names" style="margin-top:0"><select id="ed-nform" style="flex:1">${Object.keys(D.FORMATIONS)
+        .map((k) => `<option ${tac.formation === k ? 'selected' : ''}>${k}</option>`)
+        .join(
+          '',
+        )}</select><select id="ed-nbuild" style="flex:1">${D.BUILDUP.map((k) => `<option ${tac.buildup === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
+      <div class="ng-names"><select id="ed-npress" style="flex:1">${D.PRESS.map((k) => `<option ${tac.press === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-nwidth" style="flex:1">${D.WIDTH.map((k) => `<option ${tac.width === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edClearNation">Put the game's version back</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="nations" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveNation">Save</button></div>`;
   };
@@ -1306,7 +1404,8 @@
     if (!s) return historyView();
     const nameOf = (id) => (ED.def.clubs.find((c) => c.id === id) || { name: id }).name;
     const nations = [...new Set(ED.def.leagues.map((l) => l.nat))];
-    return `<div class="h1" style="margin-top:2vh">${yy(s.year)}</div><div class="tag">Tap a league to say who won it.</div>
+    const tourns = [...Object.keys(intlNow().tourns), ...intlNow().invites.map((v) => v.id)];
+    return `<div class="h1" style="margin-top:2vh">${yy(s.year)}</div><div class="tag">Tap a league, a cup or a tournament to say who won it.</div>
       ${errBox()}
       ${nations
         .map((nat) => {
@@ -1325,6 +1424,13 @@
             .join('')}`;
         })
         .join('')}
+      <div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">🌍 International</div>
+      ${tourns
+        .map((id) => {
+          const e = (s.intl || {})[id];
+          return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonIntl" data-tid="${id}"><div class="row"><div class="grow"><div class="small b">${esc(tName(id))}</div><div class="tiny dim">${e ? `🏆 ${(D.NATIONS[e.winner] || {}).flag || ''} ${esc((ntOf(e.winner) || D.NATIONS[e.winner] || { name: e.winner }).name)}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
+        })
+        .join('')}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelSeason">Delete this season</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="history" aria-label="Back">←</button></div>`;
   };
@@ -1341,6 +1447,39 @@
       <div class="ng-label">Winner</div>${sel('cw', e.winner, 'Not filled in')}
       <div class="ng-label">Runner-up <span class="tiny dim">· optional</span></div>${sel('cr', e.runnerUp, 'Not chosen')}
       <div class="actions ng-foot"><button class="btn sm" data-act="edSeason" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveSeasonCup">Save</button></div>`;
+  };
+  UI.acts.edSeasonIntl = (d) => {
+    ED.view = 'seasonintl';
+    ED.ht = d.tid;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edSaveSeasonIntl = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const s = seasonOf(ED.hy);
+    s.intl = s.intl || {};
+    if (!v('iw')) delete s.intl[ED.ht];
+    else if (v('iw') === v('ir')) {
+      ED.err = ['The winner and the runner-up are different nations'];
+      return UI.worldEditor();
+    } else s.intl[ED.ht] = { winner: v('iw'), runnerUp: v('ir') || null };
+    ED.view = 'season';
+    ED.err = [];
+    UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  const seasonIntlView = () => {
+    const s = seasonOf(ED.hy);
+    if (!s || !tName(ED.ht)) return historyView();
+    const e = (s.intl || {})[ED.ht] || {};
+    const nats = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const sel = (id, cur, none) =>
+      `<select id="ed-${id}"><option value="">${none}</option>${nats.map(([k, n]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>`;
+    return `<div class="h1" style="margin-top:2vh">${esc(tName(ED.ht))}</div><div class="tag">${yy(s.year)}. The winner counts a title for the nation, and the Continental Champions Trophy invites the continental champions.</div>
+      ${errBox()}
+      <div class="ng-label">Winner</div>${sel('iw', e.winner, 'Not filled in')}
+      <div class="ng-label">Runner-up <span class="tiny dim">· optional</span></div>${sel('ir', e.runnerUp, 'Not chosen')}
+      <div class="actions ng-foot"><button class="btn sm" data-act="edSeason" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveSeasonIntl">Save</button></div>`;
   };
   const seasonLeagueView = () => {
     const s = seasonOf(ED.hy),
@@ -1422,6 +1561,8 @@
       history: historyView,
       season: seasonView,
       seasoncup: seasonCupView,
+      seasonintl: seasonIntlView,
+      intl: intlView,
       seasonleague: seasonLeagueView,
       newleague: newLeagueView,
     };

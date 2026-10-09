@@ -179,6 +179,33 @@ check(
   E.setNation('ENG', { name: 'Albion', short: 'ALB', colors: ['#112233', '#ffffff'], coef: 88 }).ok,
   'a national team edit was refused',
 );
+// international football: bad settings are refused, good ones kept
+check(!E.setIntl({ cycle: 9 }).ok, 'a World Championship year of 9 was accepted');
+check(
+  !E.setIntl({ tourns: { WC: { name: 'Global Cup', slots: [9, 3, 2, 1, 2] } } }).ok,
+  'seventeen places in a sixteen-nation cup were accepted',
+);
+check(!E.setIntl({ tourns: { XX: { name: 'No Such Cup' } } }).ok, 'a tournament the game does not have was accepted');
+check(
+  !E.setIntl({ invites: [{ id: 'KIR', name: 'Test Invitational', host: 'NOWHERE' }] }).ok,
+  'an unknown host nation was accepted',
+);
+check(
+  !E.setNation('ENG', { tactic: { formation: '9-9-9', buildup: 'Short', press: 'Mid Block', width: 'Balanced' } }).ok,
+  'a formation of 9-9-9 was accepted',
+);
+check(
+  E.setIntl({
+    cycle: 0,
+    tourns: { WC: { name: 'Global Cup', slots: [8, 4, 2, 1, 1] }, EC: { name: 'Euro Test Cup' } },
+    invites: [{ id: 'KIR', name: 'Test Invitational', host: 'ESP' }],
+  }).ok,
+  'valid international settings were refused',
+);
+check(
+  E.setNation('ENG', { tactic: { formation: '4-4-2', buildup: 'Direct', press: 'High Press', width: 'Wide' } }).ok,
+  'a national team style was refused',
+);
 // history: a past season for the Premier Division, with a champion who is not its strongest club
 const dd = def.clubs.filter((c) => c.league === 'D1');
 const order = dd.map((c) => c.id);
@@ -210,6 +237,19 @@ check(
 check(
   !E.addSeason({ year: def.meta.startYear - 3, comps: {}, cups: { NOSUCH: { winner: cupClub } } }).ok,
   'a season with a cup the game does not have was accepted',
+);
+check(
+  E.addSeason({ year: def.meta.startYear - 4, comps: {}, intl: { WC: { winner: 'ARG', runnerUp: 'ARG' } } }).ok ===
+    false,
+  'a final between a nation and itself was accepted',
+);
+check(
+  E.addSeason({
+    year: def.meta.startYear - 4,
+    comps: {},
+    intl: { WC: { winner: 'ARG', runnerUp: 'BRA' }, EC: { winner: 'ENG' } },
+  }).ok,
+  'a season with tournament winners was refused',
 );
 def.meta.fillHistory = true;
 const chk = DB.check(def);
@@ -316,6 +356,31 @@ console.log(`D1 has ${n1} clubs`);
     'the African cup format did not reach the world',
   );
   check(FM.Cups.formatOf(S.comps.CC).legs.qf === 2, 'a continental cup that was not edited changed');
+  check(
+    FM.Intl.CYCLE === 0 &&
+      FM.Intl.tournamentFor(S.year) === 'continental' &&
+      FM.Intl.tournamentFor(S.year + 2) === 'world',
+    'the World Championship year did not reach the world',
+  );
+  check(
+    FM.Intl.TOURNS.world[0].name === 'Global Cup' &&
+      FM.Intl.TOURNS.world[0].pools[0][1] === 8 &&
+      FM.Intl.TNAME.WC === 'Global Cup',
+    'the tournament name and places did not reach the world',
+  );
+  check(
+    FM.Intl.INVITES[0].name === 'Test Invitational' && FM.Intl.INVITES[0].host === 'ESP',
+    'the invitational did not change',
+  );
+  check(
+    S.nteams.n_ENG.tactic.formation === '4-4-2' && S.nteams.n_ENG.tactic.width === 'Wide',
+    'the national team style did not reach the world',
+  );
+  check(
+    S.nteams.n_ARG.titles.WC >= 1 &&
+      S.archive.some((e) => e.intl && e.intl.some((r) => r.id === 'WC' && r.winner === 'n_ARG')),
+    'the past World Championship is not in the archive and the nations titles',
+  );
   check(S.comps.CUPENG.prize === 7e6 && S.comps.AF.prize === 6e6, 'the prize funds did not reach the world');
   check(
     S.comps.CUPENG.clubs.length > 8 &&
@@ -399,6 +464,14 @@ check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n
 // a save keeps the database, and a plain new world afterwards has none of it
 check(FM.S.database && FM.S.database.name === 'Editor test', 'the world does not remember its database');
 DB.clear();
+check(
+  FM.Intl.CYCLE === 2 &&
+    FM.Intl.TOURNS.world[0].name === 'FIFA World Cup' &&
+    FM.Intl.TOURNS.world[0].pools[0][1] === 9 &&
+    FM.Intl.TNAME.WC === 'FIFA World Cup' &&
+    FM.Intl.INVITES[0].host === 'JPN',
+  'clearing the database left the international settings changed',
+);
 check(!FM.D.allClubRows().some((row) => row[0] === 'Alphaton'), 'clearing the database left the new club in the data');
 
 console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'editor check passed');

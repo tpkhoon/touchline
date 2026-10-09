@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-363 features are playable in the web prototype today. Build = the build that added it.
+364 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -376,6 +376,7 @@ Every feature from the game design document, with what is playable in the protot
 | International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
 | Editor | World editor: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
 | Editor | World editor players: a squad screen for each club and a screen for each player (name, nationality, position, foot, age, contract, the 14 attributes with the ability they make, set from an ability if you prefer, potential); made players are added to the generated squads, or replace the squad of any club given eleven or more | Playtest round 11 |
+| Editor | World editor, international football: tournament names, the World Championship's places by part of the world, the year of the four it is played in, the invitationals' names and hosts, how each national team plays, and past tournament winners (the nation's titles, and the Trophy's invitations) | Playtest round 11 |
 | Editor | World editor, cup money and past cups: a prize fund for every cup, a domestic cup kept to the top one, two or three divisions, and the winner and runner-up of each domestic cup in a past season (counted in the club's honours) | Playtest round 11 |
 | Editor | World editor, the rest of the game: cups open to a format (rounds as one match, neutral or two legs; a continental cup's legs and one-venue knockouts), derbies and B teams, coaches and scouts (made for a club, they come with the job; made with no club, they are on offer in the staff market), national teams (name, colours, ranking points) and past seasons (champion, runner-up and third of each league, with a full table made to fit) | Playtest round 11 |
 | Editor | World editor, the rest of the world: free agents, a manager for each club, the rules (points for a win, substitutes, two-legged ties, away goals), cup names, whole new leagues in any nation with their promotion, relegation and continental places, and the game's own clubs taken out of the world and put back | Playtest round 11 |
@@ -392,7 +393,7 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams and history; a squad for each national team, a cup's group sizes, past transfers and eras of their own are still to come. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
+| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams and history; a squad for each national team (who is called up), qualifying formats, a cup's group sizes, past transfers and eras of their own are still to come. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
 | History | Historical eras from 1992 with era-appropriate rules | Alpha 2 |
 | History | Alternate-history setup and scenario creator | Alpha 2 |
 | Youth | University draft, graduates, scholarships, overseas trials | Alpha 2 |
