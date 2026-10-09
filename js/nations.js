@@ -1,4 +1,4 @@
-// More nationalities: 43 further nations whose players turn up in the world's squads and play for their own national
+// More nationalities: 52 further nations whose players turn up in the world's squads and play for their own national
 // teams (js/intl.js builds a team for every nation that has enough players). None of them has a league in the game;
 // their players are spread through the existing leagues by where emigrants really go (France and Belgium for the
 // French-speaking African nations, Germany and Austria for the Balkans, Spain and Italy for the Latin Americans ...).
@@ -10,6 +10,15 @@
 
   // ---------- Name pools for the cultures the first set did not cover ----------
   Object.assign(D.NAME_POOLS, {
+    // Spain's own regional cultures: players with a Basque or Catalan family (the clubs that sign only them are in D.CLUB_POLICY)
+    basque: P(
+      `Iker Aitor Unai Xabier Mikel Gorka Asier Ander Jon Iñigo Oier Beñat Eneko Julen Markel Haritz Imanol Koldo Peru Ibai Aimar Ekain Gaizka Josu Urko Igor Endika Gari Joseba Aritz Kepa Aner Arkaitz Eder Eñaut Gontzal Hodei Iñaki Jokin Kerman Lander Maialen Mattin Naia Odei Paul Sendoa Txomin Unax Xabi Yeray Zigor Aitzol Alain Arnaitz Danel Gaizka Ixaka Lizar Mugurutza Nerea Oihan Sabin Telmo Urtzi Xuban`,
+      `Etxeberria Goikoetxea Iturbe Larrañaga Zubizarreta Aguirre Urrutia Mendizabal Arrieta Echevarría Olazabal Zabala Garmendia Irigoyen Lasa Ugarte Uriarte Aranburu Elorza Ibarra Otegi Berasategi Agirre Altuna Beitia Bengoetxea Galdos Idiakez Lekue Mendiola Oyarzabal Sagarna Zugasti Aizpurua Aramburu Arana Arregi Astigarraga Azkue Bilbao Elizondo Eguren Etxaniz Gabilondo Garaikoetxea Goenaga Iraola Iriondo Jauregi Lazkano Letamendi Maiztegi Mugica Orbegozo Salaberria San Sebastian Sarasola Telleria Txapartegi Unanue Urkiza Zabaleta Zubeldia Zulaika`,
+    ),
+    catalan: P(
+      `Jordi Pau Marc Oriol Arnau Roger Pol Joan Xavi Sergi Albert Genís Guillem Ferran Biel Aleix Adrià Cesc Èric Joel Lluc Nil Quim Ramon Bernat Eduard Jaume Martí Narcís Raül Sebastià Abel Aitor Bru Carles Dídac Enric Gerard Hugo Iu Jofre Magí Miquel Oleguer Pere Pep Ricard Roc Salvador Tià Toni Vicenç Arnau Biel Cristià Eloi Francesc Isidre Jan Lluís Oriol Quirze Xènia`,
+      `Puig Soler Serra Vila Ferrer Roca Mas Pujol Vidal Casals Torrent Camps Ribas Font Bosch Carbonell Casanovas Castells Costa Fabregat Girbau Grau Jover Marsal Molins Planas Prat Riera Rovira Sala Subirats Vallès Vendrell Alsina Anglada Argemí Balaguer Barceló Boada Bonet Cabré Calvet Capdevila Clavé Colomer Comas Domènech Escudé Fàbregas Garriga Gasull Guardiola Illa Llobet Maresma Montserrat Moragues Noguera Oller Parés Pla Pons Rius Salvadó Tarrés Terrades Tortosa Urpí Valls Viladomat Xicota`,
+    ),
     eastslavic: P(
       `Oleksandr Andriy Serhiy Dmytro Vitaliy Mykola Ivan Artem Bohdan Yaroslav Roman Taras Vasyl Maksym Denys Yuriy Ihor Oleh Pavlo Viktor Volodymyr Anatoliy Danylo Kyrylo Mykhailo Stanislav Vladyslav Yevhen Zakhar Alexei Sergei Dmitri Nikolai Vladimir Andrei Pavel Mikhail Igor Artyom Ilya Kirill Maxim Evgeny Konstantin Anton Vyacheslav Gleb Daniil Timofei Egor Ruslan Rostislav Valentin Boris Leonid Oleg Grigory Fyodor Semyon Arseniy Matvey Lev Timur Stepan Gennady Vasily`,
       `Ivanov Petrov Smirnov Kuznetsov Popov Sokolov Lebedev Kozlov Novikov Morozov Volkov Solovyov Vasiliev Zaitsev Pavlov Semyonov Golubev Vinogradov Bogdanov Vorobyov Fyodorov Mikhailov Belyaev Tarasov Belov Komarov Orlov Kiselyov Makarov Andreev Kovalev Ilyin Gusev Titov Kuzmin Kudryavtsev Baranov Kulikov Alekseev Stepanov Yakovlev Sorokin Sergeev Romanov Zakharov Borisov Korolev Gerasimov Ponomarev Grigoriev Lazarev Medvedev Ershov Nikitin Sobolev Ryabov Polyakov Tsvetkov Danilov Zhukov Frolov Zhuravlev Nikolaev Krylov Maksimov Sidorov Osipov Belousov Fedotov Dorofeev Egorov Matveev Bobrov Kovalenko Bondarenko Tkachenko Kravchenko Boyko Melnyk Shevchuk Kovalchuk Polishchuk Savchenko Rudenko Lysenko Marchenko Petrenko Moroz Pavlenko Kharchenko Koval Oliynyk Sydorenko Zaporozhets Hrytsenko Havrylenko Honcharenko Ivashchenko Klymenko Kuzmenko Lytvynenko Martynenko Nesterenko Panchenko Romanenko Semenenko Tereshchenko Vasylenko Yaremenko`,
@@ -53,6 +62,27 @@
     hebrew: P(
       `Yossi Moshe David Avi Eli Itay Omer Noam Eyal Guy Tomer Shahar Amit Yuval Ori Nir Dor Tal Lior Oren Ran Ido Idan Barak Gal Elad Ben Matan Roi Shlomi Rotem Eden Daniel Yoav Asaf Ofir Uri Rami Doron Nadav Ilan Tamir Yonatan`,
       `Cohen Levi Mizrahi Peretz Biton Dahan Avraham Friedman Malka Azoulay Katz Yosef Amar Shapira Hadad Gabay Ben_David Ohayon Dayan Bar Shalom Sasson Segal Nachmani Ashkenazi Golan Weiss Edri Mor Klein Stern Tal Barak Peled Navon Meir Zohar Rosen Biran Elkayam Hazan Ziv Alon Tamir Sharabi`,
+    ),
+    vietnamese: P(
+      `Quang Hai Van Hau Cong Phuong Tien Linh Duc Chinh Hoang Duc Minh Vuong Tuan Anh Thanh Trung Hung Dung Nam Long Son Hieu Khanh Binh Dat Phuc Thang Tri Viet Bao Huy Kien Loc Nghia Quoc Tai Thinh Vinh Hoa Huynh Khoa Lam Phat Quan Tung Hoai Nhan Thien`,
+      `Nguyen Tran Le Pham Hoang Huynh Phan Vu Vo Dang Bui Do Ho Ngo Duong Ly Dinh Doan Trinh Mai Truong Lam Luong Ta Dao Cao Ha Lu Tong Chau Quach Thai Kieu Phung Han To Tang Lac Diep Trieu Giang Banh Kim`,
+    ),
+    indonesian: P(
+      `Egy Witan Evan Rizky Asnawi Pratama Marselino Ramadhan Elkan Justin Jordi Thom Ivar Rafael Shayne Yakob Ricky Marc Nadeo Sandy Arhan Ernando Zulfiandi Hansamu Fachruddin Bagas Dimas Rizal Hokky Ramai Beckham Ilham Andhika Arif Bayu Dedi Eko Fajar Gilang Hendra Irfan Joko Kurniawan Lukman Muhammad Nur Putra Rendy Syahrul Taufik Yudha Zaenal`,
+      `Wijaya Santoso Saputra Pratama Kurniawan Nugroho Hidayat Setiawan Wibowo Susanto Firmansyah Ramadhan Hakim Permana Gunawan Maulana Putra Siregar Lubis Nasution Harahap Sitompul Simanjuntak Pane Hutagalung Sinaga Tambunan Manullang Purnomo Utomo Prasetyo Hartono Kusuma Lesmana Budiman Rahman Fauzi Salim Aziz Syahputra Mahendra Ardiansyah Prakoso Suryadi`,
+    ),
+    malay: P(
+      `Safawi Faisal Syafiq Arif Aiman Dion Brendan Stuart Matthew Junior La'Vere Safuwan Syazwan Azam Hadi Akhyar Mukhairi Muhammad Danial Hakimi Irfan Zaquan Faiz Hafiz Shahrul Khairul Zulkifli Azri Amirul Rahim Nazmi Farhan Haziq Imran Luqman Norshahrul Rodzi Shamil Wan Zulhilmi Aidil Baddrol Hariss Kamal Mohd Nasrullah Syukur Zamir`,
+      `Abdullah Ismail Rahman Hassan Ahmad Ibrahim Yusof Othman Aziz Hamid Karim Latif Mahmud Musa Omar Razak Salleh Salim Samad Zakaria Zain Daud Hashim Jamal Kassim Lazim Mansor Osman Rashid Saad Tahir Wahab Yahya Zulkifli Che Awang Bakar Hussein Idris Jaafar Kadir Lim Tan Wong Chong Raj Kumar Singh`,
+    ),
+    filipino: P(
+      `Neil Stephan Javier Oliver Kevin Patrick Diego Michael Jesse Sandro Mike Daisuke Ruben Jaime Manny Paolo Carlo Marco Angelo Dennis Jerome Mark Jeric Jovelle Rhandy Raphael Adrian Bryan Christian Gerald Joshua Lorenz Nathan Ramon Ricardo Rodel Santiago Tomas Victor Alfonso Benedict Cedric Emilio Francis Gabriel Jericho`,
+      `Reyes Santos Cruz Bautista Ocampo Garcia Mendoza Torres Tomas Andrada Castillo Flores Villanueva Ramos Aquino Dela_Cruz De_Leon Gonzales Hernandez Lopez Perez Rivera Salazar Soriano Aguilar Alvarez Bernardo Cabrera Domingo Enriquez Fernandez Guevarra Ignacio Javier Lim Magno Navarro Ortega Padilla Quizon Rosales Sison Tolentino Valdez Zamora`,
+    ),
+    // Singapore: Chinese, Malay and Indian families in the proportions of the island
+    singaporean: P(
+      `Ikhsan Hariss Safuwan Faris Irfan Shahdan Zulqarnaen Hafiz Amirul Danish Haziq Jun Wei Kai Jia Zhi Ryan Kieran Daniel Joshua Marcus Aaron Prakash Arun Vikram Sanjay Muhammad Ahmad Aiman Khairul Syafiq Adam Gabriel Nazrul Hami Song Yong Jordan Shawal Zulfahmi Harhys Lionel Bryan Darren Brandon Raj Dhanesh`,
+      `Tan Lim Lee Ng Goh Teo Chua Koh Ong Wong Chong Yeo Ho Sim Chan Abdullah Rahman Ismail Hassan Yusof Ibrahim Sulaiman Ahmad Mohamed Pillai Nair Krishnan Singh Kumar Menon Sharma Fandi Bakar Said Zainal Lau Foo Quek Sng Ang Tay`,
     ),
     georgian: P(
       `Giorgi Davit Nikoloz Luka Levan Irakli Zurab Merab Vakhtang Tornike Lasha Mikheil Temur Aleksandre Beka Guram Revaz Shota Konstantine Tamaz Otar Badri Gela Gocha Kakha Soso Nika Saba Data Giga Mamuka Bidzina Archil Tengiz Zaza`,
@@ -611,6 +641,126 @@
       0.2,
       ['NED', 'GER', 'ENG', 'TUR', 'SWE'],
       ['#CE1126', '#007A3D'],
+    ),
+    N(
+      'VIE',
+      'Vietnam',
+      '🇻🇳',
+      'ASIA',
+      'Quick and tireless',
+      { pace: 1.2, stamina: 1.5, workRate: 1.2 },
+      'vietnamese',
+      0.15,
+      ['THA', 'JPN', 'KOR', 'ENG'],
+      ['#DA251D', '#FFCD00'],
+    ),
+    N(
+      'IDN',
+      'Indonesia',
+      '🇮🇩',
+      'ASIA',
+      'Energetic and passionate',
+      { pace: 1.2, stamina: 1.2, dribbling: 1.2 },
+      'indonesian',
+      0.18,
+      ['NED', 'THA', 'JPN', 'KOR'],
+      ['#CE1126', '#FFFFFF'],
+    ),
+    N(
+      'MYS',
+      'Malaysia',
+      '🇲🇾',
+      'ASIA',
+      'Neat and enterprising',
+      { pace: 1.2, passing: 1.2, workRate: 1 },
+      'malay',
+      0.12,
+      ['THA', 'ENG', 'JPN', 'KOR'],
+      ['#FFCC00', '#010066'],
+    ),
+    N(
+      'PHI',
+      'Philippines',
+      '🇵🇭',
+      'ASIA',
+      'Resourceful and hard-working',
+      { workRate: 1.5, stamina: 1.2, passing: 1 },
+      'filipino',
+      0.12,
+      ['THA', 'ENG', 'USA', 'JPN'],
+      ['#0038A8', '#CE1126'],
+    ),
+    N(
+      'SGP',
+      'Singapore',
+      '🇸🇬',
+      'ASIA',
+      'Neat and disciplined',
+      { passing: 1.2, composure: 1, workRate: 1.2 },
+      'singaporean',
+      0.1,
+      ['MYS', 'THA', 'JPN', 'AUS'],
+      ['#EF3340', '#FFFFFF'],
+    ),
+    N(
+      'BLR',
+      'Belarus',
+      '🇧🇾',
+      'EUR',
+      'Disciplined and physical',
+      { strength: 1.2, stamina: 1, workRate: 1 },
+      'eastslavic',
+      0.3,
+      ['GER', 'POL', 'TUR', 'ENG', 'CZE'],
+      ['#CF101A', '#007C30'],
+    ),
+    N(
+      'BOL',
+      'Bolivia',
+      '🇧🇴',
+      'SAM',
+      'Hardy at altitude',
+      { stamina: 1.5, strength: 1, workRate: 1 },
+      'latin',
+      0.3,
+      ['ARG', 'ESP', 'BRA', 'MEX', 'POR'],
+      ['#007934', '#F9E300'],
+    ),
+    N(
+      'IND',
+      'India',
+      '🇮🇳',
+      'ASIA',
+      'Quick and technical',
+      { technique: 1.2, pace: 1, dribbling: 1.2 },
+      'southasian',
+      0.3,
+      ['ENG', 'ESP', 'POR', 'JPN', 'KOR', 'AUS'],
+      ['#FF9933', '#138808'],
+    ),
+    N(
+      'QAT',
+      'Qatar',
+      '🇶🇦',
+      'ASIA',
+      'Technical and well-drilled',
+      { technique: 1.5, passing: 1, composure: 1 },
+      'mashriq',
+      0.3,
+      ['ESP', 'POR', 'BEL', 'TUR'],
+      ['#8A1538', '#FFFFFF'],
+    ),
+    N(
+      'UAE',
+      'United Arab Emirates',
+      '🇦🇪',
+      'ASIA',
+      'Fast and attacking',
+      { pace: 1.2, technique: 1.2, dribbling: 1 },
+      'mashriq',
+      0.3,
+      ['ESP', 'POR', 'ENG', 'BEL'],
+      ['#CE1126', '#FFFFFF'],
     ),
   ];
 

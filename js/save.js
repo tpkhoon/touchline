@@ -153,10 +153,25 @@
     }
     // each league's real promotion, relegation and play-off rules (Germany's relegation play-offs, two-legged
     // play-off finals): older saves take the current ones, once
-    if (s.compRules !== 2 && s.comps && FM.D.LEAGUES) {
-      s.compRules = 2;
+    if (s.compRules !== 3 && s.comps && FM.D.LEAGUES) {
+      s.compRules = 3;
       for (const l of FM.D.LEAGUES)
         if (s.comps[l.id] && s.comps[l.id].type === 'league') s.comps[l.id].rules = JSON.parse(JSON.stringify(l.rules));
+    }
+    // the traits added later (Engine, Clutch, Mentor ...): older players are given the ones they qualify for, up to three
+    if (!s.traitsV2 && s.players && FM.W && FM.W.rollNewTraits) {
+      s.traitsV2 = 1;
+      for (const p of Object.values(s.players))
+        if (p.hid && p.traits && p.traits.length < 3)
+          p.traits = p.traits
+            .concat(FM.W.rollNewTraits(p, p.traits.slice()))
+            .filter((t, i, a) => a.indexOf(t) === i)
+            .slice(0, 3);
+    }
+    // clubs with a signing policy (Eibar: Basque players only; Andorra: Catalan): older saves get the policy
+    if (!s.policyV1 && s.clubs && FM.D.CLUB_POLICY) {
+      s.policyV1 = 1;
+      for (const [id, c] of Object.entries(s.clubs)) if (!c.policy) c.policy = FM.D.CLUB_POLICY[id.slice(2)] || null;
     }
     // real-life club abbreviations and nicknames (the id keeps the club's code)
     if (!s.clubAbbr && s.clubs && FM.D.CLUB_INFO) {
@@ -168,6 +183,49 @@
         if (info && info[1] && !c.nick) c.nick = info[1];
       }
     }
+    // abbreviations come from the club's own name now (many carried the codes of its old, real-life name: CHE3, CON)
+    if (s.clubAbbr !== 2 && s.clubs && FM.D.CLUB_INFO) {
+      s.clubAbbr = 2;
+      // (only where the club still has the name the abbreviation was made from)
+      const named = new Map(FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || []).map((r) => [r[1], r[0]]));
+      for (const [id, c] of Object.entries(s.clubs)) {
+        const info = FM.D.CLUB_INFO[id.slice(2)];
+        if (info && info[0] && named.get(id.slice(2)) === c.name) c.short = info[0];
+      }
+    }
+    // England's divisions were labelled D1–D4 ("D1" read as the First Division, which is D2): ENG1–ENG4
+    if (s.comps && FM.D.LEAGUES)
+      for (const l of FM.D.LEAGUES) {
+        const c = s.comps[l.id];
+        if (c && /^D\d$/.test(c.short) && l.short !== c.short) c.short = l.short;
+      }
+    // second nationalities (through family heritage) for players made before they existed
+    if (s.players && FM.W && FM.D.POOL_NATS)
+      for (const p of Object.values(s.players))
+        if (p.heritage && p.nat2 === undefined) p.nat2 = FM.W.dualNat(p.nat, p.heritage, null);
+    // scouts made while the county-cup data overwrote the scouting regions have numbered regions: new profiles, and
+    // any assignment to a region that does not exist is cleared
+    if (s.staff && FM.W && FM.D.REGIONS) {
+      for (const st of Object.values(s.staff))
+        if (st.role === 'Scout' && st.regions && Object.keys(st.regions).some((k) => !FM.D.REGIONS[k]))
+          Object.assign(st, FM.W.scoutProfile(st.nat in FM.D.NATIONS ? st.nat : 'ENG', st.ability || 12));
+      if (s.user && s.user.assignments)
+        s.user.assignments = s.user.assignments.filter((a) => a.region == null || FM.D.REGIONS[a.region]);
+    }
+    // three clubs were renamed when the name generator learned to avoid rude words ("Cabrona FC")
+    if (s.clubs && FM.D.LEAGUES)
+      for (const row of FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || [])) {
+        const c = s.clubs['c_' + row[1]];
+        if (c && ['Cabrona FC', 'FC Unter Furtbach', 'FC Unter Neckarhafen'].includes(c.name)) {
+          c.name = row[0];
+          c.city = row[2];
+          if (row[7] && c.stadium) c.stadium.name = row[7];
+        }
+      }
+    // "Born Leader" duplicated the Leader trait: the personality is read from the other hidden traits now
+    if (s.players && FM.W)
+      for (const p of Object.values(s.players))
+        if (p.personality === 'Born Leader' && p.hid) p.personality = FM.W.personality(p.hid);
     // the world ranking is a coefficient now (it was an Elo rating, 1500 for an average side)
     for (const t of Object.values(s.nteams || {}))
       if (t.coef == null && t.elo != null) {

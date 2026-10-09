@@ -41,7 +41,7 @@
       const comp = c.comp && s.comps[c.comp],
         pos = comp && comp.table && comp.table[id] ? W.position(id) : null;
       rows.push(
-        `<div class="row small tap" data-act="clubView" data-id="${id}" style="padding:7px 0;border-top:1px solid var(--line);gap:8px">${C.crest(c, 20)}<span class="grow ellip">${esc(c.name)}</span><span class="dim">${pos ? `${U.ordinal(pos)} · ${comp.table[id].pts} pts` : comp ? esc(comp.name) : ''}</span><span class="tiny dim" style="margin-left:6px">${esc(FM.Season.confLabel(c))}</span></div>`,
+        `<div class="row small tap" data-act="clubView" data-id="${id}" style="padding:7px 0;border-top:1px solid var(--line);gap:8px">${C.crest(c, 20)}<span class="grow ellip">${esc(c.name)}</span><span class="dim">${pos ? `${U.ordinal(pos)} · ${U.pts(comp.table[id].pts)}` : comp ? esc(comp.name) : ''}</span><span class="tiny dim" style="margin-left:6px">${esc(FM.Season.confLabel(c))}</span></div>`,
       );
     }
     for (const id of f.players) {
@@ -58,7 +58,7 @@
       if (!comp) continue;
       const top = comp.table && Object.entries(comp.table).sort((a, b) => b[1].pts - a[1].pts)[0];
       rows.push(
-        `<div class="row small tap" data-act="leagueGo" data-id="${id}" style="padding:7px 0;border-top:1px solid var(--line);gap:8px"><span>🏆</span><span class="grow ellip">${esc(comp.name)}</span><span class="dim">${top && s.clubs[top[0]] ? `${esc(s.clubs[top[0]].short)} lead · ${top[1].pts} pts` : ''}</span></div>`,
+        `<div class="row small tap" data-act="leagueGo" data-id="${id}" style="padding:7px 0;border-top:1px solid var(--line);gap:8px"><span>🏆</span><span class="grow ellip">${esc(comp.name)}</span><span class="dim">${top && s.clubs[top[0]] ? `${esc(s.clubs[top[0]].short)} lead · ${U.pts(top[1].pts)}` : ''}</span></div>`,
       );
     }
     for (const id of f.nations) {

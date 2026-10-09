@@ -17,6 +17,8 @@
     'world',
     'realstats',
     'worlddef',
+    'dbimport',
+    'histimport',
     'engine',
     'season',
     'careers',
@@ -26,6 +28,8 @@
     'tiers',
     'contracts',
     'people',
+    'mstyle',
+    'asia',
     'scouting',
     'transfers',
     'registration',
@@ -41,6 +45,7 @@
     'matchday',
     'records',
     'injuries',
+    'draft',
     'save',
   ];
   R.broken = false;

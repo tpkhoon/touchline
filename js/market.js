@@ -187,6 +187,7 @@
     const c = W.userClub();
     if (!c) return { ok: false, msg: 'You need a club to run trials.' };
     if (p.clubId) return { ok: false, msg: 'Only free agents come on trial.' };
+    if (!FM.Reg.policy(c, p).ok) return { ok: false, msg: FM.Reg.policy(c, p).why };
     if (M.onTrial(p)) return { ok: false, msg: `${W.name(p)} is already on trial with you.` };
     if (M.trials().length >= M.MAX_TRIALS)
       return { ok: false, msg: `You already have ${M.MAX_TRIALS} trialists. Decide on one of them first.` };
@@ -315,6 +316,7 @@
     const c = W.userClub(),
       open = FM.Season.windowOpen();
     for (const p of M.loanedOut(c.id)) {
+      if (p.loan.military) continue; // doing national service: nothing to recall or complain about
       if (p.loan.recall && open) {
         const was = S().clubs[p.clubId];
         M.recall(p);
@@ -487,13 +489,16 @@
       step = U.moneyStep(raw);
     return Math.ceil(raw / step) * step;
   };
-  M.cashNow = (fee, deal) => (deal && deal.inst > 1 ? U.roundMoney(fee / deal.inst) : fee);
+  // An instalment deal pays the fee in equal parts (the first now, the rest a year apart); the first part takes any
+  // rounding, so the parts always add up to the fee
+  M.instPart = (fee, deal) => (deal && deal.inst > 1 ? U.roundMoney(fee / deal.inst) : fee);
+  M.cashNow = (fee, deal) => (deal && deal.inst > 1 ? fee - M.instPart(fee, deal) * (deal.inst - 1) : fee);
   M.describeDeal = function (fee, deal) {
     if (!deal) return U.money(fee);
     const bits = [];
     bits.push(
       deal.inst > 1
-        ? `${U.money(M.cashNow(fee, deal))} now + ${deal.inst - 1} × ${U.money(M.cashNow(fee, deal))} yearly`
+        ? `${U.money(fee)} in all: ${U.money(M.cashNow(fee, deal))} now + ${deal.inst - 1} × ${U.money(M.instPart(fee, deal))} yearly`
         : `${U.money(fee)} up front`,
     );
     if (deal.addOn) bits.push(`${U.money(deal.addOn)} after ${deal.addApps || 25} appearances`);
@@ -531,7 +536,7 @@
       delete p.sellOn;
     }
     if (!deal) return;
-    const per = M.cashNow(fee, deal);
+    const per = M.instPart(fee, deal);
     for (let k = 1; k < (deal.inst || 1); k++)
       payments().push({ pid: p.id, from: to.id, to: from.id, amt: per, due: now() + 1000 * k, why: 'inst' });
     if (deal.addOn)
@@ -605,15 +610,42 @@
       money:
         Math.log2(Math.max(0.3, wage / Math.max(500, p.wage || W.wageFor(p)))) * (W.hasTrait(p, 'Mercenary') ? 3 : 1.6),
       home: c.nat === p.nat ? (age >= 30 ? 1.2 : 0.5) : 0,
+      identity: M.identityAppeal(p, c),
+      manager: W.isUser(c.id) ? FM.Style.appealFor(p) : 0,
     };
   };
-  const total = (a) => a.league + a.club + a.time + a.money + a.home;
+  // What the club's identity says to this player: a youth club is a pathway for a teenager and a dead end for a veteran, a giant
+  // or an oil-backed club speaks to the ambitious and the mercenary, a fallen giant puts the ambitious off, a fan-owned club
+  // is loved by its own countrymen, a selling club is a stepping stone
+  M.identityAppeal = function (p, c) {
+    const age = W.age(p),
+      amb = p.hid.amb;
+    switch (c.identity) {
+      case 'youth':
+        return age <= 21 ? 0.6 : age >= 30 ? -0.3 : 0;
+      case 'giant':
+        return amb >= 13 ? 0.5 : 0.2;
+      case 'oil':
+        return W.hasTrait(p, 'Mercenary') ? 0.7 : amb >= 13 ? 0.3 : 0;
+      case 'fallen':
+        return amb >= 13 ? -0.4 : 0;
+      case 'fan':
+        return p.nat === c.nat ? 0.4 : 0;
+      case 'selling':
+        return age <= 22 ? 0.3 : -0.2;
+      default:
+        return 0;
+    }
+  };
+  const total = (a) => a.league + a.club + a.time + a.money + a.home + (a.identity || 0) + (a.manager || 0);
   const WHY = {
     league: 'a bigger league',
     club: 'the bigger club',
     time: 'the promise of regular football',
     money: 'the better contract',
     home: 'the chance to go home',
+    identity: 'what the club stands for',
+    manager: 'the manager and how he plays',
   };
   // Other clubs chasing the same player this window (decided once, so you can see them in your talks)
   M.rivals = function (p) {
@@ -785,6 +817,8 @@
     if (!M.preOpen()) return { ok: false, msg: 'Pre-contracts open with the mid-season window (matchday 12).' };
     if (p.pre)
       return { ok: false, msg: `${W.name(p)} has already agreed to join ${s.clubs[p.pre.c].name} in the summer.` };
+    const pc = FM.Reg.policy(W.userClub(), p);
+    if (!pc.ok) return { ok: false, msg: pc.why };
     return { ok: true };
   };
   // Agree a pre-contract with full terms (the agent haggles as for a free agent; other clubs may compete)
@@ -869,7 +903,10 @@
         const suitor = Object.values(s.clubs)
           .filter(
             (c) =>
-              (c.sim === 'full' || c.sim === 'light') && !W.isUserSide(c.id) && Math.abs(W.levelFor(c.rep) - p.ca) <= 8,
+              (c.sim === 'full' || c.sim === 'light') &&
+              !W.isUserSide(c.id) &&
+              FM.Reg.policy(c, p).ok &&
+              Math.abs(W.levelFor(c.rep) - p.ca) <= 8,
           )
           .sort((a, b) => b.rep - a.rep)[0];
         if (!suitor) continue;
@@ -989,10 +1026,24 @@
         p.season.apps <= Math.max(2, games * 0.3) &&
         !s.news.some((n) => n.type === 'bid' && n.data.pid === p.id && n.data.status === 'open'),
     );
-    const p = cands.length && U.wpick(cands, (q) => (W.age(q) <= 22 ? 2 : 1) * (q.pa - q.ca + 5));
+    // players on your loan list are the ones they ask about first
+    const listed = W.squad(uc.id).filter(
+      (p) =>
+        p.loanListed &&
+        !p.loan &&
+        !s.news.some((n) => n.type === 'bid' && n.data.pid === p.id && n.data.status === 'open'),
+    );
+    const p = listed.length
+      ? U.pick(listed)
+      : cands.length && U.wpick(cands, (q) => (W.age(q) <= 22 ? 2 : 1) * (q.pa - q.ca + 5));
     if (!p) return;
     const dest = M.loanTarget(p);
     if (!dest) return;
+    M.makeLoanBid(p, dest);
+  };
+  // A club's request to borrow one of your players: the wage share, the minutes promised, sometimes an option to buy
+  M.makeLoanBid = function (p, dest) {
+    const s = S();
     const starts = W.levelFor(dest.rep) <= p.ca + 2;
     const share = Math.min(1, Math.round((0.5 + Math.random() * 0.4 + (starts ? 0.1 : 0)) * 20) / 20);
     const buy = W.age(p) >= 21 && Math.random() < 0.35 ? U.roundMoney(p.value * U.rand(1.05, 1.3)) : 0;
@@ -1005,15 +1056,44 @@
       data: { pid: p.id, from: dest.id, fee: 0, status: 'open', loan: { share, starts, buy } },
     });
   };
+  // Offer a loan-listed player to clubs: up to two that would use him ask for him at once; then he is left alone for a
+  // few days
+  M.offerLoan = function (p) {
+    const s = S();
+    if (!p || !W.ownPlayer(p) || p.loan) return { ok: false, msg: 'He cannot be offered on loan.' };
+    if (!p.loanListed) return { ok: false, msg: 'Put him on the loan list first.' };
+    if (!FM.Season.windowOpen())
+      return { ok: false, msg: 'The transfer window is closed: loans can only be offered while it is open.' };
+    if (p.loanShopYear === s.year && s.day - p.loanShopDay < 3)
+      return { ok: false, msg: `You have only just offered ${W.short(p)} on loan: give the clubs a few days.` };
+    p.loanShopYear = s.year;
+    p.loanShopDay = s.day;
+    const dests = [];
+    for (let i = 0; i < 2; i++) {
+      const d = M.loanTarget(
+        p,
+        dests.map((x) => x.id),
+      );
+      if (d) dests.push(d);
+    }
+    if (!dests.length) return { ok: false, msg: `No club has a place for ${W.short(p)} on loan right now.` };
+    dests.forEach((d) => M.makeLoanBid(p, d));
+    return {
+      ok: true,
+      msg: `${W.short(p)} has been offered on loan: ${dests.length} club${dests.length === 1 ? ' wants' : 's want'} him. See your inbox.`,
+    };
+  };
+
   // Where a player would go on loan: a smaller club where he'd start or rotate, at a level that stretches him,
   // in the strongest league that fits
-  M.loanTarget = function (p) {
+  M.loanTarget = function (p, skip = []) {
     const s = S(),
       parent = s.clubs[p.clubId],
       g = D.POS_GROUP[p.pos];
     const fits = Object.values(s.clubs).filter((c) => {
-      if ((c.sim !== 'full' && c.sim !== 'light') || c.id === p.clubId || W.isUserSide(c.id)) return false;
-      if (c.rep >= parent.rep - 3) return false;
+      if ((c.sim !== 'full' && c.sim !== 'light') || c.id === p.clubId || W.isUserSide(c.id) || skip.includes(c.id))
+        return false;
+      if (c.rep >= parent.rep - 3 || !FM.Reg.policy(c, p).ok) return false;
       const lvl = W.levelFor(c.rep);
       if (p.ca < lvl - 6 || p.ca > lvl + 10) return false;
       const best = W.squad(c.id)
@@ -1082,6 +1162,13 @@
       if (to.id === uc.rival) {
         mood -= 8;
         posts.push(`Selling ${W.short(p)} to ${to.short}?! Unforgivable.`, 'Board out. Today.');
+      } else if (a <= 21 && p.pa >= W.levelFor(uc.rep) + 2 && fee < 1000 * Math.pow(1.13, p.pa) * 0.6) {
+        // a teenager with a future, gone for a fraction of what he could be worth
+        mood -= 6;
+        posts.push(
+          `Selling a ${a}-year-old with that talent for ${U.money(fee)}? Madness.`,
+          `${W.short(p)} could have been ours for a decade. Robbed. 😡`,
+        );
       } else if (key || fav) {
         mood -= 5;
         posts.push(`Gutted to see ${W.short(p)} go. One of our best.`, `${U.money(fee)} isn't enough for him.`);

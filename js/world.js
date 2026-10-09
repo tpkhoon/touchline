@@ -7,8 +7,9 @@
 
   // ---------------- Player model ----------------
   W.age = (p) => FM.S.year - p.born;
-  W.name = (p) => `${p.fn} ${p.ln}`;
-  W.short = (p) => `${p.fn[0]}. ${p.ln}`;
+  // (a one-word name, like a Brazilian footballer's, has no first name: his single name is in ln)
+  W.name = (p) => (p.fn ? `${p.fn} ${p.ln}` : p.ln);
+  W.short = (p) => (p.fn ? `${p.fn[0]}. ${p.ln}` : p.ln);
 
   W.calcCA = function (p, pos = p.pos) {
     // a natural wing-back is judged on wing-back weights; anyone else in a wing-back slot as a full-back (the slot
@@ -260,7 +261,8 @@
     const fit = W.fitAt(p, slotType, slot, role);
     return W.calcCA(p, slotType) * (0.62 + 0.38 * fit) * (0.8 + 0.2 * (p.fitness / 100)) * (0.95 + p.morale / 1000);
   };
-  W.available = (p) => !p.inj && !p.susp && !p.retired;
+  // (a player doing military service is away unless he is with the army's club)
+  W.available = (p) => !p.inj && !p.susp && !p.retired && (!p.service || !!(p.loan && p.loan.military));
   // Selection weight for match fitness: fresh players are preferred, tired ones rested
   W.fitnessPick = (p) => {
     const f = p.fitness;
@@ -271,7 +273,6 @@
     if (h.prof >= 16 && h.amb >= 13) return 'Model Professional';
     if (h.loy >= 16) return 'Loyal Servant';
     if (h.amb >= 16 && h.loy <= 8) return 'Mercenary';
-    if (h.lead >= 16) return 'Born Leader';
     if (h.temp <= 5) return 'Volatile';
     if (h.prof <= 6) return 'Laid Back';
     if (h.amb >= 16) return 'Ambitious';
@@ -311,6 +312,34 @@
     return a;
   }
 
+  // The traits added after the first dozen: what the player is made of (his attributes and hidden character) decides
+  // which of them he can have. Also used once on older saves, which are given them on load.
+  W.rollNewTraits = function (p, t) {
+    const h = p.hid,
+      A = p.attrs,
+      age = W.age(p),
+      add = (name, ok, chance = 1) => ok && !t.includes(name) && U.chance(chance) && t.push(name);
+    add('Engine', A.stamina >= 14, 0.5);
+    add(
+      'Set-Piece Expert',
+      p.pos !== 'GK' && Math.max(...['pen', 'fk', 'cor'].map((k) => FM.Matchday.spScore(p, k))) >= 13.5,
+      0.5,
+    );
+    add('Clutch', h.big >= 12 && A.composure >= 12, 0.5);
+    add('Aerial Threat', A.strength >= 13 && A.positioning >= 10 && ['ST', 'CB'].includes(p.pos), 0.6);
+    add('Hatchet Man', h.temp <= 10 && A.tackling >= 11 && ['DM', 'CB', 'CM', 'FB', 'WB'].includes(p.pos), 0.5);
+    add('Slow Starter', true, 0.04);
+    add('Cup Specialist', h.big >= 13, 0.1);
+    add('Big-Match Nerves', h.big <= 4);
+    add('Model Professional', h.prof >= 17);
+    add('Low Work Ethic', h.prof <= 4);
+    add('Versatile', true, 0.05);
+    add('Mentor', age >= 29 && h.lead >= 13 && h.prof >= 13, 0.5);
+    add('Homesick', h.loy >= 13 && h.amb <= 8, 0.5);
+    add('Needs Game Time', h.temp <= 7 && h.amb >= 13, 0.5);
+    return t;
+  };
+
   function genTraits(p) {
     const h = p.hid,
       t = [];
@@ -326,6 +355,7 @@
     if (U.chance(0.05)) t.push('Derby Specialist');
     if (U.chance(0.06)) t.push('Fair-Weather');
     if (p.attrs.dribbling >= 14 && U.chance(0.25)) t.push('Flair');
+    W.rollNewTraits(p, t);
     return U.shuffle(t).slice(0, 3);
   }
 
@@ -507,9 +537,85 @@
     if (pool) return { fn: U.pick(pool.fn), ln: Math.random() < 0.7 ? U.pick(pool.ln) : U.pick(N.ln) };
     return { fn: U.pick(N.fn), ln: U.pick(N.ln) };
   };
+  // A second nationality he is eligible for through his family (most players of a heritage have one): the nation his
+  // name's culture belongs to, never his own. null when there is none.
+  W.dualNat = function (nat, heritage, poolKey) {
+    if (!heritage || Math.random() > 0.7) return null;
+    if (!poolKey) poolKey = D.HERITAGE_POOL[heritage] ? U.pick(D.HERITAGE_POOL[heritage]) : heritage;
+    const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.NATIONS[n]);
+    return list.length ? U.pick(list) : null;
+  };
+  // One-word names, as Brazilian and Portuguese players often have: a diminutive or a nickname made from his first name
+  // ("Rafael" → "Rafinha", "Pedro" → "Pedrinho", "Carlos" → "Cacá"), never one of the famous ones
+  const MONO_RATE = { BRA: 0.16, POR: 0.05 };
+  const MONO_BLOCK = new Set(
+    `kaka pepe nani raphinha dudu juninho fred hulk oscar willian ronaldinho rivaldo romario bebeto cafu ederson alisson
+    fabinho casemiro marquinhos richarlison rafinha rafinho neymar pele zico socrates garrincha jo rodrygo vinicius
+    antony vitinho pedrinho gabigol bruninho paulinho robinho adriano elano denilson edmilson dida taffarel claudinho
+    firmino lulinha danilo thiago bernard bruno everton hernanes ramires lucio fernandinho kleber dede cacau`.split(
+      /\s+/,
+    ),
+  );
+  const plain = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const ACCENT = { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú' };
+  W.mononym = function (first) {
+    const base = plain(String(first).split(' ')[0]);
+    if (base.length < 3) return null;
+    const vowel = (c) => 'aeiou'.includes(c.toLowerCase());
+    let i = 3;
+    while (i < base.length && vowel(base[i - 1])) i++; // the first syllable up to a consonant: Raf, Heit, Pedr
+    const clip = base.slice(0, i).replace(/[aeiou]+$/i, ''), // (Caio → Ca: too short for a suffix)
+      open = base.slice(0, i + 1); // ... and the vowel after it: Rafa, Pedro
+    const hard = (stem) => (/g$/i.test(stem) ? stem + 'u' : /c$/i.test(stem) ? stem.slice(0, -1) + 'qu' : stem); // Marc → Marquinho
+    const r = Math.random();
+    let out = null;
+    if (r < 0.45 && clip.length >= 3 && !/h$/i.test(clip)) out = hard(clip) + 'inho';
+    else if (r < 0.65 && clip.length >= 3) out = hard(clip) + 'ão';
+    else if (r < 0.8) {
+      // a doubled syllable, the last accented: Cacá, Dedé, Zezé
+      const m = base.match(/^([^aeiou]*)([aeiou])/i);
+      out = m && m[1].length === 1 ? m[1] + m[2] + m[1] + ACCENT[m[2].toLowerCase()] : null;
+    } else if (/[ao]$/i.test(open) && open.length >= 4 && open.length < base.length) out = open; // Rafa, Duda
+    if (!out || out.length < 3) return null;
+    out = out.charAt(0).toUpperCase() + out.slice(1).toLowerCase();
+    return MONO_BLOCK.has(plain(out).toLowerCase()) ? null : out;
+  };
+  // Youth years for a player made with the world: the nation he grew up in (his own, now and then where he plays now if
+  // he moved young) and the club there that trained him (for a young player often his current club; B teams belong to
+  // their parent). A nation with no club in this world leaves the club empty.
+  let youthPool = { S: null, n: 0, by: {} };
+  W.assignYouth = function (p, clubId) {
+    const S = FM.S,
+      age = W.age(p),
+      here = clubId && S.clubs[clubId];
+    if (youthPool.S !== S || youthPool.n !== Object.keys(S.clubs).length) {
+      const by = {};
+      for (const c of Object.values(S.clubs))
+        if (c.comp && !c.parent && c.sim !== 'nation') (by[c.nat] = by[c.nat] || []).push(c);
+      youthPool = { S, n: Object.keys(S.clubs).length, by };
+    }
+    if (p.youth && S.clubs[p.youth]) {
+      p.homeNat = S.clubs[p.youth].nat;
+      p.trainedAt = p.youth;
+      return;
+    }
+    let home = p.nat;
+    if (here && here.nat !== p.nat && age <= 24 && Math.random() < 0.12) home = here.nat; // moved abroad as a teenager
+    p.homeNat = home;
+    const pool = youthPool.by[home] || [];
+    const own = here && (here.parent ? S.clubs[here.parent] : here);
+    if (own && own.nat === home && age <= 22 && Math.random() < 0.6) p.trainedAt = own.id;
+    else if (pool.length) {
+      let r = Math.random() * pool.reduce((t, c) => t + c.rep, 0);
+      p.trainedAt = (pool.find((c) => (r -= c.rep) < 0) || pool[0]).id;
+    } else p.trainedAt = null;
+  };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
-    const heritage = W.pickHeritage(nat),
+    // a club with a heritage policy (Basque-only, Catalan-only) fields players of that heritage and its own nation
+    const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
+    if (pol) nat = FM.S.clubs[clubId].nat;
+    const heritage = pol && pol.heritage ? pol.heritage : W.pickHeritage(nat),
       nm = W.rollName(nat, heritage);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(
@@ -543,6 +649,14 @@
       cult: 0,
       derbyGoals: 0,
     };
+    // a share of Brazilians and Portuguese go by one name
+    if (!heritage && Math.random() < (MONO_RATE[nat] || 0)) {
+      const one = W.mononym(nm.fn);
+      if (one && !REAL_NAMES.has(one) && !W.nameTaken(` ${one}`)) {
+        p.fn = '';
+        p.ln = one;
+      }
+    }
     W.genAlt(p);
     // Unique names (and never a famous real player). Retry combinations, then fall back to a second surname.
     let tries = 0;
@@ -556,7 +670,10 @@
       p.ln = D.TWO_SURNAMES.includes(nat) ? `${p.ln.split(' ')[0]} ${second}` : `${p.ln.split('-')[0]}-${second}`;
     }
     W.claimName(`${p.fn} ${p.ln}`);
-    if (heritage) p.heritage = heritage;
+    if (heritage) {
+      p.heritage = heritage;
+      p.nat2 = W.dualNat(nat, heritage, D.lastPoolKey);
+    }
     p.traits = genTraits(p);
     p.personality = W.personality(hid);
     // Plausible prior career for older players (so "600 games" veterans can exist)
@@ -670,7 +787,7 @@
       list = p.side === 'L' || p.foot === 'Left' ? [3, 2, ...list] : [2, 3, ...list];
     const senior = W.age(p) > 18;
     if (senior) for (const n of list) if (!taken.has(n)) return n;
-    let n = senior ? 2 : 30;
+    let n = senior ? 12 : 30; // (past the shirts the positions want: a spare winger is not number 9)
     while (taken.has(n)) n++;
     return n;
   };
@@ -901,6 +1018,81 @@
     const gap = age >= 26 ? AGE_GAP[Math.min(age, 26)] || 0 : AGE_GAP[Math.max(18, age)] + Math.max(0, 18 - age) * 2;
     return ca + Math.max(0, Math.round(gap + U.gauss(0, 1.5 + gap * 0.4)));
   };
+  // ---------- What a club can become: its attributes and its ceiling ----------
+  // A club's reputation is not free to go anywhere. Each club has a market (the size of its city and its catchment), a support
+  // base, a youth catchment and an owner, worked out from its ground, its standing and its identity (and kept on the club, so a
+  // database can set them). They give it a historical reputation that moves slowly, a ceiling it cannot rise above without a
+  // cause (a takeover, years of success growing its support) and a floor it does not sink below at once. Rises and falls in
+  // a season are also capped, so a small club does not become a giant in a few years, or a giant a nobody.
+  W.REP_STEP = 4.5; // the most a club's reputation moves in a season from its results
+  W.REP_STANDING = 0.8; // how much of its yearly target comes from this season's standing (the rest from its history)
+  W.REP_HEAD = 1.8; // a multiplier on the headroom its market, supporters and owner allow
+  W.REP_SLACK = 1.6; // a multiplier on how far below its history a club may sink
+  const BIG_NATION = {
+    ENG: 1,
+    ESP: 1,
+    GER: 1,
+    FRA: 1,
+    ITA: 1,
+    BRA: 1,
+    USA: 1,
+    JPN: 0.5,
+    MEX: 0.5,
+    TUR: 0.5,
+    ARG: 0.5,
+    KSA: 0.4,
+    NED: 0.2,
+    POR: 0.2,
+    RUS: 0.6,
+  };
+  const SUPPORT_BY_IDENTITY = { giant: 2, fan: 1.5, historic: 1, fallen: 1.5, oil: -1, selling: -0.5, youth: 0 };
+  W.clubAttr = function (c) {
+    if (c.attr) return c.attr;
+    const h = U.hash(c.id),
+      cap = (c.stadium && (c.stadium.cap0 || c.stadium.cap)) || 15000;
+    const scale = (Math.log(cap) - Math.log(3000)) / (Math.log(80000) - Math.log(3000));
+    const market = U.clamp(1 + scale * 7.5 + ((h % 5) - 2) * 0.35 + (BIG_NATION[c.nat] || 0) * 0.8, 1, 10);
+    const support = U.clamp(market * 0.6 + (c.rep - 40) / 12 + (SUPPORT_BY_IDENTITY[c.identity] || 0), 1, 10);
+    const catchment = U.clamp(market * 0.7 + (c.identity === 'youth' ? 1.5 : 0) + (((h >> 3) % 3) - 1) * 0.5, 1, 10);
+    const own = { oil: 'sovereign', fan: 'fans', selling: 'investors' }[c.identity] || 'private';
+    const a = { market, support, catchment, own, hist: c.rep };
+    a.ceil = W.repCeiling(a, c.rep);
+    a.floor = Math.max(20, c.rep - (6 + market * 0.8) * W.REP_SLACK);
+    c.attr = a;
+    return a;
+  };
+  // The most a club can be: its standing now (it is never above its own ceiling), plus what its market, supporters and owner allow
+  W.repCeiling = (a, rep) =>
+    Math.min(
+      99,
+      rep +
+        (1.5 + 1.9 * a.market + 1.1 * a.support) * W.REP_HEAD +
+        (a.own === 'sovereign' ? 8 : a.own === 'fans' ? -1.5 : 0),
+    );
+  // A change to a club's reputation, held to its ceiling and floor (national teams and clubs outside the leagues have none)
+  W.nudgeRep = function (c, d) {
+    if (!c || !c.comp || c.sim === 'nation') {
+      if (c) c.rep = U.clamp(c.rep + d, 20, 99);
+      return;
+    }
+    const a = W.clubAttr(c);
+    c.rep = U.clamp(c.rep + d, a.floor, Math.max(a.ceil, c.rep));
+  };
+  // A season ends: the club's reputation moves toward what its standing and its history support, by a capped step, and its
+  // history follows slowly. Success also grows the club (supporters, then the ceiling); a long slump shrinks it.
+  W.driftRep = function (c, standing) {
+    const a = W.clubAttr(c);
+    const target = U.clamp(W.REP_STANDING * standing + (1 - W.REP_STANDING) * a.hist, a.floor, a.ceil);
+    c.rep = U.clamp(c.rep + U.clamp((target - c.rep) * 0.18, -W.REP_STEP, W.REP_STEP), 20, Math.max(a.ceil, c.rep));
+    a.hist += (c.rep - a.hist) * 0.05;
+    a.floor = Math.max(20, Math.min(a.floor + 0.2, a.hist - (6 + a.market * 0.8) * W.REP_SLACK));
+  };
+  W.growClub = function (c, d) {
+    const a = W.clubAttr(c);
+    a.support = U.clamp(a.support + d, 1, 10);
+    a.ceil = Math.min(99, a.ceil + d * 3);
+  };
+
   W.levelFor = (rep) => 25 + rep * 0.58;
   // Ability of an unattached player the world invents (a new world's free agents, a thin summer market): mostly
   // lower-league standard; only rarely someone good enough for a top flight
@@ -920,20 +1112,33 @@
         ? club.nat
         : U.pick(Object.keys(D.NATIONS));
 
-  function genSquad(club) {
+  // A squad for a club. `have`: players it already has (a database that fixes some of them): only the gaps are filled
+  function genSquad(club, have = []) {
     const lvl = W.levelFor(club.rep);
     const positions = randomPos(W.squadWant(club));
+    for (const h of have) {
+      const i = positions.indexOf(h.pos);
+      if (i >= 0 && !h.youth) positions.splice(i, 1);
+    }
     const made = []; // nationality and age of each player so far: the squad starts within its league's rules
+    have.forEach((h) => made.push({ nat: h.nat, age: W.age(h) }));
     const nat = (age, pick) => {
       const n = FM.Reg.genNat(club, made, age, pick);
       made.push({ nat: n, age });
       return n;
     };
+    const mil = !!(club.policy && club.policy.military); // the army's club: conscripts on loan, no academy
     const sidesMade = {},
-      mine = [];
+      mine = have.slice();
     positions.forEach((pos, i) => {
       // a B team is a young side: mostly 18 to 23, with a few older heads
-      const age = club.parent ? (Math.random() < 0.85 ? U.randi(18, 23) : U.randi(24, 27)) : pickAge(pos);
+      const age = mil
+        ? U.randi(24, 27)
+        : club.parent
+          ? Math.random() < 0.85
+            ? U.randi(18, 23)
+            : U.randi(24, 27)
+          : pickAge(pos);
       const starter = i % 2 === 0;
       let ca = Math.round(
         U.clamp(
@@ -943,13 +1148,14 @@
         ),
       );
       const p = W.genPlayer({
-        nat: nat(age, () => W.natFor(club)),
+        nat: mil ? 'KOR' : nat(age, () => W.natFor(club)),
         pos,
         age,
         ca,
         pa: W.potentialFor(ca, age),
         clubId: club.id,
       });
+      if (mil) FM.Asia.enlist(p, club);
       if (W.FLANK.includes(pos)) {
         // left and right in turn, the foot to match (most full-backs; wingers are often inverted)
         const n = (sidesMade[pos] = (sidesMade[pos] || 0) + 1);
@@ -961,7 +1167,7 @@
       mine.push(p);
     });
     // Academy prospects
-    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2); i++) {
+    for (let i = 0; i < (mil ? 0 : (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length); i++) {
       const age = U.randi(17, 19),
         pos = U.pick(['CB', 'CM', 'W', 'ST', 'FB', 'AM', 'WB', 'WM']);
       const ca = Math.round(lvl - U.randi(12, 20));
@@ -977,9 +1183,12 @@
       FM.S.players[p.id] = p;
       mine.push(p);
     }
+    mine.forEach((p) => (p.no = 0)); // (numbers handed out as each player was made go back: the best choose first)
     W.numberSquad(mine);
     W.rosterVer++; // (these players went straight into the club: any squad index built before now is out of date)
   }
+
+  W.genSquad = genSquad;
 
   // Squads come from an index rebuilt whenever someone joins a club (W.startSpell bumps rosterVer).
   // Leavers, retirees and deleted players are filtered out on read, so the index never goes stale.
@@ -1362,41 +1571,203 @@
     return rounds.concat(second);
   };
 
-  W.setupSeasonFixtures = function (comp) {
-    comp.table = {};
-    comp.clubs.forEach(
-      (id) =>
-        (comp.table[id] = {
-          p: 0,
-          w: 0,
-          d: 0,
-          l: 0,
-          gf: 0,
-          ga: 0,
-          pts: comp.deductions?.[id] ? -comp.deductions[id] : 0,
-          form: [],
-        }),
+  // Conference membership of a league's clubs (comp.conf: club id -> conference). Clubs the rules don't name (a club
+  // that arrived by promotion, say) join the smaller conference.
+  W.conferenceOf = function (comp) {
+    const names = Object.keys(comp.rules.conferences);
+    comp.conf = comp.conf || {};
+    for (const [n, codes] of Object.entries(comp.rules.conferences))
+      for (const code of codes) if (comp.clubs.includes('c_' + code)) comp.conf['c_' + code] = n;
+    for (const id of Object.keys(comp.conf)) if (!comp.clubs.includes(id)) delete comp.conf[id];
+    const size = (n) => comp.clubs.filter((id) => comp.conf[id] === n).length;
+    for (const id of comp.clubs) if (!comp.conf[id]) comp.conf[id] = names.slice().sort((a, b) => size(a) - size(b))[0];
+    return comp.conf;
+  };
+  // one conference's standings (the table's order, restricted to its clubs)
+  W.confTable = (comp, n) => W.sortedTable(comp).filter((r) => comp.conf && comp.conf[r.id] === n);
+  W.confClubs = (comp, n) => comp.clubs.filter((id) => comp.conf && comp.conf[id] === n);
+
+  // An MLS-style schedule: each conference plays a double round-robin among itself (the odd club out each round meets
+  // its counterpart from the other conference), and four more rounds are played entirely across the conferences.
+  W.conferenceRounds = function (comp) {
+    W.conferenceOf(comp);
+    const names = Object.keys(comp.rules.conferences),
+      A = W.confClubs(comp, names[0]),
+      B = W.confClubs(comp, names[1]);
+    const rrA = W.roundRobin(A),
+      rrB = W.roundRobin(B);
+    const n = Math.max(rrA.length, rrB.length);
+    const used = new Set();
+    const key = (x, y) => (x < y ? x + '|' + y : y + '|' + x);
+    const flip = (x, y) => (Math.random() < 0.5 ? [x, y] : [y, x]);
+    const rounds = [];
+    for (let r = 0; r < n; r++) {
+      const rd = [...(rrA[r] || []), ...(rrB[r] || [])];
+      const idle = (grp, lst) => {
+        const playing = new Set((lst[r] || []).flat());
+        return grp.filter((id) => !playing.has(id));
+      };
+      const ia = idle(A, rrA),
+        ib = idle(B, rrB);
+      for (let i = 0; i < Math.min(ia.length, ib.length); i++) {
+        rd.push(flip(ia[i], ib[i]));
+        used.add(key(ia[i], ib[i]));
+      }
+      rounds.push(rd);
+    }
+    // cross-conference rounds: a random perfect matching that avoids repeating a pairing where it can
+    const crossRounds = [];
+    const extra = Math.max(0, (comp.rules.rounds || 34) - n);
+    for (let k = 0; k < extra; k++) {
+      let best = null;
+      for (let tries = 0; tries < 30; tries++) {
+        const a = U.shuffle(A),
+          b = U.shuffle(B),
+          m = Math.min(a.length, b.length);
+        const pairs = a.slice(0, m).map((id, i) => [id, b[i]]);
+        const dup = pairs.filter(([x, y]) => used.has(key(x, y))).length;
+        if (!best || dup < best.dup) best = { pairs, dup };
+        if (!dup) break;
+      }
+      best.pairs.forEach(([x, y]) => used.add(key(x, y)));
+      crossRounds.push(best.pairs.map(([x, y]) => flip(x, y)));
+    }
+    // the extra rounds are spread through the season rather than bunched at the end
+    crossRounds.forEach((rd, k) =>
+      rounds.splice(Math.round(((k + 1) * (rounds.length + 1)) / (crossRounds.length + 1)) + k, 0, rd),
     );
+    return rounds;
+  };
+
+  const blankRow = (pts = 0) => ({ p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts, form: [] });
+
+  // Argentina's format: two zones of equal size (snaked by reputation), each playing its zone once and then a
+  // cross-zone round, twice a year: the Apertura, then the Clausura with the home matches reversed.
+  W.zoneRounds = function (comp) {
+    const ids = comp.clubs.slice().sort((a, b) => FM.clubOf(b).rep - FM.clubOf(a).rep),
+      A = [],
+      B = [];
+    ids.forEach((id, i) => (i % 4 === 0 || i % 4 === 3 ? A : B).push(id));
+    comp.zones = {};
+    A.forEach((id) => (comp.zones[id] = 'A'));
+    B.forEach((id) => (comp.zones[id] = 'B'));
+    const rrA = W.roundRobin(A),
+      rrB = W.roundRobin(B),
+      hA = rrA.length / 2,
+      hB = rrB.length / 2,
+      h = Math.max(hA, hB);
+    const cross = A.slice(0, Math.min(A.length, B.length)).map((a, i) => (Math.random() < 0.5 ? [a, B[i]] : [B[i], a]));
+    const t1 = [],
+      t2 = [];
+    // (each zone's two halves from its own length, so zones of different sizes keep their second half)
+    for (let r = 0; r < h; r++) {
+      t1.push([...(rrA[r] && r < hA ? rrA[r] : []), ...(rrB[r] && r < hB ? rrB[r] : [])]);
+      t2.push([...(r < hA ? rrA[hA + r] || [] : []), ...(r < hB ? rrB[hB + r] || [] : [])]);
+    }
+    t1.push(cross);
+    t2.push(cross.map(([x, y]) => [y, x]));
+    return t1.concat(t2);
+  };
+
+  // The rounds played after a league splits (a round per index, the groups' matches side by side)
+  W.splitRounds = (sp) =>
+    Math.max(
+      0,
+      ...sp.groups.map((n, i) =>
+        sp.rounds[i] === 'none' ? 0 : (n % 2 ? n : n - 1) * (sp.rounds[i] === 'double' ? 2 : 1),
+      ),
+    );
+
+  W.setupSeasonFixtures = function (comp) {
+    const R = comp.rules || {};
+    comp.table = {};
+    comp.clubs.forEach((id) => (comp.table[id] = blankRow(comp.deductions?.[id] ? -comp.deductions[id] : 0)));
     comp.deductions = {};
-    let rounds = W.roundRobin(comp.clubs);
-    if (comp.rules && comp.rules.rounds) rounds = rounds.slice(0, comp.rules.rounds); // formats shorter than a double round-robin
+    let rounds = R.conferences ? W.conferenceRounds(comp) : R.zones ? W.zoneRounds(comp) : W.roundRobin(comp.clubs);
+    if (R.rounds) rounds = rounds.slice(0, R.rounds); // formats shorter than a double round-robin
+    comp.groupOf = null;
+    comp.groups = null;
+    comp.split = null;
+    if (R.split) {
+      // a regular season of `after` rounds (a third time round for the 33-game leagues), then the split
+      while (rounds.length < R.split.after) {
+        const rr = W.roundRobin(comp.clubs);
+        rounds = rounds.concat(rr.slice(0, rr.length / 2));
+      }
+      rounds = rounds.slice(0, R.split.after);
+      for (let i = W.splitRounds(R.split); i > 0; i--) rounds.push([]);
+      comp.split = { done: false };
+    }
     comp.fixtures = rounds.map((rd, r) =>
       rd.map(([h, a]) => ({ id: FM.nextId('f'), comp: comp.id, round: r, h, a, res: null })),
     );
+    // two tournaments a year (Apertura and Clausura): each its own table, the season's table the two together
+    comp.torneos = R.torneos
+      ? R.torneos.map((name) => ({ name, table: Object.fromEntries(comp.clubs.map((id) => [id, blankRow()])) }))
+      : null;
+    comp.torneoHalf = comp.torneos ? Math.ceil(comp.fixtures.length / 2) : 0;
     comp.playoff = null;
+    comp.ko = null;
+  };
+
+  // The split: after the regular season the table divides into groups (the top six, the rest ...) that play each other
+  // again; the points carry over, or are halved (rounded up) where the real league does. Final positions go group
+  // by group, whatever the points.
+  W.doSplit = function (c) {
+    const sp = c.rules.split,
+      t = W.sortedTable(c);
+    c.groupOf = {};
+    c.groups = [];
+    let at = 0;
+    sp.groups.forEach((n, g) => {
+      const ids = t.slice(at, at + n).map((r) => r.id);
+      at += n;
+      ids.forEach((id) => (c.groupOf[id] = g));
+      c.groups.push(ids);
+    });
+    if (sp.halve) for (const id of c.clubs) c.table[id].pts = Math.ceil(c.table[id].pts / 2);
+    const per = c.groups.map((ids, g) => {
+      if (sp.rounds[g] === 'none' || ids.length < 2) return [];
+      const rr = W.roundRobin(ids);
+      return sp.rounds[g] === 'double' ? rr : rr.slice(0, rr.length / 2);
+    });
+    for (let j = 0; j < c.fixtures.length - sp.after; j++)
+      c.fixtures[sp.after + j] = per.flatMap((rds) =>
+        (rds[j] || []).map(([h, a]) => ({ id: FM.nextId('f'), comp: c.id, round: sp.after + j, h, a, res: null })),
+      );
+    c.split.done = true;
+    const uc = FM.S.user && W.userClub(); // (a world with no manager yet, as in the developer tools, has none)
+    if (uc && uc.comp === c.id)
+      FM.News.add({
+        type: 'world',
+        title: `${c.name} splits`,
+        body: `${sp.names
+          .map(
+            (n, g) =>
+              `${n}: ${c.groups[g]
+                .slice(0, 3)
+                .map((id) => FM.clubOf(id).short)
+                .join(', ')}${c.groups[g].length > 3 ? '…' : ''}`,
+          )
+          .join(' · ')}.${sp.halve ? ' Points are halved.' : ' Points carry over.'}`,
+        big: false,
+      });
   };
 
   // A table in order: points, then the competition's own tiebreakers (D.TIEBREAK: head-to-head, wins, goal
   // difference, goals scored, in the order its real rules use), then the club's name. comp: a league, or a group
   // ({ table, fixtures, tiebreak }) — head-to-head reads the results from its fixtures.
   W.sortedTable = function (comp) {
+    const grp = (id) => (comp.groupOf && comp.groupOf[id]) || 0; // a split league: group by group
     const rows = Object.entries(comp.table)
       .map(([id, r]) => ({ id, ...r, gd: r.gf - r.ga }))
-      .sort((a, b) => b.pts - a.pts || FM.clubOf(a.id).name.localeCompare(FM.clubOf(b.id).name));
+      .sort(
+        (a, b) => grp(a.id) - grp(b.id) || b.pts - a.pts || FM.clubOf(a.id).name.localeCompare(FM.clubOf(b.id).name),
+      );
     const rule = comp.tiebreak || (comp.rules && comp.rules.tiebreak) || D.TIEBREAK[comp.id] || D.TIEBREAK_DEFAULT;
     for (let i = 0; i < rows.length;) {
       let j = i + 1;
-      while (j < rows.length && rows[j].pts === rows[i].pts) j++;
+      while (j < rows.length && rows[j].pts === rows[i].pts && grp(rows[j].id) === grp(rows[i].id)) j++;
       if (j - i > 1) {
         const run = rows.slice(i, j);
         // head-to-head among the clubs level on points (only worked out when a rule asks for it)
@@ -1440,6 +1811,13 @@
     }
     return rows;
   };
+  // one tournament's table (Apertura / Clausura), and one zone of it (Argentina)
+  W.torneoTable = function (comp, t, zone) {
+    const half = comp.torneoHalf,
+      fx = (t ? comp.fixtures.slice(half) : comp.fixtures.slice(0, half)).flat();
+    const rows = W.sortedTable({ id: comp.id, rules: comp.rules, table: comp.torneos[t].table, fixtures: [fx] });
+    return zone ? rows.filter((r) => comp.zones && comp.zones[r.id] === zone) : rows;
+  };
   W.position = (clubId) => {
     const c = FM.S.clubs[clubId];
     return W.sortedTable(FM.S.comps[c.comp]).findIndex((r) => r.id === clubId) + 1;
@@ -1462,7 +1840,14 @@
   W.roundOn = (c, r) => (c.onDay ? (c.onDay[r] ?? -1) : r);
   W.roundFixtures = (c, r) => {
     const k = W.roundOn(c, r);
-    return k >= 0 ? c.fixtures[k] || null : null;
+    if (k < 0) return null;
+    // a split league makes its post-split rounds once every regular-season match is in
+    const sp = c.rules.split;
+    if (sp && c.split && !c.split.done && k >= sp.after) {
+      if (c.fixtures.slice(0, sp.after).every((rd) => rd.every((f) => f.res))) W.doSplit(c);
+      else return [];
+    }
+    return c.fixtures[k] || null;
   };
   W.roundsBefore = (c, r) => {
     if (!c.onDay) return Math.min(r, c.fixtures.length);
@@ -1473,6 +1858,9 @@
 
   // League days with midweek cup, continental, Club World Cup and international days slotted in between.
   // Two-legged knockouts add a second leg day; tournament summers append the finals at the end.
+  const KO_STAGES = ['M1', 'M2', 'M3', 'M4'];
+  // the kind of title playoff a league has: 'mls', 'finals6', 'liguilla' or 'zones' (none: null)
+  W.koType = (c) => (c.rules.playoffs && c.rules.playoffs.type) || (c.rules.mls ? 'mls' : null);
   W.buildCalendar = function () {
     const S = FM.S,
       rounds = Math.max(...W.leagues().map((c) => c.fixtures.length));
@@ -1513,10 +1901,14 @@
       RC[r] = true;
     }
     const legs = !!S.rules.twoLegs;
+    const mid = W.leagues().filter((c) => W.koType(c) && c.torneos);
     const cal = [];
     for (let i = 0; i < D.PRESEASON_DAYS; i++) cal.push({ type: 'pre', idx: i });
     for (let r = 0; r < rounds; r++) {
       cal.push({ type: 'league', round: r });
+      // the first tournament's knockouts follow its last round
+      if (mid.some((c) => c.onDay[r] === c.torneoHalf - 1))
+        for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 0 });
       let st = CC[r];
       if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF)1$/, '$1');
       if (st && W.continentals().length) cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: st });
@@ -1529,6 +1921,12 @@
       if (RC[r]) cal.push({ type: 'cup', regional: true, comps: FM.Regional.regionals().map((c) => c.id) });
       if (INTL[r] && S.nteams) INTL[r].forEach((tag) => cal.push({ type: 'intl', tag }));
     }
+    // Title playoffs (the MLS Cup, A-League finals, the Liguilla, Argentina's knockouts): four days, the last tournament's at the
+    // end of the season (a league with one tournament uses days with no tournament set)
+    if (W.leagues().some((c) => W.koType(c) && !c.torneos))
+      for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m });
+    if (W.leagues().some((c) => W.koType(c) && c.torneos))
+      for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 1 });
     if (legs)
       cal.push(
         { type: 'playoff', stage: 'SF1' },
@@ -1559,8 +1957,11 @@
       retired: [],
       wbPos: 2, // wing-backs are a position from the start (older saves convert theirs on load)
       wmPos: 1, // so are wide midfielders (LM/RM)
-      compRules: 2, // and each league's real promotion, relegation and play-off rules
-      clubAbbr: 1, // clubs show their real abbreviations and nicknames
+      traitsV2: 1,
+      policyV1: 1,
+      intro: { year: opts.startYear || D.SEASON_START, n: 0, derby: false, met: {} }, // the first season introduces the world as it goes
+      compRules: 3, // and each league's real promotion, relegation and play-off rules
+      clubAbbr: 2, // clubs show their real abbreviations and nicknames
       rules: {
         win: opts.win || 3,
         subs: opts.subs || 5,
@@ -1626,6 +2027,7 @@
         nat,
         colors: [c1, c2],
         identity,
+        policy: D.CLUB_POLICY[code] || null, // who the club will sign (the Basque and Catalan clubs of Spain's second division)
         rep,
         parent,
         stadium: { name: stadium, cap, cap0: cap },
@@ -1649,7 +2051,7 @@
           .replace('{city}', city)
           .replace('{short}', short)
           .replace('{nick}', (info[1] || name.split(' ').pop()).replace(/^(The|Die|Les|Los|Los|Le|La|El|Il|De) /, '')),
-        tradition: U.pick(D.TRADITIONS),
+        tradition: D.TRADITIONS[U.hash(code) % D.TRADITIONS.length], // fixed by the club, so the picker can show it first
         rival: null,
         derby: null,
         titles: {},
@@ -1664,6 +2066,7 @@
       };
       S.clubs[id] = club;
       S.comps[compId].clubs.push(id);
+      W.clubAttr(club);
       genSquad(club);
       return club;
     };
@@ -1708,6 +2111,7 @@
       p.contract = S.year;
       S.players[p.id] = p;
     }
+    for (const id in S.players) W.assignYouth(S.players[id], S.players[id].clubId); // where each grew up and who trained him
     FM.Contracts.seedWorld();
     W.leagues().forEach(W.setupSeasonFixtures);
     FM.Intl.setup();
@@ -1984,38 +2388,114 @@
   };
 
   // Fictional historic legends so every club has a past before your save writes its future
+  // Every club's own history before the save: five legends, from the years the club existed, with names of its own
+  // country (or heritage), two of them forwards so the club has a scorer to beat
   W.seedLegends = function () {
     const notes = [
       'Captained the club to its last title',
       'Club record goalscorer',
-      'Cult hero — scored in five straight derbies',
+      'Cult hero: scored in five straight derbies',
       'One-club man, 17 seasons',
       'The greatest free signing in club history',
       'Academy graduate turned legend',
       'Scored the goal that saved the club from relegation',
     ];
+    const now = FM.S.year;
     Object.values(FM.S.clubs)
-      .filter((c) => c.sim === 'full')
+      .filter((c) => c.comp && c.sim !== 'nation')
       .forEach((c) => {
-        c.legends = [0, 1, 2]
+        const first = Math.max(c.founded || 1950, 1950),
+          pool = c.policy && D.NAME_POOLS[c.policy.heritage];
+        const poss = ['ST', 'W', 'ST', 'AM', 'CM', 'CB', 'GK', 'CM', 'FB'];
+        c.legends = [0, 1, 2, 3, 4]
           .map((i) => {
-            const nat = Math.random() < 0.8 ? 'ENG' : U.pick(Object.keys(D.NATIONS));
-            const from = U.randi(1962, 2008),
-              yrs = U.randi(7, 16),
-              pos = U.pick(['ST', 'CM', 'CB', 'W', 'GK', 'AM']);
+            const nat = U.chance(0.88) ? c.nat : U.pick(Object.keys(D.NATIONS));
+            const yrs = U.randi(7, 16),
+              from = U.randi(first, Math.max(first, Math.min(2012, now - yrs - 1))),
+              pos = i < 2 ? U.pick(['ST', 'ST', 'W', 'AM']) : U.pick(poss);
             const apps = yrs * U.randi(28, 40);
+            const nm = pool
+              ? [U.pick(pool.fn), U.pick(pool.ln)]
+              : [U.pick(D.NATIONS[nat].fn), U.pick(D.NATIONS[nat].ln)];
             return {
-              name: `${U.pick(D.NATIONS[nat].fn)} ${U.pick(D.NATIONS[nat].ln)}`,
-              nat,
+              name: `${nm[0]} ${nm[1]}`,
+              nat: pool ? c.nat : nat,
               pos,
               era: `${from}–${from + yrs}`,
               apps,
-              goals: Math.round(apps * ({ ST: 0.45, W: 0.2, AM: 0.22, CM: 0.1 }[pos] || 0.03)),
+              goals: Math.round(apps * ({ ST: 0.5, W: 0.24, AM: 0.26, CM: 0.1, FB: 0.04, CB: 0.05 }[pos] || 0.005)),
               note: notes[(U.hash(c.id) + i) % notes.length],
             };
           })
           .sort((a, b) => b.apps - a.apps);
       });
+  };
+
+  // Thirty seasons of league champions, runners-up and domestic cup winners before the save begins, so the archive, the club pages
+  // and the honours cards have a past. A club wins in proportion to its standing (and the weight of its history), a champion tends
+  // to win again (a dynasty), and a club cannot win before it was founded; the champions it produces are the clubs the world's own
+  // ceilings say could have been champions.
+  W.seedHistory = function (years = 30) {
+    const S = FM.S;
+    if (S.archive.length) return 0;
+    const clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim !== 'nation' && !c.parent);
+    const weight = (c, y) => {
+      if (c.founded && c.founded > y) return 0;
+      const hist =
+        { giant: 1.8, historic: 1.5, oil: 0.9, fallen: 1.4, fan: 0.8, youth: 0.9, selling: 0.9 }[c.identity] || 1;
+      return Math.exp((c.rep - 55) / 7) * hist;
+    };
+    const prev = {};
+    const cups = Object.values(S.comps).filter((x) => x.type === 'cup' && x.nat);
+    const out = [];
+    for (let i = years; i >= 1; i--) {
+      const year = S.year - i,
+        entry = {
+          year,
+          label: `${year}/${String(year + 1).slice(2)}`,
+          comps: {},
+          cups: {},
+          promoted: [],
+          relegated: [],
+          upsets: [],
+          transfers: [],
+          user: null,
+          seeded: true,
+        };
+      for (const comp of W.leagues()) {
+        const pool = clubs.filter((c) => c.comp === comp.id);
+        if (pool.length < 2) continue;
+        const w = (c) => weight(c, year) * (prev[comp.id] === c.id ? 2.4 : 1);
+        const champ = U.wpick(pool, w) || pool[0];
+        const second = U.wpick(
+          pool.filter((c) => c.id !== champ.id),
+          w,
+        );
+        prev[comp.id] = champ.id;
+        champ.titles = champ.titles || {};
+        champ.titles[comp.id] = (champ.titles[comp.id] || 0) + 1;
+        entry.comps[comp.id] = {
+          name: comp.name,
+          sim: comp.sim || 'full',
+          nat: comp.nat,
+          champion: champ.id,
+          runnerUp: second.id,
+        };
+      }
+      for (const cup of cups) {
+        const pool = clubs.filter((c) => c.nat === cup.nat);
+        if (pool.length < 2) continue;
+        // a cup is kinder to the small: the weight is flattened
+        const w = (c) => Math.sqrt(weight(c, year)) + 0.2;
+        const win = U.wpick(pool, w);
+        entry.cups[cup.id] = { name: cup.name, winner: win.id };
+        win.titles = win.titles || {};
+        win.titles[cup.id] = (win.titles[cup.id] || 0) + 1;
+      }
+      out.push(entry);
+    }
+    S.archive = out;
+    return out.length;
   };
 
   // ---------------- Compact save format ----------------
@@ -2191,6 +2671,12 @@
   };
 
   W.userClub = () => FM.S.clubs[FM.S.user.clubId];
+  // The army's club (Gimcheon Sangmu in real life): its squad is conscripts, so nothing tops it up
+  W.army = (c) => !!(c && c.policy && c.policy.military);
+  // Lower-league realism: a part-time club (the fourth tier and below, or a tiny club) trains in the evenings, has no scouting
+  // network to speak of (two scouts at most) and pays what a community club can
+  W.partTime = (c) => !!c && c.sim !== 'nation' && ((FM.S.comps[c.comp] && FM.S.comps[c.comp].tier >= 4) || c.rep < 28);
+  W.maxScouts = () => (W.partTime(W.userClub()) ? 2 : 5);
   W.isUser = (clubId) => FM.S.user && FM.S.user.clubId === clubId;
   W.isUserNation = (id) => !!(FM.S.user && FM.S.user.nation && FM.S.user.nation === id);
   W.isMine = (id) => W.isUser(id) || W.isUserNation(id);

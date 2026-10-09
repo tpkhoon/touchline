@@ -25,8 +25,35 @@
     ARG: { tv: 0.7, com: 0.8, gate: 1, sell: 0.8 },
     USA: { tv: 0.9, com: 1.2, gate: 1.05 }, // salary-capped, commercially strong
     MEX: { tv: 1, com: 1, gate: 0.95 },
+    SGP: { tv: 0.6, com: 0.9, gate: 0.8, sell: 0.5 },
+    MYS: { tv: 0.7, com: 0.9, gate: 0.9 },
+    VIE: { tv: 0.7, com: 0.9, gate: 0.9 },
+    IDN: { tv: 0.75, com: 0.85, gate: 1.0 },
+    PHI: { tv: 0.5, com: 0.7, gate: 0.7 },
+    RSA: { tv: 0.8, com: 1.0, gate: 0.8, sell: 0.7 },
+    KSA: { tv: 1.3, com: 1.6, gate: 0.6, sell: 0.35 }, // state and owner money, small crowds, clubs buy more than they sell
   };
-  F.mix = (c) => ({ ...F.MIX._, ...(F.MIX[c.nat] || {}) });
+  // What the club's identity does to where its money comes from: an oil-backed club's sponsors pay over the odds, a fan-owned
+  // club lives on its gate, a giant sells shirts, a selling club puts more of every sale back into the squad
+  F.IDMIX = {
+    oil: { com: 1.35, gate: 0.95 },
+    fan: { gate: 1.12, com: 0.92 },
+    giant: { com: 1.1 },
+    historic: { gate: 1.05 },
+    selling: { sell: 0.15 },
+  };
+  F.MARKET_K = 0.01; // how much a club's market size moves its commercial income (per point of the 10)
+  F.ID_SCALE = 0.5; // how far identity moves revenue sources from the country's mix (0 none, 1 as set above)
+  F.mix = (c) => {
+    const m = { ...F.MIX._, ...(F.MIX[c.nat] || {}) },
+      i = F.IDMIX[c.identity] || {};
+    return {
+      tv: m.tv,
+      com: m.com * (1 + ((i.com || 1) - 1) * F.ID_SCALE),
+      gate: m.gate * (1 + ((i.gate || 1) - 1) * F.ID_SCALE),
+      sell: m.sell + (i.sell || 0) * F.ID_SCALE,
+    };
+  };
   F.SHARE = { tv: 0.33, com: 0.25, gate: 0.42 };
   // A season's revenue for a club, by source (before attendance and cup runs move the gate part)
   F.annual = function (c) {
@@ -37,7 +64,12 @@
     const tvTier = tier === 1 ? 1 : tier === 2 ? 0.7 : 0.5;
     return {
       tv: R * F.SHARE.tv * m.tv * tvTier * ((comp && comp.tvBoost) || 1),
-      com: R * F.SHARE.com * m.com * (1 + (((c.facilities && c.facilities.fanzone) || 1) - 1) * 0.06),
+      com:
+        R *
+        F.SHARE.com *
+        m.com *
+        (1 + (((c.facilities && c.facilities.fanzone) || 1) - 1) * 0.06) *
+        (0.9 + W.clubAttr(c).market * 0.02),
       gate: R * F.SHARE.gate * m.gate,
     };
   };
@@ -74,7 +106,8 @@
 
   // ---------- Wages against revenue ----------
   F.wageBill = (c) =>
-    U.sum(W.squad(c.id), (p) => p.wage * (p.loan && p.clubId === c.id ? p.loan.share : 1)) * FM.D.WAGE_WEEKS;
+    U.sum(W.squad(c.id), (p) => (p.service ? 0 : p.wage) * (p.loan && p.clubId === c.id ? p.loan.share : 1)) *
+    FM.D.WAGE_WEEKS;
   F.wageRatio = (c) => F.wageBill(c) / Math.max(1, F.revenue(c));
   F.LIMIT = { cut: 0.7, freeze: 0.85, interest: 0.01 };
   // Weekly: interest on debt for everyone; for your club, the board steps in as the wage bill outgrows revenue
@@ -82,6 +115,7 @@
     const s = S();
     for (const c of Object.values(s.clubs)) {
       if (c.sim !== 'full') continue;
+      if (!W.isUser(c.id) && FM.Reg.real() && FM.Reg.mls(c)) FM.Reg.mlsComply(c); // an MLS club keeps within its salary budget
       if (c.balance < 0) {
         const i = Math.round(-c.balance * F.LIMIT.interest);
         c.balance -= i;

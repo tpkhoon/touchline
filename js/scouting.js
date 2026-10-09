@@ -11,6 +11,12 @@
     if (c) return c.nat === 'ENG' ? 'ENG' : D.NATIONS[c.nat].region;
     return D.NATIONS[p.nat].region;
   };
+  // A club with a signing policy (the Basque and Catalan clubs) only looks at players it could sign: its scouts, search and
+  // suggestions leave everyone else out
+  Sc.scoutable = function (p) {
+    const c = FM.S.user && FM.S.user.clubId && FM.S.clubs[FM.S.user.clubId];
+    return !c || !c.policy || FM.Reg.policy(c, p).ok;
+  };
   Sc.know = (pid) => FM.S.user.knowledge[pid] || 0;
   // Average ability of the user's current XI (cached per matchday — used on every report render)
   Sc.level = function () {
@@ -193,7 +199,7 @@
     const before = u.knowledge[p.id] || 0;
     u.knowledge[p.id] = Math.min(100, before + gain * (1 - before / 140));
     const rep = u.reports[p.id];
-    if (!rep || rep.scout !== scout.id)
+    if (!rep)
       u.reports[p.id] = {
         scout: scout.id,
         err: U.gauss(0, 1),
@@ -202,10 +208,25 @@
         year: FM.S.year,
         isNew: true,
       };
-    else {
+    else if (rep.scout === scout.id) {
       rep.day = FM.S.day;
       rep.year = FM.S.year;
       rep.isNew = true;
+    } else if (rep.second && rep.second.scout === scout.id) {
+      rep.second.day = FM.S.day;
+      rep.second.year = FM.S.year;
+      rep.second.isNew = true;
+    } else {
+      // a different scout watching the same player: his view is kept beside the first, as a second opinion (the latest
+      // other scout replaces an earlier one)
+      rep.second = {
+        scout: scout.id,
+        err: U.gauss(0, 1),
+        errP: U.gauss(0, 1),
+        day: FM.S.day,
+        year: FM.S.year,
+        isNew: true,
+      };
     }
   }
 
@@ -240,6 +261,7 @@
             !p.retired &&
             p.clubId !== u.clubId &&
             !dis[p.id] &&
+            Sc.scoutable(p) &&
             (a.type === 'league' ? p.clubId && S.clubs[p.clubId].comp === a.comp : Sc.region(p) === a.region) &&
             (a.pos === 'any' || D.POS_GROUP[p.pos] === a.pos) &&
             (!a.nat || a.nat === 'any' || p.nat === a.nat) &&
@@ -312,6 +334,79 @@
   // How much a player's head-room (potential over current ability) counts in a scout's judgement, by age:
   // a teenager is bought for what he'll become, a 26-year-old for what he is
   Sc.potentialWeight = (age) => (age <= 19 ? 0.6 : age <= 21 ? 0.5 : age <= 23 ? 0.35 : age <= 25 ? 0.15 : 0);
+  // What a player would do for your side: against the weakest starter in his position (how many slots your shape has there),
+  // and whether you are short of players there at all. helps: he would improve the eleven or fill a gap.
+  Sc.need = function (p, ca) {
+    const club = W.userClub();
+    if (!club) return null;
+    const tac = FM.S.user.tactic,
+      slots = (D.FORMATIONS[tac.formation] || []).filter((x) => x.t === p.pos).length || 1;
+    const same = W.squad(club.id)
+      .filter((q) => q.pos === p.pos && !(q.loan && q.loan.from === club.id))
+      .sort((a, b) => b.ca - a.ca);
+    const want = W.squadWant(club)[p.pos] ?? 2;
+    const weakest = same[Math.min(slots, same.length) - 1] || null;
+    const delta = ca - (weakest ? weakest.ca : 0);
+    return {
+      delta,
+      slots,
+      depth: same.length,
+      want,
+      replaces: weakest,
+      helps: delta >= 2 || same.length < want,
+      short: same.length < want,
+    };
+  };
+  // Three prices for a target: what the analytics department makes of his value, what his side (or his agent) wants, and what
+  // the sporting director thinks you could get him for. They differ, and which to believe is the decision.
+  Sc.prices = function (p, k) {
+    const club = W.userClub();
+    if (!club || p.clubId === club.id || k < 20) return null;
+    const T = FM.Transfers,
+      ask = T.askPrice(p);
+    const an = club.facilities.analytics || 0;
+    const noise = (tag, spread) => ((U.hash(p.id + tag) % 2001) / 1000 - 1) * spread;
+    const dir = FM.Staff.get('director');
+    const dirAbility = dir ? W.staffAbility('director') : 8;
+    return {
+      free: !p.clubId,
+      analytics:
+        an >= 1 && k >= 30 ? U.roundMoney(W.baseValue(p) * W.formFactor(p) * (1 + noise('an', 0.2 - an * 0.03))) : null,
+      agent: p.clubId ? ask : null,
+      director: U.roundMoney(T.userAsk(p) * (1 + noise('dir', Math.max(0.03, 0.2 - dirAbility * 0.01)))),
+      directorKnows: dirAbility >= 12 ? 'sure' : dirAbility >= 8 ? 'fairly sure' : 'guessing',
+    };
+  };
+
+  // ---------- Scouts see differently ----------
+  // Each scout has a lean: some are impressed by athletes (pace, stamina, strength), some by technique (dribbling, technique,
+  // passing, vision). A scout who judges well leans little. The lean colours his read of a player, so two scouts can disagree
+  // about the same man, and each notices different things.
+  Sc.bias = function (scout) {
+    const mag = U.clamp(1.25 - scout.judge / 20, 0.25, 1);
+    return ((U.hash(scout.id) % 2001) / 1000 - 1) * mag;
+  };
+  // How athletic against technical a player is: about -2 (all technique) to 2 (all athlete)
+  Sc.athlete = function (p) {
+    if (p.pos === 'GK') return 0;
+    const a = p.attrs;
+    return ((a.pace + a.stamina + a.strength) / 3 - (a.dribbling + a.technique + a.passing + a.vision) / 4) / 3;
+  };
+  Sc.leanAdj = (scout, p) => (scout ? Sc.bias(scout) * Sc.athlete(p) * 3 : 0);
+  // The attribute a scout would single out: athletes for a physical lean, technique for a technical one
+  Sc.notice = function (scout, p) {
+    const b = scout ? Sc.bias(scout) : 0,
+      pool =
+        b >= 0.25
+          ? ['pace', 'strength', 'stamina']
+          : b <= -0.25
+            ? ['technique', 'dribbling', 'passing', 'vision']
+            : D.ATTRS.filter((a) => (D.POS_W[p.pos] || {})[a]);
+    const best = pool.slice().sort((x, y) => p.attrs[y] - p.attrs[x])[0],
+      worst = pool.slice().sort((x, y) => p.attrs[x] - p.attrs[y])[0];
+    return { best, worst, lean: b >= 0.25 ? 'physical' : b <= -0.25 ? 'technical' : 'rounded' };
+  };
+
   Sc.view = function (p) {
     const S = FM.S,
       u = S.user,
@@ -319,16 +414,25 @@
     const k = own ? 100 : Sc.know(p.id);
     const rep = u.reports[p.id];
     const scout = rep && S.staff[rep.scout];
-    const exp = scout ? scout.regions[Sc.region(p)] : 0.4;
+    const rep2 = rep && rep.second && S.staff[rep.second.scout] ? rep.second : null,
+      scout2 = rep2 && S.staff[rep2.scout];
     const unc = 1 - k / 100;
-    const errC = rep ? rep.err : 0,
-      errP = rep ? rep.errP : 0;
-    const caEst = U.clamp(p.ca + errC * unc * 14 * (1.3 - exp), 20, 99);
-    const paEst = U.clamp(Math.max(caEst, p.pa + errP * unc * 22 * (1.3 - exp)), 20, 99);
+    // one scout's read of ability and potential: his errors, his knowledge of the region and his lean
+    const estOf = (r, sc) => {
+      const e = sc ? sc.regions[Sc.region(p)] : 0.4;
+      const ca = U.clamp(p.ca + (r ? r.err : 0) * unc * 14 * (1.3 - e) + Sc.leanAdj(sc, p) * unc * 1.2, 20, 99);
+      return { ca, pa: U.clamp(Math.max(ca, p.pa + (r ? r.errP : 0) * unc * 22 * (1.3 - e)), 20, 99) };
+    };
+    const e1 = estOf(rep, scout),
+      e2 = rep2 ? estOf(rep2, scout2) : null;
+    // two opinions are averaged, and the estimate is a little firmer for it
+    const caEst = e2 ? (e1.ca + e2.ca) / 2 : e1.ca,
+      paEst = e2 ? (e1.pa + e2.pa) / 2 : e1.pa;
     const age = W.age(p),
       ageK = age <= 19 ? 1 : age >= 28 ? 0.3 : 1 - (age - 19) * 0.078; // the older he is, the less ceiling there is to guess
-    const wC = unc * 16 + (k < 100 ? 2 : 0),
-      wP = (unc * 24 + (k < 100 ? 4 : 0)) * ageK;
+    const firm = rep2 ? 0.82 : 1,
+      wC = (unc * 16 + (k < 100 ? 2 : 0)) * firm,
+      wP = (unc * 24 + (k < 100 ? 4 : 0)) * ageK * firm;
     const v = {
       k,
       own,
@@ -420,27 +524,28 @@
         v.moneyball = `Analytics flag: averaging ${avg.toFixed(2)} — output of a player worth far more than ${U.money(p.value)}.`;
     }
     v.fee = k >= 20 ? U.roundMoney(FM.Transfers.askPrice(p) * (1 + (rep ? rep.err * 0.1 * unc : 0))) : null;
-    // Scout's grade + recommendation (what the scout believes, not the truth)
+    // Scout's grade + recommendation: what the scout believes (not the truth), set against what the club needs and can pay. A
+    // good player the side does not need, or cannot afford, is one to watch, not one to sign.
     if (v.ca) {
-      const c = (v.ca[0] + v.ca[1]) / 2,
-        pa = v.pa ? (v.pa[0] + v.pa[1]) / 2 : c,
-        age = W.age(p);
-      let score = c - lvl + Math.max(0, pa - c) * Sc.potentialWeight(age) - (age >= 31 ? (age - 30) * 1.5 : 0);
-      if (v.moneyball) score += 3;
-      v.score = score;
-      v.grade = score >= 4 ? 'A' : score >= -2 ? 'B' : score >= -8 ? 'C' : 'D';
-      v.rec = own
-        ? null
-        : p.loan
-          ? 'Monitor'
-          : age <= 21 && pa >= lvl + 4 && c < lvl - 3
-            ? 'Loan'
-            : v.grade === 'A' || v.grade === 'B'
-              ? 'Sign'
-              : v.grade === 'C'
-                ? 'Monitor'
-                : 'Avoid';
-      const name = p.fn;
+      v.need = own ? null : Sc.need(p, caEst);
+      const judge = (c, pa) => {
+        let score = c - lvl + Math.max(0, pa - c) * Sc.potentialWeight(age) - (age >= 31 ? (age - 30) * 1.5 : 0);
+        if (v.moneyball) score += 3;
+        return { score, grade: score >= 4 ? 'A' : score >= -2 ? 'B' : score >= -8 ? 'C' : 'D' };
+      };
+      const recOf = (g, c, pa) => {
+        if (own) return [null];
+        if (p.loan) return ['Monitor'];
+        if (age <= 21 && pa >= lvl + 4 && c < lvl - 3) return ['Loan'];
+        if (g === 'A' || g === 'B') {
+          const future = age <= 22 && pa >= lvl + 6;
+          if (v.need && !v.need.helps && !future) return ['Monitor', 'covered'];
+          if (p.clubId && club && v.fee != null && v.fee > club.budget) return ['Monitor', 'pricey'];
+          return ['Sign'];
+        }
+        return [g === 'C' ? 'Monitor' : 'Avoid'];
+      };
+      const name = p.fn || p.ln;
       const Q = {
         A: [
           `${name} is the real deal. I'd move now before someone else does.`,
@@ -459,15 +564,43 @@
         ],
         D: [`Not for us, I'm afraid.`, `Honest pro, but not at our level.`, `I'd pass on this one.`],
       };
-      v.quote =
-        v.rec === 'Loan'
-          ? `Not ready for our first team, but the talent is obvious. A loan with an eye on the future makes sense.`
-          : Q[v.grade][U.hash(p.id) % 3];
-      if (v.rec === 'Sign' && p.clubId && club && v.fee > club.budget * 1.5) {
-        v.rec = 'Monitor';
-        v.pricey = true;
-        v.quote += ` Trouble is, he's well out of our price range.`;
-      }
+      // one scout's complete view of the player: his estimate, grade, advice and what he singled out
+      const opinion = (sc, e) => {
+        const j = judge(e.ca, e.pa),
+          [rec, why] = recOf(j.grade, e.ca, e.pa);
+        const nt = sc ? Sc.notice(sc, p) : null;
+        let line = '';
+        if (nt && k >= 25) {
+          const a = nt.best,
+            w = nt.worst;
+          if (p.attrs[a] >= 13) line += ` ${D.PHRASES[a][p.attrs[a] >= 17 ? 0 : 1]}.`;
+          if (p.attrs[w] <= 9 && w !== a)
+            line += ` ${nt.lean === 'physical' ? 'But' : 'Though'} ${D.PHRASES[w][2].charAt(0).toLowerCase() + D.PHRASES[w][2].slice(1)}.`;
+        }
+        let quote =
+          rec === 'Loan'
+            ? `Not ready for our first team, but the talent is obvious. A loan with an eye on the future makes sense.`
+            : Q[j.grade][U.hash(p.id + (sc ? sc.id : '')) % 3];
+        quote += line;
+        if (why === 'covered') quote += ` But we are well covered there: he would not improve the side.`;
+        else if (why === 'pricey') quote += ` Trouble is, he is well out of our price range.`;
+        else if (v.need && v.need.replaces && v.need.helps && (rec === 'Sign' || rec === 'Loan'))
+          quote += ` He would push ${W.short(v.need.replaces)} for a place.`;
+        return { scout: sc, grade: j.grade, rec, why, score: j.score, ca: e.ca, quote, lean: nt ? nt.lean : 'rounded' };
+      };
+      const ops = [opinion(scout, e1)];
+      if (e2) ops.push(opinion(scout2, e2));
+      // the verdict: one scout's, or the two averaged
+      const j = judge(caEst, paEst),
+        [rec, why] = recOf(j.grade, caEst, paEst);
+      v.score = j.score;
+      v.grade = j.grade;
+      v.rec = rec;
+      v.recWhy = why || null;
+      v.pricey = why === 'pricey';
+      v.opinions = ops;
+      v.disagree = ops.length > 1 && Math.abs(ops[0].score - ops[1].score) >= 5;
+      v.quote = e2 ? ops[0].quote : ops[0].quote;
       if (v.traits.includes('Big Game Player') && v.grade !== 'D') v.quote += ' Loves the big occasions, too.';
       if (v.injury && p.hid.inj >= 15) v.quote += ' My one worry is his fitness record.';
     } else {
@@ -532,16 +665,12 @@
 
   // Best targets across all reports, for the scouting home screen and the assistant
   Sc.recommendations = function (limit = 6) {
-    const S = FM.S,
-      c = W.userClub();
+    const S = FM.S;
     return Object.keys(S.user.reports)
       .map((id) => S.players[id])
-      .filter((p) => p && !W.ownPlayer(p) && !p.retired)
+      .filter((p) => p && !W.ownPlayer(p) && !p.retired && Sc.scoutable(p))
       .map((p) => ({ p, v: Sc.view(p) }))
-      .filter(
-        ({ v, p }) =>
-          ['A', 'B'].includes(v.grade) && (!p.clubId || (v.fee || 0) <= c.budget * 1.25 || v.rec === 'Loan'),
-      )
+      .filter(({ v, p }) => ['A', 'B'].includes(v.grade) && (v.rec === 'Sign' || v.rec === 'Loan'))
       .sort((a, b) => b.v.score - a.v.score)
       .slice(0, limit);
   };

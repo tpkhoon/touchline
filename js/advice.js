@@ -104,9 +104,10 @@
       groupCount = (g) => sq.filter((q) => !q.loan && D.POS_GROUP[q.pos] === g).length,
       NEED = { GK: 2, DEF: 6, MID: 5, ATT: 4 };
     sq.filter((p) => W.age(p) <= 23 && !xi.includes(p) && !p.loan).forEach((p) => {
-      const rivals = xi.filter(
-        (q, i) => q && D.POS_GROUP[slots[i].t === 'WB' ? 'FB' : slots[i].t] === D.POS_GROUP[p.pos],
-      );
+      // compared with the starters who play his own position (a winger with the wingers, not with whoever is
+      // standing in that slot), else with his own line
+      const own = xi.filter((q) => q && q.pos === p.pos),
+        rivals = own.length ? own : xi.filter((q) => q && D.POS_GROUP[q.pos] === D.POS_GROUP[p.pos]);
       const weakest = rivals.sort((a, b) => a.ca - b.ca)[0];
       if (weakest && p.ca >= weakest.ca - 2)
         add(
@@ -133,7 +134,7 @@
           '✈️',
           `${W.short(p)} (${W.age(p)}, ${p.pos}) needs games: ${p.season.apps} so far. ${dest.name}${comp ? ` (${comp.name})` : ''} would ${starts ? 'start him' : 'give him minutes'} at a level that stretches him.${open ? '' : ' Loans reopen with the window.'}`,
           p.id,
-          open ? { label: 'Loan out', act: 'loanOut', id: p.id } : null,
+          open ? { label: 'Loan list', act: 'loanOut', id: p.id } : null,
         );
       }
     });
@@ -387,7 +388,11 @@
     const fee = U.roundMoney(st.wage * 4);
     if (c.balance < fee) return { ok: false, msg: 'Not enough money for the signing-on fee.' };
     if (key === 'scout') {
-      if (s.user.scouts.length >= 5) return { ok: false, msg: 'You already employ 5 scouts. Release one first.' };
+      if (s.user.scouts.length >= W.maxScouts())
+        return {
+          ok: false,
+          msg: `You already employ ${W.maxScouts()} scouts${W.maxScouts() < 5 ? ': a part-time club has no scouting network' : ''}. Release one first.`,
+        };
       s.user.scouts.push(id);
     } else {
       const old = s.user.staff[key] && s.staff[s.user.staff[key]];
@@ -403,7 +408,7 @@
     FM.News.add({
       type: 'club',
       title: `${st.fn} ${st.ln} appointed ${st.role}`,
-      body: `${D.NATIONS[st.nat].flag} ${st.personality}, ability ${st.ability}/20. ${D.STAFF_ROLES[st.role].effect}.`,
+      body: `${D.NATIONS[st.nat].flag} ${st.personality}, ability ${U.staffText(st.ability)}. ${D.STAFF_ROLES[st.role].effect}.`,
       clubId: c.id,
     });
     return { ok: true, msg: `${st.fn} ${st.ln} joins as ${st.role}. Signing-on fee ${U.money(fee)}.` };

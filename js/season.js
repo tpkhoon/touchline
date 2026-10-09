@@ -48,6 +48,24 @@
       d = Math.max(0.1, 1 - w - l);
     return (w + d / 2) / (w + d + l);
   };
+  // The pre-match "Win chance" and the team talk's read of the occasion: the two XIs' average ability, moved by what
+  // the match engine moves too: the home crowd (its mood, the ground, a derby or a heated rivalry, a long trip) and
+  // each side's confidence. A smooth curve, so a big gap makes a long shot rather than the same floor every week.
+  // me/opp are clubs (or national teams); xiMe/xiOpp the average ability of the sides' XIs.
+  Sea.matchOdds = function (me, opp, home, xiMe, xiOpp, neutral, derby) {
+    const hc = home ? me : opp,
+      ac = home ? opp : me;
+    const hf = neutral
+        ? 0
+        : FM.Match.homeFactor(hc, ac, !!derby || (hc.sim !== 'nation' && FM.Records.heated(hc.id, ac.id))),
+      conf = (c) => (c && c.sim !== 'nation' && c.conf) || 0;
+    // points of ability: ~2.5 for a normal home crowd, confidence worth up to 4 either way
+    const edge = (home ? 1 : -1) * 2.5 * hf + 4 * (conf(me) - conf(opp));
+    const d = xiMe - xiOpp + edge;
+    const e = 1 / (1 + Math.exp(-d / 9)),
+      draw = 0.28 * Math.exp(-((d / 16) ** 2));
+    return U.clamp(e - draw / 2, 0.01, 0.95);
+  };
   Sea.seasonLabel = () => `${FM.S.year}/${String((FM.S.year + 1) % 100).padStart(2, '0')}`;
 
   // Fixtures played on the current day (creates playoff ties lazily)
@@ -66,8 +84,12 @@
     if (cal.type === 'intl' || cal.type === 'tourn') return FM.Intl.dayFixtures(cal);
     const out = [];
     for (const c of W.leagues()) {
+      // title playoffs: the tournament the day belongs to (a day with none belongs to the leagues that have only one)
+      if (W.koType(c) && (cal.torneo === undefined ? !c.torneos : c.torneos && cal.torneo < c.torneos.length))
+        out.push(...Sea.koDay(c, cal.stage, cal.torneo || 0));
       const po = c.rules.promote && c.rules.promote.playoff;
-      if (!po) continue;
+      // (the promotion play-offs only start on their own days, not on the title playoffs' days mid-season)
+      if (!po || !/^(SF|F)/.test(cal.stage)) continue;
       if (!c.playoff) {
         const t = FM.Youth.promotable(c, W.sortedTable(c)); // B teams can't go up into their parent's division
         const seeds = t.slice(po[0] - 1, po[1]).map((r) => r.id);
@@ -194,6 +216,174 @@
     }
     return out;
   };
+  // Title playoffs, in one engine for every league that has them. c.ko[t] holds tournament t's seeds and each round's ties
+  // (M1..M4, made when that day comes from the round before). Single matches hosted by the better seed.
+  //   mls       seven a conference: Round One (the top seed byes), Conference Semifinals and Finals, the MLS Cup
+  //   finals6   the A-League: the top six; 3rd v 6th and 4th v 5th, semi-finals, the Grand Final
+  //   liguilla  Liga MX: play-in for 7th–10th, then the top eight (quarter-finals, semi-finals, final)
+  //   zones     Argentina: the top eight of each zone, cross-zone round of 16, quarter-finals, semi-finals, final
+  Sea.KO_ROUNDS = {
+    mls: { M1: 'Round One', M2: 'Conference Semifinal', M3: 'Conference Final', M4: 'MLS Cup' },
+    finals6: { M1: 'Elimination Final', M2: 'Semi-final', M3: '', M4: 'Grand Final' },
+    liguilla: { M1: 'Play-in', M2: 'Quarter-final', M3: 'Semi-final', M4: 'Final' },
+    zones: { M1: 'Round of 16', M2: 'Quarter-final', M3: 'Semi-final', M4: 'Final' },
+  };
+  // The table a tournament's playoff is seeded from
+  Sea.koTable = (c, t) => (c.torneos ? W.torneoTable(c, t) : W.sortedTable(c));
+  Sea.koSeeds = function (c, t) {
+    const type = W.koType(c),
+      table = Sea.koTable(c, t).map((r) => r.id);
+    if (type === 'mls')
+      return Object.fromEntries(
+        Object.keys(c.rules.conferences).map((n) => [
+          n,
+          W.confTable(c, n)
+            .slice(0, c.rules.mls.playoff)
+            .map((r) => r.id),
+        ]),
+      );
+    if (type === 'finals6') return { all: table.slice(0, 6) };
+    if (type === 'liguilla') return { all: table.slice(0, 10) };
+    // zones: the top eight of each zone's table
+    return Object.fromEntries(
+      ['A', 'B'].map((z) => [
+        z,
+        W.torneoTable(c, t, z)
+          .slice(0, 8)
+          .map((r) => r.id),
+      ]),
+    );
+  };
+  Sea.koDay = function (c, stage, t) {
+    const type = W.koType(c),
+      label = type && Sea.KO_ROUNDS[type][stage];
+    if (!label) return [];
+    c.ko = c.ko || [];
+    const tie = (h, a, extra) => ({ id: FM.nextId('f'), comp: c.id, po: label, h, a, res: null, ko: true, ...extra });
+    if (!c.ko[t]) c.ko[t] = { seeds: Sea.koSeeds(c, t), M1: null, M2: null, M3: null, M4: null };
+    const M = c.ko[t],
+      keys = Object.keys(M.seeds),
+      table = Sea.koTable(c, t).map((r) => r.id),
+      // seed number within the club's own group of seeds; ties between groups go by table position
+      seedOf = (id) => {
+        for (const n of keys) {
+          const i = M.seeds[n].indexOf(id);
+          if (i >= 0) return i;
+        }
+        return 99;
+      },
+      rank = (id) => seedOf(id) * 1000 + table.indexOf(id),
+      best = (x, y) => (rank(x) <= rank(y) ? [x, y] : [y, x]),
+      // best against worst down the list of survivors
+      reseed = (ids, extra) => {
+        const s = ids.slice().sort((x, y) => rank(x) - rank(y)),
+          out = [];
+        while (s.length > 1) out.push(tie(...best(s.shift(), s.pop()), extra));
+        return out;
+      },
+      win = (k, conf) => (M[k] || []).filter((f) => f.res && (!conf || f.conf === conf)).map(winnerOf);
+    if (!M[stage]) {
+      if (type === 'mls') {
+        if (stage === 'M1')
+          M.M1 = keys.flatMap((n) =>
+            [
+              [1, 6],
+              [2, 5],
+              [3, 4],
+            ]
+              .filter(([, lo]) => M.seeds[n][lo])
+              .map(([hi, lo]) => tie(M.seeds[n][hi], M.seeds[n][lo], { conf: n })),
+          );
+        else if (stage === 'M2')
+          M.M2 = keys.flatMap((n) => {
+            // the top seed meets the lowest surviving seed; the other two survivors meet each other
+            const alive = win('M1', n).sort((x, y) => seedOf(x) - seedOf(y));
+            alive.unshift(M.seeds[n][0]);
+            const lowest = alive.length > 1 ? alive.pop() : null;
+            return [
+              [alive[0], lowest],
+              [alive[1], alive[2]],
+            ]
+              .filter(([h, a]) => h && a)
+              .map(([h, a]) => tie(...best(h, a), { conf: n }));
+          });
+        else if (stage === 'M3')
+          M.M3 = keys.flatMap((n) => {
+            const w = win('M2', n);
+            return w.length === 2 ? [tie(...best(w[0], w[1]), { conf: n })] : [];
+          });
+        else if (stage === 'M4')
+          M.M4 = Sea.koFinal(
+            c,
+            M,
+            win('M3'),
+            tie,
+            W.sortedTable(c).map((r) => r.id),
+          );
+      } else if (type === 'finals6') {
+        const s = M.seeds.all;
+        if (stage === 'M1')
+          M.M1 = [
+            [s[2], s[5]],
+            [s[3], s[4]],
+          ]
+            .filter(([h, a]) => h && a)
+            .map(([h, a]) => tie(h, a));
+        else if (stage === 'M2') {
+          const alive = win('M1').sort((x, y) => seedOf(x) - seedOf(y)),
+            low = alive.pop();
+          M.M2 = [
+            [s[0], low],
+            [s[1], alive[0]],
+          ]
+            .filter(([h, a]) => h && a)
+            .map(([h, a]) => tie(h, a));
+        } else if (stage === 'M4') M.M4 = Sea.koFinal(c, M, win('M2'), tie, table);
+      } else if (type === 'liguilla') {
+        const s = M.seeds.all;
+        if (stage === 'M1')
+          M.M1 = [
+            [s[6], s[9]],
+            [s[7], s[8]],
+          ]
+            .filter(([h, a]) => h && a)
+            .map(([h, a]) => tie(h, a));
+        else if (stage === 'M2') {
+          // the top six and the two play-in winners, best against worst: 1 v 8, 2 v 7, 3 v 6, 4 v 5 (by original seed)
+          M.M2 = reseed([...s.slice(0, 6), ...win('M1')]);
+        } else if (stage === 'M3') M.M3 = reseed(win('M2'));
+        else if (stage === 'M4') M.M4 = Sea.koFinal(c, M, win('M3'), tie, table);
+      } else if (type === 'zones') {
+        if (stage === 'M1') {
+          const [A, B] = [M.seeds.A, M.seeds.B];
+          M.M1 = [];
+          for (let i = 0; i < 4; i++) {
+            if (A[i] && B[7 - i]) M.M1.push(tie(A[i], B[7 - i]));
+            if (B[i] && A[7 - i]) M.M1.push(tie(B[i], A[7 - i]));
+          }
+        } else if (stage === 'M2') M.M2 = reseed(win('M1'));
+        else if (stage === 'M3') M.M3 = reseed(win('M2'));
+        else if (stage === 'M4') {
+          const w = win('M3');
+          M.M4 = w.length === 2 ? [tie(...best(w[0], w[1]), { final: true, neutral: true })] : [];
+        }
+      }
+    }
+    return M[stage] || [];
+  };
+  // the final: hosted by the better of the two on the table
+  Sea.koFinal = (c, M, w, tie, order) => {
+    if (w.length !== 2) return [];
+    const [h, a] = order.indexOf(w[0]) < order.indexOf(w[1]) ? w : [w[1], w[0]];
+    return [tie(h, a, { final: true })];
+  };
+  // who won a tournament's playoff (null until the final is played)
+  Sea.koResult = function (c, t) {
+    const f = c.ko && c.ko[t] && c.ko[t].M4 && c.ko[t].M4[0];
+    if (!f || !f.res) return null;
+    const w = winnerOf(f);
+    return { champion: w, runnerUp: w === f.h ? f.a : f.h };
+  };
   function winnerOf(fx) {
     const r = fx.res;
     if (r.win === 0 || r.win === 1) return r.win ? fx.a : fx.h;
@@ -264,6 +454,7 @@
     Sea.learnPositions(m);
     if (comp.type === 'league' && !fx.ko && !fx.leg) {
       Sea.updTable(comp.table, fx, res);
+      if (comp.torneos) Sea.updTable(comp.torneos[fx.round >= comp.torneoHalf ? 1 : 0].table, fx, res);
       const e = (S.eraLog = S.eraLog || { g: 0, n: 0 });
       e.g += res.hg + res.ag;
       e.n++;
@@ -328,6 +519,7 @@
         p.cult += 3;
       }
       if (g.ast) S.players[g.ast].season.ast++;
+      FM.Records.noteGoal(fx, g);
     });
     res.cards.forEach((c) => {
       const p = S.players[c.pid];
@@ -361,7 +553,7 @@
           gap: loser.rep - winner.rep,
           comp: fx.comp,
         });
-        winner.rep = Math.min(99, winner.rep + 1);
+        W.nudgeRep(winner, 1);
       }
     }
     Sea.growFam(hc);
@@ -449,7 +641,11 @@
   Sea.learnRate = (p) => {
     const a = W.age(p),
       known = Object.values(p.alt || {}).filter((v) => v >= 0.85).length;
-    return (a <= 23 ? 1.35 : a <= 28 ? 1 : a <= 31 ? 0.75 : 0.55) * (known >= 2 ? 1.25 : 1);
+    return (
+      (a <= 23 ? 1.35 : a <= 28 ? 1 : a <= 31 ? 0.75 : 0.55) *
+      (known >= 2 ? 1.25 : 1) *
+      (W.hasTrait(p, 'Versatile') ? 1.6 : 1)
+    );
   };
   Sea.learnPositions = function (m) {
     for (const sd of m.sides) {
@@ -559,7 +755,7 @@
     if (key === 'tour') {
       sq.forEach((p) => (p.fitness = Math.max(70, p.fitness - 12)));
       c.fanMood = Math.min(100, c.fanMood + 6);
-      c.rep = Math.min(99, c.rep + 0.5);
+      W.nudgeRep(c, 0.5);
     }
     sq.forEach((p) => (p.morale = Math.min(100, p.morale + (key === 'tour' ? 1 : 3))));
     FM.News.add({
@@ -585,7 +781,10 @@
     u.stats.games++;
     won ? u.stats.w++ : lost ? u.stats.l++ : u.stats.d++;
     if (won && op.club.rep - club.rep >= 12) u.stats.giantKills++;
-    u.rep = U.clamp(u.rep + (won ? 0.6 : lost ? -0.4 : 0.1) + (won && op.club.rep > club.rep ? 0.5 : 0), 1, 99);
+    const dRep = (won ? 0.6 : lost ? -0.4 : 0.1) + (won && op.club.rep > club.rep ? 0.5 : 0);
+    u.rep = U.clamp(u.rep + dRep, 1, 99);
+    FM.Style.afterResult(club, dRep); // a name made in this club's country
+    FM.Style.afterMatch(club, m, side); // and the kind of manager you are turning out to be
     // youth debuts
     for (const pid in sd.mins) {
       const p = S.players[pid];
@@ -607,6 +806,11 @@
       100,
     );
     if (club.identity === 'fan' && gf >= 3) club.fanMood = Math.min(100, club.fanMood + 3);
+    // what the fans make of how you play: a style that fits the club lifts the mood a little each match, one that does not
+    // costs it, most when you lose
+    const sf = FM.Board.styleFit(club, u.tactic);
+    if (sf)
+      club.fanMood = U.clamp(club.fanMood + sf * (sf > 0 ? (lost ? 0.2 : 0.5) : lost ? 1.4 : won ? 0.2 : 0.7), 0, 100);
     u.lastMatch = { fxId: fx.id, comp: fx.comp };
     // Familiarity grows with the tactic you used; switched to Plan B, both grow, at half the rate each
     const famK = FM.Staff.impact('assistant').fam * FM.Training.famK(); // a good assistant (and tactics training) drills it in faster
@@ -845,7 +1049,7 @@
     if (S.day % 8 === 0) FM.Finance.weekly(); // interest on debt, the board on the wage bill
     Sea.minimalSimWeek();
     Sea.freeAgents();
-    if (employed) Sea.ensureUserSquad(14);
+    if (employed) Sea.ensureUserSquad(11);
     Sea.ensureKeepers();
     Sea.finances();
     if (employed) {
@@ -881,6 +1085,7 @@
     else if (!summary) FM.Injury.riskHim(Sea.userFixture()); // a key man nearly fit before a big game
     if (!summary) {
       FM.Market.newDay(); // deadline, trials, loanees, payments
+      FM.Matchday.pregame(); // an opponent in form, a full house away: the squad feels it
       FM.Stories.preMatchPress(); // a big game today: the press want a word first
     }
     W.numberAll(S.players); // squad numbers for anyone the day brought in (academy intakes, regens)
@@ -913,13 +1118,16 @@
         !c.parent && // a B team's job goes with the parent club's set-up, not to an outside manager
         !taken.has(c.id) &&
         c.id !== justLeft &&
-        c.rep <= u.rep + 14 &&
+        c.rep <= FM.Style.effectiveRep(c) + 14 && // clubs judge you by your name in their country first
         c.rep >= u.rep - 30,
     );
     for (let i = initial ? 3 : 1; i > 0 && pool.length; i--) {
       const c = U.wpick(
         pool,
-        (x) => (100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5) * (x.id === u.favClub ? 3 : 1),
+        (x) =>
+          (100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5) *
+          (x.id === u.favClub ? 3 : 1) *
+          (1 + 0.6 * FM.Style.match(x)),
       ); // your boyhood club keeps an eye on you
       pool.splice(pool.indexOf(c), 1);
       u.offers.push({
@@ -944,19 +1152,37 @@
     const S = FM.S;
     let freeGK = null;
     for (const c of Object.values(S.clubs)) {
-      if (c.sim === 'minimal' && !c.comp) continue;
+      if ((c.sim === 'minimal' && !c.comp) || W.army(c)) continue;
       const sq = W.squad(c.id),
         keepers = sq.filter((p) => p.pos === 'GK');
       // three for fully simulated clubs (two can both be injured or banned), two elsewhere; and never none fit
       const need = Math.max(c.sim === 'full' ? 3 : 2, keepers.some(W.available) ? 0 : keepers.length + 1);
       let n = keepers.length;
       if (n >= need) continue;
-      const user = W.isUser(c.id),
+      // your own club is never covered for you: the feed warns you, once a fortnight, and the signing is yours to make
+      if (W.isUser(c.id)) {
+        const u = S.user;
+        if (W.employed() && (keepers.length < 2 || !keepers.some(W.available)) && !(u.gkWarn > Sea.dayIndex() - 14)) {
+          u.gkWarn = Sea.dayIndex();
+          FM.News.add({
+            type: 'club',
+            title: keepers.length ? 'No fit goalkeeper' : 'You have no goalkeeper',
+            body: keepers.length
+              ? 'Every keeper on the books is injured or banned, and an outfield player will have to go in goal. Find cover in the free agents or on loan.'
+              : 'There is not a goalkeeper on the books, and an outfield player will have to go in goal. Find one in the free agents or on loan.',
+            clubId: c.id,
+          });
+        }
+        continue;
+      }
+      const user = false,
         signed = [];
       while (n < need) {
         if (!freeGK) freeGK = Object.values(S.players).filter((p) => !p.clubId && !p.retired && p.pos === 'GK');
         const level = W.levelFor(c.rep);
-        const fa = freeGK.filter((p) => !p.clubId && p.ca >= level - 20).sort((a, b) => b.ca - a.ca)[0];
+        const fa = freeGK
+          .filter((p) => !p.clubId && p.ca >= level - 20 && FM.Reg.policy(c, p).ok)
+          .sort((a, b) => b.ca - a.ca)[0];
         let p = fa;
         if (p) {
           W.startSpell(p, c.id);
@@ -991,11 +1217,19 @@
 
   // The user's club never runs out of players: under `min` (18 for a new season, 14 at any time), the sporting
   // director signs free agents on one-year deals, or promotes youngsters when none fit, and says so in the feed
-  Sea.ensureUserSquad = function (min) {
+  Sea.ensureUserSquad = function (min, warn) {
     const S = FM.S,
       c = S.user && !S.user.sacked && W.userClub();
-    if (!c) return;
+    if (!c || W.army(c)) return;
     const sq = W.squad(c.id);
+    // a thin squad is yours to fix: the feed says so when the season starts (the floor below only keeps a team on the pitch)
+    if (warn && sq.length >= min && sq.length < warn)
+      FM.News.add({
+        type: 'club',
+        title: `Thin squad: ${sq.length} players`,
+        body: `You start the season with ${sq.length} players under contract. Injuries and suspensions will bite: add depth in the transfer window or the free agents.`,
+        clubId: c.id,
+      });
     if (sq.length >= min) return;
     const want = D.SQUAD_TIER.full,
       level = W.levelFor(c.rep),
@@ -1005,7 +1239,7 @@
       sq.forEach((p) => (counts[p.pos] = (counts[p.pos] || 0) + 1));
       const pos = Object.keys(want).find((k) => (counts[k] || 0) < want[k]) || U.pick(D.POS);
       const fa = Object.values(S.players)
-        .filter((p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= level - 18)
+        .filter((p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= level - 18 && FM.Reg.policy(c, p).ok)
         .sort((a, b) => b.ca - a.ca)[0];
       let p = fa;
       if (p) {
@@ -1029,7 +1263,7 @@
     }
     FM.News.add({
       type: 'club',
-      title: `Sporting director makes up the numbers: ${signed.length} signing${signed.length === 1 ? '' : 's'}`,
+      title: `Too few players to field a team: ${signed.length} call-up${signed.length === 1 ? '' : 's'}`,
       body: `With only ${sq.length - signed.length} players under contract, the club has added ${signed.map((p) => `${W.name(p)} (${p.pos}${p.youth === c.id ? ', academy' : ''})`).join(', ')} on one-year deals. Renew contracts before they expire to keep control of your squad.`,
       clubId: c.id,
       pids: signed.map((p) => p.id),
@@ -1110,7 +1344,7 @@
       todays = Sea.dayFixtures();
     const wageBill = {};
     Object.values(S.players).forEach((p) => {
-      if (!p.clubId || p.retired) return;
+      if (!p.clubId || p.retired || p.service) return; // (a conscript is paid by the army, not by a club)
       const payer = FM.Youth.owner(p.clubId); // a B-team player is paid by the parent club
       if (p.loan) {
         wageBill[payer] = (wageBill[payer] || 0) + p.wage * p.loan.share;
@@ -1213,7 +1447,7 @@
       const k = c.building.k;
       c.facilities[k]++;
       if (k === 'stadium') FM.Records.expandStadium(c, 6000, 'New stand');
-      if (k === 'museum') c.rep = Math.min(99, c.rep + 1);
+      if (k === 'museum') W.nudgeRep(c, 1);
       FM.News.add({
         type: 'club',
         title: `${Sea.FAC[k].name} upgrade complete`,
@@ -1232,12 +1466,12 @@
     else if (
       !firstSeason &&
       FM.Season.baseRound() >= 14 &&
-      c.boardConf < 10 &&
+      c.boardConf < 10 + FM.Board.patience(c) &&
       W.position(c.id) > Sea.expectedPos(c) + 3 &&
       !S.user.sacked
     ) {
       S.user.sacked = true;
-    } else if (S.day > 6 && c.boardConf < 30 && !c.warned) {
+    } else if (S.day > 6 && c.boardConf < 30 + FM.Board.patience(c) && !c.warned) {
       c.warned = true;
       FM.News.add({
         type: 'board',
@@ -1280,12 +1514,59 @@
       const ypoty = players
         .filter((p) => W.age(p) <= 21 && p.season.apps >= 8)
         .sort((a, b) => b.season.rsum / b.season.apps - a.season.rsum / a.season.apps)[0];
+      // a playoff league's champion is whoever wins its final (a league with two tournaments has a champion of each, the
+      // season's being the last); the best record takes the Shield
+      const kt = W.koType(comp),
+        nT = comp.torneos ? comp.torneos.length : 1,
+        results = kt ? Array.from({ length: nT }, (_, i) => Sea.koResult(comp, i)) : [],
+        lastRes = results.filter(Boolean).pop(),
+        champId = lastRes ? lastRes.champion : t[0].id,
+        runnerId = lastRes ? lastRes.runnerUp : t[1].id;
+      const playoffsOf = (M) =>
+        Object.fromEntries(
+          ['M1', 'M2', 'M3', 'M4'].map((k) => [
+            k,
+            ((M && M[k]) || [])
+              .filter((f) => f.res)
+              .map((f) => ({
+                h: f.h,
+                a: f.a,
+                hg: f.res.hg,
+                ag: f.res.ag,
+                pens: f.res.pens || null,
+                w: winnerOf(f),
+              })),
+          ]),
+        );
+      const lastKo = comp.ko && comp.ko[nT - 1];
       entry.comps[comp.id] = {
         name: comp.name,
         sim: comp.sim || 'full',
         nat: comp.nat,
-        champion: t[0].id,
-        runnerUp: t[1].id,
+        champion: champId,
+        runnerUp: runnerId,
+        ...(kt ? { playoffs: playoffsOf(lastKo) } : {}),
+        ...(comp.rules.mls ? { shield: t[0].id, conf: { ...comp.conf } } : {}),
+        ...(comp.torneos
+          ? {
+              torneos: comp.torneos.map((tn, i) => ({
+                name: tn.name,
+                champion: results[i] ? results[i].champion : null,
+                runnerUp: results[i] ? results[i].runnerUp : null,
+                table: W.torneoTable(comp, i).map((r) => ({ id: r.id, p: r.p, pts: r.pts, gd: r.gd })),
+                playoffs: playoffsOf(comp.ko && comp.ko[i]),
+              })),
+            }
+          : {}),
+        ...(comp.groups
+          ? {
+              split: {
+                names: comp.rules.split.names,
+                groups: comp.groups.map((g) => g.slice()),
+                halve: !!comp.rules.split.halve,
+              },
+            }
+          : {}),
         // the whole table, every club's record: the archive behind club histories
         table: t.map((r) => ({ id: r.id, p: r.p, w: r.w, d: r.d, l: r.l, gf: r.gf, ga: r.ga, pts: r.pts, gd: r.gd })),
         toty: FM.Records.toty(comp.id), // the team of the season
@@ -1298,23 +1579,51 @@
         },
         ypoty: ypoty && { pid: ypoty.id, name: W.name(ypoty), club: ypoty.clubId },
       };
-      const champ = S.clubs[t[0].id];
-      champ.titles[comp.id] = (champ.titles[comp.id] || 0) + 1;
-      champ.rep = Math.min(99, champ.rep + 2);
+      const champ = S.clubs[champId];
+      // every tournament's champion has the title (the same club can have both)
+      for (const r of results.filter(Boolean).length ? results.filter(Boolean) : [{ champion: champId }])
+        S.clubs[r.champion].titles[comp.id] = (S.clubs[r.champion].titles[comp.id] || 0) + 1;
+      if (comp.torneos) entry.comps[comp.id].champions = results.map((r) => r && r.champion);
+      if (comp.rules.mls) {
+        const sh = S.clubs[t[0].id];
+        sh.titles[comp.id + 'S'] = (sh.titles[comp.id + 'S'] || 0) + 1;
+        FM.News.add({
+          type: 'world',
+          title: `${sh.name} win the Supporters' Shield`,
+          body: `The best record in ${comp.name}: ${t[0].pts} points.${champId !== sh.id ? ` ${champ.name} went on to win the ${comp.short === 'US1' ? 'MLS Cup' : 'league final'}.` : ' They went on to win the final too.'}`,
+          clubId: sh.id,
+        });
+      }
+      if (comp.torneos)
+        results.forEach((r, i) => {
+          if (r)
+            FM.News.add({
+              type: 'world',
+              title: `${S.clubs[r.champion].name} win the ${comp.torneos[i].name}`,
+              body: `${comp.name}: ${S.clubs[r.champion].name} beat ${S.clubs[r.runnerUp].name} in the final.`,
+              clubId: r.champion,
+            });
+        });
+      W.nudgeRep(champ, 2);
+      W.growClub(champ, 0.15); // a champion's support grows, and with it the most the club can become
       // Merit payments + reputation drift toward league standing
       const n = t.length,
         [repTop, repBot] = comp.repBand || { 1: [88, 60], 2: [62, 46], 3: [50, 38] }[comp.tier] || [60, 40];
       t.forEach((r, i) => {
         const c = S.clubs[r.id];
         if (c.sim === 'full') c.balance += Sea.revenuePotential(c) * 0.12 * ((n - i) / n);
-        const target = repTop - ((repTop - repBot) * i) / (n - 1);
-        c.rep = U.clamp(c.rep + (target - c.rep) * 0.18, 20, 99);
+        W.driftRep(c, repTop - ((repTop - repBot) * i) / (n - 1));
+        if (i < 3 && n >= 8) W.growClub(c, 0.04);
       });
       if (poty) S.players[poty.id].cult += 5;
       const R = comp.rules;
       // Qualification relationship: this league's top n enter another competition next season
-      if (R.qualify)
-        qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(t.slice(0, R.qualify.n).map((r) => r.id));
+      if (R.qualify) {
+        // a playoff league sends its champion and its Shield winner first, then the next best records
+        const champs = comp.torneos ? entry.comps[comp.id].champions.filter(Boolean).reverse() : [champId];
+        const order = kt ? [...new Set([...champs, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
+        qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(order.slice(0, R.qualify.n));
+      }
       // second-tier continental cups: the next places down
       for (const cc of D.CONTINENTALS) {
         const k = cc.feeders && cc.feeders[comp.id];
@@ -1361,7 +1670,35 @@
           name: c.name,
           winner: c.winner,
           runnerUp: c.runnerUp,
+          awards: c.awards || null, // its awards and team of the tournament
         };
+    // Each club's season in the archive beside the tables: its manager, top scorer and cup runs
+    {
+      // the club's top scorer, and the man with most appearances, over every competition of the season
+      const topBy = {},
+        appsBy = {};
+      for (const p of Object.values(S.players)) {
+        if (p.retired || !p.clubId) continue;
+        const g = p.season.goals || 0,
+          a = p.season.apps || 0;
+        if (g > 0 && (!topBy[p.clubId] || g > topBy[p.clubId].g || (g === topBy[p.clubId].g && a < topBy[p.clubId].a)))
+          topBy[p.clubId] = { g, a, n: W.name(p), id: p.id };
+        if (a > 0 && (!appsBy[p.clubId] || a > appsBy[p.clubId].a)) appsBy[p.clubId] = { a, n: W.name(p), id: p.id };
+      }
+      const cups = Object.values(S.comps).filter((c) => c.type === 'cup' || c.type === 'continental');
+      entry.clubInfo = {};
+      for (const c of Object.values(S.clubs)) {
+        if (!c.comp || !S.comps[c.comp] || c.sim === 'nation') continue;
+        const m = W.isUser(c.id) ? null : c.manager && S.staff[c.manager],
+          runs = cups.map((x) => [x.name, FM.Cups.runOf(x, c.id)]).filter((x) => x[1]);
+        entry.clubInfo[c.id] = {
+          m: W.isUser(c.id) ? S.user.name : m ? `${m.fn} ${m.ln}` : '',
+          t: topBy[c.id] ? [topBy[c.id].n, topBy[c.id].g, topBy[c.id].id] : null,
+          a: appsBy[c.id] ? [appsBy[c.id].n, appsBy[c.id].a, appsBy[c.id].id] : null,
+          c: runs,
+        };
+      }
+    }
     // Apply promotion/relegation relationships (then put any B team now level with its parent back down)
     const applyMove = ([id, from, to]) => {
       const c = S.clubs[id];
@@ -1369,7 +1706,7 @@
       S.comps[to].clubs.push(id);
       c.comp = to;
       (S.comps[to].tier < S.comps[from].tier ? entry.promoted : entry.relegated).push(id);
-      c.rep = U.clamp(c.rep + (S.comps[to].tier < S.comps[from].tier ? 4 : -5), 20, 99);
+      W.nudgeRep(c, S.comps[to].tier < S.comps[from].tier ? 4 : -5);
     };
     moves.forEach(applyMove);
     FM.Youth.fixBTeams().forEach(applyMove);
@@ -1402,8 +1739,13 @@
     const userComp = entry.comps[userCompId];
     const userPos = userComp.table.findIndex((r) => r.id === club.id) + 1;
     let trophies = [];
-    if (userComp.champion === club.id) trophies.push(userComp.name);
+    if (userComp.champions)
+      userComp.champions.forEach(
+        (id, i) => id === club.id && trophies.push(`${userComp.name} (${userComp.torneos[i].name})`),
+      );
+    else if (userComp.champion === club.id) trophies.push(userComp.name);
     if (userComp.playoffWinner === club.id) trophies.push('Playoff winners');
+    if (userComp.shield === club.id) trophies.push("Supporters' Shield");
     const promoted = entry.promoted.includes(club.id),
       relegated = entry.relegated.includes(club.id);
     if (promoted) S.user.stats.promotions++;
@@ -1453,9 +1795,10 @@
       promoted,
       relegated,
       objs,
-      sacked: club.boardConf < 20 && (relegated || (!firstSeason && missBy >= 1)),
+      sacked: club.boardConf < 20 + FM.Board.patience(club) * 1.2 && (relegated || (!firstSeason && missBy >= 1)),
     };
 
+    FM.Style.seasonEnd(club); // a board of your kind (or not)
     FM.People.seasonEnd(summary);
     FM.Stories.seasonEnd(entry);
     // Summer international tournaments were played on the last days of the calendar
@@ -1518,6 +1861,7 @@
       if (rows.length) p.history = (p.history || []).concat(rows);
       delete p.splits;
       Sea.rustPositions(p);
+      Sea.shiftPotential(p); // young players' potential moves with how the season went
       p.season = W.blankSeason();
       p.flagMinutes = false;
       p.lastGrowth = 0;
@@ -1540,6 +1884,7 @@
           p.clubId = null;
           p.team = undefined; // a free agent is in no youth side
           p.listed = false;
+          p.loanListed = false;
           if (S.user.tactic.lineup) S.user.tactic.lineup = S.user.tactic.lineup.map((x) => (x === p.id ? null : x));
         } else if (Sea.aiRenews(p, c)) {
           p.contract = S.year + (W.age(p) >= 31 ? 1 : U.randi(1, 3));
@@ -1588,15 +1933,25 @@
       })
       .forEach((p) => Sea.retire(p));
     // Unattached for a whole season: he has left professional football (a notable career still gets its farewell)
+    const intl = S.nteams ? FM.Intl.squadIds() : new Set(); // (an international without a club is kept)
     Object.values(S.players)
-      .filter((p) => !p.clubId && !p.retired && p.freeSince != null && p.freeSince < (S.year - 1) * 1000)
+      .filter(
+        (p) => !p.clubId && !p.retired && p.freeSince != null && p.freeSince < (S.year - 1) * 1000 && !intl.has(p.id),
+      )
       .forEach((p) => (p.career.apps >= 380 ? Sea.retire(p) : delete S.players[p.id]));
     // Keep the pool a sensible size: the least employable (weakest, bar young players with a future) drop out first
     const worthFA = (p) => p.ca + (W.age(p) <= 21 ? (p.pa - p.ca) * 0.4 : 0);
     const pool = Object.values(S.players)
       .filter((p) => !p.clubId && !p.retired)
       .sort((a, b) => worthFA(a) - worthFA(b));
-    while (pool.length > 150) delete S.players[pool.shift().id];
+    // (the pool is trimmed from the weakest up, bar players in a national squad)
+    while (pool.length > 150 && pool.some((p) => !intl.has(p.id))) {
+      const gone = pool.splice(
+        pool.findIndex((p) => !intl.has(p.id)),
+        1,
+      )[0];
+      delete S.players[gone.id];
+    }
     // A thin market gets a few unattached pros from leagues outside the game (only when needed, never a flood)
     for (let i = pool.length; i < 40; i++) {
       const age = U.randi(22, 31),
@@ -1612,10 +1967,10 @@
       p.freeSince = Sea.dayIndex();
       S.players[p.id] = p;
     }
-    Sea.ensureUserSquad(18);
+    Sea.ensureUserSquad(11, 18);
     // squads replenish (AI)
     Object.values(S.clubs).forEach((c) => {
-      if (W.isUser(c.id)) return;
+      if (W.isUser(c.id) || W.army(c)) return;
       const sq = W.squad(c.id);
       const need = W.squadTarget(c) - sq.length;
       const want = W.squadWant(c);
@@ -1624,7 +1979,7 @@
         sq.forEach((p) => (counts[p.pos] = (counts[p.pos] || 0) + 1));
         const pos = Object.keys(want).find((k) => (counts[k] || 0) < want[k]) || U.pick(D.POS);
         const fa = Object.values(S.players).find(
-          (p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= W.levelFor(c.rep) - 12,
+          (p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= W.levelFor(c.rep) - 12 && FM.Reg.policy(c, p).ok,
         );
         if (fa) {
           W.startSpell(fa, c.id);
@@ -1659,7 +2014,6 @@
         }
         // the biggest clubs put more of their wealth into the squad (stars only move when someone can pay)
         c.budget = Math.max(5e5, Math.round((c.balance * (c.rep >= 82 ? 0.5 : 0.35)) / 1e5) * 1e5);
-        c.finLast = c.fin;
         c.fin = null;
         if (c.balance < FM.Finance.adminThreshold(c) && !c.admin) {
           c.admin = true;
@@ -1683,6 +2037,7 @@
     FM.Stories.worldEvents(entry);
     FM.Contracts.newSeason();
     FM.Youth.newSeason(); // youth sides re-sorted, B teams restocked
+    FM.Asia.newSeason(); // Korea's military service
     Sea.ageStaff();
     Sea.trimRetired();
     W.leagues().forEach(W.setupSeasonFixtures);

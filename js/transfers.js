@@ -78,6 +78,7 @@
     if (!FM.Season.windowOpen()) return { ok: false, msg: 'Loans can only be agreed while the window is open.' };
     if (!p.clubId) return { ok: false, msg: 'He is a free agent — just offer him a contract.' };
     if (p.loan) return { ok: false, msg: `He's already on loan at ${S.clubs[p.clubId].name}.` };
+    if (!FM.Reg.policy(club, p).ok) return { ok: false, msg: FM.Reg.policy(club, p).why };
     const t = T.loanTerms(p);
     if (!t.available)
       return { ok: false, msg: `${S.clubs[p.clubId].name} won't loan him out — he's too important to them.` };
@@ -109,6 +110,7 @@
     if (sp) sp.to = S.year;
     p.loan = { from: from.id, share, fee, year: S.year, wg: FM.Season.gamesPlayed(toId), wa: 0 }; // wg/wa: minutes watch
     p.team = undefined; // out on loan he plays for the borrower's first team, not a youth side
+    p.loanListed = false;
     W.startSpell(p, toId);
     W.spell(p).loan = true;
     W.spell(p).signed = true;
@@ -129,6 +131,7 @@
       loan: true,
     });
     FM.Stories.loan(p, from, to, share);
+    T.closeBids(p, `${to.name} on loan`);
   };
   // AI clubs interested in taking one of the user's players on loan
   // Clubs that would take your player on loan, and make sense for him: he would start or rotate in his position, at
@@ -177,7 +180,7 @@
   T.endLoans = function () {
     const S = FM.S;
     Object.values(S.players).forEach((p) => {
-      if (!p.loan) return;
+      if (!p.loan || p.loan.military) return; // (the army's conscripts stay until their service ends: FM.Asia)
       // An option to buy: the borrower takes it up if he played most of their games
       const o = p.loan;
       if (o.buy && !W.ownPlayer(p) && S.clubs[p.clubId] && W.spell(p).apps >= 15 && S.clubs[p.clubId].budget >= o.buy) {
@@ -264,6 +267,15 @@
 
   // flags.deal: a structured fee (instalments, add-on, sell-on: FM.Market). Only the first instalment changes hands
   // now; the buyer's budget also sets aside half of what is still to pay.
+  // Once a player has gone (sold, or out on loan), every other offer for him that is still waiting for your answer is
+  // withdrawn on the spot: the bids are rejected with a note saying where he went
+  T.closeBids = function (p, where) {
+    for (const n of FM.S.news)
+      if (n.type === 'bid' && n.data && n.data.pid === p.id && n.data.status === 'open') {
+        n.data.status = 'rejected';
+        n.reply = `Withdrawn: ${W.short(p)} has joined ${where}.`;
+      }
+  };
   T.execute = function (p, toId, fee, wage, flags = {}) {
     const icon = W.ownPlayer(p) && FM.Season.isIcon(p);
     const S = FM.S,
@@ -293,7 +305,10 @@
       const sp = W.spell(p);
       if (sp) sp.to = S.year;
       S.seasonLog.net[from.id] = (S.seasonLog.net[from.id] || 0) + fee;
-      if (W.isUser(from.id)) S.user.stats.sold++;
+      if (W.isUser(from.id)) {
+        S.user.stats.sold++;
+        FM.Style.afterTransfer(from, p, fee, false);
+      }
     }
     to.balance -= cash;
     to.budget = Math.max(0, to.budget - cash - (fee - cash) * 0.5);
@@ -313,6 +328,8 @@
     p.value = W.value(p);
     if (!W.isUser(toId)) FM.Contracts.aiDeal(p, to);
     if (W.isUser(toId)) {
+      FM.Board.reactSigning(to, p, fee);
+      FM.Style.afterTransfer(to, p, fee, true);
       S.user.knowledge[p.id] = 100;
       S.user.stats.bought++;
       S.user.shortlist = S.user.shortlist.filter((x) => x !== p.id);
@@ -327,11 +344,13 @@
       from: from && from.id,
       to: toId,
       fee,
+      inst: deal && deal.inst > 1 ? deal.inst : 0, // paid in this many instalments (fee is the total)
       intl,
       day: S.day,
       age: W.age(p),
     });
     FM.Stories.transfer(p, from, to, fee, { ...flags, intl });
+    T.closeBids(p, to.name);
     if (W.isUser(toId) || (from && W.isUser(from.id))) FM.Market.reactions(p, from, to, fee, flags);
   };
 
@@ -410,6 +429,30 @@
   // look abroad, the biggest ones scout the world
   T.HOME_SCALE = 1; // a multiplier on the home pull below (a tuning knob for the developer sweeps)
   T.homePull = (c) => (c.rep >= 75 ? 16 : c.rep >= 62 ? 34 : 70) * T.HOME_SCALE;
+  // What a club's identity makes it look for: a weight on each target from his age, potential, nationality and standing. A
+  // youth club wants youngsters, a selling club young players it can sell on, a fan-owned club its own countrymen and not the
+  // old, an oil-backed or giant club stars, a fallen giant experience for the rebuild.
+  T.identityFit = function (c, p) {
+    const age = W.age(p),
+      room = p.pa - p.ca,
+      lvl = W.levelFor(c.rep);
+    switch (c.identity) {
+      case 'youth':
+        return age <= 22 ? 1.6 : age >= 28 ? 0.45 : 1;
+      case 'selling':
+        return age <= 24 && room >= 8 ? 1.8 : age >= 29 ? 0.4 : 1;
+      case 'fan':
+        return (p.nat === c.nat ? 1.5 : 0.8) * (age >= 31 ? 0.7 : 1);
+      case 'oil':
+        return p.ca >= lvl ? 1.5 : 0.8;
+      case 'giant':
+        return p.ca >= lvl - 2 ? 1.3 : 0.9;
+      case 'fallen':
+        return age >= 27 ? 1.35 : 1;
+      default:
+        return 1;
+    }
+  };
   T.fillGap = function (c, sq, mkt) {
     if (sq.length >= W.squadTarget(c)) return false;
     const want = W.squadWant(c);
@@ -445,6 +488,7 @@
       (x) =>
         Math.pow(x.ca, 3) *
         (W.age(x) <= 25 ? 1.25 : W.age(x) >= 31 ? 0.6 : 1) *
+        T.identityFit(c, x) *
         (!x.clubId ? T.FREE_PULL : nationOf(x.clubId) === c.nat ? T.homePull(c) : 1),
     );
     T.execute(p, c.id, U.roundMoney(T.askPrice(p) * premium(p, c) * urg), T.wageDemand(p, c));
@@ -455,10 +499,10 @@
   T.regCheck = function (c) {
     if (FM.Reg.real()) {
       const st = FM.Reg.status(c);
-      return st ? (p) => FM.Reg.canSign(c, p, st).ok : () => true;
+      return st ? (p) => FM.Reg.canSign(c, p, st).ok : (p) => FM.Reg.policy(c, p).ok;
     }
     const full = T.foreignCount(c) >= FM.S.rules.foreignLimit + 3;
-    return (p) => !(full && p.nat !== c.nat);
+    return (p) => FM.Reg.policy(c, p).ok && !(full && p.nat !== c.nat);
   };
   T.canRegister = (c, p) => T.regCheck(c)(p);
   // Squad planning by age: a starter past his best (31+, keepers 33+) with no heir in the squad is replaced now,
@@ -494,7 +538,11 @@
       if (!pool.length) continue;
       const p = U.wpick(
         pool,
-        (x) => Math.pow(x.ca, 3) * (W.age(x) <= 24 ? 1.25 : 1) * (nationOf(x.clubId) === c.nat ? T.homePull(c) / 2 : 1),
+        (x) =>
+          Math.pow(x.ca, 3) *
+          (W.age(x) <= 24 ? 1.25 : 1) *
+          T.identityFit(c, x) *
+          (nationOf(x.clubId) === c.nat ? T.homePull(c) / 2 : 1),
       );
       T.execute(p, c.id, U.roundMoney(T.askPrice(p) * premium(p, c)), T.wageDemand(p, c));
       T.offload(c, g, full);
@@ -607,6 +655,7 @@
           (x) =>
             Math.pow(x.ca, 3) *
             (W.age(x) <= 25 ? 1.25 : W.age(x) >= 31 ? 0.6 : 1) *
+            T.identityFit(c, x) *
             (!x.clubId ? T.FREE_PULL / 2 : nationOf(x.clubId) === c.nat ? T.homePull(c) : c.rep >= 70 ? 1.3 : 1),
         );
         if (Math.random() < 0.15) {
@@ -717,6 +766,37 @@
       }
     }
 
+    // Gulf money: an Oil-Backed club in the Saudi Pro League buys a famous name in his late twenties or thirties, paying
+    // well over the going rate in fee and wages. The league's rule on foreign places still decides if he can be registered,
+    // and the clubs he leaves in Europe and South America feel it. One or two a window.
+    if (Math.random() < 0.55 * k) {
+      const gulf = full.filter((c) => c.identity === 'oil' && c.comp === 'SA1' && !W.isUserSide(c.id));
+      const stars = gulf.length
+        ? Object.values(S.players).filter((p) => {
+            if (!p.clubId || p.loan || p.ca < 76 || W.age(p) < 27 || W.age(p) > 35 || W.ownPlayer(p) || p.pre)
+              return false;
+            const sc = S.clubs[p.clubId];
+            return sc.sim === 'full' && sc.comp !== 'SA1' && !W.isUserSide(sc.id) && !T.isSettled(p);
+          })
+        : [];
+      if (stars.length) {
+        const star = U.wpick(stars, (p) => Math.exp((p.ca - 76) / 6)),
+          price = U.roundMoney(T.askPrice(star) * 1.3);
+        const buyers = gulf.filter((c) => price <= c.budget + Math.max(0, c.balance) * 0.5 && T.canRegister(c, star));
+        if (buyers.length) {
+          const to = U.wpick(buyers, (c) => c.rep),
+            from = S.clubs[star.clubId];
+          T.execute(star, to.id, price, Math.round(T.wageDemand(star, to) * 2), { marquee: true, gulf: true });
+          FM.News.add({
+            type: 'transfer',
+            title: `Gulf money: ${W.short(star)} to ${to.name}`,
+            body: `${to.name}'s owners pay ${U.money(price)} and a wage far above the European market for ${W.name(star)} (${from.name}), at ${W.age(star)}. ${from.name} lose a ${star.ca}-rated player; the Saudi Pro League's foreign places are filling with famous names.`,
+            clubId: to.id,
+          });
+        }
+      }
+    }
+
     T.aiLoans(full, share);
     if (FM.Season.baseRound() >= 10) T.winterExits(full, share);
   };
@@ -811,11 +891,16 @@
         (c.sim === 'full' || c.sim === 'light') &&
         !W.isUserSide(c.id) &&
         c.rep >= uc.rep - (target.listed ? 20 : 4) &&
+        FM.Reg.policy(c, target).ok &&
         c.budget >= target.value * 0.8,
     );
     if (!bidders.length) return;
     const b = U.pick(bidders);
     if (S.news.some((n) => n.type === 'bid' && n.data.pid === target.id && n.data.status === 'open')) return;
+    T.makeBid(target, b);
+  };
+  // A club's bid for one of your players, put in your inbox
+  T.makeBid = function (target, b) {
     // A club short at his position (or buying on deadline day) bids higher and has more room to go up
     const urg = FM.Market.urgency(b, target.pos);
     // a good sporting director gets more out of the clubs bidding for your players
@@ -835,6 +920,42 @@
       clubId: b.id,
       data: { pid: target.id, from: b.id, fee, status: 'open', max, deal, rounds: 0 },
     });
+  };
+  // Offer a transfer-listed player to clubs: up to three that could afford him respond with bids at once (instead of
+  // waiting for them to come in over the days), then he is left alone for a few days
+  T.offerToClubs = function (p) {
+    const S = FM.S,
+      uc = W.userClub();
+    if (!p || !W.ownPlayer(p) || p.loan) return { ok: false, msg: 'He cannot be offered to clubs.' };
+    if (!p.listed) return { ok: false, msg: 'Put him on the transfer list first.' };
+    if (!FM.Season.windowOpen())
+      return { ok: false, msg: 'The transfer window is closed: offers can only be made while it is open.' };
+    if (p.shopYear === S.year && S.day - p.shopDay < 3)
+      return { ok: false, msg: `You have only just offered ${W.short(p)} around: give the clubs a few days.` };
+    const open = new Set(
+      S.news.filter((n) => n.type === 'bid' && n.data.pid === p.id && n.data.status === 'open').map((n) => n.data.from),
+    );
+    const bidders = U.shuffle(
+      Object.values(S.clubs).filter(
+        (c) =>
+          (c.sim === 'full' || c.sim === 'light') &&
+          !W.isUserSide(c.id) &&
+          !open.has(c.id) &&
+          c.rep >= uc.rep - 20 &&
+          FM.Reg.policy(c, p).ok &&
+          c.budget >= p.value * 0.8,
+      ),
+    ).slice(0, 3);
+    p.shopYear = S.year;
+    p.shopDay = S.day;
+    if (!bidders.length)
+      return { ok: false, msg: `No club can afford ${W.short(p)} at his value right now. Try again in a few days.` };
+    bidders.forEach((b) => T.makeBid(p, b));
+    return {
+      ok: true,
+      n: bidders.length,
+      msg: `${W.short(p)} has been offered around: ${bidders.length} club${bidders.length === 1 ? ' has' : 's have'} bid. See your inbox.`,
+    };
   };
 
   T.respondBid = function (n, accept) {

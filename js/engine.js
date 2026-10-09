@@ -317,6 +317,9 @@
       if (this.big && W.hasTrait(p, 'Big Game Player')) f *= 1.06;
       if (this.bigGame && p.id === sd.star) f *= 1 + CAL.star;
       if (this.derby && W.hasTrait(p, 'Derby Specialist')) f *= 1.08;
+      if (this.big && W.hasTrait(p, 'Big-Match Nerves')) f *= 0.95;
+      if (this.knockout && W.hasTrait(p, 'Cup Specialist')) f *= 1.05;
+      if (this.minute <= 20 && W.hasTrait(p, 'Slow Starter')) f *= 0.93;
       if (sd.injured[p.id]) f *= 0.6;
       return f;
     }
@@ -424,7 +427,16 @@
       att *= pen * (1 + sd.mods.att);
       mid *= pen * (1 + sd.mods.mid);
       def *= pen * (1 + sd.mods.def);
-      return { att, mid, def, gk, rate: b[3], q: b[4], cross, win: Math.min(0.08, win) };
+      return {
+        att,
+        mid,
+        def,
+        gk,
+        rate: b[3] * (sd.shoutExp ? sd.shoutExp.rate : 1),
+        q: b[4],
+        cross,
+        win: Math.min(0.08, win),
+      };
     }
 
     // ---------- one simulated minute ----------
@@ -443,6 +455,8 @@
       if (this.assist && tl.m > 1) this.assistantDecides(tl);
       const out = { tl, events: [], script: [] };
       const [H, A] = this.sides;
+      this.shoutTick(H);
+      this.shoutTick(A);
       const sH = this.strength(H),
         sA = this.strength(A);
       // pressing effects on opponent control
@@ -464,6 +478,7 @@
         if (sd.tactic.press === 'Low Block') r *= 0.92;
         if (sd.tactic.buildup === 'Counter' && opSd.tactic.press === 'High Press') r *= 1.15;
         if (opSd.tactic.buildup === 'Possession') r *= 0.93;
+        if (opSd.shoutExp && opSd.shoutExp.kind === 'slow') r *= 0.92; // the other side slowing the game costs us chances too
         if (this.weather[0] === 'Snow') r *= CAL.snow; // heavy pitch, fewer chances
         // Game state: from the hour mark the team in front sits deeper and the team behind pushes
         const diff = sd.goals - opSd.goals;
@@ -533,7 +548,9 @@
     // tacklers and readers of the game. A tackler wins it with his tackling, an interceptor with his positioning;
     // a high press makes more tackles, a low block more interceptions. Each one counts in his stats and rating.
     defend(k) {
-      if (Math.random() >= CAL.defActs) return;
+      // a high press goes in more often, a deep block waits for the ball to come to it
+      if (Math.random() >= CAL.defActs * ({ 'High Press': 1.12, 'Low Block': 0.95 }[this.sides[k].tactic.press] || 1))
+        return;
       const sd = this.sides[k],
         on = this.onPitch(sd);
       if (!on.length) return;
@@ -643,6 +660,7 @@
         w.longshot += 0.05;
       }
       if (T.buildup === 'Counter') w.counter += 0.18;
+      if (T.press === 'Low Block') w.counter += 0.07; // a deep block wins it back with the opposition stretched: its chances come on the break
       if (T.buildup === 'Possession' || T.buildup === 'Short') {
         w.cutback += 0.08;
         w.through += 0.05;
@@ -666,6 +684,7 @@
         w.longshot += 0.08;
         w.through -= 0.06;
       }
+      FM.Matchday.insWeights(sd, od, w);
       let type = U.wpick(Object.keys(w), (k) => Math.max(0.01, w[k]));
       if (Math.random() < CAL.penRate) type = 'penalty';
       const XG = {
@@ -743,6 +762,7 @@
           return (MW[t] + AW[t] * 0.5) * (A.passing + A.vision) * (1 + (r.assist || 0));
         });
       }
+      if (type !== 'penalty' && (sd.ins || od.ins)) xg = U.clamp(xg * Md.insXg(sd, od, type, shooter.p), 0.01, 0.8);
       const p = shooter.p,
         A = p.attrs;
       const finF = 0.75 + ((A.finishing + A.composure) / 40) * 0.5;
@@ -753,6 +773,8 @@
         0.9,
       );
       if (type === 'longshot' && W.hasTrait(p, 'Flair')) pGoal += 0.03;
+      if ((this.minute >= 75 || type === 'penalty') && W.hasTrait(p, 'Clutch')) pGoal *= 1.1;
+      if ((type === 'cross' || sp === 'cor') && W.hasTrait(p, 'Aerial Threat')) pGoal *= 1.1;
       let outcome,
         howler = false;
       if (Math.random() < pGoal) outcome = 'goal';
@@ -928,7 +950,14 @@
     discipline(tl, out) {
       this.sides.forEach((sd) => {
         const press = sd.tactic.press === 'High Press' ? 1.4 : sd.tactic.press === 'Low Block' ? 0.8 : 1;
-        if (Math.random() < CAL.yellowRate * press * (this.derby ? 1.4 : this.heated ? 1.2 : 1) * (sd.hot || 1)) {
+        if (
+          Math.random() <
+          CAL.yellowRate *
+            press *
+            (this.derby ? 1.4 : this.heated ? 1.2 : 1) *
+            (sd.hot || 1) *
+            (sd.shoutExp ? sd.shoutExp.cards : 1)
+        ) {
           const on = this.onPitch(sd).filter(({ i }) => sd.slots[i].t !== 'GK');
           const o = U.wpick(
             on,
@@ -936,6 +965,7 @@
               (22 - p.hid.temp) *
               (DW[sd.slots[i].t] + 0.2) *
               (W.hasTrait(p, 'Temperamental') ? 2 : 1) *
+              (W.hasTrait(p, 'Hatchet Man') ? 2 : 1) *
               (sd.yc[p.id] ? CAL.bookedCaution : 1),
           );
           if (!o) return;
@@ -1008,7 +1038,10 @@
             (rfs[i] =
               (t === 'GK' ? 0.25 : t === 'WB' || t === 'FB' || t === 'CM' || t === 'WM' ? 1.1 : 1) *
               (1 + (this.roleAt(sd, i).press || 0) * 2));
-          sd.st[p.id] = Math.max(0, sd.st[p.id] - 0.42 * (1.35 - (p.attrs.stamina / 20) * 0.7) * pf * rf);
+          sd.st[p.id] = Math.max(
+            0,
+            sd.st[p.id] - 0.42 * (1.35 - (p.attrs.stamina / 20) * 0.7) * pf * rf * (W.hasTrait(p, 'Engine') ? 0.75 : 1),
+          );
           if (!sd.injured[p.id] && Math.random() < FM.Injury.matchChance(p, sd.st[p.id])) {
             sd.injured[p.id] = tl.m;
             out.events.push({
@@ -1025,6 +1058,55 @@
       });
     }
 
+    // ---------- Shouts: a call from the touchline ----------
+    // A shout moves the side for a few minutes (att, mid, def and cards, put back when it ends) and may say something to the
+    // players. How well it lands depends on the captain's leadership and the squad's mood, and a manager who shouts all the
+    // time is tuned out. One at a time, with a pause between.
+    shout(sd, kind) {
+      const sh = Match.SHOUTS[kind];
+      if (!sh) return { ok: false, msg: 'No such shout.' };
+      if (this.finished) return { ok: false, msg: 'The match is over.' };
+      const min = this.minute;
+      if (sd.shoutNext != null && min < sd.shoutNext)
+        return { ok: false, msg: `Give the last one a chance: ${sd.shoutNext - min} min.` };
+      this.shoutEnd(sd); // (a new call replaces the old one)
+      const on = this.onPitch(sd).map(({ p }) => p);
+      const capt = sd.capt && FM.S.players[sd.capt];
+      const mood = on.length ? U.avg(on, (p) => p.morale) : 60;
+      sd.shoutLog = (sd.shoutLog || []).filter((m) => min - m < 25).concat([min]);
+      let eff = U.clamp(0.8 + ((capt ? capt.hid.lead : 10) - 10) / 40 + (mood - 60) / 200, 0.5, 1.25);
+      if (sd.shoutLog.length > 3) eff *= 0.6; // too many: nobody listens
+      const heard = Math.random() < 0.88 ? 1 : 0; // now and then it just does not land
+      eff *= heard;
+      const d = { att: 0, mid: 0, def: 0 };
+      for (const k of ['att', 'mid', 'def']) {
+        const v = sh[k] || 0;
+        // a bad effect is felt whole; a good one only as far as the players take it in
+        d[k] = v > 0 ? v * eff : v * (0.5 + eff / 2);
+        sd.mods[k] += d[k];
+      }
+      sd.shoutExp = { kind, until: min + sh.dur, d, cards: sh.cards || 1, rate: sh.rate || 1 };
+      sd.shoutNext = min + 4;
+      if (sh.conf) sd.conf = U.clamp(sd.conf + sh.conf * eff, -1, 1);
+      if (sh.morale) on.forEach((p) => (p.morale = U.clamp(p.morale + sh.morale * eff, 0, 100)));
+      const note = !heard
+        ? 'It falls flat: the players did not seem to hear it.'
+        : eff >= 1
+          ? 'The players respond at once.'
+          : eff >= 0.75
+            ? 'The players take it on board.'
+            : 'A muted response.';
+      return { ok: true, msg: `${sh.say} ${note}`, eff, heard: !!heard };
+    }
+    shoutEnd(sd) {
+      const e = sd.shoutExp;
+      if (!e) return;
+      for (const k of ['att', 'mid', 'def']) sd.mods[k] -= e.d[k];
+      sd.shoutExp = null;
+    }
+    shoutTick(sd) {
+      if (sd.shoutExp && this.minute >= sd.shoutExp.until) this.shoutEnd(sd);
+    }
     // The assistant's call on a tactical moment (FM.Prompts): the staff's recommended option, which comes first;
     // a substitution it calls for is made with the best fit on the bench
     assistantDecides(tl) {
@@ -1250,6 +1332,78 @@
     'Wing Play': { n: [2, 5], reach: 4, prog: 1.5, back: 0.2, gk: 0.1, wide: 1 },
   };
   // Build-up styles: [attack, midfield, defence, chance rate, chance quality]
+  // The shouts: what each does to the side for `dur` minutes (att / mid / def, as with the manager's tactics), the sending-off
+  // risk (cards), the chance-creation rate, and a one-off lift to confidence and morale
+  Match.SHOUTS = {
+    push: {
+      label: 'Push up',
+      icon: '⬆️',
+      att: 0.05,
+      mid: 0.01,
+      def: -0.05,
+      dur: 8,
+      say: '"Push up, find the winner!"',
+      tip: 'More attack, more gaps behind',
+    },
+    hold: {
+      label: 'Hold shape',
+      icon: '🧱',
+      att: -0.04,
+      def: 0.05,
+      dur: 8,
+      say: '"Hold your shape, stay compact!"',
+      tip: 'Tighter at the back, less going forward',
+    },
+    tackle: {
+      label: 'Get stuck in',
+      icon: '💪',
+      mid: 0.03,
+      att: 0.01,
+      cards: 1.6,
+      dur: 8,
+      say: '"Get stuck in, win the second balls!"',
+      tip: 'Win it back, but more cards',
+    },
+    calm: {
+      label: 'Calm down',
+      icon: '🧘',
+      cards: 0.4,
+      mid: 0.01,
+      dur: 8,
+      conf: 0.1,
+      say: '"Calm down, keep your heads."',
+      tip: 'Fewer cards, steadier',
+    },
+    focus: {
+      label: 'Concentrate',
+      icon: '🎯',
+      def: 0.04,
+      mid: 0.02,
+      dur: 10,
+      say: '"Concentrate, every ball!"',
+      tip: 'Sharper at the back and in midfield',
+    },
+    cheer: {
+      label: 'Encourage',
+      icon: '👏',
+      conf: 0.3,
+      morale: 2,
+      att: 0.01,
+      dur: 6,
+      say: '"Well done, keep going, we are with you!"',
+      tip: 'Lifts confidence and morale',
+    },
+    slow: {
+      label: 'Slow it down',
+      icon: '⏳',
+      att: -0.03,
+      mid: 0.02,
+      rate: 0.88,
+      dur: 8,
+      say: '"Slow it down, keep the ball."',
+      tip: 'Fewer chances for both sides',
+    },
+  };
   Match.BUILDUP = {
     Short: [1, 1.04, 1, 1, 1.05],
     Direct: [1.02, 0.95, 1, 1.08, 0.92],
@@ -1617,6 +1771,7 @@
       const sd = m.sides.find((s) => s.user),
         op = m.sides[1 - sd.idx];
       const diff = sd.goals - op.goals;
+      const read = FM.Matchday.halfRead(m, sd);
       const apply = (kind) => () => {
         let good = 0,
           bad = 0;
@@ -1645,16 +1800,20 @@
         id: 'ht',
         icon: '🗣️',
         title: 'Half-time team talk',
-        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.`,
+        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.\n${read.lines.map(([i, t]) => `${i} ${t}`).join('\n')}`,
         options: [
           { label: 'Keep calm', desc: 'Stay the course', apply: apply('calm') },
           { label: 'Demand more', desc: 'Risky with volatile players', apply: apply('demand') },
           { label: 'Praise them', desc: 'Best when playing well', apply: apply('praise') },
           {
             label: 'Tactical tweaks',
-            desc: "Fix what isn't working (your assistant's eye matters)",
+            desc: read.fix ? read.fix.text : "Fix what isn't working (your assistant's eye matters)",
             apply: () => {
               const k = 0.01 + (FM.Staff.impact('assistant').fam - 1) * 0.1;
+              if (read.fix) {
+                sd.mods.def += k * 0.5;
+                return read.fix.apply();
+              }
               if (op.xg > sd.xg) {
                 sd.mods.def += k + 0.01;
                 return 'Shape tightened where they were getting through.';

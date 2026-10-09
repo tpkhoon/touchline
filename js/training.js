@@ -98,7 +98,7 @@
   };
   Tr.devK = (p) => {
     const t = plan(p);
-    return t ? (t.f.dev || 1) * t.i.dev : 1;
+    return t ? (t.f.dev || 1) * t.i.dev * (W.partTime(S().clubs[p.clubId]) ? 0.8 : 1) : 1; // part-timers train in the evenings
   };
   Tr.injK = (p) => {
     const t = plan(p);
@@ -106,7 +106,7 @@
   };
   Tr.recK = (p) => {
     const t = plan(p);
-    return t ? (t.f.rec || 0) + t.i.rec : 0;
+    return t ? (t.f.rec || 0) + t.i.rec - (W.partTime(S().clubs[p.clubId]) ? 0.1 : 0) : 0;
   };
   // Growth weights for each attribute: the team focus, and an individual focus on top (which counts for more)
   Tr.weights = (p) => {

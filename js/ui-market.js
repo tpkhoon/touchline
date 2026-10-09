@@ -17,6 +17,129 @@
     return n === 1 ? '⏰ Deadline day' : n ? `Window open · ${n} days left` : 'Window closed';
   };
 
+  // ======================= The Transfers tab =======================
+  // One place for the market: the window, offers waiting for your answer, your transfer list, loans, payments to come, your
+  // deals this season and the biggest deals elsewhere, with a way into search, free agents, the shortlist and the Transfer Centre
+  UI.screens.transfers = function () {
+    const s = S(),
+      c = W.userClub(),
+      win = FM.Season.windowOpen();
+    const CL = (id) => FM.clubOf(id);
+    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${win ? '🟢' : '🔴'}</span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14. Until then only free agents can sign.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
+    const links = `<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">${[
+      ['search', '🔎 Search players'],
+      ['free', '🆓 Free agents'],
+      ['shortlist', '⭐ Shortlist'],
+      ['market', '🌍 Transfer Centre'],
+      ...(c &&
+      (s.comps[c.comp].rules.mls || s.comps[c.comp].rules.uni) &&
+      (FM.Draft.current() || (s.draftLog || []).length)
+        ? [['draft', FM.Draft.isUni(c.comp) ? '🎓 Graduates' : '🎓 Draft']]
+        : []),
+    ]
+      .map(([v, l]) => `<button class="btn sm grow" data-act="trGo" data-v="${v}">${l}</button>`)
+      .join('')}</div>`;
+    // offers for your players
+    const bids = s.news.filter((n) => n.type === 'bid' && n.data && n.data.status === 'open');
+    const offers = bids.length
+      ? `<div class="sec"><div class="h3">Offers for your players</div><span class="dim small">${bids.length}</span></div>${bids
+          .map(
+            (n) =>
+              `<div class="card"><div class="b">${esc(n.title)}</div><div class="small dim" style="margin-top:4px">${esc(n.body)}</div>${UI.bidButtons(n)}</div>`,
+          )
+          .join('')}`
+      : `<div class="card flat small dim">No offers waiting. List a player (Squad → his profile → Transfer list) to invite bids.</div>`;
+    // your transfer list and loan list: always shown, so you can see who is on them and offer them around
+    const listCard = (title, players, act, empty) =>
+      `<div class="sec"><div class="h3">${title}</div><span class="dim small">${players.length}</span></div><div class="card flat" style="padding:2px 12px">${
+        players.length
+          ? players
+              .map(
+                (p) =>
+                  `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="${act}" data-id="${p.id}">📣 Offer</button></div>`,
+              )
+              .join('')
+          : `<div class="small dim" style="padding:10px 0">${empty}</div>`
+      }</div>`;
+    const sqd = W.squad(c.id);
+    const list =
+      listCard(
+        'Your transfer list',
+        sqd.filter((p) => p.listed && !p.loan),
+        'offerClubs',
+        'Nobody listed for sale. Open a player and tap Transfer list.',
+      ) +
+      listCard(
+        'Your loan list',
+        sqd.filter((p) => p.loanListed && !p.loan),
+        'offerLoan',
+        'Nobody listed for loan. Open a player and tap Loan list.',
+      );
+    // loans
+    const loansIn = W.squad(c.id).filter((p) => p.loan),
+      loansOut = Object.values(s.players).filter((p) => p.loan && p.loan.from === c.id && p.clubId !== c.id);
+    const loanRow = (p, out) =>
+      `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="grow ellip">${C.flags(p)} ${esc(W.name(p))}</span><span class="tiny dim">${out ? `at ${esc(CL(p.clubId).short)}` : `from ${esc(CL(p.loan.from).short)}`} · ${p.season.apps} apps</span></div>`;
+    const loans =
+      loansIn.length || loansOut.length
+        ? `<div class="sec"><div class="h3">Loans</div></div><div class="card flat" style="padding:2px 12px">${loansIn.map((p) => loanRow(p, false)).join('')}${loansOut.map((p) => loanRow(p, true)).join('')}</div>`
+        : '';
+    // payments
+    const led = M.ledger(c.id),
+      owe = U.sum(led.owe, (x) => x.amt),
+      owed = U.sum(led.owed, (x) => x.amt);
+    const pays =
+      led.owe.length || led.owed.length
+        ? `<div class="card flat small"><div class="h3" style="margin-bottom:6px">Payments to come</div>${led.owe.length ? `<div class="row"><span class="grow">You owe in instalments and add-ons</span><b>${U.money(owe)}</b></div>` : ''}${led.owed.length ? `<div class="row" style="margin-top:4px"><span class="grow">Owed to you</span><b>${U.money(owed)}</b></div>` : ''}</div>`
+        : '';
+    // your deals
+    const mine = s.seasonLog.transfers.filter((t) => W.isUser(t.to) || W.isUser(t.from)).reverse();
+    const deal = (t) => {
+      const buy = W.isUser(t.to),
+        other = buy ? t.from && CL(t.from) : CL(t.to);
+      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><span style="width:20px">${buy ? '🟢' : '🔴'}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''}</div><div class="tiny dim">${buy ? 'from' : 'to'} ${other ? esc(other.name) : 'free agency'}</div></div><div style="text-align:right"><b>${t.fee ? U.money(t.fee) : 'Free'}</b>${t.inst ? `<div class="tiny dim">total · ${t.inst} instalments</div>` : ''}</div></div>`;
+    };
+    const deals = `<div class="sec"><div class="h3">Your deals this season</div><span class="dim small">${mine.length}</span></div><div class="card flat" style="padding:2px 12px">${mine.slice(0, 10).map(deal).join('') || '<div class="empty">No deals yet this season.</div>'}</div>`;
+    // the biggest elsewhere
+    const big = s.seasonLog.transfers
+      .filter((t) => !W.isUser(t.to) && !W.isUser(t.from) && !t.loan)
+      .sort((a, b) => b.fee - a.fee)
+      .slice(0, 5);
+    const elsewhere = big.length
+      ? `<div class="sec"><div class="h3">Biggest deals elsewhere</div><button class="btn sm" data-act="trGo" data-v="market">All deals</button></div><div class="card flat" style="padding:2px 12px">${big
+          .map(
+            (t) =>
+              `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)}</div><div class="tiny dim ellip">${t.from && CL(t.from) ? esc(CL(t.from).short) : '—'} → ${esc(CL(t.to).short)}</div></div><b>${U.money(t.fee)}</b></div>`,
+          )
+          .join('')}</div>`
+      : '';
+    const sub = UI.sub.transfers || 'overview';
+    const tabs = `<div class="chips">${[
+      ['overview', 'Overview'],
+      ['free', 'Free agents'],
+      ['market', 'Transfer Centre'],
+    ]
+      .map(([v, l]) => `<button class="chip ${sub === v ? 'on' : ''}" data-act="trSub" data-v="${v}">${l}</button>`)
+      .join('')}</div>`;
+    if (sub === 'free' || sub === 'market') return head + tabs + UI.views[sub]();
+    return head + tabs + links + offers + list + loans + pays + deals + elsewhere;
+  };
+  UI.acts.trSub = (d) => {
+    UI.sub.transfers = d.v;
+    UI.render();
+  };
+  // the shortcuts: search and the shortlist live in Scout, free agents and the Transfer Centre here
+  UI.acts.trGo = (d) => {
+    if (d.v === 'draft') UI.draftSheet();
+    else if (d.v === 'free' || d.v === 'market') {
+      UI.sub.transfers = d.v;
+      UI.render();
+    } else {
+      UI.sub.scout = d.v;
+      UI.go('scout');
+    }
+  };
+
   // ---------- Desk decisions ----------
   UI.deskChoices = (n) =>
     n.resolved
@@ -167,15 +290,81 @@
   UI.acts.ddGo = (d) => {
     UI.closeAllSheets();
     if (d.v === 'market') {
-      UI.sub.scout = 'market';
-      UI.go('scout');
+      UI.sub.transfers = 'market';
+      UI.go('transfers');
     } else {
       UI.sub.feed = 'reply';
       UI.go('home');
     }
   };
   const homeScreen = UI.screens.home;
-  UI.screens.home = (...a) => UI.deadlineCard() + homeScreen(...a);
+  UI.screens.home = (...a) => UI.deadlineCard() + UI.draftCard() + homeScreen(...a);
+
+  // ======================= The draft =======================
+  // The league's college draft (the American league): a card on Home while your club is on the clock, and a board to
+  // pick from. Each prospect shows a fogged ability range, like any player you haven't scouted.
+  const Dr = FM.Draft;
+  UI.draftCard = function () {
+    const d = Dr && Dr.current();
+    if (!d || !W.employed() || !Dr.userToPick()) return '';
+    const left = d.order.slice(d.pick).filter((id) => W.isUser(id)).length;
+    return `<div class="card row tap" data-act="draftOpen" style="border:1px solid var(--acc)"><span style="font-size:28px">🎓</span><div class="grow"><div class="h3">You're on the clock · pick ${d.pick + 1}</div><div class="tiny dim">${left} pick${left === 1 ? '' : 's'} left in the ${d.year} draft. Advancing the day lets your assistant pick for you.</div></div><span class="dim">›</span></div>`;
+  };
+  const prospectRow = (p, act) => {
+    const star = (ca, pos) => W.stars(ca, pos);
+    return `<div class="prow"><span class="pos ${FM.D.POS_GROUP[p.pos]}">${W.posLabel(p)}</span><div class="grow"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="small dim ellip">${W.age(p)} yrs · ${esc(FM.D.NATIONS[p.nat] ? FM.D.NATIONS[p.nat].name : p.nat)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.stars(star(p.ca - 4, p.pos), star(p.ca + 4, p.pos), star(p.pa + 4, p.pos))}${act || ''}</div></div>`;
+  };
+  UI.draftSheet = function () {
+    const d = Dr.current(),
+      log = (S().draftLog || []).slice(-1)[0];
+    document.querySelectorAll('.sheet-wrap').forEach((x) => x.remove());
+    if (!d && !log) return UI.toast('No draft yet');
+    let html;
+    if (d) {
+      const mine = Dr.userToPick(),
+        recent = d.picks.slice(-6).reverse();
+      html = `<div class="card flat"><div class="b">${mine ? `You're on the clock — pick ${d.pick + 1} (round ${Math.floor(d.pick / d.size) + 1})` : `Pick ${d.pick + 1} of ${d.order.length}`}</div><div class="small dim" style="margin-top:4px">Clubs that missed the playoffs pick first; the champions pick last. Undrafted prospects leave the game.</div><div class="row" style="gap:8px;margin-top:8px"><button class="btn sm grow" data-act="draftAuto">Let the assistant finish the draft</button></div></div>
+      ${recent.length ? `<div class="sec"><div class="h3">Latest picks</div></div><div class="card flat" style="padding:2px 12px">${recent.map((x) => `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(S().players[x.pid]))} <span class="dim">${S().players[x.pid].pos}</span></span><span class="ellip" style="max-width:120px">${esc(FM.clubOf(x.club).short)}</span></div>`).join('')}</div>` : ''}
+      <div class="sec"><div class="h3">Available prospects</div><span class="dim small">${d.pool.length}</span></div><div class="card flat list" style="padding:4px 12px">${d.pool
+        .slice(0, 40)
+        .map((p) =>
+          prospectRow(p, mine ? `<button class="btn sm" data-act="draftPick" data-id="${p.id}">Draft</button>` : ''),
+        )
+        .join('')}</div>`;
+    } else {
+      const own = log.picks.filter((x) => W.isUser(x.club));
+      html = `<div class="small dim" style="margin-bottom:8px">The ${log.year} draft.</div>${log.picks
+        .slice(0, 30)
+        .map((x) => {
+          const p = S().players[x.pid];
+          return p
+            ? `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(p))} <span class="dim">${p.pos}</span></span><span class="ellip" style="max-width:120px;${W.isUser(x.club) ? 'font-weight:800' : ''}">${esc(FM.clubOf(x.club).short)}</span></div>`
+            : '';
+        })
+        .join('')}${own.length ? '' : ''}`;
+    }
+    UI.sheet(html, {
+      title: d ? `🎓 ${d.year} ${Dr.isUni(d.comp) ? 'Graduate draft' : 'Draft'}` : '🎓 Draft results',
+      full: true,
+    });
+  };
+  UI.acts.draftOpen = () => UI.draftSheet();
+  UI.acts.draftPick = (d) => {
+    const r = Dr.userPick(d.id);
+    if (!r.ok) return UI.toast(r.msg);
+    UI.toast(`Drafted ${W.name(r.p)}`);
+    if (Dr.current() && Dr.userToPick()) UI.draftSheet();
+    else {
+      UI.closeAllSheets();
+      UI.render();
+    }
+  };
+  UI.acts.draftAuto = () => {
+    Dr.finish();
+    UI.closeAllSheets();
+    UI.toast('Draft complete');
+    UI.render();
+  };
   UI.BID_STATUS = {
     accepted: '✅ Accepted',
     rejected: '❌ Rejected',

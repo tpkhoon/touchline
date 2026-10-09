@@ -9,6 +9,8 @@
 //   Converter   the real-stats converter (tools/realstats.mjs) on pasted or uploaded CSV/JSON
 //   Importer    the historical importer (tools/import-history.mjs) on tables, players and clubs, and the validator for a
 //               world definition (tools/worlddef.mjs)
+//   Names       the name generator (tools/namegen.mjs): players, towns, clubs, grounds, nicknames, leagues and sponsors by
+//               nation and seed, with the world generator's checks shown on each name
 //   Game        the game itself in a frame, with the developer panel switched on (js/devtools.js is only added here)
 //
 // It listens on 127.0.0.1 only and runs a fixed list of jobs: it never runs a command it was sent.
@@ -1016,6 +1018,20 @@ const server = http.createServer(async (req, res) => {
       const r = running.get(+b.id);
       if (r) r.proc.kill();
       return send(res, 200, { ok: !!r });
+    }
+    // the name generator: what the game's name libraries make for a nation, with the checks' verdicts
+    if (p === '/api/names/nations') {
+      const ng = await import('./namegen.mjs');
+      return send(res, 200, { nations: ng.nations(), kinds: ng.KINDS });
+    }
+    if (p === '/api/names' && req.method === 'POST') {
+      const b = await json(req);
+      try {
+        const ng = await import('./namegen.mjs');
+        return send(res, 200, ng.generateNames(b));
+      } catch (e) {
+        return send(res, 200, { error: e.message });
+      }
     }
     // the real-stats converter: a CSV or JSON text in, converted players out
     if (p === '/api/convert' && req.method === 'POST') {

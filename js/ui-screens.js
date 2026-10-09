@@ -36,7 +36,7 @@
         U.avg(W.pickXI(t.id, W.isUser(t.id) ? s.user.tactic : t.tactic).xi.filter(Boolean), (p) => p.ca);
       const us = str(me),
         them = str(opp);
-      const pw = FM.Season.winChance(us, them, home, fx.neutral);
+      const pw = FM.Season.matchOdds(me, opp, home, us, them, fx.neutral, derby);
       const compName = fx.intl ? 'International' : s.comps[fx.comp].name;
       const f1 = fx.first && FM.Cups.findFixture(fx.first);
       const aggNote =
@@ -78,7 +78,9 @@
     } else if (cal) {
       const others = FM.Season.dayFixtures();
       const away =
-        cal.type === 'intl' ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(p.nat).includes(p)) : [];
+        cal.type === 'intl'
+          ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(FM.Intl.nationOf(p)).includes(p))
+          : [];
       const what =
         cal.type === 'intl'
           ? `International break. ${
@@ -108,7 +110,7 @@
     const waiting = s.news.filter(UI.isOpenDecision).length;
     return `${hero}
       <div class="kpis">
-        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${s.comps[c.comp].short} · ${row.pts} pts</div>` : `<div class="v">—</div><div class="l">${s.comps[c.comp].short} · season starts soon</div>`}</div>
+        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${s.comps[c.comp].short} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l">${s.comps[c.comp].short} · season starts soon</div>`}</div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.boardConf)}">${Math.round(c.boardConf)}%</div><div class="l">Board</div></div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.fanMood)}">${Math.round(c.fanMood)}%</div><div class="l">Fans</div></div>
       </div>
@@ -356,9 +358,9 @@
         ga = home ? d.mine.ag : d.mine.hg,
         opp = TM(home ? d.mine.a : d.mine.h);
       const r = gf > ga ? ['W', 'var(--good)'] : gf < ga ? ['L', 'var(--bad)'] : ['D', 'var(--ink3)'];
-      our = `<div class="big"><span class="wdl" style="background:${r[1]}">${r[0]}</span><div class="grow" style="min-width:0"><div class="b ellip">${gf}–${ga} v ${opp ? esc(opp.name) : '?'} (${home ? 'H' : 'A'})</div><div class="small dim">Now ${U.ordinal(d.pos)} ${arrow(d.move)} · ${d.pts} pts${d.top ? ` · ${d.gap ? `${d.gap} clear` : 'top on goal difference'}` : ` · ${d.gap ? `${d.gap} behind the leaders` : 'level on points with the leaders'}`}${d.safety != null ? ` · ${d.inZone ? (d.safety < 0 ? `${-d.safety} pts from safety` : 'in the drop zone on goal difference') : d.safety > 0 ? `${d.safety} pts clear of the drop zone` : 'level on points with the drop zone'}` : ''}</div></div></div>`;
+      our = `<div class="big"><span class="wdl" style="background:${r[1]}">${r[0]}</span><div class="grow" style="min-width:0"><div class="b ellip">${gf}–${ga} v ${opp ? esc(opp.name) : '?'} (${home ? 'H' : 'A'})</div><div class="small dim">Now ${U.ordinal(d.pos)} ${arrow(d.move)} · ${U.pts(d.pts)}${d.top ? ` · ${d.gap ? `${d.gap} clear` : 'top on goal difference'}` : ` · ${d.gap ? `${d.gap} behind the leaders` : 'level on points with the leaders'}`}${d.safety != null ? ` · ${d.inZone ? (d.safety < 0 ? `${U.pts(-d.safety)} from safety` : 'in the drop zone on goal difference') : d.safety > 0 ? `${U.pts(d.safety)} clear of the drop zone` : 'level on points with the drop zone'}` : ''}</div></div></div>`;
     } else
-      our = `<div class="small dim" style="margin-top:6px">No league game for us this round. We're ${U.ordinal(d.pos)} ${arrow(d.move)} on ${d.pts} pts.</div>`;
+      our = `<div class="small dim" style="margin-top:6px">No league game for us this round. We're ${U.ordinal(d.pos)} ${arrow(d.move)} on ${U.pts(d.pts)}.</div>`;
     const table = `<div class="dsec">${d.table.map(([id, pts, mv], i) => `<div class="dr ${id === me ? 'me' : ''}"><span style="width:18px" class="dim">${i + 1}</span>${C.crest(TM(id), 16)}<span class="grow ellip">${esc(TM(id).name)}</span>${arrow(mv)}<b style="width:28px;text-align:right">${pts}</b></div>`).join('')}${d.pos > d.table.length ? `<div class="dr me"><span style="width:18px">${d.pos}</span>${C.crest(TM(me), 16)}<span class="grow ellip">${esc(TM(me).name)}</span>${arrow(d.move)}<b style="width:28px;text-align:right">${d.pts}</b></div>` : ''}</div>`;
     const results = `<div class="dsec"><div class="tiny b dim">RESULTS</div><div class="res">${d.results
       .map(([h, a, hg, ag]) => {
@@ -493,12 +495,12 @@
         comp = s.comps[c.comp],
         obj = FM.Season.objectives(c)[0],
         days = Math.max(1, o.until - now);
-      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${D.IDENTITY[c.identity].label}</div></div><span class="pill">Rep ${Math.round(c.rep)}</span></div>
+      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${D.IDENTITY[c.identity].label}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
         <div class="small muted" style="margin-top:8px;line-height:1.5">${o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.'}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
         <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">Offer open for about ${days} day${days === 1 ? '' : 's'}</span><button class="btn sm" data-act="clubView" data-id="${c.id}">Look closer</button><button class="btn sm pri" data-act="takeJob" data-id="${c.id}">Accept</button></div></div>`;
     };
     return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
-        <div class="small" style="opacity:.75;margin-top:8px">Reputation ${Math.round(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
+        <div class="small" style="opacity:.75;margin-top:8px">Reputation ${U.repText(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
         <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Wait for an offer</button>'}</div></div>
       <div class="sec"><div class="h3">Job offers</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
       ${offers.map(card).join('') || '<div class="empty">No offers right now. Keep waiting — clubs in your range will call.</div>'}
@@ -631,10 +633,13 @@
                 : squadView())
     );
   };
-  UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false };
+  UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false, rev: false };
+  // which sorts run low to high by themselves (the rest high to low); the arrow button turns either around
+  const SQ_ASC = new Set(['fit', 'age', 'contract']);
   const SQ_SORT = {
     pos: ['Position', (a, b) => b.ca - a.ca],
-    ca: ['Rating', (a, b) => b.ca - a.ca],
+    ca: ['Ability', (a, b) => b.ca - a.ca],
+    pa: ['Potential', (a, b) => b.pa - a.pa || b.ca - a.ca],
     fit: ['Fitness', (a, b) => a.fitness - b.fitness],
     age: ['Age', (a, b) => W.age(a) - W.age(b)],
     wage: ['Wage', (a, b) => b.wage - a.wage],
@@ -674,6 +679,10 @@
     UI._sq.stat = !UI._sq.stat;
     UI.render();
   };
+  UI.acts.sqRev = () => {
+    UI._sq.rev = !UI._sq.rev;
+    UI.render();
+  };
   UI.acts.sqSort = (d) => {
     UI._sq.sort = d.v;
     UI.render();
@@ -710,14 +719,16 @@
     const foreign = sq.filter((p) => p.nat !== club().nat).length;
     const expiring = sq.filter((p) => !p.loan && p.contract <= S().year).length;
     const extra = (p) =>
-      `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
+      `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${q.sort === 'pa' ? ` · potential ${C.starText(p.pa, p.pos)}` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
     const list = sq.filter((p) => SQ_FILTER[q.filter][1](p, starters)).sort(SQ_SORT[q.sort][1]);
-    const chipsRow = (act, cur, map) =>
-      `<div class="chips noswipe">${Object.entries(map)
+    if (q.rev && q.sort !== 'pos') list.reverse();
+    const asc = SQ_ASC.has(q.sort) !== !!(q.rev && q.sort !== 'pos');
+    const chipsRow = (act, cur, map, label = '', more = '') =>
+      `<div class="chips noswipe">${label ? `<span class="chip-lbl">${label}</span>` : ''}${Object.entries(map)
         .map(
           ([k, [l]]) => `<button class="chip ${cur === k ? 'on' : ''}" data-act="${act}" data-v="${k}">${l}</button>`,
         )
-        .join('')}</div>`;
+        .join('')}${more}</div>`;
     const body =
       q.sort === 'pos'
         ? groups
@@ -731,8 +742,7 @@
         : `<div class="card flat list" style="padding:4px 12px">${list.map((p) => C.playerRow(p, extra(p), contractTag(p, q.sort === 'contract'))).join('')}</div>`;
     return `<div class="row small dim" style="margin:0 2px 8px"><span>${sq.length} players</span><span>·</span><span>Wages ${U.money(U.sum(sq, (p) => p.wage))}/wk</span><span class="grow"></span><span>Foreign ${foreign}${FM.Reg.real() ? '' : ` (${W.foreignLimitText()} in squad)`}</span></div>${UI.regLine(club())}
       ${expiring ? `<button class="warnline tap" style="width:100%;text-align:left;border:0" data-act="sqFilter" data-v="expiring">⏳ ${expiring} contract${expiring === 1 ? '' : 's'} expire this season — unsigned players leave on a free. Show them ›</button>` : ''}
-      <div class="small b dim" style="margin:4px 2px 0">SORT</div>${chipsRow('sqSort', q.sort, SQ_SORT)}<div class="small b dim" style="margin:0 2px">SHOW</div>${chipsRow('sqFilter', q.filter, SQ_FILTER)}
-      <div class="chips noswipe"><button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Standout stat in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button></div>
+      ${chipsRow('sqSort', q.sort, SQ_SORT, 'Sort', q.sort === 'pos' ? '' : `<button class="chip on" data-act="sqRev" title="Reverse the order">${asc ? '↑ Low to high' : '↓ High to low'}</button>`)}${chipsRow('sqFilter', q.filter, SQ_FILTER, 'Show', `<button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Stats in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button>`)}
       ${list.length ? body : '<div class="empty">No players match this filter.</div>'}`;
   }
   function academyView() {
@@ -1034,7 +1044,7 @@
               : inXI >= 0
                 ? 'In XI (swap)'
                 : '';
-          return `<div class="prow tap" data-act="pickSlot" data-i="${i}" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))} ${cur && cur.id === p.id ? '✓' : ''}</div><div class="small dim">${fit >= 1 ? 'Natural' : fit >= 0.8 ? 'Accomplished' : fit >= 0.6 ? 'Awkward' : 'Unfamiliar'}${tag ? ' · ' + tag : ''}</div></div>${C.fitTag(p.fitness)}<div class="b" style="width:26px;text-align:right">${Math.round(W.effAt(p, s.t, s, T.roles[i]))}</div></div>`;
+          return `<div class="prow tap" data-act="pickSlot" data-i="${i}" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))} ${cur && cur.id === p.id ? '✓' : ''}</div><div class="small dim">${fit >= 1 ? 'Natural' : fit >= 0.8 ? 'Accomplished' : fit >= 0.6 ? 'Awkward' : 'Unfamiliar'}${tag ? ' · ' + tag : ''}</div></div>${C.fitTag(p.fitness)}<div class="b" style="min-width:40px;text-align:right">${C.starText(W.effAt(p, s.t, s, T.roles[i]), s.t)}</div></div>`;
         })
         .join('')}</div>`,
       { title: `${D.slotLabel(s)} · ${D.POS_NAME[s.t] || s.t}` },
@@ -1194,13 +1204,15 @@
       .map((r) => ({ ...r, now: true }));
     const history = current.concat((p.history || []).slice().reverse());
     // The nation opens its national-team overview (nations without a national team in the world stay plain text)
-    const nt = S().nteams && S().nteams['n_' + p.nat];
+    const playsFor = FM.Intl.nationOf(p),
+      otherNat = playsFor === p.nat ? p.nat2 : p.nat;
+    const nt = S().nteams && S().nteams['n_' + playsFor];
     const natLink = (html) =>
       nt
         ? `<span class="tap" data-act="nation" data-id="${nt.id}" style="text-decoration:underline dotted">${html}</span>`
         : html;
-    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${esc(p.fn)}<br>${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(p.nat)} ${D.NATIONS[p.nat].name}`)}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''} · ${age} yrs${c ? ' · ' + esc(c.name) : ''}</div></div>${c ? C.crest(c, 48) : ''}</div>
-      <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].short || S().comps[W.refComp()].name)}${own || v.k >= 40 ? ` · ${C.posOveralls(p)}` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${me} ${ml}</b></div>` : ''}</div></div>
+    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${D.NATIONS[playsFor].name}`)} · <b title="International appearances">${p.intl && p.intl.caps ? `${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'}` : 'Uncapped'}</b>${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : p.natur && p.natur.code === otherNat ? 'Naturalised in ' + p.natur.year : 'Eligible through family'}">${C.flag(otherNat)} ${D.NATIONS[otherNat].name} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''} · ${age} yrs${c ? ` · <span class="tap" data-act="clubView" data-id="${c.id}" style="text-decoration:underline dotted">${esc(c.name)}</span>` : ''}</div></div>${c ? `<span class="tap" data-act="clubView" data-id="${c.id}">${C.crest(c, 48)}</span>` : ''}</div>
+      <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].short || S().comps[W.refComp()].name)}${own || v.k >= 40 ? ` · ${C.posOveralls(p)}` : ''}${own && p.pa0 !== undefined && Math.abs(p.pa - p.pa0) >= 4 ? ` · <span title="His potential has ${p.pa > p.pa0 ? 'risen' : 'fallen'} since we first assessed him" style="color:${p.pa > p.pa0 ? '#9be37a' : '#ff9d9d'}">potential ${p.pa > p.pa0 ? '▲' : '▼'}</span>` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${me} ${ml}</b></div>` : ''}</div></div>
       <div class="sp"></div>
       ${ownActions}
       ${FM.Season.isIcon(p) ? `<div style="margin-bottom:6px"><span class="trait" title="${esc(`${p.career.spells.at(-1).apps} appearances for ${CL(p.clubId).name}`)}">⭐ Club icon</span></div>` : ''}
@@ -1219,13 +1231,14 @@
           .reverse()
           .map(
             (sp) =>
-              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow">${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : ''}${sp.from}–${sp.to || 'now'}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
+              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow ${CL(sp.c) ? 'tap' : ''}" ${CL(sp.c) ? `data-act="clubView" data-id="${sp.c}"` : ''}>${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : ''}${sp.from}–${sp.to || 'now'}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
           )
           .join('')}
-        ${p.intl && p.intl.caps ? `<div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${natLink(`${C.flag(p.nat)} ${p.intl.caps} caps · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goals`}`)}</b></div>` : ''}
+        <div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${p.intl && p.intl.caps ? natLink(`${C.flag(playsFor)} ${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'} · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goal${p.intl.goals === 1 ? '' : 's'}`}`) : `<span class="dim" style="font-weight:600">Uncapped${p.nat2 ? ' · free to choose' : ''}</span>`}</b></div>
         ${p.honours && p.honours.length ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Honours</span><b>${honoursLine(p)}</b></div>` : ''}
         ${trainedRows(p)}
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
+      ${persuadeCard(p)}
       ${bioCard(p)}
       ${UI.seasonsCard(p, history)}
       ${injuryCard(p)}`;
@@ -1279,9 +1292,28 @@
       const v = gk
         ? [h.apps, h.cs || 0, h.ga || 0, h.r ? h.r.toFixed(2) : '—']
         : [h.apps, h.g, h.a || 0, h.r ? h.r.toFixed(2) : '—'];
-      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip" style="max-width:110px">${c ? esc(c.short) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
+      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.short) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
     };
-    const tot = history.reduce(
+    // The rows only go back as far as the game has a record: what the Career panel counts beyond them (earlier
+    // seasons at a club, and his career before that) comes as rows of its own, so the totals agree
+    const extra = [];
+    const spells = (p.career && p.career.spells) || [];
+    for (const club of new Set(spells.map((x) => x.c))) {
+      const sp = spells.filter((x) => x.c === club),
+        rows = history.filter((h) => h.c === club);
+      const apps = sp.reduce((t, x) => t + (x.apps || 0), 0) - rows.reduce((t, h) => t + h.apps, 0),
+        g = sp.reduce((t, x) => t + (x.goals || 0), 0) - rows.reduce((t, h) => t + h.g, 0);
+      if (apps > 0) extra.push({ c: club, apps, g: Math.max(0, g), earlier: true });
+    }
+    const shownApps = history.concat(extra).reduce((t, h) => t + h.apps, 0),
+      shownG = history.concat(extra).reduce((t, h) => t + h.g, 0);
+    if (p.career && p.career.apps > shownApps)
+      extra.push({ apps: p.career.apps - shownApps, g: Math.max(0, p.career.goals - shownG), before: true });
+    const extraRow = (h) => {
+      const c = h.c && CL(h.c);
+      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.short) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td></tr>`;
+    };
+    const tot = history.concat(extra).reduce(
       (t, h) => ({
         apps: t.apps + h.apps,
         g: t.g + h.g,
@@ -1293,7 +1325,7 @@
     );
     return `<div class="card"><div class="h3">Season by season</div>
       <table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${head.map((h) => `<th>${h}</th>`).join('')}</tr>
-      ${history.map(row).join('')}
+      ${history.map(row).join('')}${extra.map(extraRow).join('')}
       <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}</tr></table></div>`;
   };
   // Where he counts as trained and for whom he is homegrown (the registration rules read the same record)
@@ -1302,22 +1334,38 @@
       t = R.trained(p);
     const nat = (code) => (D.NATIONS[code] ? `${C.flag(code)} ${esc(D.NATIONS[code].name)}` : esc(code));
     const where = t.club
-      ? `${C.crest(t.club, 16)} ${esc(t.club.name)} (${nat(t.club.nat)})`
-      : `${nat(p.nat)} <span class="dim" style="font-weight:400">(no youth record: counted where he was born)</span>`;
+      ? `<span class="tap" data-act="clubView" data-id="${t.club.id}">${C.crest(t.club, 16)} ${esc(t.club.name)}</span> <span class="dim" style="font-weight:400">(${nat(t.club.nat)})</span>`
+      : `<span class="dim" style="font-weight:400">a youth academy in</span> ${nat(t.home)}`;
     const how =
       t.why === 'academy'
         ? 'came through its academy'
         : t.why === 'record'
           ? `${t.seasons} season${t.seasons > 1 ? 's' : ''} there between 15 and 21`
-          : '';
-    const hg = t.nations.length
-      ? t.nations.map(nat).join(', ')
-      : '<span class="dim" style="font-weight:400">no nation</span>';
+          : 'his youth club, from before the game began';
+    const others = t.nations.filter((n) => n !== t.home);
+    const hg = `${nat(t.home)}${others.length ? `<div class="tiny dim" style="font-weight:400">also homegrown for ${others.map(nat).join(', ')}</div>` : ''}`;
     const own = p.clubId && CL(p.clubId) && CL(p.clubId).nat;
     const need = own && R.rulesFor(CL(p.clubId)) && R.rulesFor(CL(p.clubId)).squad;
-    return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}${how ? `<div class="tiny dim" style="font-weight:400">${how}</div>` : ''}</b></div>
-        <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown for</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
+    return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}<div class="tiny dim" style="font-weight:400">${how}</div></b></div>
+        ${p.draftClub && CL(p.draftClub) ? `<div class="row small" style="margin-top:8px"><span class="grow muted">${p.uni ? 'University route' : 'Drafted'}</span><b>${p.draftYear} · ${esc(CL(p.draftClub).name)}</b></div>` : ''}
+        <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown in</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
   };
+  // As national team manager: a player eligible for your nation who plays for another (or has not chosen) can be asked
+  // to commit, if he has not yet been capped
+  function persuadeCard(p) {
+    const s = S(),
+      t = s.user.nation && s.nteams[s.user.nation];
+    if (!t || (p.nat !== t.code && p.nat2 !== t.code) || FM.Intl.nationOf(p) === t.code) return '';
+    const live = FM.Intl.uncapped(p) && p.askY !== s.year,
+      ch = FM.Intl.persuadeChance(p);
+    return `<div class="card"><div class="h3">🌍 Play for ${esc(t.name)}?</div>
+      <div class="small muted" style="margin:6px 0 10px">${
+        !FM.Intl.uncapped(p)
+          ? `${esc(W.short(p))} has played for ${esc(D.NATIONS[FM.Intl.nationOf(p)].name)} and is tied to them.`
+          : `${esc(W.short(p))} is eligible for ${esc(t.name)} and has not been capped. Chances of winning him over: <b>${ch >= 0.6 ? 'good' : ch >= 0.35 ? 'fair' : 'slim'}</b>.${p.askY === s.year ? ' You have asked him this year.' : ''}`
+      }</div>
+      ${live ? `<button class="btn pri block" data-act="ntPersuade" data-id="${p.id}">Ask him to commit to ${esc(t.name)}</button>` : ''}</div>`;
+  }
   // His story in words, from what the game has recorded: where he started, each move and what it cost, his totals,
   // caps, honours and his worst injury. (A long career shows the first move and the latest few.)
   function bioCard(p) {
@@ -1326,7 +1374,7 @@
       sp = p.career.spells.filter((x) => cn(x.c)),
       out = [];
     out.push(
-      `Born in ${p.born}, a ${D.POS_NAME[p.pos].toLowerCase()}${nat ? ` from ${nat.name}` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` of ${D.HERITAGE_LABEL[p.heritage]} heritage` : ''}.`,
+      `Born in ${p.born}, a ${D.POS_NAME[p.pos].toLowerCase()}${nat ? ` from ${nat.name}` : ''}${p.nat2 && D.NATIONS[p.nat2] ? `, also eligible for ${D.NATIONS[p.nat2].name}` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` of ${D.HERITAGE_LABEL[p.heritage]} heritage` : ''}.`,
     );
     // players made with the world have games from before their recorded clubs
     const earlier = p.career.apps - p.career.spells.reduce((t, x) => t + x.apps, 0);
@@ -1405,6 +1453,31 @@
     UI.refreshSheet(playerHTML(p));
     UI.save();
   };
+  UI.acts.loanList = (d) => {
+    const p = P(d.id);
+    p.loanListed = !p.loanListed;
+    UI.toast(
+      p.loanListed ? 'Loan listed: clubs will ask for him when the window is open' : 'Removed from the loan list',
+    );
+    UI.refreshSheet(playerHTML(p));
+    UI.save();
+  };
+  UI.acts.offerLoan = (d) => {
+    const p = P(d.id),
+      r = FM.Market.offerLoan(p);
+    UI.toast(r.msg, 4000);
+    UI.save();
+    UI.render();
+    if (document.querySelector('.sheet-wrap') && P(d.id)) UI.refreshSheet(playerHTML(p));
+  };
+  UI.acts.offerClubs = (d) => {
+    const p = P(d.id),
+      r = FM.Transfers.offerToClubs(p);
+    UI.toast(r.msg, 4000);
+    UI.save();
+    UI.render();
+    if (document.querySelector('.sheet-wrap') && P(d.id)) UI.refreshSheet(playerHTML(p));
+  };
   UI.acts.renew = (d) => {
     const p = P(d.id),
       c = club();
@@ -1433,6 +1506,10 @@
     );
   };
   UI.acts.doScoutPlayer = (d) => {
+    if (!FM.Scouting.scoutable(P(d.id))) {
+      UI.closeSheet();
+      return UI.toast(`${W.userClub().name} only look at ${W.userClub().policy.label} players`, 3500);
+    }
     FM.Scouting.assign(d.s, { type: 'player', pid: d.id });
     UI.save();
     UI.closeSheet();
@@ -1570,7 +1647,7 @@
             : a.type === 'region'
               ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.pos === 'any' ? 'all' : a.pos} · ≤${a.maxAge}</span>`
               : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${a.weeks}w</span>`;
-          return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${sc.judge}/20 · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
+          return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${U.staffText(sc.judge)} · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
         <div class="small muted" style="margin:10px 0 6px">${esc(sc.note)}</div>
         ${Object.entries(D.REGIONS)
           .map(
@@ -1649,7 +1726,7 @@
   function searchView() {
     const q = UI._q,
       s = S();
-    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p));
+    let ps = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p) && FM.Scouting.scoutable(p));
     if (q.text)
       ps = ps.filter((p) =>
         (W.name(p) + ' ' + (p.clubId ? CL(p.clubId).name : '')).toLowerCase().includes(q.text.toLowerCase()),
@@ -1710,20 +1787,22 @@
     if (S().comps[t] && S().comps[t].type === 'league' && t !== mine) opts.push([t, lname(S().comps[t])]);
     opts.push(['world', '🗺️ All leagues']);
     if (W.cups().length || W.continentals().length) opts.push(['cups', 'Cups']);
-    opts.push(['fixtures', 'Fixtures'], ['totw', 'Team of the week'], ['stats', 'Stats']);
+    opts.push(['fixtures', 'Fixtures'], ['totw', 'Team of the week'], ['awards', 'Awards'], ['stats', 'Stats']);
     return (
       chips('league', opts) +
       (t === 'fixtures'
         ? fixturesView()
         : t === 'totw'
           ? totwView()
-          : t === 'stats'
-            ? statsView()
-            : t === 'cups'
-              ? cupsView()
-              : t === 'world'
-                ? worldView()
-                : tableView(t))
+          : t === 'awards'
+            ? awardsView()
+            : t === 'stats'
+              ? statsView()
+              : t === 'cups'
+                ? cupsView()
+                : t === 'world'
+                  ? worldView()
+                  : tableView(t))
     );
   };
   // International football has its own tab: national teams, rankings, tournaments and your national job
@@ -1797,10 +1876,122 @@
       comp.sim && comp.sim !== 'full'
         ? `<div class="warnline" style="margin-bottom:8px">${FM.Tiers.ICON[comp.sim]} ${FM.Tiers.LABEL[comp.sim]} — ${comp.sim === 'light' ? 'results come from a fast statistical model; player stats are recorded.' : 'scores only; squads exist for scouting.'}</div>`
         : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${t.map((r, i) => `<tr class="${zone(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>
-      <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${legend.map((l) => `<span>${l}</span>`).join('')}</div>
-      ${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
+    const tableHTML = (rows, zoneOf, title) =>
+      `${title ? `<div class="h3" style="margin:10px 4px 4px">${esc(title)}</div>` : ''}<div class="card flat" style="padding:6px 10px"><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th class="l">Form</th></tr>${rows.map((r, i) => `<tr class="${zoneOf(i)} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 18)}<span class="ellip" style="max-width:130px">${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td class="l">${C.form(r.form.slice(-3))}</td></tr>`).join('')}</table></div>`;
+    const mls = R.mls && comp.conf;
+    const torn = comp.torneos,
+      groups = comp.groups && R.split;
+    const confNames = mls ? Object.keys(R.conferences) : [];
+    const byConf = mls && UI._confView !== 'all';
+    // two tournaments a year: the one on show (the second once it has started), or the season's table
+    const started2 =
+      torn &&
+      comp.fixtures
+        .slice(comp.torneoHalf)
+        .flat()
+        .some((f) => f.res);
+    const tv = torn ? (UI._torneoView === undefined ? (started2 ? 1 : 0) : UI._torneoView) : null;
+    const finals = R.playoffs && R.playoffs.type === 'finals6';
+    let tables, shown;
+    if (byConf) {
+      tables = confNames
+        .map((cn) =>
+          tableHTML(
+            W.confTable(comp, cn),
+            (i) => (i < R.mls.playoff ? (i === 0 ? 'zone-up' : 'zone-po') : ''),
+            `${cn}ern Conference`,
+          ),
+        )
+        .join('');
+      shown = comp.ko && comp.ko[0];
+    } else if (torn && tv !== 'all') {
+      const cut = comp.zones ? 8 : 6;
+      tables = comp.zones
+        ? ['A', 'B']
+            .map((z) =>
+              tableHTML(
+                W.torneoTable(comp, tv, z),
+                (i) => (i === 0 ? 'zone-up' : i < cut ? 'zone-po' : ''),
+                `${torn[tv].name} · Zone ${z}`,
+              ),
+            )
+            .join('')
+        : tableHTML(
+            W.torneoTable(comp, tv),
+            (i) => (i < 6 ? (i === 0 ? 'zone-up' : 'zone-po') : i < 10 ? 'zone-po' : ''),
+            torn[tv].name,
+          );
+      shown = comp.ko && comp.ko[tv];
+    } else if (groups) {
+      tables = comp.groups
+        .map((ids, g) =>
+          tableHTML(
+            t.filter((r) => ids.includes(r.id)),
+            (i) => (g === 0 && i === 0 ? 'zone-up' : ''),
+            R.split.names[g],
+          ),
+        )
+        .join('');
+    } else {
+      tables = tableHTML(t, (i) => (finals && i < 6 && i > 0 ? 'zone-po' : zone(i)));
+      if (finals || torn) shown = comp.ko && comp.ko[0];
+    }
+    const chip = (on, act, v, label) =>
+      `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-v="${v}">${label}</button>`;
+    const confChips = mls
+      ? `<div class="row" style="gap:6px;margin:0 2px 6px">${chip(byConf, 'confView', 'conf', 'Conferences')}${chip(!byConf, 'confView', 'all', "Overall (Supporters' Shield)")}</div>`
+      : torn
+        ? `<div class="row" style="gap:6px;margin:0 2px 6px">${torn.map((x, i) => chip(tv === i, 'torneoView', i, esc(x.name))).join('')}${chip(tv === 'all', 'torneoView', 'all', 'Season')}</div>`
+        : '';
+    const splitNote = groups
+      ? `<div class="tiny dim" style="margin:0 4px 8px">${comp.split && comp.split.done ? `Split after round ${R.split.after}` : `Splits after round ${R.split.after} into ${R.split.groups.join(' / ')}`}${R.split.halve ? ': points are halved' : ': points carry over'}.</div>`
+      : R.split
+        ? `<div class="tiny dim" style="margin:0 4px 8px">Splits after round ${R.split.after} into ${R.split.groups.join(' / ')}${R.split.halve ? ', points halved' : ''}.</div>`
+        : '';
+    const mlsLegend = mls
+      ? byConf
+        ? [`🟢 Conference leader`, `🔵 Playoffs (top ${R.mls.playoff})`]
+        : [`🟢 Supporters' Shield`, `🔵 ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`]
+      : torn && tv !== 'all'
+        ? [
+            comp.zones ? '🔵 Knockouts (top 8 of each zone)' : '🟢 Direct to the quarter-finals (top 6)',
+            ...(comp.zones ? [] : ['🔵 Play-in (7–10)']),
+          ]
+        : finals
+          ? ['🟢 Champion', '🔵 Finals (top 6)']
+          : null;
+    const bracket = shown ? UI.koBracket(comp, shown) : '';
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${tables}
+      <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
+      ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
   }
+  // A title playoff bracket: the seeds, then each round's ties
+  UI.koBracket = function (comp, M) {
+    const type = W.koType(comp),
+      rows = [];
+    for (const k of ['M1', 'M2', 'M3', 'M4']) {
+      const ties = M[k] || [];
+      if (!ties.length) continue;
+      rows.push(
+        `<div class="small b dim" style="margin:10px 0 2px">${esc(FM.Season.KO_ROUNDS[type][k]).toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
+      );
+    }
+    const seeds = Object.entries(M.seeds)
+      .map(
+        ([cn, ids]) =>
+          `<div class="tiny dim" style="margin-top:4px">${cn === 'all' ? '' : `<b>${esc(cn)}</b>: `}${ids.map((id, i) => `${i + 1} ${esc(CL(id).short)}`).join(' · ')}</div>`,
+      )
+      .join('');
+    return `<div class="card"><div class="h3">Playoffs</div>${seeds}${rows.join('')}</div>`;
+  };
+  UI.acts.torneoView = (d) => {
+    UI._torneoView = d.v === 'all' ? 'all' : +d.v;
+    UI.render();
+  };
+  UI.acts.confView = (d) => {
+    UI._confView = d.v;
+    UI.render();
+  };
   const stagePill = (po) => {
     const [base, leg] = po.split(' · ');
     const b =
@@ -1898,6 +2089,76 @@
       ${sel ? `${lines(sel.xi)}${mgr ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>🎙️</span><span class="grow" style="margin-left:8px">Manager of the week: <b>${esc(((m) => (m ? `${m} (${mgr.name})` : mgr.name))(W.isUser(mgr.id) ? s.user.name : s.staff[mgr.manager] ? `${s.staff[mgr.manager].fn} ${s.staff[mgr.manager].ln}` : ''))}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:8px">The first team of the week is picked after the first league matchday.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Team of the season so far</div></div>${toty ? `<div class="tiny dim">By average rating, for players with a fair share of the games.</div>${lines(toty)}` : '<div class="small dim" style="margin-top:8px">Not enough games played yet.</div>'}</div>`;
   }
+  // ---- Awards: the world's best XI, a league's awards, and what a cup or tournament gave out ----
+  UI.xiLines = (xi) =>
+    ['GK', 'DEF', 'MID', 'ATT']
+      .map((g) => {
+        const rows = xi.filter((x) => D.POS_GROUP[x.pos] === g);
+        return rows.length
+          ? `<div class="small b dim" style="margin:10px 0 2px">${{ GK: 'GOALKEEPER', DEF: 'DEFENCE', MID: 'MIDFIELD', ATT: 'ATTACK' }[g]}</div>${rows
+              .map((x) => {
+                const pl = P(x.id),
+                  cl = CL(x.c);
+                return `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${x.id}"><span class="pos ${D.POS_GROUP[x.pos]}" style="min-width:34px;text-align:center">${x.lab}</span><span class="grow ellip" style="margin-left:8px">${pl && W.ownPlayer(pl) ? '⭐ ' : ''}${esc(x.n)} <span class="dim">· ${cl ? (cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.short)) : '?'}</span></span><b>${x.r.toFixed(1)}</b></div>`;
+              })
+              .join('')}`
+          : '';
+      })
+      .join('');
+  UI.awardsHTML = (aw, xiLabel = 'TEAM OF THE TOURNAMENT') => {
+    if (!aw) return '<div class="small dim" style="margin-top:6px">Nothing to give out yet.</div>';
+    const side = (id) => {
+      const cl = id && CL(id);
+      return cl
+        ? ` <span class="dim">· ${cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.short)}</span>`
+        : '';
+    };
+    const row = (icon, label, a, tail = '') =>
+      a
+        ? `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line);gap:8px" data-act="player" data-id="${a.pid}"><span>${icon}</span><span class="grow ellip"><span class="dim">${label}</span> <b>${esc(a.name)}</b>${side(a.club)}</span><b>${tail}</b></div>`
+        : '';
+    return `${row('👟', 'Golden Boot', aw.boot, aw.boot ? `${aw.boot.goals} goal${aw.boot.goals === 1 ? '' : 's'}` : '')}${row('⭐', 'Best player', aw.player, aw.player ? aw.player.avg.toFixed(2) : '')}${row('🌱', 'Best young player', aw.young, aw.young ? aw.young.avg.toFixed(2) : '')}${row('🧤', 'Best goalkeeper', aw.keeper, aw.keeper ? aw.keeper.avg.toFixed(2) : '')}${row('🎯', 'Most assists', aw.assists, aw.assists ? aw.assists.assists : '')}
+      ${aw.xi ? `<div class="small b dim" style="margin:12px 0 0">${xiLabel}</div>${UI.xiLines(aw.xi)}` : ''}`;
+  };
+  function awardsView() {
+    const s = S(),
+      cur = UI._awardsComp || myComp();
+    const pick = `<div class="chips" style="flex-wrap:wrap">${W.leagues()
+      .map(
+        (c) =>
+          `<button class="chip ${c.id === cur ? 'on' : ''}" data-act="awardsComp" data-v="${c.id}">${C.flag(c.nat)} ${esc(c.short)}</button>`,
+      )
+      .join('')}</div>`;
+    const world = FM.Records.worldXI(),
+      la = FM.Records.leagueAwards(cur);
+    const past = s.archive
+      .filter((e) => e.worldXI || (e.comps[cur] && e.comps[cur].awards))
+      .slice(-4)
+      .reverse();
+    return `<div class="card"><div class="row"><div class="h3 grow">World best XI</div><span class="pill acc">${esc(FM.Season.seasonLabel())} so far</span></div>
+      <div class="tiny dim">The best average ratings in every league played in full or light, with a little extra for the stronger leagues.</div>
+      ${world ? `${UI.xiLines(world.xi)}${world.best ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>🌍</span><span class="grow" style="margin-left:8px">Player of the year so far: <b>${esc(world.best.name)}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:6px">Awards start once the league seasons are under way.</div>'}</div>
+      ${pick}
+      <div class="card"><div class="row"><div class="h3 grow">${esc(S().comps[cur].name)} awards</div><span class="pill">so far</span></div>${UI.awardsHTML(la, 'TEAM OF THE SEASON')}</div>
+      ${
+        past.length
+          ? `<div class="sec"><div class="h3">Previous seasons</div></div>${past
+              .map(
+                (e) =>
+                  `<details class="card cupfold" data-cup="aw_${e.year}" ${(UI._cupsOpen || {})['aw_' + e.year] ? 'open' : ''}><summary><div class="row"><div class="h3 grow">${esc(e.label)}</div></div></summary>${
+                    e.worldXI
+                      ? `<div class="small b dim" style="margin-top:8px">WORLD BEST XI${e.worldXI.best ? ` · player of the year ${esc(e.worldXI.best.name)}` : ''}</div>${UI.xiLines(e.worldXI.xi)}`
+                      : ''
+                  }${e.comps[cur] && e.comps[cur].awards ? `<div class="small b dim" style="margin-top:12px">${esc(e.comps[cur].name.toUpperCase())}</div>${UI.awardsHTML(e.comps[cur].awards, 'TEAM OF THE SEASON')}` : ''}</details>`,
+              )
+              .join('')}`
+          : ''
+      }`;
+  }
+  UI.acts.awardsComp = (d) => {
+    UI._awardsComp = d.v;
+    UI.render();
+  };
   function statsView() {
     const s = S(),
       cur = UI._statsComp || myComp();
@@ -2058,6 +2319,9 @@
     const inIt = (c) => c.clubs.includes(uc);
     // each tournament folds away: open by default for those you are in (and the lone Club World Cup), as you left the rest
     const isOpen = (id) => UI._cupsOpen[id] ?? (!!S().comps[id] && (S().comps[id].clubs.includes(uc) || v === 'world'));
+    // a finished competition's awards and team of the tournament close its card
+    const awardsOf = (c) =>
+      c.awards ? `<div class="small b dim" style="margin:14px 0 0">AWARDS</div>${UI.awardsHTML(c.awards)}` : '';
     const foldAll = (html) =>
       html
         .split(/(?=<div class="card" data-cupid=")/)
@@ -2066,7 +2330,7 @@
             /^<div class="card" data-cupid="([^"]+)">(<div class="row">[\s\S]*?<div class="h3 grow">[\s\S]*?<\/div>(?:<span class="pill acc">[\s\S]*?<\/span>)?<\/div>)([\s\S]*)<\/div>$/,
           );
           return m
-            ? `<details class="card cupfold" data-cup="${m[1]}" ${isOpen(m[1]) ? 'open' : ''}><summary>${m[2]}</summary>${m[3]}</details>`
+            ? `<details class="card cupfold" data-cup="${m[1]}" ${isOpen(m[1]) ? 'open' : ''}><summary>${m[2]}</summary>${m[3]}${awardsOf(S().comps[m[1]] || {})}</details>`
             : card;
         })
         .join('');
@@ -2348,12 +2612,14 @@
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
-    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${Math.round(c.rep)}</span></div></div></div></div>
+    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span></div></div></div></div>
       <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${I.icon}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
+        ${c.policy ? `<div class="phrase"><span>🏛️</span><span>A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club</span></div>` : ''}
         ${c.rival ? `<div class="phrase"><span>⚔️</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
         <div class="row small" style="margin-top:10px"><span style="width:90px" class="dim">Fan mood</span><div class="grow">${C.bar(c.fanMood, C.moodColor(c.fanMood))}</div></div>
         <div class="row small" style="margin-top:8px"><span style="width:90px" class="dim">Board</span><div class="grow">${C.bar(c.boardConf, C.moodColor(c.boardConf))}</div></div></div>
       ${UI.boardroomCard()}
+      ${UI.clubSeasonsCard(c.id)}
       <div class="card"><div class="h3">Board objectives</div>${FM.Season.objectives(c)
         .map(
           (o) =>
@@ -2369,7 +2635,7 @@
     const c = club(),
       F = FM.Season.FAC;
     return (
-      `${c.building ? `<div class="warnline">🏗️ Building: ${F[c.building.k].name} — ${c.building.weeks} week(s) left</div>` : ''}<div class="small muted" style="margin:0 2px 10px">Infrastructure is your legacy. Upgrades take weeks and cost real money. One project at a time.</div><div class="card flat list" style="padding:0 14px">` +
+      `${c.building ? `<div class="warnline">🏗️ Building: ${F[c.building.k].name} — ${c.building.weeks} week(s) left</div>` : ''}<div class="card flat list" style="padding:0 14px">` +
       Object.entries(F)
         .map(([k, f]) => {
           const lvl = c.facilities[k],
@@ -2396,7 +2662,7 @@
     const net = s.seasonLog.net[c.id] || 0;
     return `<div class="kpis"><div class="kpi"><div class="v">${U.money(c.balance)}</div><div class="l">Balance</div></div><div class="kpi"><div class="v">${U.money(c.budget)}</div><div class="l">Transfer budget</div></div><div class="kpi"><div class="v">${U.money(U.sum(sq, (p) => p.wage))}</div><div class="l">Wages / wk</div></div></div>
       <div class="card"><div class="row"><div class="h3 grow">Weekly cash flow</div><span class="tiny"><span style="color:var(--good)">■</span> income <span style="color:var(--bad)">■</span> wages</span></div>
-        <div class="row" style="align-items:flex-end;height:110px;gap:4px;margin-top:10px">${L.length ? L.map((l) => `<div class="grow row" style="align-items:flex-end;gap:1px;height:100%"><div class="grow" style="height:${(l.inc / mx) * 100}%;background:var(--good);border-radius:3px 3px 0 0"></div><div class="grow" style="height:${(l.exp / mx) * 100}%;background:var(--bad);border-radius:3px 3px 0 0;opacity:.8"></div></div>`).join('') : '<div class="dim small">Play a matchday to see cash flow.</div>'}</div>
+        <div class="row" style="align-items:flex-end;height:${L.length ? 110 : 24}px;gap:4px;margin-top:10px">${L.length ? L.map((l) => `<div class="grow row" style="align-items:flex-end;gap:1px;height:100%"><div class="grow" style="height:${(l.inc / mx) * 100}%;background:var(--good);border-radius:3px 3px 0 0"></div><div class="grow" style="height:${(l.exp / mx) * 100}%;background:var(--bad);border-radius:3px 3px 0 0;opacity:.8"></div></div>`).join('') : '<div class="dim small">Play a matchday to see cash flow.</div>'}</div>
         <div class="small dim" style="margin-top:8px">Home games bring gate receipts — bigger stadium, happier fans, more money.</div></div>
       ${UI.incomeCard(c)}
       ${spendCard(c, s, sq)}
@@ -2459,13 +2725,12 @@
               .join('')
           : '<div class="empty">Your save will write this chapter.</div>'
       }</div>`;
-    return `<div class="small muted" style="margin:0 2px 4px">The club remembers. Legends from history sit alongside the ones your save creates.</div>
-      ${sec(
-        'Top scorers',
-        all.filter((x) => x.goals).sort((a, b) => b.goals - a.goals),
-        (x) => x.goals,
-        (x) => `${x.pos} · ${x.apps} apps${x.era ? ' · ' + x.era : ''}`,
-      )}
+    return `${sec(
+      'Top scorers',
+      all.filter((x) => x.goals).sort((a, b) => b.goals - a.goals),
+      (x) => x.goals,
+      (x) => `${x.pos} · ${x.apps} apps${x.era ? ' · ' + x.era : ''}`,
+    )}
       ${sec(
         'Most appearances',
         all.slice().sort((a, b) => b.apps - a.apps),
@@ -2567,10 +2832,11 @@
     if (st.sold >= 3) tags.push(['💼', 'Wheeler-Dealer']);
     const fav = u.favClub && S().clubs[u.favClub];
     return `<div class="card"><div class="row" style="gap:12px">${C.avatar(u, 52)}<div class="grow"><div class="h2">${u.nat ? C.flag(u.nat) + ' ' : ''}${esc(u.name)}</div><div class="small dim">${esc(u.badges)} licence · ${club() ? `Manager of ${esc(club().name)}` : 'Out of work'}${fav ? ` · ❤️ ${esc(fav.name)}` : ''}</div></div></div>
-      <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.bar(u.rep)}</div><b style="margin-left:8px">${Math.round(u.rep)}</b></div>
+      <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.stars(U.repStars(u.rep))}</div></div>
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
       ${teamTalkCard(u)}
       ${UI.careerExtras()}
+      ${UI.styleCard()}
       <div class="kpis"><div class="kpi"><div class="v">${st.games}</div><div class="l">Games</div></div><div class="kpi"><div class="v">${st.games ? Math.round((st.w / st.games) * 100) : 0}%</div><div class="l">Win rate</div></div><div class="kpi"><div class="v">${st.trophies}</div><div class="l">Trophies</div></div></div>
       <div class="card flat small"><div class="row"><span class="grow dim">W / D / L</span><b>${st.w} / ${st.d} / ${st.l}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Youth debuts</span><b>${st.youthDebuts}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Giant-killings</span><b>${st.giantKills}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Signings / sales</span><b>${st.bought} / ${st.sold}</b></div></div>
       <div class="sec"><div class="h3">Career</div></div><div class="card flat">${
@@ -2647,6 +2913,8 @@
       <div class="card"><div class="row"><div class="grow"><div class="h3">Save slot ${UI.slot}</div><div class="small dim">Autosaves after every matchday and whenever you leave the app · ${esc(FM.Save.backend())}</div></div><button class="btn sm" data-act="saveNow">Save now</button></div>
         <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="exportSave">⬆️ Export backup</button><button class="btn sm grow" data-act="importSave">⬇️ Import backup</button></div>
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">${backupLine(s)} A backup is one compressed .touchline file. Keep it somewhere safe, or move your career to another device.</div></div>
+      <div class="card"><div class="h3">Database</div><div class="small dim" style="margin-top:4px;line-height:1.5">Take this world out as a database file: its leagues, clubs, colours, ratings and stadiums, and optionally every player. Anyone can start a career in it from the new-career screen, or edit it first.${s.database ? ` This world came from <b>${esc(s.database.name)}</b>.` : ''}</div>
+        <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="exportDb" data-p="0">🗄️ Export clubs</button><button class="btn sm grow" data-act="exportDb" data-p="1">🗄️ Export with players</button></div></div>
       <div class="card"><div class="h3">Help</div><div class="small dim" style="margin-top:4px">Something wrong, or an idea? Tell us — a report carries your game's version and a copy of your save, nothing else.</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="reportProblem">🐞 Report a problem</button><button class="btn sm grow" data-act="sendFeedback">💬 Send feedback</button></div>
         <button class="btn sm block" style="margin-top:8px" data-act="whatsNew">🆕 What's new</button>${UI.helpExtras()}${FM.Dev ? '<button class="btn sm block" style="margin-top:8px" data-act="devPanel">🛠 Developer tools</button>' : ''}</div>
@@ -2784,6 +3052,29 @@
       { title: "What's new", full: true },
     );
   // ---------- Backups ----------
+  // The world as a database file (a world definition: FM.DbImport reads it back)
+  UI.acts.exportDb = async (d) => {
+    try {
+      const withPlayers = d.p === '1';
+      const bytes = new TextEncoder().encode(FM.DbImport.export({ withPlayers }));
+      const name = `touchline-database-${S().year}${withPlayers ? '-players' : ''}.json`;
+      const r = await FM.Native.shareFile({
+        bytes,
+        name,
+        type: 'application/json',
+        title: 'Touchline database',
+        preferShare: matchMedia('(pointer: coarse)').matches,
+      });
+      if (r !== 'cancelled')
+        UI.toast(
+          `Database ${r === 'saved' ? 'saved' : 'ready'}: ${name} (${Math.max(1, Math.round(bytes.length / 1024))} KB)`,
+          3500,
+        );
+    } catch (e) {
+      console.warn(e);
+      UI.toast('⚠️ ' + (e.message || 'Export failed'), 4000);
+    }
+  };
   UI.acts.exportSave = async () => {
     try {
       await FM.Save.write(UI.slot, S());

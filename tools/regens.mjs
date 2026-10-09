@@ -42,7 +42,10 @@ for (let y = 0; y < YEARS; y++) {
     if (p.retired) continue;
     p.season = W.blankSeason();
     p.season.apps = apps(p);
+    p.season.rsum = p.season.apps * 6.8; // (an average season's ratings)
     for (let i = 0; i < steps; i++) Sea.develop(p, 1 / steps);
+    Sea.shiftPotential(p); // his potential moves with how the year went
+    p.lastGrowth = 0;
     t.traj[W.age(p)] = p.ca;
   }
   S.year++;
@@ -234,4 +237,13 @@ for (const [label, v, lo, hi] of checks) {
 console.log(
   `\n${checks.length - fail}/${checks.length} checks passed · samples: ${prospects.length} prospects, ${early.length} early primes, ${ageless.length} long primes, ${meteors.length} one-season wonders`,
 );
+// ---- dynamic potential: how far prospects' potential moved from what they were first thought to be ----
+{
+  const young = all.filter((t) => t.arc !== undefined && t.p.pa0 !== undefined);
+  const d = young.map((t) => t.p.pa - t.pa0);
+  if (d.length)
+    console.log(
+      `\nPotential moves: ${d.length} players, mean ${U.avg(d, (x) => x).toFixed(2)}, ${Math.round((100 * d.filter((x) => x >= 5).length) / d.length)}% up by 5+, ${Math.round((100 * d.filter((x) => x <= -5).length) / d.length)}% down by 5+`,
+    );
+}
 process.exit(fail ? 1 : 0);

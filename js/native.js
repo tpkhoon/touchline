@@ -90,6 +90,28 @@
     });
   };
 
+  // Pick one or more files: resolves to [{ name, bytes }] (empty when cancelled)
+  N.pickFiles = function (accept) {
+    return new Promise((res) => {
+      const inp = document.createElement('input');
+      inp.type = 'file';
+      inp.multiple = true;
+      inp.accept = accept || '';
+      inp.style.display = 'none';
+      inp.addEventListener('change', async () => {
+        const fs = [...(inp.files || [])];
+        inp.remove();
+        res(await Promise.all(fs.map(async (f) => ({ name: f.name, bytes: new Uint8Array(await f.arrayBuffer()) }))));
+      });
+      inp.addEventListener('cancel', () => {
+        inp.remove();
+        res([]);
+      });
+      document.body.appendChild(inp);
+      inp.click();
+    });
+  };
+
   // ---------- Status bar follows the theme ----------
   const BG = { dark: '#0a0e14', light: '#eef1f6' };
   N.theme = function (t) {

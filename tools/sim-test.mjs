@@ -2,6 +2,7 @@
 // app uses (our matches applied first, the rest of each day simulated after a JSON round trip, exactly
 // like the Web Worker), then checks invariants, save packing and save migrations.
 //   node tools/sim-test.mjs [--seasons 2] [--seed 7]
+import fs from 'node:fs';
 import vm from 'node:vm';
 import { parseArgs, loadSim } from './harness.mjs';
 
@@ -36,7 +37,65 @@ const cid = Object.values(FM.S.clubs).find((c) => c.comp === 'D1' && c.rep < 75)
 W.takeCharge(cid, 'Test Manager');
 W.seedLegends();
 FM.Stories.welcome();
+// the club guide (UI-only, so loaded here by hand): every club has a difficulty, all four labels are used, each league
+// has a card, and the strongest club of a league is never rated harder than its weakest
+vm.runInContext(fs.readFileSync(new URL('../js/clubguide.js', import.meta.url), 'utf8'), ctx);
+{
+  const G = FM.Guide,
+    all = FM.D.allClubRows().filter((r) => !r[9]);
+  const keys = new Set(all.map((r) => G.diffKey(r[1])));
+  check(
+    all.every((r) => G.diff(r[1]) && G.hook(r[1]) && G.objective(r[1])),
+    'club guide: a club has no difficulty, hook or objective',
+  );
+  check(keys.size === 4, `club guide: only ${[...keys]} difficulty labels are used`);
+  for (const l of FM.D.LEAGUES) {
+    check(G.leagueCard(l).length > 20, `club guide: ${l.id} has no league card`);
+    const rows = FM.D[l.clubs].filter((r) => !r[9]).sort((a, b) => b[6] - a[6]);
+    check(
+      G.score(rows[0][1]) <= G.score(rows[rows.length - 1][1]),
+      `club guide: ${l.id}'s best club is rated harder than its worst`,
+    );
+  }
+  const recs = G.recommend({ diff: 'fight', project: 'rebuild', where: 'any' });
+  check(
+    recs.length === 3 && recs.every((x) => x.reason),
+    'club guide: suggestions did not return three clubs with reasons',
+  );
+}
+// shouts: a call changes the side for a few minutes and puts it back; the next needs a pause
+{
+  const [h, a] = Object.values(FM.S.clubs).filter((c) => c.comp === 'D1');
+  const m = new FM.Match({ h: h.id, a: a.id, comp: 'D1' });
+  for (let i = 0; i < 12; i++) m.step();
+  const sd = m.sides[0],
+    before = JSON.stringify(sd.mods);
+  const r1 = m.shout(sd, 'push');
+  check((r1.ok && JSON.stringify(sd.mods) !== before) || (r1.ok && !r1.heard), 'a shout did not change the side');
+  check(!m.shout(sd, 'hold').ok, 'a second shout straight away was allowed');
+  while (!m.finished) m.step();
+  check(
+    Math.abs(sd.mods.att) < 1e-9 && Math.abs(sd.mods.def) < 1e-9,
+    `a shout was not taken back: ${JSON.stringify(sd.mods)}`,
+  );
+  // pressure: an opponent in form weighs on the squad
+  const opp = [h, a].find((c) => c.id !== FM.S.user.clubId);
+  opp.form = ['W', 'W', 'W', 'W', 'D'];
+  const pr = FM.Matchday.pressure({ h: FM.S.user.clubId, a: opp.id, comp: 'D1' });
+  check(pr.d < 0 && pr.notes.length, 'an opponent in form brought no pressure');
+}
 check(FM.S.version === FM.SAVE_VERSION, `new world has version ${FM.S.version}, expected ${FM.SAVE_VERSION}`);
+
+// the invitational of the season just ended (the season roll plans the next one)
+let lastInvite = null;
+const newIntl = FM.Intl.newSeason;
+FM.Intl.newSeason = function () {
+  lastInvite = FM.S.invite || null;
+  return newIntl.call(this);
+};
+
+// the reputation each club starts with (its ceiling may only be passed by a cause)
+const startRep = Object.fromEntries(Object.values(FM.S.clubs).map((c) => [c.id, c.rep]));
 
 // ---- play seasons ----
 const stats = { matches: 0, goals: 0, userMatches: 0, days: 0 };
@@ -172,6 +231,117 @@ for (let s = 0; s < SEASONS; s++) {
   }
   check(FM.S.year === year + 1, `season ${s + 1}: year did not advance`);
   check(summary && summary.entry, `season ${s + 1}: no season summary`);
+  // the American league: conferences, 34 games each, a seven-a-side playoff ending in one final, then a draft
+  {
+    const us = summary && summary.entry && summary.entry.comps.US1;
+    if (us) {
+      check(!!us.shield && !!us.conf, `season ${s + 1}: US1 has no Shield or conferences recorded`);
+      check(
+        us.playoffs.M1.length === 6 && us.playoffs.M2.length === 4,
+        `season ${s + 1}: US1 playoff rounds are the wrong size`,
+      );
+      check(us.playoffs.M3.length === 2 && us.playoffs.M4.length === 1, `season ${s + 1}: US1 playoff finals missing`);
+      check(
+        us.playoffs.M4[0] && us.playoffs.M4[0].w === us.champion,
+        `season ${s + 1}: US1 champion is not the final's winner`,
+      );
+      check(
+        us.table.every((r) => r.p === 34),
+        `season ${s + 1}: a US1 club did not play 34 games`,
+      );
+      const d = FM.S.draft;
+      check(d && d.done && d.picks.length === d.order.length, `season ${s + 1}: the US1 draft did not complete`);
+      check(
+        d && d.picks.every((x) => FM.S.players[x.pid] && FM.S.players[x.pid].clubId),
+        `season ${s + 1}: a draftee has no club`,
+      );
+    }
+  }
+  // league formats: splits (the top group fills the top places, every club played its full schedule), two tournaments
+  // each with a champion, and a final for every playoff league
+  {
+    const ents = summary && summary.entry && summary.entry.comps;
+    for (const [id, e] of Object.entries(ents || {})) {
+      if (e.split) {
+        const n0 = e.split.groups[0].length,
+          top = new Set(e.split.groups[0]);
+        check(
+          e.table.slice(0, n0).every((r) => top.has(r.id)),
+          `season ${s + 1}: ${id}'s top group does not fill the top places`,
+        );
+        check(top.has(e.champion), `season ${s + 1}: ${id}'s champion is not in its top group`);
+      }
+      if (e.torneos)
+        check(
+          e.torneos.length === 2 && e.torneos.every((t) => t.champion && t.playoffs.M4.length === 1),
+          `season ${s + 1}: ${id} is missing a tournament champion`,
+        );
+      else if (e.playoffs) check(e.playoffs.M4.length === 1, `season ${s + 1}: ${id} has no final`);
+    }
+  }
+  // every nation keeps a national team (a thin one is topped up with unattached players), and unattached internationals stay
+  check(
+    !FM.S.nteams || Object.keys(FM.S.nteams).length === Object.keys(FM.D.NATIONS).length,
+    `season ${s + 1}: ${Object.keys(FM.S.nteams || {}).length} national teams for ${Object.keys(FM.D.NATIONS).length} nations`,
+  );
+  // a new season starts clean: no split yet (last year's groups gone), and each title-playoff day is on the calendar once
+  {
+    const stale = W.leagues().filter((c) => c.rules.split && c.split && !c.split.done && c.groups);
+    check(stale.length === 0, `season ${s + 1}: ${stale.map((c) => c.id)} still has last season's split groups`);
+    const days = FM.S.calendar.filter((d) => d.type === 'playoff').map((d) => `${d.stage}/${d.torneo ?? ''}`);
+    check(days.length === new Set(days).size, `season ${s + 1}: a playoff day is on the calendar twice`);
+  }
+  // every club has what it can become, and keeps within it: reputation between its floor and its ceiling (or where it started)
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.comp && x.sim !== 'nation')) {
+    const a = c.attr;
+    check(
+      a && a.ceil >= a.floor && a.market >= 1 && a.market <= 10,
+      `season ${s + 1}: ${c.short} has no sound attributes`,
+    );
+    if (a)
+      check(
+        c.rep <= Math.max(a.ceil, startRep[c.id]) + 0.01,
+        `season ${s + 1}: ${c.short} is above its ceiling (${c.rep.toFixed(1)} against ${a.ceil.toFixed(1)})`,
+      );
+  }
+  // the manager's style has been learning from the matches, and the standing in the club's country has a record
+  check(
+    FM.S.user.style && FM.S.user.style.n > 0 && FM.S.user.repNat,
+    `season ${s + 1}: the manager's style recorded nothing`,
+  );
+  // MLS clubs keep to the salary budget (the AI's are brought within it) and nobody but a Designated Player earns above the maximum
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.comp === 'US1' && !W.isUser(x.id))) {
+    const st = FM.Reg.mlsStatus(c);
+    check(
+      st.illegal === 0 && st.charge <= st.m.cap * 1.02,
+      `season ${s + 1}: ${c.short} has a salary charge of ${Math.round(st.charge / 1e3)}k with ${st.illegal} illegal wages`,
+    );
+  }
+  // the season's invitational tournament (when its host was free) was played to a winner
+  check(!lastInvite || lastInvite.winner, `season ${s + 1}: the ${lastInvite && lastInvite.name} never finished`);
+  if (lastInvite) console.log(`  invitational: ${lastInvite.name}, won by ${FM.S.nteams[lastInvite.winner].name}`);
+  // the first season introduced the world: a rival manager, a star and a wonderkid
+  if (s === 0)
+    check(
+      FM.S.intro && FM.S.intro.n === 3,
+      `season 1: the world introductions stopped at ${FM.S.intro && FM.S.intro.n} of 3`,
+    );
+  // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it)
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy)) {
+    const odd = W.squad(c.id).filter((p) => p.heritage !== c.policy.heritage);
+    check(odd.length === 0, `season ${s + 1}: ${c.short} (${c.policy.label}-only) has ${odd.length} other players`);
+  }
+  // naturalised players hold the citizenship they were granted, and no federation that bars it granted one
+  {
+    const bad = Object.values(FM.S.players).filter(
+      (p) => p.natur && (p.nat2 !== p.natur.code || (FM.D.NATURALISE[p.natur.code] || {}).never),
+    );
+    check(bad.length === 0, `season ${s + 1}: ${bad.length} naturalised players have the wrong second nation`);
+    // youth leagues stay competitive: no side wins nearly everything
+    const ys = Object.values(FM.S.youth || {}).flatMap((n) => Object.values(n));
+    const dom = ys.filter((lg) => Object.values(lg.table).some((r) => r.p >= 20 && r.pts > r.p * 2.7));
+    check(dom.length === 0, `season ${s + 1}: ${dom.length} youth leagues have a side winning over 90% of its games`);
+  }
   // B teams stay below their parent clubs; your competitive matches are logged for the analytics tab
   {
     const tierOf = (c) => (c && c.comp && FM.S.comps[c.comp] ? FM.S.comps[c.comp].tier : 99);
@@ -454,6 +624,26 @@ check(S.news.length > 0 && S.news.length <= 2 * FM.News.CAP, `feed has ${S.news.
       dup.add(fx.id);
     }
   check(dupes === 0, `${dupes} regional fixtures appear twice`);
+}
+// awards: last season's world best XI, every full league's awards, the cups' and the finals' awards and teams
+{
+  const last = S.archive[S.archive.length - 1];
+  check(!!(last && last.worldXI && last.worldXI.xi.length >= 8), 'no world best XI for last season');
+  const lg = Object.values(last.comps).filter((x) => x.sim === 'full');
+  check(
+    lg.every((x) => x.awards && x.awards.xi && x.awards.player),
+    'a full league has no awards or team of the season',
+  );
+  const cups = Object.values(last.cups || {});
+  check(
+    cups.length && cups.filter((c) => c.awards).length >= Math.ceil(cups.length / 2),
+    `only ${cups.filter((c) => c.awards).length} of ${cups.length} finished cups have awards`,
+  );
+  const fin = (S.tourns || []).filter((t) => t.winner);
+  check(
+    fin.every((t) => t.awards && t.awards.xi),
+    'a finished international tournament has no awards',
+  );
 }
 // club news survives the world's transfer noise (counting every club the test manager has had: a late sacking can
 // leave him at a new club with little news of its own yet)

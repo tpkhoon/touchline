@@ -35,7 +35,96 @@ tables in the continental cups use UEFA's rule: head-to-head first.
   The 2. Bundesliga does the same with the 3. Liga (2 up, 3rd in the play-off; 2 down, 16th in the play-off). A B
   team can't be promoted into its parent's division, so the next club takes its place.
 - **Italy:** Serie A 3 down. Serie B: 2 up, play-offs 3rd–6th with a two-legged final.
-- **France:** Ligue 1 2 down; Ligue 2 2 up.
+- **France:** Ligue 1 2 down plus a play-off: 16th plays the best non-promoted club of Ligue 2 over two legs. Ligue 2: 2 up, the 3rd-placed club in the play-off.
+
+## League formats: splits, tournaments and title playoffs
+
+Where a real league does not simply play a double round-robin, the game follows its format. The data lives in
+`rules` in `js/data.js` (`split`, `torneos`, `zones`, `playoffs`, `conferences`, `mls`).
+
+### Splits
+
+After the regular season the table divides into groups that play each other again. Final positions go group by
+group, whatever the points. Points carry over unless noted.
+
+| League | Regular season | Split | After the split |
+| --- | --- | --- | --- |
+| Scottish Premiership | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
+| Belgian Pro League | 30 matches | Top 6 / the rest | The top 6 play 10 more with the points halved; the rest finish |
+| Danish Superliga | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
+| Austrian Bundesliga | 22 matches | Top 6 / bottom 6 | 10 matches each, points halved (rounded up) |
+| Swiss Super League | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
+| Czech First League | 30 matches | Top 6 / middle 4 / bottom 6 | 10, 6 and 10 matches, points kept |
+| Serbian SuperLiga | 30 matches | Top 8 / bottom 8 | 7 matches each, points kept |
+| Super League Greece | 26 matches | Top 6 / bottom 8 | 10 and 7 matches, points halved |
+| K League 1 | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
+| Cymru Premier | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
+
+### Two tournaments a year
+
+Liga MX (Apertura and Clausura) and Argentina (Apertura and Clausura) have two champions a year, each tournament its
+own table and its own knockout. The season's table is the two together; it decides the continental places after the
+champions.
+
+- **Mexico:** 18 clubs play each other once in each tournament (17 matches). The top six go straight to the
+  quarter-finals; places 7–10 play in (7th v 10th, 8th v 9th, one match each); then quarter-finals, semi-finals and a
+  final, all single matches hosted by the better seed (the real Liguilla uses two legs).
+- **Argentina:** 28 clubs in two zones of 14 (split by reputation, snaked), each playing its zone once and one match
+  against the other zone (14 matches a tournament). The top eight of each zone play a cross-zone round of 16, then
+  quarter-finals, semi-finals and a final at a neutral ground, all single matches.
+
+### Title playoffs
+
+- **MLS (USA):** see the American league above: seven a conference, the top seed skipping Round One, ending in the
+  MLS Cup; the best record wins the Supporters' Shield.
+- **MLS roster and salary rules (USA):** a salary budget of $5.2M a year, counted over a club's 20 biggest wage
+  charges; no player counts for more than $700K (the maximum charge); up to three Designated Players may earn more than
+  that and are charged only that much, and nobody else may earn above it; a senior roster of at most 30; eight
+  international slots; a three-round college draft. A signing or renewal that would break any of these is refused, with
+  the reason (and a hint when a Designated Player place would fix it); the AI's clubs are trimmed back within the budget
+  every week and at the start of a season. Not in the game: allocation money, Generation adidas and the
+  under-22 initiative.
+- **A-League (Australia):** the top six play off: 3rd v 6th and 4th v 5th (elimination finals), semi-finals (1st and
+  2nd against the survivors) and the Grand Final, all single matches hosted by the better seed.
+
+### Relegation play-offs
+
+Germany (Bundesliga and 2. Bundesliga) and France (Ligue 1): the club above the automatic places plays the best
+non-promoted club of the division below over two legs. Italy, Spain and England have none in the real top flights;
+Serie B's play-out has nowhere to send the loser (there is no Serie C in the game).
+
+## Southeast Asia and South Africa
+
+Six more top flights, each one division in the game: the **Singapore Premier League** (10 clubs), **Malaysia Super League** (14), **V.League 1** (14), **Liga 1 Indonesia** (18), **Philippines Football League** (10) and South Africa's **Premier Soccer League** (16), every club playing every other twice.
+
+- **Continental places:** Malaysia, Vietnam, Indonesia and Singapore each send their champion to the Asian Champions Cup; those and the Philippines also fill the Asian Shield with one or two more. The Premier Soccer League sends two to the African Champions Cup and two to the African Shield.
+- **Foreign players:** Malaysia and Vietnam 3 + 1 Asian + 1 ASEAN, Indonesia 6 + 1 + 1, Singapore 4 + 1 Asian, the Philippines 5, South Africa 7.
+- **Domestic cups:** a knockout with the final at a neutral ground for each nation (Singapore Cup, Malaysia Cup, Vietnam Cup, Indonesia Cup, Philippines Cup, Nedbank Cup under invented names).
+
+## Asian rules beyond the squad list
+
+- **Japan's university route:** the J.League holds a two-round graduate draft each winter from a class of 22-year-old university players, in the order of last season's table with the weakest first; the AI picks as the clock reaches it, you pick on the Graduates board or leave it to your assistant.
+- **Korea's military service:** a Korean player is called up between 26 and 28 unless he has been exempted (a long international career helps, as the Asian Games and World Cup medals do). He serves two seasons, his contract is extended to cover it and he comes back a point or two rusty. The best go to the army's club, a K League side whose whole squad is conscripts on loan from their own clubs (up to 30, never fewer than three keepers); it signs nobody else and has no academy, and nobody pays the conscripts' wages.
+- **Gulf money:** Oil-Backed clubs of the Saudi Pro League pay well above the market in fee and wages for a famous name in his late twenties or thirties, one or two a window.
+
+## Saudi Arabia and clubs with a signing policy
+
+- **Saudi Pro League (18 clubs):** the top three of the First Division go up and the bottom three go down; the top six
+  take Asian Champions Cup places (the real league sends fewer, here it fills the 16-club draw). Ten foreign players per
+  squad. Most of the clubs are Oil-Backed, with budgets and ambitions to match. The King's Cup is the domestic cup.
+- **Saudi First Division League (18 clubs):** three up; four foreign players.
+- **Signing policy (Athletic Club):** Eibar sign only players of Basque heritage and Andorra only Catalan ones. They
+  cannot buy, borrow, take on a free transfer, agree a pre-contract with or trial anyone else, and their youth teams and
+  squads are made of such players. Other clubs may sign Basque and Catalan players freely. Their scouts, the search and the
+  suggestions also leave out everyone they could not sign.
+
+## Invitational tournaments
+
+- One a season, in turn: the Kirin Cup (Japan hosts), the King's Cup (Thailand) and the Nehru Cup (India). The host and three
+  invited nations from different parts of the world, none of whom has a qualifier on the days it is played, play semi-finals on
+  the first day of the second international window and a final and a third-place match on the second; ties go to penalties.
+  They count as friendlies for fitness and call-ups and a little more than a friendly for the national-team coefficient.
+  The winner is recorded with the season's international results.
 
 ## Domestic cups
 
@@ -72,8 +161,8 @@ The Club World Cup is single matches at neutral grounds.
   homegrown players (three seasons at the nation's clubs between 15 and 21); Italy also limits non-EU signings from
   abroad to 2 a season.
 - **Spain:** 3 non-EU players. **France:** 4 non-EU. In both, players from Cotonou-agreement states (Nigeria, Ghana,
-  Senegal and Ivory Coast in the game) and Euro-Med partners (Morocco) count as EU. **Turkey:** 14 foreign registered. **Mexico:** 9. **Thailand:** 7.
-  **Korea:** 6. **Argentina:** 6 registered, 5 in a matchday squad. **MLS:** 8 international slots. **A-League:** 5 visa
+  Senegal and Ivory Coast in the game) and Euro-Med partners (Morocco) count as EU. **Turkey:** 14 foreign registered. **Mexico:** 9. **Thailand:** 5 + 1 Asian + 1 ASEAN.
+  **Korea:** 3 + 1 Asian + 1 ASEAN (the AFC's "3 + 1": the extra place can only be filled by a player from an Asian nation, the ASEAN place by one from Thailand, Malaysia, Vietnam, Indonesia, the Philippines or Singapore). **Argentina:** 6 registered, 5 in a matchday squad. **MLS:** 8 international slots. **A-League:** 5 visa
   players. **Brazil:** 9 foreign in a matchday squad. **J1:** 5 in a matchday squad (Thai players exempt).
 - Leagues with a matchday cap also keep the squad within five of it, so a team can always field a legal side.
 
@@ -94,6 +183,16 @@ exceptional talent whatever his numbers. The game simplifies the real points tab
 quality of the selling club among them); the structure and the automatic thresholds follow the real rule. A refused
 signing says how far short he fell.
 - Other leagues have no foreign-player limit in the game.
+
+## Naturalisation (`D.NATURALISE` in `js/data.js`)
+
+A player who has lived in a country for a number of seasons after turning 18 can be granted its citizenship.
+
+- **Residence:** FIFA's own minimum of five years is the default. Spain asks 10 years, but 2 for players from Argentina, Uruguay, Colombia, Mexico and Portugal. Portugal asks 6, or 3 for Brazilians. Italy asks 10, or 4 for EU citizens. France asks 5 and Germany 8.
+- **Never allowed:** Japan, Korea, Thailand, Nigeria, Ghana, Senegal and the Ivory Coast do not naturalise players.
+- **Rate and cap:** each country has a yearly chance that its federation pushes a player through and a cap on how many it naturalises in a season.
+- **Who:** only uncapped players the federation wants, meaning players good enough for its squad.
+- **Result:** he becomes eligible as a second nation (a second flag, and "Naturalised in <year>" on his profile), with news for notable cases. He may switch allegiance as other dual nationals do.
 
 ## Where the game simplifies
 

@@ -68,7 +68,7 @@
     const winner = res.hg > res.ag ? hc : res.ag > res.hg ? ac : null;
     if (winner) {
       const loser = winner === hc ? ac : hc;
-      if (loser.rep - winner.rep >= 14) winner.rep = Math.min(99, winner.rep + 0.5);
+      if (loser.rep - winner.rep >= 14) FM.W.nudgeRep(winner, 0.5);
     }
   };
 
@@ -108,6 +108,7 @@
         const sp = W.spell(sc);
         if (sp && sp.c === sc.clubId) sp.goals++;
         goals.push({ side, pid: sc.id });
+        FM.Records.noteGoal(fx, { pid: sc.id });
       }
     });
     return { hg, ag, goals, sim: 'minimal' };
@@ -199,6 +200,7 @@
       const sp = W.spell(p);
       if (sp && sp.c === p.clubId) sp.goals++;
       if (g.ast && S().players[g.ast]) S().players[g.ast].season.ast++;
+      FM.Records.noteGoal(fx, g);
     });
     res.motm = motm;
     if (motm) S().players[motm].season.motm++;

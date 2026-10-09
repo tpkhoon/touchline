@@ -5,6 +5,68 @@
 
   FM.D = {};
 
+  // ---------- Clubs with a signing policy ----------
+  // Like Athletic Club in real life: a club that fields only players of one regional heritage. By club code. Eibar sign
+  // only Basque players, Andorra only Catalan ones; neither can sign anyone else (transfer, loan, free agent or
+  // pre-contract) and their academies and squads are made of them.
+  FM.D.CLUB_POLICY = {
+    EIB: { heritage: 'basque', label: 'Basque' },
+    AND: { heritage: 'catalan', label: 'Catalan' },
+    // Gimcheon Sangmu in real life: the army's club. Its squad is conscripts doing their national service, on loan from their own
+    // clubs (js/asia.js); it signs nobody else.
+    GIM: { military: true, label: 'military-service' },
+  };
+
+  // ---------- Naturalisation ----------
+  // A player who has lived in a country for `years` seasons after turning 18 can be granted its citizenship, and with it
+  // the right to play for its national team (if he has never been capped). `fast` shortens the wait for citizens of
+  // related nations, `rate` is the chance a year that a federation pushes through a player it wants, `cap` how many
+  // it will naturalise in a season, and `never` marks countries that do not allow a second citizenship. Anywhere
+  // not listed follows FIFA's own minimum of five years.
+  FM.D.NATURALISE_DEFAULT = { years: 5, rate: 0.12, cap: 1 };
+  FM.D.NATURALISE = {
+    ESP: { years: 10, rate: 0.4, cap: 2, fast: { years: 2, from: ['ARG', 'URU', 'COL', 'MEX', 'POR'] } },
+    POR: { years: 6, rate: 0.4, cap: 2, fast: { years: 3, from: ['BRA'] } },
+    ITA: {
+      years: 10,
+      rate: 0.3,
+      cap: 2,
+      fast: {
+        years: 4,
+        from: ['FRA', 'ESP', 'POR', 'GER', 'NED', 'BEL', 'IRL', 'GRE', 'POL', 'AUT', 'CRO', 'CZE', 'HUN', 'DEN'],
+      },
+    },
+    FRA: { years: 5, rate: 0.35, cap: 2 },
+    GER: { years: 8, rate: 0.2, cap: 1 },
+    NED: { years: 5, rate: 0.25, cap: 1 },
+    BEL: { years: 5, rate: 0.3, cap: 2 },
+    TUR: { years: 5, rate: 0.35, cap: 2 },
+    SUI: { years: 10, rate: 0.2, cap: 1 },
+    AUT: { years: 10, rate: 0.2, cap: 1 },
+    DEN: { years: 9, rate: 0.1, cap: 1 },
+    NOR: { years: 7, rate: 0.1, cap: 1 },
+    USA: { years: 5, rate: 0.2, cap: 2 },
+    MEX: { years: 5, rate: 0.3, cap: 2, fast: { years: 2, from: ['ARG', 'URU', 'COL', 'BRA'] } },
+    AUS: { years: 4, rate: 0.2, cap: 1 },
+    ENG: { years: 5, rate: 0.15, cap: 1 },
+    SCO: { years: 5, rate: 0.15, cap: 1 },
+    WAL: { years: 5, rate: 0.15, cap: 1 },
+    IRL: { years: 5, rate: 0.2, cap: 1 },
+    MAR: { years: 5, rate: 0.05, cap: 1 },
+    JPN: { never: true },
+    KSA: { never: true },
+    KOR: { never: true },
+    THA: { never: true },
+    NGA: { never: true },
+    SGP: { never: true },
+    MYS: { never: true },
+    VIE: { never: true },
+    IDN: { never: true },
+    GHA: { never: true },
+    SEN: { never: true },
+    CIV: { never: true },
+  };
+
   // ---------- Attributes (1–20 scale, FM-style) ----------
   FM.D.ATTRS = [
     'pace',
@@ -586,6 +648,26 @@
     'Fair-Weather': { icon: '🌧️', desc: 'Hates rainy matches. Noticeably worse in the wet.' },
     Consistent: { icon: '📈', desc: 'Rarely has a bad game.' },
     Flair: { icon: '✨', desc: 'Tries the unexpected. Moments of magic.' },
+    Engine: { icon: '⚙️', desc: 'Tireless: loses energy far more slowly in a match.' },
+    'Set-Piece Expert': {
+      icon: '🎯',
+      desc: 'Better from the spot, on free kicks and on corners than his numbers say.',
+    },
+    Clutch: {
+      icon: '🧊',
+      desc: 'Cool when it matters: finishes better after the 75th minute and from the penalty spot.',
+    },
+    'Aerial Threat': { icon: '🦅', desc: 'Dangerous from crosses and corners.' },
+    'Hatchet Man': { icon: '🪓', desc: 'Hard in the tackle: booked and sent off more often.' },
+    'Slow Starter': { icon: '🐢', desc: 'Takes time to get going: weaker in the first twenty minutes.' },
+    'Cup Specialist': { icon: '🏆', desc: 'Raises his game in knockout matches.' },
+    'Big-Match Nerves': { icon: '😰', desc: 'Shrinks on the big occasion.' },
+    'Model Professional': { icon: '📋', desc: 'Lives right: develops faster and picks up fewer injuries.' },
+    'Low Work Ethic': { icon: '😴', desc: 'Trains half-heartedly: develops more slowly.' },
+    Versatile: { icon: '🔀', desc: 'Learns new positions quickly.' },
+    Mentor: { icon: '🧓', desc: 'Young teammates grow faster around him.' },
+    Homesick: { icon: '🏠', desc: 'Unsettled at a club outside his own country.' },
+    'Needs Game Time': { icon: '🪑', desc: 'Sulks quickly when left out of the side.' },
   };
 
   // ---------- Nations ----------
@@ -1482,8 +1564,8 @@
   FM.D.CLIMATE = {
     wet: ['ENG', 'SCO', 'WAL', 'IRL', 'NED', 'BEL', 'NOR', 'DEN', 'GER'],
     cold: ['NOR', 'DEN', 'POL', 'CZE', 'AUT', 'SUI', 'SRB', 'GER', 'KOR', 'SCO', 'USA', 'HUN'],
-    warm: ['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'MAR', 'ARG', 'URU', 'USA', 'JPN', 'KOR', 'FRA', 'AUS'],
-    tropical: ['BRA', 'THA', 'NGA', 'MEX', 'COL', 'GHA', 'CIV', 'SEN'],
+    warm: ['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'MAR', 'ARG', 'URU', 'USA', 'JPN', 'KOR', 'FRA', 'AUS', 'KSA', 'RSA'],
+    tropical: ['BRA', 'THA', 'NGA', 'MEX', 'COL', 'GHA', 'CIV', 'SEN', 'SGP', 'MYS', 'VIE', 'IDN', 'PHI'],
   };
 
   FM.D.SEASON_START = 2026;
@@ -1748,7 +1830,7 @@
       id: 'D1',
       nat: 'ENG',
       name: 'English Premier Division',
-      short: 'D1',
+      short: 'ENG1',
       tier: 1,
       sim: 'full',
       clubs: 'CLUBS_D1',
@@ -1759,7 +1841,7 @@
       id: 'D2',
       nat: 'ENG',
       name: 'English First Division',
-      short: 'D2',
+      short: 'ENG2',
       tier: 2,
       sim: 'full',
       clubs: 'CLUBS_D2',
@@ -1770,7 +1852,7 @@
       id: 'D3',
       nat: 'ENG',
       name: 'English Second Division',
-      short: 'D3',
+      short: 'ENG3',
       tier: 3,
       sim: 'light',
       clubs: 'CLUBS_D3',
@@ -1781,7 +1863,7 @@
       id: 'D4',
       nat: 'ENG',
       name: 'English Third Division',
-      short: 'D4',
+      short: 'ENG4',
       tier: 4,
       sim: 'light',
       clubs: 'CLUBS_D4',
@@ -1802,7 +1884,7 @@
     {
       id: 'ES2',
       nat: 'ESP',
-      name: 'Spanish Liga de Plata',
+      name: 'Gibralfaro Liga de Plata',
       short: 'ES2',
       tier: 2,
       sim: 'light',
@@ -1824,7 +1906,7 @@
     {
       id: 'DE1',
       nat: 'GER',
-      name: 'German Hauptliga',
+      name: 'Neckar Meisterliga',
       short: 'DE1',
       tier: 1,
       sim: 'full',
@@ -1835,7 +1917,7 @@
     {
       id: 'DE2',
       nat: 'GER',
-      name: 'German Zweite Hauptliga',
+      name: 'Ostsee Aufstiegsliga',
       short: 'DE2',
       tier: 2,
       sim: 'light',
@@ -1846,7 +1928,7 @@
     {
       id: 'DE3',
       nat: 'GER',
-      name: 'German Dritte Liga',
+      name: 'German Nordliga',
       short: 'DE3',
       tier: 3,
       sim: 'light',
@@ -1857,29 +1939,29 @@
     {
       id: 'FR1',
       nat: 'FRA',
-      name: 'French Division Nationale',
+      name: 'French Championnat de France',
       short: 'FR1',
       tier: 1,
       sim: 'full',
       clubs: 'CLUBS_FR1',
       repBand: [90, 57],
-      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'FR2', n: 2 } },
+      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'FR2', n: 2, playoff: true } },
     },
     {
       id: 'FR2',
       nat: 'FRA',
-      name: 'French Division Nationale 2',
+      name: 'French Division Deux',
       short: 'FR2',
       tier: 2,
       sim: 'light',
       clubs: 'CLUBS_FR2',
       repBand: [58, 44],
-      rules: { promote: { to: 'FR1', auto: 2 } },
+      rules: { promote: { to: 'FR1', auto: 2, tie: true } },
     },
     {
       id: 'BR1',
       nat: 'BRA',
-      name: 'Brazilian Liga Nacional',
+      name: 'Atlântica Brasil Série Nacional',
       short: 'BR1',
       tier: 1,
       sim: 'full',
@@ -1890,7 +1972,7 @@
     {
       id: 'IT1',
       nat: 'ITA',
-      name: 'Italian Campionato Nazionale',
+      name: 'Laguna Lega Nazionale',
       short: 'IT1',
       tier: 1,
       sim: 'light',
@@ -1901,7 +1983,7 @@
     {
       id: 'IT2',
       nat: 'ITA',
-      name: 'Italian Campionato Cadetto',
+      name: 'Italian Lega Cadetta',
       short: 'IT2',
       tier: 2,
       sim: 'light',
@@ -1912,7 +1994,7 @@
     {
       id: 'PT1',
       nat: 'POR',
-      name: 'Portuguese Liga de Honra',
+      name: 'Portucale Superliga',
       short: 'PT1',
       tier: 1,
       sim: 'light',
@@ -1934,24 +2016,72 @@
     {
       id: 'AR1',
       nat: 'ARG',
-      name: 'Argentine Liga Mayor',
+      name: 'Austral Superliga',
       short: 'AR1',
       tier: 1,
       sim: 'light',
       clubs: 'CLUBS_AR1',
       repBand: [79, 53],
-      rules: { rounds: 27, qualify: { to: 'CL', n: 3 } },
+      rules: {
+        torneos: ['Apertura', 'Clausura'],
+        zones: true,
+        playoffs: { type: 'zones' },
+        qualify: { to: 'CL', n: 3 },
+      },
     },
     {
       id: 'US1',
       nat: 'USA',
-      name: 'American Premier Division',
+      name: 'Prairie Major League',
       short: 'US1',
       tier: 1,
       sim: 'light',
       clubs: 'CLUBS_US1',
       repBand: [67, 55],
-      rules: { rounds: 34, qualify: { to: 'NC', n: 4 } },
+      rules: {
+        rounds: 34,
+        qualify: { to: 'NC', n: 4 },
+        // like MLS: two conferences, a 34-game schedule weighted to the conference, the best seven of each in the
+        // playoffs (ending in the league's cup final), the best overall record taking the Supporters' Shield, and a
+        // college draft each winter
+        mls: { playoff: 7, draftRounds: 3 },
+        conferences: {
+          East: [
+            'MIA',
+            'CIN',
+            'CLB',
+            'PHI',
+            'NYC',
+            'ATL',
+            'NYR',
+            'NSH',
+            'ORL',
+            'CLT',
+            'CHI',
+            'DCU',
+            'NER',
+            'TRT',
+            'MTL',
+          ],
+          West: [
+            'LAF',
+            'LAG',
+            'SEA',
+            'VAN',
+            'PTI',
+            'MIN',
+            'SDG',
+            'RSL',
+            'DAL',
+            'HOU',
+            'SKC',
+            'STL',
+            'RAP',
+            'AUS',
+            'SJE',
+          ],
+        },
+      },
     },
     {
       id: 'JP1',
@@ -1962,7 +2092,8 @@
       sim: 'light',
       clubs: 'CLUBS_JP1',
       repBand: [64, 53],
-      rules: { qualify: { to: 'AC', n: 4 } },
+      // university route: graduates of the universities are signed through a two-round graduate draft each winter
+      rules: { qualify: { to: 'AC', n: 4 }, uni: { draftRounds: 2 } },
     },
     {
       id: 'MX1',
@@ -1973,23 +2104,32 @@
       sim: 'minimal',
       clubs: 'CLUBS_MX1',
       repBand: [70, 55],
-      rules: { qualify: { to: 'NC', n: 4 } },
+      rules: { torneos: ['Apertura', 'Clausura'], playoffs: { type: 'liguilla' }, qualify: { to: 'NC', n: 4 } },
     },
     {
       id: 'KR1',
       nat: 'KOR',
-      name: 'Korean Premier League',
+      name: 'Daehan Insurance Premier League',
       short: 'KR1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_KR1',
       repBand: [60, 51],
-      rules: { qualify: { to: 'AC', n: 2 } },
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+        qualify: { to: 'AC', n: 2 },
+      },
     },
     {
       id: 'TH1',
       nat: 'THA',
-      name: 'Thai Premier League',
+      name: 'Thai Super League',
       short: 'TH1',
       tier: 1,
       sim: 'minimal',
@@ -2011,7 +2151,7 @@
     {
       id: 'MA1',
       nat: 'MAR',
-      name: 'Moroccan Division Nationale',
+      name: 'Moroccan Ligue Nationale',
       short: 'MA1',
       tier: 1,
       sim: 'minimal',
@@ -2022,24 +2162,40 @@
     {
       id: 'RS1',
       nat: 'SRB',
-      name: 'Serbian Prva Liga',
+      name: 'Fruška Gora Energo Prva Liga',
       short: 'RS1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_RS1',
       repBand: [64, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 30,
+          groups: [8, 8],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'BE1',
       nat: 'BEL',
-      name: 'Belgian Eerste Klasse',
+      name: 'Kempen Eerste Klasse',
       short: 'BE1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_BE1',
       repBand: [68, 50],
-      rules: {},
+      rules: {
+        split: {
+          after: 30,
+          groups: [6, 10],
+          rounds: ['double', 'none'],
+          names: ['Championship playoff', 'Regular season'],
+          halve: true,
+        },
+      },
     },
     {
       id: 'TR1',
@@ -2061,18 +2217,34 @@
       sim: 'minimal',
       clubs: 'CLUBS_CZ1',
       repBand: [64, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 30,
+          groups: [6, 4, 6],
+          rounds: ['double', 'double', 'double'],
+          names: ['Championship', 'Europe play-off', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'GR1',
       nat: 'GRE',
-      name: 'Greek Alfa Liga',
+      name: 'Attiki Alfa Liga',
       short: 'GR1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_GR1',
       repBand: [68, 48],
-      rules: {},
+      rules: {
+        split: {
+          after: 26,
+          groups: [6, 8],
+          rounds: ['double', 'single'],
+          names: ['Play-offs', 'Play-outs'],
+          halve: true,
+        },
+      },
     },
     {
       id: 'NO1',
@@ -2088,7 +2260,7 @@
     {
       id: 'PL1',
       nat: 'POL',
-      name: 'Polish Liga Główna',
+      name: 'Mazowsze Liga Główna',
       short: 'PL1',
       tier: 1,
       sim: 'minimal',
@@ -2099,24 +2271,40 @@
     {
       id: 'DK1',
       nat: 'DEN',
-      name: 'Danish Topliga',
+      name: 'Fyn Kredit Topliga',
       short: 'DK1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_DK1',
       repBand: [64, 48],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'AT1',
       nat: 'AUT',
-      name: 'Austrian Bundesstaffel',
+      name: 'Arlberg Bundesstaffel',
       short: 'AT1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_AT1',
       repBand: [64, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Relegation'],
+          halve: true,
+        },
+      },
     },
     {
       id: 'CH1',
@@ -2127,7 +2315,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_CH1',
       repBand: [63, 48],
-      rules: {},
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'SC1',
@@ -2138,7 +2334,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_SC1',
       repBand: [70, 46],
-      rules: {},
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'AU1',
@@ -2149,12 +2353,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_AU1',
       repBand: [58, 46],
-      rules: { qualify: { to: 'AC', n: 2 } },
+      rules: { playoffs: { type: 'finals6' }, qualify: { to: 'AC', n: 2 } },
     },
     {
       id: 'HU1',
       nat: 'HUN',
-      name: 'Hungarian Első Osztály',
+      name: 'Alföld Első Osztály',
       short: 'HU1',
       tier: 1,
       sim: 'minimal',
@@ -2165,7 +2369,7 @@
     {
       id: 'IE1',
       nat: 'IRL',
-      name: 'Irish Premier Division',
+      name: 'Burrenwood Senior Premier',
       short: 'IE1',
       tier: 1,
       sim: 'minimal',
@@ -2176,13 +2380,111 @@
     {
       id: 'WA1',
       nat: 'WAL',
-      name: 'Welsh Premier Division',
+      name: 'Welsh Uwch Division',
       short: 'WA1',
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_WA1',
       repBand: [49, 37],
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Conference'],
+          halve: false,
+        },
+      },
+    },
+    // Saudi Arabia: a league of owners with oil money (most of the clubs are Oil-Backed, as the Public Investment Fund's four
+    // are in real life), foreign stars on big wages, and the first division below it
+    {
+      id: 'SA1',
+      nat: 'KSA',
+      name: 'Saudi Premier League',
+      short: 'SA1',
+      tier: 1,
+      sim: 'light',
+      clubs: 'CLUBS_SA1',
+      repBand: [72, 50],
+      rules: { qualify: { to: 'AC', n: 6 }, relegate: { to: 'SA2', n: 3 } },
+    },
+    {
+      id: 'SA2',
+      nat: 'KSA',
+      name: 'Harmony Digital First Division',
+      short: 'SA2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_SA2',
+      repBand: [47, 40],
+      rules: { promote: { to: 'SA1', auto: 3 } },
+    },
+    {
+      id: 'SG1',
+      nat: 'SGP',
+      name: 'Singaporean Super League',
+      short: 'SG1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_SG1',
+      repBand: [46, 34],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'MY1',
+      nat: 'MYS',
+      name: 'Malaysian Super League',
+      short: 'MY1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_MY1',
+      repBand: [60, 40],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'VN1',
+      nat: 'VIE',
+      name: 'Lac Hong Premier League',
+      short: 'VN1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_VN1',
+      repBand: [52, 40],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'ID1',
+      nat: 'IDN',
+      name: 'Cendrawasih Group Premier League',
+      short: 'ID1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_ID1',
+      repBand: [54, 40],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'PH1',
+      nat: 'PHI',
+      name: 'Mindanao Capital Premier League',
+      short: 'PH1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_PH1',
+      repBand: [40, 30],
       rules: {},
+    },
+    {
+      id: 'ZA1',
+      nat: 'RSA',
+      name: 'South African Premier Soccer League',
+      short: 'ZA1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_ZA1',
+      repBand: [62, 40],
+      rules: { qualify: { to: 'AF', n: 2 } },
     },
   ];
   FM.D.CONTINENTALS = [
@@ -2257,7 +2559,7 @@
       short: 'ASI2',
       prize: 2e6,
       tier: 2,
-      feeders: { JP1: 2, KR1: 2, TH1: 2, AU1: 2 },
+      feeders: { JP1: 2, KR1: 2, TH1: 2, AU1: 2, MY1: 2, VN1: 2, ID1: 2, SG1: 1, PH1: 1 },
     },
     {
       id: 'AX',
@@ -2266,7 +2568,7 @@
       short: 'AFR2',
       prize: 1.5e6,
       tier: 2,
-      feeders: { NG1: 2, MA1: 2 },
+      feeders: { NG1: 2, MA1: 2, ZA1: 2 },
       legs: { f: 2 },
     },
   ];
@@ -2327,17 +2629,24 @@
   // single matches at the home of the club drawn first (the lower-division club, in the real draws), with extra
   // time and penalties. Away goals do not count anywhere: no competition has used them since 2021–22.
   FM.D.DOMESTIC_CUPS = [
-    ['CUPENG', 'ENG', 'English Challenge Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at Wembley
-    ['CUPESP', 'ESP', 'Spanish Copa de la Federación', 'ESPC', { neutral: [2] }], // single-leg semi-finals since 2019–20
-    ['CUPGER', 'GER', 'German Verbandspokal', 'GERC', { neutral: [2] }], // final in Berlin
-    ['CUPFRA', 'FRA', 'French Coupe de la Fédération', 'FRAC', { neutral: [2] }],
-    ['CUPBRA', 'BRA', 'Brazilian Copa da Federação', 'BRAC', { legs: [8, 4, 2], neutral: [] }], // two legs from the later rounds, home-and-away final
-    ['CUPITA', 'ITA', 'Italian Coppa della Federazione', 'ITAC', { legs: [4], neutral: [2] }],
-    ['CUPPOR', 'POR', 'Portuguese Taça da Federação', 'PORC', { legs: [4], neutral: [2] }],
-    ['CUPNED', 'NED', 'Dutch Federatiebeker', 'NEDC', { neutral: [2] }],
+    ['CUPENG', 'ENG', 'English National Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at Wembley
+    ['CUPESP', 'ESP', 'Spanish Copa del Rey Fundador', 'ESPC', { neutral: [2] }], // single-leg semi-finals since 2019–20
+    ['CUPGER', 'GER', 'German Bundespokal Neu', 'GERC', { neutral: [2] }], // final in Berlin
+    ['CUPFRA', 'FRA', 'French Coupe Nationale', 'FRAC', { neutral: [2] }],
+    ['CUPBRA', 'BRA', 'Brazilian Copa dos Campeões', 'BRAC', { legs: [8, 4, 2], neutral: [] }], // two legs from the later rounds, home-and-away final
+    ['CUPITA', 'ITA', 'Italian Coppa Nazionale', 'ITAC', { legs: [4], neutral: [2] }],
+    ['CUPPOR', 'POR', 'Portuguese Taça Nacional', 'PORC', { legs: [4], neutral: [2] }],
+    ['CUPNED', 'NED', 'Dutch Kampioensbeker', 'NEDC', { neutral: [2] }],
     ['CUPARG', 'ARG', 'Argentine Copa de la Federación', 'ARGC', { neutral: 'all' }], // every tie at a neutral ground
-    ['CUPUSA', 'USA', 'American Challenge Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
+    ['CUPUSA', 'USA', 'American Liberty Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
     ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2] }],
+    ['CUPKSA', 'KSA', "Saudi King's Trophy", 'KSAC', { neutral: [2] }],
+    ['CUPSGP', 'SGP', 'Singaporean Cup', 'SGPC', { neutral: [2] }],
+    ['CUPMYS', 'MYS', 'Malaysian Cup', 'MYSC', { neutral: [2] }],
+    ['CUPVIE', 'VIE', 'Vietnamese Cup', 'VIEC', { neutral: [2] }],
+    ['CUPIDN', 'IDN', 'Indonesian Cup', 'IDNC', { neutral: [2] }],
+    ['CUPPHI', 'PHI', 'Filipino Cup', 'PHIC', { neutral: [2] }],
+    ['CUPRSA', 'RSA', 'South African National Cup', 'RSAC', { neutral: [2] }],
   ];
   // Club World Cup: last season's continental finalists (winners only from Africa and North America)
   // [competition, 0 = winner / 1 = runner-up], in seed order
@@ -2654,6 +2963,32 @@
       CIV: 1,
     },
     WA1: { WAL: 70, ENG: 20, IRL: 3, SCO: 2, NGA: 1, GHA: 1, ESP: 1, POR: 1, FRA: 1 },
+    SA1: {
+      KSA: 58,
+      BRA: 7,
+      ARG: 3,
+      POR: 3,
+      FRA: 3,
+      MAR: 4,
+      EGY: 3,
+      TUN: 3,
+      SEN: 2,
+      NGA: 2,
+      CIV: 2,
+      ALG: 2,
+      SRB: 2,
+      ENG: 2,
+      ESP: 2,
+      COL: 1,
+      URU: 1,
+    },
+    SG1: { SGP: 58, JPN: 10, KOR: 6, BRA: 6, SRB: 4, MYS: 6, AUS: 4, IRL: 2, NGA: 2, THA: 2 },
+    MY1: { MYS: 64, BRA: 8, ARG: 4, AUS: 4, JPN: 4, KOR: 4, SRB: 3, NGA: 2, ESP: 3, THA: 4 },
+    VN1: { VIE: 78, BRA: 8, JPN: 4, KOR: 3, NGA: 2, SRB: 2, ESP: 1, THA: 2 },
+    ID1: { IDN: 62, BRA: 8, KOR: 6, JPN: 6, ESP: 3, ARG: 3, SRB: 3, NED: 3, NGA: 2, AUS: 2, THA: 2 },
+    PH1: { PHI: 52, JPN: 10, KOR: 8, BRA: 7, ENG: 6, AUS: 5, SRB: 3, NGA: 2, USA: 5, THA: 2 },
+    ZA1: { RSA: 80, BRA: 4, NGA: 3, GHA: 3, SEN: 2, MAR: 2, ESP: 1, POR: 2, ENG: 1, ARG: 2 },
+    SA2: { KSA: 72, EGY: 5, TUN: 4, MAR: 4, BRA: 3, ALG: 3, NGA: 2, SEN: 2, SRB: 1, CIV: 1, ARG: 1, POR: 1, ESP: 1 },
   });
 
   // ---------- Alpha 1: contracts, agents, promises, badges ----------
@@ -2693,18 +3028,55 @@
       bonusW: 1,
     },
   };
+  // Agencies: a few brand names that work anywhere, and surname firms in the style of the agent's own country
   FM.D.AGENT_FIRMS = [
-    'Apex Sports',
-    'Stellar Group',
-    'Blue Line Mgmt',
-    'Goldfoot Agency',
-    'Pinnacle Talent',
+    'Apex Sports Group',
+    'Stellar Football',
+    'Pinnacle Sports Partners',
     'Northstar Football',
-    'Premier Reps',
-    'Crest & Co.',
-    'Touchline Talent',
-    'Wembley Mgmt',
+    'Unique Sports Management',
+    'Base Football',
+    'Elite Sports Consulting',
+    'Meridian Sports',
+    'Summit Sports Group',
+    'Prime Football Partners',
+    'Vantage Sports',
+    'Crest Sports Agency',
   ];
+  FM.D.AGENT_FIRM_STYLES = {
+    es: ['{ln} Gestión Deportiva', 'Representaciones {ln}', '{ln} Sports'],
+    pt: ['{ln} Gestão Desportiva', '{ln} Sports', 'Agência {ln}'],
+    de: ['{ln} Sportmanagement', '{ln} Spielerberatung', '{ln} Sports Group'],
+    fr: ['{ln} Sport Conseil', 'Agence {ln}', '{ln} Sports'],
+    it: ['Agenzia {ln}', '{ln} Sport Management', '{ln} Sports'],
+    nl: ['{ln} Sportmanagement', '{ln} Sports Agency', '{ln} & Partners'],
+    en: [
+      '{ln} Sports Management',
+      '{ln} & Partners',
+      '{ln} Sports Group',
+      '{ln} Football Agency',
+      '{ln} Representation',
+    ],
+  };
+  FM.D.AGENT_FIRM_LANG = {
+    ESP: 'es',
+    MEX: 'es',
+    ARG: 'es',
+    COL: 'es',
+    URU: 'es',
+    BOL: 'es',
+    POR: 'pt',
+    BRA: 'pt',
+    GER: 'de',
+    AUT: 'de',
+    SUI: 'de',
+    FRA: 'fr',
+    BEL: 'fr',
+    SEN: 'fr',
+    MAR: 'fr',
+    ITA: 'it',
+    NED: 'nl',
+  };
   // Squad status: promised starts per season share, and what players expect relative to the squad
   FM.D.STATUS = {
     key: { label: 'Key player', share: 0.75, apps: 38 },

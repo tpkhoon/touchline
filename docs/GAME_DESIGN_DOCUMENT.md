@@ -2,6 +2,30 @@
 
 Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/db0a1349-77d1-4363-b0df-55ef94250bd5)
 
+## Contents
+
+- [Vision and positioning](#vision-and-positioning)
+- [Audience and business model](#audience-and-business-model)
+- [Design pillars](#design-pillars)
+- [Core gameplay loop](#core-gameplay-loop)
+- [Match engine](#match-engine)
+- [Tactical system](#tactical-system)
+- [Players and personalities](#players-and-personalities)
+- [Scouting and transfers](#scouting-and-transfers)
+- [Youth development and university football](#youth-development-and-university-football)
+- [Club identity, facilities and staff](#club-identity-facilities-and-staff)
+- [Season preview and pre-season](#season-preview-and-pre-season)
+- [Living world and football stories](#living-world-and-football-stories)
+- [Career mode and manager identity](#career-mode-and-manager-identity)
+- [Legacy and history](#legacy-and-history)
+- [Global database and competitions](#global-database-and-competitions)
+- [Historical eras and scenarios](#historical-eras-and-scenarios)
+- [World editor and community sharing](#world-editor-and-community-sharing)
+- [Mobile-first UX](#mobile-first-ux)
+- [Monetisation and cosmetics](#monetisation-and-cosmetics)
+- [Prototype status and roadmap](#prototype-status-and-roadmap)
+
+
 ## Vision and positioning
 
 Touchline is a premium, mobile-only football management game that gives Football Manager players a proper long-term save on their phone without losing immersion.
@@ -154,7 +178,7 @@ Players are remembered for who they are, not their rating. Personality is what c
 | Transfer value | Moves with age, form, potential and contract length |
 | Form | Charts of recent ratings |
 
-**Traits and hidden personality:** Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Media Friendly, Temperamental, Derby Specialist.
+**Traits and hidden personality:** Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Media Friendly, Temperamental, Derby Specialist, Fair-Weather, Consistent, Flair, and (round 10) Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick and Needs Game Time. A player has up to three, made from his attributes and hidden character; each has a real effect in matches, development, injuries or morale.
 
 Personality quirks should read like real people. A player might be a cult hero who hates rainy matches, loves derbies, clashes with strict managers, and becomes captain after defending teammates.
 
@@ -309,7 +333,7 @@ Every major footballing nation is represented, but simulation depth is tiered ra
 
 | Tier | Scope | Depth |
 | --- | --- | --- |
-| Full simulation | Top 30–40 leagues | Full match engine, finances, transfers |
+| Full simulation | Top 30–42 leagues | Full match engine, finances, transfers |
 | Light simulation | Smaller leagues | Every fixture played by a statistical model from team strength; per-match goals, assists, cards and ratings for real players; clubs buy and sell |
 | Minimal simulation | Rest of the world | Scores from reputation; squads and players exist for scouting and the market |
 
@@ -405,7 +429,9 @@ Gameplay updates are free.
 
 ## Prototype status and roadmap
 
-Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 710 real clubs in 40 real leagues across 31 nations in three simulation tiers, B teams and U21/U18 sides, eleven domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 81 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups. The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
+Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 746 fictional clubs in 42 leagues (the real structure under invented names) across 32 nations in three simulation tiers, B teams and U21/U18 sides, 18 domestic cups, ten continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 91 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
+
+The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
 
 | Area | In the prototype | Yet to be added |
 | --- | --- | --- |
@@ -417,10 +443,10 @@ Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile r
 | Youth and training | Nation-shaped intakes, facility and coach-driven development; U21 and U18 sides with youth leagues; B teams in Spain and Germany; training focus, intensity and individual training | University draft, scholarships, overseas trials; national youth pathways |
 | Club | Identities, fan culture, facilities, finances by country, attendance, wage pressure up to administration, staff whose ability has real effects, assistant notes, board meetings and ultimatums, club records, stadium history; analytics of your season | Club philosophy, deeper staff, deeper economics |
 | Season | Preview, pre-season friendlies and camps, weekly matchday digest | — |
-| Competitions | 40 leagues in 31 nations across full, light and minimal tiers (your league and its neighbours always full); 5 domestic cups; 7 continental cups (incl. Europa League and Copa Sudamericana) and a Club World Cup; playoffs; two-legged ties with optional away goals | A third-tier continental cup (Conference style); more nations |
+| Competitions | 48 leagues in 38 nations across full, light and minimal tiers (your league and its neighbours always full); 5 domestic cups; 7 continental cups (incl. Europa League and Copa Sudamericana) and a Club World Cup; playoffs; two-legged ties with optional away goals | A third-tier continental cup (Conference style); more nations |
 | World and stories | 35 nations, living world, story feed, shareable cards, World News filters, rivalries that emerge and cool, managers who move between clubs, record-breaking news | Podcasts and richer press; historical eras; scenarios; Football World screen |
 | Legacy and career | Hall of Fame, Archive, legends as managers, reputation, job offers, start unemployed or play on after a sacking, coaching licences, national team jobs, all-time head-to-heads, team-talk record | Retired players as owners and pundits |
 | Platform | Installable offline web app, save upgrades, compressed backups, background simulation, native-app projects (Android, iOS) | Device builds, cloud saves |
 | Editor | Every career plays by each competition's real rules | Full database and rules editor; database export/import and community sharing |
 
-**Decision:** the game ships with fictional leagues, clubs and competitions, keeping the real structure, sizes, formats and rules; real names become optional packs. The prototype still uses real club, league and competition names (with its own ratings) and fictional players.
+**Decision:** the game ships with fictional leagues, clubs and competitions, keeping the real structure, sizes, formats and rules; real names become optional packs. The prototype now runs on the fictional set (generated names over the real structure; the real names are kept in data/real-world.json for optional packs) and fictional players.

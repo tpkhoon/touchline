@@ -89,6 +89,49 @@
     if (age <= 30 && y < A.meteor + (p.hid.prof >= 14 ? A.ageless : A.agelessPlain)) return (p.arc = { k: 'ageless' });
     return null;
   };
+  // ---------- Dynamic potential ----------
+  // A young player's potential is an estimate that moves as he grows up (it used to be fixed at birth). Each summer, up
+  // to 25, it shifts with how he did against his curve, his rating and game time, the club's academy and training, a long
+  // injury and a little luck: now and then a teenager surges (+4 to +9) or stalls (−3 to −7). The changes average out, so
+  // the world's supply of talent stays what the calibration expects, but no regen's ceiling is certain.
+  Sea.POT = { surge: 0.025, slump: 0.06, perf: 1.0, fac: 0.25, noise: 1.2, bias: -0.5, cap: 97 };
+  Sea.shiftPotential = function (p) {
+    const S = FM.S,
+      P = Sea.POT,
+      a = W.age(p);
+    if (a < 15 || a > 25) return;
+    const club = p.clubId && S.clubs[p.clubId],
+      apps = p.season.apps + (p.season.yapps || 0) * 0.4;
+    let d = U.gauss(0, P.noise) + (a <= 20 ? P.bias : 0);
+    if (p.season.apps >= 6) d += (p.season.rsum / p.season.apps - 6.8) * P.perf;
+    if (a >= 18 && apps < 4)
+      d -= 0.8; // no football
+    else if (p.season.apps >= 25) d += 0.4;
+    // against the curve: growing faster than a player of his age normally does lifts the ceiling
+    d += U.clamp(((p.lastGrowth || 0) - Sea.growthCurve(p)) * 0.3, -2, 2);
+    if (club && a <= 21) d += ((club.facilities.academy || 2) + (club.facilities.training || 2) - 5) * P.fac;
+    if (p.inj && (p.inj.out || 0) >= 8) d -= 1.5;
+    if (a <= 20) {
+      const r = Math.random();
+      // (a surge is rarer the higher his ceiling already is: the world's wonderkids stay rare)
+      if (r < P.surge * Math.max(0.2, 1 - Math.max(0, p.pa - 72) / 30)) d += U.rand(3, 7);
+      else if (r > 1 - P.slump && p.pa - p.ca >= 8) d -= U.rand(3, 7);
+    }
+    d *= a <= 20 ? 1 : a <= 23 ? 0.7 : 0.4;
+    const was = p.pa,
+      now = Math.round(U.clamp(was + d, p.ca, P.cap));
+    if (p.pa0 === undefined) p.pa0 = was; // (what he was thought to be when we first saw him)
+    p.pa = now;
+    if (P.trace) (P.trace[a] = P.trace[a] || []).push([d, now - was, p.pa - p.ca]);
+    if (now !== was && Math.abs(now - was) >= 5 && W.ownPlayer(p))
+      FM.News.add({
+        type: 'club',
+        title: `${W.name(p)}'s potential has ${now > was ? 'risen' : 'fallen'}`,
+        body: `${now > was ? 'He has taken a step beyond what the staff expected' : 'He has not developed as hoped'}: he is now judged to have a ceiling of ${W.stars(now, p.pos)}★ (was ${W.stars(was, p.pos)}★).`,
+        pid: p.id,
+        clubId: p.clubId,
+      });
+  };
   // How far a club's training ground can take a player: its level and the club's standing (a big club's coaching and
   // players pull a young player along beyond what the pitches alone would)
   Sea.devCap = (c) => Math.round(50 + ((c.facilities && c.facilities.training) || 2) * 7 + (c.rep - 60) * 0.35);
@@ -106,7 +149,13 @@
       const train =
         (club ? club.facilities.training || 2 : 2) + (club && W.isUser(club.id) ? FM.Staff.impact('coach').dev : 0);
       const mins = Math.min(0.45, p.season.apps * 0.03 + Math.min(0.15, (p.season.yapps || 0) * 0.008)); // youth-team games help a little
-      const f = 0.55 + train * 0.09 + (p.hid.prof - 10) / 25 + mins;
+      const f =
+        0.55 +
+        train * 0.09 +
+        (p.hid.prof - 10) / 25 +
+        mins +
+        (W.hasTrait(p, 'Model Professional') ? 0.1 : 0) -
+        (W.hasTrait(p, 'Low Work Ethic') ? 0.1 : 0);
       const early = arc === 'early' && a <= 21,
         fast = early || (arc === 'burnout' && a <= p.arc.peak);
       g = Math.min(g * f * (early ? 3 : fast ? 1.3 : 1), head * (early ? 1.2 : 0.45)) * frac * U.rand(0.6, 1.4); // closing in on potential slows down: players keep improving into their mid-twenties
@@ -114,6 +163,8 @@
       if (p.ca >= Sea.ELITE.from) g *= Sea.ELITE.growth; // the very best grow more slowly: keeps the elite from inflating
       if (p.inj && (p.inj.out || 0) >= 8) g *= 0.4; // months on the treatment table cost development
       g *= FM.Training.devK(p); // your training focus and intensity
+      // a Mentor in the squad: the young learn from him
+      if (a <= 21 && club && W.squad(club.id).some((q) => q !== p && W.hasTrait(q, 'Mentor'))) g *= 1.12;
       // the training ground has a ceiling: a player who has outgrown it develops slowly until it is upgraded
       if (club) {
         const cap = Sea.devCap(club);
@@ -230,6 +281,7 @@
     const Y = Sea.YOUTH;
     const S = FM.S;
     Object.values(S.clubs).forEach((c) => {
+      if (W.army(c)) return; // the army's club has no academy
       const acad = c.facilities.academy || 2;
       const n = 2 + Math.floor(acad / 2) + (c.identity === 'youth' ? 1 : 0);
       const made = [];

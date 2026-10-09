@@ -48,6 +48,7 @@
         .map((x) => x.id);
       c.rounds = [];
       c.winner = null;
+      c.awards = null;
       c.runnerUp = null;
     }
     // second-tier cups go second, so the main cups' entrants are taken first
@@ -125,6 +126,7 @@
         }));
       c.ko = { qf: [], qf2: null, sf: [], sf2: null, final: null };
       c.winner = null;
+      c.awards = null;
       c.runnerUp = null;
       c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.13)); // participation fee
     }
@@ -185,6 +187,7 @@
     c.clubs = ids.slice(0, 8);
     c.ko = { qf: [], sf: [], final: null };
     c.winner = null;
+    c.awards = null;
     c.runnerUp = null;
     c.clubs.forEach((id) => (S().clubs[id].balance += 2e6));
   };
@@ -332,6 +335,30 @@
     return c.ko[key];
   }
   // Winners of a finished knockout round (null while any tie is unresolved)
+  // How far a club got in a cup this season, in words (null if it was not in it)
+  Cu.runOf = function (c, id) {
+    if (c.winner === id) return 'Winners';
+    if (c.runnerUp === id) return 'Runners-up';
+    if (c.type === 'cup') {
+      for (let i = (c.rounds || []).length - 1; i >= 0; i--) {
+        const r = c.rounds[i];
+        if (
+          (r.byes || []).includes(id) ||
+          [...(r.ties || []), ...(r.ties2 || [])].some((f) => f.h === id || f.a === id)
+        )
+          return r.name;
+      }
+      return c.clubs && c.clubs.includes(id) ? 'First round' : null;
+    }
+    if (c.type === 'continental') {
+      const ko = c.ko || {},
+        inR = (a) => (a || []).some((f) => f && (f.h === id || f.a === id));
+      if (inR(ko.sf) || inR(ko.sf2)) return 'Semi-finals';
+      if (inR(ko.qf) || inR(ko.qf2)) return 'Quarter-finals';
+      return c.clubs && c.clubs.includes(id) ? 'Group stage' : null;
+    }
+    return null;
+  };
   Cu.roundWinners = function (c, key) {
     const dec = c.ko[key + '2'] && c.ko[key + '2'].length ? c.ko[key + '2'] : c.ko[key];
     if (!dec || !dec.length || dec.some((f) => !f.res || !Cu.decides(f))) return null;
@@ -548,12 +575,10 @@
     c.winner = w;
     c.runnerUp = l;
     c.lastFinal = { w, r: l, year: S().year };
+    if (FM.Records) FM.Records.finishComp(c); // its awards and team of the tournament
     club.titles[c.id] = (club.titles[c.id] || 0) + 1;
     club.balance += c.prize || 0;
-    club.rep = Math.min(
-      99,
-      club.rep + (c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5),
-    );
+    W.nudgeRep(club, c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5);
     club.fanMood = Math.min(100, club.fanMood + 15);
     if (W.isUser(w)) {
       if (c.type !== 'regional') S().user.stats.trophies++; // (a county cup is an honour, not a trophy of the season)

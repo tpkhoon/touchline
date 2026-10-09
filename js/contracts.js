@@ -26,9 +26,16 @@
           Rookie: age <= 20 ? 3 : 0.3,
         })[k],
     );
+    const fn = U.pick(D.NATIONS[p.nat].fn),
+      ln = U.pick(D.NATIONS[p.nat].ln);
+    // a family member acts for him; otherwise an agency: a brand, or the agent's own name in his country's style
     const firm =
-      style === 'Family' ? `${U.pick(['Brother', 'Father', 'Uncle', 'Cousin'])} (${p.ln})` : U.pick(D.AGENT_FIRMS);
-    p.agent = { style, firm, name: `${U.pick(D.NATIONS[p.nat].fn)} ${U.pick(D.NATIONS[p.nat].ln)}` };
+      style === 'Family'
+        ? `${U.pick(['Brother', 'Father', 'Uncle', 'Cousin'])} (${p.ln})`
+        : U.chance(0.3)
+          ? U.pick(D.AGENT_FIRMS)
+          : U.pick(D.AGENT_FIRM_STYLES[D.AGENT_FIRM_LANG[p.nat] || 'en']).replace('{ln}', ln);
+    p.agent = { style, firm, name: `${fn} ${ln}` };
     return p.agent;
   };
   Co.agentInfo = (p) => ({ ...Co.agentOf(p), ...D.AGENTS[Co.agentOf(p).style] });
@@ -305,8 +312,10 @@
         ok: false,
         msg: `That exceeds your transfer budget of ${U.money(club.budget)}${deal && deal.inst > 1 ? ' (the board sets aside half of the later instalments)' : ''}.`,
       };
-    if (FM.Reg.real() && !FM.Reg.canSign(club, p).ok)
-      return { ok: false, msg: `You can't register him: ${FM.Reg.canSign(club, p).why}` };
+    const rc = FM.Reg.real() ? FM.Reg.canSign(club, p) : FM.Reg.policy(club, p);
+    if (!rc.ok) return { ok: false, msg: `You can't register him: ${rc.why}` };
+    const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, false) : { ok: true };
+    if (!mc.ok) return { ok: false, msg: mc.why };
     if (FM.Finance.frozen(t.wage))
       return {
         ok: false,
@@ -387,6 +396,8 @@
         ok: false,
         msg: `The board have frozen the wage bill: a renewal can't pay him more than his ${U.money(p.wage)}/wk now.`,
       };
+    const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, true) : { ok: true };
+    if (!mc.ok) return { ok: false, msg: mc.why };
     const ev = Co.evaluate(p, club, t, 'renew');
     if (!ev.ok) {
       if (!ev.hard) Co.logDemand(p, ev, t);
@@ -442,11 +453,25 @@
   };
 
   // AI clubs meeting a release clause can take a player — you can't stop them
+  // A clause is never sprung without notice: the buyer is named a game day before the payment, which is the
+  // manager's chance to talk to the player or tie him to a new deal.
   Co.releaseClauses = function () {
     const s = S(),
       uc = W.userClub();
     const cands = W.squad(uc.id).filter((p) => !p.loan && p.deal && p.deal.release && !W.hasTrait(p, 'Loyal'));
+    // a warning given on an earlier day: the payment goes in now, unless the player has signed a new deal, the club
+    // cannot pay any more, or the window has closed (this runs only while it is open)
     for (const p of cands) {
+      const w = p.clauseWarn;
+      if (!w || w.day >= s.day) continue;
+      delete p.clauseWarn;
+      const b = s.clubs[w.club];
+      if (s.day - w.day > 3) continue; // a stale warning (the window shut in between) lapses
+      if (b && b.budget >= p.deal.release && p.deal.release === w.fee && p.clubId === uc.id)
+        return Co.payClause(p, b, uc);
+    }
+    for (const p of cands) {
+      if (p.clauseWarn) continue;
       const cheap = p.deal.release / Math.max(1, p.value);
       const chance = cheap <= 1.3 ? 0.12 : cheap <= 2 ? 0.05 : cheap <= 3 ? 0.012 : 0.002;
       if (Math.random() > chance) continue;
@@ -474,19 +499,29 @@
         p.morale = Math.min(100, p.morale + 5);
         continue;
       }
-      const fee = p.deal.release;
-      FM.People.onClause(p);
-      FM.Transfers.execute(p, b.id, fee, FM.Transfers.wageDemand(p, b), { clause: true });
+      p.clauseWarn = { club: b.id, fee: p.deal.release, day: s.day };
       FM.News.add({
-        type: 'bid',
-        title: `${b.name} pay ${W.name(p)}'s ${U.money(fee)} release clause`,
-        body: `The clause in his contract leaves ${uc.name} powerless. He joins ${b.name} with immediate effect.`,
+        type: 'club',
+        title: `${b.name} are set to trigger ${W.name(p)}'s release clause`,
+        body: `${b.name} are ready to pay the ${U.money(p.deal.release)} in ${W.short(p)}'s contract and are expected to do so within days. A new contract with a higher clause, or a word with the player, is your only chance to stop it.`,
         pid: p.id,
-        clubId: b.id,
-        data: { pid: p.id, from: b.id, fee, status: 'accepted' },
+        clubId: uc.id,
       });
       return; // one per day is drama enough
     }
+  };
+  Co.payClause = function (p, b, uc) {
+    const fee = p.deal.release;
+    FM.People.onClause(p);
+    FM.Transfers.execute(p, b.id, fee, FM.Transfers.wageDemand(p, b), { clause: true });
+    FM.News.add({
+      type: 'bid',
+      title: `${b.name} pay ${W.name(p)}'s ${U.money(fee)} release clause`,
+      body: `The clause in his contract leaves ${uc.name} powerless. He joins ${b.name} with immediate effect.`,
+      pid: p.id,
+      clubId: b.id,
+      data: { pid: p.id, from: b.id, fee, status: 'accepted' },
+    });
   };
 
   Co.newSeason = function () {

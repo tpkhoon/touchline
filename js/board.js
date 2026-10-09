@@ -58,7 +58,7 @@
             europe > places
               ? { t: europe, text: `a ${second.region === 'Europe' ? 'European' : second.name} place (top ${europe})` }
               : { t: places + 2, text: `top ${places + 2}` }));
-      else if (europe && exp <= europe + 1)
+      else if (second && europe && exp <= europe + 1)
         ((aim = {
           t: europe,
           text: `Qualify for ${second.region === 'Europe' ? 'Europe' : second.name} (top ${europe})`,
@@ -361,7 +361,7 @@
       const f = form5(club);
       if (f.length) {
         const pts = f.reduce((t, r) => t + (r === 1 ? 3 : r === 0.5 ? 1 : 0), 0);
-        lines.push(`Recent form: ${pts} points from the last ${f.length} games.`);
+        lines.push(`Recent form: ${U.pts(pts)} from the last ${f.length === 1 ? 'game' : `${f.length} games`}.`);
       }
     }
     lines.push(
@@ -424,6 +424,64 @@
       rec: opts.indexOf('none'),
       choices: opts.map((k) => ({ k, label: `${B.REQUESTS[k].icon} ${B.REQUESTS[k].label}` })),
     });
+  };
+
+  // ---------- Identity at work: patience, signings and what the fans want ----------
+  // How long a board gives a manager: oil-backed and giant clubs lose patience fastest, fan-owned and youth clubs wait (points of
+  // confidence added to the sacking lines)
+  B.patience = (club) =>
+    ({ oil: 7, giant: 4, historic: 2, fallen: 3, fan: -4, youth: -4, selling: -2 })[club.identity] || 0;
+  // A big signing is judged against what the club is: a youth club that buys a veteran, a selling club that buys no one it can
+  // sell on, are questioned; a signing that fits the identity earns a little trust
+  B.reactSigning = function (club, p, fee) {
+    const fit = FM.Transfers.identityFit(club, p);
+    const big = fee >= 0.05 * Sea().revenuePotential(club) || p.ca >= W.levelFor(club.rep) + 6;
+    if (!big) return;
+    if (fit >= 1.5) club.boardConf = Math.min(100, club.boardConf + 1.5);
+    else if (fit <= 0.5) {
+      club.boardConf = Math.max(0, club.boardConf - 2.5);
+      FM.News.add({
+        type: 'board',
+        title: `The board question the signing of ${W.name(p)}`,
+        body:
+          club.identity === 'youth'
+            ? 'A club that prides itself on its academy does not usually buy a player of his age. The chairman wants to see the youngsters get their chance.'
+            : 'The board wanted young players the club could sell on, not a player of his age.',
+        clubId: club.id,
+      });
+    }
+  };
+  // How well a tactic fits what the fans of this club expect: -1 (they hate it) to 1 (it is what they came for)
+  B.styleFit = function (club, t) {
+    if (!t) return 0;
+    const low = t.press === 'Low Block',
+      high = t.press === 'High Press',
+      pass = t.buildup === 'Possession' || t.buildup === 'Short';
+    switch (club.identity) {
+      case 'giant':
+      case 'oil':
+        return low ? -0.7 : pass ? 0.7 : t.buildup === 'Counter' || t.buildup === 'Direct' ? -0.3 : 0.2;
+      case 'fan':
+        return low
+          ? -0.6
+          : high || t.width === 'Wide' || t.buildup === 'Wing Play' || t.buildup === 'Possession'
+            ? 0.8
+            : 0.1;
+      case 'historic':
+        return pass ? 0.5 : low ? -0.3 : 0;
+      case 'fallen':
+        return high ? 0.7 : low ? -0.7 : 0.2;
+      default:
+        return 0;
+    }
+  };
+  B.styleNote = function (club, t) {
+    const f = B.styleFit(club, t);
+    return f >= 0.5
+      ? `The fans like the way you play: it is what they expect of ${club.name}.`
+      : f <= -0.5
+        ? `The fans do not like the way you play: it is not what they expect of ${club.name}.`
+        : '';
   };
 
   // ---------- Answers ----------

@@ -23,6 +23,29 @@
   const P = (id) => FM.S.players[id];
 
   // ---------------- Preview ----------------
+  // The opposition's likely XI, line by line (from the same pick the match will use for them, unless they have
+  // injuries or suspensions by then), with the danger man starred and who they are missing
+  MV.predictedXI = function (opp, key) {
+    const t = opp.tactic,
+      slots = D.FORMATIONS[t.formation] || [];
+    const { xi } = W.pickXI(opp.id, t);
+    const line = (g) =>
+      xi
+        .map((p, i) => (p && slots[i] && D.POS_GROUP[slots[i].t] === g ? p : null))
+        .filter(Boolean)
+        .map(
+          (p) =>
+            `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p === key ? ' <span title="Danger man">★</span>' : ''}`,
+        )
+        .join(' · ');
+    const out = W.squad(opp.id).filter((p) => !W.available(p));
+    const row = (l, g) =>
+      `<div class="row small" style="margin-top:6px;gap:8px;align-items:flex-start"><span class="dim" style="width:34px">${l}</span><span class="grow" style="line-height:1.7">${line(g)}</span></div>`;
+    return `<div class="card"><div class="row"><div class="h3 grow">Predicted XI</div><span class="tiny dim">${esc(t.formation)}</span></div>
+      ${row('GK', 'GK')}${row('DEF', 'DEF')}${row('MID', 'MID')}${row('ATT', 'ATT')}
+      ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
+  };
+  const DANGER_POS = { ST: 1, W: 0.96, AM: 0.96, WM: 0.9, CM: 0.82, WB: 0.74, FB: 0.7, DM: 0.68, CB: 0.6, GK: 0.2 };
   MV.preview = function () {
     const fx = FM.Season.userFixture();
     if (!fx) return;
@@ -33,7 +56,14 @@
     const nt = me.sim === 'nation',
       myTactic = nt ? me.tactic : s.user.tactic;
     const oppXI = W.pickXI(opp.id, opp.tactic).xi.filter(Boolean);
-    const key = oppXI.slice().sort((a, b) => b.ca - a.ca)[0];
+    // the danger man is the one who scores or creates: judged on ability weighted by how attacking his position is,
+    // plus what he has done this season, never a keeper or a centre-back just because he is the best-rated
+    const threat = (p) => {
+      const st = p.season || {},
+        g = st.apps >= 3 ? ((st.goals || 0) + 0.6 * (st.ast || 0)) / st.apps : 0;
+      return p.ca * (DANGER_POS[p.pos] ?? 0.6) + g * 8;
+    };
+    const key = oppXI.slice().sort((a, b) => threat(b) - threat(a))[0] || oppXI[0];
     const { xi } = W.pickXI(me.id, myTactic);
     const unavailable = nt
       ? FM.Intl.pool(me.code)
@@ -66,6 +96,7 @@
         <div class="row small" style="margin-top:6px"><span class="grow dim">System</span><b>${opp.tactic.formation} · ${opp.tactic.buildup} · ${opp.tactic.press}</b></div>
         <div class="row small" style="margin-top:6px"><span class="grow dim">Danger man</span><b class="tap" data-act="player" data-id="${key.id}">${C.flag(key.nat)} ${esc(W.name(key))} (${key.pos})</b></div>
         <div class="q" style="margin-top:10px;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13px;border-left:3px solid var(--acc2)"><b class="tiny dim" style="display:block">${esc(asst.fn + ' ' + asst.ln)} · Assistant</b>“${tip}”</div></div>
+      ${MV.predictedXI(opp, key)}
       ${MV.conditions(fx, me, opp, nt)}
       ${f1 && f1.res ? `<div class="warnline" style="margin-bottom:8px">Second leg. First leg: ${esc(CL(f1.h).name)} ${f1.res.hg}–${f1.res.ag} ${esc(CL(f1.a).name)}${s.rules.awayGoals ? ' · away goals count' : ''}. Level on aggregate after 90 minutes → extra time${s.rules.awayGoals ? ' (unless away goals decide it)' : ''}.</div>` : fx.leg === 1 ? '<div class="warnline" style="margin-bottom:8px">First leg — no extra time tonight. The tie is decided in the return match.</div>' : ''}
       <div class="card"><div class="row"><div class="h3 grow">Your XI · ${myTactic.formation}</div><button class="btn sm" data-act="${nt ? 'goNation' : 'goTactics'}">${nt ? 'Squad' : 'Tactics'}</button></div>
@@ -76,12 +107,12 @@
               `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
           )
           .join(' · ')}</div>
-        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' 🚑' : ' 🟥')).join(', ')}</div>` : ''}</div>
+        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
       ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
+      ${MV.oppCard(fx)}
       ${MV.talkCard(fx)}
-      <button class="btn pri block" data-act="kickoff" style="margin-top:4px">▶ Watch live</button>
-      <button class="btn block" data-act="instant" style="margin-top:8px">⚡ Instant result</button>`,
+      <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">⚡ Instant</button></div>`,
       { title: fx.po || (FM.S.comps[fx.comp] ? FM.S.comps[fx.comp].name : 'International') },
     );
   };
@@ -115,10 +146,53 @@
   const TALK_SHORT = {
     calm: 'Calm',
     focus: 'Focus',
-    free: 'Enjoy it',
+    free: 'Relax',
     fire: 'Fire up',
     pressure: 'Demand',
     tactics: 'Tactics',
+  };
+  // The opposition report and the instructions that answer it (up to two; the assistant pre-selects what the report favours)
+  MV.oppCard = function (fx) {
+    const Md = FM.Matchday;
+    if (fx.intl || !FM.clubOf(W.isMine(fx.h) ? fx.a : fx.h).tactic) return '';
+    const rep = Md.opposition(fx);
+    MV.rep = rep;
+    MV.ins = rep.best.map((a) => a.id);
+    const advice = Object.fromEntries(rep.advice.map((a) => [a.id, a]));
+    const asst = FM.Staff.get('assistant');
+    return `<div class="card"><div class="h3">Their weaknesses</div>
+      ${rep.lines.length ? rep.lines.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${i}</span><span class="small">${esc(t)}</span></div>`).join('') : '<div class="small muted" style="margin-top:6px">A balanced side with no obvious weakness.</div>'}
+      <div class="h3" style="margin-top:12px">Match instructions <span class="tiny dim">(up to two)</span></div>
+      <div id="insList">${Object.entries(Md.INS)
+        .map(([id, d]) => {
+          const a = advice[id];
+          return `<button class="btn sm ins ${MV.ins.includes(id) ? 'pri' : ''}" style="margin:4px 4px 0 0" data-act="insPick" data-v="${id}" title="${esc(d.desc)}">${esc(d.short)}${a ? (a.s > 0 ? ' 👍' : ' ⚠️') : ''}</button>`;
+        })
+        .join('')}</div>
+      <div class="small muted" id="insDesc" style="margin-top:8px;line-height:1.45">${MV.insDesc()}</div>
+      <div class="tiny dim" style="margin-top:6px">${esc(asst.fn + ' ' + asst.ln)}: ${rep.best.length ? esc(rep.best.map((a) => a.why).join('. ')) + '.' : 'Nothing stands out; play your game.'}</div></div>`;
+  };
+  MV.insDesc = () => {
+    const Md = FM.Matchday,
+      adv = Object.fromEntries(((MV.rep && MV.rep.advice) || []).map((a) => [a.id, a]));
+    return MV.ins.length
+      ? MV.ins
+          .map(
+            (id) =>
+              `<b>${esc(Md.INS[id].label)}.</b> ${esc(Md.INS[id].desc)}.${adv[id] && adv[id].s < 0 ? ` <span style="color:var(--warn)">⚠️ ${esc(adv[id].why)}.</span>` : ''}`,
+          )
+          .join('<br>')
+      : 'No instructions: play the system as set.';
+  };
+  UI.acts.insPick = (d) => {
+    const i = MV.ins.indexOf(d.v);
+    if (i >= 0) MV.ins.splice(i, 1);
+    else MV.ins = MV.ins.concat([d.v]).slice(-2);
+    document
+      .querySelectorAll('[data-act=insPick]')
+      .forEach((b) => b.classList.toggle('pri', MV.ins.includes(b.dataset.v)));
+    const el = document.getElementById('insDesc');
+    if (el) el.innerHTML = MV.insDesc();
   };
   MV.talkCard = function (fx) {
     const Md = FM.Matchday,
@@ -143,6 +217,7 @@
         )
         .join('')}</div>
       <div class="small muted" id="talkDesc" style="margin-top:8px;line-height:1.45">${MV.talkDesc(sugg)}</div>
+      ${ctx.notes && ctx.notes.length ? `<div class="tiny" style="margin-top:6px;color:var(--warn)">😬 Weighing on the players: ${esc(ctx.notes.join('; '))}.</div>` : ''}
       ${capt ? `<div class="tiny dim" style="margin-top:6px">© ${esc(W.name(capt))} leads the team out${W.hasTrait(capt, 'Leader') ? ' — a Leader keeps heads level if the message misses' : ''}.</div>` : ''}</div>
       <div class="card"><div class="h3">Warm-up</div>
       <div class="seg" style="margin-top:8px">${Object.entries(Md.WARMUPS)
@@ -224,9 +299,12 @@
     // Deliver the team talk chosen in the preview (once)
     const talkMsg = MV.talk && MV.talkCtx ? FM.Matchday.applyTalk(m, MV.talk, MV.talkCtx) : null;
     if (MV.warm) FM.Matchday.applyWarmup(m, MV.warm);
+    const insMsg = MV.ins && MV.ins.length ? FM.Matchday.applyInstructions(m, MV.ins) : null;
+    MV.ins = null;
     MV.warm = null;
     MV.talk = null;
     if (talkMsg) MV.promptLog = (MV.promptLog || []).concat([`Pre-match team talk → ${talkMsg}`]);
+    if (insMsg) MV.promptLog = (MV.promptLog || []).concat([insMsg]);
     const capt = P(m.sides[MV.us].capt);
     if (instant) {
       while (!m.finished) m.step();
@@ -239,13 +317,13 @@
     const ov = document.createElement('div');
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
-    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip">${esc(H.club.name)}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip">${esc(A.club.name)}</span></div></div>
+    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(C.shortName(H.club))}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(C.shortName(A.club))}</span></div></div>
       <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
       <div class="m-mom"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>
       <div class="m-ticker${text ? ' m-feed' : ''}" id="mTicker"><div>The teams are out${capt ? `, ${esc(W.short(capt))} wearing the armband` : ''}. ${esc(H.club.name)} vs ${esc(A.club.name)}.</div>${talkMsg ? `<div>🗣️ ${esc(talkMsg)}</div>` : ''}</div>
-      <div class="m-ctrl"><button id="mPause" data-act="mPause">⏸</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mSubs">Subs</button><button data-act="mSim">⏭ End</button></div>`;
+      <div class="m-ctrl"><button id="mPause" data-act="mPause">⏸</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mShout">📣 Shout</button><button data-act="mSubs">Subs</button><button data-act="mSim">⏭ End</button></div>`;
     document.getElementById('app').appendChild(ov);
     MV.st = {
       paused: false,
@@ -817,6 +895,38 @@
     st.paused = true;
     MV.tacticsSheet();
   };
+  // Shouts: a call from the touchline (engine: Match.shout); one at a time, with a few minutes between
+  UI.acts.mShout = () => {
+    MV.st.paused = true;
+    MV.shoutSheet();
+  };
+  MV.shoutSheet = function () {
+    const m = MV.m,
+      sd = m.sides[MV.us],
+      min = m.minute,
+      wait = sd.shoutNext != null && min < sd.shoutNext ? sd.shoutNext - min : 0,
+      on = sd.shoutExp;
+    const html = `<div class="small muted" style="margin-bottom:10px;line-height:1.5">A call from the touchline lasts a few minutes. How well it lands depends on the captain and the mood of the players, and a manager who shouts all game is tuned out.${on ? ` <b>Now: ${esc(FM.Match.SHOUTS[on.kind].label)} (${Math.max(0, on.until - min)} min left).</b>` : ''}</div>
+      <div class="list">${Object.entries(FM.Match.SHOUTS)
+        .map(
+          ([k, x]) =>
+            `<div class="prow tap ${wait ? 'dim' : ''}" data-act="mShoutDo" data-k="${k}"><span style="font-size:22px;width:32px">${x.icon}</span><div class="grow"><div class="b">${esc(x.label)}</div><div class="small dim">${esc(x.tip)} · ${x.dur} min</div></div></div>`,
+        )
+        .join('')}</div>
+      ${wait ? `<div class="tiny dim" style="margin-top:8px">The last call needs ${wait} more minute${wait === 1 ? '' : 's'} to sink in.</div>` : ''}
+      <button class="btn pri block" style="margin-top:14px" data-act="mResume">Resume</button>`;
+    if (document.querySelector('.sheet-wrap')) UI.refreshSheet(html);
+    else UI.sheet(html, { title: '📣 Shouts', onClose: () => (MV.st.paused = false) });
+  };
+  UI.acts.mShoutDo = (d) => {
+    const r = MV.m.shout(MV.m.sides[MV.us], d.k);
+    if (!r.ok) {
+      UI.toast(r.msg, 2500);
+      return MV.shoutSheet();
+    }
+    MV.ticker(`📣 ${r.msg}`);
+    UI.acts.mResume();
+  };
   MV.tacticsSheet = function () {
     const sd = MV.m.sides[MV.us],
       T = sd.tactic;
@@ -878,7 +988,7 @@
       const bench = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id));
       return `<div class="small muted">Subs left: <b>${sd.subsLeft}</b> of ${FM.S.rules.subs}</div>
         <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? '🚑' : ''}${sd.yc[p.id] ? '🟨' : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
-        <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + Math.round(W.effAt(p, sd.slots[MV._subOut].t)) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
+        <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + C.starText(W.effAt(p, sd.slots[MV._subOut].t), sd.slots[MV._subOut].t) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
         <button class="btn block" style="margin-top:12px" data-act="mResume">Done</button>`;
     };
     MV._subRender = render;
@@ -982,6 +1092,17 @@
     document.querySelectorAll('#postChips .chip').forEach((c) => c.classList.toggle('on', c.dataset.v === d.v));
     MV.renderPost();
   };
+  // The post-match card that reads the result: the headline and the causes behind it (FM.Matchday.why)
+  MV.whyCard = function (m) {
+    const w = FM.Matchday.why(m, MV.us);
+    const col = { good: 'var(--good)', bad: 'var(--bad)', luck: 'var(--warn)', neutral: 'var(--ink2)' };
+    return `<div class="card"><div class="h3">Why it went this way</div><div class="small b" style="margin:6px 0 2px;color:${col[w.tone]}">${esc(w.headline)}</div>${w.causes
+      .map(
+        (c) =>
+          `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span style="font-size:18px;width:24px">${c.icon}</span><div class="grow"><div class="b" style="color:${col[c.kind]}">${esc(c.title)}</div><div class="dim" style="line-height:1.4">${esc(c.text)}</div></div></div>`,
+      )
+      .join('')}${w.causes.length ? '' : '<div class="tiny dim">Nothing stood out: an ordinary match.</div>'}</div>`;
+  };
   MV.renderPost = function () {
     const m = MV.m,
       res = m.result(),
@@ -1019,6 +1140,7 @@
           : '';
       body.innerHTML = `${motm ? `<div class="card row">${C.pos(motm)}<div class="grow"><div class="tiny dim b">PLAYER OF THE MATCH</div><div class="b">${C.pname(motm, W.name(motm))}</div></div>${C.rating(m.sides.find((s) => s.rating[motm.id] != null).rating[motm.id])}</div>` : ''}
         <div class="card">${sbar('Possession', res.poss[0], res.poss[1], (v) => v + '%')}${sbar('Expected goals (xG)', res.xg[0], res.xg[1], (v) => v.toFixed(2))}${sbar('Shots', res.shots[0], res.shots[1])}${sbar('On target', res.sot[0], res.sot[1])}${spg[0].length + spg[1].length ? sbar('Set-piece goals', spg[0].length, spg[1].length) + spNote : ''}${sbar('Passes', m.passStats(0).total, m.passStats(1).total)}${sbar('Pass accuracy', m.passStats(0).acc, m.passStats(1).acc, (v) => v + '%')}${sbar('Yellow cards', Object.keys(H.yc).length, Object.keys(A.yc).length)}</div>
+        ${MV.whyCard(m)}
         <div class="card"><div class="h3" style="margin-bottom:6px">Key moments</div>${m.events
           .filter((e) => ['goal', 'red', 'injury', 'sub', 'pens'].includes(e.k) || (e.k === 'chance' && e.big))
           .map(
