@@ -63,6 +63,7 @@ const FILES = [
   './js/ui-market.js',
   './js/ui-follow.js',
   './js/ui-youth.js',
+  './js/ui-editor.js',
   './js/changelog.js',
   './js/ui-training.js',
   './js/ui-access.js',

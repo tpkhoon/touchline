@@ -25,6 +25,7 @@
     "test:tactics": "node tools/tactics.mjs",
     "test:asia": "node tools/asia.mjs",
     "test:cups": "node tools/cups-check.mjs --seasons 2",
+    "test:editor": "node tools/editor-check.mjs",
     "test:longrun": "node tools/longrun.mjs --check",
     "sysmap": "node tools/sysmap.mjs --write docs/SYSTEMS.md",
     "import:history": "node tools/import-history.mjs",

@@ -1237,7 +1237,7 @@
             .map((e) => `• ${esc(e)}`)
             .join('<br>')}</div>`
         : '';
-    return `<div class="card" style="margin-top:16px;padding:12px 14px"><div class="small b">🗄️ Database</div>${body}${err}</div>`;
+    return `<div class="card" style="margin-top:16px;padding:12px 14px"><div class="small b">🗄️ Database</div>${body}${err}<div class="actions" style="margin-top:10px"><button class="btn sm" data-act="edOpen">✏️ ${r && r.ok ? 'Edit this world' : 'World editor'}</button></div></div>`;
   };
   // The clubs and leagues the picker lists just changed (a database came or went): a club chosen before may be gone, and
   // the filters and suggestions were made against the old list
@@ -1249,6 +1249,8 @@
     }
     Object.assign(NG, { recs: [], lg: 'all', df: 'all', q: '' });
   };
+  UI._ng = () => NG;
+  UI._ngDataChanged = ngDataChanged;
   UI.acts.ngDbPick = async () => {
     const picked = await FM.Native.pickFiles(FM.DbImport.accept());
     if (!picked.length) return;
