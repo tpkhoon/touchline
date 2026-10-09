@@ -110,6 +110,7 @@
         ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' (injured)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
       ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
+      ${MV.oppCard(fx)}
       ${MV.talkCard(fx)}
       <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">⚡ Instant</button></div>`,
       { title: fx.po || (FM.S.comps[fx.comp] ? FM.S.comps[fx.comp].name : 'International') },
@@ -149,6 +150,49 @@
     fire: 'Fire up',
     pressure: 'Demand',
     tactics: 'Tactics',
+  };
+  // The opposition report and the instructions that answer it (up to two; the assistant pre-selects what the report favours)
+  MV.oppCard = function (fx) {
+    const Md = FM.Matchday;
+    if (fx.intl || !FM.clubOf(W.isMine(fx.h) ? fx.a : fx.h).tactic) return '';
+    const rep = Md.opposition(fx);
+    MV.rep = rep;
+    MV.ins = rep.best.map((a) => a.id);
+    const advice = Object.fromEntries(rep.advice.map((a) => [a.id, a]));
+    const asst = FM.Staff.get('assistant');
+    return `<div class="card"><div class="h3">Their weaknesses</div>
+      ${rep.lines.length ? rep.lines.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${i}</span><span class="small">${esc(t)}</span></div>`).join('') : '<div class="small muted" style="margin-top:6px">A balanced side with no obvious weakness.</div>'}
+      <div class="h3" style="margin-top:12px">Match instructions <span class="tiny dim">(up to two)</span></div>
+      <div id="insList">${Object.entries(Md.INS)
+        .map(([id, d]) => {
+          const a = advice[id];
+          return `<button class="btn sm ins ${MV.ins.includes(id) ? 'pri' : ''}" style="margin:4px 4px 0 0" data-act="insPick" data-v="${id}" title="${esc(d.desc)}">${esc(d.short)}${a ? (a.s > 0 ? ' 👍' : ' ⚠️') : ''}</button>`;
+        })
+        .join('')}</div>
+      <div class="small muted" id="insDesc" style="margin-top:8px;line-height:1.45">${MV.insDesc()}</div>
+      <div class="tiny dim" style="margin-top:6px">${esc(asst.fn + ' ' + asst.ln)}: ${rep.best.length ? esc(rep.best.map((a) => a.why).join('. ')) + '.' : 'Nothing stands out; play your game.'}</div></div>`;
+  };
+  MV.insDesc = () => {
+    const Md = FM.Matchday,
+      adv = Object.fromEntries(((MV.rep && MV.rep.advice) || []).map((a) => [a.id, a]));
+    return MV.ins.length
+      ? MV.ins
+          .map(
+            (id) =>
+              `<b>${esc(Md.INS[id].label)}.</b> ${esc(Md.INS[id].desc)}.${adv[id] && adv[id].s < 0 ? ` <span style="color:var(--warn)">⚠️ ${esc(adv[id].why)}.</span>` : ''}`,
+          )
+          .join('<br>')
+      : 'No instructions: play the system as set.';
+  };
+  UI.acts.insPick = (d) => {
+    const i = MV.ins.indexOf(d.v);
+    if (i >= 0) MV.ins.splice(i, 1);
+    else MV.ins = MV.ins.concat([d.v]).slice(-2);
+    document
+      .querySelectorAll('[data-act=insPick]')
+      .forEach((b) => b.classList.toggle('pri', MV.ins.includes(b.dataset.v)));
+    const el = document.getElementById('insDesc');
+    if (el) el.innerHTML = MV.insDesc();
   };
   MV.talkCard = function (fx) {
     const Md = FM.Matchday,
@@ -255,9 +299,12 @@
     // Deliver the team talk chosen in the preview (once)
     const talkMsg = MV.talk && MV.talkCtx ? FM.Matchday.applyTalk(m, MV.talk, MV.talkCtx) : null;
     if (MV.warm) FM.Matchday.applyWarmup(m, MV.warm);
+    const insMsg = MV.ins && MV.ins.length ? FM.Matchday.applyInstructions(m, MV.ins) : null;
+    MV.ins = null;
     MV.warm = null;
     MV.talk = null;
     if (talkMsg) MV.promptLog = (MV.promptLog || []).concat([`Pre-match team talk → ${talkMsg}`]);
+    if (insMsg) MV.promptLog = (MV.promptLog || []).concat([insMsg]);
     const capt = P(m.sides[MV.us].capt);
     if (instant) {
       while (!m.finished) m.step();

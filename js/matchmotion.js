@@ -280,7 +280,25 @@
         if (back.length >= 2) {
           let line = U.avg(back, (i) => fr[i].x);
           line = Math.min(line, Math.max(0.07, bf.x - 0.05));
+          // the press and the block show on the pitch as the engine treats them: a high press squeezes up the field behind the
+          // ball, a low block drops the line and the banks of players in front of it
+          if (sd.tactic.press === 'High Press') line = Math.max(line, Math.min(0.45, bf.x - 0.22));
+          else if (sd.tactic.press === 'Low Block') line = Math.min(line, 0.17);
           back.forEach((i) => (fr[i].x = U.lerp(fr[i].x, line, sd.slots[i].t === 'WB' ? 0.5 : 0.8)));
+        }
+        if (sd.tactic.press === 'Low Block') {
+          // two compact banks in front of the box: nobody stays high but the forwards, and the shape narrows
+          sd.slots.forEach((sl, i) => {
+            if (sl.t === 'GK' || sl.t === 'ST') return;
+            fr[i].x = Math.min(fr[i].x, ['CB', 'FB', 'WB'].includes(sl.t) ? 0.2 : 0.36);
+            fr[i].y = 0.5 + (fr[i].y - 0.5) * 0.78;
+          });
+        } else if (sd.tactic.press === 'High Press') {
+          // the midfield and forwards push up with the line
+          sd.slots.forEach((sl, i) => {
+            if (sl.t === 'GK' || ['CB', 'FB', 'WB'].includes(sl.t)) return;
+            fr[i].x = Math.max(fr[i].x, Math.min(0.62, bf.x - 0.08));
+          });
         }
         // defenders pick up the nearest runner in their zone, goal-side of him
         const att = oppDots.map((d) => MV.toFrame(k, d.x, d.y));

@@ -684,6 +684,7 @@
         w.longshot += 0.08;
         w.through -= 0.06;
       }
+      FM.Matchday.insWeights(sd, od, w);
       let type = U.wpick(Object.keys(w), (k) => Math.max(0.01, w[k]));
       if (Math.random() < CAL.penRate) type = 'penalty';
       const XG = {
@@ -761,6 +762,7 @@
           return (MW[t] + AW[t] * 0.5) * (A.passing + A.vision) * (1 + (r.assist || 0));
         });
       }
+      if (type !== 'penalty' && (sd.ins || od.ins)) xg = U.clamp(xg * Md.insXg(sd, od, type, shooter.p), 0.01, 0.8);
       const p = shooter.p,
         A = p.attrs;
       const finF = 0.75 + ((A.finishing + A.composure) / 40) * 0.5;
@@ -1769,6 +1771,7 @@
       const sd = m.sides.find((s) => s.user),
         op = m.sides[1 - sd.idx];
       const diff = sd.goals - op.goals;
+      const read = FM.Matchday.halfRead(m, sd);
       const apply = (kind) => () => {
         let good = 0,
           bad = 0;
@@ -1797,16 +1800,20 @@
         id: 'ht',
         icon: '🗣️',
         title: 'Half-time team talk',
-        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.`,
+        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.\n${read.lines.map(([i, t]) => `${i} ${t}`).join('\n')}`,
         options: [
           { label: 'Keep calm', desc: 'Stay the course', apply: apply('calm') },
           { label: 'Demand more', desc: 'Risky with volatile players', apply: apply('demand') },
           { label: 'Praise them', desc: 'Best when playing well', apply: apply('praise') },
           {
             label: 'Tactical tweaks',
-            desc: "Fix what isn't working (your assistant's eye matters)",
+            desc: read.fix ? read.fix.text : "Fix what isn't working (your assistant's eye matters)",
             apply: () => {
               const k = 0.01 + (FM.Staff.impact('assistant').fam - 1) * 0.1;
+              if (read.fix) {
+                sd.mods.def += k * 0.5;
+                return read.fix.apply();
+              }
               if (op.xg > sd.xg) {
                 sd.mods.def += k + 0.01;
                 return 'Shape tightened where they were getting through.';

@@ -77,7 +77,7 @@ function measure(m, k) {
   };
 }
 // n matches of `x` (the tactic under test) against `opp`, half of them at home
-function run(x, opp = {}) {
+function run(x, opp = {}, ins = null, oppIns = null) {
   const rows = [];
   for (let i = 0; i < N; i++) {
     const homeX = i % 2 === 0;
@@ -85,8 +85,11 @@ function run(x, opp = {}) {
     h.tactic = homeX ? mk(x) : mk(opp);
     a.tactic = homeX ? mk(opp) : mk(x);
     const m = new FM.Match({ h: h.id, a: a.id, comp: 'D1' });
+    const k = homeX ? 0 : 1;
+    if (ins) FM.Matchday.applyInstructions(m, ins, m.sides[k]);
+    if (oppIns) FM.Matchday.applyInstructions(m, oppIns, m.sides[1 - k]);
     while (!m.finished) m.step();
-    rows.push(measure(m, homeX ? 0 : 1));
+    rows.push(measure(m, k));
   }
   return rows;
 }
@@ -171,6 +174,61 @@ expect(
   0.03,
   true,
 );
+
+// Match instructions: each answers one thing in the opposition report, so it should pay against the side it is meant for and
+// cost (or do nothing) against the side it is not. The report's own advice must agree with the engine.
+lines.push('— Match instructions answer the opposition');
+const hp = { press: 'High Press' },
+  lb = { press: 'Low Block' },
+  nar = { width: 'Narrow' };
+const baseHP = run({}, hp),
+  counterHP = run({}, hp, ['counter']),
+  baseLB = run({}, lb),
+  counterLB = run({}, lb, ['counter']),
+  patLB = run({}, lb, ['patience']),
+  patHP = run({}, hp, ['patience']),
+  baseN = run({}, nar),
+  crossN = run({}, nar, ['crosses']);
+expect('counter plan against a high press: more counter chances', counterHP, baseHP, 'counterFor', 'up', 0.3, true);
+expect('counter plan against a low block gains far less (no space)', counterLB, baseLB, 'counterFor', 'up', 0, true);
+if (
+  mean(counterHP, 'counterFor') - mean(baseHP, 'counterFor') <=
+  1.5 * (mean(counterLB, 'counterFor') - mean(baseLB, 'counterFor'))
+) {
+  lines.push('✗ the counter plan should pay clearly more against a press than against a block');
+  fails.push('counter plan fit');
+} else lines.push('✓ the counter plan pays clearly more against a press than against a block');
+expect('patience against a low block: more through balls and cutbacks', patLB, baseLB, 'centralFor', 'up', 0.08, true);
+expect('patience against a high press: more counters against us', patHP, baseHP, 'counterAg', 'up', 0.1, true);
+expect('wide play against a narrow side: more crosses', crossN, baseN, 'crossFor', 'up', 0.15, true);
+const dropped = run({}, { buildup: 'Direct' }, ['drop']),
+  baseD = run({}, { buildup: 'Direct' });
+expect('dropping the line: fewer through balls against us', dropped, baseD, 'throughAg', 'down', 0.1, true);
+// the report: against a high press it recommends the counter plan and warns against patience; against a block the reverse
+const advise = (press) => {
+  return FM.Matchday.INS.counter.fit({ press, width: 'Balanced', fb: { gap: 0 }, lead: 4, pace: 13 })[0];
+};
+const advOk =
+  advise('High Press') > 0 && advise('Low Block') < 0 && FM.Matchday.INS.patience.fit({ press: 'Low Block' })[0] > 0;
+lines.push(
+  `${advOk ? '✓' : '✗'} the report’s advice agrees with the engine (counter for a press, patience for a block)`,
+);
+if (!advOk) fails.push('report advice');
+// an instruction is named in the post-match reading
+{
+  let named = 0;
+  for (let i = 0; i < 60; i++) {
+    c1.tactic = mk();
+    c2.tactic = mk();
+    const m = new FM.Match({ h: c1.id, a: c2.id, comp: 'D1' });
+    FM.Matchday.applyInstructions(m, ['crosses', 'patience'], m.sides[0]);
+    while (!m.finished) m.step();
+    if (FM.Matchday.why(m, 0).causes.some((c) => c.tag === 'instruction')) named++;
+  }
+  const ok = named >= 20;
+  lines.push(`${ok ? '✓' : '✗'} instructions are judged in the post-match reading: ${named}/60 matches`);
+  if (!ok) fails.push('instruction reading');
+}
 
 // The post-match reading: it must always return a headline and causes in the right shape, and it must name the tactic when the
 // tactic left a mark (a high press that conceded counters, a low block that held or broke, tired legs)

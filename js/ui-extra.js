@@ -25,6 +25,44 @@
     `<div class="bar" style="height:4px;width:54px"><i style="width:${k}%;background:${k >= 70 ? 'var(--good)' : k >= 35 ? 'var(--warn)' : 'var(--bad)'}"></i></div>`;
 
   // ======================= Player card pieces =======================
+  // What each scout who has watched him makes of the player: his grade, his advice and what he singled out. Two scouts can
+  // disagree, and one leans toward athletes, another toward technique.
+  UI.opinionsBlock = function (p, v) {
+    if (!v.opinions || !v.opinions.length)
+      return v.quote
+        ? `<div class="q" style="margin:8px 0;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13.5px;border-left:3px solid var(--acc2);font-style:italic">${esc(v.quote)}</div>`
+        : '';
+    const u = S().user,
+      lean = {
+        physical: 'is impressed by athletes',
+        technical: 'is impressed by technique',
+        rounded: 'weighs the whole player',
+      };
+    const one = (o) =>
+      `<div class="q" style="margin:8px 0;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13.5px;border-left:3px solid var(--acc2)"><div class="row" style="gap:8px;align-items:center">${gradeBadge(o.grade, 26)}<div class="grow"><div class="small b">${o.scout ? esc(o.scout.fn + ' ' + o.scout.ln) : 'The assistant'}</div><div class="tiny dim">${o.scout ? lean[o.lean] : 'a quick look'}</div></div>${recPill(o.rec)}</div><div style="margin-top:6px;font-style:italic">${esc(o.quote)}</div></div>`;
+    const more = v.opinions.length === 1 && u.scouts.length >= 2 && v.k < 100 && !v.own;
+    return `${v.opinions.map(one).join('')}${v.disagree ? '<div class="warnline" style="margin:8px 0">The scouts disagree. Weigh them up: it is your decision.</div>' : ''}${more ? `<button class="btn sm block" style="margin:4px 0 8px" data-act="scoutPlayer" data-id="${p.id}">🔭 Ask another scout for a second opinion</button>` : ''}`;
+  };
+  // What he would cost, three ways, and what he would do for the side
+  UI.pricesBlock = function (p, v, isFree) {
+    const pr = FM.Scouting.prices(p, v.k);
+    const need = v.need;
+    const needLine = need
+      ? need.helps
+        ? `<div class="phrase"><span>🧱</span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${p.pos} (${need.depth} of ${need.want})` : ''}</span></div>`
+        : `<div class="phrase"><span>🧱</span><span>Your <b>${p.pos}</b> spot is covered: he would not improve the eleven (${Math.round(need.delta)})</span></div>`
+      : '';
+    if (isFree || !pr || !p.clubId)
+      return `${needLine}<div class="row small" style="margin-top:10px"><span class="grow muted">${isFree ? 'Free agent — wants' : 'Estimated fee'}</span><b>${isFree ? U.money(FM.Transfers.wageDemand(p, club())) + '/wk' : v.fee != null ? '~' + U.money(v.fee) : '?'}</b></div>`;
+    const row = (l, val, note) =>
+      `<div class="row small" style="margin-top:6px"><span class="grow muted">${l}${note ? `<div class="tiny dim">${note}</div>` : ''}</span><b>${val}</b></div>`;
+    const gap = pr.analytics ? Math.round((pr.agent / pr.analytics - 1) * 100) : null;
+    return `${needLine}<div class="h3" style="margin-top:12px">What he would cost</div>
+      ${row('Analytics: his worth', pr.analytics ? `~${U.money(pr.analytics)}` : '?', pr.analytics ? 'from his output, age and potential' : 'needs an analytics department (level 1)')}
+      ${row('The seller wants', `~${U.money(pr.agent)}`, gap != null ? `${gap >= 0 ? gap + '% above' : -gap + '% below'} the analytics estimate` : '')}
+      ${row('Sporting director: could get it done for', `~${U.money(pr.director)}`, `${pr.directorKnows === 'sure' ? 'he is sure' : pr.directorKnows === 'fairly sure' ? 'he is fairly sure' : 'he is guessing'}`)}
+      <div class="tiny dim" style="margin-top:6px">Three views of one price: which to believe is your decision.</div>`;
+  };
   UI.reportCard = function (p, v) {
     const s = S();
     const reg = FM.Scouting.region(p);
@@ -32,7 +70,7 @@
     const loanT = p.clubId && !p.loan ? FM.Transfers.loanTerms(p) : null;
     return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">🔭 Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v.rec)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
       <div class="h2" style="margin:12px 0 4px">“${esc(v.verdict)}”</div>
-      ${v.quote ? `<div class="q" style="margin:8px 0;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13.5px;border-left:3px solid var(--acc2);font-style:italic">${esc(v.quote)}</div>` : ''}
+      ${UI.opinionsBlock(p, v)}
       ${v.strengths.map((t) => `<div class="phrase"><span>✅</span><span>${esc(t)}</span></div>`).join('')}
       ${v.weaknesses.map((t) => `<div class="phrase"><span>⚠️</span><span>${esc(t)}</span></div>`).join('')}
       ${v.k < 25 ? '<div class="lock">🔒 Strengths & weaknesses — needs more scouting</div>' : ''}
@@ -49,7 +87,7 @@
       ${!v.own && FM.Scouting.nextRung(v.k) ? `<div class="tiny dim" style="margin-top:6px">🔭 ${Math.round(v.k)}% known · at ${FM.Scouting.nextRung(v.k)[0]}%: ${esc(FM.Scouting.nextRung(v.k)[1])}</div>` : ''}
       <div class="phrase"><span>📈</span><span>Potential confidence: <b>${v.confidence}</b></span></div>
       ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">📊 ${esc(v.moneyball)}</div>` : ''}
-      <div class="row small" style="margin-top:10px"><span class="grow muted">${isFree ? 'Free agent — wants' : 'Estimated fee'}</span><b>${isFree ? U.money(FM.Transfers.wageDemand(p, club())) + '/wk' : v.fee != null ? '~' + U.money(v.fee) : '?'}</b></div>
+      ${UI.pricesBlock(p, v, isFree)}
       ${loanT && loanT.available ? `<div class="row small" style="margin-top:4px"><span class="grow muted">Loan possible</span><b>~${Math.round(Math.min(1, loanT.share) * 100)}% of wages</b></div>` : ''}
       <div class="row" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">🔭 Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}">⚖️ Compare</button>${UI.trialButton(p)}${p.loan ? '' : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div></div>`;
   };
