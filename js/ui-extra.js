@@ -1433,6 +1433,7 @@
     SA: 'South American Championship',
     AF: 'Africa Nations Trophy',
     AS: 'Asia-Pacific Nations Cup',
+    CT: 'Continental Champions Trophy',
   };
   const resultRow = (g, focus) => {
     const h = T(g.h),
@@ -1452,7 +1453,7 @@
     const called = new Set(own.filter((p) => FM.Intl.squad(FM.Intl.nationOf(p)).includes(p)).map((p) => p.id));
     const ranked = FM.Intl.ranked();
     const history = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
-    return `<div class="card"><div class="row"><span style="font-size:26px">🌍</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
+    return `<div class="card"><div class="row"><span style="font-size:26px">🌍</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
       <div class="sec"><div class="h3">Your internationals</div><span class="dim small">${called.size} in current squads</span></div>
       <div class="card flat list" style="padding:4px 12px">${
         mine.length

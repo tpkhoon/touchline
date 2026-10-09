@@ -1662,6 +1662,18 @@
       });
     }
     S.relTies = null;
+    // the European knockout cups: the domestic cup winners, and the clubs just below the Trophy's places
+    for (const d of D.EURO_CUPS)
+      if (d.feeders)
+        for (const comp of W.leagues()) {
+          const k = d.feeders[comp.id];
+          if (!k) continue;
+          const table = (entry.comps[comp.id] && entry.comps[comp.id].table) || [];
+          const ids = table.map((r) => r.id);
+          const from = FM.Cups.skipFor(comp.id, d);
+          qualified[d.id] = (qualified[d.id] || []).concat(ids.slice(from, from + k));
+        }
+    qualified.HC = FM.Cups.holdersFor(qualified, entry);
     S.qualified = qualified;
     entry.qualified = qualified;
     entry.cups = {};

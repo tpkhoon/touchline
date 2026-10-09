@@ -2692,6 +2692,36 @@
     ['CUPPHI', 'PHI', 'Filipino Cup', 'PHIC', { neutral: [2] }],
     ['CUPRSA', 'RSA', 'South African National Cup', 'RSAC', { neutral: [2] }],
   ];
+  // European knockout cups outside the main continental ladder, played as single matches on days of their own (the same
+  // knockout machinery as a domestic cup, with entrants chosen by rule):
+  //   holders: the domestic cup winners of every nation (a club that also won its league hands the place to the cup's
+  //            runner-up), the structure of the Cup Winners' Cup
+  //   summer:  the clubs just below the European places, in the first rounds of the season; the two finalists take the last
+  //            places in the European Trophy, the structure of the Intertoto Cup
+  // feeders: [league, places] for the summer cup, counted after the places every cup above it takes
+  FM.D.EURO_CUPS = [
+    {
+      id: 'HC',
+      kind: 'holders',
+      name: "European Holders' Cup",
+      short: 'EHC',
+      prize: 2e6,
+      opts: { legs: [4], neutral: [2] }, // two-legged semi-finals, a neutral final
+    },
+    {
+      id: 'SM',
+      kind: 'summer',
+      region: 'Europe',
+      tier: 5, // below the Trophy and the regional cups: its places come after theirs
+      name: 'European Summer Cup',
+      short: 'ESC',
+      prize: 1e6,
+      opts: { neutral: [2] },
+      feeders: { D1: 1, ES1: 1, DE1: 1, IT1: 1, FR1: 1, PT1: 1, NL1: 1, BE1: 1 },
+      places: 2, // finalists who take a European Trophy place
+      takes: 'UC',
+    },
+  ];
   // Club World Cup: last season's continental finalists (winners only from Africa and North America)
   // [competition, 0 = winner / 1 = runner-up], in seed order
   FM.D.CWC_SEEDS = [

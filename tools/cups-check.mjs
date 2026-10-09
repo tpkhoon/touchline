@@ -28,7 +28,9 @@ Sea.init();
 W.takeCharge(Object.values(FM.S.clubs).find((c) => c.comp === 'D1' && c.rep < 75).id, 'Test Manager');
 W.goUnemployed('test');
 
-const NEW = ['N2', 'AA', 'CT', 'NR'];
+const NEW = ['N2', 'AA', 'CT', 'NR', 'HC', 'SM'];
+// (the European knockout cups: the Holders' Cup takes each nation's cup winner, the Summer Cup eight clubs)
+const WANT = { HC: [12, 24], SM: [8, 8] };
 const report = (label) => {
   for (const id of NEW) {
     const c = FM.S.comps[id];
@@ -40,16 +42,19 @@ const report = (label) => {
       `${label} ${c.name}: ${(c.clubs || []).length} clubs, ${(c.groups || []).length} groups`,
       JSON.stringify(nats),
     );
-    check(
-      [8, 16].includes((c.clubs || []).length),
-      `${label}: ${id} has ${(c.clubs || []).length} entrants (want 8 or 16)`,
-    );
-    const seen = new Set();
-    for (const other of W.continentals()) {
-      if (other.id === id) continue;
-      for (const x of c.clubs || []) if ((other.clubs || []).includes(x)) seen.add(x);
+    const n = (c.clubs || []).length,
+      want = WANT[id];
+    check(want ? n >= want[0] && n <= want[1] : [8, 16].includes(n), `${label}: ${id} has ${n} entrants`);
+    check(n === new Set(c.clubs).size, `${label}: ${id} has a club twice`);
+    // (the continental cups share no club; the Holders' Cup clubs may also be in the Shield or the Trophy)
+    if (id !== 'HC' && id !== 'SM') {
+      const seen = new Set();
+      for (const other of W.continentals()) {
+        if (other.id === id) continue;
+        for (const x of c.clubs || []) if ((other.clubs || []).includes(x)) seen.add(x);
+      }
+      check(!seen.size, `${label}: ${id} shares ${seen.size} clubs with another continental cup`);
     }
-    check(!seen.size, `${label}: ${id} shares ${seen.size} clubs with another continental cup`);
   }
 };
 report('start');
@@ -62,6 +67,19 @@ for (let s = 0; s < SEASONS; s++) {
     for (const id of NEW) {
       const c = FM.S.comps[id];
       if (c && c.winner && !won[id]) won[id] = FM.S.clubs[c.winner].name;
+    }
+    // the Summer Cup's two finalists have the Trophy places it promised (its final comes before the group stage)
+    {
+      const sm = FM.S.comps.SM,
+        uc = FM.S.comps.UC;
+      if (sm && sm.winner && uc && !checked.has('SM' + year)) {
+        checked.add('SM' + year);
+        check(
+          uc.clubs.includes(sm.winner) && uc.clubs.includes(sm.runnerUp),
+          `season ${s + 1}: the Summer Cup finalists are not in the Trophy`,
+        );
+        check(uc.clubs.length === new Set(uc.clubs).size, `season ${s + 1}: the Trophy has a club twice`);
+      }
     }
     // every group winner (and with up to four groups, every runner-up) reaches the quarter-finals or semi-finals
     for (const c of W.continentals()) {

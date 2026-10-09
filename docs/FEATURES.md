@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-342 features are playable in the web prototype today. Build = the build that added it.
+345 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -371,10 +371,13 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Carpathian Cup: a regional cup of sixteen clubs, four each from Czechia, Poland, Hungary and Austria, in four groups then knockouts | Playtest round 11 |
 | Competitions | Northern League Cup: a regional cup for Norway (4 clubs) and Denmark (4); a group stage then a final each season | Playtest round 11 |
 | Competitions | More than four groups (the Asian cup's five): the group winners and the best runners-up make the quarter-finals, the best seed meeting the eighth and never a club from its own group | Playtest round 11 |
+| Competitions | European Summer Cup: eight clubs just below the European places (the next place after the Trophy's in England, Spain, Germany, Italy, France, Portugal, the Netherlands and Belgium) play three knockout rounds in the first weeks of the season, and the two finalists take the last European Trophy places | Playtest round 11 |
+| Competitions | European Holders' Cup: each European nation's domestic cup winner (or its best club without another European place where there is no cup; the cup runner-up when the winner is already in the European Champions Cup), 21 clubs in knockouts on six days of their own, semi-finals over two legs and a neutral final | Playtest round 11 |
+| International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
 
 ## Yet to be added
 
-57 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+54 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -421,9 +424,6 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | World | Legacy screen for long saves: a "your football world" history of club rise and fall, league-structure changes (new leagues, mergers, a new continental competition), generational waves by nation, dynasties and collapses. It reads from the season archive, adds a timeline of structural changes and can be shared as a card. Already in: club season-by-season history. | Living world |
 | World | Dynasties, decline and surprise rises driven by club dynamics rather than match randomness: fan base, finances, infrastructure and ownership drift with results, so great clubs fade and small ones climb. Bankruptcies, surprise promotions and tactical trends feed the world news, and the champion-from-top-three rate stays inside the real 70â€“90% range. Already in: takeovers with causes and the 30-year stability test. | Living world |
 | Presentation | Newspaper and database look: front pages, match programmes, a transfer-site style market and scouting reports as a shared set of components that reskin existing screens. The media outlets already have voices; this is the visual layer, with the club-colour accent and readable at phone width. | Alpha 2 |
-| Competitions | European Summer Cup: a summer qualifying cup (the structure of the Intertoto Cup) for the clubs that just miss Europe, whose winners take the last European Trophy places; runs in every modern save, with a rules switch to turn it off | Alpha 2 |
-| Competitions | European Holders' Cup: a European knockout cup (the structure of the Cup Winners' Cup) for each country's domestic cup winners, with the cup runner-up taking the place when one club wins both; runs in the modern game, with domestic cup winners no longer taking a European Shield place, and a rules switch to turn it off | Alpha 2 |
-| International | Continental Champions Trophy: a national-team tournament (the structure of the Confederations Cup) between the continental champions, the world champions and the host, played in the year before the World Cup; runs in the modern game, with a rules switch to turn it off | Alpha 2 |
 | Platform | Compile and test the native apps on Android and iOS devices; app icons and splash screens | Mobile readiness |
 | Match | Live passing network and heat map during the match | Beta |
 | Performance | Profile and optimise simulation for 30+ full leagues | Beta |

@@ -35,6 +35,7 @@
         ],
       },
     ],
+    confed: [{ id: 'CT', name: 'Continental Champions Trophy', size: 8, pools: [], confed: true }],
     continental: [
       { id: 'EC', name: 'UEFA European Championship', size: 8, pools: [[['EUR'], 8]] },
       { id: 'SA', name: 'Copa América', size: 4, pools: [[['SAM'], 4]] },
@@ -48,6 +49,7 @@
     SA: 'Copa América',
     AF: 'Africa Cup of Nations',
     AS: 'Asia-Pacific Nations Cup',
+    CT: 'Continental Champions Trophy',
   }; // Asia and North America share one tournament here, so it keeps its own name
 
   // Invitational tournaments in the international windows: a host and three invited nations play semi-finals on the first day
@@ -207,7 +209,13 @@
   I.ranked = () => Object.values(S().nteams).sort((a, b) => b.coef - a.coef);
 
   // ---------- Calendar ----------
-  I.tournamentFor = (year) => (year % 4 === 2 ? 'world' : year % 4 === 0 ? 'continental' : null);
+  // A World Championship every fourth year, continental championships two years on, and in the year before each World
+  // Championship the Continental Champions Trophy (the structure of the Confederations Cup: the continental champions, the
+  // world champions and a host)
+  I.tournamentFor = (year) =>
+    year % 4 === 2 ? 'world' : year % 4 === 0 ? 'continental' : year % 4 === 1 ? 'confed' : null;
+  I.kindName = (kind) =>
+    ({ world: 'World Cup', continental: 'continental championships', confed: 'Continental Champions Trophy' })[kind];
   I.nextTournament = function () {
     for (let y = S().year; y < S().year + 4; y++) {
       const k = I.tournamentFor(y);
@@ -228,7 +236,7 @@
     s.intlDay = null;
     s.intlBreak = [];
     const kind = I.tournamentFor(s.year);
-    if (kind) {
+    if (kind && kind !== 'confed') {
       const q = { kind, year: s.year, groups: [], direct: {} };
       I.TOURNS[kind].forEach((tn) =>
         tn.pools.forEach(([regions, slots], pi) => {
@@ -270,6 +278,27 @@
     I.topUp();
     I.allegianceTick();
     I.refreshJobs();
+  };
+
+  // The Continental Champions Trophy's invitations: the champions of the last continental championships, the world champions and
+  // a host from the better nations (the rest of the eight are filled by ranking). A continent without a champion yet sends its
+  // best-ranked nation.
+  I.CONFED_FROM = { EC: ['EUR'], SA: ['SAM'], AF: ['AFR'], AS: ['ASIA', 'NAM'] };
+  I.confedTeams = function () {
+    const s = S(),
+      won = {},
+      ids = [];
+    for (let i = (s.archive || []).length - 1; i >= 0; i--)
+      for (const r of s.archive[i].intl || []) if (r.winner && s.nteams[r.winner] && !won[r.id]) won[r.id] = r.winner;
+    const add = (id) => id && !ids.includes(id) && ids.push(id);
+    for (const [tid, regions] of Object.entries(I.CONFED_FROM))
+      add(won[tid] || (I.ranked().find((t) => regions.includes(I.region(t.code))) || {}).id);
+    add(won.WC || I.ranked()[0].id);
+    const hosts = I.ranked()
+      .slice(0, 16)
+      .filter((t) => !ids.includes(t.id));
+    if (hosts.length) add(U.pick(hosts).id);
+    return ids;
   };
 
   // The season's invitational: the host and three guests from different parts of the world, none of whom has a qualifier on
@@ -472,10 +501,14 @@
     const s = S(),
       kind = I.tournamentFor(s.year);
     s.tourns = (I.TOURNS[kind] || []).map((tn) => {
-      let teams = I.qualifiedFor(tn.id).map(T);
+      let teams = (tn.confed ? I.confedTeams() : I.qualifiedFor(tn.id)).map(T);
       if (teams.length < tn.size)
         teams = teams
-          .concat(I.ranked().filter((t) => !teams.includes(t) && tn.pools.some(([r]) => r.includes(I.region(t.code)))))
+          .concat(
+            I.ranked().filter(
+              (t) => !teams.includes(t) && (tn.confed || tn.pools.some(([r]) => r.includes(I.region(t.code)))),
+            ),
+          )
           .slice(0, tn.size);
       teams = teams.sort((a, b) => b.coef - a.coef).slice(0, tn.size);
       const G = Math.max(1, teams.length / 4);
@@ -503,7 +536,7 @@
     });
     // National team job: failing to qualify ends it
     const u = s.user;
-    if (u && u.nation && !s.tourns.some((t) => t.teams.includes(u.nation)))
+    if (u && u.nation && kind !== 'confed' && !s.tourns.some((t) => t.teams.includes(u.nation)))
       I.sackNational(`${T(u.nation).name} failed to qualify for the ${s.tourns.map((t) => t.name).join(' / ')}.`);
     FM.News.add({
       type: 'world',
@@ -709,7 +742,7 @@
     s.intlSeason.push(res);
     FM.Stories.intlTournament(res, champ);
     const u = s.user;
-    if (u && u.nation && t.teams.includes(u.nation)) I.judgeTournament(t);
+    if (u && u.nation && t.id !== 'CT' && t.teams.includes(u.nation)) I.judgeTournament(t); // (the Trophy is an invitation: no verdict)
   };
   I.seasonResults = () => (S().intlSeason || []).slice();
   I.seasonEnd = function () {
@@ -787,7 +820,7 @@
     FM.Stories.share({
       kicker: 'NATIONAL TEAM',
       title: `${u.name} named ${t.name} manager`,
-      sub: `${club ? `A dual role alongside ${club.name}.` : 'A full-time international job while you wait for a club.'} ${I.nextTournament() ? `Next up: the ${I.nextTournament().kind === 'world' ? 'World Cup' : 'continental championships'} in ${I.nextTournament().year}.` : ''}`,
+      sub: `${club ? `A dual role alongside ${club.name}.` : 'A full-time international job while you wait for a club.'} ${I.nextTournament() ? `Next up: the ${I.kindName(I.nextTournament().kind)} in ${I.nextTournament().year}.` : ''}`,
       big: D.NATIONS[t.code].flag,
       clubId: club ? club.id : undefined, // (out of work, there is no club to name)
     });

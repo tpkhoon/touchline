@@ -1825,6 +1825,8 @@
 
   W.leagues = () => Object.values(FM.S.comps).filter((c) => c.type === 'league');
   W.cups = () => Object.values(FM.S.comps).filter((c) => c.type === 'cup');
+  // the domestic cups: the European knockout cups (Holders', Summer) have days of their own
+  W.domesticCups = () => W.cups().filter((c) => !c.euro);
   W.continentals = () => Object.values(FM.S.comps).filter((c) => c.type === 'continental');
 
   W.worldCups = () => Object.values(FM.S.comps).filter((c) => c.type === 'world');
@@ -1883,7 +1885,7 @@
       CWC = at(D.CWC_AFTER),
       INTL = at(D.INTL_AFTER);
     // Domestic cup days: enough rounds for the biggest cup (byes even out the first round), spread through the season
-    const cupDays = Math.max(Object.keys(D.CUP_AFTER).length, ...W.cups().map((c) => FM.Cups.daysNeeded(c)));
+    const cupDays = Math.max(Object.keys(D.CUP_AFTER).length, ...W.domesticCups().map((c) => FM.Cups.daysNeeded(c)));
     const CUP = {},
       c0 = W.scaleRound(1),
       c1 = W.scaleRound(19);
@@ -1900,6 +1902,21 @@
       while (RC[r]) r++;
       RC[r] = true;
     }
+    // The European knockout cups: the Summer Cup in the first rounds (its final before the Trophy's group stage begins), the
+    // Holders' Cup spread through the season
+    const EURO = {};
+    for (const c of W.cups().filter((x) => x.euro)) {
+      const n = FM.Cups.daysNeeded(c);
+      const map = {};
+      for (let i = 0; i < n; i++)
+        map[c.euro === 'summer' ? Math.min(i, 2) : Math.round(3 + (i * 17) / Math.max(1, n - 1))] = c.id;
+      // (two days that land on the same round follow one another)
+      for (const [k, id] of Object.entries(map)) {
+        let r = W.scaleRound(+k);
+        while ((EURO[r] || []).includes(id)) r++;
+        (EURO[r] = EURO[r] || []).push(id);
+      }
+    }
     const legs = !!S.rules.twoLegs;
     const mid = W.leagues().filter((c) => W.koType(c) && c.torneos);
     const cal = [];
@@ -1909,6 +1926,7 @@
       // the first tournament's knockouts follow its last round
       if (mid.some((c) => c.onDay[r] === c.torneoHalf - 1))
         for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 0 });
+      for (const id of EURO[r] || []) cal.push({ type: 'cup', comps: [id] });
       let st = CC[r];
       if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF)1$/, '$1');
       if (st && W.continentals().length) cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: st });
@@ -1917,7 +1935,7 @@
         cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: 'F2' });
       if (CWC[r] && W.worldCups().length)
         cal.push({ type: 'cup', comps: W.worldCups().map((c) => c.id), stage: CWC[r], world: true });
-      if (CUP[r] && W.cups().length) cal.push({ type: 'cup', comps: W.cups().map((c) => c.id) });
+      if (CUP[r] && W.domesticCups().length) cal.push({ type: 'cup', comps: W.domesticCups().map((c) => c.id) });
       if (RC[r]) cal.push({ type: 'cup', regional: true, comps: FM.Regional.regionals().map((c) => c.id) });
       if (INTL[r] && S.nteams) INTL[r].forEach((tag) => cal.push({ type: 'intl', tag }));
     }
@@ -2000,6 +2018,7 @@
     D.DOMESTIC_CUPS.forEach(([id, nat, name, short, opts]) => FM.Cups.addDomestic(S, id, nat, name, short, opts));
     S.comps.FR = { id: 'FR', type: 'friendly', name: 'Pre-season friendly', short: 'FR', clubs: [] };
     D.CONTINENTALS.forEach((c) => (S.comps[c.id] = { ...c, type: 'continental', clubs: [] }));
+    D.EURO_CUPS.forEach((d) => FM.Cups.addEuro(S, d));
     S.comps.CWC = { id: 'CWC', type: 'world', name: 'FIFA Club World Cup', short: 'CWC', clubs: [], prize: 1e7 };
 
     const mkClub = (row, compId, nat, sim) => {

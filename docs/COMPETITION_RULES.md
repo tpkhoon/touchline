@@ -140,6 +140,15 @@ home draw), the finals at a neutral ground unless noted.
 | Copa Argentina | Every tie at a neutral ground |
 | U.S. Open Cup | Final at the better club's ground |
 
+## Continental Champions Trophy
+
+- Played in the summer before each World Cup (one season in four), in the same calendar days as the other summer finals.
+  Eight nations: the winners of the last continental championships (a continent that has not had one sends its best-ranked
+  nation), the world champions, a host picked from the sixteen best-ranked nations, and the best-ranked others to make up the
+  eight. Two groups of four, semi-finals and a final at neutral grounds; ties go to penalties.
+- It is an invitation: a national team manager whose nation is not invited is not sacked for missing it, and one who plays
+  is not judged on the result.
+
 ## Continental cups
 
 All have groups of four then knockouts, as the game's scaled-down format.
@@ -153,6 +162,8 @@ All have groups of four then knockouts, as the game's scaled-down format.
 | CAF Champions League, CAF Confederation Cup | Two legs | Two legs |
 | CONCACAF Champions Cup, North American Shield | Two legs | Two legs |
 | Adriatic and Aegean Cup, Carpathian Cup, Northern League Cup (regional cups) | Two legs | One match, neutral |
+| European Holders' Cup (a knockout from the first round) | Semi-finals over two legs, other rounds single matches | One match, neutral |
+| European Summer Cup | Single matches | One match, neutral |
 
 The Club World Cup is single matches at neutral grounds.
 
@@ -166,6 +177,8 @@ Entrants are the places just below the main cups in each league; a club is never
 | Adriatic and Aegean Cup | Serbia 3, Greece 2, Turkey 3 (after their European places); 8 clubs in two groups |
 | Carpathian Cup | Czechia, Poland, Hungary and Austria 4 each; 16 clubs in four groups |
 | Northern League Cup | Norway 4, Denmark 4; 8 clubs in two groups |
+| European Holders' Cup | One club from each European nation: its domestic cup winner, or the runner-up when the winner is in the European Champions Cup; a nation with no domestic cup sends its best club with no other European place. Knockout from the first round (byes for the top seeds) |
+| European Summer Cup | The next place after the European Trophy's in England, Spain, Germany, Italy, France, Portugal, the Netherlands and Belgium; 8 clubs in a knockout before the Trophy's group stage. The two finalists take the places of the Trophy's lowest-ranked entrants (never the user's club) |
 
 ## Squad registration (real leagues; `js/registration.js`)
 

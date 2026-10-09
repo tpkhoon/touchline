@@ -44,9 +44,12 @@
     );
   Cu.setupSeason = function (qualified) {
     for (const c of W.cups()) {
-      c.clubs = Cu.entrants(c)
-        .sort((a, b) => b.rep - a.rep)
-        .map((x) => x.id);
+      // (the European knockout cups take their clubs after the continental cups have, below)
+      c.clubs = c.euro
+        ? []
+        : Cu.entrants(c)
+            .sort((a, b) => b.rep - a.rep)
+            .map((x) => x.id);
       c.rounds = [];
       c.winner = null;
       c.awards = null;
@@ -131,9 +134,110 @@
       c.runnerUp = null;
       c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.13)); // participation fee
     }
+    Cu.setupEuro(qualified);
     for (const c of W.worldCups()) Cu.setupWorld(c);
     FM.Regional.setupSeason(); // county cups and state championships
     Cu.licenceCheck();
+  };
+
+  // ---------- European knockout cups: the Holders' Cup and the Summer Cup ----------
+  const inContinental = () => new Set(W.continentals().flatMap((x) => x.clubs || []));
+  Cu.euroDef = (c) => D.EURO_CUPS.find((x) => x.id === c.id) || {};
+  // One club for each European nation: the Holders' Cup has an entrant from every nation with a top flight in Europe
+  Cu.euroNations = () => [
+    ...new Set(
+      D.LEAGUES.filter((l) => l.tier === 1 && ['EUR', 'ENG'].includes(D.NATIONS[l.nat].region)).map((l) => l.nat),
+    ),
+  ];
+  // The entrants a cup would have in the first season, before any cup has been won or table made
+  Cu.holdersFallback = function () {
+    const taken = inContinental();
+    return Cu.euroNations()
+      .map((nat) => {
+        const clubs = Object.values(S().clubs)
+          .filter((x) => x.nat === nat && x.comp && S().comps[x.comp] && S().comps[x.comp].tier === 1 && !x.parent)
+          .sort((a, b) => b.rep - a.rep);
+        return (clubs.find((x) => !taken.has(x.id)) || clubs[0] || {}).id;
+      })
+      .filter(Boolean);
+  };
+  Cu.summerFallback = function (def) {
+    const taken = inContinental(),
+      out = [];
+    for (const [id, n] of Object.entries(def.feeders || {})) {
+      const l = S().comps[id];
+      if (!l) continue;
+      out.push(
+        ...l.clubs
+          .filter((x) => !taken.has(x))
+          .sort((a, b) => rep(b) - rep(a))
+          .slice(0, n),
+      );
+    }
+    return out;
+  };
+  Cu.setupEuro = function (qualified) {
+    for (const c of W.cups().filter((x) => x.euro)) {
+      const def = Cu.euroDef(c);
+      let ids = ((qualified && qualified[c.id]) || []).filter((id) => S().clubs[id]);
+      if (!ids.length) ids = c.euro === 'holders' ? Cu.holdersFallback() : Cu.summerFallback(def);
+      c.clubs = [...new Set(ids)];
+      c.rounds = [];
+      c.winner = null;
+      c.runnerUp = null;
+      c.awards = null;
+      c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.1)); // an appearance fee
+    }
+  };
+  // Who the Holders' Cup takes at the end of a season: each nation's domestic cup winner, or the runner-up when the winner is
+  // already in the European Champions Cup (a club that wins both hands the place on); a nation with no domestic cup sends
+  // its best club that has no other European place
+  Cu.holdersFor = function (qualified, entry) {
+    const top = new Set(D.CONTINENTALS.filter((x) => !x.tier || x.tier === 1).flatMap((x) => qualified[x.id] || []));
+    const used = new Set(Object.values(qualified).flat());
+    return Cu.euroNations()
+      .map((nat) => {
+        const cup = W.cups().find((c) => !c.euro && c.nat === nat && c.winner);
+        if (cup) return top.has(cup.winner) && cup.runnerUp && !top.has(cup.runnerUp) ? cup.runnerUp : cup.winner;
+        const lg = W.leagues().find((l) => l.nat === nat && l.tier === 1),
+          table = (lg && entry.comps[lg.id] && entry.comps[lg.id].table) || [];
+        return (table.find((r) => !used.has(r.id)) || table[0] || {}).id;
+      })
+      .filter(Boolean);
+  };
+  // The Summer Cup's two finalists take the last places of the cup it feeds (the European Trophy), before its group stage
+  // has begun: the lowest-ranked entrants, never your own club, give way
+  Cu.summerPlaces = function (c) {
+    const def = Cu.euroDef(c),
+      uc = S().comps[def.takes];
+    if (!uc || !uc.groups || uc.groups.some((g) => g.fixtures.flat().some((f) => f.res))) return;
+    const incoming = [c.winner, c.runnerUp].slice(0, def.places || 1).filter((id) => id && !uc.clubs.includes(id));
+    const out = uc.clubs
+      .filter((id) => !W.isUser(id))
+      .sort((a, b) => rep(a) - rep(b))
+      .slice(0, incoming.length);
+    incoming.forEach((id, i) => {
+      Cu.swapEntrant(uc, out[i], id);
+      S().clubs[id].balance += uc.prize * 0.13;
+      FM.News.add({
+        type: W.isUser(id) ? 'club' : 'world',
+        title: `${S().clubs[id].name} take a ${uc.name} place`,
+        body: `${id === c.winner ? 'Winners' : 'Runners-up'} of the ${c.name}, ${S().clubs[id].name} join the ${uc.name} group stage in place of ${S().clubs[out[i]].name}.`,
+        clubId: id,
+      });
+    });
+  };
+  // One club takes another's place in a cup whose groups have not started: the draw, the table and the fixtures follow
+  Cu.swapEntrant = function (comp, oldId, newId) {
+    const sw = (x) => (x === oldId ? newId : x);
+    comp.clubs = comp.clubs.map(sw);
+    for (const g of comp.groups || []) {
+      if (!g.clubs.includes(oldId)) continue;
+      g.clubs = g.clubs.map(sw);
+      g.table[newId] = g.table[oldId];
+      delete g.table[oldId];
+      for (const f of g.fixtures.flat()) ((f.h = sw(f.h)), (f.a = sw(f.a)));
+    }
   };
 
   // How many of a league's clubs go to its main continental cup (the second-tier cup takes the next places)
@@ -144,8 +248,23 @@
   // Saves made before a competition existed get it (empty until the next season's draw)
   Cu.addDomestic = (s, id, nat, name, short, opts) =>
     (s.comps[id] = { id, type: 'cup', nat, name, short, clubs: [], prize: 3e6, opts: opts || {} });
+  // A European knockout cup (the Holders' Cup, the Summer Cup): a cup of its own with no nation, the entrants chosen by rule
+  Cu.addEuro = (s, d) =>
+    (s.comps[d.id] = {
+      id: d.id,
+      type: 'cup',
+      euro: d.kind,
+      nat: '',
+      region: 'Europe',
+      name: d.name,
+      short: d.short,
+      clubs: [],
+      prize: d.prize,
+      opts: d.opts || {},
+    });
   Cu.ensureContinentals = function (s) {
     FM.Regional.ensure(s);
+    for (const d of D.EURO_CUPS || []) if (!s.comps[d.id]) Cu.addEuro(s, d);
     for (const c of D.CONTINENTALS) if (!s.comps[c.id]) s.comps[c.id] = { ...c, type: 'continental', clubs: [] };
     for (const [id, nat, name, short, opts] of D.DOMESTIC_CUPS)
       if (!s.comps[id]) Cu.addDomestic(s, id, nat, name, short, opts);
@@ -154,7 +273,11 @@
   Cu.optsOf = (c) => c.opts || (D.DOMESTIC_CUPS.find((x) => x[0] === c.id) || [])[4] || {};
   // Calendar days a domestic cup needs: a round a day, two days for a two-legged one
   Cu.daysNeeded = (c) => {
-    const n = Math.max(2, Cu.entrants(c).length),
+    const def = c.euro && Cu.euroDef(c),
+      euroN =
+        def &&
+        (c.euro === 'holders' ? Cu.euroNations().length : Object.values(def.feeders || {}).reduce((t, k) => t + k, 0)),
+      n = Math.max(2, euroN || Cu.entrants(c).length),
       p = 2 ** Math.floor(Math.log2(n)),
       legs = (Cu.optsOf(c).legs || []).filter((k) => k <= p).length;
     return Math.log2(p) + (n === p ? 0 : 1) + legs;
@@ -590,6 +713,7 @@
     S().clubs[w].balance += Cu.purse(c, 4e5, c.prize * 0.25);
     if (fx.final) Cu.finish(c, w, l);
   };
+  // (the tail of Cu.finish below: a Summer Cup final hands out its European places)
 
   Cu.finish = function (c, w, l) {
     const club = S().clubs[w];
@@ -606,6 +730,7 @@
       S().user.rep = Math.min(99, S().user.rep + (c.type === 'regional' ? 1 : c.type === 'cup' ? 4 : 8));
       club.boardConf = Math.min(100, club.boardConf + 15);
     }
+    if (c.euro === 'summer') Cu.summerPlaces(c);
     if (c.type === 'regional' && !W.isUser(w)) return; // (another club's county cup is not news)
     FM.Stories.share({
       kicker:

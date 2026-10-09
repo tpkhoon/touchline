@@ -2421,10 +2421,11 @@
         return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🏅 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
       })
       .join('');
+    // (the European knockout cups, the Holders' and the Summer Cup, sit with the continental ones)
     const dom = W.cups()
-      .filter((c) => v === 'domestic' || (v === 'mine' && inIt(c)))
+      .filter((c) => (v === 'domestic' && !c.euro) || (v === 'continental' && c.euro) || (v === 'mine' && inIt(c)))
       .map((c) => {
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🏆 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.clubs.length} clubs · single-leg knockout · extra time & penalties</div>
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? '⭐' : '🏆'} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${c.clubs.length} clubs · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties</div>
         ${
           c.rounds
             .slice()
