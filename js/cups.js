@@ -86,8 +86,11 @@
           ),
         );
       }
-      const G = Math.max(1, Math.floor(entrants.length / 4));
-      c.clubs = entrants.slice(0, G * 4);
+      // (groups of four; three groups do not make a bracket, so the weakest four entrants wait for another year)
+      const raw = Math.floor(entrants.length / 4),
+        G = raw === 3 ? 2 : Math.max(1, raw);
+      // (more entrants than places: the weakest wait, whichever league they come from)
+      c.clubs = (entrants.length > G * 4 ? entrants.slice().sort((a, b) => rep(b) - rep(a)) : entrants).slice(0, G * 4);
       // Seeded draw: pots of G by reputation, one from each pot per group, avoiding same-nation clashes where possible
       const seeded = c.clubs.slice().sort((a, b) => rep(b) - rep(a));
       const groupsIds = [...Array(G)].map(() => []);

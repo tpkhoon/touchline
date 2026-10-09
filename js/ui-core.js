@@ -1249,6 +1249,14 @@
     }
     Object.assign(NG, { recs: [], lg: 'all', df: 'all', q: '' });
   };
+  // The rules a database sets (the points for a win, the substitutes, two-legged ties and away goals): the rest of a world's
+  // rules are each competition's real ones
+  UI._dbRules = (def) => {
+    const r = (def && def.rules) || {};
+    return Object.fromEntries(
+      ['win', 'subs', 'twoLegs', 'awayGoals'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
+    );
+  };
   UI._ng = () => NG;
   UI._ngDataChanged = ngDataChanged;
   UI.acts.ngDbPick = async () => {
@@ -1339,7 +1347,7 @@
       let built = false;
       if (NG.db && NG.db.ok) {
         try {
-          FM.DbImport.build(NG.db.def, { ...W.REAL_RULES, sims });
+          FM.DbImport.build(NG.db.def, { ...W.REAL_RULES, ...UI._dbRules(NG.db.def), sims });
           built = true;
         } catch (e) {
           console.warn(e);

@@ -81,13 +81,49 @@ check(!E.addPlayer(mkP(1, { attrs: flat(25) })).ok, 'attributes of 25 were accep
 check(!E.addPlayer(mkP(1, { pa: 20 })).ok, 'a potential below his ability was accepted');
 check(!E.addPlayer(mkP(1, { club: 'c_NOPE' })).ok, 'a player for a club that does not exist was accepted');
 for (let i = 0; i < 11; i++) check(E.addPlayer(mkP(i)).ok, 'a valid player was refused');
+// a club of the game's own taken out, and a league in a nation that had none
+const d3 = def.clubs.filter((c) => c.league === 'D3' && !c.parent && !/^c_ZZ/.test(c.id));
+const gone = d3[d3.length - 1].id;
+def.clubs = def.clubs.filter((c) => c.id !== gone);
+def.removeClubs.push(gone);
+const urus = Array.from({ length: 10 }, (_, i) => ({
+  ...mk('c_URU' + (i + 1), 'Montevideo ' + (i + 1), 'URU1'),
+  nat: 'URU',
+}));
+def.leagues.push({
+  id: 'URU1',
+  name: 'Uruguayan Test League',
+  short: 'URU',
+  nat: 'URU',
+  tier: 1,
+  sim: 'light',
+  repBand: [70, 45],
+  rules: { qualify: { to: 'CL', n: 1 } },
+});
+def.clubs.push(...urus);
 def.meta.players = 'replace';
+// a free agent, a manager, a renamed cup and the rules
+check(
+  E.addPlayer(mkP(20, { club: null, ln: 'Freeman', contract: def.meta.startYear + 1 })).ok,
+  'a free agent was refused',
+);
+def.managers.push({ club: mine, fn: 'Ivor', ln: 'Edit', nat: 'ENG', age: 50, ability: 18 });
+def.competitions = [{ id: 'CUPENG', name: 'Editor Test Cup', short: 'ETC', nat: null, type: 'cup' }];
+def.rules.win = 2;
+def.rules.subs = 3;
 const chk = DB.check(def);
+// refusing what would break a league
+{
+  const bad = JSON.parse(JSON.stringify(def));
+  const lg = bad.clubs.filter((c) => c.league === 'D4' && !c.parent);
+  for (const c of lg.slice(0, 20)) (bad.removeClubs.push(c.id), (bad.clubs = bad.clubs.filter((x) => x.id !== c.id)));
+  check(!DB.check(bad).ok, 'removing twenty clubs of a league of 24 was accepted');
+}
 check(chk.ok, 'the edited definition did not check: ' + chk.errors.join('; '));
 const patch = WD.patchOf(def);
 check(
-  patch.clubs.filter((c) => c.isNew).length === 2,
-  `expected two new clubs in the patch, got ${patch.clubs.filter((c) => c.isNew).length}`,
+  patch.clubs.filter((c) => c.isNew).length === 12,
+  `expected twelve new clubs in the patch, got ${patch.clubs.filter((c) => c.isNew).length}`,
 );
 check(
   patch.clubs.filter((c) => !c.isNew).length === 2,
@@ -101,7 +137,7 @@ check(
   FM.D.allClubRows().some((row) => row[0] === 'Alphaton'),
   'the staged data does not list the new club',
 );
-DB.build(def, { ...W.REAL_RULES });
+DB.build(def, { ...W.REAL_RULES, win: def.rules.win, subs: def.rules.subs });
 Sea.init();
 const S = FM.S;
 check(
@@ -141,6 +177,27 @@ check(
     'the made goalkeeper is missing',
   );
 }
+{
+  const fa = Object.values(S.players).filter((p) => p.defId && !p.clubId && p.ln === 'Freeman');
+  check(fa.length === 1 && fa[0].contract >= S.year, 'the made free agent is not in the world as one');
+  const st = S.staff[S.clubs[mine].manager];
+  check(
+    st && st.fn === 'Ivor' && st.ln === 'Edit' && st.ability === 18,
+    'the club has not got the manager made for it',
+  );
+  check(S.comps.CUPENG.name === 'Editor Test Cup' && S.comps.CUPENG.short === 'ETC', 'the renamed cup kept its name');
+  check(S.rules.win === 2 && S.rules.subs === 3, 'the rules the editor set are not those of the world');
+}
+check(!S.clubs[gone], 'the club taken out is still in the world');
+check(
+  S.clubs.c_URU1 && S.comps.URU1 && S.comps.URU1.clubs.length === 10,
+  'the new league in a new nation is not in the world',
+);
+check(W.squad('c_URU1').length >= 16, 'a club of the new league has no squad');
+check(
+  S.comps.CL.clubs.length === 8 && S.comps.CL.groups.length === 2,
+  `the South American cup has ${S.comps.CL.clubs.length} clubs in ${S.comps.CL.groups.length} groups with the new league's place`,
+);
 const n1 = S.comps.D1.clubs.length;
 console.log(`D1 has ${n1} clubs`);
 W.takeCharge(d1[2].id, 'Test Manager');
@@ -157,6 +214,15 @@ check(
   `clubs played ${t && [...new Set(t.map((x) => x.p))].join('/')} games, not ${(n1 - 1) * 2}`,
 );
 check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n1} to ${FM.S.comps.D1.clubs.length})`);
+{
+  const u = arch && arch.comps.URU1 && arch.comps.URU1.table;
+  check(u && u.length === 10 && u.every((r) => r.p === 18), 'the new league did not play its season');
+  const t3 = arch && arch.comps.D3 && arch.comps.D3.table;
+  check(
+    t3 && t3.length === 24 && t3.every((r) => r.p === 46),
+    'the third division (one out, one in) did not play 46 games each',
+  );
+}
 // a save keeps the database, and a plain new world afterwards has none of it
 check(FM.S.database && FM.S.database.name === 'Editor test', 'the world does not remember its database');
 DB.clear();

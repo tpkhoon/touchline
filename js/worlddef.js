@@ -44,6 +44,7 @@
     managers: [],
     competitions: [],
     rivals: [], // [club id, club id, derby name]
+    removeClubs: [], // ids of the game's own clubs the world does without
     history: { seasons: [] },
   });
 
@@ -185,8 +186,10 @@
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   // What a definition changes in the static data: { leagues: [...], clubs: [...], rivals: [...] }, empty when nothing
   WD.patchOf = function (def) {
-    const patch = { leagues: [], clubs: [], rivals: [] };
+    const patch = { leagues: [], clubs: [], rivals: [], removed: [] };
     const known = staticClubs();
+    const removed = new Set((def.removeClubs || []).map(codeOf).filter((code) => known.has(code)));
+    patch.removed = [...removed];
     const leagueIds = new Set(D.LEAGUES.map((l) => l.id));
     for (const l of def.leagues || []) {
       const cur = D.LEAGUES.find((x) => x.id === l.id);
@@ -214,6 +217,7 @@
     for (const c of def.clubs || []) {
       const code = codeOf(c.id),
         cur = known.get(code);
+      if (removed.has(code)) continue;
       const base = cur ? rowToClub(cur.row, cur.league) : null;
       const m = { ...(base || { city: c.name, identity: 'historic', stadium: {}, colors: [] }), ...c };
       m.stadium = { ...((base && base.stadium) || {}), ...(c.stadium || {}) };
@@ -266,7 +270,7 @@
     WD.useStatic(patch);
     return patch;
   };
-  WD.patchIsEmpty = (p) => !p || !(p.leagues.length || p.clubs.length || p.rivals.length);
+  WD.patchIsEmpty = (p) => !p || !(p.leagues.length || p.clubs.length || p.rivals.length || (p.removed || []).length);
 
   // Put a patch into the static data; returns what undoes it
   function applyPatch(patch) {
@@ -295,6 +299,12 @@
         if (l[k] != null) cur[k] = JSON.parse(JSON.stringify(l[k]));
     }
     const by = staticClubs();
+    for (const code of patch.removed || []) {
+      const where = by.get(code);
+      if (!where) continue;
+      D[where.league.clubs].splice(D[where.league.clubs].indexOf(where.row), 1);
+      by.delete(code);
+    }
     for (const c of patch.clubs) {
       const where = by.get(c.code);
       const target = D.LEAGUES.find((l) => l.id === c.league);
@@ -439,6 +449,27 @@
         errors.push(`league ${l.id}: tier must be 1–6`);
       if (l.repBand && !(Array.isArray(l.repBand) && l.repBand[0] >= l.repBand[1]))
         errors.push(`league ${l.id}: repBand must be [high, low]`);
+    }
+    // clubs of the game's own the definition takes out: nothing may still refer to them, and a league keeps enough clubs
+    const removed = new Set((def.removeClubs || []).filter((id) => staticClubIds.has(id)));
+    for (const id of removed) staticClubIds.delete(id);
+    for (const l of D.LEAGUES) {
+      const gone = (D[l.clubs] || []).filter((r) => removed.has('c_' + r[1])).length;
+      if (!gone) continue;
+      const left =
+        D[l.clubs].length -
+        gone +
+        def.clubs.filter((c) => c.league === l.id && !staticClubIds.has(c.id) && !removed.has(c.id)).length;
+      if (left < 8) errors.push(`league ${l.id}: ${left} clubs would be left; a league needs at least 8`);
+    }
+    for (const c of def.clubs)
+      if (c.parent && removed.has(c.parent)) errors.push(`club ${c.id}: its parent ${c.parent} is removed`);
+    for (const id of removed) {
+      const row = staticClubs().get(String(id).replace(/^c_/, ''));
+      if (row)
+        for (const r of D[row.league.clubs])
+          if (r[9] && 'c_' + r[9] === id && !removed.has('c_' + r[1]))
+            errors.push(`club ${id} is removed but ${r[0]} is its B team`);
     }
     const defClubs = seen(def.clubs, 'clubs');
     const clubs = new Set([...defClubs, ...staticClubIds]);
@@ -616,6 +647,7 @@
       W.refresh(p);
       p.wage = d.wage || W.wageFor(p);
       if (d.contract) p.contract = d.contract;
+      else if (!d.club) p.contract = S.year; // (a free agent, like the ones the world makes)
       p.defId = d.id;
       W.claimName(`${p.fn} ${p.ln}`);
       S.players[p.id] = p;
