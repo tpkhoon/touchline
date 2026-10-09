@@ -180,7 +180,7 @@
   T.endLoans = function () {
     const S = FM.S;
     Object.values(S.players).forEach((p) => {
-      if (!p.loan) return;
+      if (!p.loan || p.loan.military) return; // (the army's conscripts stay until their service ends: FM.Asia)
       // An option to buy: the borrower takes it up if he played most of their games
       const o = p.loan;
       if (o.buy && !W.ownPlayer(p) && S.clubs[p.clubId] && W.spell(p).apps >= 15 && S.clubs[p.clubId].budget >= o.buy) {

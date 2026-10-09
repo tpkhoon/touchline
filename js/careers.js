@@ -281,6 +281,7 @@
     const Y = Sea.YOUTH;
     const S = FM.S;
     Object.values(S.clubs).forEach((c) => {
+      if (W.army(c)) return; // the army's club has no academy
       const acad = c.facilities.academy || 2;
       const n = 2 + Math.floor(acad / 2) + (c.identity === 'youth' ? 1 : 0);
       const made = [];

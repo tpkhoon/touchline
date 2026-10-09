@@ -76,6 +76,16 @@ check(
 );
 check(service > 0, `Korean players went into military service (${service} in ${SEASONS} seasons)`);
 check(returned > 0, `and came back (${returned})`);
+const camp = FM.Asia.camp(),
+  csq = camp ? W.squad(camp.id) : [];
+check(
+  !!camp && csq.length >= 15 && csq.every((p) => p.service && p.loan && p.loan.military),
+  `the army's club (${camp ? camp.name : 'none'}) has only conscripts on loan from their own clubs (${csq.length} players)`,
+);
+check(
+  camp && csq.filter((p) => p.pos === 'GK').length >= 2 && csq.filter(W.available).length >= 14,
+  'and can field a side',
+);
 check(gulf > 0, `Saudi clubs hold famous names bought from elsewhere (${gulf} players of 76+ at 27 or older)`);
 check(drafted > 0, `Japan's graduate draft signed university players (${drafted})`);
 const kr = Object.values(FM.S.clubs).find((c) => c.comp === 'KR1');

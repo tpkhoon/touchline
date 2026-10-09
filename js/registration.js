@@ -295,6 +295,10 @@
   // A club's signing policy (Basque-only, Catalan-only): who it will not take
   R.policy = function (c, p) {
     const pol = c && c.policy;
+    if (pol && pol.military)
+      return p.service && p.clubId === c.id // (conscripts are called up by FM.Asia; nobody can sign for the army's club)
+        ? { ok: true }
+        : { ok: false, why: `${c.name} is the army's club: its squad is players doing their military service.` };
     if (!pol || p.heritage === pol.heritage) return { ok: true };
     return { ok: false, why: `${c.name} only signs ${pol.label} players: it fields players of ${pol.label} heritage.` };
   };

@@ -606,7 +606,7 @@
     ['RAP', 'RSL', 'Mapleford–Bearville Derby'],
     ['CIN', 'CLB', 'Goldenville–Cherryford Derby'],
     ['ATL', 'ORL', 'Lakegrove–Springridge Derby'],
-    ['GAM', 'CER', 'Matsta Derby'],
+    ['GAM', 'CER', 'Matsuhara Derby'],
     ['YFM', 'KAW', 'Akisaki–Shinsaki Derby'],
     ['FCT', 'TVE', 'Higashino Derby'],
     ['URA', 'KAS', 'Sakurata–Kitanarisaki Derby'],
@@ -853,16 +853,16 @@
     ['Shinmoto Verde', 'SFH', 'Shinmoto', '#50318F', '#FFFFFF', 'youth', 63, 'Saimoto Park', 28520],
     ['Shinsaki Fiore', 'KAW', 'Shinsaki', '#1E90FF', '#000000', 'historic', 62, 'Shinsaki Athletic Stadium', 26827],
     ['Akisaki Rayo', 'YFM', 'Akisaki', '#0033A0', '#FFFFFF', 'historic', 61, 'Takeyama Park', 72327],
-    ['FC Matsta', 'GAM', 'Matsta', '#1A3D8F', '#000000', 'historic', 60, 'Matsta Sports Complex', 39694],
+    ['FC Matsuhara', 'GAM', 'Matsuhara', '#1A3D8F', '#000000', 'historic', 60, 'Matsuhara Sports Complex', 39694],
     ['Asahama Albatros', 'MAC', 'Asahama', '#002E6E', '#C8A200', 'oil', 60, 'Asahama Sports Complex', 15489],
     ['Higashino City', 'FCT', 'Higashino', '#0033A0', '#E60012', 'fan', 60, 'Higashino Athletic Stadium', 49970],
     ['Nagakami Verde', 'KSW', 'Nagakami', '#FFF000', '#000000', 'selling', 58, 'Nagakami Athletic Stadium', 15109],
     ['Fujimori City', 'NAG', 'Fujimori', '#D6000F', '#F9A61A', 'fan', 58, 'Inasaki Arena', 44380],
-    ['Matsta Cometa', 'CER', 'Matsta', '#EC6A9E', '#0A1F5C', 'historic', 58, 'Matsura Stadium', 24481],
+    ['Matsuhara Cometa', 'CER', 'Matsuhara', '#EC6A9E', '#0A1F5C', 'historic', 58, 'Matsura Stadium', 24481],
     ['Kitaokaura Kingfishers', 'AVI', 'Kitaokaura', '#1C1C7C', '#AAAAAA', 'youth', 56, 'Haruura Arena', 21562],
     ['Hokuno Stella', 'KYO', 'Hokuno', '#6A1B9A', '#FFFFFF', 'fan', 56, 'Kawahara Arena', 21600],
     ['Okaura Sevens', 'NII', 'Okaura', '#FF6600', '#003DA5', 'youth', 55, 'Narizawa Arena', 42300],
-    ['Matszawa Stella', 'SBM', 'Matszawa', '#8CC63F', '#003DA5', 'youth', 55, 'Matszawa Sports Complex', 15380],
+    ['Matsuzawa Stella', 'SBM', 'Matsuzawa', '#8CC63F', '#003DA5', 'youth', 55, 'Matsuzawa Sports Complex', 15380],
     ['Higashino Sport Club', 'TVE', 'Higashino', '#00843D', '#FFFFFF', 'fan', 55, 'Kawamoto Arena', 49970],
     ['Matsaki City', 'SHI', 'Matsaki', '#FF8200', '#003DA5', 'fan', 55, 'Saita Stadium', 19594],
     ['Nagano Aurora', 'OKA', 'Nagano', '#9E1B32', '#FFFFFF', 'fan', 53, 'Nagaura Arena', 15479],
@@ -1300,90 +1300,200 @@
     ['Al Khalid', 'JED', 'Yanik', '#0057B8', '#CE1126', 'oil', 40, 'Majuf Arena', 10000],
   ];
   FM.D.CLUBS_SG1 = [
-    ['Kalir Rovers', 'LCS', 'Kalir', '#00AEEF', '#FFFFFF', 'oil', 46, 'Tampines Arena', 6000],
-    ['Bisris International', 'TAM', 'Bisris', '#FFD100', '#E30613', 'historic', 44, 'Chopak Stadium', 5000],
-    ['Kalir FC', 'ANS', 'Kalir', '#F26522', '#FFFFFF', 'youth', 42, 'Hanwang Arena', 2700],
-    ['Kalhun FC', 'GEY', 'Kalhun', '#D2232A', '#006A4E', 'fan', 40, 'Chopines Stadium', 3000],
-    ['Lion Choris', 'BKS', 'Choris', '#E30613', '#000000', 'historic', 38, 'Tuasang Arena', 3900],
-    ['Kalris United', 'HOG', 'Kalris', '#F26522', '#0033A0', 'fan', 38, 'Tuaskang Arena', 3500],
-    ['Clahun International', 'TPU', 'Clahun', '#ED1C24', '#FFFFFF', 'historic', 37, 'Yisang Arena', 2700],
-    ['Sengkang Warriors', 'WAR', 'Sengkang', '#1F3A93', '#FFFFFF', 'fan', 36, 'Yisbawang Stadium', 4000],
-    ['Lion Sengkang', 'WWL', 'Sengkang', '#F26522', '#000000', 'fan', 35, 'Bisngol Stadium', 4300],
-    ['Semok Rovers', 'YLI', 'Kalir', '#E30613', '#FFFFFF', 'youth', 34, 'Pasok Arena', 6000],
+    ['Bandar Mawar Rovers', 'LCS', 'Bandar Mawar', '#00AEEF', '#FFFFFF', 'oil', 46, 'Pasir Lintang Arena', 6000],
+    [
+      'Taman Jerangau United',
+      'TAM',
+      'Taman Jerangau',
+      '#FFD100',
+      '#E30613',
+      'historic',
+      44,
+      'Taman Jerangau Sports Hub',
+      5000,
+    ],
+    ['Bandar Mawar FC', 'ANS', 'Bandar Mawar', '#F26522', '#FFFFFF', 'youth', 42, 'Kampong Temasek Arena', 2700],
+    ['Bandar Asau FC', 'GEY', 'Bandar Asau', '#D2232A', '#006A4E', 'fan', 40, 'Teluk Lintang Stadium', 3000],
+    ['Lion Teluk Jerangau', 'BKS', 'Teluk Jerangau', '#E30613', '#000000', 'historic', 38, 'Jalan Kenanga Arena', 3900],
+    ['Kampong Kenanga United', 'HOG', 'Kampong Kenanga', '#F26522', '#0033A0', 'fan', 38, 'Jalan Rasau Arena', 3500],
+    [
+      'Taman Rasau International',
+      'TPU',
+      'Taman Rasau',
+      '#ED1C24',
+      '#FFFFFF',
+      'historic',
+      37,
+      'Bukit Kenanga Arena',
+      2700,
+    ],
+    ['Teluk Selat Warriors', 'WAR', 'Teluk Selat', '#1F3A93', '#FFFFFF', 'fan', 36, 'Bukit Emasek Stadium', 4000],
+    ['Lion Teluk Selat', 'WWL', 'Teluk Selat', '#F26522', '#000000', 'fan', 35, 'Bandar Jerangau Stadium', 4300],
+    ['Taman Lintang Rovers', 'YLI', 'Bandar Mawar', '#E30613', '#FFFFFF', 'youth', 34, 'Jalan Lintang Arena', 6000],
   ];
   FM.D.CLUBS_MY1 = [
-    ['Sungaiar FC', 'JDT', 'Sungaiar', '#3FA9F5', '#FFFFFF', 'oil', 60, 'Kualamas Arena', 40000],
-    ['Tanjungsera City', 'SEL', 'Tanjungsera', '#E30613', '#FFD100', 'giant', 52, 'Kualadap Arena', 25000],
-    ['Bukitsera City', 'TRG', 'Bukitsera', '#000000', '#FFD100', 'historic', 52, 'Bukitsera Provincial Stadium', 50000],
-    ['Bentonglama City', 'KED', 'Bentonglama', '#00A651', '#E30613', 'historic', 50, 'Telukang Sports Park', 32000],
-    ['Bentongdap United', 'KLC', 'Bentongdap', '#7BAFD4', '#FFFFFF', 'oil', 50, 'Bentongdap Provincial Stadium', 18000],
-    ['Telukbaru City', 'SAB', 'Telukbaru', '#0066CC', '#FFD100', 'fan', 48, 'Telukbaru Provincial Stadium', 35000],
-    ['Alortan FC', 'PRK', 'Alortan', '#FFD100', '#000000', 'historic', 48, 'Alortan Provincial Stadium', 42000],
-    ['Pulaudap Athletic', 'PAH', 'Pulaudap', '#FFD100', '#000000', 'historic', 47, 'Kualaar Arena', 40000],
-    ['Sri Telukrak', 'PNG', 'Telukrak', '#FFD100', '#1E90FF', 'fan', 46, 'Pasirsera Sports Park', 20000],
-    ['Kluanrak FC', 'NSE', 'Kluanrak', '#E30613', '#FFD100', 'fan', 45, 'Pulaumas Stadium', 45000],
-    ['Lahadrak Athletic', 'MEL', 'Lahadrak', '#E30613', '#FFFFFF', 'fan', 44, 'Lahadrak Provincial Stadium', 40000],
-    ['Lahadgelap United', 'KEL', 'Lahadgelap', '#E30613', '#FFFFFF', 'fan', 43, 'Lahadbaru Stadium', 22000],
-    ['Bentongdap Athletic', 'PDR', 'Bentongdap', '#1F3A93', '#FFFFFF', 'selling', 40, 'Kualatan Arena', 18000],
-    ['Lahadting United', 'KCH', 'Lahadting', '#E30613', '#FFFFFF', 'fan', 40, 'Alorsera Sports Park', 40000],
+    ['Tanjung Mutiara FC', 'JDT', 'Tanjung Mutiara', '#3FA9F5', '#FFFFFF', 'oil', 60, 'Kuala Rimba Arena', 40000],
+    ['Bukit Nilam City', 'SEL', 'Bukit Nilam', '#E30613', '#FFD100', 'giant', 52, 'Kuala Pelita Arena', 25000],
+    [
+      'Pulau Selasih City',
+      'TRG',
+      'Pulau Selasih',
+      '#000000',
+      '#FFD100',
+      'historic',
+      52,
+      'Pulau Selasih Provincial Stadium',
+      50000,
+    ],
+    [
+      'Simpang Karang City',
+      'KED',
+      'Simpang Karang',
+      '#00A651',
+      '#E30613',
+      'historic',
+      50,
+      'Teluk Damai Sports Park',
+      32000,
+    ],
+    [
+      'Simpang Pelita United',
+      'KLC',
+      'Simpang Pelita',
+      '#7BAFD4',
+      '#FFFFFF',
+      'oil',
+      50,
+      'Simpang Pelita Provincial Stadium',
+      18000,
+    ],
+    [
+      'Teluk Jelai City',
+      'SAB',
+      'Teluk Jelai',
+      '#0066CC',
+      '#FFD100',
+      'fan',
+      48,
+      'Teluk Jelai Provincial Stadium',
+      35000,
+    ],
+    [
+      'Teluk Pelita FC',
+      'PRK',
+      'Teluk Pelita',
+      '#FFD100',
+      '#000000',
+      'historic',
+      48,
+      'Teluk Pelita Provincial Stadium',
+      42000,
+    ],
+    [
+      'Sungai Pelita Athletic',
+      'PAH',
+      'Sungai Pelita',
+      '#FFD100',
+      '#000000',
+      'historic',
+      47,
+      'Kuala Mutiara Arena',
+      40000,
+    ],
+    ['Sri Teluk Tebing', 'PNG', 'Teluk Tebing', '#FFD100', '#1E90FF', 'fan', 46, 'Pasir Nilam Sports Park', 20000],
+    ['Simpang Tebing FC', 'NSE', 'Simpang Tebing', '#E30613', '#FFD100', 'fan', 45, 'Sungai Rimba Stadium', 45000],
+    [
+      'Pulau Tebing Athletic',
+      'MEL',
+      'Pulau Tebing',
+      '#E30613',
+      '#FFFFFF',
+      'fan',
+      44,
+      'Pulau Tebing Provincial Stadium',
+      40000,
+    ],
+    ['Pulau Lenggeng United', 'KEL', 'Pulau Lenggeng', '#E30613', '#FFFFFF', 'fan', 43, 'Pulau Jelai Stadium', 22000],
+    [
+      'Simpang Pelita Athletic',
+      'PDR',
+      'Simpang Pelita',
+      '#1F3A93',
+      '#FFFFFF',
+      'selling',
+      40,
+      'Kuala Selasih Arena',
+      18000,
+    ],
+    ['Pulau Indah United', 'KCH', 'Pulau Indah', '#E30613', '#FFFFFF', 'fan', 40, 'Kota Nilam Sports Park', 40000],
   ];
   FM.D.CLUBS_VN1 = [
-    ['Quangiang FC', 'VTL', 'Quangiang', '#E30613', '#FFFFFF', 'youth', 52, 'Tuyeninh Arena', 22500],
-    ['Thep Quangiang', 'HNI', 'Quangiang', '#FFD100', '#1F3A93', 'oil', 50, 'Quangiang Provincial Stadium', 22500],
-    ['Bactri FC', 'CAH', 'Quangiang', '#E30613', '#FFD100', 'oil', 50, 'Longan Stadium', 22500],
-    ['Vinhninh Athletic', 'NDF', 'Vinhninh', '#FFFFFF', '#003DA5', 'historic', 49, 'Haitay Stadium', 30000],
-    ['Thaiduong Athletic', 'SLN', 'Thaiduong', '#FFD100', '#000000', 'historic', 48, 'Yentinh Arena', 12000],
-    ['Thaiphong FC', 'HGL', 'Thaiphong', '#0A8F3C', '#FFFFFF', 'youth', 47, 'Haidinh Arena', 12000],
-    ['Haduong FC', 'BBD', 'Haduong', '#0066CC', '#FFFFFF', 'selling', 46, 'Haian Stadium', 18250],
-    ['Song Vinhdinh', 'HPH', 'Vinhdinh', '#E30613', '#FFFFFF', 'historic', 45, 'Bacnghe Sports Park', 28000],
-    ['Thep Tuyenphong', 'THH', 'Tuyenphong', '#E30613', '#FFD100', 'fan', 44, 'Tuyenphong Provincial Stadium', 14000],
-    ['Lamtinh City', 'HTH', 'Lamtinh', '#FFD100', '#E30613', 'fan', 43, 'Vinhtay Arena', 28000],
-    ['Longiang City', 'HCM', 'Longiang', '#E30613', '#FFD100', 'fan', 43, 'Thailien Arena', 25000],
-    ['Thep Haitay', 'DAN', 'Haitay', '#F26522', '#FFFFFF', 'fan', 42, 'Haitay Provincial Stadium', 20000],
-    ['Bacbang United', 'BDH', 'Bacbang', '#FFD100', '#E30613', 'fan', 41, 'Bacbang Provincial Stadium', 20000],
-    ['Song Bacdinh', 'KHH', 'Bacdinh', '#1E90FF', '#FFFFFF', 'fan', 40, 'Songhe Arena', 20000],
+    ['Binh Mai FC', 'VTL', 'Binh Mai', '#E30613', '#FFFFFF', 'youth', 52, 'Tuyen Cuong Arena', 22500],
+    ['Thep Binh Mai', 'HNI', 'Binh Mai', '#FFD100', '#1F3A93', 'oil', 50, 'Binh Mai Provincial Stadium', 22500],
+    ['Bac Uong FC', 'CAH', 'Binh Mai', '#E30613', '#FFD100', 'oil', 50, 'Long Sa Stadium', 22500],
+    ['Vinh Phat Athletic', 'NDF', 'Vinh Phat', '#FFFFFF', '#003DA5', 'historic', 49, 'Hai Dai Stadium', 30000],
+    ['Thai Mai Athletic', 'SLN', 'Thai Mai', '#FFD100', '#000000', 'historic', 48, 'Yen Khe Arena', 12000],
+    ['Thai Lam FC', 'HGL', 'Thai Lam', '#0A8F3C', '#FFFFFF', 'youth', 47, 'Hai Truong Arena', 12000],
+    ['Ha Thuy FC', 'BBD', 'Ha Thuy', '#0066CC', '#FFFFFF', 'selling', 46, 'Thai Hien Arena', 18250],
+    ['Song Vinh Truong', 'HPH', 'Vinh Truong', '#E30613', '#FFFFFF', 'historic', 45, 'Bac Hien Sports Park', 28000],
+    ['Thep Tuyen Lam', 'THH', 'Tuyen Lam', '#E30613', '#FFD100', 'fan', 44, 'Tuyen Lam Provincial Stadium', 14000],
+    ['Lam Khe City', 'HTH', 'Lam Khe', '#FFD100', '#E30613', 'fan', 43, 'Vinh Dai Arena', 28000],
+    ['Long Loc City', 'HCM', 'Long Loc', '#E30613', '#FFD100', 'fan', 43, 'Thai Thinh Arena', 25000],
+    ['Thep Hai Dai', 'DAN', 'Hai Dai', '#F26522', '#FFFFFF', 'fan', 42, 'Hai Dai Provincial Stadium', 20000],
+    ['Bac Loc United', 'BDH', 'Bac Loc', '#FFD100', '#E30613', 'fan', 41, 'Bac Loc Provincial Stadium', 20000],
+    ['Song Hai Truong', 'KHH', 'Hai Truong', '#1E90FF', '#FFFFFF', 'fan', 40, 'Son Hien Arena', 20000],
   ];
   FM.D.CLUBS_ID1 = [
     [
-      'Tangukasar Putra',
+      'Kedilembang Putra',
       'PSB',
-      'Tangukasar',
+      'Kedilembang',
       '#0033A0',
       '#FFFFFF',
       'giant',
       54,
-      'Tangukasar Provincial Stadium',
+      'Kedilembang Provincial Stadium',
       38000,
     ],
-    ['Purkasar FC', 'PSJ', 'Purkasar', '#F26522', '#FFFFFF', 'giant', 54, 'Purkasar Provincial Stadium', 77000],
-    ['Persi Cirenang', 'PSY', 'Cirenang', '#00A651', '#FFFFFF', 'giant', 52, 'Solara Sports Park', 46000],
-    ['PS Gianri', 'ARE', 'Gianri', '#0033A0', '#FFFFFF', 'fan', 52, 'Gianri Provincial Stadium', 42000],
-    ['Persi Surara', 'BAU', 'Surara', '#E30613', '#FFFFFF', 'oil', 50, 'Surara Provincial Stadium', 25000],
-    ['Pekanbaya United', 'PSM', 'Pekanbaya', '#E30613', '#FFFFFF', 'historic', 50, 'Suraor Stadium', 15000],
-    ['Surakasar FC', 'BOR', 'Surakasar', '#F26522', '#003DA5', 'oil', 49, 'Bogori Stadium', 16000],
-    ['Bhakti Surari', 'PSI', 'Surari', '#003DA5', '#FFFFFF', 'historic', 46, 'Surari Provincial Stadium', 21000],
-    ['Bhakti Jemrang', 'MAD', 'Jemrang', '#E30613', '#FFFFFF', 'selling', 46, 'Kedidung Sports Park', 15000],
-    ['Bhakti Cirekasar', 'PKE', 'Cirekasar', '#5B2C83', '#FFFFFF', 'fan', 45, 'Giankasar Sports Park', 20000],
-    ['Persi Purkasar', 'BHY', 'Purkasar', '#FFD100', '#0033A0', 'selling', 44, 'Pekankasar Arena', 5000],
-    ['Persi Tanguwok', 'SOL', 'Tanguwok', '#E30613', '#000000', 'historic', 44, 'Pekanang Stadium', 20000],
-    ['PS Jemkar', 'PST', 'Jemkar', '#E30613', '#FFFFFF', 'fan', 42, 'Pekanor Sports Park', 30000],
-    ['Jemkar Putra', 'DEW', 'Jemkar', '#1F3A93', '#E30613', 'oil', 47, 'Bogorang Stadium', 30000],
-    ['PS Pamabaya', 'RNS', 'Purkasar', '#FFD100', '#003DA5', 'oil', 43, 'Tanguor Arena', 30000],
-    ['Bhakti Makamur', 'PSS', 'Makamur', '#00A651', '#FFFFFF', 'fan', 43, 'Surara Sports Park', 31000],
-    ['PS Purmur', 'PKB', 'Purmur', '#F26522', '#FFFFFF', 'selling', 41, 'Pamawok Stadium', 30000],
-    ['Bogoang United', 'BPU', 'Bogoang', '#FFD100', '#000000', 'fan', 41, 'Bankasar Arena', 15000],
+    ['Langsari FC', 'PSJ', 'Langsari', '#F26522', '#FFFFFF', 'giant', 54, 'Langsari Provincial Stadium', 77000],
+    ['Persi Solawati', 'PSY', 'Solawati', '#00A651', '#FFFFFF', 'giant', 52, 'Cirewati Sports Park', 46000],
+    ['PS Pamamulan', 'ARE', 'Pamamulan', '#0033A0', '#FFFFFF', 'fan', 52, 'Pamamulan Provincial Stadium', 42000],
+    ['Persi Surawati', 'BAU', 'Surawati', '#E30613', '#FFFFFF', 'oil', 50, 'Surawati Provincial Stadium', 25000],
+    ['Langjaya United', 'PSM', 'Langjaya', '#E30613', '#FFFFFF', 'historic', 50, 'Surapura Stadium', 15000],
+    ['Suralembang FC', 'BOR', 'Suralembang', '#F26522', '#003DA5', 'oil', 49, 'Bogorang Stadium', 16000],
+    [
+      'Bhakti Suramulan',
+      'PSI',
+      'Suramulan',
+      '#003DA5',
+      '#FFFFFF',
+      'historic',
+      46,
+      'Suramulan Provincial Stadium',
+      21000,
+    ],
+    ['Bhakti Jembmulan', 'MAD', 'Jembmulan', '#E30613', '#FFFFFF', 'selling', 46, 'Semangan Sports Park', 15000],
+    ['Bhakti Tasisari', 'PKE', 'Tasisari', '#5B2C83', '#FFFFFF', 'fan', 45, 'Tasisari Sports Park', 20000],
+    ['Persi Langsari', 'BHY', 'Langsari', '#FFD100', '#0033A0', 'selling', 44, 'Puralembang Arena', 5000],
+    ['Persi Kedigiri', 'SOL', 'Kedigiri', '#E30613', '#000000', 'historic', 44, 'Jemblembang Stadium', 20000],
+    ['PS Tangpura', 'PST', 'Tangpura', '#E30613', '#FFFFFF', 'fan', 42, 'Purakalan Sports Park', 30000],
+    ['Tangpura Putra', 'DEW', 'Tangpura', '#1F3A93', '#E30613', 'oil', 47, 'Tangmulan Stadium', 30000],
+    ['PS Pamabaya', 'RNS', 'Langsari', '#FFD100', '#003DA5', 'oil', 43, 'Kedikalan Arena', 30000],
+    ['Bhakti Pamadongan', 'PSS', 'Pamadongan', '#00A651', '#FFFFFF', 'fan', 43, 'Surawati Sports Park', 31000],
+    ['PS Pamawati', 'PKB', 'Pamawati', '#F26522', '#FFFFFF', 'selling', 41, 'Solagiri Stadium', 30000],
+    ['Puramulan United', 'BPU', 'Puramulan', '#FFD100', '#000000', 'fan', 41, 'Bansari Arena', 15000],
   ];
   FM.D.CLUBS_PH1 = [
-    ['Tacailao FC', 'KYI', 'Tacailao', '#E30613', '#000000', 'youth', 40, 'Pasikit Arena', 7000],
-    ['Tacailao Warriors', 'UCF', 'Tacailao', '#FFFFFF', '#003DA5', 'oil', 39, 'Lagnga Sports Park', 7000],
-    ['Olonilao Warriors', 'SLG', 'Olonilao', '#1E90FF', '#FFFFFF', 'selling', 37, 'Olonilao Provincial Stadium', 3000],
-    ['Tagukit Eagles', 'LMS', 'Tagukit', '#E30613', '#FFD100', 'selling', 36, 'Pambuan Sports Park', 12000],
-    ['Pamnga Warriors', 'DHC', 'Pamnga', '#FFD100', '#000000', 'fan', 36, 'Olonlo Arena', 15000],
-    ['Iloipangan FC', 'DAV', 'Iloipangan', '#E30613', '#003DA5', 'fan', 36, 'Cabunga Stadium', 6000],
-    ['Tagukit FC', 'MDG', 'Tagukit', '#FFD100', '#000000', 'fan', 35, 'Bagapag Sports Park', 12000],
-    ['Calaon United', 'MKH', 'Tagukit', '#E30613', '#FFFFFF', 'fan', 34, 'Davapag Stadium', 12000],
-    ['Tacayan United', 'AZK', 'Tagukit', '#0038A8', '#CE1126', 'youth', 33, 'Tagukit Provincial Stadium', 12000],
-    ['Bulabuan United', 'MEN', 'Tagukit', '#5B2C83', '#FFFFFF', 'fan', 33, 'Bulalo Stadium', 12000],
+    ['Binaguin FC', 'KYI', 'Binaguin', '#E30613', '#000000', 'youth', 40, 'Tagyaan Arena', 7000],
+    ['Binaguin Warriors', 'UCF', 'Binaguin', '#FFFFFF', '#003DA5', 'oil', 39, 'Dumagyaan Arena', 7000],
+    ['Bagyaan Warriors', 'SLG', 'Bagyaan', '#1E90FF', '#FFFFFF', 'selling', 37, 'Bagyaan Provincial Stadium', 3000],
+    ['Pasyaan Eagles', 'LMS', 'Pasyaan', '#E30613', '#FFD100', 'selling', 36, 'Bagagalan Sports Park', 12000],
+    ['Bagalan Warriors', 'DHC', 'Bagalan', '#FFD100', '#000000', 'fan', 36, 'Talabay Arena', 15000],
+    ['Maringan FC', 'DAV', 'Maringan', '#E30613', '#003DA5', 'fan', 36, 'Talatuan Stadium', 6000],
+    ['Pasyaan FC', 'MDG', 'Pasyaan', '#FFD100', '#000000', 'fan', 35, 'Mariguin Sports Park', 12000],
+    ['Cabyaan United', 'MKH', 'Pasyaan', '#E30613', '#FFFFFF', 'fan', 34, 'Cabubantay Stadium', 12000],
+    ['Binatuan United', 'AZK', 'Pasyaan', '#0038A8', '#CE1126', 'youth', 33, 'Pasyaan Provincial Stadium', 12000],
+    ['Pamgalan United', 'MEN', 'Pasyaan', '#5B2C83', '#FFFFFF', 'fan', 33, 'Pambay Stadium', 12000],
   ];
   FM.D.CLUBS_ZA1 = [
     ['Ladefontein Works', 'MSD', 'Ladefontein', '#FFD100', '#003DA5', 'oil', 62, 'Volula Stadium', 51762],
@@ -2150,72 +2260,72 @@ QAI|ANI|Gazelles|1972
 ANW|AL11|Greens|1948
 BUK|ANO|Greens|1967
 JED|AKH|Blues|1999
-LCS|KALI|Sky Blues|1976
-TAM|BIS|Yellows|1928
-ANS|KAF|Oranges|2008
-GEY|KAN|Reds|1989
+LCS|BAM|Sky Blues|1976
+TAM|TAN|Yellows|1928
+ANS|BMA|Oranges|2008
+GEY|BAA|Reds|1989
 BKS|LON|Reds|1928
-HOG|KAS|Oranges|1977
-TPU|CLA|Reds|1918
-WAR|SEN|Eagles|1920
-WWL|LSE|Stags|1977
-YLI|SEM|Reds|1952
-JDT|SUR|Sky Blues|1950
-SEL|TAN|Deer|1933
-TRG|BUK|Blacks|1940
-KED|BMA|Panthers|1927
-KLC|BEP|Sky Blues|1986
-SAB|TEL|Turtles|1943
-PRK|AAN|Deer|1922
-PAH|PUL|Yellows|1906
+HOG|KAM|Oranges|1977
+TPU|TAI|Reds|1918
+WAR|TEL|Eagles|1920
+WWL|LTE|Stags|1977
+YLI|TLI|Reds|1952
+JDT|TAG|Sky Blues|1950
+SEL|BUK|Deer|1933
+TRG|PUL|Blacks|1940
+KED|SIM|Panthers|1927
+KLC|SIG|Sky Blues|1986
+SAB|TUK|Turtles|1943
+PRK|TEP|Deer|1922
+PAH|SUI|Yellows|1906
 PNG|SRI|Yellows|1941
-NSE|KLU|Deer|1979
-MEL|LAH|Reds|1948
-KEL|LAP|Reds|1958
-PDR|BAP|Blues|2008
-KCH|LAG|Deer|1988
-VTL|QUG|Falcons|1979
+NSE|SIT|Deer|1979
+MEL|PUU|Reds|1948
+KEL|PLE|Reds|1958
+PDR|SIP|Blues|2008
+KCH|PUI|Deer|1988
+VTL|BIH|Falcons|1979
 HNI|THP|Yellows|1967
-CAH|BRI|Tigers|1988
+CAH|BUO|Tigers|1988
 NDF|VIN|Whites|1930
 SLN|THA|Yellows|1913
-HGL|THG|Falcons|1928
-BBD|HNG|Blues|1956
+HGL|THI|Falcons|1928
+BBD|HHA|Blues|1956
 HPH|SON|Reds|1904
-THH|TEP|Reds|1949
-HTH|LNH|Yellows|1933
+THH|THT|Reds|1949
+HTH|LKH|Yellows|1933
 HCM|LOG|Dragons|1978
 DAN|THH|Dragons|1913
-BDH|BAG|Yellows|1934
-KHH|SOB|Dragons|1937
-PSB|TAP|Blues|1930
-PSJ|PUR|Oranges|1919
+BDH|BLO|Yellows|1934
+KHH|SOH|Dragons|1937
+PSB|KED|Blues|1930
+PSJ|LRI|Oranges|1919
 PSY|PER|Greens|1899
 ARE|PSS|Blues|1955
 BAU|PEI|Tigers|1956
-PSM|PEK|Reds|1937
-BOR|SUF|Oranges|1925
+PSM|LYA|Reds|1937
+BOR|SUR|Oranges|1925
 PSI|BHA|Eagles|1931
 MAD|BHI|Eagles|1980
 PKE|BTI|Crimsons|1932
 BHY|PSI|Crocodiles|1954
-SOL|PET|Tigers|1912
+SOL|PEK|Tigers|1912
 PST|PPS|Tigers|1972
-DEW|JEM|Blues|1934
+DEW|TAA|Blues|1934
 RNS|PSP|Eagles|1943
-PSS|BHM|Greens|1970
-PKB|PPU|Panthers|1961
-BPU|BOG|Yellows|1990
-KYI|TAC|Warriors|2008
-UCF|TAO|Whites|1982
-SLG|OAO|Sky Blues|1927
-LMS|TAG|Reds|2008
-DHC|PAM|Yellows|1934
-DAV|ILO|Eagles|1952
-MDG|TAT|Yellows|1942
-MKH|CALA|Sharks|1953
-AZK|TAU|Sparks|1931
-MEN|BUU|Crimsons|1922
+PSS|BHP|Greens|1970
+PKB|PPA|Panthers|1961
+BPU|PUR|Yellows|1990
+KYI|BIF|Warriors|2008
+UCF|BIW|Whites|1982
+SLG|BAG|Sky Blues|1927
+LMS|PAS|Reds|2008
+DHC|BAW|Yellows|1934
+DAV|MAF|Eagles|1952
+MDG|PAN|Yellows|1942
+MKH|CABY|Sharks|1953
+AZK|BIU|Sparks|1931
+MEN|PAM|Crimsons|1922
 MSD|LAD|Workmen|1950
 KCI|NEL|Yellows|1903
 OPI|NCH|Blacks|1939

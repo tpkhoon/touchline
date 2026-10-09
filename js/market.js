@@ -316,6 +316,7 @@
     const c = W.userClub(),
       open = FM.Season.windowOpen();
     for (const p of M.loanedOut(c.id)) {
+      if (p.loan.military) continue; // doing national service: nothing to recall or complain about
       if (p.loan.recall && open) {
         const was = S().clubs[p.clubId];
         M.recall(p);

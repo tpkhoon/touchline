@@ -1152,7 +1152,7 @@
     const S = FM.S;
     let freeGK = null;
     for (const c of Object.values(S.clubs)) {
-      if (c.sim === 'minimal' && !c.comp) continue;
+      if ((c.sim === 'minimal' && !c.comp) || W.army(c)) continue;
       const sq = W.squad(c.id),
         keepers = sq.filter((p) => p.pos === 'GK');
       // three for fully simulated clubs (two can both be injured or banned), two elsewhere; and never none fit
@@ -1220,7 +1220,7 @@
   Sea.ensureUserSquad = function (min, warn) {
     const S = FM.S,
       c = S.user && !S.user.sacked && W.userClub();
-    if (!c) return;
+    if (!c || W.army(c)) return;
     const sq = W.squad(c.id);
     // a thin squad is yours to fix: the feed says so when the season starts (the floor below only keeps a team on the pitch)
     if (warn && sq.length >= min && sq.length < warn)
@@ -1344,7 +1344,7 @@
       todays = Sea.dayFixtures();
     const wageBill = {};
     Object.values(S.players).forEach((p) => {
-      if (!p.clubId || p.retired) return;
+      if (!p.clubId || p.retired || p.service) return; // (a conscript is paid by the army, not by a club)
       const payer = FM.Youth.owner(p.clubId); // a B-team player is paid by the parent club
       if (p.loan) {
         wageBill[payer] = (wageBill[payer] || 0) + p.wage * p.loan.share;
@@ -1970,7 +1970,7 @@
     Sea.ensureUserSquad(11, 18);
     // squads replenish (AI)
     Object.values(S.clubs).forEach((c) => {
-      if (W.isUser(c.id)) return;
+      if (W.isUser(c.id) || W.army(c)) return;
       const sq = W.squad(c.id);
       const need = W.squadTarget(c) - sq.length;
       const want = W.squadWant(c);

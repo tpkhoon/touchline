@@ -12,6 +12,9 @@
   FM.D.CLUB_POLICY = {
     EIB: { heritage: 'basque', label: 'Basque' },
     AND: { heritage: 'catalan', label: 'Catalan' },
+    // Gimcheon Sangmu in real life: the army's club. Its squad is conscripts doing their national service, on loan from their own
+    // clubs (js/asia.js); it signs nobody else.
+    GIM: { military: true, label: 'military-service' },
   };
 
   // ---------- Naturalisation ----------

@@ -261,7 +261,8 @@
     const fit = W.fitAt(p, slotType, slot, role);
     return W.calcCA(p, slotType) * (0.62 + 0.38 * fit) * (0.8 + 0.2 * (p.fitness / 100)) * (0.95 + p.morale / 1000);
   };
-  W.available = (p) => !p.inj && !p.susp && !p.retired && !p.service;
+  // (a player doing military service is away unless he is with the army's club)
+  W.available = (p) => !p.inj && !p.susp && !p.retired && (!p.service || !!(p.loan && p.loan.military));
   // Selection weight for match fitness: fresh players are preferred, tired ones rested
   W.fitnessPick = (p) => {
     const f = p.fitness;
@@ -614,7 +615,7 @@
     // a club with a heritage policy (Basque-only, Catalan-only) fields players of that heritage and its own nation
     const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
     if (pol) nat = FM.S.clubs[clubId].nat;
-    const heritage = pol ? pol.heritage : W.pickHeritage(nat),
+    const heritage = pol && pol.heritage ? pol.heritage : W.pickHeritage(nat),
       nm = W.rollName(nat, heritage);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(
@@ -1126,11 +1127,18 @@
       made.push({ nat: n, age });
       return n;
     };
+    const mil = !!(club.policy && club.policy.military); // the army's club: conscripts on loan, no academy
     const sidesMade = {},
       mine = have.slice();
     positions.forEach((pos, i) => {
       // a B team is a young side: mostly 18 to 23, with a few older heads
-      const age = club.parent ? (Math.random() < 0.85 ? U.randi(18, 23) : U.randi(24, 27)) : pickAge(pos);
+      const age = mil
+        ? U.randi(24, 27)
+        : club.parent
+          ? Math.random() < 0.85
+            ? U.randi(18, 23)
+            : U.randi(24, 27)
+          : pickAge(pos);
       const starter = i % 2 === 0;
       let ca = Math.round(
         U.clamp(
@@ -1140,13 +1148,14 @@
         ),
       );
       const p = W.genPlayer({
-        nat: nat(age, () => W.natFor(club)),
+        nat: mil ? 'KOR' : nat(age, () => W.natFor(club)),
         pos,
         age,
         ca,
         pa: W.potentialFor(ca, age),
         clubId: club.id,
       });
+      if (mil) FM.Asia.enlist(p, club);
       if (W.FLANK.includes(pos)) {
         // left and right in turn, the foot to match (most full-backs; wingers are often inverted)
         const n = (sidesMade[pos] = (sidesMade[pos] || 0) + 1);
@@ -1158,7 +1167,7 @@
       mine.push(p);
     });
     // Academy prospects
-    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length; i++) {
+    for (let i = 0; i < (mil ? 0 : (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length); i++) {
       const age = U.randi(17, 19),
         pos = U.pick(['CB', 'CM', 'W', 'ST', 'FB', 'AM', 'WB', 'WM']);
       const ca = Math.round(lvl - U.randi(12, 20));
@@ -2662,6 +2671,8 @@
   };
 
   W.userClub = () => FM.S.clubs[FM.S.user.clubId];
+  // The army's club (Gimcheon Sangmu in real life): its squad is conscripts, so nothing tops it up
+  W.army = (c) => !!(c && c.policy && c.policy.military);
   // Lower-league realism: a part-time club (the fourth tier and below, or a tiny club) trains in the evenings, has no scouting
   // network to speak of (two scouts at most) and pays what a community club can
   W.partTime = (c) => !!c && c.sim !== 'nation' && ((FM.S.comps[c.comp] && FM.S.comps[c.comp].tier >= 4) || c.rep < 28);

@@ -1870,9 +1870,9 @@ const SEA_BASE = {
 NATION_L.SGP = {
   ...LANG.tha,
   ...SEA_BASE,
-  a: words('Tam Bed Jur Wood Yis Cho Seng Han Ser Pun Kra Pas Tuas Kal Bis Cla Sem'),
-  b: words('pines ok ong lands hun kang gol ngol ris ir pak ang wang bawang'),
-  elide: true,
+  a: words('Pasir Bukit Teluk Kampong Jalan Bandar Taman'),
+  b: words('Lintang Tembusu Rasau Selat Jerangau Mawar Kenanga Temasek'),
+  elide: false,
   club: [
     ...rep(['{c} United', '{c} Rovers', '{c} FC'], 2),
     '{c} International',
@@ -1883,42 +1883,51 @@ NATION_L.SGP = {
   ground: ['{x} Stadium', '{c} Sports Hub', '{x} Arena'],
   misc: words('Lions Eagles Stags Tigers Jaguars Cheetahs Swans'),
   cup: 'Cup',
+  gap: ' ',
 };
 NATION_L.MYS = {
   ...LANG.tha,
   ...SEA_BASE,
-  a: words('Kuala Alor Kota Batu Pasir Teluk Bukit Tanjung Sungai Pulau Lahad Kluan Bentong Mersi'),
-  b: words('tan ar baru mas ang gelap dap lama telang sera rak ting'),
+  a: words('Kuala Kota Batu Pasir Teluk Bukit Tanjung Sungai Pulau Simpang Bandar'),
+  b: words('Selasih Mutiara Jelai Rimba Damai Lenggeng Pelita Karang Segar Nilam Tebing Indah'),
   club: [...rep(['{c} FC', '{c} United'], 3), '{c} City', 'Darul {c}', 'Sri {c}', '{c} Athletic'],
   misc: words('Tigers Eagles Turtles Panthers Hornbills Rhinos Deer'),
   cup: 'Cup',
+  gap: ' ',
+  elide: false,
 };
 NATION_L.VIE = {
   ...LANG.tha,
   ...SEA_BASE,
-  a: words('Hai Nam Thanh Ha Quang Bin Khanh Phu Thai Lam Bac Dong Long Vinh Tuyen Cao Son Yen'),
-  b: words('phong dinh hoa tinh duong tri ninh bang giang an tay lien nghe'),
+  a: words('Hai Nam Thanh Ha Quang Binh Khanh Phu Thai Lam Bac Dong Long Vinh Tuyen Cao Son Yen'),
+  b: words('Lam Truong Hung Khe Mai Thuy Cuong Phat Loc Sa Dai Tan Thinh Hien'),
   club: [...rep(['{c} FC'], 3), '{c} United', '{c} Athletic', 'Thep {c}', 'Song {c}', '{c} City'],
   misc: words('Dragons Eagles Lions Tigers Falcons Cranes'),
   cup: 'Cup',
+  gap: ' ',
+  elide: false,
 };
 NATION_L.IDN = {
   ...LANG.tha,
   ...SEA_BASE,
-  a: words('Ban Sura Mal Kedi Sema Bogo Slem Tangu Maka Pama Sola Cire Gian Pekan Jem Pur'),
-  b: words('dung baya ang ri rang or man kasar nang kar ra mur wok'),
+  a: words('Ban Sura Mala Sema Bogo Tang Kedi Pama Sola Cire Tasi Pura Jemb Lang'),
+  b: words('ngan baya rang mulan pura kalan sari lembang jaya wati dongan giri'),
   club: [...rep(['Persi {c}'], 4), '{c} United', '{c} FC', 'PS {c}', '{c} Putra', 'Bhakti {c}'],
   misc: words('Tigers Crocodiles Lions Eagles Panthers Garuda'),
   cup: 'Cup',
+  elide: true,
 };
 NATION_L.PHI = {
   ...LANG.tha,
   ...SEA_BASE,
-  a: words('San Santa Bula Pam Baga Iloi Taca Tagu Cala Dava Lag Mari Bina Pasi Cabu Olon'),
-  b: words('can pangan lo mba nga yan buan on kit ig pag ilao'),
+  a: words('Bula Pam Baga Mari Bina Pasi Cabu Olon Lago Dumag Taga Tala'),
+  b: words('can ngan bay lan tuan galan ngas yaan bantay guin'),
   club: [...rep(['{c} FC', '{c} United'], 3), '{c} City', 'Stallion {c}', '{c} Warriors', '{c} Eagles'],
   misc: words('Eagles Stallions Warriors Sharks Diggers Sparks'),
   cup: 'Cup',
+  elide: true,
+  pre: ['San', 'Santa', 'Santo'],
+  preGap: ' ',
 };
 NATION_L.RSA = {
   ...LANG.eng,
@@ -1961,6 +1970,8 @@ export function stem(L, r) {
   if (L.elide && isVowel(a.slice(-1)) && isVowel(b[0])) a = a.slice(0, -1);
   if (a.slice(-1).toLowerCase() === b[0].toLowerCase() && !isVowel(b[0])) b = b.slice(1);
   if (L.link && !isVowel(a.slice(-1)) && !isVowel(b[0])) a += L.link[Math.floor(r() * L.link.length)];
+  // (gap: a language that writes its towns as two words, "Hai Lam", "Kuala Rimba")
+  if (L.gap) return `${cap(a)}${L.gap}${cap(b)}`;
   return cap(a + b).replace(/(.)\1\1+/g, '$1$1');
 }
 export function placeName(L, r) {
