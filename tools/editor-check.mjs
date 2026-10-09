@@ -60,6 +60,28 @@ const mk = (id, name, lg) => ({
   stadium: { name: name + ' Park', cap: 9000 },
 });
 def.clubs.push(mk('c_ZZA1', 'Alphaton', 'D1'), mk('c_ZZB1', 'Betaville', 'D3'));
+// players you make: bad ones are refused, and a club given eleven has exactly that squad (the first screen's "replace" choice)
+const flat = (v) => Object.fromEntries(FM.D.ATTRS.map((k) => [k, v]));
+const mine = def.clubs.find((c) => c.league === 'D1' && c.id !== d1[0].id && c.id !== d1[2].id && !c.parent).id;
+const mkP = (i, over = {}) => ({
+  fn: 'Maker',
+  ln: 'No' + i,
+  nat: 'ENG',
+  pos: i === 0 ? 'GK' : 'CM',
+  born: def.meta.startYear - 25,
+  foot: 'Right',
+  attrs: flat(10),
+  pa: 55,
+  club: mine,
+  contract: def.meta.startYear + 2,
+  ...over,
+});
+check(!E.addPlayer(mkP(1, { born: def.meta.startYear - 60 })).ok, 'a player aged 60 was accepted');
+check(!E.addPlayer(mkP(1, { attrs: flat(25) })).ok, 'attributes of 25 were accepted');
+check(!E.addPlayer(mkP(1, { pa: 20 })).ok, 'a potential below his ability was accepted');
+check(!E.addPlayer(mkP(1, { club: 'c_NOPE' })).ok, 'a player for a club that does not exist was accepted');
+for (let i = 0; i < 11; i++) check(E.addPlayer(mkP(i)).ok, 'a valid player was refused');
+def.meta.players = 'replace';
 const chk = DB.check(def);
 check(chk.ok, 'the edited definition did not check: ' + chk.errors.join('; '));
 const patch = WD.patchOf(def);
@@ -97,6 +119,28 @@ check(
   S.comps.D1.clubs.includes(moved.id) && !S.comps.D2.clubs.includes(moved.id),
   'the moved club is not in its new league',
 );
+{
+  const sq = W.squad(mine);
+  const made = sq.filter((p) => p.defId);
+  check(made.length === 11, `the club given eleven players has ${made.length} of them in its squad`);
+  check(
+    made.every((p) => /^Maker/.test(p.fn)),
+    'a made player lost his name',
+  );
+  // (he has ten midfielders: the generated ones are gone, and the positions he left empty were made up)
+  check(
+    sq.filter((p) => !p.defId && p.pos === 'CM' && !p.team && !p.youth).length === 0,
+    'the generated midfielders were not replaced',
+  );
+  check(
+    sq.filter((p) => !p.defId && !p.team && !p.youth).length >= 8,
+    'the squad was not made up where the made players left gaps',
+  );
+  check(
+    sq.some((p) => p.pos === 'GK' && p.defId),
+    'the made goalkeeper is missing',
+  );
+}
 const n1 = S.comps.D1.clubs.length;
 console.log(`D1 has ${n1} clubs`);
 W.takeCharge(d1[2].id, 'Test Manager');

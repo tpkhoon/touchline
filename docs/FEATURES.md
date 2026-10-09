@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-359 features are playable in the web prototype today. Build = the build that added it.
+360 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -374,7 +374,8 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | European Summer Cup: eight clubs just below the European places (the next place after the Trophy's in England, Spain, Germany, Italy, France, Portugal, the Netherlands and Belgium) play three knockout rounds in the first weeks of the season, and the two finalists take the last European Trophy places | Playtest round 11 |
 | Competitions | European Holders' Cup: each European nation's domestic cup winner (or its best club without another European place where there is no cup; the cup runner-up when the winner is already in the European Champions Cup), 21 clubs in knockouts on six days of their own, semi-finals over two legs and a neutral final | Playtest round 11 |
 | International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
-| Editor | World editor, first screens: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
+| Editor | World editor: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
+| Editor | World editor players: a squad screen for each club and a screen for each player (name, nationality, position, foot, age, contract, the 14 attributes with the ability they make, set from an ability if you prefer, potential); made players are added to the generated squads, or replace the squad of any club given eleven or more | Playtest round 11 |
 
 ## Yet to be added
 
@@ -388,7 +389,7 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Editor | Database and world editor — architecture and the first screens (leagues and clubs) done; the rest of the UI still to come. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
+| Editor | Database and world editor — architecture and the screens for leagues, clubs and players done; staff, competitions, rules and history still to come. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
 | History | Historical eras from 1992 with era-appropriate rules | Alpha 2 |
 | History | Alternate-history setup and scenario creator | Alpha 2 |
 | Youth | University draft, graduates, scholarships, overseas trials | Alpha 2 |
