@@ -247,7 +247,7 @@
   };
   // Saves made before a competition existed get it (empty until the next season's draw)
   Cu.addDomestic = (s, id, nat, name, short, opts) =>
-    (s.comps[id] = { id, type: 'cup', nat, name, short, clubs: [], prize: 3e6, opts: opts || {} });
+    (s.comps[id] = { id, type: 'cup', nat, name, short, clubs: [], rounds: [], prize: 3e6, opts: opts || {} });
   // A European knockout cup (the Holders' Cup, the Summer Cup): a cup of its own with no nation, the entrants chosen by rule
   Cu.addEuro = (s, d) =>
     (s.comps[d.id] = {
@@ -259,6 +259,7 @@
       name: d.name,
       short: d.short,
       clubs: [],
+      rounds: [],
       prize: d.prize,
       opts: d.opts || {},
     });

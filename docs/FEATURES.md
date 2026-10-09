@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-345 features are playable in the web prototype today. Build = the build that added it.
+358 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -377,7 +377,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-54 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+51 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -387,9 +387,6 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Tools | Wonderkid test: how often wonderkids reach world class, stall, flop or peak early, against real careers | Playtest 7 |
-| Tools | Real-stats converter: real player numbers into in-game attributes, ability and potential | Playtest 7 |
-| Platform | "Report a problem" that exports your save | Playtest 7 |
 | Editor | Database and world editor — architecture first, UI after. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
 | History | Historical eras from 1992 with era-appropriate rules | Alpha 2 |
 | History | Alternate-history setup and scenario creator | Alpha 2 |

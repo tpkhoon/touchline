@@ -2377,7 +2377,7 @@
             ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
             : '');
         const ko = FM.Cups.koList(c);
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · ${c.groups.length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${c.groups.length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them
@@ -2398,7 +2398,7 @@
           : '';
         const fx =
           c.format === 'ko'
-            ? c.rounds
+            ? (c.rounds || [])
                 .slice()
                 .reverse()
                 .map(
@@ -2427,7 +2427,7 @@
       .map((c) => {
         return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? '⭐' : '🏆'} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${c.clubs.length} clubs · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties</div>
         ${
-          c.rounds
+          (c.rounds || [])
             .slice()
             .reverse()
             .map(
