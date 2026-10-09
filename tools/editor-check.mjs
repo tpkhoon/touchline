@@ -107,7 +107,37 @@ check(
   E.addPlayer(mkP(20, { club: null, ln: 'Freeman', contract: def.meta.startYear + 1 })).ok,
   'a free agent was refused',
 );
-def.managers.push({ club: mine, fn: 'Ivor', ln: 'Edit', nat: 'ENG', age: 50, ability: 18 });
+def.managers.push({
+  club: mine,
+  fn: 'Ivor',
+  ln: 'Edit',
+  nat: 'ENG',
+  age: 50,
+  ability: 18,
+  personality: 'Cautious',
+  rep: 85,
+  tactic: { formation: '4-4-2', buildup: 'Direct', press: 'Low Block', width: 'Wide' },
+});
+// managers and agents that are not valid are refused by the definition's check
+{
+  const bad = JSON.parse(JSON.stringify(def));
+  bad.managers[0].rep = 5;
+  bad.managers[0].personality = 'Grumpy';
+  bad.managers[0].tactic = { formation: '9-9-9', buildup: 'Short', press: 'Mid Block', width: 'Balanced' };
+  const errs = WD.validate(bad, null).errors.filter((e) => e.startsWith('manager'));
+  check(errs.length === 3, `expected three manager errors, got ${errs.length}`);
+  bad.managers = [def.managers[0], { ...def.managers[0] }];
+  check(
+    WD.validate(bad, null).errors.some((e) => /two managers/.test(e)),
+    'two managers for one club were accepted',
+  );
+  bad.agents = ['Same Agency', 'same agency'];
+  check(
+    WD.validate(bad, null).errors.some((e) => /agent firms/.test(e)),
+    'two agent firms with one name were accepted',
+  );
+}
+def.agents = ['Test Agency One', 'Test Agency Two', 'Test Agency Three'];
 def.competitions = [{ id: 'CUPENG', name: 'Editor Test Cup', short: 'ETC', nat: null, type: 'cup' }];
 def.rules.win = 2;
 def.rules.subs = 3;
@@ -157,8 +187,45 @@ const aid = E.addStaff({
 });
 check(aid.ok, 'a valid assistant was refused');
 check(
-  E.addStaff({ role: 'Scout', fn: 'Sam', ln: 'Scout', nat: 'ARG', age: 40, ability: 17, club: mine }).ok,
+  E.addStaff({
+    role: 'Scout',
+    fn: 'Sam',
+    ln: 'Scout',
+    nat: 'ARG',
+    age: 40,
+    ability: 17,
+    club: mine,
+    personality: 'Loyal',
+    years: 4,
+    wage: 12345,
+    regions: { ENG: 0.1, EUR: 0.2, SAM: 0.95, NAM: 0.1, ASIA: 0.1, AFR: 0.2 },
+    judge: 16,
+  }).ok,
   'a valid scout was refused',
+);
+check(
+  !E.addStaff({ role: 'Scout', fn: 'Moon', ln: 'Scout', nat: 'ENG', age: 40, ability: 10, regions: { MOON: 0.9 } }).ok,
+  'a scout who knows the moon was accepted',
+);
+check(
+  !E.addStaff({ role: 'Scout', fn: 'Low', ln: 'Pay', nat: 'ENG', age: 40, ability: 10, wage: 5 }).ok,
+  'a wage of 5 was accepted',
+);
+check(
+  !E.addStaff({ role: 'Scout', fn: 'Bad', ln: 'Mood', nat: 'ENG', age: 40, ability: 10, personality: 'Grumpy' }).ok,
+  'an unknown personality was accepted',
+);
+check(
+  !E.addStaff({
+    role: 'First-Team Coach',
+    fn: 'Net',
+    ln: 'Work',
+    nat: 'ENG',
+    age: 40,
+    ability: 10,
+    regions: { ENG: 0.5 },
+  }).ok,
+  'a coach with a scouting network was accepted',
 );
 check(
   !E.addStaff({ role: 'Goalkeeping Coach', fn: 'No', ln: 'Role', nat: 'ENG', age: 40, ability: 10 }).ok,
@@ -371,7 +438,7 @@ check(
   check(fa.length === 1 && fa[0].contract >= S.year, 'the made free agent is not in the world as one');
   const st = S.staff[S.clubs[mine].manager];
   check(
-    st && st.fn === 'Ivor' && st.ln === 'Edit' && st.ability === 18,
+    st && st.fn === 'Ivor' && st.ln === 'Edit' && st.ability === 18 && st.personality === 'Cautious' && st.rep === 85,
     'the club has not got the manager made for it',
   );
   check(S.comps.CUPENG.name === 'Editor Test Cup' && S.comps.CUPENG.short === 'ETC', 'the renamed cup kept its name');
@@ -491,6 +558,25 @@ W.takeCharge(mine, 'Test Manager');
     'the scout made for the club did not come with the job',
   );
   check(S.staff[u.staff.coach].fn !== 'Free', 'a coach on offer was given to the club');
+  {
+    const sc = S.staff[u.scouts[0]];
+    check(
+      sc.personality === 'Loyal' &&
+        sc.wage === 12345 &&
+        sc.contract === S.year + 4 &&
+        sc.regions.SAM === 0.95 &&
+        sc.judge === 16,
+      'the scout details did not come with the job',
+    );
+    check(
+      S.clubs[mine].tactic.formation === '4-4-2' && S.clubs[mine].tactic.press === 'Low Block',
+      'the managers system did not reach the club',
+    );
+    check(
+      FM.D.AGENT_FIRMS.length === 3 && FM.D.AGENT_FIRMS[0] === 'Test Agency One',
+      'the agent firms did not reach the game',
+    );
+  }
   check(
     S.staffPool.some((id) => S.staff[id].fn === 'Free' && S.staff[id].role === 'First-Team Coach'),
     'the coach on offer is not in the staff market',
@@ -548,6 +634,10 @@ check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n
 // a save keeps the database, and a plain new world afterwards has none of it
 check(FM.S.database && FM.S.database.name === 'Editor test', 'the world does not remember its database');
 DB.clear();
+check(
+  FM.D.AGENT_FIRMS.length === 12 && FM.D.AGENT_FIRMS[0] === 'Apex Sports Group',
+  'clearing the database left the agent firms changed',
+);
 check(
   FM.Intl.CYCLE === 2 &&
     FM.Intl.TOURNS.world[0].name === 'FIFA World Cup' &&

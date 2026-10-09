@@ -47,6 +47,7 @@
     removeRivals: [], // [club id, club id]: derbies of the game's own the world does without
     removeClubs: [], // ids of the game's own clubs the world does without
     intl: {}, // international football: { cycle, tourns: { id: { name, slots } }, invites: [{ id, name, host }] }
+    agents: [], // the names of the agent firms (empty: the game's own)
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
     nations: [], // national teams: { code, name, short, colors, coef }
     history: { seasons: [] },
@@ -123,7 +124,20 @@
       });
       if (c.rival && c.id < c.rival) def.rivals.push([c.id, c.rival, c.derby || 'Derby']);
       const m = c.manager && S.staff[c.manager];
-      if (m) def.managers.push({ club: c.id, fn: m.fn, ln: m.ln, nat: m.nat, age: m.age, ability: m.ability });
+      if (m)
+        def.managers.push({
+          club: c.id,
+          fn: m.fn,
+          ln: m.ln,
+          nat: m.nat,
+          age: m.age,
+          ability: m.ability,
+          personality: m.personality,
+          rep: m.rep,
+          tactic: c.tactic
+            ? { formation: c.tactic.formation, buildup: c.tactic.buildup, press: c.tactic.press, width: c.tactic.width }
+            : undefined,
+        });
     }
     if (opts.players !== false)
       for (const p of Object.values(S.players)) {
@@ -211,6 +225,15 @@
     }
     if (f.prize != null && !(f.prize >= 1e5 && f.prize <= 1e9))
       e.push(`${at}: the prize is between 100,000 and 1,000,000,000`);
+    return e;
+  };
+
+  const tacticErrors = (k, at) => {
+    const e = [];
+    if (!D.FORMATIONS[k.formation]) e.push(`${at}: unknown formation "${k.formation}"`);
+    if (!D.BUILDUP.includes(k.buildup)) e.push(`${at}: unknown build-up "${k.buildup}"`);
+    if (!D.PRESS.includes(k.press)) e.push(`${at}: unknown press "${k.press}"`);
+    if (!D.WIDTH.includes(k.width)) e.push(`${at}: unknown width "${k.width}"`);
     return e;
   };
 
@@ -318,6 +341,7 @@
       for (const r of D[l.clubs] || []) def.clubs.push(rowToClub(r, l));
     }
     def.intl = WD.intlNow();
+    def.agents = D.AGENT_FIRMS.slice();
     const have = new Set(def.clubs.map((c) => c.id));
     for (const [a, b, name] of D.RIVALS)
       if (have.has('c_' + a) && have.has('c_' + b)) def.rivals.push(['c_' + a, 'c_' + b, name]);
@@ -336,7 +360,12 @@
       cups: [],
       newCups: [],
       intl: null,
+      agents: null,
     };
+    {
+      const names = (def.agents || []).map((a) => String(a || '').trim()).filter(Boolean);
+      if (names.length && !same(names, D.AGENT_FIRMS)) patch.agents = names;
+    }
     const known = staticClubs();
     const removed = new Set((def.removeClubs || []).map(codeOf).filter((code) => known.has(code)));
     patch.removed = [...removed];
@@ -468,6 +497,7 @@
       (p.removeRivals || []).length ||
       (p.cups || []).length ||
       (p.newCups || []).length ||
+      p.agents ||
       p.intl
     );
 
@@ -486,6 +516,7 @@
       mix: new Set(Object.keys(D.NAT_MIX)),
       cups: D.DOMESTIC_CUPS.map((c) => JSON.stringify(c[4] || {})),
       cupCount: D.DOMESTIC_CUPS.length,
+      agents: D.AGENT_FIRMS.slice(),
       euro: (D.EURO_CUPS || []).map((c) => JSON.stringify(c.opts || {})),
       conts: D.CONTINENTALS.map((c) => ({
         legs: c.legs && JSON.stringify(c.legs),
@@ -540,6 +571,7 @@
       else D.RIVALS.push(r.slice());
     }
     if (patch.intl) applyIntl(patch.intl);
+    if (patch.agents) D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...patch.agents);
     for (const c of patch.newCups || [])
       if (!D.DOMESTIC_CUPS.some((x) => x[0] === c.id))
         D.DOMESTIC_CUPS.push([c.id, c.nat, c.name, c.short, JSON.parse(JSON.stringify(c.opts))]);
@@ -585,6 +617,7 @@
         }
         I().CYCLE = o.c;
       }
+      D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...snap.agents);
       D.DOMESTIC_CUPS.length = snap.cupCount;
       D.DOMESTIC_CUPS.forEach((c, i) => (c[4] = JSON.parse(snap.cups[i])));
       (D.EURO_CUPS || []).forEach((c, i) => ((c.opts = JSON.parse(snap.euro[i])), (c.prize = snap.euroPrize[i])));
@@ -804,8 +837,27 @@
         warnings.push(
           `club ${id}: ${n} defined players join it on top of its squad (the weakest at each position make room)`,
         );
-    for (const m of def.managers)
-      if (!clubs.has(m.club)) errors.push(`manager ${m.fn} ${m.ln}: club "${m.club}" is not in the definition`);
+    const mgrs = new Set();
+    for (const m of def.managers) {
+      const at = `manager ${m.fn} ${m.ln}`;
+      if (!clubs.has(m.club)) errors.push(`${at}: club "${m.club}" is not in the definition`);
+      if (mgrs.has(m.club)) errors.push(`${at}: club "${m.club}" has two managers`);
+      mgrs.add(m.club);
+      if (m.nat != null && !D.NATIONS[m.nat]) errors.push(`${at}: unknown nation "${m.nat}"`);
+      if (m.age != null && !(m.age >= 28 && m.age <= 80)) errors.push(`${at}: age must be 28–80`);
+      if (m.ability != null && !(m.ability >= 1 && m.ability <= 20)) errors.push(`${at}: ability must be 1–20`);
+      if (m.rep != null && !(m.rep >= 20 && m.rep <= 99)) errors.push(`${at}: reputation must be 20–99`);
+      if (m.personality && !D.STAFF_PERSONALITY.includes(m.personality))
+        errors.push(`${at}: unknown personality "${m.personality}"`);
+      if (m.tactic) errors.push(...tacticErrors(m.tactic, at));
+    }
+    {
+      const names = (def.agents || []).map((a) => String(a || '').trim());
+      if (names.length && (names.length > 30 || names.some((a) => !a)))
+        errors.push('agent firms: up to 30 names, none empty');
+      if (new Set(names.map((a) => a.toLowerCase())).size !== names.length)
+        errors.push('agent firms: two firms have one name');
+    }
     // where each club plays (the definition's word first, else the game's own), for B teams and derbies
     const where = new Map();
     for (const [code, x] of staticClubs()) where.set('c_' + code, { league: x.league.id, nat: x.league.nat });
@@ -882,6 +934,19 @@
       if (!D.NATIONS[s.nat]) errors.push(`${at}: unknown nation "${s.nat}"`);
       if (!(s.ability >= 1 && s.ability <= 20)) errors.push(`${at}: ability must be 1–20`);
       if (!(s.age >= 25 && s.age <= 80)) errors.push(`${at}: age must be 25–80`);
+      if (s.personality && !D.STAFF_PERSONALITY.includes(s.personality))
+        errors.push(`${at}: unknown personality "${s.personality}"`);
+      if (s.wage != null && !(s.wage >= 50 && s.wage <= 500000))
+        errors.push(`${at}: the weekly wage is between 50 and 500,000`);
+      if (s.years != null && !(Number.isInteger(s.years) && s.years >= 1 && s.years <= 5))
+        errors.push(`${at}: the contract runs 1–5 years`);
+      if (s.judge != null && !(s.judge >= 1 && s.judge <= 20)) errors.push(`${at}: judgement must be 1–20`);
+      if (s.regions) {
+        if (s.role !== 'Scout') errors.push(`${at}: only a scout has a network of regions`);
+        for (const [k, v] of Object.entries(s.regions))
+          if (!D.REGIONS[k] || !(v >= 0.05 && v <= 1))
+            errors.push(`${at}: region "${k}" needs a knowledge between 5% and 100%`);
+      }
       if (s.club) {
         if (!clubs.has(s.club)) errors.push(`${at}: club "${s.club}" is not in the definition`);
         const k = s.club + (s.role === 'Scout' ? '#scout' : '#' + s.role);
@@ -902,13 +967,7 @@
       if (n.coef != null && !(n.coef >= 20 && n.coef <= 100))
         errors.push(`${at}: ranking points must be between 20 and 100`);
       if (n.name != null && !String(n.name).trim()) errors.push(`${at}: a national team needs a name`);
-      if (n.tactic) {
-        const k = n.tactic;
-        if (!D.FORMATIONS[k.formation]) errors.push(`${at}: unknown formation "${k.formation}"`);
-        if (!D.BUILDUP.includes(k.buildup)) errors.push(`${at}: unknown build-up "${k.buildup}"`);
-        if (!D.PRESS.includes(k.press)) errors.push(`${at}: unknown press "${k.press}"`);
-        if (!D.WIDTH.includes(k.width)) errors.push(`${at}: unknown width "${k.width}"`);
-      }
+      if (n.tactic) errors.push(...tacticErrors(n.tactic, at));
       if (n.short != null && (!String(n.short).trim() || String(n.short).length > 4))
         errors.push(`${at}: the short name is 1–4 characters`);
     }
@@ -1025,6 +1084,9 @@
       if (m.nat && D.NATIONS[m.nat]) st.nat = m.nat;
       if (m.age) st.age = m.age;
       if (m.ability) st.ability = m.ability;
+      if (m.personality) st.personality = m.personality;
+      if (m.rep) st.rep = m.rep;
+      if (m.tactic) c.tactic = W.newTactic(m.tactic.formation, m.tactic.buildup, m.tactic.press, m.tactic.width);
       rep.managers++;
     }
     // national teams: a name, a short name, colours and the ranking points they start with
@@ -1207,8 +1269,21 @@
     'Head Physio': 'physio',
     'Sporting Director': 'director',
   };
-  const makeStaff = (d) =>
-    W.genStaff(d.role, D.NATIONS[d.nat] ? d.nat : 'ENG', { fn: d.fn, ln: d.ln, age: d.age, ability: d.ability });
+  const makeStaff = (d) => {
+    const extra = { fn: d.fn, ln: d.ln, age: d.age, ability: d.ability };
+    if (d.personality) extra.personality = d.personality;
+    if (d.wage) extra.wage = d.wage;
+    if (d.years) extra.contract = FM.S.year + d.years;
+    if (d.role === 'Scout' && d.regions) {
+      const best = Object.keys(d.regions).sort((a, b) => d.regions[b] - d.regions[a]);
+      Object.assign(extra, {
+        regions: { ...Object.fromEntries(Object.keys(D.REGIONS).map((r) => [r, 0.1])), ...d.regions },
+        judge: d.judge || d.ability,
+        note: `Strongest in ${D.REGIONS[best[0]]}${best[1] && d.regions[best[1]] > 0.6 ? ' and ' + D.REGIONS[best[1]] : ''}.`,
+      });
+    } else if (d.role === 'Scout' && d.judge) extra.judge = d.judge;
+    return W.genStaff(d.role, D.NATIONS[d.nat] ? d.nat : 'ENG', extra);
+  };
   WD.seedStaff = function (clubId, isNew) {
     const S = FM.S,
       ds = S.defStaff;

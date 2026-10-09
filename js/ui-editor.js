@@ -135,6 +135,18 @@
         nat: $('#ed-mnat').value,
         age: Math.max(28, Math.min(80, Math.round(+$('#ed-mage').value) || 48)),
         ability: Math.round(+$('#ed-mab').value),
+        rep: Math.round(+$('#ed-mrep').value),
+        ...($('#ed-mpers').value ? { personality: $('#ed-mpers').value } : {}),
+        ...($('#ed-mform').value
+          ? {
+              tactic: {
+                formation: $('#ed-mform').value,
+                buildup: $('#ed-mbuild').value,
+                press: $('#ed-mpress').value,
+                width: $('#ed-mwidth').value,
+              },
+            }
+          : {}),
       });
   };
   // A club the definition adds is first made with a placeholder id; once it has a name its id follows it (the club's own
@@ -370,7 +382,11 @@
       <div class="ng-label">Beyond the clubs</div>
       ${[
         ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names and formats`],
-        ['staff', '🧑‍🏫 Coaches and scouts', `${(ED.def.staff || []).length} made`],
+        [
+          'staffhub',
+          '🧑‍🏫 Staff, managers and agents',
+          `${(ED.def.staff || []).length} coaches and scouts · ${(ED.def.managers || []).length} managers`,
+        ],
         ['intl', '🌍 International football', `tournaments, national teams and their history`],
         [
           'history',
@@ -380,7 +396,7 @@
       ]
         .map(
           ([v, t, s]) =>
-            `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="${v === 'staff' ? 'edStaff' : 'edView'}" data-v="${v}" ${v === 'staff' ? `data-cid="${FREE}"` : ''}><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
+            `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="edView" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
         )
         .join('')}
       <div class="ng-label">Players you make</div>
@@ -720,7 +736,14 @@
     return `<div class="ng-label">Manager <span class="tiny dim">· leave the names empty to keep the one the game gives the club</span></div>
       <div class="ng-names" style="margin-top:0"><input type="text" id="ed-mfn" maxlength="24" placeholder="First name" value="${esc(m.fn || '')}"><input type="text" id="ed-mln" maxlength="28" placeholder="Last name" value="${esc(m.ln || '')}"></div>
       <div class="ng-names"><select id="ed-mnat" style="flex:1">${nations.map(([k, n]) => `<option value="${k}" ${(m.nat || c.nat) === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-mage" min="28" max="80" inputmode="numeric" style="max-width:84px" value="${m.age || 48}" aria-label="Age"></div>
-      <div class="ng-label" style="margin-top:8px">Ability <b id="ed-mabv" style="color:#e6edf6">${m.ability || 12}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-mab" min="1" max="20" step="1" value="${m.ability || 12}" style="width:100%">`;
+      <div class="ng-label" style="margin-top:8px">Ability <b id="ed-mabv" style="color:#e6edf6">${m.ability || 12}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-mab" min="1" max="20" step="1" value="${m.ability || 12}" style="width:100%">
+      <div class="ng-label" style="margin-top:8px">Reputation <b id="ed-mrepv" style="color:#e6edf6">${m.rep || c.rep}</b> <span class="tiny dim">(how the wider game rates them)</span></div><input type="range" id="ed-mrep" min="20" max="99" step="1" value="${m.rep || c.rep}" style="width:100%">
+      <div class="ng-label">Personality</div><select id="ed-mpers"><option value="">As the game gives</option>${D.STAFF_PERSONALITY.map((k) => `<option ${m.personality === k ? 'selected' : ''}>${k}</option>`).join('')}</select>
+      <div class="ng-label">How their team plays <span class="tiny dim">· the system they set the club up in</span></div>
+      <select id="ed-mform"><option value="">As the game sets the club up</option>${Object.keys(D.FORMATIONS)
+        .map((k) => `<option ${(m.tactic || {}).formation === k ? 'selected' : ''}>${k}</option>`)
+        .join('')}</select>
+      <div class="ng-names"><select id="ed-mbuild" style="flex:1">${D.BUILDUP.map((k) => `<option ${((m.tactic || {}).buildup || 'Short') === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-mpress" style="flex:1">${D.PRESS.map((k) => `<option ${((m.tactic || {}).press || 'Mid Block') === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-mwidth" style="flex:1">${D.WIDTH.map((k) => `<option ${((m.tactic || {}).width || 'Balanced') === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>`;
   };
   // Derby and B team: a club has one derby rival (any club of its nation) and may be the B team of a club of a higher division
   const tierOfLeague = (lid) => (leagueOf(lid) || {}).tier || 1;
@@ -1193,6 +1216,69 @@
     'Sporting Director',
     'Scout',
   ];
+  const staffHubView =
+    () => `<div class="h1" style="margin-top:2vh">Staff, managers and agents</div><div class="tag">The people around the clubs.</div>
+      <div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="edStaff" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">Coaches and scouts for hire</div><div class="tiny dim">${(ED.def.staff || []).filter((s) => !s.club).length} on offer from the first day. Staff for one club are made on that club's screen.</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="edView" data-v="managers"><div class="row"><div class="grow"><div class="small b">Managers</div><div class="tiny dim">${(ED.def.managers || []).length} made · each is set on the club's screen</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="edView" data-v="agents"><div class="row"><div class="grow"><div class="small b">Agent firms</div><div class="tiny dim">${agentsNow().length} firms represent the players</div></div><span class="dim">›</span></div></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  const managersView = () => {
+    const list = (ED.def.managers || []).slice().sort((a, b) => (a.ln || '').localeCompare(b.ln || ''));
+    return `<div class="h1" style="margin-top:2vh">Managers</div><div class="tag">Every manager you made. A club with none keeps the one the game gives it. Tap one to change them on the club's screen.</div>
+      ${
+        list
+          .map((m) => {
+            const c = ED.def.clubs.find((x) => x.id === m.club);
+            return c
+              ? `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="club" data-cid="${esc(c.id)}"><div class="row" style="gap:10px">${crestDot(c)}<div class="grow"><div class="small b">${esc(((m.fn || '') + ' ' + (m.ln || '')).trim())}</div><div class="tiny dim">${esc(c.name)} · ability ${m.ability}${m.tactic ? ' · ' + esc(m.tactic.formation) : ''}</div></div><span class="dim">›</span></div></div>`
+              : '';
+          })
+          .join('') || '<div class="empty">None made yet. Open a club to make its manager.</div>'
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="staffhub" aria-label="Back">←</button></div>`;
+  };
+  // Agent firms: the names players' agents work for (the game's own twelve until you change them)
+  const agentsNow = () => (ED.def.agents && ED.def.agents.length ? ED.def.agents : D.AGENT_FIRMS);
+  const readAgents = () => agentsNow().map((a, i) => (($('#ed-ag-' + i) || {}).value ?? a).trim());
+  UI.acts.edSaveAgents = (d) => {
+    ED.def.agents = readAgents().filter(Boolean);
+    const errs = WD.validate(ED.def, null).errors.filter((e) => e.startsWith('agent firms'));
+    if (errs.length) {
+      ED.err = errs;
+      ED.def.agents = [];
+    } else ED.err = [];
+    if (d && d.quiet) return;
+    if (!errs.length) UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  UI.acts.edAddAgent = () => {
+    const names = readAgents().filter(Boolean);
+    ED.def.agents = [...names, 'New Sports Agency'];
+    UI.worldEditor();
+  };
+  UI.acts.edDelAgent = (d) => {
+    const names = readAgents();
+    names.splice(+d.i, 1);
+    ED.def.agents = names.filter(Boolean);
+    if (!ED.def.agents.length) ED.def.agents = [];
+    UI.worldEditor();
+  };
+  UI.acts.edResetAgents = () => {
+    ED.def.agents = D.AGENT_FIRMS.slice();
+    ED.err = [];
+    UI.worldEditor();
+  };
+  const agentsView =
+    () => `<div class="h1" style="margin-top:2vh">Agent firms</div><div class="tag">The firms players' agents work for. Players from some nations also get an agency named after their agent.</div>
+      ${errBox()}
+      ${agentsNow()
+        .map(
+          (a, i) =>
+            `<div class="ng-names" style="margin-top:6px"><input type="text" id="ed-ag-${i}" maxlength="40" value="${esc(a)}"><button class="btn sm" data-act="edDelAgent" data-i="${i}" aria-label="Remove">✕</button></div>`,
+        )
+        .join('')}
+      <div class="actions" style="margin-top:12px"><button class="btn sm" data-act="edAddAgent">＋ Add a firm</button><button class="btn sm" data-act="edResetAgents">Back to the game's twelve</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="staffhub" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveAgents">Save</button></div>`;
   const staffHere = () =>
     (ED.def.staff || []).filter((s) => (s.club || null) === (ED.sclub === FREE ? null : ED.sclub));
   UI.acts.edStaff = (d) => {
@@ -1224,6 +1310,25 @@
     ED.err = [];
     UI.worldEditor();
   };
+  // The scout's network as set on the screen (nothing when the game is to make it, or the person is not a scout)
+  const scoutNet = (role) => {
+    if (role !== 'Scout' || !($('#ed-scustom') || {}).checked) return { regions: undefined, judge: undefined };
+    return {
+      regions: Object.fromEntries(Object.keys(D.REGIONS).map((r) => [r, Math.round(+$('#ed-sreg-' + r).value) / 100])),
+      judge: Math.round(+$('#ed-sjudge').value),
+    };
+  };
+  // A network made up from the scout's nation and ability, as the game would (shown on the sliders, saved with Save)
+  UI.acts.edScoutNet = () => {
+    const p = FM.W.scoutProfile($('#ed-snat').value, Math.round(+$('#ed-sab').value));
+    $('#ed-scustom').checked = true;
+    for (const r of Object.keys(D.REGIONS)) {
+      $('#ed-sreg-' + r).value = Math.round(p.regions[r] * 100);
+      $('#ed-sregv-' + r).textContent = Math.round(p.regions[r] * 100) + '%';
+    }
+    $('#ed-sjudge').value = p.judge;
+    $('#ed-sjudgev').textContent = p.judge;
+  };
   UI.acts.edSaveStaff = () => {
     const v = (id) => ($('#ed-' + id) || {}).value;
     const r = WD.editor(ED.def, null).updateStaff(ED.sid, {
@@ -1233,6 +1338,10 @@
       nat: v('snat'),
       age: Math.round(+v('sage')),
       ability: Math.round(+v('sab')),
+      personality: v('spers') || undefined,
+      years: Math.round(+v('syears')) || undefined,
+      wage: Math.round(+v('swage')) || undefined,
+      ...scoutNet(v('srole')),
     });
     if (!r.ok) {
       ED.err = r.errors;
@@ -1262,7 +1371,7 @@
           )
           .join('') || '<div class="empty">None made yet.</div>'
       }
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edAddStaff">＋ Add a person</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'staffhub' : 'club'}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edAddStaff">＋ Add a person</button></div>`;
   };
   const stafferView = () => {
     const s = (ED.def.staff || []).find((x) => x.id === ED.sid);
@@ -1274,6 +1383,18 @@
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">First name</div><input type="text" id="ed-sfn" maxlength="24" value="${esc(s.fn || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Last name</div><input type="text" id="ed-sln" maxlength="28" value="${esc(s.ln || '')}"></div></div>
       <div class="ng-names"><select id="ed-snat" style="flex:1">${nations.map(([k, n]) => `<option value="${k}" ${s.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-sage" min="25" max="80" inputmode="numeric" style="max-width:84px" value="${s.age}" aria-label="Age"></div>
       <div class="ng-label">Ability <b id="ed-sabv" style="color:#e6edf6">${s.ability}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-sab" min="1" max="20" step="1" value="${s.ability}" style="width:100%">
+      <div class="ng-label">Personality</div><select id="ed-spers"><option value="">As the game gives</option>${D.STAFF_PERSONALITY.map((k) => `<option ${s.personality === k ? 'selected' : ''}>${k}</option>`).join('')}</select>
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Contract (years)</div><input type="number" id="ed-syears" min="1" max="5" inputmode="numeric" placeholder="Game's" value="${s.years || ''}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Wage a week</div><input type="number" id="ed-swage" min="50" max="500000" inputmode="numeric" placeholder="Game's" value="${s.wage || ''}"></div></div>
+      <div class="ng-label">Scout's network <span class="tiny dim">· scouts only</span></div>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ed-scustom" ${s.regions ? 'checked' : ''}> I set it (otherwise the game makes it from where they come from)</label>
+      ${Object.entries(D.REGIONS)
+        .map(
+          ([r, name]) =>
+            `<div class="row" style="gap:10px;align-items:center;margin-top:6px"><span class="small" style="width:110px;flex:none">${esc(name)}</span><input type="range" id="ed-sreg-${r}" min="5" max="100" step="5" value="${Math.round(((s.regions || {})[r] || 0.3) * 100)}" style="flex:1"><b id="ed-sregv-${r}" style="width:42px;text-align:right">${Math.round(((s.regions || {})[r] || 0.3) * 100)}%</b></div>`,
+        )
+        .join('')}
+      <div class="ng-label">Judgement <b id="ed-sjudgev" style="color:#e6edf6">${s.judge || s.ability}</b> <span class="tiny dim">(how well they read a player, 1–20)</span></div><input type="range" id="ed-sjudge" min="1" max="20" step="1" value="${s.judge || s.ability}" style="width:100%">
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edScoutNet">Make up a network</button></div>
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelStaff">Delete this person</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edStaff" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveStaff">Save</button></div>`;
   };
@@ -1736,6 +1857,9 @@
       cup: cupView,
       newcup: newCupView,
       staff: staffView,
+      staffhub: staffHubView,
+      managers: managersView,
+      agents: agentsView,
       staffer: stafferView,
       nations: nationsView,
       nation: nationView,
@@ -1770,6 +1894,9 @@
     bind('ed-rep', (v) => ($('#ed-repv').textContent = v));
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
     bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
+    bind('ed-mrep', (v) => ($('#ed-mrepv').textContent = v));
+    bind('ed-sjudge', (v) => ($('#ed-sjudgev').textContent = v));
+    for (const r of Object.keys(D.REGIONS)) bind('ed-sreg-' + r, (v) => ($('#ed-sregv-' + r).textContent = v + '%'));
     bind('ed-ncoef', (v) => ($('#ed-ncoefv').textContent = v));
     bind('ed-cupprize', () => saveCupPrize());
     bind('ed-cupname', () => saveCupNames());
