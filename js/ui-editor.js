@@ -3,8 +3,9 @@
 // edited through the same validated calls the importers use, and handed back to the new-career screen as the database the
 // world is made from (or saved as a file to share). Opened from the Database card on the new-career screen.
 //
-// This first version edits what a club and a league are: names, colours, grounds, ratings, identities, which league a club
-// plays in, and adds new clubs. Players, staff and competitions come next (the definition already carries them).
+// It edits what a club and a league are (names, colours, grounds, ratings, identities, which league a club plays in, new
+// clubs and leagues, promotion, relegation and continental places), the players and free agents, a manager for each club, the
+// rules, the cups (names and formats), derbies and B teams, coaches and scouts, national teams and past seasons.
 (function () {
   const FM = window.FM,
     D = FM.D,
@@ -150,6 +151,8 @@
     c.id = next;
     for (const p of ED.def.players) if (p.club === id) p.club = next;
     for (const m of ED.def.managers || []) if (m.club === id) m.club = next;
+    for (const s of ED.def.staff || []) if (s.club === id) s.club = next;
+    for (const o of ED.def.clubs) if (o.parent === id) o.parent = next;
     for (const r of ED.def.rivals || []) for (let i = 0; i < 2; i++) if (r[i] === id) r[i] = next;
     if (ED.cid === id) ED.cid = next;
   };
@@ -188,6 +191,9 @@
     def.clubs = def.clubs.filter((c) => c.id !== id);
     def.players = (def.players || []).filter((p) => p.club !== id);
     def.managers = (def.managers || []).filter((m) => m.club !== id);
+    def.staff = (def.staff || []).filter((s) => s.club !== id);
+    for (const r of def.rivals || [])
+      if (r[0] === id || r[1] === id) def.removeRivals = [...(def.removeRivals || []), [r[0], r[1]]];
     def.rivals = (def.rivals || []).filter((r) => r[0] !== id && r[1] !== id);
     if (builtIn().has(id)) def.removeClubs = [...new Set([...(def.removeClubs || []), id])];
   };
@@ -242,6 +248,15 @@
       return UI.worldEditor();
     }
     saveManager(ED.cid);
+    const E = WD.editor(ED.def, null),
+      rival = v('derby'),
+      b = E.setParent(ED.cid, v('parent') || null);
+    if (!b.ok) {
+      ED.err = b.errors;
+      return UI.worldEditor();
+    }
+    if (rival) E.setDerby(ED.cid, rival, v('derbyname'));
+    else if (E.derbyOf(ED.cid)) E.clearDerby(ED.cid);
     renameToName(ED.cid, patch.name);
     ED.lid = lg;
     ED.view = 'league';
@@ -341,7 +356,22 @@
               .join('')}</div>`,
         )
         .join('')}
-      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edView" data-v="cups"><div class="row"><div class="grow"><div class="small b">🏆 Cup names</div><div class="tiny dim">${(ED.def.competitions || []).length} renamed</div></div><span class="dim">›</span></div></div>
+      <div class="ng-label">Beyond the clubs</div>
+      ${[
+        ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names and formats`],
+        ['staff', '🧑‍🏫 Coaches and scouts', `${(ED.def.staff || []).length} made`],
+        ['nations', '🌍 National teams', `${(ED.def.nations || []).length} changed`],
+        [
+          'history',
+          '📜 History',
+          `${ED.def.history.seasons.length} past season${ED.def.history.seasons.length === 1 ? '' : 's'}`,
+        ],
+      ]
+        .map(
+          ([v, t, s]) =>
+            `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="${v === 'staff' ? 'edStaff' : 'edView'}" data-v="${v}" ${v === 'staff' ? `data-cid="${FREE}"` : ''}><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
+        )
+        .join('')}
       <div class="ng-label">Players you make</div>
       <div class="seg" style="margin:0">${[
         ['overlay', 'Add to the squads'],
@@ -575,6 +605,39 @@
       <div class="ng-names"><select id="ed-mnat" style="flex:1">${nations.map(([k, n]) => `<option value="${k}" ${(m.nat || c.nat) === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-mage" min="28" max="80" inputmode="numeric" style="max-width:84px" value="${m.age || 48}" aria-label="Age"></div>
       <div class="ng-label" style="margin-top:8px">Ability <b id="ed-mabv" style="color:#e6edf6">${m.ability || 12}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-mab" min="1" max="20" step="1" value="${m.ability || 12}" style="width:100%">`;
   };
+  // Derby and B team: a club has one derby rival (any club of its nation) and may be the B team of a club of a higher division
+  const tierOfLeague = (lid) => (leagueOf(lid) || {}).tier || 1;
+  const clubGroups = (nat, sel, ok) =>
+    ED.def.leagues
+      .filter((l) => l.nat === nat)
+      .map((l) => {
+        const rows = clubsOf(l.id)
+          .filter(ok)
+          .sort((a, b) => a.name.localeCompare(b.name));
+        return rows.length
+          ? `<optgroup label="${esc(l.name)}">${rows.map((c) => `<option value="${esc(c.id)}" ${c.id === sel ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</optgroup>`
+          : '';
+      })
+      .join('');
+  const derbyFields = (c) => {
+    const r = WD.editor(ED.def, null).derbyOf(c.id),
+      other = r ? (r[0] === c.id ? r[1] : r[0]) : '';
+    const tier = tierOfLeague(c.league),
+      taken = new Set(ED.def.clubs.filter((x) => x.parent && x.id !== c.id).map((x) => x.parent));
+    const parents = clubGroups(
+      c.nat,
+      c.parent,
+      (x) => x.id !== c.id && !x.parent && tierOfLeague(x.league) < tier && !taken.has(x.id),
+    );
+    return `<div class="ng-label">Derby <span class="tiny dim">· the club's great rivalry</span></div>
+      <select id="ed-derby"><option value="">No derby</option>${clubGroups(c.nat, other, (x) => x.id !== c.id)}</select>
+      <input type="text" id="ed-derbyname" maxlength="40" placeholder="Name of the derby" style="margin-top:6px" value="${esc(r ? r[2] : '')}">
+      ${
+        parents || c.parent
+          ? `<div class="ng-label">B team of <span class="tiny dim">· plays below its parent, which owns its players</span></div><select id="ed-parent"><option value="">Not a B team</option>${parents}</select>`
+          : ''
+      }`;
+  };
   const clubView = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     if (!c) return leagueView();
@@ -600,7 +663,9 @@
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Capacity</div><input type="number" id="ed-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${c.stadium.cap}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Founded</div><input type="number" id="ed-founded" min="1800" max="2030" inputmode="numeric" value="${c.founded || ''}"></div></div>
       ${sameNat.length > 1 ? `<div class="ng-label">League</div><select id="ed-league">${lgOpts}</select>` : ''}
       ${managerFields(c)}
-      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Players</div><div class="tiny dim">${playersOf(c.id).length} made for this club</div></div><span class="dim">›</span></div></div>
+      ${derbyFields(c)}
+      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edStaff" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Coaches and scouts</div><div class="tiny dim">${(ED.def.staff || []).filter((s) => s.club === c.id).length} come with this job</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Players</div><div class="tiny dim">${playersOf(c.id).length} made for this club</div></div><span class="dim">›</span></div></div>
       ${!added ? '<div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edRevertClub">Put the game\'s version back</button></div>' : ''}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelClub">${added ? 'Delete this club' : 'Take this club out of the world'}</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClub">Save club</button></div>`;
@@ -743,32 +808,484 @@
     ...D.EURO_CUPS.map((c) => ({ id: c.id, name: c.name, short: c.short, group: 'Continental' })),
     { id: 'CWC', name: 'FIFA Club World Cup', short: 'CWC', group: 'Continental' },
   ];
-  UI.acts.edSaveCups = () => {
-    const comps = [];
-    for (const c of cupList()) {
-      const name = (($('#ed-cup-' + c.id) || {}).value || '').trim(),
-        short = (($('#ed-cups-' + c.id) || {}).value || '').trim();
-      if (name && (name !== c.name || (short && short !== c.short)))
-        comps.push({ id: c.id, name, short: short || c.short, nat: null, type: 'cup' });
+  // The cup's entry in the definition (its name, short name and, for the cups that have one, its format)
+  const compOf = (id) => (ED.def.competitions || []).find((c) => c.id === id);
+  const ROUND = { 2: 'Final', 4: 'Semi-finals', 8: 'Quarter-finals', 16: 'Round of 16' };
+  const fmtNow = (id) => (compOf(id) && compOf(id).format) || WD.formatOf(id);
+  const roundList = (list) =>
+    [...list]
+      .sort((a, b) => b - a)
+      .map((n) => ROUND[n] || `last ${n}`)
+      .join(', ');
+  const fmtLine = (id) => {
+    const f = fmtNow(id),
+      kind = WD.cupKind(id);
+    if (!f) return 'Name only';
+    if (kind === 'cont') {
+      const leg = (k, n) => `${n} ${f.legs[k] === 2 ? 'two legs' : 'one leg'}`;
+      return `${leg('qf', 'QF')} · ${leg('sf', 'SF')} · ${leg('f', 'final')}${f.central ? ' · one venue' : ''}`;
     }
-    ED.def.competitions = comps;
-    ED.view = 'home';
-    UI.toast('Cup names saved', 1500);
+    const bits = [];
+    if ((f.legs || []).length) bits.push('two legs: ' + roundList(f.legs));
+    if (f.neutral === 'all') bits.push('every tie neutral');
+    else if ((f.neutral || []).length) bits.push('neutral: ' + roundList(f.neutral));
+    return bits.join(' · ') || 'Single matches at the home ground';
+  };
+  UI.acts.edCup = (d) => {
+    ED.view = 'cup';
+    ED.cup = d.cup;
+    ED.err = [];
     UI.worldEditor();
   };
+  // Change a cup's format through the validated call; the screen draws again
+  const setFormat = (format) => {
+    const r = WD.editor(ED.def, null).setCup(ED.cup, { format });
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  UI.acts.edCupRound = (d) => {
+    const f = clone(fmtNow(ED.cup)),
+      r = +d.r,
+      earlier = f.neutral === 'all';
+    f.legs = (f.legs || []).filter((n) => n !== r);
+    const neutral = (earlier ? [16, 8, 4, 2] : (f.neutral || []).slice()).filter((n) => n !== r);
+    if (d.v === 'two') f.legs.push(r);
+    else if (d.v === 'neutral') neutral.push(r);
+    // (every tie neutral covers every round: one round put back to a home ground ends that)
+    f.neutral = earlier && d.v !== 'single' ? 'all' : neutral;
+    setFormat(f);
+  };
+  UI.acts.edCupEarlier = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    if (d.v === 'neutral') f.neutral = 'all';
+    else if (f.neutral === 'all') f.neutral = [16, 8, 4, 2].filter((n) => !(f.legs || []).includes(n));
+    setFormat(f);
+  };
+  UI.acts.edCupLegs = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    f.legs[d.k] = +d.n;
+    setFormat(f);
+  };
+  UI.acts.edCupCentral = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    f.central = d.v === 'true';
+    setFormat(f);
+  };
+  UI.acts.edCupReset = () => {
+    ED.def.competitions = (ED.def.competitions || []).filter((x) => x.id !== ED.cup);
+    ED.view = 'cups';
+    UI.worldEditor();
+  };
+  // The names are saved as you type them (an empty name keeps the last one)
+  const saveCupNames = () => {
+    const name = (($('#ed-cupname') || {}).value || '').trim(),
+      short = (($('#ed-cupshort') || {}).value || '').trim();
+    const c = cupList().find((x) => x.id === ED.cup);
+    if (!c || !name) return;
+    const o = compOf(c.id);
+    if (!o && name === c.name && (!short || short === c.short)) return;
+    WD.editor(ED.def, null).setCup(c.id, { name, short: short || c.short });
+  };
   const cupsView = () => {
-    const over = Object.fromEntries((ED.def.competitions || []).map((c) => [c.id, c]));
     let last = '';
-    return `<div class="h1" style="margin-top:2vh">Cup names</div><div class="tag">Rename any cup. Leave a name as it is to keep it.</div>
+    return `<div class="h1" style="margin-top:2vh">Cups</div><div class="tag">Rename a cup or change how its knockouts are played. Tap one.</div>
       ${cupList()
         .map((c) => {
-          const o = over[c.id] || c,
+          const o = compOf(c.id) || c,
             head = c.group !== last ? `<div class="ng-label">${esc(c.group)}</div>` : '';
           last = c.group;
-          return `${head}<div class="ng-names" style="margin-top:6px"><input type="text" id="ed-cup-${c.id}" maxlength="48" value="${esc(o.name)}"><input type="text" id="ed-cups-${c.id}" maxlength="6" style="max-width:84px" value="${esc(o.short || c.short)}"></div>`;
+          return `${head}<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edCup" data-cup="${c.id}"><div class="row"><div class="grow"><div class="small b">${esc(o.name)}</div><div class="tiny dim">${esc(fmtLine(c.id))}</div></div><span class="dim">›</span></div></div>`;
         })
         .join('')}
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveCups">Save names</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  const seg = (act, cur, opts, extra = '', key = 'v') =>
+    `<div class="seg" style="margin:0">${opts.map(([v, t]) => `<button class="${cur === v ? 'on' : ''}" data-act="${act}" ${extra} data-${key}="${v}">${t}</button>`).join('')}</div>`;
+  const cupView = () => {
+    const c = cupList().find((x) => x.id === ED.cup);
+    if (!c) return cupsView();
+    const o = compOf(c.id) || c,
+      kind = WD.cupKind(c.id),
+      f = fmtNow(c.id);
+    let body = '<div class="tiny dim" style="line-height:1.5;margin-top:10px">This cup has no format to change.</div>';
+    if (kind === 'opts') {
+      const all = f.neutral === 'all';
+      body = `<div class="ng-label">Earlier rounds <span class="tiny dim">· before the round of 16</span></div>${seg(
+        'edCupEarlier',
+        all ? 'neutral' : 'single',
+        [
+          ['single', 'At the home ground'],
+          ['neutral', 'Neutral ground'],
+        ],
+      )}
+        ${[16, 8, 4, 2]
+          .map((r) => {
+            const cur = (f.legs || []).includes(r)
+              ? 'two'
+              : all || (f.neutral || []).includes(r)
+                ? 'neutral'
+                : 'single';
+            return `<div class="tiny dim" style="margin:10px 0 4px">${ROUND[r]}</div>${seg(
+              'edCupRound',
+              cur,
+              [
+                ['single', 'One match'],
+                ['neutral', 'Neutral'],
+                ['two', 'Two legs'],
+              ],
+              `data-r="${r}"`,
+            )}`;
+          })
+          .join('')}
+        <div class="tiny dim" style="margin-top:8px;line-height:1.5">One match is played at the home of the club drawn first, with extra time and penalties. A neutral match is the same at a neutral ground. Two legs are home and away. The calendar makes room for the extra days.</div>`;
+    } else if (kind === 'cont') {
+      body = `${[
+        ['qf', 'Quarter-finals'],
+        ['sf', 'Semi-finals'],
+        ['f', 'Final'],
+      ]
+        .map(
+          ([k, t]) =>
+            `<div class="tiny dim" style="margin:10px 0 4px">${t}</div>${seg(
+              'edCupLegs',
+              f.legs[k],
+              [
+                [1, 'One match'],
+                [2, 'Two legs'],
+              ],
+              `data-k="${k}"`,
+              'n',
+            )}`,
+        )
+        .join('')}
+        <div class="tiny dim" style="margin:10px 0 4px">Knockouts at one venue</div>${seg('edCupCentral', !!f.central, [
+          [false, 'No'],
+          [true, 'Yes'],
+        ])}
+        <div class="tiny dim" style="margin-top:8px;line-height:1.5">The group stage is the same everywhere. Two-legged ties need the world's two-legged knockouts rule (on the first screen); without it every tie is one match.</div>`;
+    }
+    return `<div class="h1" style="margin-top:2vh">${esc(o.name)}</div><div class="tag">${esc(c.group)}</div>
+      ${errBox()}
+      <div class="ng-names"><input type="text" id="ed-cupname" maxlength="48" value="${esc(o.name)}"><input type="text" id="ed-cupshort" maxlength="6" style="max-width:84px" value="${esc(o.short || c.short)}"></div>
+      ${body}
+      <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edCupReset">Put the game's name and format back</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button></div>`;
+  };
+
+  // ---------- Coaches and scouts ----------
+  // Staff made for a club come with the job when you take charge of it (they replace the ones a new manager is given); staff made
+  // with no club are on offer for hire in the first season.
+  const STAFF_ROLES = [
+    'Assistant Manager',
+    'First-Team Coach',
+    'Head of Analytics',
+    'Head Physio',
+    'Sporting Director',
+    'Scout',
+  ];
+  const staffHere = () =>
+    (ED.def.staff || []).filter((s) => (s.club || null) === (ED.sclub === FREE ? null : ED.sclub));
+  UI.acts.edStaff = (d) => {
+    ED.view = 'staff';
+    if (d.cid !== undefined) ED.sclub = d.cid;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edAddStaff = () => {
+    const c = ED.sclub === FREE ? null : ED.def.clubs.find((x) => x.id === ED.sclub);
+    const taken = new Set(staffHere().map((s) => s.role));
+    const role = (c && STAFF_ROLES.find((r) => r !== 'Scout' && !taken.has(r))) || 'Scout';
+    const r = WD.editor(ED.def, null).addStaff({
+      role,
+      fn: 'New',
+      ln: 'Staff',
+      nat: (c && c.nat) || 'ENG',
+      age: 45,
+      ability: 12,
+      club: c ? c.id : null,
+    });
+    ED.err = r.ok ? [] : r.errors;
+    if (r.ok) ((ED.view = 'staffer'), (ED.sid = r.id));
+    UI.worldEditor();
+  };
+  UI.acts.edStaffer = (d) => {
+    ED.view = 'staffer';
+    ED.sid = d.sid;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edSaveStaff = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const r = WD.editor(ED.def, null).updateStaff(ED.sid, {
+      role: v('srole'),
+      fn: (v('sfn') || '').trim(),
+      ln: (v('sln') || '').trim(),
+      nat: v('snat'),
+      age: Math.round(+v('sage')),
+      ability: Math.round(+v('sab')),
+    });
+    if (!r.ok) {
+      ED.err = r.errors;
+      return UI.worldEditor();
+    }
+    ED.view = 'staff';
+    ED.err = [];
+    UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  UI.acts.edDelStaff = () => {
+    WD.editor(ED.def, null).removeStaff(ED.sid);
+    ED.view = 'staff';
+    UI.worldEditor();
+  };
+  const staffView = () => {
+    const free = ED.sclub === FREE,
+      c = free ? null : ED.def.clubs.find((x) => x.id === ED.sclub),
+      list = staffHere();
+    return `<div class="h1" style="margin-top:2vh">${free ? '🧑‍🏫 Coaches and scouts for hire' : `${crestDot(c)} ${esc(c.name)}: staff`}</div><div class="tag">${free ? 'People who are on offer in the staff market from the first day.' : 'These come with the job when you take charge of this club: an assistant, a coach, an analyst, a physio, a director and up to five scouts. They replace the ones a new manager is given.'}</div>
+      ${errBox()}
+      ${
+        list
+          .map(
+            (s) =>
+              `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edStaffer" data-sid="${esc(s.id)}"><div class="row"><div class="grow"><div class="small b">${esc(((s.fn || '') + ' ' + (s.ln || '')).trim())}</div><div class="tiny dim">${esc(s.role)} · ${(D.NATIONS[s.nat] || {}).flag || ''} · age ${s.age} · ability ${s.ability}</div></div><span class="dim">›</span></div></div>`,
+          )
+          .join('') || '<div class="empty">None made yet.</div>'
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edAddStaff">＋ Add a person</button></div>`;
+  };
+  const stafferView = () => {
+    const s = (ED.def.staff || []).find((x) => x.id === ED.sid);
+    if (!s) return staffView();
+    const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    return `<div class="h1" style="margin-top:2vh">${esc(((s.fn || '') + ' ' + (s.ln || '')).trim() || 'New staff')}</div><div class="tag">${s.role === 'Scout' ? 'A scout knows the region they come from best; the game works out the rest of the network.' : 'The better the ability, the more the club gets from the role.'}</div>
+      ${errBox()}
+      <div class="ng-label">Role</div><select id="ed-srole">${STAFF_ROLES.map((r) => `<option ${s.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">First name</div><input type="text" id="ed-sfn" maxlength="24" value="${esc(s.fn || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Last name</div><input type="text" id="ed-sln" maxlength="28" value="${esc(s.ln || '')}"></div></div>
+      <div class="ng-names"><select id="ed-snat" style="flex:1">${nations.map(([k, n]) => `<option value="${k}" ${s.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-sage" min="25" max="80" inputmode="numeric" style="max-width:84px" value="${s.age}" aria-label="Age"></div>
+      <div class="ng-label">Ability <b id="ed-sabv" style="color:#e6edf6">${s.ability}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-sab" min="1" max="20" step="1" value="${s.ability}" style="width:100%">
+      <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelStaff">Delete this person</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edStaff" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveStaff">Save</button></div>`;
+  };
+
+  // ---------- National teams ----------
+  // The name, short name, colours and ranking points a national team starts with (a nation too thin in players to field a team
+  // keeps none; its entry is ignored)
+  const ntOf = (code) => (ED.def.nations || []).find((n) => n.code === code);
+  const sameColours = (a, b) =>
+    a.length === b.length && a.every((x, i) => String(x).toLowerCase() === String(b[i]).toLowerCase());
+  UI.acts.edNation = (d) => {
+    ED.view = 'nation';
+    ED.code = d.code;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edSaveNation = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const N = D.NATIONS[ED.code],
+      E = WD.editor(ED.def, null);
+    const patch = {
+      name: (v('nname') || '').trim(),
+      short: (v('nshort') || '').trim().toUpperCase(),
+      colors: [v('nc1'), v('nc2')],
+      coef: +v('ncoef') === 50 ? null : Math.round(+v('ncoef') * 10) / 10, // (50: the game works the points out)
+    };
+    const r = E.setNation(ED.code, patch);
+    if (!r.ok) {
+      ED.err = r.errors;
+      return UI.worldEditor();
+    }
+    if (
+      patch.name === N.name &&
+      patch.short === ED.code &&
+      patch.coef == null &&
+      sameColours(patch.colors, D.NT_COLORS[ED.code] || ['#ffffff', '#000000'])
+    )
+      E.clearNation(ED.code);
+    ED.view = 'nations';
+    ED.err = [];
+    UI.toast('National team saved', 1500);
+    UI.worldEditor();
+  };
+  UI.acts.edClearNation = () => {
+    WD.editor(ED.def, null).clearNation(ED.code);
+    ED.view = 'nations';
+    UI.worldEditor();
+  };
+  const nationsView = () => {
+    const by = {};
+    for (const [code, n] of Object.entries(D.NATIONS)) (by[n.region] = by[n.region] || []).push([code, n]);
+    return `<div class="h1" style="margin-top:2vh">National teams</div><div class="tag">Name, colours and ranking points of each national team. Tap one. A nation with too few players to field a squad has no team in the world.</div>
+      ${Object.entries(by)
+        .map(
+          ([region, list]) =>
+            `<div class="ng-label">${esc((D.REGIONS || {})[region] || region)}</div>${list
+              .sort((a, b) => a[1].name.localeCompare(b[1].name))
+              .map(([code, n]) => {
+                const o = ntOf(code);
+                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${n.flag} ${esc((o && o.name) || n.name)}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}</div></div><span class="dim">›</span></div></div>`;
+              })
+              .join('')}`,
+        )
+        .join('')}
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  const nationView = () => {
+    const N = D.NATIONS[ED.code];
+    if (!N) return nationsView();
+    const o = ntOf(ED.code) || {},
+      cols = o.colors || D.NT_COLORS[ED.code] || ['#ffffff', '#000000'],
+      coef = o.coef != null ? o.coef : 50;
+    return `<div class="h1" style="margin-top:2vh">${N.flag} ${esc(o.name || N.name)}</div><div class="tag">The national team of ${esc(N.name)}.</div>
+      ${errBox()}
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Name</div><input type="text" id="ed-nname" maxlength="32" value="${esc(o.name || N.name)}"></div><div style="flex:1;max-width:100px"><div class="ng-label" style="margin-top:0">Short</div><input type="text" id="ed-nshort" maxlength="4" value="${esc(o.short || ED.code)}"></div></div>
+      <div class="ng-label">Colours</div>
+      <div class="row" style="gap:10px"><input type="color" id="ed-nc1" value="${esc(cols[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="ed-nc2" value="${esc(cols[1])}" style="width:64px;height:44px;padding:2px"><span class="tiny dim">shirt, and the second colour</span></div>
+      <div class="ng-label">Ranking points <b id="ed-ncoefv" style="color:#e6edf6">${coef}</b> <span class="tiny dim">(about 50 for an average nation, 90 and over for the best; every match moves them)</span></div>
+      <input type="range" id="ed-ncoef" min="20" max="100" step="0.5" value="${coef}" style="width:100%">
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Left at 50 the game works the points out from the nation's players, as it does without the editor.</div>
+      <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edClearNation">Put the game's version back</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="nations" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveNation">Save</button></div>`;
+  };
+
+  // ---------- History ----------
+  // Past seasons: who won each league. A season entered as champion, runner-up and third gets a full table made to fit (a club
+  // higher up has won more), and the champion's honours are counted. Past seasons come before the first one you play.
+  const seasonOf = (y) => ED.def.history.seasons.find((s) => s.year === y);
+  UI.acts.edAddSeason = () => {
+    const v = Math.round(+($('#ed-hyear') || {}).value);
+    const r = WD.editor(ED.def, null).addSeason({ year: v, label: `${v}/${String(v + 1).slice(2)}`, comps: {} });
+    ED.err = r.ok ? [] : r.errors;
+    if (r.ok) ((ED.view = 'season'), (ED.hy = v));
+    UI.worldEditor();
+  };
+  UI.acts.edSeason = (d) => {
+    ED.view = 'season';
+    if (d.y !== undefined) ED.hy = +d.y;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edDelSeason = () => {
+    WD.editor(ED.def, null).removeSeason(ED.hy);
+    ED.view = 'history';
+    UI.worldEditor();
+  };
+  UI.acts.edSeasonLeague = (d) => {
+    ED.view = 'seasonleague';
+    ED.hl = d.lid;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edFillHistory = (d) => {
+    ED.def.meta.fillHistory = d.v === 'true';
+    UI.worldEditor();
+  };
+  UI.acts.edSaveSeasonLeague = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const s = seasonOf(ED.hy),
+      l = leagueOf(ED.hl),
+      champ = v('hc'),
+      second = v('hr'),
+      third = v('ht');
+    if (!champ) {
+      delete s.comps[l.id];
+      ED.view = 'season';
+      ED.err = [];
+      return UI.worldEditor();
+    }
+    const top = [champ, second, third].filter(Boolean);
+    if (!second || new Set(top).size !== top.length) {
+      ED.err = [
+        !second ? 'Choose a runner-up as well' : 'The champion, runner-up and third place are three different clubs',
+      ];
+      return UI.worldEditor();
+    }
+    const clubs = clubsOf(l.id).sort((a, b) => b.rep - a.rep),
+      order = top.concat(clubs.map((c) => c.id).filter((id) => !top.includes(id))),
+      games = (l.rules && l.rules.rounds) || 2 * (clubs.length - 1);
+    s.comps[l.id] = {
+      champion: champ,
+      runnerUp: second,
+      third: third || null,
+      table: WD.makeTable(order, games, ED.def.rules.win),
+    };
+    const bad = WD.validate(ED.def, null).errors.filter((e) => e.startsWith(`season ${s.year}`));
+    if (bad.length) {
+      delete s.comps[l.id];
+      ED.err = bad;
+      return UI.worldEditor();
+    }
+    ED.view = 'season';
+    ED.err = [];
+    UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  const yy = (y) => `${y}/${String(y + 1).slice(2)}`;
+  const historyView = () => {
+    const seasons = ED.def.history.seasons.slice().sort((a, b) => b.year - a.year),
+      start = yearOf(),
+      next = seasons.length ? seasons[seasons.length - 1].year - 1 : start - 1;
+    return `<div class="h1" style="margin-top:2vh">History</div><div class="tag">Past seasons before the one you start in (${yy(start)}). They fill the archive, club honours and the record books.</div>
+      ${errBox()}
+      ${
+        seasons
+          .map(
+            (s) =>
+              `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeason" data-y="${s.year}"><div class="row"><div class="grow"><div class="small b">${yy(s.year)}</div><div class="tiny dim">${Object.keys(s.comps).length} league${Object.keys(s.comps).length === 1 ? '' : 's'} filled in</div></div><span class="dim">›</span></div></div>`,
+          )
+          .join('') || '<div class="empty">No past seasons yet.</div>'
+      }
+      <div class="ng-label">Seasons you have not entered</div>
+      <div class="seg" style="margin:0">${[
+        [false, 'Leave empty'],
+        [true, 'Make them up'],
+      ]
+        .map(
+          ([k, t]) =>
+            `<button class="${!!ED.def.meta.fillHistory === k ? 'on' : ''}" data-act="edFillHistory" data-v="${k}">${t}</button>`,
+        )
+        .join('')}</div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">With "make them up" the game invents the thirty years before the start that you have not entered, as it does for a world without the editor.</div>
+      <div class="ng-label">Add a season <span class="tiny dim">· the year it started</span></div>
+      <div class="ng-names" style="margin-top:0"><input type="number" id="ed-hyear" inputmode="numeric" value="${next}" style="max-width:120px"><button class="btn sm pri grow" data-act="edAddSeason">Add</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  const seasonView = () => {
+    const s = seasonOf(ED.hy);
+    if (!s) return historyView();
+    const nameOf = (id) => (ED.def.clubs.find((c) => c.id === id) || { name: id }).name;
+    const nations = [...new Set(ED.def.leagues.map((l) => l.nat))];
+    return `<div class="h1" style="margin-top:2vh">${yy(s.year)}</div><div class="tag">Tap a league to say who won it.</div>
+      ${errBox()}
+      ${nations
+        .map((nat) => {
+          const n = D.NATIONS[nat] || { flag: '', name: nat };
+          return `<div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">${n.flag} ${esc(n.name)}</div>${ED.def.leagues
+            .filter((l) => l.nat === nat)
+            .map((l) => {
+              const e = s.comps[l.id];
+              return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonLeague" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.champion))} · ${esc(nameOf(e.runnerUp))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
+            })
+            .join('')}`;
+        })
+        .join('')}
+      <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelSeason">Delete this season</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="history" aria-label="Back">←</button></div>`;
+  };
+  const seasonLeagueView = () => {
+    const s = seasonOf(ED.hy),
+      l = leagueOf(ED.hl);
+    if (!s || !l) return historyView();
+    const e = s.comps[l.id] || {};
+    const clubs = clubsOf(l.id).sort((a, b) => a.name.localeCompare(b.name));
+    const sel = (id, cur, none) =>
+      `<select id="ed-${id}"><option value="">${none}</option>${clubs.map((c) => `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
+    return `<div class="h1" style="margin-top:2vh">${esc(l.name)}</div><div class="tag">${yy(s.year)}. The rest of the table is made up to fit.</div>
+      ${errBox()}
+      <div class="ng-label">Champion</div>${sel('hc', e.champion, 'Not filled in')}
+      <div class="ng-label">Runner-up</div>${sel('hr', e.runnerUp, 'Choose')}
+      <div class="ng-label">Third <span class="tiny dim">· optional</span></div>${sel('ht', e.third, 'Not chosen')}
+      <div class="actions ng-foot"><button class="btn sm" data-act="edSeason" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveSeasonLeague">Save</button></div>`;
   };
   UI.acts.edSquadMode = (d) => {
     ED.def.meta.players = d.v;
@@ -832,9 +1349,25 @@
               ? playerView()
               : ED.view === 'cups'
                 ? cupsView()
-                : ED.view === 'newleague'
-                  ? newLeagueView()
-                  : homeView();
+                : ED.view === 'cup'
+                  ? cupView()
+                  : ED.view === 'staff'
+                    ? staffView()
+                    : ED.view === 'staffer'
+                      ? stafferView()
+                      : ED.view === 'nations'
+                        ? nationsView()
+                        : ED.view === 'nation'
+                          ? nationView()
+                          : ED.view === 'history'
+                            ? historyView()
+                            : ED.view === 'season'
+                              ? seasonView()
+                              : ED.view === 'seasonleague'
+                                ? seasonLeagueView()
+                                : ED.view === 'newleague'
+                                  ? newLeagueView()
+                                  : homeView();
     app.innerHTML = `<div class="title">${body}</div>`;
     window.scrollTo(0, 0);
     // fields that update the definition as you type
@@ -856,6 +1389,10 @@
     });
     bind('ed-rep', (v) => ($('#ed-repv').textContent = v));
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
+    bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
+    bind('ed-ncoef', (v) => ($('#ed-ncoefv').textContent = v));
+    bind('ed-cupname', () => saveCupNames());
+    bind('ed-cupshort', () => saveCupNames());
     if (ED.view === 'player') {
       for (const k of D.ATTRS)
         bind('ed-a-' + k, (v) => {

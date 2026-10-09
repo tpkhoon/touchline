@@ -1270,6 +1270,7 @@
         S.staffPool.push(st.id);
       }
     });
+    if (FM.WorldDef) FM.WorldDef.seedStaff(null, false); // staff a world definition put on offer
   };
   W.userStaff = () =>
     Object.values(FM.S.user.staff)
@@ -2398,6 +2399,7 @@
     if (S.user.tactic.fam == null) S.user.tactic.fam = 55; // tactical familiarity 0–100
     S.user.preseason = S.user.preseason || {};
     if (!S.staffPool) W.refreshStaffPool();
+    if (FM.WorldDef) FM.WorldDef.seedStaff(clubId, isNew); // the staff a world definition made for this club come with the job
     // Own-club and same-league players are partially known
     Object.values(S.players).forEach((p) => {
       if (p.clubId === clubId) S.user.knowledge[p.id] = 100;
@@ -2456,7 +2458,9 @@
   // ceilings say could have been champions.
   W.seedHistory = function (years = 30) {
     const S = FM.S;
-    if (S.archive.length) return 0;
+    // (a world with past seasons of its own has no generated ones, unless its definition asks for the years before to be made up)
+    if (S.archive.length && !(S.histFill && S.archive.every((e) => e.imported))) return 0;
+    const have = new Set(S.archive.map((e) => e.year));
     const clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim !== 'nation' && !c.parent);
     const weight = (c, y) => {
       if (c.founded && c.founded > y) return 0;
@@ -2468,6 +2472,7 @@
     const cups = Object.values(S.comps).filter((x) => x.type === 'cup' && x.nat);
     const out = [];
     for (let i = years; i >= 1; i--) {
+      if (have.has(S.year - i)) continue;
       const year = S.year - i,
         entry = {
           year,
@@ -2513,7 +2518,7 @@
       }
       out.push(entry);
     }
-    S.archive = out;
+    S.archive = out.concat(S.archive).sort((a, b) => a.year - b.year);
     return out.length;
   };
 
