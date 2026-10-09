@@ -17,7 +17,8 @@ const { FM } = loadSim(SEED, {
 });
 const W = FM.W,
   Sea = FM.Season;
-const fails = [];
+const fails = [],
+  checked = new Set();
 const check = (ok, msg) => {
   if (!ok) fails.push(msg);
 };
@@ -61,6 +62,23 @@ for (let s = 0; s < SEASONS; s++) {
     for (const id of NEW) {
       const c = FM.S.comps[id];
       if (c && c.winner && !won[id]) won[id] = FM.S.clubs[c.winner].name;
+    }
+    // every group winner (and with up to four groups, every runner-up) reaches the quarter-finals or semi-finals
+    for (const c of W.continentals()) {
+      const first = c.groups.length >= 4 ? c.ko.qf : c.ko.sf;
+      if (!first || !first.length || checked.has(c.id + year)) continue;
+      checked.add(c.id + year);
+      const inKO = new Set(first.flatMap((f) => [f.h, f.a]));
+      c.groups.forEach((g) => {
+        const t = FM.Cups.groupTable(g);
+        check(inKO.has(t[0].id), `season ${s + 1}: ${c.id} group ${g.name} winner is not in the knockouts`);
+        if (c.groups.length <= 4)
+          check(inKO.has(t[1].id), `season ${s + 1}: ${c.id} group ${g.name} runner-up is not in the knockouts`);
+      });
+      check(
+        inKO.size === (c.groups.length >= 4 ? 8 : 4),
+        `season ${s + 1}: ${c.id} has ${inKO.size} knockout clubs from ${c.groups.length} groups`,
+      );
     }
   }
   check(FM.S.year === year + 1, `season ${s + 1} never ended`);

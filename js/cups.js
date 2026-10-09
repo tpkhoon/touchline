@@ -18,7 +18,8 @@
   // (UEFA's group tiebreakers: head-to-head points, goal difference and goals, then overall)
   Cu.groupTable = (g) => W.sortedTable({ table: g.table, fixtures: g.fixtures, tiebreak: ['h2h', 'gd', 'gf'] });
   // Top two go through. With the games left, who is already through (or top), and who can no longer make it?
-  Cu.groupMarks = function (g) {
+  Cu.groupMarks = function (g, wide) {
+    if (wide) return {}; // (the runners-up are ranked across the groups, so a group's own table cannot say)
     const win = S().rules.win,
       left = {};
     g.clubs.forEach((id) => (left[id] = g.fixtures.flat().filter((f) => !f.res && (f.h === id || f.a === id)).length));
@@ -374,6 +375,25 @@
     if (!(S().calendar || []).some((x) => x.type === 'cup' && x.stage === 'F2')) legs.f = 1;
     return { legs, central: !!d.central };
   };
+  // More than four groups (the Asian cup's five): the eight quarter-finalists are the group winners, then the best
+  // runners-up to make up the numbers; the best seed meets the eighth, avoiding a rematch from the same group
+  Cu.wideQuarters = function (c) {
+    const better = (a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || rep(b.id) - rep(a.id);
+    const tabs = c.groups.map(Cu.groupTable);
+    const winners = tabs.map((t, g) => ({ ...t[0], g })).sort(better);
+    const runners = tabs.map((t, g) => ({ ...t[1], g })).sort(better);
+    const seeds = winners.concat(runners).slice(0, 8);
+    const pairs = [];
+    const left = seeds.slice();
+    while (left.length > 1) {
+      const top = left.shift();
+      // the lowest seed left that is not from the same group (the last one if every one is)
+      let k = left.length - 1;
+      while (k > 0 && left[k].g === top.g) k--;
+      pairs.push([top.id, left.splice(k, 1)[0].id]);
+    }
+    return pairs;
+  };
   function continental(c, stage) {
     if (!stage || !c.groups) return [];
     if (stage[0] === 'G') return c.groups.flatMap((g) => g.fixtures[+stage.slice(1) - 1] || []);
@@ -389,6 +409,7 @@
       if (c.groups.length < 4) return [];
       return round('qf', 'Quarter-final', () => {
         if (!groupsDone()) return null;
+        if (c.groups.length > 4) return Cu.wideQuarters(c);
         const [A, B, Cc, Dd] = c.groups.map(Cu.groupTable);
         return [
           [A[0].id, B[1].id],
@@ -692,7 +713,7 @@
       const g = c.groups.find((x) => x.clubs.includes(clubId));
       const pos = Cu.groupTable(g).findIndex((r) => r.id === clubId) + 1;
       const groupsDone = g.fixtures.flat().every((f) => f.res);
-      const mark = !groupsDone && Cu.groupMarks(g)[clubId];
+      const mark = !groupsDone && Cu.groupMarks(g, c.groups.length > 4)[clubId];
       out.push({
         c,
         text: koOut

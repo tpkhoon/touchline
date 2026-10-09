@@ -2337,6 +2337,14 @@
     const legs = s.rules.twoLegs
       ? 'two-legged knockouts' + (s.rules.awayGoals ? ' (away goals)' : '')
       : 'single-leg knockouts';
+    // each cup's own knockout format: the Asian cup plays single matches at one venue, and the African and North
+    // American finals are over two legs
+    const cupFormat = (c) => {
+      if (!s.rules.twoLegs) return `${legs} · neutral final`;
+      const f = FM.Cups.formatOf(c),
+        one = f.legs.qf === 1 && f.legs.sf === 1;
+      return `${one ? 'single-match knockouts' + (f.central ? ' at one venue' : '') : legs} · ${f.legs.f === 2 ? 'two-legged final' : 'neutral final'}`;
+    };
     const wc = W.worldCups()
       .filter((c) => v === 'world' || (v === 'mine' && inIt(c)))
       .map(
@@ -2362,14 +2370,14 @@
                       (r, i) =>
                         `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td title="${{ top: 'Group won', through: 'Through to the knockouts', out: 'Eliminated' }[mk[r.id]] || ''}" style="color:${mk[r.id] === 'out' ? 'var(--bad)' : 'var(--good)'};font-weight:800">${{ top: '★', through: '✓', out: '✗' }[mk[r.id]] || ''}</td></tr>`,
                     )
-                    .join(''))(FM.Cups.groupMarks(g))}</table>`,
+                    .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4))}</table>`,
             )
             .join('') +
           (c.groups && c.groups.length
             ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
             : '');
         const ko = FM.Cups.koList(c);
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · top 2 in each group reach the ${c.groups.length >= 4 ? 'quarter-finals' : 'semi-finals'} · ${legs} · neutral final</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${c.clubs.length} clubs · ${c.groups.length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${c.groups.length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them

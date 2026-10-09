@@ -150,8 +150,10 @@
   // Answer a desk decision. Returns { msg, offer: pid } (offer: open contract talks with him)
   M.resolve = function (n, i) {
     if (n.resolved) return { msg: 'Already decided.' };
-    const ch = n.choices[i],
+    // (an out-of-range answer falls back to the default, then to the first choice)
+    const ch = n.choices[i] || n.choices[n.def] || n.choices[0],
       p = S().players[n.pid];
+    if (!ch) return ((n.resolved = 'No decision needed'), { msg: '' });
     n.resolved = ch.label;
     const r = (
       n.kind === 'trial'
@@ -341,7 +343,7 @@
         body: `${apps} appearance${apps === 1 ? '' : 's'} in their last ${games} games${p.loan.promised ? `, even after ${host.name} promised him more minutes` : ''}. ${W.age(p) <= 21 ? 'He was sent there to develop.' : 'He needs games.'}`,
         pid: p.id,
         rec: p.loan.promised ? 0 : 1,
-        def: 2,
+        def: p.loan.promised ? 1 : 2, // (no "tell them to play him" choice once they have promised)
         choices: [
           { k: 'recall', label: open ? 'Recall him' : 'Recall him when the window opens' },
           ...(p.loan.promised ? [] : [{ k: 'complain', label: `Tell ${host.name} to play him` }]),

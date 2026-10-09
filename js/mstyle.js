@@ -94,17 +94,19 @@
   St.seasonEnd = function (club) {
     const m = St.match(club);
     if (Math.abs(m) < 0.25) return;
+    // (the axes that are clear enough to name; a profile that only just clears the board's bar may have none)
+    const words = ['youth', 'attack', 'spend', 'stable']
+      .map((k) => St.word(St.get(FM.S.user), k))
+      .filter(Boolean)
+      .join(', ')
+      .toLowerCase();
     club.boardConf = U.clamp(club.boardConf + m * 3, 0, 100);
     FM.News.add({
       type: 'board',
       title: m > 0 ? 'The board like how you run the club' : 'The board are uneasy about your approach',
       body:
         m > 0
-          ? `Your approach (${['youth', 'attack', 'spend', 'stable']
-              .map((k) => St.word(St.get(FM.S.user), k))
-              .filter(Boolean)
-              .join(', ')
-              .toLowerCase()}) is what a club like ${club.name} wants.`
+          ? `Your approach${words ? ` (${words})` : ''} is what a club like ${club.name} wants.`
           : `Your approach is not what a club like ${club.name} is looking for, and it shows in the chairman's confidence.`,
       clubId: club.id,
     });

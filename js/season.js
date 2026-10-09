@@ -1153,8 +1153,9 @@
     let freeGK = null;
     for (const c of Object.values(S.clubs)) {
       if ((c.sim === 'minimal' && !c.comp) || W.army(c)) continue;
+      // (the first team's keepers: one in the U21 or U18 side is not picked while the first team has a squad)
       const sq = W.squad(c.id),
-        keepers = sq.filter((p) => p.pos === 'GK');
+        keepers = sq.filter((p) => p.pos === 'GK' && !p.team);
       // three for fully simulated clubs (two can both be injured or banned), two elsewhere; and never none fit
       const need = Math.max(c.sim === 'full' ? 3 : 2, keepers.some(W.available) ? 0 : keepers.length + 1);
       let n = keepers.length;
@@ -1199,6 +1200,7 @@
             clubId: c.id,
           });
           S.players[p.id] = p;
+          W.rosterVer++; // (made straight into the club: the squad index is out of date until it is rebuilt)
           p.contract = S.year + 2;
         }
         n++;
@@ -1619,7 +1621,9 @@
       const R = comp.rules;
       // Qualification relationship: this league's top n enter another competition next season
       // a playoff league sends its champion and its Shield winner first, then the next best records
-      const champs = comp.torneos ? entry.comps[comp.id].champions.filter(Boolean).reverse() : [champId];
+      const champs = comp.torneos
+        ? ((entry.comps[comp.id] && entry.comps[comp.id].champions) || []).filter(Boolean).reverse()
+        : [champId];
       const order = kt ? [...new Set([...champs, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
       if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(order.slice(0, R.qualify.n));
       // second-tier continental cups: the next places down (in that order, so a playoff champion is never in two cups)

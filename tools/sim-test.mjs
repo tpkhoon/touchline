@@ -173,11 +173,13 @@ function marketMoves() {
   }
 }
 let tSeason = Date.now();
+const userClubs = new Set(); // (the clubs you have run: nobody covers their keepers for you)
 for (let s = 0; s < SEASONS; s++) {
   let summary = null,
     daysThisSeason = 0;
   const year = FM.S.year;
   while (!summary) {
+    if (W.employed()) userClubs.add(W.userClub().id);
     // Out of work (sacked): wait for an offer and take the first one, as a player would from the Home tab
     if (!W.employed() && (FM.S.user.offers || []).length) {
       W.takeCharge(FM.S.user.offers[0].id, 'Test Manager', false);
@@ -325,6 +327,21 @@ for (let s = 0; s < SEASONS; s++) {
     check(
       FM.S.intro && FM.S.intro.n === 3,
       `season 1: the world introductions stopped at ${FM.S.intro && FM.S.intro.n} of 3`,
+    );
+  // every desk decision has a default that is one of its choices (an unanswered one is settled with it after three days)
+  for (const n of FM.S.news.filter((x) => x.type === 'desk' && x.choices))
+    check(
+      !!n.choices[n.def || 0],
+      `season ${s + 1}: desk decision "${n.title}" has default ${n.def} of ${n.choices.length} choices`,
+    );
+  // a fully simulated club always has two keepers in its first team (one in the U21 or U18 side is not picked)
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.sim === 'full' && !userClubs.has(x.id) && !x.parent))
+    check(
+      W.squad(c.id).filter((p) => p.pos === 'GK' && !p.team).length >= 2,
+      `season ${s + 1}: ${c.short} (${c.comp}, ${c.sim}) has fewer than two first-team keepers: ${W.squad(c.id)
+        .filter((p) => p.pos === 'GK')
+        .map((p) => `${p.id} ${p.team || 'first'}${p.loan ? ' loan' : ''}${p.inj ? ' inj' : ''}`)
+        .join(', ')}`,
     );
   // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it); the
   // army's club is made of conscripts, whatever their heritage
@@ -510,7 +527,12 @@ if (W.employed()) {
   Object.assign(t, { focus: 'defending', intensity: 'hard' });
   const wt = Tr.attrW(p, Tr.weights(p));
   check(wt('tackling') > 1.2 && wt('finishing') < 1, 'defending training does not favour defending attributes');
-  check(Tr.devK(p) > 1.1 && Tr.injK(p) > 1.2, 'hard training does not speed development and raise injury risk');
+  // (a part-time club trains in the evenings: development is a fifth slower there)
+  const evenings = W.partTime(W.userClub()) ? 0.8 : 1;
+  check(
+    Tr.devK(p) > 1.1 * evenings && Tr.injK(p) > 1.2,
+    'hard training does not speed development and raise injury risk',
+  );
   const other = Object.values(FM.S.players).find((x) => x.clubId && !W.ownPlayer(x));
   check(Tr.devK(other) === 1 && !Tr.weights(other), "another club's player follows your training");
   Object.assign(t, { focus: 'balanced', intensity: 'normal' });
@@ -562,7 +584,10 @@ check(
 for (const c of Object.values(S.clubs)) {
   if (c.sim !== 'full') continue;
   const n = W.squad(c.id).length;
-  check(n >= 16 && n <= 45, `${c.name} has ${n} players`);
+  check(
+    n >= 16 && n <= 45,
+    `${c.name} has ${n} players (${W.isUser(c.id) ? 'your club' : 'AI club'}, ${c.comp}, day ${FM.S.day}, window ${Sea.windowOpen() ? 'open' : 'shut'})`,
+  );
   check(Number.isFinite(c.balance), `${c.name} balance is ${c.balance}`);
 }
 for (const comp of W.leagues()) {

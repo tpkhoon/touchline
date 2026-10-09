@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-341 features are playable in the web prototype today. Build = the build that added it.
+342 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -370,6 +370,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Adriatic and Aegean Cup: a regional cup for Serbia (3 clubs), Greece (2) and Turkey (3), the places below their European cups; a group stage then a final each season | Playtest round 11 |
 | Competitions | Carpathian Cup: a regional cup of sixteen clubs, four each from Czechia, Poland, Hungary and Austria, in four groups then knockouts | Playtest round 11 |
 | Competitions | Northern League Cup: a regional cup for Norway (4 clubs) and Denmark (4); a group stage then a final each season | Playtest round 11 |
+| Competitions | More than four groups (the Asian cup's five): the group winners and the best runners-up make the quarter-finals, the best seed meeting the eighth and never a club from its own group | Playtest round 11 |
 
 ## Yet to be added
 

@@ -159,6 +159,12 @@
     }
     d.done = true;
     d.pool = [];
+    // the draftees' wages come after the new season's check on the AI's salary budgets: bring those clubs back within it
+    if (FM.Reg && FM.Reg.real())
+      new Set(d.picks.map((x) => x.club)).forEach((id) => {
+        const c = S().clubs[id];
+        if (c && !W.isUser(id) && FM.Reg.mls(c)) FM.Reg.mlsComply(c);
+      });
     const top = d.picks[0] && S().players[d.picks[0].pid],
       mine = d.picks.filter((x) => W.isUser(x.club));
     if (top)
