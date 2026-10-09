@@ -27,6 +27,50 @@
       .replace(/\b(fc|afc|cf|sc|ac|as|ssc|sv|fk|bk|the)\b/g, '')
       .replace(/[^a-z0-9]/g, '');
 
+  // Player statistics (rows of a CSV, as objects) into rows for the editing API's importPlayers, through the real-stats
+  // converter. opts.club: 'column' (each row's own club column, matched against the definition's clubs; a row with none is
+  // a free agent), a club id (every row goes there) or null (every row is a free agent). requireClub: a row whose club
+  // cannot be matched, or has none, is left out and listed (the historical importer's rule).
+  H.playerRows = function (def, rows, opts = {}) {
+    const year = opts.year || def.meta.startYear || D.SEASON_START,
+      mode = opts.club === undefined ? 'column' : opts.club;
+    const byKey = new Map();
+    for (const c of def.clubs) for (const k of [c.id, c.name, c.short, c.nick]) if (k) byKey.set(norm(k), c);
+    const find = opts.find || ((x) => byKey.get(norm(x)) || byKey.get(norm(String(x).replace(/^c_/, ''))));
+    const out = [],
+      unmatched = new Set();
+    for (const row of rows.map(R.clean)) {
+      let c = null;
+      if (mode === 'column') {
+        c = row.club ? find(row.club) : null;
+        if ((row.club || opts.requireClub) && !c) {
+          unmatched.add(row.club);
+          continue;
+        }
+      } else if (mode) c = def.clubs.find((x) => x.id === mode) || null;
+      try {
+        const lg = c && def.leagues.find((l) => l.id === c.league);
+        const x = R.convert({
+          ...row,
+          league: row.league ?? (lg && lg.id) ?? 50,
+          age: row.age ?? (row.born ? year - row.born : undefined),
+        });
+        out.push({
+          name: row.name,
+          nat: row.nat,
+          born: row.born ?? year - (row.age ?? 25),
+          club: c ? c.id : null,
+          foot: row.foot || 'Right',
+          contract: row.contract ?? year + (c ? 2 : 1),
+          ...x,
+        });
+      } catch (e) {
+        out.push({ name: row.name, error: e.message });
+      }
+    }
+    return { rows: out, unmatched: [...unmatched] };
+  };
+
   // The importer: texts in, { def, report } out. S is the world it matches clubs and leagues against (none: the game's own data).
   H.import = function ({ tables, players, clubs, name = 'Imported world' }, S = null) {
     // S: a world to match against; none (the app, before a career starts): the game's own data
@@ -113,34 +157,9 @@
     }
 
     // players → converted
-    const converted = [];
-    for (const row of (players || []).map(R.clean)) {
-      const c = club(row.club);
-      if (!c) {
-        rep.unmatched.add(row.club);
-        continue;
-      }
-      try {
-        const lg = def.leagues.find((l) => l.id === c.league);
-        const x = R.convert({
-          ...row,
-          league: row.league ?? (lg && lg.id) ?? 50,
-          age: row.age ?? (row.born ? year - row.born : undefined),
-        });
-        converted.push({
-          name: row.name,
-          nat: row.nat,
-          born: row.born ?? year - row.age,
-          club: c.id,
-          foot: row.foot || 'Right',
-          contract: row.contract,
-          ...x,
-        });
-      } catch (e) {
-        converted.push({ name: row.name, error: e.message });
-      }
-    }
-    const r = E.importPlayers(converted);
+    const pr = H.playerRows(def, players || [], { year, requireClub: true, club: 'column', find: club });
+    pr.unmatched.forEach((x) => rep.unmatched.add(x));
+    const r = E.importPlayers(pr.rows);
     rep.players = r.added;
     rep.errors.push(...r.errors);
     rep.unmatched = [...rep.unmatched];

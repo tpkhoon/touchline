@@ -410,6 +410,7 @@
         )
         .join('')}</div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">${(ED.def.players || []).length} player${(ED.def.players || []).length === 1 ? '' : 's'} made so far. Open a club, then Players.</div>
+      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">⬇️ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">🆓 Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
       <div class="ng-label">Leagues — tap one to edit its clubs</div>
       ${nations
@@ -935,6 +936,79 @@
       ${!added ? '<div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edRevertClub">Put the game\'s version back</button></div>' : ''}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelClub">${added ? 'Delete this club' : 'Take this club out of the world'}</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClub">Save club</button></div>`;
+  };
+
+  // ---------- Importing players ----------
+  // A CSV (or a JSON list) of real players' season numbers becomes players through the real-stats converter (js/realstats.js):
+  // columns name, pos, nat, born or age, club, foot, contract, minutes, goals, assists, xg, passes, tackles, saves and so on.
+  const SAMPLE_CSV = [
+    'name,nat,born,pos,club,minutes,goals,assists,xg,passes,tackles',
+    'Marco Verdi,ITA,1999,ST,,2400,16,5,14.2,310,18',
+    'Jonas Berg,GER,2001,CM,,2900,4,7,3.1,1650,70',
+    'Sam Okoro,NGA,1996,CB,,3100,2,1,1.4,1400,55',
+  ].join('\n');
+  UI.acts.edImportPlayers = (d) => {
+    const here = ED.view === 'squad' && d.from !== 'home' ? ED.cid : 'column';
+    ED.imp = { from: ED.view, target: here, text: ED.imp ? ED.imp.text : '', report: null };
+    ED.view = 'importp';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edImpSample = () => {
+    $('#ed-imptext').value = SAMPLE_CSV;
+  };
+  UI.acts.edImpRun = () => {
+    const text = (($('#ed-imptext') || {}).value || '').trim();
+    ED.imp.text = text;
+    ED.imp.target = $('#ed-imptarget').value;
+    if (!text) {
+      ED.err = ['Paste a CSV or pick a file first'];
+      return UI.worldEditor();
+    }
+    let rows;
+    try {
+      rows = text.startsWith('[') || text.startsWith('{') ? [].concat(JSON.parse(text)) : FM.RealStats.parseCSV(text);
+    } catch (e) {
+      ED.err = ['The file could not be read: ' + e.message];
+      return UI.worldEditor();
+    }
+    const target = ED.imp.target === 'column' ? 'column' : ED.imp.target === FREE ? null : ED.imp.target;
+    const pr = FM.HistImport.playerRows(ED.def, rows, { year: yearOf(), club: target });
+    const r = WD.editor(ED.def, null).importPlayers(pr.rows);
+    ED.imp.report = { added: r.added, unmatched: pr.unmatched, errors: r.errors, rows: rows.length };
+    ED.err = [];
+    UI.worldEditor();
+  };
+  const importView = () => {
+    const imp = ED.imp || { target: 'column', text: '', report: null },
+      c = ED.def.clubs.find((x) => x.id === imp.target);
+    const rp = imp.report;
+    return `<div class="h1" style="margin-top:2vh">Import players</div><div class="tag">A spreadsheet (CSV) or JSON list of real players' season numbers. Each row becomes a player: the converter turns the numbers into attributes, ability and potential, judged against the strength of his league.</div>
+      ${errBox()}
+      <div class="ng-label">Where they go</div>
+      <select id="ed-imptarget"><option value="column" ${imp.target === 'column' ? 'selected' : ''}>The club in each row (no club: a free agent)</option><option value="${FREE}" ${imp.target === FREE ? 'selected' : ''}>Free agents</option>${c ? `<option value="${esc(c.id)}" selected>${esc(c.name)}</option>` : ''}</select>
+      <div class="ng-label">The file</div>
+      <input type="file" id="ed-impfile" accept=".csv,.json,text/csv,application/json">
+      <textarea id="ed-imptext" rows="8" spellcheck="false" placeholder="name,nat,born,pos,club,minutes,goals,assists,xg,passes,tackles" style="width:100%;margin-top:8px;font-family:monospace;font-size:12px">${esc(imp.text)}</textarea>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Columns: name, pos (ST, W, AM, CM, DM, FB, CB, GK or the usual abbreviations), nat, born or age, club (its name, short name or id), foot, contract, and the numbers you have: minutes, goals, assists, xg, xa, shots, passes, passPct, keyPasses, tackles, interceptions, clearances, dribbles, aerials, pressures, saves, savePct, goalsConceded, rating. Counts are season totals.</div>
+      ${
+        rp
+          ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${rp.added} of ${rp.rows} players added</div>${
+              rp.unmatched.length
+                ? `<div class="tiny" style="color:#fbbf24;margin-top:6px;line-height:1.5">Clubs not found, rows left out: ${esc(rp.unmatched.slice(0, 10).join(', '))}</div>`
+                : ''
+            }${
+              rp.errors.length
+                ? `<div class="tiny" style="color:#f87171;margin-top:6px;line-height:1.5">${rp.errors
+                    .slice(0, 6)
+                    .map((e) => '• ' + esc(e))
+                    .join('<br>')}${rp.errors.length > 6 ? `<br>… and ${rp.errors.length - 6} more` : ''}</div>`
+                : ''
+            }</div>`
+          : ''
+      }
+      <div class="actions" style="margin-top:12px"><button class="btn sm" data-act="edImpSample">Fill in a sample</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${imp.from === 'squad' ? 'squad' : 'home'}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edImpRun">Import</button></div>`;
   };
 
   // ---------- Players ----------
@@ -1851,6 +1925,7 @@
             .join('')}`;
         })
         .join('')}
+      <div class="card tap" style="margin:12px 0 4px;padding:10px 12px" data-act="edSeasonTransfers"><div class="row"><div class="grow"><div class="small b">💰 Big transfers</div><div class="tiny dim">${(s.transfers || []).length ? `${s.transfers.length} entered` : 'None entered'}</div></div><span class="dim">›</span></div></div>
       <div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">🌍 International</div>
       ${tourns
         .map((id) => {
@@ -1874,6 +1949,78 @@
       <div class="ng-label">Winner</div>${sel('cw', e.winner, 'Not filled in')}
       <div class="ng-label">Runner-up <span class="tiny dim">· optional</span></div>${sel('cr', e.runnerUp, 'Not chosen')}
       <div class="actions ng-foot"><button class="btn sm" data-act="edSeason" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveSeasonCup">Save</button></div>`;
+  };
+  // The season's big transfers (the record deals the club pages and the archive show): player, nation, the clubs and the fee
+  UI.acts.edSeasonTransfers = () => {
+    ED.view = 'seasontransfers';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  const clubByName = (text) => {
+    const q = String(text || '')
+      .trim()
+      .toLowerCase();
+    return q
+      ? ED.def.clubs.find(
+          (c) => c.name.toLowerCase() === q || c.id.toLowerCase() === q || (c.short || '').toLowerCase() === q,
+        )
+      : null;
+  };
+  UI.acts.edAddTransfer = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const s = seasonOf(ED.hy),
+      to = clubByName(v('trto')),
+      from = clubByName(v('trfrom'));
+    const fail = (m) => {
+      ED.err = [m];
+      UI.worldEditor();
+    };
+    if (!(v('trname') || '').trim()) return fail('Give the player a name');
+    if (!to) return fail('The club he joined is not one of the clubs of this world (type its name)');
+    if ((v('trfrom') || '').trim() && !from)
+      return fail('The club he left is not one of the clubs of this world (leave it empty for a free signing)');
+    s.transfers = s.transfers || [];
+    s.transfers.push({
+      name: v('trname').trim(),
+      nat: v('trnat') || null,
+      from: from ? from.id : null,
+      to: to.id,
+      fee: Math.round(+v('trfee') * 1e6) || 0,
+    });
+    const bad = WD.validate(ED.def, null).errors.filter((e) => e.startsWith(`season ${s.year}`));
+    if (bad.length) {
+      s.transfers.pop();
+      return fail(bad[0]);
+    }
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edDelTransfer = (d) => {
+    seasonOf(ED.hy).transfers.splice(+d.i, 1);
+    UI.worldEditor();
+  };
+  const seasonTransfersView = () => {
+    const s = seasonOf(ED.hy);
+    if (!s) return historyView();
+    const nameOf = (id) => (ED.def.clubs.find((c) => c.id === id) || { name: id || 'free' }).name;
+    const nats = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    return `<div class="h1" style="margin-top:2vh">Big transfers</div><div class="tag">${yy(s.year)}. The biggest deals of the season: the archive shows the record deal. Up to twenty.</div>
+      ${errBox()}
+      ${
+        (s.transfers || [])
+          .map(
+            (x, i) =>
+              `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row"><div class="grow"><div class="small b">${(D.NATIONS[x.nat] || {}).flag || ''} ${esc(x.name)}</div><div class="tiny dim">${esc(nameOf(x.from))} → ${esc(nameOf(x.to))} · ${U.money(x.fee)}</div></div><button class="btn sm" data-act="edDelTransfer" data-i="${i}" aria-label="Remove">✕</button></div></div>`,
+          )
+          .join('') || '<div class="empty">None entered.</div>'
+      }
+      <div class="ng-label">Add a transfer</div>
+      <datalist id="ed-clublist">${ED.def.clubs.map((c) => `<option value="${esc(c.name)}"></option>`).join('')}</datalist>
+      <input type="text" id="ed-trname" maxlength="40" placeholder="Player's name">
+      <div class="ng-names"><select id="ed-trnat" style="flex:1"><option value="">Nation</option>${nats.map(([k, n]) => `<option value="${k}">${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-trfee" min="0" step="0.5" inputmode="decimal" placeholder="Fee, millions" style="max-width:130px"></div>
+      <input type="text" id="ed-trfrom" list="ed-clublist" placeholder="Club he left (empty: free)" autocomplete="off" style="margin-top:8px">
+      <input type="text" id="ed-trto" list="ed-clublist" placeholder="Club he joined" autocomplete="off" style="margin-top:8px">
+      <div class="actions ng-foot"><button class="btn sm" data-act="edSeason" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edAddTransfer">Add the transfer</button></div>`;
   };
   UI.acts.edSeasonIntl = (d) => {
     ED.view = 'seasonintl';
@@ -1944,7 +2091,7 @@
           })
           .join('') || `<div class="empty">No players made ${free ? 'as free agents' : 'for this club'} yet.</div>`
       }
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm" data-act="edImportPlayers">⬇️ Import</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
   };
 
   const playerView = () => {
@@ -1977,6 +2124,7 @@
     const views = {
       league: leagueView,
       club: clubView,
+      importp: importView,
       clubx: clubxView,
       squad: squadView,
       player: playerView,
@@ -1994,6 +2142,7 @@
       season: seasonView,
       seasoncup: seasonCupView,
       seasonintl: seasonIntlView,
+      seasontransfers: seasonTransfersView,
       intl: intlView,
       seasonleague: seasonLeagueView,
       newleague: newLeagueView,
@@ -2022,6 +2171,11 @@
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
     bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
     bind('ed-mrep', (v) => ($('#ed-mrepv').textContent = v));
+    if (ED.view === 'importp' && $('#ed-impfile'))
+      $('#ed-impfile').addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) $('#ed-imptext').value = await file.text();
+      });
     if (ED.view === 'clubx') {
       for (const id of ['xcs', 'xcp', 'xce']) bind('ed-' + id, () => ($('#ed-crestprev').innerHTML = draftCrest()));
       for (const k of WD.FACILITIES) bind('ed-xf-' + k, (v) => ($('#ed-xf-' + k + 'v').textContent = v));

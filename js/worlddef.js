@@ -96,7 +96,7 @@
         name: t.name,
         short: t.short,
         colors: t.colors.slice(0, 2),
-        coef: t.coef,
+        coef: Math.round(Math.max(20, Math.min(100, t.coef)) * 10) / 10, // (the points drift as matches are played: kept in the range the editor allows)
         tactic: {
           formation: t.tactic.formation,
           buildup: t.tactic.buildup,
@@ -1012,6 +1012,20 @@
       else if (s.year >= year) errors.push(`season ${s.year}: past seasons must be before the start year ${year}`);
       if (years.has(s.year)) errors.push(`Two past seasons for ${s.year}`);
       years.add(s.year);
+      if (s.transfers) {
+        if (!Array.isArray(s.transfers) || s.transfers.length > 20)
+          errors.push(`season ${s.year}: up to twenty transfers`);
+        else
+          for (const x of s.transfers) {
+            const at = `season ${s.year} transfer ${x.name || '?'}`;
+            if (!String(x.name || '').trim()) errors.push(`${at}: needs the player's name`);
+            if (!(x.fee >= 0 && x.fee <= 1e9)) errors.push(`${at}: the fee is between 0 and 1,000,000,000`);
+            if (!clubs.has(x.to)) errors.push(`${at}: the club he joined, "${x.to}", is not in the definition`);
+            if (x.from && !clubs.has(x.from))
+              errors.push(`${at}: the club he left, "${x.from}", is not in the definition`);
+            if (x.nat && !D.NATIONS[x.nat]) errors.push(`${at}: unknown nation "${x.nat}"`);
+          }
+      }
       for (const [id, c] of Object.entries(s.intl || {})) {
         if (!tournList().some((t) => t.id === id) && !I().INVITES.some((v) => v.id === id))
           errors.push(`season ${s.year}: "${id}" is not an international tournament the game has`);
@@ -1264,7 +1278,20 @@
         promoted: [],
         relegated: [],
         upsets: [],
-        transfers: [],
+        transfers: (s.transfers || [])
+          .filter((x) => S.clubs[x.to])
+          .map((x) => ({
+            pid: null,
+            name: x.name,
+            nat: x.nat || null,
+            from: S.clubs[x.from] ? x.from : null,
+            to: x.to,
+            fee: x.fee,
+            intl: !!(S.clubs[x.from] && S.clubs[x.to].nat !== S.clubs[x.from].nat),
+            day: 0,
+            age: null,
+          }))
+          .sort((a, b) => b.fee - a.fee),
         user: null,
         imported: true,
       }));

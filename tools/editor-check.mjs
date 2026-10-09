@@ -125,6 +125,28 @@ check(
   E.addPlayer(mkP(20, { club: null, ln: 'Freeman', contract: def.meta.startYear + 1 })).ok,
   'a free agent was refused',
 );
+// players imported from a spreadsheet: a row with no club is a free agent, a bad position is reported, an unknown club is left out
+{
+  const csv = [
+    'name,nat,born,pos,club,minutes,goals,xg,tackles',
+    'Ivan Import,SRB,1998,ST,,2400,15,13.5,20',
+    'Bad Row,ENG,1999,XX,,100,1,0.5,2',
+    'Lost Club,ENG,1999,CM,Nowhere FC,900,0,0.1,30',
+    'Kim Club,KOR,2000,CB,' + def.clubs.find((c) => c.league === 'D2').name + ',2700,1,0.8,60',
+  ].join('\n');
+  const pr = FM.HistImport.playerRows(def, FM.RealStats.parseCSV(csv), { club: 'column' });
+  check(
+    pr.unmatched.join() === 'Nowhere FC',
+    'a club that is not in the world was not reported: ' + pr.unmatched.join(),
+  );
+  const res = E.importPlayers(pr.rows);
+  check(
+    res.added === 2 && res.errors.length === 1,
+    `expected two players added and one error, got ${res.added} and ${res.errors.length}`,
+  );
+  const one = FM.HistImport.playerRows(def, FM.RealStats.parseCSV(csv).slice(0, 1), { club: null });
+  check(one.rows.length === 1 && one.rows[0].club === null, 'a row sent to the free agents has a club');
+}
 def.managers.push({
   club: mine,
   fn: 'Ivor',
@@ -364,8 +386,25 @@ check(!E.addSeason({ year: def.meta.startYear + 2, comps: {} }).ok, 'a season af
 // a past cup final, and a cup winner who is not in the right nation is refused
 const cupClub = def.clubs.find((c) => c.nat === 'ENG' && c.league === 'D1').id;
 check(
-  E.addSeason({ year: def.meta.startYear - 2, comps: {}, cups: { CUPENG: { winner: cupClub, runnerUp: null } } }).ok,
+  E.addSeason({
+    year: def.meta.startYear - 2,
+    comps: {},
+    cups: { CUPENG: { winner: cupClub, runnerUp: null } },
+    transfers: [
+      { name: 'Cheap Signing', nat: 'ENG', from: null, to: cupClub, fee: 1e6 },
+      { name: 'Big Signing', nat: 'BRA', from: d1[3].id, to: cupClub, fee: 90e6 },
+    ],
+  }).ok,
   'a season with a cup winner was refused',
+);
+check(
+  !E.addSeason({ year: def.meta.startYear - 5, comps: {}, transfers: [{ name: 'Lost', to: 'c_NOPE', fee: 1 }] }).ok,
+  'a transfer to a club that does not exist was accepted',
+);
+check(
+  !E.addSeason({ year: def.meta.startYear - 5, comps: {}, transfers: [{ name: 'Free Lunch', to: cupClub, fee: -4 }] })
+    .ok,
+  'a negative fee was accepted',
 );
 check(
   !E.addSeason({ year: def.meta.startYear - 3, comps: {}, cups: { NOSUCH: { winner: cupClub } } }).ok,
@@ -474,6 +513,18 @@ check(
   );
 }
 {
+  {
+    const iv = Object.values(S.players).filter((p) => p.defId && p.ln === 'Import');
+    check(
+      iv.length === 1 && !iv[0].clubId && iv[0].pos === 'ST' && iv[0].ca > 35,
+      'the imported striker is not a free agent in the world',
+    );
+    const kim = Object.values(S.players).filter((p) => p.defId && p.ln === 'Club');
+    check(
+      kim.length === 1 && kim[0].clubId && S.clubs[kim[0].clubId].comp === 'D2',
+      'the imported defender is not at his club',
+    );
+  }
   const fa = Object.values(S.players).filter((p) => p.defId && !p.clubId && p.ln === 'Freeman');
   check(fa.length === 1 && fa[0].contract >= S.year, 'the made free agent is not in the world as one');
   const st = S.staff[S.clubs[mine].manager];
@@ -569,6 +620,18 @@ console.log(`D1 has ${n1} clubs`);
       S.clubs[cupClub].titles.CUPENG >= 1,
     'the past cup winner is not in the archive and the honours',
   );
+  {
+    const tr = (S.archive.find((e) => e.year === S.year - 2) || {}).transfers || [];
+    check(
+      tr.length === 2 &&
+        tr[0].name === 'Big Signing' &&
+        tr[0].fee === 90e6 &&
+        !tr[0].intl &&
+        tr[0].to === cupClub &&
+        tr[1].from === null,
+      'the past season transfers are not in the archive, biggest first',
+    );
+  }
   check(
     S.clubs[drb[0].id].rival === drb[1].id && S.clubs[drb[0].id].derby === 'The Editor Derby',
     'the new derby is not in the world',
