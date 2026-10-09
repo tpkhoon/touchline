@@ -548,7 +548,9 @@
     // tacklers and readers of the game. A tackler wins it with his tackling, an interceptor with his positioning;
     // a high press makes more tackles, a low block more interceptions. Each one counts in his stats and rating.
     defend(k) {
-      if (Math.random() >= CAL.defActs) return;
+      // a high press goes in more often, a deep block waits for the ball to come to it
+      if (Math.random() >= CAL.defActs * ({ 'High Press': 1.12, 'Low Block': 0.95 }[this.sides[k].tactic.press] || 1))
+        return;
       const sd = this.sides[k],
         on = this.onPitch(sd);
       if (!on.length) return;
@@ -658,6 +660,7 @@
         w.longshot += 0.05;
       }
       if (T.buildup === 'Counter') w.counter += 0.18;
+      if (T.press === 'Low Block') w.counter += 0.07; // a deep block wins it back with the opposition stretched: its chances come on the break
       if (T.buildup === 'Possession' || T.buildup === 'Short') {
         w.cutback += 0.08;
         w.through += 0.05;
@@ -681,6 +684,7 @@
         w.longshot += 0.08;
         w.through -= 0.06;
       }
+      FM.Matchday.insWeights(sd, od, w);
       let type = U.wpick(Object.keys(w), (k) => Math.max(0.01, w[k]));
       if (Math.random() < CAL.penRate) type = 'penalty';
       const XG = {
@@ -758,6 +762,7 @@
           return (MW[t] + AW[t] * 0.5) * (A.passing + A.vision) * (1 + (r.assist || 0));
         });
       }
+      if (type !== 'penalty' && (sd.ins || od.ins)) xg = U.clamp(xg * Md.insXg(sd, od, type, shooter.p), 0.01, 0.8);
       const p = shooter.p,
         A = p.attrs;
       const finF = 0.75 + ((A.finishing + A.composure) / 40) * 0.5;
@@ -1053,8 +1058,6 @@
       });
     }
 
-    // The assistant's call on a tactical moment (FM.Prompts): the staff's recommended option, which comes first;
-    // a substitution it calls for is made with the best fit on the bench
     // ---------- Shouts: a call from the touchline ----------
     // A shout moves the side for a few minutes (att, mid, def and cards, put back when it ends) and may say something to the
     // players. How well it lands depends on the captain's leadership and the squad's mood, and a manager who shouts all the
@@ -1104,6 +1107,8 @@
     shoutTick(sd) {
       if (sd.shoutExp && this.minute >= sd.shoutExp.until) this.shoutEnd(sd);
     }
+    // The assistant's call on a tactical moment (FM.Prompts): the staff's recommended option, which comes first;
+    // a substitution it calls for is made with the best fit on the bench
     assistantDecides(tl) {
       const sd = this.sides.find((s) => s.user);
       if (!sd) return;
@@ -1766,6 +1771,7 @@
       const sd = m.sides.find((s) => s.user),
         op = m.sides[1 - sd.idx];
       const diff = sd.goals - op.goals;
+      const read = FM.Matchday.halfRead(m, sd);
       const apply = (kind) => () => {
         let good = 0,
           bad = 0;
@@ -1794,16 +1800,20 @@
         id: 'ht',
         icon: '🗣️',
         title: 'Half-time team talk',
-        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.`,
+        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.\n${read.lines.map(([i, t]) => `${i} ${t}`).join('\n')}`,
         options: [
           { label: 'Keep calm', desc: 'Stay the course', apply: apply('calm') },
           { label: 'Demand more', desc: 'Risky with volatile players', apply: apply('demand') },
           { label: 'Praise them', desc: 'Best when playing well', apply: apply('praise') },
           {
             label: 'Tactical tweaks',
-            desc: "Fix what isn't working (your assistant's eye matters)",
+            desc: read.fix ? read.fix.text : "Fix what isn't working (your assistant's eye matters)",
             apply: () => {
               const k = 0.01 + (FM.Staff.impact('assistant').fam - 1) * 0.1;
+              if (read.fix) {
+                sd.mods.def += k * 0.5;
+                return read.fix.apply();
+              }
               if (op.xg > sd.xg) {
                 sd.mods.def += k + 0.01;
                 return 'Shape tightened where they were getting through.';

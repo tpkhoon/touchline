@@ -261,7 +261,8 @@
     const fit = W.fitAt(p, slotType, slot, role);
     return W.calcCA(p, slotType) * (0.62 + 0.38 * fit) * (0.8 + 0.2 * (p.fitness / 100)) * (0.95 + p.morale / 1000);
   };
-  W.available = (p) => !p.inj && !p.susp && !p.retired;
+  // (a player doing military service is away unless he is with the army's club)
+  W.available = (p) => !p.inj && !p.susp && !p.retired && (!p.service || !!(p.loan && p.loan.military));
   // Selection weight for match fitness: fresh players are preferred, tired ones rested
   W.fitnessPick = (p) => {
     const f = p.fitness;
@@ -614,7 +615,7 @@
     // a club with a heritage policy (Basque-only, Catalan-only) fields players of that heritage and its own nation
     const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
     if (pol) nat = FM.S.clubs[clubId].nat;
-    const heritage = pol ? pol.heritage : W.pickHeritage(nat),
+    const heritage = pol && pol.heritage ? pol.heritage : W.pickHeritage(nat),
       nm = W.rollName(nat, heritage);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(
@@ -1017,6 +1018,81 @@
     const gap = age >= 26 ? AGE_GAP[Math.min(age, 26)] || 0 : AGE_GAP[Math.max(18, age)] + Math.max(0, 18 - age) * 2;
     return ca + Math.max(0, Math.round(gap + U.gauss(0, 1.5 + gap * 0.4)));
   };
+  // ---------- What a club can become: its attributes and its ceiling ----------
+  // A club's reputation is not free to go anywhere. Each club has a market (the size of its city and its catchment), a support
+  // base, a youth catchment and an owner, worked out from its ground, its standing and its identity (and kept on the club, so a
+  // database can set them). They give it a historical reputation that moves slowly, a ceiling it cannot rise above without a
+  // cause (a takeover, years of success growing its support) and a floor it does not sink below at once. Rises and falls in
+  // a season are also capped, so a small club does not become a giant in a few years, or a giant a nobody.
+  W.REP_STEP = 4.5; // the most a club's reputation moves in a season from its results
+  W.REP_STANDING = 0.8; // how much of its yearly target comes from this season's standing (the rest from its history)
+  W.REP_HEAD = 1.8; // a multiplier on the headroom its market, supporters and owner allow
+  W.REP_SLACK = 1.6; // a multiplier on how far below its history a club may sink
+  const BIG_NATION = {
+    ENG: 1,
+    ESP: 1,
+    GER: 1,
+    FRA: 1,
+    ITA: 1,
+    BRA: 1,
+    USA: 1,
+    JPN: 0.5,
+    MEX: 0.5,
+    TUR: 0.5,
+    ARG: 0.5,
+    KSA: 0.4,
+    NED: 0.2,
+    POR: 0.2,
+    RUS: 0.6,
+  };
+  const SUPPORT_BY_IDENTITY = { giant: 2, fan: 1.5, historic: 1, fallen: 1.5, oil: -1, selling: -0.5, youth: 0 };
+  W.clubAttr = function (c) {
+    if (c.attr) return c.attr;
+    const h = U.hash(c.id),
+      cap = (c.stadium && (c.stadium.cap0 || c.stadium.cap)) || 15000;
+    const scale = (Math.log(cap) - Math.log(3000)) / (Math.log(80000) - Math.log(3000));
+    const market = U.clamp(1 + scale * 7.5 + ((h % 5) - 2) * 0.35 + (BIG_NATION[c.nat] || 0) * 0.8, 1, 10);
+    const support = U.clamp(market * 0.6 + (c.rep - 40) / 12 + (SUPPORT_BY_IDENTITY[c.identity] || 0), 1, 10);
+    const catchment = U.clamp(market * 0.7 + (c.identity === 'youth' ? 1.5 : 0) + (((h >> 3) % 3) - 1) * 0.5, 1, 10);
+    const own = { oil: 'sovereign', fan: 'fans', selling: 'investors' }[c.identity] || 'private';
+    const a = { market, support, catchment, own, hist: c.rep };
+    a.ceil = W.repCeiling(a, c.rep);
+    a.floor = Math.max(20, c.rep - (6 + market * 0.8) * W.REP_SLACK);
+    c.attr = a;
+    return a;
+  };
+  // The most a club can be: its standing now (it is never above its own ceiling), plus what its market, supporters and owner allow
+  W.repCeiling = (a, rep) =>
+    Math.min(
+      99,
+      rep +
+        (1.5 + 1.9 * a.market + 1.1 * a.support) * W.REP_HEAD +
+        (a.own === 'sovereign' ? 8 : a.own === 'fans' ? -1.5 : 0),
+    );
+  // A change to a club's reputation, held to its ceiling and floor (national teams and clubs outside the leagues have none)
+  W.nudgeRep = function (c, d) {
+    if (!c || !c.comp || c.sim === 'nation') {
+      if (c) c.rep = U.clamp(c.rep + d, 20, 99);
+      return;
+    }
+    const a = W.clubAttr(c);
+    c.rep = U.clamp(c.rep + d, a.floor, Math.max(a.ceil, c.rep));
+  };
+  // A season ends: the club's reputation moves toward what its standing and its history support, by a capped step, and its
+  // history follows slowly. Success also grows the club (supporters, then the ceiling); a long slump shrinks it.
+  W.driftRep = function (c, standing) {
+    const a = W.clubAttr(c);
+    const target = U.clamp(W.REP_STANDING * standing + (1 - W.REP_STANDING) * a.hist, a.floor, a.ceil);
+    c.rep = U.clamp(c.rep + U.clamp((target - c.rep) * 0.18, -W.REP_STEP, W.REP_STEP), 20, Math.max(a.ceil, c.rep));
+    a.hist += (c.rep - a.hist) * 0.05;
+    a.floor = Math.max(20, Math.min(a.floor + 0.2, a.hist - (6 + a.market * 0.8) * W.REP_SLACK));
+  };
+  W.growClub = function (c, d) {
+    const a = W.clubAttr(c);
+    a.support = U.clamp(a.support + d, 1, 10);
+    a.ceil = Math.min(99, a.ceil + d * 3);
+  };
+
   W.levelFor = (rep) => 25 + rep * 0.58;
   // Ability of an unattached player the world invents (a new world's free agents, a thin summer market): mostly
   // lower-league standard; only rarely someone good enough for a top flight
@@ -1051,11 +1127,18 @@
       made.push({ nat: n, age });
       return n;
     };
+    const mil = !!(club.policy && club.policy.military); // the army's club: conscripts on loan, no academy
     const sidesMade = {},
       mine = have.slice();
     positions.forEach((pos, i) => {
       // a B team is a young side: mostly 18 to 23, with a few older heads
-      const age = club.parent ? (Math.random() < 0.85 ? U.randi(18, 23) : U.randi(24, 27)) : pickAge(pos);
+      const age = mil
+        ? U.randi(24, 27)
+        : club.parent
+          ? Math.random() < 0.85
+            ? U.randi(18, 23)
+            : U.randi(24, 27)
+          : pickAge(pos);
       const starter = i % 2 === 0;
       let ca = Math.round(
         U.clamp(
@@ -1065,13 +1148,14 @@
         ),
       );
       const p = W.genPlayer({
-        nat: nat(age, () => W.natFor(club)),
+        nat: mil ? 'KOR' : nat(age, () => W.natFor(club)),
         pos,
         age,
         ca,
         pa: W.potentialFor(ca, age),
         clubId: club.id,
       });
+      if (mil) FM.Asia.enlist(p, club);
       if (W.FLANK.includes(pos)) {
         // left and right in turn, the foot to match (most full-backs; wingers are often inverted)
         const n = (sidesMade[pos] = (sidesMade[pos] || 0) + 1);
@@ -1083,7 +1167,7 @@
       mine.push(p);
     });
     // Academy prospects
-    for (let i = 0; i < (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length; i++) {
+    for (let i = 0; i < (mil ? 0 : (D.ACADEMY_TIER[club.sim] ?? 2) - have.filter((h) => h.youth).length); i++) {
       const age = U.randi(17, 19),
         pos = U.pick(['CB', 'CM', 'W', 'ST', 'FB', 'AM', 'WB', 'WM']);
       const ca = Math.round(lvl - U.randi(12, 20));
@@ -1982,6 +2066,7 @@
       };
       S.clubs[id] = club;
       S.comps[compId].clubs.push(id);
+      W.clubAttr(club);
       genSquad(club);
       return club;
     };
@@ -2346,6 +2431,73 @@
       });
   };
 
+  // Thirty seasons of league champions, runners-up and domestic cup winners before the save begins, so the archive, the club pages
+  // and the honours cards have a past. A club wins in proportion to its standing (and the weight of its history), a champion tends
+  // to win again (a dynasty), and a club cannot win before it was founded; the champions it produces are the clubs the world's own
+  // ceilings say could have been champions.
+  W.seedHistory = function (years = 30) {
+    const S = FM.S;
+    if (S.archive.length) return 0;
+    const clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim !== 'nation' && !c.parent);
+    const weight = (c, y) => {
+      if (c.founded && c.founded > y) return 0;
+      const hist =
+        { giant: 1.8, historic: 1.5, oil: 0.9, fallen: 1.4, fan: 0.8, youth: 0.9, selling: 0.9 }[c.identity] || 1;
+      return Math.exp((c.rep - 55) / 7) * hist;
+    };
+    const prev = {};
+    const cups = Object.values(S.comps).filter((x) => x.type === 'cup' && x.nat);
+    const out = [];
+    for (let i = years; i >= 1; i--) {
+      const year = S.year - i,
+        entry = {
+          year,
+          label: `${year}/${String(year + 1).slice(2)}`,
+          comps: {},
+          cups: {},
+          promoted: [],
+          relegated: [],
+          upsets: [],
+          transfers: [],
+          user: null,
+          seeded: true,
+        };
+      for (const comp of W.leagues()) {
+        const pool = clubs.filter((c) => c.comp === comp.id);
+        if (pool.length < 2) continue;
+        const w = (c) => weight(c, year) * (prev[comp.id] === c.id ? 2.4 : 1);
+        const champ = U.wpick(pool, w) || pool[0];
+        const second = U.wpick(
+          pool.filter((c) => c.id !== champ.id),
+          w,
+        );
+        prev[comp.id] = champ.id;
+        champ.titles = champ.titles || {};
+        champ.titles[comp.id] = (champ.titles[comp.id] || 0) + 1;
+        entry.comps[comp.id] = {
+          name: comp.name,
+          sim: comp.sim || 'full',
+          nat: comp.nat,
+          champion: champ.id,
+          runnerUp: second.id,
+        };
+      }
+      for (const cup of cups) {
+        const pool = clubs.filter((c) => c.nat === cup.nat);
+        if (pool.length < 2) continue;
+        // a cup is kinder to the small: the weight is flattened
+        const w = (c) => Math.sqrt(weight(c, year)) + 0.2;
+        const win = U.wpick(pool, w);
+        entry.cups[cup.id] = { name: cup.name, winner: win.id };
+        win.titles = win.titles || {};
+        win.titles[cup.id] = (win.titles[cup.id] || 0) + 1;
+      }
+      out.push(entry);
+    }
+    S.archive = out;
+    return out.length;
+  };
+
   // ---------------- Compact save format ----------------
   // Players are ~80% of a save. Attributes, hidden attributes, season stats, career spells and history are
   // stored as arrays, common keys are shortened, defaults are dropped, and derived fields (ability, value,
@@ -2519,6 +2671,12 @@
   };
 
   W.userClub = () => FM.S.clubs[FM.S.user.clubId];
+  // The army's club (Gimcheon Sangmu in real life): its squad is conscripts, so nothing tops it up
+  W.army = (c) => !!(c && c.policy && c.policy.military);
+  // Lower-league realism: a part-time club (the fourth tier and below, or a tiny club) trains in the evenings, has no scouting
+  // network to speak of (two scouts at most) and pays what a community club can
+  W.partTime = (c) => !!c && c.sim !== 'nation' && ((FM.S.comps[c.comp] && FM.S.comps[c.comp].tier >= 4) || c.rep < 28);
+  W.maxScouts = () => (W.partTime(W.userClub()) ? 2 : 5);
   W.isUser = (clubId) => FM.S.user && FM.S.user.clubId === clubId;
   W.isUserNation = (id) => !!(FM.S.user && FM.S.user.nation && FM.S.user.nation === id);
   W.isMine = (id) => W.isUser(id) || W.isUserNation(id);

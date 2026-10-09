@@ -28,6 +28,8 @@
     'tiers',
     'contracts',
     'people',
+    'mstyle',
+    'asia',
     'scouting',
     'transfers',
     'registration',

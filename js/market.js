@@ -316,6 +316,7 @@
     const c = W.userClub(),
       open = FM.Season.windowOpen();
     for (const p of M.loanedOut(c.id)) {
+      if (p.loan.military) continue; // doing national service: nothing to recall or complain about
       if (p.loan.recall && open) {
         const was = S().clubs[p.clubId];
         M.recall(p);
@@ -609,15 +610,42 @@
       money:
         Math.log2(Math.max(0.3, wage / Math.max(500, p.wage || W.wageFor(p)))) * (W.hasTrait(p, 'Mercenary') ? 3 : 1.6),
       home: c.nat === p.nat ? (age >= 30 ? 1.2 : 0.5) : 0,
+      identity: M.identityAppeal(p, c),
+      manager: W.isUser(c.id) ? FM.Style.appealFor(p) : 0,
     };
   };
-  const total = (a) => a.league + a.club + a.time + a.money + a.home;
+  // What the club's identity says to this player: a youth club is a pathway for a teenager and a dead end for a veteran, a giant
+  // or an oil-backed club speaks to the ambitious and the mercenary, a fallen giant puts the ambitious off, a fan-owned club
+  // is loved by its own countrymen, a selling club is a stepping stone
+  M.identityAppeal = function (p, c) {
+    const age = W.age(p),
+      amb = p.hid.amb;
+    switch (c.identity) {
+      case 'youth':
+        return age <= 21 ? 0.6 : age >= 30 ? -0.3 : 0;
+      case 'giant':
+        return amb >= 13 ? 0.5 : 0.2;
+      case 'oil':
+        return W.hasTrait(p, 'Mercenary') ? 0.7 : amb >= 13 ? 0.3 : 0;
+      case 'fallen':
+        return amb >= 13 ? -0.4 : 0;
+      case 'fan':
+        return p.nat === c.nat ? 0.4 : 0;
+      case 'selling':
+        return age <= 22 ? 0.3 : -0.2;
+      default:
+        return 0;
+    }
+  };
+  const total = (a) => a.league + a.club + a.time + a.money + a.home + (a.identity || 0) + (a.manager || 0);
   const WHY = {
     league: 'a bigger league',
     club: 'the bigger club',
     time: 'the promise of regular football',
     money: 'the better contract',
     home: 'the chance to go home',
+    identity: 'what the club stands for',
+    manager: 'the manager and how he plays',
   };
   // Other clubs chasing the same player this window (decided once, so you can see them in your talks)
   M.rivals = function (p) {

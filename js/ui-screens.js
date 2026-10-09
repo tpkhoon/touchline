@@ -1347,6 +1347,7 @@
     const own = p.clubId && CL(p.clubId) && CL(p.clubId).nat;
     const need = own && R.rulesFor(CL(p.clubId)) && R.rulesFor(CL(p.clubId)).squad;
     return `<div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Trained</span><b style="text-align:right">${where}<div class="tiny dim" style="font-weight:400">${how}</div></b></div>
+        ${p.draftClub && CL(p.draftClub) ? `<div class="row small" style="margin-top:8px"><span class="grow muted">${p.uni ? 'University route' : 'Drafted'}</span><b>${p.draftYear} · ${esc(CL(p.draftClub).name)}</b></div>` : ''}
         <div class="row small" style="margin-top:8px;align-items:flex-start"><span class="grow muted">Homegrown in</span><b style="text-align:right">${hg}${need ? `<div class="tiny" style="font-weight:400;color:var(--${t.nations.includes(own) ? 'good' : 'warn'})">${t.nations.includes(own) ? 'counts as homegrown here' : 'not homegrown here: takes a place on the squad list'}</div>` : ''}</b></div>`;
   };
   // As national team manager: a player eligible for your nation who plays for another (or has not chosen) can be asked
@@ -2835,6 +2836,7 @@
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
       ${teamTalkCard(u)}
       ${UI.careerExtras()}
+      ${UI.styleCard()}
       <div class="kpis"><div class="kpi"><div class="v">${st.games}</div><div class="l">Games</div></div><div class="kpi"><div class="v">${st.games ? Math.round((st.w / st.games) * 100) : 0}%</div><div class="l">Win rate</div></div><div class="kpi"><div class="v">${st.trophies}</div><div class="l">Trophies</div></div></div>
       <div class="card flat small"><div class="row"><span class="grow dim">W / D / L</span><b>${st.w} / ${st.d} / ${st.l}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Youth debuts</span><b>${st.youthDebuts}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Giant-killings</span><b>${st.giantKills}</b></div><div class="row" style="margin-top:6px"><span class="grow dim">Signings / sales</span><b>${st.bought} / ${st.sold}</b></div></div>
       <div class="sec"><div class="h3">Career</div></div><div class="card flat">${

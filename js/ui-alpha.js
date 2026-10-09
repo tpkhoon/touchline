@@ -643,6 +643,7 @@
         <div class="row small" style="margin-top:6px"><span class="grow muted">System</span><b>${tac.formation} · ${tac.buildup} · ${tac.press}</b></div>
         ${c.founded ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Founded</span><b>${c.founded}</b></div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">Stadium</span><b>${esc(c.stadium ? c.stadium.name : '—')}${c.stadium ? ` · ${c.stadium.cap.toLocaleString()}${c.sim === 'full' ? ` · opened ${FM.Records.stadium(c).opened}` : ''}` : ''}</b></div>
+        ${UI.clubAttrRows(c)}
         ${c.policy ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Signing policy</span><b>Only ${esc(c.policy.label)} players</b></div>` : ''}
         ${c.rival ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Rival</span><b class="tap" data-act="clubView" data-id="${c.rival}">⚔️ ${esc(s.clubs[c.rival].name)}</b></div>` : ''}
         ${rivalTag ? `<div class="row small" style="margin-top:6px"><span class="grow muted">With your club</span><b>${rivalTag}</b></div>` : ''}
@@ -813,6 +814,21 @@
 
   // ======================= Boardroom =======================
   // The boardroom: confidence, the four meetings of the season (when the next one is) and the board's own demand
+  // What a club can become: its market, supporters, youth catchment, owner and the most it can grow to (W.clubAttr)
+  UI.clubAttrRows = function (c) {
+    if (!c.comp || c.sim === 'nation') return '';
+    const a = W.clubAttr(c);
+    const size = (v) => (v >= 8 ? 'Very large' : v >= 6 ? 'Large' : v >= 4 ? 'Medium' : v >= 2.5 ? 'Small' : 'Tiny');
+    const own = {
+      sovereign: 'Sovereign wealth',
+      fans: 'Fan-owned',
+      investors: 'Investment group',
+      private: 'Private owner',
+    }[a.own];
+    const row = (l, v, t) =>
+      `<div class="row small" style="margin-top:6px"><span class="grow muted">${l}</span><b${t ? ` title="${esc(t)}"` : ''}>${v}</b></div>`;
+    return `${row('Market', `${size(a.market)} (${a.market.toFixed(0)}/10)`, 'The size of its city and catchment')}${row('Supporters', `${size(a.support)} (${a.support.toFixed(0)}/10)`, 'Its support base: it grows with success')}${row('Youth catchment', `${size(a.catchment)}`, 'How many good young players live nearby')}${row('Owner', own)}${row('Can grow to', C.stars(U.repStars(a.ceil)), 'The most its market, supporters and owner allow, until something changes')}`;
+  };
   UI.boardroomCard = function () {
     const c = club(),
       B = FM.Board,
@@ -825,11 +841,46 @@
     const open = S().news.find((n) => n.type === 'desk' && n.kind === 'board' && !n.resolved);
     return `<div class="card"><div class="row"><div class="h3 grow">🏛️ Boardroom</div><span class="tiny dim">${held.length} of ${B.MEETINGS.length} meetings held</span></div>
       <div class="row small" style="margin-top:8px"><span style="width:90px" class="dim">Confidence</span><div class="grow">${C.bar(c.boardConf, C.moodColor(c.boardConf))}</div><b style="margin-left:8px">${Math.round(c.boardConf)}%</b></div>
+      ${(() => {
+        const n = [
+          B.styleNote(c, S().user.tactic),
+          FM.Style.ready(S().user) && Math.abs(FM.Style.match(c)) >= 0.25
+            ? FM.Style.match(c) > 0
+              ? 'The board like how you run the club.'
+              : 'The board are uneasy about your approach.'
+            : '',
+        ].filter(Boolean);
+        return n.length ? `<div class="tiny dim" style="margin-top:8px">${n.map(esc).join(' ')}</div>` : '';
+      })()}
       ${ult ? `<div class="warnline" style="margin-top:10px">⚠️ Ultimatum: ${ult.need} points from 5 league games. So far ${row.pts - ult.pts} from ${row.p - ult.from}.</div>` : ''}
       ${b.agenda ? `<div class="warnline" style="margin-top:10px">📌 The board's demand: ${esc(b.agenda.text)}. They will check at the next meeting.</div>` : ''}
       <div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap">${B.MEETINGS.map((m) => `<span class="pill ${held.includes(m.k) ? 'good' : next && next.k === m.k ? 'acc' : ''}" title="${esc(m.label)}">${held.includes(m.k) ? '✓ ' : ''}${esc(m.label.replace(/ board (meeting|review)/, '').replace('Pre-season', 'Pre-season'))}</span>`).join('')}</div>
       <div class="small muted" style="margin-top:8px">${open ? '🔔 A board meeting is waiting for you in the feed.' : next ? `Next: ${esc(next.label)}${days ? `, in about ${days} day${days === 1 ? '' : 's'}` : ', today'}.` : 'No more meetings this season.'}</div>
       <div class="tiny dim" style="margin-top:8px">Four meetings a season. At each the board say how they see things, may make a demand of their own, and hear one request: they answer on confidence, money, recent form, your reputation and what you have asked before.</div></div>`;
+  };
+
+  // The manager you are turning out to be (FM.Style): four axes from what you do, and your standing in each country
+  UI.styleCard = function () {
+    const u = S().user,
+      St = FM.Style,
+      st = St.get(u);
+    const rows = St.ready(u)
+      ? Object.keys(St.AXES)
+          .map((k) => {
+            const v = st[k],
+              w = St.word(st, k);
+            return `<div class="small" style="margin-top:10px"><div class="row"><span class="tiny dim">${St.AXES[k][0]}</span><span class="grow"></span><span class="tiny dim">${St.AXES[k][1]}</span></div><div style="position:relative;height:6px;border-radius:3px;background:var(--line);margin-top:4px"><i style="position:absolute;top:-3px;left:calc(${(v + 1) * 50}% - 6px);width:12px;height:12px;border-radius:50%;background:var(--acc)"></i></div>${w ? `<div class="tiny b" style="margin-top:6px">${esc(w)}</div>` : ''}</div>`;
+          })
+          .join('')
+      : `<div class="small dim" style="margin-top:6px">Your style appears after ${St.MIN_GAMES} matches (${st.n} so far): it comes from who you play, how you set up and what you spend, not from a choice.</div>`;
+    const nat = Object.entries(u.repNat || {})
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    return `<div class="card"><div class="h3">Your style</div>${rows}${
+      nat.length
+        ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Standing by country</div>${nat.map(([n, v]) => `<div class="row small" style="margin-top:4px">${C.flag(n)} <span class="grow">${esc(D.NATIONS[n] ? D.NATIONS[n].name : n)}</span>${C.stars(U.repStars(v))}</div>`).join('')}<div class="tiny dim" style="margin-top:6px">A name made in one country carries less in another: clubs judge you first by your standing in their own.</div>`
+        : ''
+    }</div>`;
   };
 
   // ======================= Manager: badges + national team =======================

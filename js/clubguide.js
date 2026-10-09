@@ -166,6 +166,7 @@
     if (pol) out.push(`Only ${pol.label} players`);
     if (G.rival(code)) out.push('Derby club');
     if (e.bigGround) out.push('Big ground');
+    if (e.l.tier >= 4 || e.row[6] < 28) out.push('Part-time squad');
     const f = G.info(code).founded;
     if (f && f < 1890) out.push(`Est. ${f}`);
     else if (f && f > 1975) out.push('Young club');
@@ -190,6 +191,91 @@
     });
     const top = x.rows[0];
     return `${parts.join(' · ')}. Strongest: ${top[0]}${d.brutal ? `; ${d.brutal} brutal job${d.brutal > 1 ? 's' : ''} for the brave` : ''}.`;
+  };
+
+  // ---------- story starts and first clubs ----------
+  // A story start is a club picked for a situation with a stake, so the first season has a plot: each is a filter over the
+  // index, and "another" draws a different club for the same story.
+  const STORIES = [
+    {
+      id: 'giant',
+      icon: '🦁',
+      title: 'A giant awakens',
+      blurb: 'A famous name that has lost its way. The fans remember the trophies; the squad does not.',
+      ok: (e) => ['fallen', 'giant', 'historic'].includes(e.row[5]) && e.pct > 0.3 && e.pct < 0.85 && e.l.tier <= 2,
+    },
+    {
+      id: 'promotion',
+      icon: '🪜',
+      title: 'Last chance at promotion',
+      blurb: 'A strong squad in the second tier and an owner whose patience is running out: go up this year.',
+      ok: (e) => e.l.tier === 2 && e.pct < 0.3 && !['oil'].includes(e.row[5]),
+    },
+    {
+      id: 'odds',
+      icon: '🧗',
+      title: 'Against the odds',
+      blurb:
+        'The weakest squad, the smallest budget, the lowest expectations. Stay up and the city will not forget it.',
+      ok: (e) => G.diffKey(e.row[1]) === 'brutal' && e.l.tier <= 2,
+    },
+    {
+      id: 'money',
+      icon: '🛢️',
+      title: 'New money, big promises',
+      blurb: 'Rich owners, a thin squad and an impatient board. Spend it well.',
+      ok: (e) => e.row[5] === 'oil' && e.pct > 0.2,
+    },
+    {
+      id: 'academy',
+      icon: '🎓',
+      title: 'The academy is the plan',
+      blurb: 'A famous youth system and a first team that is mostly its graduates. Develop them and sell wisely.',
+      ok: (e) => e.row[5] === 'youth' && e.l.tier <= 2,
+    },
+    {
+      id: 'derby',
+      icon: '⚔️',
+      title: 'The derby decides your job',
+      blurb: 'The rivals down the road are better this year. Your first season will be judged by two fixtures.',
+      ok: (e) => {
+        const rv = G.rival(e.row[1]),
+          re = rv && G.entry(rv.code);
+        return !!re && re.l.id === e.l.id && re.rank < e.rank - 1 && e.pct > 0.25;
+      },
+    },
+    {
+      id: 'asia',
+      icon: '🌏',
+      title: 'Football in Asia',
+      blurb:
+        'A different calendar, the AFC places, foreign-player limits and Gulf money. A job few managers know how to do.',
+      ok: (e) => D.NATIONS[e.l.nat] && D.NATIONS[e.l.nat].region === 'ASIA' && e.l.tier <= 2,
+    },
+  ];
+  G.stories = function (skip = {}) {
+    const all = Object.values(G.index().byCode);
+    return STORIES.map((s) => {
+      const pool = all.filter((e) => s.ok(e) && skip[s.id] !== e.row[1]);
+      const pick = pool.length ? U.pick(pool) : null;
+      return pick && { id: s.id, icon: s.icon, title: s.title, blurb: s.blurb, code: pick.row[1] };
+    }).filter(Boolean);
+  };
+  // A short list of good first clubs: tier one or two, a fair job and a bit of the world's character, from different leagues
+  G.firstClubs = function () {
+    const pool = Object.values(G.index().byCode).filter((e) => {
+      const s = G.score(e.row[1]);
+      return e.l.tier <= 2 && s > 0.05 && s < 0.5 && e.n >= 14;
+    });
+    const out = [],
+      seen = new Set();
+    for (const e of pool.sort(() => Math.random() - 0.5)) {
+      if (seen.has(e.l.id)) continue;
+      seen.add(e.l.id);
+      out.push(e.row[1]);
+      if (out.length === 6) break;
+    }
+    return out;
   };
 
   // ---------- suggestions ----------

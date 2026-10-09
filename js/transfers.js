@@ -180,7 +180,7 @@
   T.endLoans = function () {
     const S = FM.S;
     Object.values(S.players).forEach((p) => {
-      if (!p.loan) return;
+      if (!p.loan || p.loan.military) return; // (the army's conscripts stay until their service ends: FM.Asia)
       // An option to buy: the borrower takes it up if he played most of their games
       const o = p.loan;
       if (o.buy && !W.ownPlayer(p) && S.clubs[p.clubId] && W.spell(p).apps >= 15 && S.clubs[p.clubId].budget >= o.buy) {
@@ -305,7 +305,10 @@
       const sp = W.spell(p);
       if (sp) sp.to = S.year;
       S.seasonLog.net[from.id] = (S.seasonLog.net[from.id] || 0) + fee;
-      if (W.isUser(from.id)) S.user.stats.sold++;
+      if (W.isUser(from.id)) {
+        S.user.stats.sold++;
+        FM.Style.afterTransfer(from, p, fee, false);
+      }
     }
     to.balance -= cash;
     to.budget = Math.max(0, to.budget - cash - (fee - cash) * 0.5);
@@ -325,6 +328,8 @@
     p.value = W.value(p);
     if (!W.isUser(toId)) FM.Contracts.aiDeal(p, to);
     if (W.isUser(toId)) {
+      FM.Board.reactSigning(to, p, fee);
+      FM.Style.afterTransfer(to, p, fee, true);
       S.user.knowledge[p.id] = 100;
       S.user.stats.bought++;
       S.user.shortlist = S.user.shortlist.filter((x) => x !== p.id);
@@ -424,6 +429,30 @@
   // look abroad, the biggest ones scout the world
   T.HOME_SCALE = 1; // a multiplier on the home pull below (a tuning knob for the developer sweeps)
   T.homePull = (c) => (c.rep >= 75 ? 16 : c.rep >= 62 ? 34 : 70) * T.HOME_SCALE;
+  // What a club's identity makes it look for: a weight on each target from his age, potential, nationality and standing. A
+  // youth club wants youngsters, a selling club young players it can sell on, a fan-owned club its own countrymen and not the
+  // old, an oil-backed or giant club stars, a fallen giant experience for the rebuild.
+  T.identityFit = function (c, p) {
+    const age = W.age(p),
+      room = p.pa - p.ca,
+      lvl = W.levelFor(c.rep);
+    switch (c.identity) {
+      case 'youth':
+        return age <= 22 ? 1.6 : age >= 28 ? 0.45 : 1;
+      case 'selling':
+        return age <= 24 && room >= 8 ? 1.8 : age >= 29 ? 0.4 : 1;
+      case 'fan':
+        return (p.nat === c.nat ? 1.5 : 0.8) * (age >= 31 ? 0.7 : 1);
+      case 'oil':
+        return p.ca >= lvl ? 1.5 : 0.8;
+      case 'giant':
+        return p.ca >= lvl - 2 ? 1.3 : 0.9;
+      case 'fallen':
+        return age >= 27 ? 1.35 : 1;
+      default:
+        return 1;
+    }
+  };
   T.fillGap = function (c, sq, mkt) {
     if (sq.length >= W.squadTarget(c)) return false;
     const want = W.squadWant(c);
@@ -459,6 +488,7 @@
       (x) =>
         Math.pow(x.ca, 3) *
         (W.age(x) <= 25 ? 1.25 : W.age(x) >= 31 ? 0.6 : 1) *
+        T.identityFit(c, x) *
         (!x.clubId ? T.FREE_PULL : nationOf(x.clubId) === c.nat ? T.homePull(c) : 1),
     );
     T.execute(p, c.id, U.roundMoney(T.askPrice(p) * premium(p, c) * urg), T.wageDemand(p, c));
@@ -508,7 +538,11 @@
       if (!pool.length) continue;
       const p = U.wpick(
         pool,
-        (x) => Math.pow(x.ca, 3) * (W.age(x) <= 24 ? 1.25 : 1) * (nationOf(x.clubId) === c.nat ? T.homePull(c) / 2 : 1),
+        (x) =>
+          Math.pow(x.ca, 3) *
+          (W.age(x) <= 24 ? 1.25 : 1) *
+          T.identityFit(c, x) *
+          (nationOf(x.clubId) === c.nat ? T.homePull(c) / 2 : 1),
       );
       T.execute(p, c.id, U.roundMoney(T.askPrice(p) * premium(p, c)), T.wageDemand(p, c));
       T.offload(c, g, full);
@@ -621,6 +655,7 @@
           (x) =>
             Math.pow(x.ca, 3) *
             (W.age(x) <= 25 ? 1.25 : W.age(x) >= 31 ? 0.6 : 1) *
+            T.identityFit(c, x) *
             (!x.clubId ? T.FREE_PULL / 2 : nationOf(x.clubId) === c.nat ? T.homePull(c) : c.rep >= 70 ? 1.3 : 1),
         );
         if (Math.random() < 0.15) {
@@ -728,6 +763,37 @@
           T.execute(v, d.id, U.roundMoney(v.value * 0.6), Math.round(v.wage * (d.sim === 'minimal' ? 1.4 : 1)), {
             veteran: true,
           });
+      }
+    }
+
+    // Gulf money: an Oil-Backed club in the Saudi Pro League buys a famous name in his late twenties or thirties, paying
+    // well over the going rate in fee and wages. The league's rule on foreign places still decides if he can be registered,
+    // and the clubs he leaves in Europe and South America feel it. One or two a window.
+    if (Math.random() < 0.55 * k) {
+      const gulf = full.filter((c) => c.identity === 'oil' && c.comp === 'SA1' && !W.isUserSide(c.id));
+      const stars = gulf.length
+        ? Object.values(S.players).filter((p) => {
+            if (!p.clubId || p.loan || p.ca < 76 || W.age(p) < 27 || W.age(p) > 35 || W.ownPlayer(p) || p.pre)
+              return false;
+            const sc = S.clubs[p.clubId];
+            return sc.sim === 'full' && sc.comp !== 'SA1' && !W.isUserSide(sc.id) && !T.isSettled(p);
+          })
+        : [];
+      if (stars.length) {
+        const star = U.wpick(stars, (p) => Math.exp((p.ca - 76) / 6)),
+          price = U.roundMoney(T.askPrice(star) * 1.3);
+        const buyers = gulf.filter((c) => price <= c.budget + Math.max(0, c.balance) * 0.5 && T.canRegister(c, star));
+        if (buyers.length) {
+          const to = U.wpick(buyers, (c) => c.rep),
+            from = S.clubs[star.clubId];
+          T.execute(star, to.id, price, Math.round(T.wageDemand(star, to) * 2), { marquee: true, gulf: true });
+          FM.News.add({
+            type: 'transfer',
+            title: `Gulf money: ${W.short(star)} to ${to.name}`,
+            body: `${to.name}'s owners pay ${U.money(price)} and a wage far above the European market for ${W.name(star)} (${from.name}), at ${W.age(star)}. ${from.name} lose a ${star.ca}-rated player; the Saudi Pro League's foreign places are filling with famous names.`,
+            clubId: to.id,
+          });
+        }
       }
     }
 

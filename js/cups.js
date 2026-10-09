@@ -578,10 +578,7 @@
     if (FM.Records) FM.Records.finishComp(c); // its awards and team of the tournament
     club.titles[c.id] = (club.titles[c.id] || 0) + 1;
     club.balance += c.prize || 0;
-    club.rep = Math.min(
-      99,
-      club.rep + (c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5),
-    );
+    W.nudgeRep(club, c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5);
     club.fanMood = Math.min(100, club.fanMood + 15);
     if (W.isUser(w)) {
       if (c.type !== 'regional') S().user.stats.trophies++; // (a county cup is an honour, not a trophy of the season)

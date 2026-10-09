@@ -4,6 +4,7 @@
 (function () {
   const FM = window.FM,
     U = FM.U,
+    D = FM.D,
     W = FM.W;
   const Md = (FM.Matchday = {});
   const P = (id) => FM.S.players[id];
@@ -151,6 +152,546 @@
   Md.applyWarmup = function (m, kind) {
     const sd = m.sides.find((s) => s.user);
     if (sd && Md.WARMUPS[kind]) sd.warm = kind;
+  };
+  // ---------- Opposition report and match instructions ----------
+  // The report reads the opponent's real system and XI; each instruction answers one thing in it and changes the engine's chance
+  // table the same way (Md.insWeights / Md.insXg, called from FM.Match.chance), so advice and result agree. A right answer pays,
+  // a wrong one costs (a counter plan against a side that sits deep gets no space, patience against a press loses the ball).
+  const DANGER_T = { ST: 1, W: 0.9, AM: 0.85, WM: 0.6, CM: 0.4 };
+  Md.dangerMan = function (xi) {
+    return (
+      xi
+        .filter((p) => p && p.pos !== 'GK')
+        .sort((a, b) => b.ca * (DANGER_T[b.pos] ?? 0.3) - a.ca * (DANGER_T[a.pos] ?? 0.3))[0] || null
+    );
+  };
+  // The weaker flank of a side's back line (full-backs, wing-backs, wide midfielders): { side, gap } in rating points
+  Md.flankBias = function (xi, slots) {
+    const q = { left: [], right: [] };
+    slots.forEach((s, i) => {
+      const p = xi[i];
+      if (!p || !['FB', 'WB', 'WM'].includes(s.t)) return;
+      if (s.y < 0.35) q.left.push(p.ca);
+      else if (s.y > 0.65) q.right.push(p.ca);
+    });
+    if (!q.left.length || !q.right.length) return { side: null, gap: 0 };
+    const l = U.avg(q.left, (v) => v),
+      r = U.avg(q.right, (v) => v);
+    return { side: l < r ? 'left' : 'right', gap: Math.round(Math.abs(l - r) * 10) / 10 };
+  };
+  Md.INS = {
+    counter: {
+      label: 'Hit them on the break',
+      short: 'Counter',
+      desc: 'Quick, direct runs into the space a high line leaves. Against a side that sits deep there is no space',
+      w: (w, sd, od) => {
+        const hi = od.tactic.press === 'High Press';
+        w.counter += hi ? 0.14 : 0.03;
+        w.cutback -= hi ? 0.03 : 0.06;
+      },
+      fit: (r) =>
+        r.press === 'High Press'
+          ? [1, 'They press high: there is space behind their line']
+          : r.press === 'Low Block'
+            ? [-1, 'They sit deep: no space to run into']
+            : [0, ''],
+    },
+    patience: {
+      label: 'Be patient',
+      short: 'Patience',
+      desc: 'Work the ball side to side and wait for the gap. Pays against a deep block; against a press it loses the ball',
+      w: (w, sd, od) => {
+        const lb = od.tactic.press === 'Low Block';
+        w.through += lb ? 0.06 : 0.015;
+        w.cutback += lb ? 0.06 : 0.015;
+        w.longshot -= 0.06;
+      },
+      vs: (w, holder, att) => {
+        if (att.tactic.press === 'High Press') w.counter += 0.07;
+      },
+      fit: (r) =>
+        r.press === 'Low Block'
+          ? [1, 'They sit deep: wait for the gap']
+          : r.press === 'High Press'
+            ? [-1, 'They press: slow build-up loses the ball']
+            : [0, ''],
+    },
+    crosses: {
+      label: 'Get the ball wide',
+      short: 'Wide',
+      desc: 'Cross early from the flanks. Works against a narrow side; costs central chances',
+      w: (w, sd, od) => {
+        w.cross += od.tactic.width === 'Narrow' ? 0.14 : 0.05;
+        w.through -= 0.04;
+      },
+      fit: (r) =>
+        r.width === 'Narrow'
+          ? [1, 'They play narrow: the flanks are open']
+          : r.width === 'Wide'
+            ? [-1, 'They defend wide: crosses come to a packed box']
+            : [0, ''],
+    },
+    flank: {
+      label: 'Attack their weak side',
+      short: 'Weak side',
+      desc: 'Overload the flank where their full-back is the weaker. No use when the two sides are alike',
+      w: (w, sd, od) => {
+        const g = Md.flankOf(od).gap;
+        w.cross += Math.min(0.12, g * 0.012);
+        w.cutback += Math.min(0.05, g * 0.005);
+        w.through -= 0.03;
+      },
+      x: (sd, od, type) =>
+        type === 'cross' || type === 'cutback' ? 1 + Math.min(0.06, Md.flankOf(od).gap * 0.006) : 1,
+      fit: (r) =>
+        r.fb.gap >= 8
+          ? [1, `Their ${r.fb.side} flank is weaker by ${r.fb.gap} points`]
+          : r.fb.gap < 4
+            ? [-1, 'Their flanks are evenly matched']
+            : [0, ''],
+    },
+    tight: {
+      label: 'Man-mark their danger man',
+      short: 'Mark him',
+      desc: 'Take their best attacker out of the game. Costs us a little in the build-up, and counts for nothing if the danger is spread',
+      cost: { att: -0.006 },
+      xv: (holder, att, type, p) => (p && att.dangerId && p.id === att.dangerId ? 0.78 : 1),
+      fit: (r) =>
+        r.lead >= 6
+          ? [1, `${r.key ? W.short(r.key) : 'He'} is well clear of their other attackers`]
+          : r.lead <= 2
+            ? [-1, 'Their threat is spread: no one man to stop']
+            : [0, ''],
+    },
+    drop: {
+      label: 'Drop the line',
+      short: 'Drop off',
+      desc: 'A deeper line against pace in behind: fewer through balls and counters for them, a little less pressure from us',
+      cost: { att: -0.008 },
+      vs: (w) => {
+        w.through -= 0.07;
+        w.counter -= 0.05;
+      },
+      fit: (r) =>
+        r.pace >= 15
+          ? [1, `${r.key ? W.short(r.key) : 'Their forward'} has the pace to run in behind`]
+          : r.pace <= 12
+            ? [-1, 'Nothing quick up front to fear']
+            : [0, ''],
+    },
+  };
+  Md.flankOf = (sd) => sd.flank || (sd.flank = Md.flankBias(sd.xi, sd.slots));
+  // The engine hooks: the side's own instructions, and the ones the other side holds against it
+  Md.insWeights = function (sd, od, w) {
+    (sd.ins || []).forEach((id) => Md.INS[id] && Md.INS[id].w && Md.INS[id].w(w, sd, od));
+    (od.ins || []).forEach((id) => Md.INS[id] && Md.INS[id].vs && Md.INS[id].vs(w, od, sd));
+  };
+  Md.insXg = function (sd, od, type, p) {
+    let k = 1;
+    (sd.ins || []).forEach((id) => (k *= Md.INS[id] && Md.INS[id].x ? Md.INS[id].x(sd, od, type, p) : 1));
+    (od.ins || []).forEach((id) => (k *= Md.INS[id] && Md.INS[id].xv ? Md.INS[id].xv(od, sd, type, p) : 1));
+    return k;
+  };
+  // Set the user's side up with up to two instructions (the engine reads sd.ins)
+  Md.applyInstructions = function (m, list, side) {
+    const sd = side || m.sides.find((s) => s.user);
+    if (!sd) return null;
+    sd.ins = (list || []).filter((id) => Md.INS[id]).slice(0, 2);
+    const od = m.sides[1 - sd.idx];
+    od.dangerId = (Md.dangerMan(od.xi) || {}).id;
+    sd.dangerId = (Md.dangerMan(sd.xi) || {}).id;
+    sd.ins.forEach((id) => {
+      const c = Md.INS[id].cost;
+      if (c) Object.keys(c).forEach((k) => (sd.mods[k] += c[k]));
+    });
+    return sd.ins.length ? `Instructions: ${sd.ins.map((id) => Md.INS[id].label).join(', ')}.` : null;
+  };
+  // The report: what they are, what it means, and which instructions answer it
+  Md.opposition = function (fx) {
+    const home = W.isMine(fx.h),
+      opp = FM.clubOf(home ? fx.a : fx.h);
+    const T = opp.tactic;
+    const { xi } = W.pickXI(opp.id, T);
+    const slots = D.FORMATIONS[T.formation];
+    const fb = Md.flankBias(xi, slots),
+      key = Md.dangerMan(xi);
+    const others = xi.filter((p) => p && p !== key && ['ST', 'W', 'AM'].includes(p.pos));
+    const lead = key ? Math.round(key.ca - U.avg(others, (p) => p.ca)) || 0 : 0;
+    const rep = { press: T.press, width: T.width, buildup: T.buildup, fb, key, lead, pace: key ? key.attrs.pace : 0 };
+    const lines = [];
+    if (T.press === 'High Press')
+      lines.push(['🔥', 'They press high: the space behind their line is there for counters.']);
+    if (T.press === 'Low Block')
+      lines.push(['🧱', 'They sit deep and compact: the middle is shut, and they give up shots from distance.']);
+    if (T.width === 'Narrow') lines.push(['↔️', 'A narrow side: the flanks are open to crosses.']);
+    if (T.width === 'Wide') lines.push(['↔️', 'They play wide: stretched in the middle, strong on the wings.']);
+    if (T.buildup === 'Direct') lines.push(['🚀', 'They go long early: win the first ball.']);
+    if (T.buildup === 'Counter') lines.push(['↩️', 'Built to counter: do not leave space behind us.']);
+    if (fb.side && fb.gap >= 6)
+      lines.push(['🎯', `Their ${fb.side} side is the weaker: ${fb.gap} rating points between their flanks.`]);
+    if (key && lead >= 5) lines.push(['⭐', `${W.name(key)} is their danger: ${lead} points clear of the rest.`]);
+    const advice = Object.keys(Md.INS)
+      .map((id) => {
+        const [s, why] = Md.INS[id].fit(rep);
+        return { id, s, why };
+      })
+      .filter((a) => a.s !== 0)
+      .sort((a, b) => b.s - a.s);
+    return { opp, rep, lines, advice, best: advice.filter((a) => a.s > 0).slice(0, 2) };
+  };
+  // After the match: did the instructions work? Returns causes for Md.why
+  Md.insCauses = function (m, us) {
+    const me = m.sides[us],
+      op = m.sides[1 - us],
+      out = [];
+    const ty = (s, t) => (s.types && s.types[t]) || [0, 0, 0];
+    const n = (s, ...ts) => ts.reduce((a, t) => a + ty(s, t)[0], 0);
+    const x = (s, ...ts) => ts.reduce((a, t) => a + ty(s, t)[2], 0);
+    (me.ins || []).forEach((id) => {
+      const L = Md.INS[id].label;
+      let ok, text;
+      if (id === 'counter') {
+        ok = n(me, 'counter') >= 2;
+        text = `${n(me, 'counter')} counter-attack chance${n(me, 'counter') === 1 ? '' : 's'} (${x(me, 'counter').toFixed(2)} xG)${ok ? '' : `: they did not leave the space (${op.tactic.press})`}.`;
+      } else if (id === 'patience') {
+        const c = n(me, 'through', 'cutback');
+        ok = c >= 5;
+        text = `${c} through balls and cutbacks${ok ? ' found the gaps' : ': the gaps did not come'}.`;
+      } else if (id === 'crosses' || id === 'flank') {
+        ok = x(me, 'cross', 'cutback') >= 0.6;
+        text = `${n(me, 'cross')} crosses and ${n(me, 'cutback')} cutbacks, ${x(me, 'cross', 'cutback').toFixed(2)} xG${ok ? '' : ': not enough from the flanks'}.`;
+      } else if (id === 'tight') {
+        const s = op.ps[op.dangerId] || { sh: 0 };
+        ok = s.sh <= 1;
+        text = `${P(op.dangerId) ? W.short(P(op.dangerId)) : 'Their danger man'} had ${s.sh} shot${s.sh === 1 ? '' : 's'}${ok ? ': taken out of the game' : ': the marking did not hold'}.`;
+      } else if (id === 'drop') {
+        const t = n(op, 'through', 'counter');
+        ok = t <= 3;
+        text = `They had ${t} through balls and counters${ok ? ': nothing in behind' : ': the line was still beaten'}.`;
+      }
+      out.push({
+        tag: 'instruction',
+        kind: ok ? 'good' : 'bad',
+        icon: '📋',
+        weight: ok ? 1.1 : 1.15,
+        title: `${L}: ${ok ? 'it worked' : 'it did not'}`,
+        text,
+      });
+    });
+    return out;
+  };
+  // Half-time: what the first 45 minutes say, from the engine's own counts. Returns { lines, fix } where fix is the one change
+  // that answers the biggest problem ({ label, text, apply() }), or null when nothing needs fixing
+  Md.halfRead = function (m, sd) {
+    const op = m.sides[1 - sd.idx],
+      T = sd.tactic;
+    const ty = (s, t) => (s.types && s.types[t]) || [0, 0, 0];
+    const lines = [];
+    let fix = null;
+    const offer = (label, text, apply) => (fix = fix || { label, text, apply });
+    const cAg = ty(op, 'counter');
+    if (T.press === 'High Press' && cAg[0] >= 2) {
+      lines.push([
+        '↩️',
+        `${cAg[0]} counter-attack chances against us (${cAg[2].toFixed(2)} xG): the press leaves space behind.`,
+      ]);
+      offer('Drop the press a notch', 'Mid block: they get fewer runs in behind.', () => {
+        T.press = 'Mid Block';
+        return 'Press dropped to a mid block; the space behind closes.';
+      });
+    }
+    const central = ty(op, 'through')[2] + ty(op, 'cutback')[2];
+    if (T.press === 'Low Block' && central >= 0.7) {
+      lines.push(['🕳️', `They have found ${central.toFixed(2)} xG through the middle: the block is being opened.`]);
+      offer('Step up to a mid block', 'Get tighter to them so the passes through are cut off.', () => {
+        T.press = 'Mid Block';
+        return 'Stepping up: the block moves higher.';
+      });
+    }
+    const crossAg = ty(op, 'cross')[2] + ty(op, 'cutback')[2];
+    if (crossAg >= 0.7 && T.width === 'Narrow') {
+      lines.push(['↔️', `${crossAg.toFixed(2)} xG from crosses against our narrow shape.`]);
+      offer('Widen the shape', 'Cover the flanks they are using.', () => {
+        T.width = 'Balanced';
+        return 'Wider: the flanks are covered.';
+      });
+    }
+    if (
+      sd.shots <= 2 &&
+      (sd.ins || []).includes('patience') === false &&
+      op.tactic.press === 'Low Block' &&
+      sd.goals <= op.goals
+    ) {
+      lines.push(['🧱', `Only ${sd.shots} shot${sd.shots === 1 ? '' : 's'}: the block is not being worked open.`]);
+      offer('Get the ball wide', 'Stretch them: more crosses and cutbacks.', () => {
+        sd.ins = (sd.ins || [])
+          .filter((x) => x !== 'patience')
+          .concat(['crosses'])
+          .slice(-2);
+        return 'Instruction changed: get the ball wide.';
+      });
+    }
+    const poss = m.sides.reduce((a, s) => a + s.possTicks, 0) || 1,
+      mine = Math.round((sd.possTicks / poss) * 100);
+    if (mine <= 40 && op.xg > sd.xg + 0.5) {
+      lines.push([
+        '⚖️',
+        `${100 - mine}% of the ball to them and ${op.xg.toFixed(2)} xG to ${sd.xg.toFixed(2)}: we are being overrun.`,
+      ]);
+      offer('Compact the midfield', 'More bodies in the middle to win it back.', () => {
+        sd.mods.mid += 0.012;
+        sd.mods.att -= 0.006;
+        return 'More compact in the middle; fewer forward.';
+      });
+    }
+    if (!lines.length) {
+      if (sd.xg > op.xg + 0.5 && sd.goals <= op.goals)
+        lines.push(['🎯', `${sd.xg.toFixed(2)} xG to ${op.xg.toFixed(2)}: the plan is working, the goals will come.`]);
+      else if (op.xg > sd.xg + 0.5)
+        lines.push(['⚠️', `They have had the better chances (${op.xg.toFixed(2)} xG to ${sd.xg.toFixed(2)}).`]);
+      else lines.push(['👀', 'An even half: nothing to fix, just a decision to make.']);
+    }
+    return { lines, fix };
+  };
+  // ---------- Why it went that way ----------
+  // After a match: what decided it, from what the engine counted, set against what each tactic is supposed to do. Each cause
+  // names the tactic or the event behind it (a high press and the counters it left room for, a low block and the chances it
+  // starved, tired legs, a narrow shape against crosses, a red card, finishing) with the numbers, so a result can be read
+  // and a tactic judged. Returns { headline, tone, causes: [{ tag, kind, icon, title, text }] }, the strongest first.
+  Md.why = function (m, us) {
+    const me = m.sides[us],
+      op = m.sides[1 - us],
+      res = m.result();
+    const T = me.tactic || {},
+      OT = op.tactic || {};
+    const poss = res.poss[us];
+    const ty = (s, t) => (s.types && s.types[t]) || [0, 0, 0];
+    const shots = (s, ...ts) => ts.reduce((n, t) => n + ty(s, t)[0], 0);
+    const xgOf = (s, ...ts) => ts.reduce((n, t) => n + ty(s, t)[2], 0);
+    const f2 = (v) => v.toFixed(2);
+    const winsOf = (s) => U.sum(Object.values(s.ps || {}), (p) => (p.tk || 0) + (p.ic || 0));
+    const minute = (e) => parseInt(String(e.min || '0'), 10) || 0;
+    const causes = [];
+    const add = (tag, kind, icon, weight, title, text) => causes.push({ tag, kind, icon, weight, title, text });
+    const dx = me.xg - op.xg,
+      gd = me.goals - op.goals;
+
+    // finishing and luck
+    if (me.goals - me.xg >= 1.2)
+      add(
+        'finishing',
+        'good',
+        '🎯',
+        1 + (me.goals - me.xg) * 0.5,
+        'Clinical',
+        `${me.goals} goals from ${f2(me.xg)} expected: you took what you made.`,
+      );
+    else if (me.goals - me.xg <= -1.2)
+      add(
+        'finishing',
+        'bad',
+        '🧤',
+        1 + (me.xg - me.goals) * 0.5,
+        'Wasteful',
+        `${me.goals} goal${me.goals === 1 ? '' : 's'} from ${f2(me.xg)} expected: the chances were there.`,
+      );
+    if (op.goals - op.xg >= 1.2)
+      add(
+        'finishing',
+        'bad',
+        '🎯',
+        1 + (op.goals - op.xg) * 0.5,
+        'They took everything',
+        `${op.goals} goals from ${f2(op.xg)} expected: hard to defend against.`,
+      );
+    else if (op.goals - op.xg <= -1.2)
+      add(
+        'finishing',
+        'good',
+        '🧤',
+        1 + (op.xg - op.goals) * 0.5,
+        'They wasted it',
+        `${op.goals} goal${op.goals === 1 ? '' : 's'} from ${f2(op.xg)} expected: a bit of fortune, or a good keeper.`,
+      );
+
+    // pressing and the block
+    const counterAg = shots(op, 'counter'),
+      counterFor = shots(me, 'counter');
+    if (T.press === 'High Press') {
+      if (counterAg >= 2)
+        add(
+          'press',
+          'bad',
+          '↩️',
+          1.2 + xgOf(op, 'counter') * 2,
+          'Space behind the press',
+          `Their ${counterAg} counter-attack chances (${f2(xgOf(op, 'counter'))} xG) came in the space your press left.`,
+        );
+      else if (poss >= 54)
+        add(
+          'press',
+          'good',
+          '🔥',
+          1 + (poss - 50) / 10,
+          'The press worked',
+          `${poss}% of the ball and ${winsOf(me)} tackles and interceptions: they had no time on it.`,
+        );
+    } else if (T.press === 'Low Block') {
+      const theirPoss = 100 - poss,
+        central = shots(op, 'through', 'cutback');
+      if (op.xg < 1 && theirPoss >= 55)
+        add(
+          'block',
+          'good',
+          '🧱',
+          1.3,
+          'The block held',
+          `They had ${theirPoss}% of the ball but only ${f2(op.xg)} xG and ${central} central chance${central === 1 ? '' : 's'}.`,
+        );
+      else if (op.xg >= 1.8 || central >= 6)
+        add(
+          'block',
+          'bad',
+          '🕳️',
+          1.2 + op.xg * 0.3,
+          'The block was broken',
+          `${central} through balls and cutbacks (${f2(xgOf(op, 'through', 'cutback'))} xG): sitting deep was not enough.`,
+        );
+      if (counterFor >= 2)
+        add(
+          'block',
+          'good',
+          '⚡',
+          1 + counterFor * 0.2,
+          'Chances on the break',
+          `${counterFor} counter-attack chances (${f2(xgOf(me, 'counter'))} xG) from winning it back deep.`,
+        );
+    }
+    if (OT.press === 'High Press' && poss <= 42)
+      add(
+        'press',
+        'bad',
+        '🔥',
+        1.2,
+        'Pressed out of the game',
+        `Their high press left you ${poss}% of the ball: hard to play out.`,
+      );
+    if (OT.press === 'High Press' && counterFor >= 2)
+      add(
+        'press',
+        'good',
+        '⚡',
+        1.2 + xgOf(me, 'counter') * 2,
+        'Behind their press',
+        `${counterFor} counter-attack chances (${f2(xgOf(me, 'counter'))} xG) in the space they left.`,
+      );
+
+    // legs
+    const xi = me.xi.filter(Boolean),
+      tired = xi.length ? U.avg(xi, (p) => me.st[p.id] ?? 100) : 100;
+    const late = m.events.filter((e) => e.k === 'goal' && e.side === 1 - us && minute(e) >= 70).length;
+    if (tired < 58 && (late || T.press === 'High Press'))
+      add(
+        'fatigue',
+        'bad',
+        '🪫',
+        1.1 + (60 - tired) / 20 + late * 0.4,
+        'The legs went',
+        `Your players finished on ${Math.round(tired)}%${late ? ` and ${late} goal${late === 1 ? '' : 's'} went in after the 70th minute` : ''}${T.press === 'High Press' ? ': a high press is expensive' : ''}.`,
+      );
+
+    // width and style
+    if (T.width === 'Narrow' && shots(op, 'cross') >= 4)
+      add(
+        'width',
+        'bad',
+        '↔️',
+        1 + shots(op, 'cross') * 0.12,
+        'The flanks were open',
+        `A narrow shape: they crossed it ${shots(op, 'cross')} times (${f2(xgOf(op, 'cross'))} xG).`,
+      );
+    if (T.width === 'Wide' && shots(me, 'cross') >= 5 && xgOf(me, 'cross') < 0.6)
+      add(
+        'width',
+        'bad',
+        '↔️',
+        1,
+        'Plenty of crosses, little threat',
+        `${shots(me, 'cross')} crosses for ${f2(xgOf(me, 'cross'))} xG: the delivery was not enough.`,
+      );
+    if (T.width === 'Narrow' && shots(me, 'through', 'cutback') >= 6)
+      add(
+        'width',
+        'good',
+        '↔️',
+        1,
+        'Through the middle',
+        `${shots(me, 'through', 'cutback')} chances through the centre (${f2(xgOf(me, 'through', 'cutback'))} xG) with a narrow shape.`,
+      );
+    if ((T.buildup === 'Possession' || T.buildup === 'Short') && poss >= 58 && me.xg < 1)
+      add(
+        'style',
+        'bad',
+        '🔁',
+        1.2,
+        'Possession without penetration',
+        `${poss}% of the ball, but only ${f2(me.xg)} xG: nothing behind their back line.`,
+      );
+    if (T.buildup === 'Counter' && poss <= 42 && counterFor === 0)
+      add('style', 'bad', '⚡', 1, 'No counters came', `You gave them the ball and then did not get a break on it.`);
+    if (T.buildup === 'Direct' && shots(me, 'cross', 'longshot') >= 8 && me.xg < 1)
+      add(
+        'style',
+        'bad',
+        '🚀',
+        1,
+        'Direct, but low quality',
+        `${shots(me, 'cross', 'longshot')} crosses and long shots for ${f2(me.xg)} xG.`,
+      );
+
+    // red cards, injuries, dead balls
+    for (const e of m.events) {
+      if (e.k === 'red')
+        add(
+          'discipline',
+          e.side === us ? 'bad' : 'good',
+          '🟥',
+          e.side === us ? 1.6 : 1.4,
+          e.side === us ? 'Down to ten' : 'They were down to ten',
+          `${e.side === us ? 'Your' : 'Their'} player was sent off in the ${minute(e)}th minute.`,
+        );
+      if (e.k === 'injury' && e.side === us && minute(e) < 45)
+        add(
+          'injury',
+          'bad',
+          '🚑',
+          0.9,
+          'An early injury',
+          `A key player went down in the ${minute(e)}th minute and the plan changed.`,
+        );
+    }
+    const dead = (side) =>
+      m.events.filter((e) => e.k === 'goal' && e.side === side && (e.sp || e.type === 'penalty')).length;
+    if (dead(us) >= 2)
+      add('setpiece', 'good', '🚩', 1, 'Dead balls', `${dead(us)} goals from set pieces and penalties.`);
+    if (dead(1 - us) >= 2)
+      add('setpiece', 'bad', '🚩', 1, 'Set pieces', `They scored ${dead(1 - us)} from dead balls.`);
+
+    const won = gd > 0 || (m.pens && m.pens[us] > m.pens[1 - us]),
+      lost = gd < 0 || (m.pens && m.pens[us] < m.pens[1 - us]);
+    let headline, tone;
+    if (won && dx >= 0.4) [headline, tone] = ['Deserved: you created more.', 'good'];
+    else if (won && dx < -0.6) [headline, tone] = ['A fortunate win: they had the better chances.', 'luck'];
+    else if (won) [headline, tone] = ['A narrow, even win.', 'good'];
+    else if (lost && dx >= 0.6) [headline, tone] = ['Unlucky: you made the better chances.', 'luck'];
+    else if (lost && dx <= -0.4) [headline, tone] = ['Beaten on chances.', 'bad'];
+    else if (lost) [headline, tone] = ['A close defeat.', 'bad'];
+    else if (dx >= 0.6) [headline, tone] = ['A draw you should have won.', 'luck'];
+    else if (dx <= -0.6) [headline, tone] = ['A draw you were lucky to get.', 'luck'];
+    else [headline, tone] = ['An even draw.', 'neutral'];
+    Md.insCauses(m, us).forEach((c) => causes.push(c));
+    causes.sort((a, b) => b.weight - a.weight);
+    return { headline, tone, dx, causes: causes.slice(0, 4) };
   };
   // Pressure before a match: an opponent in form, or a full house at their ground, weighs on a squad (nervy players most; a
   // big-game player or a veteran hardly notices). Returns what weighs and by how many morale points for a steady player.

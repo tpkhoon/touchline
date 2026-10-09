@@ -43,7 +43,7 @@
       `<div class="row small" style="margin-top:6px;gap:8px;align-items:flex-start"><span class="dim" style="width:34px">${l}</span><span class="grow" style="line-height:1.7">${line(g)}</span></div>`;
     return `<div class="card"><div class="row"><div class="h3 grow">Predicted XI</div><span class="tiny dim">${esc(t.formation)}</span></div>
       ${row('GK', 'GK')}${row('DEF', 'DEF')}${row('MID', 'MID')}${row('ATT', 'ATT')}
-      ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(p.ln) + (p.inj ? ' (injured)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
+      ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
   };
   const DANGER_POS = { ST: 1, W: 0.96, AM: 0.96, WM: 0.9, CM: 0.82, WB: 0.74, FB: 0.7, DM: 0.68, CB: 0.6, GK: 0.2 };
   MV.preview = function () {
@@ -107,9 +107,10 @@
               `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
           )
           .join(' · ')}</div>
-        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' (injured)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
+        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
       ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
+      ${MV.oppCard(fx)}
       ${MV.talkCard(fx)}
       <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">⚡ Instant</button></div>`,
       { title: fx.po || (FM.S.comps[fx.comp] ? FM.S.comps[fx.comp].name : 'International') },
@@ -149,6 +150,49 @@
     fire: 'Fire up',
     pressure: 'Demand',
     tactics: 'Tactics',
+  };
+  // The opposition report and the instructions that answer it (up to two; the assistant pre-selects what the report favours)
+  MV.oppCard = function (fx) {
+    const Md = FM.Matchday;
+    if (fx.intl || !FM.clubOf(W.isMine(fx.h) ? fx.a : fx.h).tactic) return '';
+    const rep = Md.opposition(fx);
+    MV.rep = rep;
+    MV.ins = rep.best.map((a) => a.id);
+    const advice = Object.fromEntries(rep.advice.map((a) => [a.id, a]));
+    const asst = FM.Staff.get('assistant');
+    return `<div class="card"><div class="h3">Their weaknesses</div>
+      ${rep.lines.length ? rep.lines.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${i}</span><span class="small">${esc(t)}</span></div>`).join('') : '<div class="small muted" style="margin-top:6px">A balanced side with no obvious weakness.</div>'}
+      <div class="h3" style="margin-top:12px">Match instructions <span class="tiny dim">(up to two)</span></div>
+      <div id="insList">${Object.entries(Md.INS)
+        .map(([id, d]) => {
+          const a = advice[id];
+          return `<button class="btn sm ins ${MV.ins.includes(id) ? 'pri' : ''}" style="margin:4px 4px 0 0" data-act="insPick" data-v="${id}" title="${esc(d.desc)}">${esc(d.short)}${a ? (a.s > 0 ? ' 👍' : ' ⚠️') : ''}</button>`;
+        })
+        .join('')}</div>
+      <div class="small muted" id="insDesc" style="margin-top:8px;line-height:1.45">${MV.insDesc()}</div>
+      <div class="tiny dim" style="margin-top:6px">${esc(asst.fn + ' ' + asst.ln)}: ${rep.best.length ? esc(rep.best.map((a) => a.why).join('. ')) + '.' : 'Nothing stands out; play your game.'}</div></div>`;
+  };
+  MV.insDesc = () => {
+    const Md = FM.Matchday,
+      adv = Object.fromEntries(((MV.rep && MV.rep.advice) || []).map((a) => [a.id, a]));
+    return MV.ins.length
+      ? MV.ins
+          .map(
+            (id) =>
+              `<b>${esc(Md.INS[id].label)}.</b> ${esc(Md.INS[id].desc)}.${adv[id] && adv[id].s < 0 ? ` <span style="color:var(--warn)">⚠️ ${esc(adv[id].why)}.</span>` : ''}`,
+          )
+          .join('<br>')
+      : 'No instructions: play the system as set.';
+  };
+  UI.acts.insPick = (d) => {
+    const i = MV.ins.indexOf(d.v);
+    if (i >= 0) MV.ins.splice(i, 1);
+    else MV.ins = MV.ins.concat([d.v]).slice(-2);
+    document
+      .querySelectorAll('[data-act=insPick]')
+      .forEach((b) => b.classList.toggle('pri', MV.ins.includes(b.dataset.v)));
+    const el = document.getElementById('insDesc');
+    if (el) el.innerHTML = MV.insDesc();
   };
   MV.talkCard = function (fx) {
     const Md = FM.Matchday,
@@ -255,9 +299,12 @@
     // Deliver the team talk chosen in the preview (once)
     const talkMsg = MV.talk && MV.talkCtx ? FM.Matchday.applyTalk(m, MV.talk, MV.talkCtx) : null;
     if (MV.warm) FM.Matchday.applyWarmup(m, MV.warm);
+    const insMsg = MV.ins && MV.ins.length ? FM.Matchday.applyInstructions(m, MV.ins) : null;
+    MV.ins = null;
     MV.warm = null;
     MV.talk = null;
     if (talkMsg) MV.promptLog = (MV.promptLog || []).concat([`Pre-match team talk → ${talkMsg}`]);
+    if (insMsg) MV.promptLog = (MV.promptLog || []).concat([insMsg]);
     const capt = P(m.sides[MV.us].capt);
     if (instant) {
       while (!m.finished) m.step();
@@ -1045,6 +1092,17 @@
     document.querySelectorAll('#postChips .chip').forEach((c) => c.classList.toggle('on', c.dataset.v === d.v));
     MV.renderPost();
   };
+  // The post-match card that reads the result: the headline and the causes behind it (FM.Matchday.why)
+  MV.whyCard = function (m) {
+    const w = FM.Matchday.why(m, MV.us);
+    const col = { good: 'var(--good)', bad: 'var(--bad)', luck: 'var(--warn)', neutral: 'var(--ink2)' };
+    return `<div class="card"><div class="h3">Why it went this way</div><div class="small b" style="margin:6px 0 2px;color:${col[w.tone]}">${esc(w.headline)}</div>${w.causes
+      .map(
+        (c) =>
+          `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span style="font-size:18px;width:24px">${c.icon}</span><div class="grow"><div class="b" style="color:${col[c.kind]}">${esc(c.title)}</div><div class="dim" style="line-height:1.4">${esc(c.text)}</div></div></div>`,
+      )
+      .join('')}${w.causes.length ? '' : '<div class="tiny dim">Nothing stood out: an ordinary match.</div>'}</div>`;
+  };
   MV.renderPost = function () {
     const m = MV.m,
       res = m.result(),
@@ -1082,6 +1140,7 @@
           : '';
       body.innerHTML = `${motm ? `<div class="card row">${C.pos(motm)}<div class="grow"><div class="tiny dim b">PLAYER OF THE MATCH</div><div class="b">${C.pname(motm, W.name(motm))}</div></div>${C.rating(m.sides.find((s) => s.rating[motm.id] != null).rating[motm.id])}</div>` : ''}
         <div class="card">${sbar('Possession', res.poss[0], res.poss[1], (v) => v + '%')}${sbar('Expected goals (xG)', res.xg[0], res.xg[1], (v) => v.toFixed(2))}${sbar('Shots', res.shots[0], res.shots[1])}${sbar('On target', res.sot[0], res.sot[1])}${spg[0].length + spg[1].length ? sbar('Set-piece goals', spg[0].length, spg[1].length) + spNote : ''}${sbar('Passes', m.passStats(0).total, m.passStats(1).total)}${sbar('Pass accuracy', m.passStats(0).acc, m.passStats(1).acc, (v) => v + '%')}${sbar('Yellow cards', Object.keys(H.yc).length, Object.keys(A.yc).length)}</div>
+        ${MV.whyCard(m)}
         <div class="card"><div class="h3" style="margin-bottom:6px">Key moments</div>${m.events
           .filter((e) => ['goal', 'red', 'injury', 'sub', 'pens'].includes(e.k) || (e.k === 'chance' && e.big))
           .map(

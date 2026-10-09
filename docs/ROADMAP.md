@@ -6,6 +6,7 @@ Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/420
 
 - [At a glance](#at-a-glance)
 - [Shipped](#shipped)
+- [Systems pass](#systems-pass)
 - [Next](#next)
 - [Open questions and risks](#open-questions-and-risks)
 
@@ -34,7 +35,7 @@ flowchart TB
 
 ## Shipped
 
-The web prototype runs on a phone browser with no build step, covering 746 real clubs in 42 real leagues across 32 nations in three simulation tiers, and 90 national teams. Newest build first.
+The web prototype runs on a phone browser with no build step, covering 828 fictional clubs in 48 leagues (the real structure under invented names) across 32 nations in three simulation tiers, and 90 national teams. Newest build first.
 
 ### Playtest feedback, round 10
 
@@ -91,6 +92,10 @@ The web prototype runs on a phone browser with no build step, covering 746 real 
 - Database import, round two: the historical CSV tables are an adapter (tables.csv, players.csv, clubs.csv picked together); a database can add clubs and whole leagues, rename the game's own and replace every player (a club given 11 or more players loses its generated squad and gets the gaps made up); the club picker shows the imported clubs and leagues before you choose; the world keeps the changes in its save and the simulation worker applies them; and Settings exports the world you play as a database, with or without players.
 - Playtest round 11: squad morale drops before a match against an opponent in form or at a full away ground (nervy players most), shown in the feed and the team-talk card; stars instead of numbers when choosing a player in the tactics screen; Basque and Catalan names (wider pools, and named clubs for the two policy clubs); a club with a signing policy scouts only players it could sign; club history reworked (top scorer and most appearances for every season, a Club legends card with the all-time top fives, realistic legends); invitational tournaments (Kirin Cup, King's Cup, Nehru Cup) in the international windows; and shouts, seven touchline calls in a live match.
 - MLS rules for the American league: a salary budget ($5.2M over the 20 biggest charges), a maximum charge ($700K), three Designated Players, a 30-man senior roster, with signings and renewals checked, the budget on the squad screen and the AI's clubs trimmed within it each week. Not yet: allocation money, Generation adidas, the under-22 initiative.
+- Systems pass, step 1: a systems map generated from the code (`npm run sysmap`, docs/SYSTEMS.md: each system's uses, the closed loops checked hop by hop, state nothing reads); a tactic-response test (`npm run test:tactics`: 20 expectations that a high press, a low block, build-up, width and the opponent's press change possession, ball-winning, stamina and chances by type); the engine changes it asked for (a low block breaks quickly, a high press goes in more often); and a "Why it went this way" card on the post-match summary.
+- Systems pass, step 2: every club has a market, supporters, a youth catchment and an owner, and a reputation ceiling that only a cause raises (a takeover, years of success); a season's reputation moves by a capped step toward what standing and history support; takeovers need a reason; a 30-year stability test (`npm run test:longrun`); identity now drives recruitment, fans' style expectations, players' willingness, the board's patience and revenue; and a manager profile (youth, attack, spending, stability) discovered from what you do, with your standing in each country.
+- Systems pass, step 3: an opposition report before the match (their press, width, weaker flank and danger man, from their real system and XI) and match instructions that answer it, each changing the engine's chances and judged in the post-match reading; half-time reads of the first half with a specific fix; press and block animations that match the engine; scouting second opinions and scout leans, three prices for a target, and recommendations that depend on squad need and budget.
+- Systems pass, step 4: six more top flights (Singapore, Malaysia, Vietnam, Indonesia, the Philippines, South Africa: 828 clubs in 48 leagues across 38 nations) with club-naming cultures of their own; the AFC's 3 + 1 and ASEAN foreign-player places; Gulf money buying famous names for Saudi clubs; Korea's military service; Japan's university graduate draft; part-time clubs; story starts and good first clubs on the club picker; a world primer under Help; thirty seasons of champions and cup winners before the save; and `npm run test:asia`.
 
 ### Playtest feedback, round 9
 
@@ -288,6 +293,15 @@ The web prototype runs on a phone browser with no build step, covering 746 real 
 | Prototype 3 · Club management | Staff hire/fire with ability effects, assistant notes and scout picks, season preview with odds and best XI, pre-season friendlies and camps, tactical familiarity, loans in/out, free agents any time, graded scout reports with filters and comparison, fine-grained fee/wage negotiation, realistic nationality mixes (28 nations), post-match shot map, xG race, player stats and analyst insights, sim to half-time, random club at new game |
 | Prototype 2 · Competitions | La Primera (Spain, 12 clubs), Crown Cup and Copa Nacional knockouts, Continental Champions Cup (groups + knockouts) with data-driven qualification, cross-border AI market, Transfer Centre |
 | Prototype 1 · Core loop | Top-down match engine with highlights and tactical prompts, two-division England with promotion, relegation and playoffs, player traits and personality, word-based scouting, youth intakes, story feed and shareable cards, living world events, Hall of Fame, Football Archive, dark/light theme, 3 save slots |
+
+## Systems pass
+
+From a review of how the systems feed one another (docs/SYSTEMS.md). Principle: every system should feed another, and a feature that exists only because other games have it is cut. Each step ends when its checks pass.
+
+- [x] **Step 1, measure:** the systems map, the tactic-response test and the post-match reading (above).
+- [x] **Step 2, the long run and club identity (done, except collapses with causes):** per-club attributes (city size, supporters, stadium and financial ceilings, youth catchment, ownership) setting a long-run reputation target; takeovers, collapses and dynasties with causes; a 30-year stability test; identity driving recruitment, fans' style, players' willingness, job security and revenue; a manager profile discovered from what you do, and reputation by league and country.
+- [x] **Step 3, tactics and scouting:** an opposition report and match instructions that answer it; half-time prompts that read the first half; press and block animations that match the engine; scouting second opinions, scout blind spots, three prices for a target, and recommendations that depend on need and budget.
+- [x] **Step 4, start anywhere and Asia (done, bar the Asian Champions Cup squad places and community-club jobs):** the missing nations (Singapore, Malaysia, Vietnam, Indonesia, the Philippines, South Africa), lower-league realism, challenge and story starts, a world primer, club histories before the save, Japan's university route, Korea's military service, the AFC foreign-player slots and ASEAN recruitment, Gulf spending.
 
 ## Next
 

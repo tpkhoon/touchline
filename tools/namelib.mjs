@@ -885,7 +885,7 @@ export const LANG = {
     cup: 'National Cup',
   },
   tha: {
-    nations: 'THA IND IDN VIE MYS UZB IRN',
+    nations: 'THA IND UZB IRN',
     a: words('Ban Chiang Nakhon Sri Phra Lam Pak Ubon Sing Mae Nong Kao Phu Tha Wang Khao Bang Rat Sak Tak'),
     b: words('buri pur mai nong kaeo chan ra sai yai thong lek nam'),
     elide: false,
@@ -1857,6 +1857,102 @@ const NATION_L = {
     quirk: ['Novy', 'Stary', 'Vyalikaya', 'Malaya'],
   },
 };
+// Southeast Asia and South Africa: each with a town-name pattern and club habits of its own
+const SEA_BASE = {
+  elide: false,
+  pre: [],
+  preGap: '',
+  joins: [],
+  ground: ['{x} Stadium', '{c} Provincial Stadium', '{x} Arena', '{x} Sports Park'],
+  colours: LANG.tha.colours,
+  tiers: ['Premier League', 'Division 1', 'Division 2', 'Division 3', 'Regional League'],
+};
+NATION_L.SGP = {
+  ...LANG.tha,
+  ...SEA_BASE,
+  a: words('Pasir Bukit Teluk Kampong Jalan Bandar Taman'),
+  b: words('Lintang Tembusu Rasau Selat Jerangau Mawar Kenanga Temasek'),
+  elide: false,
+  club: [
+    ...rep(['{c} United', '{c} Rovers', '{c} FC'], 2),
+    '{c} International',
+    '{c} Athletic',
+    'Lion {c}',
+    '{c} Warriors',
+  ],
+  ground: ['{x} Stadium', '{c} Sports Hub', '{x} Arena'],
+  misc: words('Lions Eagles Stags Tigers Jaguars Cheetahs Swans'),
+  cup: 'Cup',
+  gap: ' ',
+};
+NATION_L.MYS = {
+  ...LANG.tha,
+  ...SEA_BASE,
+  a: words('Kuala Kota Batu Pasir Teluk Bukit Tanjung Sungai Pulau Simpang Bandar'),
+  b: words('Selasih Mutiara Jelai Rimba Damai Lenggeng Pelita Karang Segar Nilam Tebing Indah'),
+  club: [...rep(['{c} FC', '{c} United'], 3), '{c} City', 'Darul {c}', 'Sri {c}', '{c} Athletic'],
+  misc: words('Tigers Eagles Turtles Panthers Hornbills Rhinos Deer'),
+  cup: 'Cup',
+  gap: ' ',
+  elide: false,
+};
+NATION_L.VIE = {
+  ...LANG.tha,
+  ...SEA_BASE,
+  a: words('Hai Nam Thanh Ha Quang Binh Khanh Phu Thai Lam Bac Dong Long Vinh Tuyen Cao Son Yen'),
+  b: words('Lam Truong Hung Khe Mai Thuy Cuong Phat Loc Sa Dai Tan Thinh Hien'),
+  club: [...rep(['{c} FC'], 3), '{c} United', '{c} Athletic', 'Thep {c}', 'Song {c}', '{c} City'],
+  misc: words('Dragons Eagles Lions Tigers Falcons Cranes'),
+  cup: 'Cup',
+  gap: ' ',
+  elide: false,
+};
+NATION_L.IDN = {
+  ...LANG.tha,
+  ...SEA_BASE,
+  a: words('Ban Sura Mala Sema Bogo Tang Kedi Pama Sola Cire Tasi Pura Jemb Lang'),
+  b: words('ngan baya rang mulan pura kalan sari lembang jaya wati dongan giri'),
+  club: [...rep(['Persi {c}'], 4), '{c} United', '{c} FC', 'PS {c}', '{c} Putra', 'Bhakti {c}'],
+  misc: words('Tigers Crocodiles Lions Eagles Panthers Garuda'),
+  cup: 'Cup',
+  elide: true,
+};
+NATION_L.PHI = {
+  ...LANG.tha,
+  ...SEA_BASE,
+  a: words('Bula Pam Baga Mari Bina Pasi Cabu Olon Lago Dumag Taga Tala'),
+  b: words('can ngan bay lan tuan galan ngas yaan bantay guin'),
+  club: [...rep(['{c} FC', '{c} United'], 3), '{c} City', 'Stallion {c}', '{c} Warriors', '{c} Eagles'],
+  misc: words('Eagles Stallions Warriors Sharks Diggers Sparks'),
+  cup: 'Cup',
+  elide: true,
+  pre: ['San', 'Santa', 'Santo'],
+  preGap: ' ',
+};
+NATION_L.RSA = {
+  ...LANG.eng,
+  a: words('Kru Marab Thab Mbom Lade Ulun Sibo Rand Hout Bett Vrede Sasol Nels Pong Vol Kwa Phal'),
+  b: words('burg dal stad kop fontein vlei rus berg ston ula bela doorn'),
+  elide: true,
+  pre: [],
+  joins: [],
+  club: [
+    ...rep(['{c} United', '{c} City', '{c} Stars'], 2),
+    '{c} Chiefs',
+    '{c} Pirates',
+    '{c} Swallows',
+    '{c} Arrows',
+    '{c} Celtic Rovers',
+    '{c} FC',
+  ],
+  ground: ['{x} Stadium', '{c} Oval', '{x} Park', '{c} Sports Complex'],
+  misc: words('Chiefs Pirates Swallows Arrows Stars Lions Rhinos Springboks'),
+  colourAlt: null,
+  tiers: ['Premier Soccer League', 'National First Division', 'Second Division'],
+  cup: 'Cup',
+  cups: ['Challenge Cup', 'National Cup'],
+  quirk: ['Old', 'New', 'Upper', 'Lower'],
+};
 NATION_L.CIV = NATION_L.SEN; // (the two share the West African French pattern)
 // every nation code the library can write names for (some are not in the game yet)
 export const libraryNations = () =>
@@ -1874,6 +1970,8 @@ export function stem(L, r) {
   if (L.elide && isVowel(a.slice(-1)) && isVowel(b[0])) a = a.slice(0, -1);
   if (a.slice(-1).toLowerCase() === b[0].toLowerCase() && !isVowel(b[0])) b = b.slice(1);
   if (L.link && !isVowel(a.slice(-1)) && !isVowel(b[0])) a += L.link[Math.floor(r() * L.link.length)];
+  // (gap: a language that writes its towns as two words, "Hai Lam", "Kuala Rimba")
+  if (L.gap) return `${cap(a)}${L.gap}${cap(b)}`;
   return cap(a + b).replace(/(.)\1\1+/g, '$1$1');
 }
 export function placeName(L, r) {
@@ -2050,6 +2148,24 @@ const SPONSORS_NAT = {
   KOR: words(
     `Hanbit Daehan_Insurance Mugunghwa Seorak Hangang_Bank Baekdu Jirisan Dongseo_Energy Cheongsan Haeoreum Namsan
     Taebaek Geumgang Hanra`,
+  ),
+  SGP: words(
+    `Merlion_Bank Orchard Marina_Capital Straits_Insurance Temasek Raffles_Holdings Lion_Energy Changi Sentosa Kallang_Trust Tuas_Logistics Bayfront`,
+  ),
+  MYS: words(
+    `Petrona_Bank Malaya_Insurance Tiger_Holdings Kinabalu_Energy Selat_Capital Langkawi Menara_Trust Borneo_Timber Rimba Nusa_Bank Perdana_Group Tun_Razak_Trust`,
+  ),
+  VIE: words(
+    `Sai_Gon_Bank Hong_Ha_Insurance Mekong_Energy Dong_A_Holdings Nam_Viet_Capital Lac_Hong Thang_Long_Trust Hoang_Gia Phuong_Nam Viet_Thanh Ha_Long_Group`,
+  ),
+  IDN: words(
+    `Bank_Nusantara Garuda_Insurance Jaya_Energy Borobudur_Holdings Sinar_Mas_Capital Merapi Pertiwi_Trust Bhinneka Cendrawasih_Group Mega_Samudra Kalimantan_Timber`,
+  ),
+  PHI: words(
+    `Mabuhay_Bank Pinoy_Insurance Luzon_Energy Visayas_Holdings Mindanao_Capital Ayala_Trust Pilipinas_Group Tamaraw Bayanihan_Foods Maynila_Logistics`,
+  ),
+  RSA: words(
+    `Springbok_Bank Karoo_Insurance Rand_Energy Protea_Holdings Table_Mountain_Capital Highveld Ubuntu_Trust Cape_Group Kruger_Mining Zulu_Logistics Madiba_Foods`,
   ),
   THA: words(
     `Siam_Bank Chaophraya Lanna Andaman_Insurance Isan_Energy Thaimit Phuket_Capital Mekong Rattana Chiang_Mai_Trust

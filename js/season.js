@@ -553,7 +553,7 @@
           gap: loser.rep - winner.rep,
           comp: fx.comp,
         });
-        winner.rep = Math.min(99, winner.rep + 1);
+        W.nudgeRep(winner, 1);
       }
     }
     Sea.growFam(hc);
@@ -755,7 +755,7 @@
     if (key === 'tour') {
       sq.forEach((p) => (p.fitness = Math.max(70, p.fitness - 12)));
       c.fanMood = Math.min(100, c.fanMood + 6);
-      c.rep = Math.min(99, c.rep + 0.5);
+      W.nudgeRep(c, 0.5);
     }
     sq.forEach((p) => (p.morale = Math.min(100, p.morale + (key === 'tour' ? 1 : 3))));
     FM.News.add({
@@ -781,7 +781,10 @@
     u.stats.games++;
     won ? u.stats.w++ : lost ? u.stats.l++ : u.stats.d++;
     if (won && op.club.rep - club.rep >= 12) u.stats.giantKills++;
-    u.rep = U.clamp(u.rep + (won ? 0.6 : lost ? -0.4 : 0.1) + (won && op.club.rep > club.rep ? 0.5 : 0), 1, 99);
+    const dRep = (won ? 0.6 : lost ? -0.4 : 0.1) + (won && op.club.rep > club.rep ? 0.5 : 0);
+    u.rep = U.clamp(u.rep + dRep, 1, 99);
+    FM.Style.afterResult(club, dRep); // a name made in this club's country
+    FM.Style.afterMatch(club, m, side); // and the kind of manager you are turning out to be
     // youth debuts
     for (const pid in sd.mins) {
       const p = S.players[pid];
@@ -803,6 +806,11 @@
       100,
     );
     if (club.identity === 'fan' && gf >= 3) club.fanMood = Math.min(100, club.fanMood + 3);
+    // what the fans make of how you play: a style that fits the club lifts the mood a little each match, one that does not
+    // costs it, most when you lose
+    const sf = FM.Board.styleFit(club, u.tactic);
+    if (sf)
+      club.fanMood = U.clamp(club.fanMood + sf * (sf > 0 ? (lost ? 0.2 : 0.5) : lost ? 1.4 : won ? 0.2 : 0.7), 0, 100);
     u.lastMatch = { fxId: fx.id, comp: fx.comp };
     // Familiarity grows with the tactic you used; switched to Plan B, both grow, at half the rate each
     const famK = FM.Staff.impact('assistant').fam * FM.Training.famK(); // a good assistant (and tactics training) drills it in faster
@@ -1110,13 +1118,16 @@
         !c.parent && // a B team's job goes with the parent club's set-up, not to an outside manager
         !taken.has(c.id) &&
         c.id !== justLeft &&
-        c.rep <= u.rep + 14 &&
+        c.rep <= FM.Style.effectiveRep(c) + 14 && // clubs judge you by your name in their country first
         c.rep >= u.rep - 30,
     );
     for (let i = initial ? 3 : 1; i > 0 && pool.length; i--) {
       const c = U.wpick(
         pool,
-        (x) => (100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5) * (x.id === u.favClub ? 3 : 1),
+        (x) =>
+          (100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5) *
+          (x.id === u.favClub ? 3 : 1) *
+          (1 + 0.6 * FM.Style.match(x)),
       ); // your boyhood club keeps an eye on you
       pool.splice(pool.indexOf(c), 1);
       u.offers.push({
@@ -1141,7 +1152,7 @@
     const S = FM.S;
     let freeGK = null;
     for (const c of Object.values(S.clubs)) {
-      if (c.sim === 'minimal' && !c.comp) continue;
+      if ((c.sim === 'minimal' && !c.comp) || W.army(c)) continue;
       const sq = W.squad(c.id),
         keepers = sq.filter((p) => p.pos === 'GK');
       // three for fully simulated clubs (two can both be injured or banned), two elsewhere; and never none fit
@@ -1169,7 +1180,9 @@
       while (n < need) {
         if (!freeGK) freeGK = Object.values(S.players).filter((p) => !p.clubId && !p.retired && p.pos === 'GK');
         const level = W.levelFor(c.rep);
-        const fa = freeGK.filter((p) => !p.clubId && p.ca >= level - 20).sort((a, b) => b.ca - a.ca)[0];
+        const fa = freeGK
+          .filter((p) => !p.clubId && p.ca >= level - 20 && FM.Reg.policy(c, p).ok)
+          .sort((a, b) => b.ca - a.ca)[0];
         let p = fa;
         if (p) {
           W.startSpell(p, c.id);
@@ -1207,7 +1220,7 @@
   Sea.ensureUserSquad = function (min, warn) {
     const S = FM.S,
       c = S.user && !S.user.sacked && W.userClub();
-    if (!c) return;
+    if (!c || W.army(c)) return;
     const sq = W.squad(c.id);
     // a thin squad is yours to fix: the feed says so when the season starts (the floor below only keeps a team on the pitch)
     if (warn && sq.length >= min && sq.length < warn)
@@ -1331,7 +1344,7 @@
       todays = Sea.dayFixtures();
     const wageBill = {};
     Object.values(S.players).forEach((p) => {
-      if (!p.clubId || p.retired) return;
+      if (!p.clubId || p.retired || p.service) return; // (a conscript is paid by the army, not by a club)
       const payer = FM.Youth.owner(p.clubId); // a B-team player is paid by the parent club
       if (p.loan) {
         wageBill[payer] = (wageBill[payer] || 0) + p.wage * p.loan.share;
@@ -1434,7 +1447,7 @@
       const k = c.building.k;
       c.facilities[k]++;
       if (k === 'stadium') FM.Records.expandStadium(c, 6000, 'New stand');
-      if (k === 'museum') c.rep = Math.min(99, c.rep + 1);
+      if (k === 'museum') W.nudgeRep(c, 1);
       FM.News.add({
         type: 'club',
         title: `${Sea.FAC[k].name} upgrade complete`,
@@ -1453,12 +1466,12 @@
     else if (
       !firstSeason &&
       FM.Season.baseRound() >= 14 &&
-      c.boardConf < 10 &&
+      c.boardConf < 10 + FM.Board.patience(c) &&
       W.position(c.id) > Sea.expectedPos(c) + 3 &&
       !S.user.sacked
     ) {
       S.user.sacked = true;
-    } else if (S.day > 6 && c.boardConf < 30 && !c.warned) {
+    } else if (S.day > 6 && c.boardConf < 30 + FM.Board.patience(c) && !c.warned) {
       c.warned = true;
       FM.News.add({
         type: 'board',
@@ -1591,15 +1604,16 @@
               clubId: r.champion,
             });
         });
-      champ.rep = Math.min(99, champ.rep + 2);
+      W.nudgeRep(champ, 2);
+      W.growClub(champ, 0.15); // a champion's support grows, and with it the most the club can become
       // Merit payments + reputation drift toward league standing
       const n = t.length,
         [repTop, repBot] = comp.repBand || { 1: [88, 60], 2: [62, 46], 3: [50, 38] }[comp.tier] || [60, 40];
       t.forEach((r, i) => {
         const c = S.clubs[r.id];
         if (c.sim === 'full') c.balance += Sea.revenuePotential(c) * 0.12 * ((n - i) / n);
-        const target = repTop - ((repTop - repBot) * i) / (n - 1);
-        c.rep = U.clamp(c.rep + (target - c.rep) * 0.18, 20, 99);
+        W.driftRep(c, repTop - ((repTop - repBot) * i) / (n - 1));
+        if (i < 3 && n >= 8) W.growClub(c, 0.04);
       });
       if (poty) S.players[poty.id].cult += 5;
       const R = comp.rules;
@@ -1692,7 +1706,7 @@
       S.comps[to].clubs.push(id);
       c.comp = to;
       (S.comps[to].tier < S.comps[from].tier ? entry.promoted : entry.relegated).push(id);
-      c.rep = U.clamp(c.rep + (S.comps[to].tier < S.comps[from].tier ? 4 : -5), 20, 99);
+      W.nudgeRep(c, S.comps[to].tier < S.comps[from].tier ? 4 : -5);
     };
     moves.forEach(applyMove);
     FM.Youth.fixBTeams().forEach(applyMove);
@@ -1781,9 +1795,10 @@
       promoted,
       relegated,
       objs,
-      sacked: club.boardConf < 20 && (relegated || (!firstSeason && missBy >= 1)),
+      sacked: club.boardConf < 20 + FM.Board.patience(club) * 1.2 && (relegated || (!firstSeason && missBy >= 1)),
     };
 
+    FM.Style.seasonEnd(club); // a board of your kind (or not)
     FM.People.seasonEnd(summary);
     FM.Stories.seasonEnd(entry);
     // Summer international tournaments were played on the last days of the calendar
@@ -1955,7 +1970,7 @@
     Sea.ensureUserSquad(11, 18);
     // squads replenish (AI)
     Object.values(S.clubs).forEach((c) => {
-      if (W.isUser(c.id)) return;
+      if (W.isUser(c.id) || W.army(c)) return;
       const sq = W.squad(c.id);
       const need = W.squadTarget(c) - sq.length;
       const want = W.squadWant(c);
@@ -1964,7 +1979,7 @@
         sq.forEach((p) => (counts[p.pos] = (counts[p.pos] || 0) + 1));
         const pos = Object.keys(want).find((k) => (counts[k] || 0) < want[k]) || U.pick(D.POS);
         const fa = Object.values(S.players).find(
-          (p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= W.levelFor(c.rep) - 12,
+          (p) => !p.clubId && !p.retired && p.pos === pos && p.ca >= W.levelFor(c.rep) - 12 && FM.Reg.policy(c, p).ok,
         );
         if (fa) {
           W.startSpell(fa, c.id);
@@ -1999,7 +2014,6 @@
         }
         // the biggest clubs put more of their wealth into the squad (stars only move when someone can pay)
         c.budget = Math.max(5e5, Math.round((c.balance * (c.rep >= 82 ? 0.5 : 0.35)) / 1e5) * 1e5);
-        c.finLast = c.fin;
         c.fin = null;
         if (c.balance < FM.Finance.adminThreshold(c) && !c.admin) {
           c.admin = true;
@@ -2023,6 +2037,7 @@
     FM.Stories.worldEvents(entry);
     FM.Contracts.newSeason();
     FM.Youth.newSeason(); // youth sides re-sorted, B teams restocked
+    FM.Asia.newSeason(); // Korea's military service
     Sea.ageStaff();
     Sea.trimRetired();
     W.leagues().forEach(W.setupSeasonFixtures);

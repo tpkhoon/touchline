@@ -91,6 +91,7 @@
         league: c.comp,
         parent: c.parent || null,
         founded: c.founded || null,
+        attr: c.attr ? { ...c.attr } : undefined, // market, support, catchment, owner and the ceiling (W.clubAttr)
         stadium: { name: c.stadium.name, cap: c.stadium.cap0 || c.stadium.cap },
       });
       if (c.rival && c.id < c.rival) def.rivals.push([c.id, c.rival, c.derby || 'Derby']);
@@ -542,6 +543,12 @@
       if (d.colors) c.colors = d.colors.slice(0, 2);
       if (d.identity) c.identity = d.identity;
       if (d.rep != null) c.rep = d.rep;
+      if (
+        d.attr &&
+        ['market', 'support', 'catchment', 'hist', 'ceil', 'floor'].every((k) => typeof d.attr[k] === 'number')
+      )
+        c.attr = { ...d.attr };
+      else if (d.rep != null && c.attr) delete c.attr; // (a new reputation: its attributes are worked out afresh)
       if (d.stadium) {
         c.stadium.name = d.stadium.name || c.stadium.name;
         if (d.stadium.cap) c.stadium.cap = c.stadium.cap0 = d.stadium.cap;
