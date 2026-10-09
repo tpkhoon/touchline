@@ -1021,11 +1021,16 @@
   const GRASS = [31, 122, 63];
   const rgb = (h) => (/^#[0-9a-f]{6}$/i.test(h) ? [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) : null);
   const dist = (a, b) => (a && b ? Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) : 999);
+  // (a club can carry shirt colours of its own, club.kit = { home, away }; the away shirt is worn unless it clashes)
   MV.kit = function (m, k) {
-    const home = m.sides[0].club.colors[0];
+    const shirt = (club) => (club.kit && club.kit.home) || club.colors[0];
+    const home = shirt(m.sides[0].club);
     if (k === 0) return home;
-    const [c1, c2] = m.sides[1].club.colors;
+    const away = m.sides[1].club,
+      [, c2] = away.colors,
+      c1 = shirt(away);
     const clash = (c) => dist(rgb(c), rgb(home)) < 80;
+    if (away.kit && away.kit.away && !clash(away.kit.away)) return away.kit.away;
     return clash(c1) && !clash(c2) ? c2 : c1;
   };
   MV.onGrass = (c) => dist(rgb(c), GRASS) < 90; // a kit that blends into the pitch

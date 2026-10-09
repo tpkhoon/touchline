@@ -63,6 +63,7 @@
   I.TNAME.KIR = 'Kirin Cup';
   I.TNAME.KGC = "King's Cup";
   I.TNAME.NEH = 'Nehru Cup';
+  I.INVITE_IDS = I.INVITES.map((v) => v.id); // (what the game has: a world definition may play fewer, but its history still names them)
 
   // Every nation can field a team. A nation whose players the world didn't happen to give enough of (Malaysia, the
   // Philippines, a small Balkan side) is topped up with players who play outside the game's leagues: unattached, so they
@@ -309,6 +310,7 @@
   // The season's invitational: the host and three guests from different parts of the world, none of whom has a qualifier on
   // the days it is played (null when the host is busy or the world has too few nations)
   I.planInvite = function () {
+    if (!I.INVITES.length) return null; // (a world definition can do without them)
     const s = S(),
       spec = I.INVITES[((s.year % I.INVITES.length) + I.INVITES.length) % I.INVITES.length];
     const host = Object.values(s.nteams || {}).find((t) => t.code === spec.host);

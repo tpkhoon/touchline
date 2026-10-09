@@ -133,6 +133,28 @@
     return WD.stringify(def);
   };
 
+  // A club data pack (names, crests, kits): put onto the game's own world
+  DB.register({
+    id: 'touchline-pack',
+    name: 'Club data pack',
+    accepts: '.json,application/json',
+    help: 'a .json pack of club names, crests and kits made in the world editor',
+    detect: (files) => files.length === 1 && /^\s*\{/.test(files[0].text) && files[0].text.includes(WD.PACK_FORMAT),
+    parse(files) {
+      const pack = WD.parsePack(files[0].text);
+      WD.useStatic(null);
+      const def = WD.fromStatic({ name: pack.meta.name || 'Club data pack' });
+      def.meta.author = pack.meta.author || '';
+      def.meta.description = pack.meta.description || '';
+      const rep = WD.applyPack(def, pack);
+      if (rep.errors.length) throw new Error(rep.errors.slice(0, 4).join('; '));
+      const notes = [`The pack renames or redraws ${rep.clubs} clubs, ${rep.leagues} leagues and ${rep.cups} cups`];
+      if (rep.unmatched.length)
+        notes.push(`${rep.unmatched.length} clubs in the pack are not in this world and were left out`);
+      return { def, notes };
+    },
+  });
+
   // The built-in format: a world definition as JSON
   DB.register({
     id: 'touchline-world',

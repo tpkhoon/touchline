@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-367 features are playable in the web prototype today. Build = the build that added it.
+373 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -376,6 +376,12 @@ Every feature from the game design document, with what is playable in the protot
 | International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
 | Editor | World editor: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
 | Editor | World editor players: a squad screen for each club and a screen for each player (name, nationality, position, foot, age, contract, the 14 attributes with the ability they make, set from an ability if you prefer, potential); made players are added to the generated squads, or replace the squad of any club given eleven or more | Playtest round 11 |
+| Editor | World editor, bulk player import: a CSV or JSON of real players' numbers turned into players on an editor screen (per-row clubs, one club or free agents) | Playtest round 11 |
+| Editor | World editor, past transfers: a season's big transfers entered in the history screen, the biggest shown as its record deal | Playtest round 11 |
+| Editor | World editor, kits: a club's own home and away shirt colours, worn in the match view | Playtest round 11 |
+| Editor | World editor, library and sharing: worlds kept on the device, opened from a file or saved as one | Playtest round 11 |
+| Editor | World editor, club data packs: names, short names, nicknames, cities, colours, crests, kits and grounds, and league, cup and national team names, as a pack that fits any world; read by the editor and the new-career import | Playtest round 11 |
+| Editor | World editor, cups taken out: the game's own domestic cups and invitationals left out of a world | Playtest round 11 |
 | Editor | World editor, club extras: a club's own crest (shape, pattern, emblem, with a preview), cash and transfer budget, the level of its seven facilities, and its market, supporters, youth catchment and owner | Playtest round 11 |
 | Editor | World editor, staff: a coach or scout's personality, contract, wage and a scout's regional network and judgement; a manager's reputation, personality and system; every manager made, listed; the agent firms renamed, added and removed | Playtest round 11 |
 | Editor | World editor, competitions: a league played once each or home and away, five tie-break orders, simulation tier and strength, play-offs for promotion (four clubs) or relegation, and a cup of your own for a nation that has none | Playtest round 11 |
@@ -386,7 +392,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-61 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+56 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -396,17 +402,12 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams, history, club extras and international football; the pieces still to come are listed on the Editor rows below. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
+| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams, history, club extras and international football; the pieces still to come are listed on the Editor rows below (national team squads, qualifying formats, cup group sizes and split leagues). World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
 | Editor | National team squads in the editor: choose who is called up for a nation, instead of the game picking its best 23 by ability (the pool of players a nation can pick from has to be built around the choice) | Alpha 2 |
 | Editor | Qualifying formats in the editor: how nations qualify for the World Championship and the continental championships (groups, play-offs, places) | Alpha 2 |
 | Editor | Cup group sizes in the editor: groups of other sizes in the continental cups, which means reworking the draw built around groups of four | Alpha 2 |
 | Editor | Split leagues in the editor: Scottish-style splits and the other fixed formats (zones, conferences, two tournaments a year) as choices, each with its own shape | Alpha 2 |
-| Editor | Taking out the game's own cups and tournaments in the editor (today only a cup of your own can be added and deleted) | Alpha 2 |
-| Editor | Past transfers in the editor's history screen: who moved where in a past season, beside the tables, cup winners and tournament winners it records now | Alpha 2 |
-| Editor | Bulk player import inside the editor: a spreadsheet or real-stats file turned into players on a screen (the converter exists; the editor has no screen for it) | Alpha 2 |
-| Editor | Club kit designs in the editor: home and away kits beyond the two club colours, shown on the match view | Alpha 2 |
-| Editor | Sharing databases: a library of databases and a way to share them (today a database is saved and loaded as a file) | Alpha 2 |
-| Editor | Club data packs: club names, crests and kits as swappable data with a pack format to import and share, so real-name packs can be made on top of the fictional default | Alpha 2 |
+| Editor | Club kit designs in the editor: patterns, shorts and socks (today a club's home and away shirt colours can be set) | Alpha 2 |
 | History | Historical eras from 1992 with era-appropriate rules | Alpha 2 |
 | History | Alternate-history setup and scenario creator | Alpha 2 |
 | Youth | University draft, graduates, scholarships, overseas trials | Alpha 2 |

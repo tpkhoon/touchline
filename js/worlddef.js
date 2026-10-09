@@ -45,6 +45,7 @@
     competitions: [],
     rivals: [], // [club id, club id, derby name]
     removeRivals: [], // [club id, club id]: derbies of the game's own the world does without
+    removeCups: [], // ids of the game's own domestic cups the world does without
     removeClubs: [], // ids of the game's own clubs the world does without
     intl: {}, // international football: { cycle, tourns: { id: { name, slots } }, invites: [{ id, name, host }] }
     agents: [], // the names of the agent firms (empty: the game's own)
@@ -121,6 +122,7 @@
         founded: c.founded || null,
         attr: c.attr ? { ...c.attr } : undefined, // market, support, catchment, owner and the ceiling (W.clubAttr)
         crest: c.crest ? c.crest.slice() : null,
+        kit: c.kit ? { ...c.kit } : null,
         finance: { balance: Math.round(c.balance), budget: Math.round(c.budget) },
         facilities: { ...c.facilities },
         stadium: { name: c.stadium.name, cap: c.stadium.cap0 || c.stadium.cap },
@@ -275,12 +277,17 @@
       }
     }
     for (const v of x.invites || []) {
-      if (!I().INVITES.some((o) => o.id === v.id)) e.push(`international: the game has no invitational "${v.id}"`);
+      if (!inviteIds().has(v.id)) e.push(`international: the game has no invitational "${v.id}"`);
       if (!String(v.name || '').trim()) e.push(`invitational ${v.id}: needs a name`);
       if (!D.NATIONS[v.host]) e.push(`invitational ${v.id}: unknown host nation "${v.host}"`);
     }
     return e;
   };
+  // (the invitationals the game has, remembered the first time they are asked for: a world that does without one still has them
+  // in its past seasons)
+  const domIds = () => (WD._dom = WD._dom || new Set(D.DOMESTIC_CUPS.map((c) => c[0])));
+  domIds();
+  const inviteIds = () => new Set(I().INVITE_IDS);
   const applyIntl = (x) => {
     if (x.cycle != null) I().CYCLE = x.cycle;
     for (const [id, v] of Object.entries(x.tourns || {})) {
@@ -288,6 +295,11 @@
       if (!tn) continue;
       if (v.name) ((tn.name = v.name), (I().TNAME[id] = v.name));
       if (v.slots) tn.pools.forEach((p, i) => (p[1] = v.slots[i]));
+    }
+    if (x.invitesAll) {
+      // the ones the world keeps, in the game's order (the others are taken out)
+      const keep = new Set(x.invitesAll.map((v) => v.id));
+      I().INVITES.splice(0, I().INVITES.length, ...I().INVITES.filter((o) => keep.has(o.id)));
     }
     for (const v of x.invites || []) {
       const o = I().INVITES.find((i) => i.id === v.id);
@@ -363,9 +375,11 @@
       removed: [],
       cups: [],
       newCups: [],
+      removeCups: [],
       intl: null,
       agents: null,
     };
+    patch.removeCups = (def.removeCups || []).filter((id) => D.DOMESTIC_CUPS.some((c) => c[0] === id));
     {
       const names = (def.agents || []).map((a) => String(a || '').trim()).filter(Boolean);
       if (names.length && !same(names, D.AGENT_FIRMS)) patch.agents = names;
@@ -482,7 +496,10 @@
       if (def.intl.cycle != null && def.intl.cycle !== cur.cycle) d.cycle = def.intl.cycle;
       for (const [id, v] of Object.entries(def.intl.tourns || {})) if (!same(v, cur.tourns[id])) d.tourns[id] = v;
       for (const v of def.intl.invites || []) if (!cur.invites.some((o) => same(o, v))) d.invites.push(v);
-      if (d.cycle != null || Object.keys(d.tourns).length || d.invites.length) patch.intl = d;
+      const keptIds = (def.intl.invites || []).map((v) => v.id);
+      if (def.intl.invites && keptIds.length < cur.invites.length)
+        d.invitesAll = def.intl.invites.map((v) => ({ id: v.id }));
+      if (d.cycle != null || Object.keys(d.tourns).length || d.invites.length || d.invitesAll) patch.intl = d;
     }
     return patch;
   };
@@ -503,6 +520,7 @@
       (p.removeRivals || []).length ||
       (p.cups || []).length ||
       (p.newCups || []).length ||
+      (p.removeCups || []).length ||
       p.agents ||
       p.intl
     );
@@ -520,8 +538,7 @@
       info: { ...D.CLUB_INFO },
       rivals: D.RIVALS.map((r) => r.slice()),
       mix: new Set(Object.keys(D.NAT_MIX)),
-      cups: D.DOMESTIC_CUPS.map((c) => JSON.stringify(c[4] || {})),
-      cupCount: D.DOMESTIC_CUPS.length,
+      cupRows: D.DOMESTIC_CUPS.map((c) => [c[0], c[1], c[2], c[3], JSON.stringify(c[4] || {})]),
       agents: D.AGENT_FIRMS.slice(),
       euro: (D.EURO_CUPS || []).map((c) => JSON.stringify(c.opts || {})),
       conts: D.CONTINENTALS.map((c) => ({
@@ -578,6 +595,10 @@
     }
     if (patch.intl) applyIntl(patch.intl);
     if (patch.agents) D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...patch.agents);
+    for (const id of patch.removeCups || []) {
+      const i = D.DOMESTIC_CUPS.findIndex((x) => x[0] === id);
+      if (i >= 0) D.DOMESTIC_CUPS.splice(i, 1);
+    }
     for (const c of patch.newCups || [])
       if (!D.DOMESTIC_CUPS.some((x) => x[0] === c.id))
         D.DOMESTIC_CUPS.push([c.id, c.nat, c.name, c.short, JSON.parse(JSON.stringify(c.opts))]);
@@ -624,8 +645,11 @@
         I().CYCLE = o.c;
       }
       D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...snap.agents);
-      D.DOMESTIC_CUPS.length = snap.cupCount;
-      D.DOMESTIC_CUPS.forEach((c, i) => (c[4] = JSON.parse(snap.cups[i])));
+      D.DOMESTIC_CUPS.splice(
+        0,
+        D.DOMESTIC_CUPS.length,
+        ...snap.cupRows.map((c) => [c[0], c[1], c[2], c[3], JSON.parse(c[4])]),
+      );
       (D.EURO_CUPS || []).forEach((c, i) => ((c.opts = JSON.parse(snap.euro[i])), (c.prize = snap.euroPrize[i])));
       D.CONTINENTALS.forEach((c, i) => {
         const s = snap.conts[i];
@@ -722,6 +746,10 @@
         c.crest.every((v, i) => Number.isInteger(v) && v >= -1 && v < n[i])
       ))
         e.push(`${at}: a crest is a shape, a pattern and an emblem (-1: the automatic one)`);
+    }
+    if (c.kit) {
+      for (const k of ['home', 'away'])
+        if (c.kit[k] != null && !HEX.test(c.kit[k])) e.push(`${at}: the ${k} shirt must be a #rrggbb colour`);
     }
     if (c.finance) {
       const f = c.finance;
@@ -953,6 +981,8 @@
     }
     for (const l of def.leagues) errors.push(...WD.validateLeagueRules(l, def));
     errors.push(...WD.validateIntl(def.intl));
+    for (const id of def.removeCups || [])
+      if (!domIds().has(id)) errors.push(`cup ${id}: the game has no such domestic cup to take out`);
     const ROLES = [
       'Assistant Manager',
       'First-Team Coach',
@@ -1027,7 +1057,7 @@
           }
       }
       for (const [id, c] of Object.entries(s.intl || {})) {
-        if (!tournList().some((t) => t.id === id) && !I().INVITES.some((v) => v.id === id))
+        if (!tournList().some((t) => t.id === id) && !inviteIds().has(id))
           errors.push(`season ${s.year}: "${id}" is not an international tournament the game has`);
         if (!D.NATIONS[c.winner]) errors.push(`season ${s.year} ${id}: winner "${c.winner}" is not a nation`);
         if (c.runnerUp && !D.NATIONS[c.runnerUp])
@@ -1036,7 +1066,7 @@
           errors.push(`season ${s.year} ${id}: the winner and the runner-up are one nation`);
       }
       for (const [id, c] of Object.entries(s.cups || {})) {
-        if (!D.DOMESTIC_CUPS.some((x) => x[0] === id) && !(def.competitions || []).some((x) => x.id === id && x.isNew))
+        if (!domIds().has(id) && !(def.competitions || []).some((x) => x.id === id && x.isNew))
           errors.push(`season ${s.year}: "${id}" is not a domestic cup the game has`);
         if (!clubs.has(c.winner)) errors.push(`season ${s.year} ${id}: winner "${c.winner}" is not in the definition`);
         if (c.runnerUp && !clubs.has(c.runnerUp))
@@ -1059,6 +1089,94 @@
       }
     }
     return { errors, warnings };
+  };
+
+  // ---------- Club data packs ----------
+  // A pack is only the look and the names of a world: each club's name, short name, nickname, city, colours, crest, kit and ground,
+  // the names of the leagues and cups, and the names and colours of the national teams. No ratings, players or rules, so any pack
+  // fits any world; clubs are matched by id. Real-name packs can be made and shared on top of the fictional default.
+  WD.PACK_FORMAT = 'touchline-pack';
+  WD.packOf = function (def, meta = {}) {
+    const m = def.meta || {};
+    return {
+      format: WD.PACK_FORMAT,
+      version: 1,
+      meta: {
+        name: meta.name || m.name || 'Club data pack',
+        author: meta.author ?? m.author ?? '',
+        description: meta.description ?? m.description ?? '',
+        created: new Date().toISOString().slice(0, 10),
+      },
+      leagues: def.leagues.map((l) => ({ id: l.id, name: l.name, short: l.short })),
+      competitions: (def.competitions || [])
+        .filter((c) => !c.isNew)
+        .map((c) => ({ id: c.id, name: c.name, short: c.short })),
+      clubs: def.clubs.map((c) => ({
+        id: c.id,
+        name: c.name,
+        short: c.short,
+        nick: c.nick || '',
+        city: c.city,
+        colors: c.colors.slice(0, 2),
+        crest: c.crest || null,
+        kit: c.kit || null,
+        stadium: c.stadium ? c.stadium.name : undefined,
+      })),
+      nations: (def.nations || []).map((n) => ({ code: n.code, name: n.name, short: n.short, colors: n.colors })),
+    };
+  };
+  WD.parsePack = function (text) {
+    let p;
+    try {
+      p = JSON.parse(text);
+    } catch (e) {
+      throw new Error('Not valid JSON: ' + e.message);
+    }
+    if (!p || p.format !== WD.PACK_FORMAT) throw new Error(`Not a ${WD.PACK_FORMAT} file`);
+    if (p.version > 1) throw new Error(`Made by a newer version of the game (pack format ${p.version})`);
+    return p;
+  };
+  // A pack onto a definition (in place): what it names or draws replaces what the definition has; what it does not know is left.
+  WD.applyPack = function (def, pack) {
+    const rep = { clubs: 0, leagues: 0, cups: 0, nations: 0, unmatched: [], errors: [] };
+    const E = WD.editor(def, null);
+    for (const k of pack.clubs || []) {
+      const c = def.clubs.find((x) => x.id === k.id);
+      if (!c) {
+        rep.unmatched.push(k.id);
+        continue;
+      }
+      const patch = {};
+      for (const f of ['name', 'short', 'nick', 'city']) if (k[f] != null && k[f] !== '') patch[f] = k[f];
+      if (k.colors) patch.colors = k.colors;
+      if (k.crest) patch.crest = k.crest;
+      if (k.kit) patch.kit = k.kit;
+      if (k.stadium) patch.stadium = { name: k.stadium };
+      const r = E.setClub(c.id, patch);
+      if (r.ok) rep.clubs++;
+      else rep.errors.push(...r.errors);
+    }
+    for (const k of pack.leagues || []) {
+      const l = def.leagues.find((x) => x.id === k.id);
+      if (!l) continue;
+      const r = E.setLeague(l.id, { name: k.name || l.name, short: k.short || l.short });
+      if (r.ok) rep.leagues++;
+      else rep.errors.push(...r.errors);
+    }
+    for (const k of pack.competitions || []) {
+      if (!WD.cupKind(k.id, def)) continue;
+      const r = E.setCup(k.id, { name: k.name, short: k.short });
+      if (r.ok) rep.cups++;
+      else rep.errors.push(...r.errors);
+    }
+    for (const k of pack.nations || []) {
+      const patch = {};
+      for (const f of ['name', 'short', 'colors']) if (k[f]) patch[f] = k[f];
+      const r = E.setNation(k.code, patch);
+      if (r.ok) rep.nations++;
+      else rep.errors.push(...r.errors);
+    }
+    return rep;
   };
 
   // ---------- Text form ----------
@@ -1127,6 +1245,7 @@
         a.floor = Math.max(20, c.rep - (6 + a.market * 0.8) * W.REP_SLACK);
       } else if (d.rep != null && c.attr) delete c.attr; // (a new reputation: its attributes are worked out afresh)
       if (d.crest) c.crest = d.crest.slice(0, 3);
+      if (d.kit && (d.kit.home || d.kit.away)) c.kit = { home: d.kit.home || null, away: d.kit.away || null };
       if (d.finance) {
         if (d.finance.balance != null) c.balance = d.finance.balance;
         if (d.finance.budget != null) c.budget = d.finance.budget;

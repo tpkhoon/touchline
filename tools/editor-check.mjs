@@ -39,6 +39,7 @@ check(r.ok, 'a valid club edit was refused: ' + r.errors.join('; '));
 const X = d1[0].id;
 check(!E.setClub(X, { crest: [9, 0, 0] }).ok, 'a crest shape that does not exist was accepted');
 check(!E.setClub(X, { crest: [0, 0] }).ok, 'a crest of two numbers was accepted');
+check(!E.setClub(X, { kit: { home: 'red', away: '#ffffff' } }).ok, 'a shirt colour that is not #rrggbb was accepted');
 check(!E.setClub(X, { facilities: { training: 7 } }).ok, 'a facility of level 7 was accepted');
 check(!E.setClub(X, { facilities: { pool: 3 } }).ok, 'a facility the game does not have was accepted');
 check(!E.setClub(X, { finance: { budget: -5 } }).ok, 'a negative transfer budget was accepted');
@@ -47,6 +48,7 @@ check(!E.setClub(X, { attr: { own: 'aliens' } }).ok, 'an owner of aliens was acc
 check(
   E.setClub(X, {
     crest: [1, 4, 6],
+    kit: { home: '#123456', away: '#fedcba' },
     finance: { balance: 250e6, budget: 80e6 },
     facilities: { training: 5, academy: 5, medical: 4, analytics: 4, stadium: 3, fanzone: 2, museum: 1 },
     attr: { market: 9, support: 8.5, catchment: 7, own: 'sovereign' },
@@ -197,7 +199,9 @@ check(
   E.setCup('CUPENG', { format: { legs: [4, 2], neutral: 'all', tiers: 2, prize: 7e6 } }).ok,
   'a valid domestic cup format was refused',
 );
-check(E.setCup('CUPFRA', { format: { legs: [], neutral: [] } }).ok, 'a valid French cup format was refused');
+// two of the game's own cups taken out of the world, and two invitationals (only the Kirin Cup is kept below)
+def.removeCups = ['CUPFRA', 'CUPJPN'];
+check(E.setCup('CUPITA', { format: { legs: [], neutral: [] } }).ok, 'a valid Italian cup format was refused');
 check(
   E.setCup('AF', { format: { legs: { qf: 1, sf: 1, f: 1 }, central: true, prize: 6e6 } }).ok,
   'a valid continental format was refused',
@@ -334,6 +338,67 @@ check(
   }).ok,
   'a cup for Uruguay was refused',
 );
+// a club data pack: names and looks only, fits another world, and the new-career import reads it too
+{
+  const base = WD.fromStatic({ name: 'Pack base' });
+  const edited = JSON.parse(JSON.stringify(base));
+  const pe = WD.editor(edited, null);
+  const first = edited.clubs[0].id;
+  check(
+    pe.setClub(first, {
+      name: 'Packed United',
+      nick: 'The Packers',
+      crest: [2, 3, 4],
+      kit: { home: '#aa0000', away: '#0000aa' },
+      rep: 77,
+    }).ok,
+    'the club for the pack was not edited',
+  );
+  pe.setLeague('D1', { name: 'Pack League', short: 'PKL' });
+  pe.setCup('CUPENG', { name: 'Pack Cup', short: 'PKC' });
+  const pack = WD.packOf(edited);
+  check(!('rep' in pack.clubs[0]) && !('players' in pack), 'a pack carries ratings or players');
+  const text = JSON.stringify(pack);
+  const fresh = WD.fromStatic({ name: 'fresh' });
+  const rp = WD.applyPack(fresh, WD.parsePack(text));
+  const fc = fresh.clubs.find((c) => c.id === first),
+    bc = base.clubs.find((c) => c.id === first);
+  check(
+    fc.name === 'Packed United' &&
+      fc.nick === 'The Packers' &&
+      fc.crest.join() === '2,3,4' &&
+      fc.kit.home === '#aa0000',
+    'the pack did not rename and redraw the club',
+  );
+  check(fc.rep === bc.rep && fc.league === bc.league, 'the pack changed a rating or a league');
+  check(fresh.leagues.find((l) => l.id === 'D1').name === 'Pack League', 'the pack did not rename the league');
+  check(
+    (fresh.competitions.find((c) => c.id === 'CUPENG') || {}).name === 'Pack Cup',
+    'the pack did not rename the cup',
+  );
+  check(
+    rp.clubs === base.clubs.length && rp.unmatched.length === 0 && rp.errors.length === 0,
+    'the pack report is wrong',
+  );
+  const odd = JSON.parse(text);
+  odd.clubs.push({ id: 'c_NOPE', name: 'Nobody FC' });
+  check(
+    WD.applyPack(WD.fromStatic({ name: 'x' }), odd).unmatched.join() === 'c_NOPE',
+    'a club not in the world was not reported',
+  );
+  let threw = false;
+  try {
+    WD.parsePack('{"format":"touchline-world"}');
+  } catch (e) {
+    threw = true;
+  }
+  check(threw, 'a world file was read as a pack');
+  const imp = DB.import([{ name: 'pack.json', text }]);
+  check(
+    imp.ok && imp.adapter === 'touchline-pack' && imp.def.clubs.find((c) => c.id === first).name === 'Packed United',
+    'the new-career import did not read the pack: ' + (imp.errors || []).join('; '),
+  );
+}
 // international football: bad settings are refused, good ones kept
 check(!E.setIntl({ cycle: 9 }).ok, 'a World Championship year of 9 was accepted');
 check(
@@ -470,6 +535,7 @@ check(
     x.crest && x.crest.join() === '1,4,6' && FM.D.CLUB_INFO[X.slice(2)][3].join() === '1,4,6',
     'the crest did not reach the world and the picker',
   );
+  check(x.kit && x.kit.home === '#123456' && x.kit.away === '#fedcba', 'the kit did not reach the club');
   check(x.balance === 250e6 && x.budget === 80e6, 'the money did not reach the club');
   check(
     x.facilities.training === 5 && x.facilities.academy === 5 && x.facilities.museum === 1,
@@ -555,8 +621,13 @@ console.log(`D1 has ${n1} clubs`);
     'the cup format did not reach the world',
   );
   check(
-    S.comps.CUPFRA.opts.legs.length === 0 && S.comps.CUPFRA.opts.neutral.length === 0,
-    'the French cup kept its old format',
+    S.comps.CUPITA.opts.legs.length === 0 && S.comps.CUPITA.opts.neutral.length === 0,
+    'the Italian cup kept its old format',
+  );
+  check(!S.comps.CUPFRA && !S.comps.CUPJPN && S.comps.CUPENG, 'the cups taken out are still in the world');
+  check(
+    FM.Intl.INVITES.length === 1 && FM.Intl.INVITES[0].id === 'KIR',
+    'the invitationals taken out are still played: ' + FM.Intl.INVITES.map((v) => v.id).join(),
   );
   const f = FM.Cups.formatOf(S.comps.AF);
   check(
@@ -737,6 +808,12 @@ check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n
 // a save keeps the database, and a plain new world afterwards has none of it
 check(FM.S.database && FM.S.database.name === 'Editor test', 'the world does not remember its database');
 DB.clear();
+check(
+  FM.D.DOMESTIC_CUPS.some((c) => c[0] === 'CUPFRA') &&
+    FM.D.DOMESTIC_CUPS.some((c) => c[0] === 'CUPJPN') &&
+    FM.Intl.INVITES.length === 3,
+  'clearing the database did not bring back the cups and invitationals taken out',
+);
 check(!(FM.D.CLUB_INFO[X.slice(2)] || [])[3], 'clearing the database left the crest in the picker data');
 check(
   FM.D.AGENT_FIRMS.length === 12 && FM.D.AGENT_FIRMS[0] === 'Apex Sports Group',

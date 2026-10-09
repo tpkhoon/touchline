@@ -77,7 +77,7 @@ if ('test' in args) {
     `a registered adapter was not used: ${x.errors}`,
   );
   check(DB.accept().includes('.tst') && DB.accept().includes('.json'), 'accept() misses a format');
-  check(DB.adapters().length === 3, 'adapters() should list three');
+  check(DB.adapters().length === 4, 'adapters() should list four (world, pack, tables, the test one)');
 
   // ---- new clubs and leagues, staged into the game's data, built, saved and restored ----
   const D = FM.D;

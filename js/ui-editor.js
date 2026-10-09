@@ -382,6 +382,7 @@
       <div class="ng-label">Beyond the clubs</div>
       ${[
         ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names and formats`],
+        ['library', '📚 Library, files and packs', 'worlds kept on this device, files, and club data packs'],
         [
           'staffhub',
           '🧑‍🏫 Staff, managers and agents',
@@ -396,7 +397,7 @@
       ]
         .map(
           ([v, t, s]) =>
-            `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="edView" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
+            `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="${v === 'library' ? 'edLibrary' : 'edView'}" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
         )
         .join('')}
       <div class="ng-label">Players you make</div>
@@ -842,6 +843,7 @@
     const finance = { balance: money('xbal'), budget: money('xbud') };
     const r = WD.editor(ED.def, null).setClub(ED.cid, {
       crest: crest.every((n) => n < 0) ? null : crest,
+      kit: $('#ed-xkiton').checked ? { home: v('xkh'), away: v('xka') } : null,
       finance: finance.balance == null && finance.budget == null ? null : finance,
       facilities: $('#ed-xfacon').checked
         ? Object.fromEntries(WD.FACILITIES.map((k) => [k, Math.round(+v('xf-' + k))]))
@@ -867,12 +869,14 @@
   UI.acts.edClearClubX = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     const base = builtIn().get(ED.cid);
-    for (const k of ['crest', 'finance', 'facilities']) c[k] = null;
+    for (const k of ['crest', 'kit', 'finance', 'facilities']) c[k] = null;
     if (base && base.attr) c.attr = base.attr;
     else delete c.attr;
     ED.view = 'club';
     UI.worldEditor();
   };
+  const shirtSvg = (col) =>
+    `<svg width="54" height="50" viewBox="0 0 54 50" aria-hidden="true"><path d="M17 3 L4 12 L10 22 L16 19 V47 H38 V19 L44 22 L50 12 L37 3 Q27 10 17 3Z" fill="${esc(col)}" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/></svg>`;
   const clubxView = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     if (!c) return leagueView();
@@ -889,6 +893,9 @@
       <div class="ng-label">Crest</div>
       <div class="row" style="gap:14px;align-items:center"><div id="ed-crestprev" style="flex:none">${UI.C.crest({ ...c, crest: cr }, 72)}</div><div class="grow">
         ${sel('xcs', CREST_NAMES.shape, cr[0])}<div style="height:6px"></div>${sel('xcp', CREST_NAMES.pattern, cr[1])}<div style="height:6px"></div>${sel('xce', CREST_NAMES.emblem, cr[2])}</div></div>
+      <div class="ng-label">Kit <span class="tiny dim">· the shirt colours worn in matches</span></div>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ed-xkiton" ${c.kit ? 'checked' : ''}> My own shirts (otherwise the club's two colours, and the second when the first clashes)</label>
+      <div class="row" style="gap:14px;align-items:center;margin-top:8px"><div style="text-align:center"><div id="ed-kithome">${shirtSvg((c.kit || {}).home || c.colors[0])}</div><input type="color" id="ed-xkh" value="${esc((c.kit || {}).home || c.colors[0])}" style="width:56px;height:36px;padding:2px"><div class="tiny dim">Home</div></div><div style="text-align:center"><div id="ed-kitaway">${shirtSvg((c.kit || {}).away || c.colors[1])}</div><input type="color" id="ed-xka" value="${esc((c.kit || {}).away || c.colors[1])}" style="width:56px;height:36px;padding:2px"><div class="tiny dim">Away</div></div></div>
       <div class="ng-label">Money <span class="tiny dim">· millions; empty: the game's figure</span></div>
       <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Cash in the bank</div><input type="number" id="ed-xbal" step="0.5" inputmode="decimal" value="${fin.balance != null ? fin.balance / 1e6 : ''}"></div><div style="flex:1"><div class="tiny dim">Transfer budget</div><input type="number" id="ed-xbud" step="0.5" min="0" inputmode="decimal" value="${fin.budget != null ? fin.budget / 1e6 : ''}"></div></div>
       <div class="ng-label">Facilities</div>
@@ -937,6 +944,154 @@
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelClub">${added ? 'Delete this club' : 'Take this club out of the world'}</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClub">Save club</button></div>`;
   };
+
+  // ---------- Library, files and club data packs ----------
+  // Worlds kept on this device (in the same storage as saves), a world opened from a file, and club data packs: only the names,
+  // crests, kits and grounds of a world, which fit any world and can be made and shared on their own.
+  const LIB = 'dblib_';
+  const libStore = () => FM.Save.store();
+  const libIndex = async () => {
+    try {
+      return JSON.parse((await libStore().get(LIB + 'index')) || '[]');
+    } catch (e) {
+      return [];
+    }
+  };
+  const fileName = (name, ext) =>
+    `touchline-${String(name || 'world')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')}${ext}`;
+  const shareJson = async (text, name, title) => {
+    try {
+      const r = await FM.Native.shareFile({
+        bytes: new TextEncoder().encode(text),
+        name,
+        type: 'application/json',
+        title,
+        preferShare: matchMedia('(pointer: coarse)').matches,
+      });
+      if (r !== 'cancelled') UI.toast(`${r === 'saved' ? 'Saved' : 'Ready'}: ${name}`, 3500);
+    } catch (e) {
+      UI.toast('⚠️ ' + (e.message || 'Could not save the file'), 4000);
+    }
+  };
+  UI.acts.edLibrary = async () => {
+    ED.lib = await libIndex();
+    ED.view = 'library';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edLibSave = async () => {
+    try {
+      const idx = await libIndex(),
+        m = ED.def.meta,
+        id = 'w' + Date.now().toString(36);
+      await libStore().put(LIB + id, WD.stringify(ED.def));
+      idx.unshift({
+        id,
+        name: m.name || 'My world',
+        author: m.author || '',
+        saved: new Date().toISOString().slice(0, 10),
+        clubs: ED.def.clubs.length,
+        players: (ED.def.players || []).length,
+      });
+      await libStore().put(LIB + 'index', JSON.stringify(idx));
+      ED.lib = idx;
+      ED.err = [];
+      UI.toast('Kept in the library', 2000);
+    } catch (e) {
+      ED.err = ['Could not keep it: ' + (e.message || e)];
+    }
+    UI.worldEditor();
+  };
+  UI.acts.edLibOpen = async (d) => {
+    try {
+      const text = await libStore().get(LIB + d.id);
+      if (!text) throw new Error('It is not there any more');
+      const def = WD.parse(text);
+      const v = WD.validate(def, null);
+      if (v.errors.length && !v.errors.every((e) => /is not in the definition|are not supported/.test(e)))
+        throw new Error(v.errors[0]);
+      ED.def = def;
+      ED.view = 'home';
+      ED.err = [];
+      UI.toast('Opened in the editor', 2000);
+    } catch (e) {
+      ED.err = ['Could not open it: ' + (e.message || e)];
+    }
+    UI.worldEditor();
+  };
+  UI.acts.edLibDel = async (d) => {
+    const idx = (await libIndex()).filter((x) => x.id !== d.id);
+    await libStore().del(LIB + d.id);
+    await libStore().put(LIB + 'index', JSON.stringify(idx));
+    ED.lib = idx;
+    UI.worldEditor();
+  };
+  // A world from a file (the same files the new-career screen reads)
+  UI.acts.edOpenFile = async () => {
+    const picked = await FM.Native.pickFiles(FM.DbImport.accept());
+    if (!picked.length) return;
+    const r = FM.DbImport.import(picked.map((x) => ({ name: x.name, text: FM.DbImport.decode(x.bytes) })));
+    WD.useStatic(null); // (the editor works on the game's own data)
+    if (!r.ok) {
+      ED.err = r.errors.slice(0, 4);
+      return UI.worldEditor();
+    }
+    ED.def = r.def;
+    ED.view = 'home';
+    ED.err = [];
+    UI.toast(r.notes && r.notes[0] ? r.notes[0] : 'Opened in the editor', 3000);
+    UI.worldEditor();
+  };
+  UI.acts.edPackSave = () =>
+    shareJson(
+      JSON.stringify(WD.packOf(ED.def), null, 1),
+      fileName((ED.def.meta.name || 'world') + '-pack', '.json'),
+      'Touchline club data pack',
+    );
+  UI.acts.edPackApply = async () => {
+    const picked = await FM.Native.pickFiles('.json,application/json');
+    if (!picked.length) return;
+    try {
+      const pack = WD.parsePack(FM.DbImport.decode(picked[0].bytes));
+      const was = clone(ED.def);
+      const rep = WD.applyPack(ED.def, pack);
+      if (rep.errors.length) {
+        ED.def = was;
+        throw new Error(rep.errors[0]);
+      }
+      ED.err = [];
+      UI.toast(
+        `Pack applied: ${rep.clubs} clubs, ${rep.leagues} leagues, ${rep.cups} cups${rep.unmatched.length ? `; ${rep.unmatched.length} clubs not in this world` : ''}`,
+        4500,
+      );
+    } catch (e) {
+      ED.err = ['Could not apply the pack: ' + (e.message || e)];
+    }
+    UI.worldEditor();
+  };
+  const libraryView =
+    () => `<div class="h1" style="margin-top:2vh">Library, files and packs</div><div class="tag">Keep worlds on this device, open one from a file, or share just the names and looks.</div>
+      ${errBox()}
+      <div class="ng-label">Worlds kept on this device</div>
+      ${
+        (ED.lib || [])
+          .map(
+            (x) =>
+              `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(x.name)}</div><div class="tiny dim">${x.clubs} clubs · ${x.players} players made · kept ${esc(x.saved)}${x.author ? ' · ' + esc(x.author) : ''}</div></div><button class="btn sm" data-act="edLibOpen" data-id="${esc(x.id)}">Open</button><button class="btn sm" data-act="edLibDel" data-id="${esc(x.id)}" aria-label="Delete">✕</button></div></div>`,
+          )
+          .join('') || '<div class="empty">Nothing kept yet.</div>'
+      }
+      <div class="actions" style="margin-top:8px"><button class="btn sm pri" data-act="edLibSave">Keep this world here</button></div>
+      <div class="ng-label">Files</div>
+      <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edOpenFile">📂 Open a world from a file…</button><button class="btn sm" data-act="edExport">⬆️ Save this world as a file</button></div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A world file holds everything you made. Send it to a friend, who opens it here or on the new-career screen.</div>
+      <div class="ng-label">Club data packs</div>
+      <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPackApply">Apply a pack…</button><button class="btn sm" data-act="edPackSave">Make a pack of this world</button></div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A pack holds only the names, short names, nicknames, cities, colours, crests, kits and grounds of the clubs, the names of the leagues and cups, and the national teams' names and colours. It fits any world: clubs are matched by id, and nothing about ratings, players or rules changes. A pack of real club names can be made once and shared.</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
 
   // ---------- Importing players ----------
   // A CSV (or a JSON list) of real players' season numbers becomes players through the real-stats converter (js/realstats.js):
@@ -1138,8 +1293,9 @@
   };
   // Cup names: the domestic cups, the continental cups and the Club World Cup, renamed through the definition's competitions
   // (domestic cups: the game's, then the ones the definition adds)
+  const outCups = () => new Set(ED.def.removeCups || []);
   const domCups = () => [
-    ...D.DOMESTIC_CUPS.map(([id, nat, name, short]) => ({ id, nat, name, short })),
+    ...D.DOMESTIC_CUPS.map(([id, nat, name, short]) => ({ id, nat, name, short, removed: outCups().has(id) })),
     ...(ED.def.competitions || [])
       .filter((c) => c.isNew)
       .map((c) => ({ id: c.id, nat: c.nat, name: c.name, short: c.short, isNew: true })),
@@ -1150,6 +1306,7 @@
       name: c.name,
       short: c.short,
       isNew: c.isNew,
+      removed: c.removed,
       group: (D.NATIONS[c.nat] || {}).name || c.nat,
     })),
     ...D.CONTINENTALS.map((c) => ({ id: c.id, name: c.name, short: c.short, group: 'Continental' })),
@@ -1237,7 +1394,11 @@
   };
   // A cup for a nation that has none (it needs eight clubs in fully or lightly simulated leagues)
   const cupNations = () => {
-    const have = new Set(domCups().map((c) => c.nat));
+    const have = new Set(
+      domCups()
+        .filter((c) => !c.removed)
+        .map((c) => c.nat),
+    );
     return Object.entries(D.NATIONS)
       .filter(([code]) => !have.has(code))
       .map(([code, n]) => {
@@ -1280,6 +1441,16 @@
       }
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button>${nats.length ? '<button class="btn sm pri grow" data-act="edCreateCup">Add the cup</button>' : ''}</div>`;
   };
+  // A domestic cup of the game's own taken out of the world, or put back
+  UI.acts.edCupOut = () => {
+    ED.def.removeCups = [...new Set([...(ED.def.removeCups || []), ED.cup])];
+    ED.def.competitions = (ED.def.competitions || []).filter((x) => x.id !== ED.cup);
+    UI.worldEditor();
+  };
+  UI.acts.edCupBack = () => {
+    ED.def.removeCups = (ED.def.removeCups || []).filter((id) => id !== ED.cup);
+    UI.worldEditor();
+  };
   UI.acts.edCupReset = () => {
     ED.def.competitions = (ED.def.competitions || []).filter((x) => x.id !== ED.cup);
     ED.view = 'cups';
@@ -1303,7 +1474,7 @@
           const o = compOf(c.id) || c,
             head = c.group !== last ? `<div class="ng-label">${esc(c.group)}</div>` : '';
           last = c.group;
-          return `${head}<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edCup" data-cup="${c.id}"><div class="row"><div class="grow"><div class="small b">${esc(o.name)}</div><div class="tiny dim">${esc(fmtLine(c.id))}</div></div><span class="dim">›</span></div></div>`;
+          return `${head}<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edCup" data-cup="${c.id}"><div class="row"><div class="grow"><div class="small b">${esc(o.name)}</div><div class="tiny dim">${c.removed ? 'Taken out of the world' : esc(fmtLine(c.id))}</div></div><span class="dim">›</span></div></div>`;
         })
         .join('')}
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edNewCup">＋ Add a cup</button></div>`;
@@ -1400,7 +1571,12 @@
       <div class="actions" style="margin-top:14px">${
         c.isNew
           ? '<button class="btn sm" data-act="edDelCup">Delete this cup</button>'
-          : '<button class="btn sm" data-act="edCupReset">Put the game\'s name and format back</button>'
+          : c.removed
+            ? '<button class="btn sm" data-act="edCupBack">Put this cup back in the world</button>'
+            : '<button class="btn sm" data-act="edCupReset">Put the game\'s name and format back</button>' +
+              (kind === 'opts' && c.group !== 'Continental'
+                ? ' <button class="btn sm" data-act="edCupOut">Take this cup out of the world</button>'
+                : '')
       }</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button></div>`;
   };
@@ -1620,7 +1796,7 @@
         slots,
       };
     }
-    const invites = FM.Intl.INVITES.map((o) => ({
+    const invites = FM.Intl.INVITES.filter((o) => ($('#ed-iinc-' + o.id) || {}).checked).map((o) => ({
       id: o.id,
       name: (v('iname-' + o.id) || '').trim(),
       host: v('ihost-' + o.id),
@@ -1669,10 +1845,13 @@
         )
         .join('')}
       <div class="ng-label">Invitational tournaments <span class="tiny dim">· one a season, in turn: a host and three guests</span></div>
-      ${cur.invites
+      ${FM.Intl.INVITES.map((o) => {
+        const have = cur.invites.find((x) => x.id === o.id);
+        return { ...o, ...(have || {}), kept: !!have };
+      })
         .map(
           (v) =>
-            `<div class="ng-names" style="margin-top:6px"><input type="text" id="ed-iname-${v.id}" maxlength="40" value="${esc(v.name)}"><select id="ed-ihost-${v.id}" style="max-width:150px">${nations
+            `<label class="tiny" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="ed-iinc-${v.id}" ${v.kept ? 'checked' : ''}> Played in this world</label><div class="ng-names" style="margin-top:4px"><input type="text" id="ed-iname-${v.id}" maxlength="40" value="${esc(v.name)}"><select id="ed-ihost-${v.id}" style="max-width:150px">${nations
               .map(
                 ([k, n]) => `<option value="${k}" ${v.host === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`,
               )
@@ -1917,7 +2096,7 @@
               return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonLeague" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.champion))} · ${esc(nameOf(e.runnerUp))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
             })
             .join('')}${domCups()
-            .filter((k) => k.nat === nat)
+            .filter((k) => k.nat === nat && !k.removed)
             .map((k) => {
               const e = (s.cups || {})[k.id];
               return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonCup" data-cup="${k.id}"><div class="row"><div class="grow"><div class="small b">${esc((compOf(k.id) || k).name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.winner))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
@@ -2125,6 +2304,7 @@
       league: leagueView,
       club: clubView,
       importp: importView,
+      library: libraryView,
       clubx: clubxView,
       squad: squadView,
       player: playerView,
@@ -2178,6 +2358,8 @@
       });
     if (ED.view === 'clubx') {
       for (const id of ['xcs', 'xcp', 'xce']) bind('ed-' + id, () => ($('#ed-crestprev').innerHTML = draftCrest()));
+      bind('ed-xkh', (v) => (($('#ed-kithome').innerHTML = shirtSvg(v)), ($('#ed-xkiton').checked = true)));
+      bind('ed-xka', (v) => (($('#ed-kitaway').innerHTML = shirtSvg(v)), ($('#ed-xkiton').checked = true)));
       for (const k of WD.FACILITIES) bind('ed-xf-' + k, (v) => ($('#ed-xf-' + k + 'v').textContent = v));
       for (const k of ['market', 'support', 'catchment'])
         bind('ed-xa-' + k, (v) => ($('#ed-xa-' + k + 'v').textContent = v));
