@@ -2571,6 +2571,46 @@
       feeders: { NG1: 2, MA1: 2, ZA1: 2 },
       legs: { f: 2 },
     },
+    // The second-tier cup of North America: the next places after the North American Champions Cup's
+    {
+      id: 'N2',
+      region: 'North America',
+      name: 'North American Shield',
+      short: 'NAM2',
+      prize: 2e6,
+      tier: 2,
+      feeders: { US1: 4, MX1: 4 },
+      legs: { f: 2 },
+    },
+    // Regional cups (tier 4, after the continental cups have taken their clubs): a small group stage then a final, for
+    // leagues with little or no room in the big European cups. Entrants are the next places down in each league.
+    {
+      id: 'AA',
+      region: 'Europe',
+      name: 'Adriatic and Aegean Cup',
+      short: 'AAC',
+      prize: 1.2e6,
+      tier: 4,
+      feeders: { RS1: 3, GR1: 2, TR1: 3 },
+    },
+    {
+      id: 'CT',
+      region: 'Europe',
+      name: 'Carpathian Cup',
+      short: 'CAR',
+      prize: 1.2e6,
+      tier: 4,
+      feeders: { CZ1: 4, PL1: 4, HU1: 4, AT1: 4 },
+    },
+    {
+      id: 'NR',
+      region: 'Europe',
+      name: 'Northern League Cup',
+      short: 'NLC',
+      prize: 1.2e6,
+      tier: 4,
+      feeders: { NO1: 4, DK1: 4 },
+    },
   ];
   // How each league splits clubs level on points, in order (the real rules): gd = goal difference, gf = goals
   // scored, wins = number of wins, h2h = head-to-head among the clubs level (points, then goal difference, then goals).
@@ -2610,6 +2650,10 @@
     AF: 5000,
     AX: 5000,
     NC: 8000,
+    N2: 5000,
+    AA: 4000,
+    CT: 4000,
+    NR: 4000,
   };
   // The headline numbers, counted from the data: the title screen, the world screen and the docs check
   // (tools/check-docs.mjs) all read these, so they can't drift apart

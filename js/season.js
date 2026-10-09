@@ -1618,18 +1618,16 @@
       if (poty) S.players[poty.id].cult += 5;
       const R = comp.rules;
       // Qualification relationship: this league's top n enter another competition next season
-      if (R.qualify) {
-        // a playoff league sends its champion and its Shield winner first, then the next best records
-        const champs = comp.torneos ? entry.comps[comp.id].champions.filter(Boolean).reverse() : [champId];
-        const order = kt ? [...new Set([...champs, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
-        qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(order.slice(0, R.qualify.n));
-      }
-      // second-tier continental cups: the next places down
+      // a playoff league sends its champion and its Shield winner first, then the next best records
+      const champs = comp.torneos ? entry.comps[comp.id].champions.filter(Boolean).reverse() : [champId];
+      const order = kt ? [...new Set([...champs, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
+      if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(order.slice(0, R.qualify.n));
+      // second-tier continental cups: the next places down (in that order, so a playoff champion is never in two cups)
       for (const cc of D.CONTINENTALS) {
         const k = cc.feeders && cc.feeders[comp.id];
         if (!k) continue;
         const from = FM.Cups.skipFor(comp.id, cc);
-        qualified[cc.id] = (qualified[cc.id] || []).concat(t.slice(from, from + k).map((r) => r.id));
+        qualified[cc.id] = (qualified[cc.id] || []).concat(order.slice(from, from + k));
       }
       if (R.relegate) t.slice(-R.relegate.n).forEach((r) => moves.push([r.id, comp.id, R.relegate.to]));
       if (R.promote) {

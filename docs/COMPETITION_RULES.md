@@ -151,9 +151,21 @@ All have groups of four then knockouts, as the game's scaled-down format.
 | AFC Champions League Elite | Single matches at one centralised venue | One match, neutral |
 | AFC Champions League Two | Two legs | One match, neutral |
 | CAF Champions League, CAF Confederation Cup | Two legs | Two legs |
-| CONCACAF Champions Cup | Two legs | Two legs |
+| CONCACAF Champions Cup, North American Shield | Two legs | Two legs |
+| Adriatic and Aegean Cup, Carpathian Cup, Northern League Cup (regional cups) | Two legs | One match, neutral |
 
 The Club World Cup is single matches at neutral grounds.
+
+### Second-tier and regional cups
+
+Entrants are the places just below the main cups in each league; a club is never in two continental cups.
+
+| Competition | Entrants |
+| --- | --- |
+| North American Shield | Places 5–8 of the American league and of Mexico's league (the Champions Cup takes the top four); 8 clubs in two groups |
+| Adriatic and Aegean Cup | Serbia 3, Greece 2, Turkey 3 (after their European places); 8 clubs in two groups |
+| Carpathian Cup | Czechia, Poland, Hungary and Austria 4 each; 16 clubs in four groups |
+| Northern League Cup | Norway 4, Denmark 4; 8 clubs in two groups |
 
 ## Squad registration (real leagues; `js/registration.js`)
 

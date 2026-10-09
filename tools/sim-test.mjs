@@ -326,8 +326,9 @@ for (let s = 0; s < SEASONS; s++) {
       FM.S.intro && FM.S.intro.n === 3,
       `season 1: the world introductions stopped at ${FM.S.intro && FM.S.intro.n} of 3`,
     );
-  // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it)
-  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy)) {
+  // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it); the
+  // army's club is made of conscripts, whatever their heritage
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy && !x.policy.military)) {
     const odd = W.squad(c.id).filter((p) => p.heritage !== c.policy.heritage);
     check(odd.length === 0, `season ${s + 1}: ${c.short} (${c.policy.label}-only) has ${odd.length} other players`);
   }

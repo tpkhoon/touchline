@@ -44,7 +44,7 @@
     } else {
       const places = R.qualify ? R.qualify.n : 0,
         cc = places && s.comps[R.qualify.to],
-        seconds = D.CONTINENTALS.filter((x) => x.feeders && x.feeders[comp.id]).sort(
+        seconds = D.CONTINENTALS.filter((x) => x.feeders && x.feeders[comp.id] && (x.tier || 1) < 4).sort(
           (a, b) => (a.tier || 1) - (b.tier || 1),
         ),
         second = seconds[0],

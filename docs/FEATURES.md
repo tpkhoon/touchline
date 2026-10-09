@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-337 features are playable in the web prototype today. Build = the build that added it.
+341 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -366,10 +366,14 @@ Every feature from the game design document, with what is playable in the protot
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
+| Competitions | North American Shield: the second-tier cup for North America (places 5–8 of the American and Mexican leagues; eight clubs, two groups, a final over two legs), so every confederation has a top and a second competition | Playtest round 11 |
+| Competitions | Adriatic and Aegean Cup: a regional cup for Serbia (3 clubs), Greece (2) and Turkey (3), the places below their European cups; a group stage then a final each season | Playtest round 11 |
+| Competitions | Carpathian Cup: a regional cup of sixteen clubs, four each from Czechia, Poland, Hungary and Austria, in four groups then knockouts | Playtest round 11 |
+| Competitions | Northern League Cup: a regional cup for Norway (4 clubs) and Denmark (4); a group stage then a final each season | Playtest round 11 |
 
 ## Yet to be added
 
-61 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+57 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -416,12 +420,8 @@ Design principle from here: don't make the game deeper by adding more screens �
 | World | Legacy screen for long saves: a "your football world" history of club rise and fall, league-structure changes (new leagues, mergers, a new continental competition), generational waves by nation, dynasties and collapses. It reads from the season archive, adds a timeline of structural changes and can be shared as a card. Already in: club season-by-season history. | Living world |
 | World | Dynasties, decline and surprise rises driven by club dynamics rather than match randomness: fan base, finances, infrastructure and ownership drift with results, so great clubs fade and small ones climb. Bankruptcies, surprise promotions and tactical trends feed the world news, and the champion-from-top-three rate stays inside the real 70–90% range. Already in: takeovers with causes and the 30-year stability test. | Living world |
 | Presentation | Newspaper and database look: front pages, match programmes, a transfer-site style market and scouting reports as a shared set of components that reskin existing screens. The media outlets already have voices; this is the visual layer, with the club-colour accent and readable at phone width. | Alpha 2 |
-| Competitions | North American Shield: a second-tier cup for North American clubs that miss the North American Champions Cup, with its own places from the Americas leagues, so every confederation has a top and a second competition (the European, Asian, African and South American Shields are in) | Living world |
 | Competitions | European Summer Cup: a summer qualifying cup (the structure of the Intertoto Cup) for the clubs that just miss Europe, whose winners take the last European Trophy places; runs in every modern save, with a rules switch to turn it off | Alpha 2 |
 | Competitions | European Holders' Cup: a European knockout cup (the structure of the Cup Winners' Cup) for each country's domestic cup winners, with the cup runner-up taking the place when one club wins both; runs in the modern game, with domestic cup winners no longer taking a European Shield place, and a rules switch to turn it off | Alpha 2 |
-| Competitions | Adriatic and Aegean Cup: a regional cup (the structure of the Balkan Cup) for Balkan clubs, a group stage and a final each season, built on one regional-cup framework shared with the Carpathian and Northern cups | Living world |
-| Competitions | Carpathian Cup: a regional cup (the structure of the Mitropa and Eastern European cups) for clubs from Eastern and Central Europe on the shared regional-cup framework, with its own entrants, calendar days and prize money | Living world |
-| Competitions | Northern League Cup: a Nordic club cup (the structure of the Royal League) for clubs from Norway, Denmark and neighbouring leagues, a group stage and a final over the winter break, on the shared regional-cup framework | Living world |
 | International | Continental Champions Trophy: a national-team tournament (the structure of the Confederations Cup) between the continental champions, the world champions and the host, played in the year before the World Cup; runs in the modern game, with a rules switch to turn it off | Alpha 2 |
 | Platform | Compile and test the native apps on Android and iOS devices; app icons and splash screens | Mobile readiness |
 | Match | Live passing network and heat map during the match | Beta |
