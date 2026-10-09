@@ -104,7 +104,7 @@ Six more top flights, each one division in the game: the **Singapore Premier Lea
 ## Asian rules beyond the squad list
 
 - **Japan's university route:** the J.League holds a two-round graduate draft each winter from a class of 22-year-old university players, in the order of last season's table with the weakest first; the AI picks as the clock reaches it, you pick on the Graduates board or leave it to your assistant.
-- **Korea's military service:** a Korean player is called up between 26 and 28 unless he has been exempted (a long international career helps, as the Asian Games and World Cup medals do). He is away for two seasons, his contract is extended to cover it and he comes back a point or two rusty.
+- **Korea's military service:** a Korean player is called up between 26 and 28 unless he has been exempted (a long international career helps, as the Asian Games and World Cup medals do). He serves two seasons, his contract is extended to cover it and he comes back a point or two rusty. The best go to the army's club, a K League side whose whole squad is conscripts on loan from their own clubs (up to 30, never fewer than three keepers); it signs nobody else and has no academy, and nobody pays the conscripts' wages.
 - **Gulf money:** Oil-Backed clubs of the Saudi Pro League pay well above the market in fee and wages for a famous name in his late twenties or thirties, one or two a window.
 
 ## Saudi Arabia and clubs with a signing policy
