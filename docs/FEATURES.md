@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-364 features are playable in the web prototype today. Build = the build that added it.
+365 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -376,6 +376,7 @@ Every feature from the game design document, with what is playable in the protot
 | International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
 | Editor | World editor: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
 | Editor | World editor players: a squad screen for each club and a screen for each player (name, nationality, position, foot, age, contract, the 14 attributes with the ability they make, set from an ability if you prefer, potential); made players are added to the generated squads, or replace the squad of any club given eleven or more | Playtest round 11 |
+| Editor | World editor, competitions: a league played once each or home and away, five tie-break orders, simulation tier and strength, play-offs for promotion (four clubs) or relegation, and a cup of your own for a nation that has none | Playtest round 11 |
 | Editor | World editor, international football: tournament names, the World Championship's places by part of the world, the year of the four it is played in, the invitationals' names and hosts, how each national team plays, and past tournament winners (the nation's titles, and the Trophy's invitations) | Playtest round 11 |
 | Editor | World editor, cup money and past cups: a prize fund for every cup, a domestic cup kept to the top one, two or three divisions, and the winner and runner-up of each domestic cup in a past season (counted in the club's honours) | Playtest round 11 |
 | Editor | World editor, the rest of the game: cups open to a format (rounds as one match, neutral or two legs; a continental cup's legs and one-venue knockouts), derbies and B teams, coaches and scouts (made for a club, they come with the job; made with no club, they are on offer in the staff market), national teams (name, colours, ranking points) and past seasons (champion, runner-up and third of each league, with a full table made to fit) | Playtest round 11 |

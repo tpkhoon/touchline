@@ -179,6 +179,54 @@ check(
   E.setNation('ENG', { name: 'Albion', short: 'ALB', colors: ['#112233', '#ffffff'], coef: 88 }).ok,
   'a national team edit was refused',
 );
+// competitions: league formats, a play-off pair, a cup of the definition's own
+const lg = (id) => def.leagues.find((l) => l.id === id);
+check(!E.setLeague('D3', { rules: { ...lg('D3').rules, legs: 3 } }).ok, 'a league played three times was accepted');
+check(
+  !E.setLeague('D3', { rules: { ...lg('D3').rules, tiebreak: ['luck'] } }).ok,
+  'a tie-breaker called luck was accepted',
+);
+check(
+  !E.setLeague('D3', { rules: { ...lg('D3').rules, promote: { to: 'D2', auto: 2, playoff: [4, 7] } } }).ok,
+  'a play-off that does not start below the places that go up was accepted',
+);
+check(
+  !E.setLeague('D2', { rules: { ...lg('D2').rules, relegate: { to: 'D3', n: 2, playoff: true } } }).ok,
+  'a relegation play-off was accepted when the league below holds no play-off place',
+);
+check(E.setLeague('ES2', { rules: { ...lg('ES2').rules, legs: 1 } }).ok, 'a league played once each was refused');
+check(
+  E.setLeague('DE1', { rules: { ...lg('DE1').rules, tiebreak: ['wins', 'gd', 'gf'] } }).ok,
+  'a tie-breaker order was refused',
+);
+check(
+  E.setLeague('D3', { rules: { ...lg('D3').rules, promote: { to: 'D2', auto: 2, tie: true } } }).ok,
+  'a promotion tie place was refused',
+);
+check(
+  E.setLeague('D2', { rules: { ...lg('D2').rules, relegate: { to: 'D3', n: 2, playoff: true } } }).ok,
+  'a relegation play-off was refused',
+);
+check(E.setLeague('URU1', { repBand: [60, 40] }).ok, 'a league strength was refused');
+check(
+  !E.addCup({ id: 'CUPXX', nat: 'ENG', name: 'Another English Cup', short: 'AEC' }).ok,
+  'a second cup for England was accepted',
+);
+check(!E.addCup({ id: 'FOO', nat: 'URU', name: 'Bad Id Cup', short: 'BIC' }).ok, 'a cup id without CUP was accepted');
+check(
+  !E.addCup({ id: 'CUPMAR', nat: 'MAR', name: 'Moroccan Cup', short: 'MC' }).ok,
+  'a cup for a nation with no simulated clubs was accepted',
+);
+check(
+  E.addCup({
+    id: 'CUPURU',
+    nat: 'URU',
+    name: 'Uruguayan Test Cup',
+    short: 'UTC',
+    format: { legs: [4], neutral: [2], prize: 2e6, tiers: 0 },
+  }).ok,
+  'a cup for Uruguay was refused',
+);
 // international football: bad settings are refused, good ones kept
 check(!E.setIntl({ cycle: 9 }).ok, 'a World Championship year of 9 was accepted');
 check(
@@ -339,7 +387,9 @@ check(
   S.comps.CL.clubs.length === 8 && S.comps.CL.groups.length === 2,
   `the South American cup has ${S.comps.CL.clubs.length} clubs in ${S.comps.CL.groups.length} groups with the new league's place`,
 );
-const n1 = S.comps.D1.clubs.length;
+const n1 = S.comps.D1.clubs.length,
+  d2n = S.comps.D2.clubs.length,
+  d3n = S.comps.D3.clubs.length;
 console.log(`D1 has ${n1} clubs`);
 {
   check(
@@ -380,6 +430,25 @@ console.log(`D1 has ${n1} clubs`);
     S.nteams.n_ARG.titles.WC >= 1 &&
       S.archive.some((e) => e.intl && e.intl.some((r) => r.id === 'WC' && r.winner === 'n_ARG')),
     'the past World Championship is not in the archive and the nations titles',
+  );
+  check(
+    S.comps.CUPURU &&
+      S.comps.CUPURU.name === 'Uruguayan Test Cup' &&
+      S.comps.CUPURU.clubs.length === 10 &&
+      S.comps.CUPURU.prize === 2e6,
+    'the definitions own cup is not in the world',
+  );
+  check(
+    S.comps.ES2.rules.legs === 1 && S.comps.DE1.rules.tiebreak.join() === 'wins,gd,gf',
+    'the league formats did not reach the world',
+  );
+  check(
+    S.comps.D3.rules.promote.tie && S.comps.D2.rules.relegate.playoff,
+    'the relegation play-off pair did not reach the world',
+  );
+  check(
+    S.comps.ES2.fixtures.length === S.comps.ES2.clubs.length - 1,
+    'a league played once each does not have a single round-robin',
   );
   check(S.comps.CUPENG.prize === 7e6 && S.comps.AF.prize === 6e6, 'the prize funds did not reach the world');
   check(
@@ -451,6 +520,21 @@ check(
   t && t.every((row) => row.p === (n1 - 1) * 2),
   `clubs played ${t && [...new Set(t.map((x) => x.p))].join('/')} games, not ${(n1 - 1) * 2}`,
 );
+check(
+  arch && arch.cups && arch.cups.CUPURU && arch.cups.CUPURU.winner && FM.S.comps.CUPURU.clubs.length === 10,
+  'the definitions own cup was not played',
+);
+{
+  const es2 = arch && arch.comps.ES2 && arch.comps.ES2.table;
+  check(
+    es2 && es2.every((r) => r.p === es2.length - 1),
+    'the league played once each did not play a single round-robin',
+  );
+  check(
+    FM.S.comps.D2.clubs.length === d2n && FM.S.comps.D3.clubs.length === d3n,
+    'the relegation play-off pair changed the sizes of its leagues',
+  );
+}
 check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n1} to ${FM.S.comps.D1.clubs.length})`);
 {
   const u = arch && arch.comps.URU1 && arch.comps.URU1.table;

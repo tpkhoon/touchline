@@ -164,8 +164,11 @@
   // (qf, sf, f: 1 or 2) and may play its knockouts at one central venue. Both live in the game's data, so a definition that
   // changes one goes into the patch and is in place before the world's calendar is made.
   const euroDef = (id) => (D.EURO_CUPS || []).find((c) => c.id === id);
-  WD.cupKind = (id) =>
-    D.DOMESTIC_CUPS.some((c) => c[0] === id) || euroDef(id)
+  // (def: a cup the definition itself adds is a domestic cup too)
+  WD.cupKind = (id, def) =>
+    D.DOMESTIC_CUPS.some((c) => c[0] === id) ||
+    euroDef(id) ||
+    ((def && def.competitions) || []).some((c) => c.id === id && c.isNew)
       ? 'opts'
       : D.CONTINENTALS.some((c) => c.id === id)
         ? 'cont'
@@ -188,8 +191,8 @@
     return null;
   };
   WD.formatOf = (id) => cupNow(id);
-  WD.validateFormat = function (id, f) {
-    const kind = WD.cupKind(id),
+  WD.validateFormat = function (id, f, def) {
+    const kind = WD.cupKind(id, def),
       at = `cup ${id}`,
       e = [];
     if (!kind) return [`${at}: the game has no such cup to give a format`];
@@ -324,7 +327,16 @@
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   // What a definition changes in the static data: { leagues: [...], clubs: [...], rivals: [...] }, empty when nothing
   WD.patchOf = function (def) {
-    const patch = { leagues: [], clubs: [], rivals: [], removeRivals: [], removed: [], cups: [], intl: null };
+    const patch = {
+      leagues: [],
+      clubs: [],
+      rivals: [],
+      removeRivals: [],
+      removed: [],
+      cups: [],
+      newCups: [],
+      intl: null,
+    };
     const known = staticClubs();
     const removed = new Set((def.removeClubs || []).map(codeOf).filter((code) => known.has(code)));
     patch.removed = [...removed];
@@ -408,6 +420,17 @@
         patch.removeRivals.push([x, y]);
     }
     for (const c of def.competitions || []) {
+      if (c.isNew) {
+        if (!WD.validateFormat(c.id, c.format || {}, def).length)
+          patch.newCups.push({
+            id: c.id,
+            nat: c.nat,
+            name: c.name,
+            short: c.short || c.id,
+            opts: JSON.parse(JSON.stringify(c.format || { legs: [], neutral: [2] })),
+          });
+        continue;
+      }
       if (!c.format || !WD.cupKind(c.id)) continue;
       if (!WD.validateFormat(c.id, c.format).length && !same(c.format, cupNow(c.id)))
         patch.cups.push({ id: c.id, kind: WD.cupKind(c.id), format: JSON.parse(JSON.stringify(c.format)) });
@@ -444,6 +467,7 @@
       (p.removed || []).length ||
       (p.removeRivals || []).length ||
       (p.cups || []).length ||
+      (p.newCups || []).length ||
       p.intl
     );
 
@@ -461,6 +485,7 @@
       rivals: D.RIVALS.map((r) => r.slice()),
       mix: new Set(Object.keys(D.NAT_MIX)),
       cups: D.DOMESTIC_CUPS.map((c) => JSON.stringify(c[4] || {})),
+      cupCount: D.DOMESTIC_CUPS.length,
       euro: (D.EURO_CUPS || []).map((c) => JSON.stringify(c.opts || {})),
       conts: D.CONTINENTALS.map((c) => ({
         legs: c.legs && JSON.stringify(c.legs),
@@ -515,6 +540,9 @@
       else D.RIVALS.push(r.slice());
     }
     if (patch.intl) applyIntl(patch.intl);
+    for (const c of patch.newCups || [])
+      if (!D.DOMESTIC_CUPS.some((x) => x[0] === c.id))
+        D.DOMESTIC_CUPS.push([c.id, c.nat, c.name, c.short, JSON.parse(JSON.stringify(c.opts))]);
     for (const c of patch.cups || []) {
       if (c.kind === 'cont') {
         const d = D.CONTINENTALS.find((x) => x.id === c.id);
@@ -557,6 +585,7 @@
         }
         I().CYCLE = o.c;
       }
+      D.DOMESTIC_CUPS.length = snap.cupCount;
       D.DOMESTIC_CUPS.forEach((c, i) => (c[4] = JSON.parse(snap.cups[i])));
       (D.EURO_CUPS || []).forEach((c, i) => ((c.opts = JSON.parse(snap.euro[i])), (c.prize = snap.euroPrize[i])));
       D.CONTINENTALS.forEach((c, i) => {
@@ -581,6 +610,51 @@
     WD._key = key;
     if (key) WD._undo = applyPatch(patch);
     if (FM.Guide && FM.Guide.reset) FM.Guide.reset();
+  };
+
+  // ---------- League formats ----------
+  // How a league is played: once each or home and away (rules.legs), how clubs level on points are split (rules.tiebreak), its
+  // simulation tier, and with the league above it the places that go up and down, the play-off for one more place (four clubs,
+  // the final over one match or two), or the relegation play-off against the club just above the drop.
+  WD.TIEBREAKS = [
+    [['gd', 'gf'], 'Goal difference, then goals scored'],
+    [['h2h', 'gd', 'gf'], 'Head-to-head, then goal difference'],
+    [['gd', 'gf', 'h2h'], 'Goal difference, goals scored, then head-to-head'],
+    [['wins', 'gd', 'gf'], 'Most wins, then goal difference'],
+    [['gf', 'gd'], 'Goals scored, then goal difference'],
+  ];
+  WD.validateLeagueRules = function (l, def) {
+    const e = [],
+      r = l.rules || {},
+      at = `league ${l.id}`;
+    if (r.legs != null && ![1, 2].includes(r.legs)) e.push(`${at}: matches are played once each or home and away`);
+    if (r.tiebreak != null) {
+      if (
+        !Array.isArray(r.tiebreak) ||
+        !r.tiebreak.length ||
+        !r.tiebreak.every((k) => ['h2h', 'wins', 'gd', 'gf'].includes(k))
+      )
+        e.push(`${at}: the tie-breakers are some of head-to-head, wins, goal difference and goals scored`);
+    }
+    const p = r.promote;
+    if (p) {
+      if (p.playoff != null) {
+        if (!(Array.isArray(p.playoff) && p.playoff[0] === p.auto + 1 && p.playoff[1] === p.auto + 4))
+          e.push(`${at}: the play-off is the four clubs just below the places that go up automatically`);
+        if (p.tie) e.push(`${at}: a promotion play-off and a relegation play-off cannot share a pair`);
+      }
+      if (p.finalLegs != null && ![1, 2].includes(p.finalLegs))
+        e.push(`${at}: the play-off final is one match or two legs`);
+      const n = def.clubs.filter((c) => c.league === l.id).length;
+      if (p.playoff && n && n < p.auto + 4)
+        e.push(`${at}: a league needs ${p.auto + 4} clubs for ${p.auto} places and a play-off`);
+    }
+    if (r.relegate && r.relegate.playoff) {
+      const lower = def.leagues.find((x) => x.rules && x.rules.promote && x.rules.promote.to === l.id);
+      if (!lower || !lower.rules.promote.tie)
+        e.push(`${at}: a relegation play-off needs the league below to hold its play-off place`);
+    }
+    return e;
   };
 
   // ---------- Validation ----------
@@ -767,7 +841,30 @@
         derby.add(id);
       }
     }
-    for (const c of def.competitions || []) if (c.format) errors.push(...WD.validateFormat(c.id, c.format));
+    for (const c of def.competitions || []) {
+      if (c.format) errors.push(...WD.validateFormat(c.id, c.format, def));
+      if (!c.isNew) continue;
+      const at = `cup ${c.id}`;
+      if (!/^CUP[A-Z0-9]{2,5}$/.test(c.id)) errors.push(`${at}: a new cup's id is CUP and 2–5 letters or digits`);
+      if (!String(c.name || '').trim()) errors.push(`${at}: needs a name`);
+      if (!D.NATIONS[c.nat]) errors.push(`${at}: needs a nation the game has`);
+      if (D.DOMESTIC_CUPS.some((x) => x[0] === c.id && x[1] !== c.nat))
+        errors.push(`${at}: the game already has a cup with that id`);
+      if (
+        D.DOMESTIC_CUPS.some((x) => x[1] === c.nat && x[0] !== c.id) ||
+        def.competitions.some((x) => x !== c && x.isNew && x.nat === c.nat)
+      )
+        errors.push(`${at}: that nation has a domestic cup already`);
+      const entrants = def.clubs.filter((k) => {
+        const lg = leagueInfo(k.league || (where.get(k.id) || {}).league);
+        return lg.nat === c.nat && (lg.sim || 'full') !== 'minimal';
+      }).length;
+      if (entrants < 8)
+        errors.push(
+          `${at}: a cup needs at least eight clubs in fully or lightly simulated leagues (the nation has ${entrants})`,
+        );
+    }
+    for (const l of def.leagues) errors.push(...WD.validateLeagueRules(l, def));
     errors.push(...WD.validateIntl(def.intl));
     const ROLES = [
       'Assistant Manager',
@@ -831,7 +928,7 @@
           errors.push(`season ${s.year} ${id}: the winner and the runner-up are one nation`);
       }
       for (const [id, c] of Object.entries(s.cups || {})) {
-        if (!D.DOMESTIC_CUPS.some((x) => x[0] === id))
+        if (!D.DOMESTIC_CUPS.some((x) => x[0] === id) && !(def.competitions || []).some((x) => x.id === id && x.isNew))
           errors.push(`season ${s.year}: "${id}" is not a domestic cup the game has`);
         if (!clubs.has(c.winner)) errors.push(`season ${s.year} ${id}: winner "${c.winner}" is not in the definition`);
         if (c.runnerUp && !clubs.has(c.runnerUp))
@@ -1202,8 +1299,14 @@
           errs = [];
         if (!next.name) errs.push('A league needs a name');
         if (next.repBand && !(next.repBand[0] >= next.repBand[1])) errs.push('repBand must be [high, low]');
-        if (errs.length) return result(errs);
+        if (next.sim && !SIMS.includes(next.sim)) errs.push('sim must be full, light or minimal');
+        const was = { ...l };
         Object.assign(l, next);
+        errs.push(...WD.validateLeagueRules(l, def));
+        if (errs.length) {
+          Object.assign(l, was);
+          return result(errs);
+        }
         return result([]);
       },
       player: (id) => def.players.find((p) => p.id === id),
@@ -1289,11 +1392,34 @@
         const cur = (def.competitions || []).find((c) => c.id === id);
         const next = { id, type: 'cup', nat: null, ...(cur || {}), ...patch };
         if (next.format) {
-          const bad = WD.validateFormat(id, next.format);
+          const bad = WD.validateFormat(id, next.format, def);
           if (bad.length) return result(bad);
         }
         if (cur) Object.assign(cur, next);
         else (def.competitions = def.competitions || []).push(next);
+        return result([]);
+      },
+      // a cup of the definition's own for a nation (its id: CUP and letters); removed again with removeCup
+      addCup(c) {
+        const next = {
+          type: 'cup',
+          isNew: true,
+          format: { legs: [], neutral: [2], prize: 3e6, tiers: 0 },
+          ...c,
+        };
+        (def.competitions = def.competitions || []).push(next);
+        const errs = WD.validate(def, S).errors.filter((e) => e.startsWith(`cup ${next.id}:`));
+        if (errs.length) {
+          def.competitions.pop();
+          return result(errs);
+        }
+        return result([]);
+      },
+      removeCup(id) {
+        const c = (def.competitions || []).find((x) => x.id === id && x.isNew);
+        if (!c) return result([`No cup ${id} of the definition's own`]);
+        def.competitions.splice(def.competitions.indexOf(c), 1);
+        for (const s of def.history.seasons) if (s.cups) delete s.cups[id];
         return result([]);
       },
       // derbies: a club has one; setting one takes the old ones of both clubs out (a pair of the game's own is listed for removal)

@@ -1685,7 +1685,10 @@
     comp.clubs.forEach((id) => (comp.table[id] = blankRow(comp.deductions?.[id] ? -comp.deductions[id] : 0)));
     comp.deductions = {};
     let rounds = R.conferences ? W.conferenceRounds(comp) : R.zones ? W.zoneRounds(comp) : W.roundRobin(comp.clubs);
-    if (R.rounds) rounds = rounds.slice(0, R.rounds); // formats shorter than a double round-robin
+    if (R.rounds)
+      rounds = rounds.slice(0, R.rounds); // formats shorter than a double round-robin
+    else if (R.legs === 1 && !R.zones && !R.conferences && !R.split)
+      rounds = rounds.slice(0, Math.ceil(rounds.length / 2)); // once each
     comp.groupOf = null;
     comp.groups = null;
     comp.split = null;
