@@ -398,7 +398,7 @@
     const wageBill = U.sum(W.userStaff(), (x) => x.wage);
     return `<div class="small muted" style="margin:0 2px 10px">Staff ability matters: coaches develop players, physios speed recovery, analysts spot bargains, directors negotiate. Staff wages: <b>${U.money(wageBill)}/wk</b>.</div>
       ${roles.map(([role, r]) => card(FM.Staff.get(r.key), role, r.key)).join('')}
-      <div class="sec"><div class="h3">Scouts</div><span class="dim small">${s.user.scouts.length}/5</span></div>
+      <div class="sec"><div class="h3">Scouts</div><span class="dim small">${s.user.scouts.length}/${W.maxScouts()}</span></div>
       ${s.user.scouts.map((id) => card(s.staff[id], 'Scout', 'scout')).join('')}`;
   };
   UI.acts.staffMarket = (d) => {

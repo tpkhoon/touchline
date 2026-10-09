@@ -2037,6 +2037,7 @@
     FM.Stories.worldEvents(entry);
     FM.Contracts.newSeason();
     FM.Youth.newSeason(); // youth sides re-sorted, B teams restocked
+    FM.Asia.newSeason(); // Korea's military service
     Sea.ageStaff();
     Sea.trimRetired();
     W.leagues().forEach(W.setupSeasonFixtures);

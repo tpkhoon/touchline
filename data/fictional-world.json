@@ -13149,6 +13149,1482 @@
    "short": "AKH",
    "nick": "Blues",
    "founded": 1999
+  },
+  "LCS": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Kalir Rovers",
+    "LCS",
+    "Kalir",
+    "#00AEEF",
+    "#FFFFFF",
+    "oil",
+    46,
+    "Tampines Arena",
+    6000
+   ],
+   "short": "KALI",
+   "nick": "Sky Blues",
+   "founded": 1976
+  },
+  "TAM": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Bisris International",
+    "TAM",
+    "Bisris",
+    "#FFD100",
+    "#E30613",
+    "historic",
+    44,
+    "Chopak Stadium",
+    5000
+   ],
+   "short": "BIS",
+   "nick": "Yellows",
+   "founded": 1928
+  },
+  "ANS": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Kalir FC",
+    "ANS",
+    "Kalir",
+    "#F26522",
+    "#FFFFFF",
+    "youth",
+    42,
+    "Hanwang Arena",
+    2700
+   ],
+   "short": "KAF",
+   "nick": "Oranges",
+   "founded": 2008
+  },
+  "GEY": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Kalhun FC",
+    "GEY",
+    "Kalhun",
+    "#D2232A",
+    "#006A4E",
+    "fan",
+    40,
+    "Chopines Stadium",
+    3000
+   ],
+   "short": "KAN",
+   "nick": "Reds",
+   "founded": 1989
+  },
+  "BKS": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Lion Choris",
+    "BKS",
+    "Choris",
+    "#E30613",
+    "#000000",
+    "historic",
+    38,
+    "Tuasang Arena",
+    3900
+   ],
+   "short": "LON",
+   "nick": "Reds",
+   "founded": 1928
+  },
+  "HOG": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Kalris United",
+    "HOG",
+    "Kalris",
+    "#F26522",
+    "#0033A0",
+    "fan",
+    38,
+    "Tuaskang Arena",
+    3500
+   ],
+   "short": "KAS",
+   "nick": "Oranges",
+   "founded": 1977
+  },
+  "TPU": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Clahun International",
+    "TPU",
+    "Clahun",
+    "#ED1C24",
+    "#FFFFFF",
+    "historic",
+    37,
+    "Yisang Arena",
+    2700
+   ],
+   "short": "CLA",
+   "nick": "Reds",
+   "founded": 1918
+  },
+  "WAR": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Sengkang Warriors",
+    "WAR",
+    "Sengkang",
+    "#1F3A93",
+    "#FFFFFF",
+    "fan",
+    36,
+    "Yisbawang Stadium",
+    4000
+   ],
+   "short": "SEN",
+   "nick": "Eagles",
+   "founded": 1920
+  },
+  "WWL": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Lion Sengkang",
+    "WWL",
+    "Sengkang",
+    "#F26522",
+    "#000000",
+    "fan",
+    35,
+    "Bisngol Stadium",
+    4300
+   ],
+   "short": "LSE",
+   "nick": "Stags",
+   "founded": 1977
+  },
+  "YLI": {
+   "league": "SG1",
+   "nat": "SGP",
+   "row": [
+    "Semok Rovers",
+    "YLI",
+    "Kalir",
+    "#E30613",
+    "#FFFFFF",
+    "youth",
+    34,
+    "Pasok Arena",
+    6000
+   ],
+   "short": "SEM",
+   "nick": "Reds",
+   "founded": 1952
+  },
+  "JDT": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Sungaiar FC",
+    "JDT",
+    "Sungaiar",
+    "#3FA9F5",
+    "#FFFFFF",
+    "oil",
+    60,
+    "Kualamas Arena",
+    40000
+   ],
+   "short": "SUR",
+   "nick": "Sky Blues",
+   "founded": 1950
+  },
+  "SEL": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Tanjungsera City",
+    "SEL",
+    "Tanjungsera",
+    "#E30613",
+    "#FFD100",
+    "giant",
+    52,
+    "Kualadap Arena",
+    25000
+   ],
+   "short": "TAN",
+   "nick": "Deer",
+   "founded": 1933
+  },
+  "TRG": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Bukitsera City",
+    "TRG",
+    "Bukitsera",
+    "#000000",
+    "#FFD100",
+    "historic",
+    52,
+    "Bukitsera Provincial Stadium",
+    50000
+   ],
+   "short": "BUK",
+   "nick": "Blacks",
+   "founded": 1940
+  },
+  "KED": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Bentonglama City",
+    "KED",
+    "Bentonglama",
+    "#00A651",
+    "#E30613",
+    "historic",
+    50,
+    "Telukang Sports Park",
+    32000
+   ],
+   "short": "BMA",
+   "nick": "Panthers",
+   "founded": 1927
+  },
+  "KLC": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Bentongdap United",
+    "KLC",
+    "Bentongdap",
+    "#7BAFD4",
+    "#FFFFFF",
+    "oil",
+    50,
+    "Bentongdap Provincial Stadium",
+    18000
+   ],
+   "short": "BEP",
+   "nick": "Sky Blues",
+   "founded": 1986
+  },
+  "SAB": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Telukbaru City",
+    "SAB",
+    "Telukbaru",
+    "#0066CC",
+    "#FFD100",
+    "fan",
+    48,
+    "Telukbaru Provincial Stadium",
+    35000
+   ],
+   "short": "TEL",
+   "nick": "Turtles",
+   "founded": 1943
+  },
+  "PRK": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Alortan FC",
+    "PRK",
+    "Alortan",
+    "#FFD100",
+    "#000000",
+    "historic",
+    48,
+    "Alortan Provincial Stadium",
+    42000
+   ],
+   "short": "AAN",
+   "nick": "Deer",
+   "founded": 1922
+  },
+  "PAH": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Pulaudap Athletic",
+    "PAH",
+    "Pulaudap",
+    "#FFD100",
+    "#000000",
+    "historic",
+    47,
+    "Kualaar Arena",
+    40000
+   ],
+   "short": "PUL",
+   "nick": "Yellows",
+   "founded": 1906
+  },
+  "PNG": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Sri Telukrak",
+    "PNG",
+    "Telukrak",
+    "#FFD100",
+    "#1E90FF",
+    "fan",
+    46,
+    "Pasirsera Sports Park",
+    20000
+   ],
+   "short": "SRI",
+   "nick": "Yellows",
+   "founded": 1941
+  },
+  "NSE": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Kluanrak FC",
+    "NSE",
+    "Kluanrak",
+    "#E30613",
+    "#FFD100",
+    "fan",
+    45,
+    "Pulaumas Stadium",
+    45000
+   ],
+   "short": "KLU",
+   "nick": "Deer",
+   "founded": 1979
+  },
+  "MEL": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Lahadrak Athletic",
+    "MEL",
+    "Lahadrak",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Lahadrak Provincial Stadium",
+    40000
+   ],
+   "short": "LAH",
+   "nick": "Reds",
+   "founded": 1948
+  },
+  "KEL": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Lahadgelap United",
+    "KEL",
+    "Lahadgelap",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    43,
+    "Lahadbaru Stadium",
+    22000
+   ],
+   "short": "LAP",
+   "nick": "Reds",
+   "founded": 1958
+  },
+  "PDR": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Bentongdap Athletic",
+    "PDR",
+    "Bentongdap",
+    "#1F3A93",
+    "#FFFFFF",
+    "selling",
+    40,
+    "Kualatan Arena",
+    18000
+   ],
+   "short": "BAP",
+   "nick": "Blues",
+   "founded": 2008
+  },
+  "KCH": {
+   "league": "MY1",
+   "nat": "MYS",
+   "row": [
+    "Lahadting United",
+    "KCH",
+    "Lahadting",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Alorsera Sports Park",
+    40000
+   ],
+   "short": "LAG",
+   "nick": "Deer",
+   "founded": 1988
+  },
+  "VTL": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Quangiang FC",
+    "VTL",
+    "Quangiang",
+    "#E30613",
+    "#FFFFFF",
+    "youth",
+    52,
+    "Tuyeninh Arena",
+    22500
+   ],
+   "short": "QUG",
+   "nick": "Falcons",
+   "founded": 1979
+  },
+  "HNI": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Thep Quangiang",
+    "HNI",
+    "Quangiang",
+    "#FFD100",
+    "#1F3A93",
+    "oil",
+    50,
+    "Quangiang Provincial Stadium",
+    22500
+   ],
+   "short": "THP",
+   "nick": "Yellows",
+   "founded": 1967
+  },
+  "CAH": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Bactri FC",
+    "CAH",
+    "Quangiang",
+    "#E30613",
+    "#FFD100",
+    "oil",
+    50,
+    "Longan Stadium",
+    22500
+   ],
+   "short": "BRI",
+   "nick": "Tigers",
+   "founded": 1988
+  },
+  "NDF": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Vinhninh Athletic",
+    "NDF",
+    "Vinhninh",
+    "#FFFFFF",
+    "#003DA5",
+    "historic",
+    49,
+    "Haitay Stadium",
+    30000
+   ],
+   "short": "VIN",
+   "nick": "Whites",
+   "founded": 1930
+  },
+  "SLN": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Thaiduong Athletic",
+    "SLN",
+    "Thaiduong",
+    "#FFD100",
+    "#000000",
+    "historic",
+    48,
+    "Yentinh Arena",
+    12000
+   ],
+   "short": "THA",
+   "nick": "Yellows",
+   "founded": 1913
+  },
+  "HGL": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Thaiphong FC",
+    "HGL",
+    "Thaiphong",
+    "#0A8F3C",
+    "#FFFFFF",
+    "youth",
+    47,
+    "Haidinh Arena",
+    12000
+   ],
+   "short": "THG",
+   "nick": "Falcons",
+   "founded": 1928
+  },
+  "BBD": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Haduong FC",
+    "BBD",
+    "Haduong",
+    "#0066CC",
+    "#FFFFFF",
+    "selling",
+    46,
+    "Haian Stadium",
+    18250
+   ],
+   "short": "HNG",
+   "nick": "Blues",
+   "founded": 1956
+  },
+  "HPH": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Song Vinhdinh",
+    "HPH",
+    "Vinhdinh",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    45,
+    "Bacnghe Sports Park",
+    28000
+   ],
+   "short": "SON",
+   "nick": "Reds",
+   "founded": 1904
+  },
+  "THH": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Thep Tuyenphong",
+    "THH",
+    "Tuyenphong",
+    "#E30613",
+    "#FFD100",
+    "fan",
+    44,
+    "Tuyenphong Provincial Stadium",
+    14000
+   ],
+   "short": "TEP",
+   "nick": "Reds",
+   "founded": 1949
+  },
+  "HTH": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Lamtinh City",
+    "HTH",
+    "Lamtinh",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    43,
+    "Vinhtay Arena",
+    28000
+   ],
+   "short": "LNH",
+   "nick": "Yellows",
+   "founded": 1933
+  },
+  "HCM": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Longiang City",
+    "HCM",
+    "Longiang",
+    "#E30613",
+    "#FFD100",
+    "fan",
+    43,
+    "Thailien Arena",
+    25000
+   ],
+   "short": "LOG",
+   "nick": "Dragons",
+   "founded": 1978
+  },
+  "DAN": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Thep Haitay",
+    "DAN",
+    "Haitay",
+    "#F26522",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Haitay Provincial Stadium",
+    20000
+   ],
+   "short": "THH",
+   "nick": "Dragons",
+   "founded": 1913
+  },
+  "BDH": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Bacbang United",
+    "BDH",
+    "Bacbang",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    41,
+    "Bacbang Provincial Stadium",
+    20000
+   ],
+   "short": "BAG",
+   "nick": "Yellows",
+   "founded": 1934
+  },
+  "KHH": {
+   "league": "VN1",
+   "nat": "VIE",
+   "row": [
+    "Song Bacdinh",
+    "KHH",
+    "Bacdinh",
+    "#1E90FF",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Songhe Arena",
+    20000
+   ],
+   "short": "SOB",
+   "nick": "Dragons",
+   "founded": 1937
+  },
+  "PSB": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Tangukasar Putra",
+    "PSB",
+    "Tangukasar",
+    "#0033A0",
+    "#FFFFFF",
+    "giant",
+    54,
+    "Tangukasar Provincial Stadium",
+    38000
+   ],
+   "short": "TAP",
+   "nick": "Blues",
+   "founded": 1930
+  },
+  "PSJ": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Purkasar FC",
+    "PSJ",
+    "Purkasar",
+    "#F26522",
+    "#FFFFFF",
+    "giant",
+    54,
+    "Purkasar Provincial Stadium",
+    77000
+   ],
+   "short": "PUR",
+   "nick": "Oranges",
+   "founded": 1919
+  },
+  "PSY": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Persi Cirenang",
+    "PSY",
+    "Cirenang",
+    "#00A651",
+    "#FFFFFF",
+    "giant",
+    52,
+    "Solara Sports Park",
+    46000
+   ],
+   "short": "PER",
+   "nick": "Greens",
+   "founded": 1899
+  },
+  "ARE": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "PS Gianri",
+    "ARE",
+    "Gianri",
+    "#0033A0",
+    "#FFFFFF",
+    "fan",
+    52,
+    "Gianri Provincial Stadium",
+    42000
+   ],
+   "short": "PSS",
+   "nick": "Blues",
+   "founded": 1955
+  },
+  "BAU": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Persi Surara",
+    "BAU",
+    "Surara",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    50,
+    "Surara Provincial Stadium",
+    25000
+   ],
+   "short": "PEI",
+   "nick": "Tigers",
+   "founded": 1956
+  },
+  "PSM": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Pekanbaya United",
+    "PSM",
+    "Pekanbaya",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    50,
+    "Suraor Stadium",
+    15000
+   ],
+   "short": "PEK",
+   "nick": "Reds",
+   "founded": 1937
+  },
+  "BOR": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Surakasar FC",
+    "BOR",
+    "Surakasar",
+    "#F26522",
+    "#003DA5",
+    "oil",
+    49,
+    "Bogori Stadium",
+    16000
+   ],
+   "short": "SUF",
+   "nick": "Oranges",
+   "founded": 1925
+  },
+  "PSI": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Bhakti Surari",
+    "PSI",
+    "Surari",
+    "#003DA5",
+    "#FFFFFF",
+    "historic",
+    46,
+    "Surari Provincial Stadium",
+    21000
+   ],
+   "short": "BHA",
+   "nick": "Eagles",
+   "founded": 1931
+  },
+  "MAD": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Bhakti Jemrang",
+    "MAD",
+    "Jemrang",
+    "#E30613",
+    "#FFFFFF",
+    "selling",
+    46,
+    "Kedidung Sports Park",
+    15000
+   ],
+   "short": "BHI",
+   "nick": "Eagles",
+   "founded": 1980
+  },
+  "PKE": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Bhakti Cirekasar",
+    "PKE",
+    "Cirekasar",
+    "#5B2C83",
+    "#FFFFFF",
+    "fan",
+    45,
+    "Giankasar Sports Park",
+    20000
+   ],
+   "short": "BTI",
+   "nick": "Crimsons",
+   "founded": 1932
+  },
+  "BHY": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Persi Purkasar",
+    "BHY",
+    "Purkasar",
+    "#FFD100",
+    "#0033A0",
+    "selling",
+    44,
+    "Pekankasar Arena",
+    5000
+   ],
+   "short": "PSI",
+   "nick": "Crocodiles",
+   "founded": 1954
+  },
+  "SOL": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Persi Tanguwok",
+    "SOL",
+    "Tanguwok",
+    "#E30613",
+    "#000000",
+    "historic",
+    44,
+    "Pekanang Stadium",
+    20000
+   ],
+   "short": "PET",
+   "nick": "Tigers",
+   "founded": 1912
+  },
+  "PST": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "PS Jemkar",
+    "PST",
+    "Jemkar",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Pekanor Sports Park",
+    30000
+   ],
+   "short": "PPS",
+   "nick": "Tigers",
+   "founded": 1972
+  },
+  "DEW": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Jemkar Putra",
+    "DEW",
+    "Jemkar",
+    "#1F3A93",
+    "#E30613",
+    "oil",
+    47,
+    "Bogorang Stadium",
+    30000
+   ],
+   "short": "JEM",
+   "nick": "Blues",
+   "founded": 1934
+  },
+  "RNS": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "PS Pamabaya",
+    "RNS",
+    "Purkasar",
+    "#FFD100",
+    "#003DA5",
+    "oil",
+    43,
+    "Tanguor Arena",
+    30000
+   ],
+   "short": "PSP",
+   "nick": "Eagles",
+   "founded": 1943
+  },
+  "PSS": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Bhakti Makamur",
+    "PSS",
+    "Makamur",
+    "#00A651",
+    "#FFFFFF",
+    "fan",
+    43,
+    "Surara Sports Park",
+    31000
+   ],
+   "short": "BHM",
+   "nick": "Greens",
+   "founded": 1970
+  },
+  "PKB": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "PS Purmur",
+    "PKB",
+    "Purmur",
+    "#F26522",
+    "#FFFFFF",
+    "selling",
+    41,
+    "Pamawok Stadium",
+    30000
+   ],
+   "short": "PPU",
+   "nick": "Panthers",
+   "founded": 1961
+  },
+  "BPU": {
+   "league": "ID1",
+   "nat": "IDN",
+   "row": [
+    "Bogoang United",
+    "BPU",
+    "Bogoang",
+    "#FFD100",
+    "#000000",
+    "fan",
+    41,
+    "Bankasar Arena",
+    15000
+   ],
+   "short": "BOG",
+   "nick": "Yellows",
+   "founded": 1990
+  },
+  "KYI": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Tacailao FC",
+    "KYI",
+    "Tacailao",
+    "#E30613",
+    "#000000",
+    "youth",
+    40,
+    "Pasikit Arena",
+    7000
+   ],
+   "short": "TAC",
+   "nick": "Warriors",
+   "founded": 2008
+  },
+  "UCF": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Tacailao Warriors",
+    "UCF",
+    "Tacailao",
+    "#FFFFFF",
+    "#003DA5",
+    "oil",
+    39,
+    "Lagnga Sports Park",
+    7000
+   ],
+   "short": "TAO",
+   "nick": "Whites",
+   "founded": 1982
+  },
+  "SLG": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Olonilao Warriors",
+    "SLG",
+    "Olonilao",
+    "#1E90FF",
+    "#FFFFFF",
+    "selling",
+    37,
+    "Olonilao Provincial Stadium",
+    3000
+   ],
+   "short": "OAO",
+   "nick": "Sky Blues",
+   "founded": 1927
+  },
+  "LMS": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Tagukit Eagles",
+    "LMS",
+    "Tagukit",
+    "#E30613",
+    "#FFD100",
+    "selling",
+    36,
+    "Pambuan Sports Park",
+    12000
+   ],
+   "short": "TAG",
+   "nick": "Reds",
+   "founded": 2008
+  },
+  "DHC": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Pamnga Warriors",
+    "DHC",
+    "Pamnga",
+    "#FFD100",
+    "#000000",
+    "fan",
+    36,
+    "Olonlo Arena",
+    15000
+   ],
+   "short": "PAM",
+   "nick": "Yellows",
+   "founded": 1934
+  },
+  "DAV": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Iloipangan FC",
+    "DAV",
+    "Iloipangan",
+    "#E30613",
+    "#003DA5",
+    "fan",
+    36,
+    "Cabunga Stadium",
+    6000
+   ],
+   "short": "ILO",
+   "nick": "Eagles",
+   "founded": 1952
+  },
+  "MDG": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Tagukit FC",
+    "MDG",
+    "Tagukit",
+    "#FFD100",
+    "#000000",
+    "fan",
+    35,
+    "Bagapag Sports Park",
+    12000
+   ],
+   "short": "TAT",
+   "nick": "Yellows",
+   "founded": 1942
+  },
+  "MKH": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Calaon United",
+    "MKH",
+    "Tagukit",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    34,
+    "Davapag Stadium",
+    12000
+   ],
+   "short": "CALA",
+   "nick": "Sharks",
+   "founded": 1953
+  },
+  "AZK": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Tacayan United",
+    "AZK",
+    "Tagukit",
+    "#0038A8",
+    "#CE1126",
+    "youth",
+    33,
+    "Tagukit Provincial Stadium",
+    12000
+   ],
+   "short": "TAU",
+   "nick": "Sparks",
+   "founded": 1931
+  },
+  "MEN": {
+   "league": "PH1",
+   "nat": "PHI",
+   "row": [
+    "Bulabuan United",
+    "MEN",
+    "Tagukit",
+    "#5B2C83",
+    "#FFFFFF",
+    "fan",
+    33,
+    "Bulalo Stadium",
+    12000
+   ],
+   "short": "BUU",
+   "nick": "Crimsons",
+   "founded": 1922
+  },
+  "MSD": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Ladefontein Works",
+    "MSD",
+    "Ladefontein",
+    "#FFD100",
+    "#003DA5",
+    "oil",
+    62,
+    "Volula Stadium",
+    51762
+   ],
+   "short": "LAD",
+   "nick": "Workmen",
+   "founded": 1950
+  },
+  "KCI": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Nelstad Stars",
+    "KCI",
+    "Nelstad",
+    "#FFD100",
+    "#000000",
+    "giant",
+    60,
+    "Marabela Stadium",
+    94736
+   ],
+   "short": "NEL",
+   "nick": "Yellows",
+   "founded": 1903
+  },
+  "OPI": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Nelstad Chiefs",
+    "OPI",
+    "Nelstad",
+    "#000000",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Sasolberg Stadium",
+    40000
+   ],
+   "short": "NCH",
+   "nick": "Blacks",
+   "founded": 1939
+  },
+  "SSU": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Ladefontein United",
+    "SSU",
+    "Ladefontein",
+    "#003DA5",
+    "#FFFFFF",
+    "oil",
+    52,
+    "Pongrus Stadium",
+    28900
+   ],
+   "short": "LAU",
+   "nick": "Blues",
+   "founded": 1942
+  },
+  "CTC": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Krurus Celtic Rovers",
+    "CTC",
+    "Krurus",
+    "#7BAFD4",
+    "#FFFFFF",
+    "oil",
+    50,
+    "Vredula Stadium",
+    55000
+   ],
+   "short": "KRU",
+   "nick": "Swallows",
+   "founded": 1969
+  },
+  "STB": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Sibula Arrows",
+    "STB",
+    "Sibula",
+    "#800020",
+    "#FFD100",
+    "youth",
+    50,
+    "Kwadal Stadium",
+    16000
+   ],
+   "short": "SIB",
+   "nick": "Swallows",
+   "founded": 1958
+  },
+  "AMA": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Lower Thabstad City",
+    "AMA",
+    "Thabstad",
+    "#00A651",
+    "#FFFFFF",
+    "historic",
+    49,
+    "Ulunvlei Park",
+    54000
+   ],
+   "short": "THD",
+   "nick": "Greens",
+   "founded": 1920
+  },
+  "GLA": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Lower Thabstad FC",
+    "GLA",
+    "Thabstad",
+    "#FFD100",
+    "#00A651",
+    "fan",
+    46,
+    "Thabstad Sports Complex",
+    12000
+   ],
+   "short": "THF",
+   "nick": "Yellows",
+   "founded": 1921
+  },
+  "RAM": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Ladula Stars",
+    "RAM",
+    "Thabstad",
+    "#5B2C83",
+    "#FFD100",
+    "oil",
+    44,
+    "Nelstad Park",
+    12000
+   ],
+   "short": "LAS",
+   "nick": "Maroons",
+   "founded": 1968
+  },
+  "TSA": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Sasolbela United",
+    "TSA",
+    "Sasolbela",
+    "#FFFFFF",
+    "#003DA5",
+    "fan",
+    44,
+    "Randberg Stadium",
+    40000
+   ],
+   "short": "SAA",
+   "nick": "Whites",
+   "founded": 1957
+  },
+  "RIB": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "New Marabkop United",
+    "RIB",
+    "Marabkop",
+    "#FFFFFF",
+    "#003DA5",
+    "fan",
+    43,
+    "Marabkop Oval",
+    20000
+   ],
+   "short": "MOP",
+   "nick": "Whites",
+   "founded": 1927
+  },
+  "SEK": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Thabrus St. Luke's",
+    "SEK",
+    "Thabrus",
+    "#FFFFFF",
+    "#E30613",
+    "fan",
+    43,
+    "Thabrus Sports Complex",
+    41733
+   ],
+   "short": "THS",
+   "nick": "Whites",
+   "founded": 1971
+  },
+  "CHP": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Vredebela Celtic Rovers",
+    "CHP",
+    "Vredebela",
+    "#003DA5",
+    "#FFFFFF",
+    "selling",
+    42,
+    "Nelsula Stadium",
+    48000
+   ],
+   "short": "VRE",
+   "nick": "Blues",
+   "founded": 1963
+  },
+  "POL": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Thabrus FC",
+    "POL",
+    "Thabrus",
+    "#FFFFFF",
+    "#000000",
+    "fan",
+    41,
+    "Thabrus Oval",
+    41733
+   ],
+   "short": "TUS",
+   "nick": "Swallows",
+   "founded": 1930
+  },
+  "MSW": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Upper Bettstad City",
+    "MSW",
+    "Bettstad",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Ladula Park",
+    24000
+   ],
+   "short": "BEC",
+   "nick": "Reds",
+   "founded": 1914
+  },
+  "MRG": {
+   "league": "ZA1",
+   "nat": "RSA",
+   "row": [
+    "Ulunbela Corinthians",
+    "MRG",
+    "Ulunbela",
+    "#FFD100",
+    "#003DA5",
+    "fan",
+    40,
+    "Ulunbela Sports Complex",
+    41733
+   ],
+   "short": "ULU",
+   "nick": "Lions",
+   "founded": 1980
   }
  },
  "leagues": {
@@ -13403,6 +14879,42 @@
    "tier": 2,
    "name": "Harmony Digital First Division",
    "short": "SA2"
+  },
+  "SG1": {
+   "nat": "SGP",
+   "tier": 1,
+   "name": "Singaporean Super League",
+   "short": "SG1"
+  },
+  "MY1": {
+   "nat": "MYS",
+   "tier": 1,
+   "name": "Malaysian Super League",
+   "short": "MY1"
+  },
+  "VN1": {
+   "nat": "VIE",
+   "tier": 1,
+   "name": "Lac Hong Premier League",
+   "short": "VN1"
+  },
+  "ID1": {
+   "nat": "IDN",
+   "tier": 1,
+   "name": "Cendrawasih Group Premier League",
+   "short": "ID1"
+  },
+  "PH1": {
+   "nat": "PHI",
+   "tier": 1,
+   "name": "Mindanao Capital Premier League",
+   "short": "PH1"
+  },
+  "ZA1": {
+   "nat": "RSA",
+   "tier": 1,
+   "name": "South African Premier Soccer League",
+   "short": "ZA1"
   }
  },
  "continentals": {
@@ -13527,6 +15039,36 @@
    "nat": "KSA",
    "name": "Saudi King's Trophy",
    "short": "KSAC"
+  },
+  "CUPSGP": {
+   "nat": "SGP",
+   "name": "Singaporean Cup",
+   "short": "SGPC"
+  },
+  "CUPMYS": {
+   "nat": "MYS",
+   "name": "Malaysian Cup",
+   "short": "MYSC"
+  },
+  "CUPVIE": {
+   "nat": "VIE",
+   "name": "Vietnamese Cup",
+   "short": "VIEC"
+  },
+  "CUPIDN": {
+   "nat": "IDN",
+   "name": "Indonesian Cup",
+   "short": "IDNC"
+  },
+  "CUPPHI": {
+   "nat": "PHI",
+   "name": "Filipino Cup",
+   "short": "PHIC"
+  },
+  "CUPRSA": {
+   "nat": "RSA",
+   "name": "South African National Cup",
+   "short": "RSAC"
   }
  },
  "rivals": [
@@ -14239,6 +15781,56 @@
    "WEH",
    "ITT",
    "Bahayma–Yanik Derby"
+  ],
+  [
+   "LCS",
+   "TAM",
+   "Kalir–Bisris Derby"
+  ],
+  [
+   "SEL",
+   "JDT",
+   "Tanjungsera–Sungaiar Derby"
+  ],
+  [
+   "VTL",
+   "HNI",
+   "Quangiang Derby"
+  ],
+  [
+   "CAH",
+   "HNI",
+   "Quangiang Derby"
+  ],
+  [
+   "PSJ",
+   "PSB",
+   "Purkasar–Tangukasar Derby"
+  ],
+  [
+   "PSY",
+   "ARE",
+   "Cirenang–Gianri Derby"
+  ],
+  [
+   "KCI",
+   "OPI",
+   "Nelstad Derby"
+  ],
+  [
+   "MSD",
+   "KCI",
+   "Ladefontein–Nelstad Derby"
+  ],
+  [
+   "KYI",
+   "UCF",
+   "Tacailao Derby"
+  ],
+  [
+   "AMA",
+   "GLA",
+   "Thabstad Derby"
   ]
  ],
  "nations": {
@@ -14322,7 +15914,12 @@
   "UZB": "Uzbekistan",
   "CHN": "China",
   "NZL": "New Zealand",
-  "IRQ": "Iraq"
+  "IRQ": "Iraq",
+  "SGP": "Singapore",
+  "MYS": "Malaysia",
+  "VIE": "Vietnam",
+  "IDN": "Indonesia",
+  "PHI": "Philippines"
  },
  "format": "touchline-names",
  "version": 1,

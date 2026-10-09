@@ -93,6 +93,20 @@ Germany (Bundesliga and 2. Bundesliga) and France (Ligue 1): the club above the 
 non-promoted club of the division below over two legs. Italy, Spain and England have none in the real top flights;
 Serie B's play-out has nowhere to send the loser (there is no Serie C in the game).
 
+## Southeast Asia and South Africa
+
+Six more top flights, each one division in the game: the **Singapore Premier League** (10 clubs), **Malaysia Super League** (14), **V.League 1** (14), **Liga 1 Indonesia** (18), **Philippines Football League** (10) and South Africa's **Premier Soccer League** (16), every club playing every other twice.
+
+- **Continental places:** Malaysia, Vietnam, Indonesia and Singapore each send their champion to the Asian Champions Cup; those and the Philippines also fill the Asian Shield with one or two more. The Premier Soccer League sends two to the African Champions Cup and two to the African Shield.
+- **Foreign players:** Malaysia and Vietnam 3 + 1 Asian + 1 ASEAN, Indonesia 6 + 1 + 1, Singapore 4 + 1 Asian, the Philippines 5, South Africa 7.
+- **Domestic cups:** a knockout with the final at a neutral ground for each nation (Singapore Cup, Malaysia Cup, Vietnam Cup, Indonesia Cup, Philippines Cup, Nedbank Cup under invented names).
+
+## Asian rules beyond the squad list
+
+- **Japan's university route:** the J.League holds a two-round graduate draft each winter from a class of 22-year-old university players, in the order of last season's table with the weakest first; the AI picks as the clock reaches it, you pick on the Graduates board or leave it to your assistant.
+- **Korea's military service:** a Korean player is called up between 26 and 28 unless he has been exempted (a long international career helps, as the Asian Games and World Cup medals do). He is away for two seasons, his contract is extended to cover it and he comes back a point or two rusty.
+- **Gulf money:** Oil-Backed clubs of the Saudi Pro League pay well above the market in fee and wages for a famous name in his late twenties or thirties, one or two a window.
+
 ## Saudi Arabia and clubs with a signing policy
 
 - **Saudi Pro League (18 clubs):** the top three of the First Division go up and the bottom three go down; the top six
@@ -147,8 +161,8 @@ The Club World Cup is single matches at neutral grounds.
   homegrown players (three seasons at the nation's clubs between 15 and 21); Italy also limits non-EU signings from
   abroad to 2 a season.
 - **Spain:** 3 non-EU players. **France:** 4 non-EU. In both, players from Cotonou-agreement states (Nigeria, Ghana,
-  Senegal and Ivory Coast in the game) and Euro-Med partners (Morocco) count as EU. **Turkey:** 14 foreign registered. **Mexico:** 9. **Thailand:** 7.
-  **Korea:** 6. **Argentina:** 6 registered, 5 in a matchday squad. **MLS:** 8 international slots. **A-League:** 5 visa
+  Senegal and Ivory Coast in the game) and Euro-Med partners (Morocco) count as EU. **Turkey:** 14 foreign registered. **Mexico:** 9. **Thailand:** 5 + 1 Asian + 1 ASEAN.
+  **Korea:** 3 + 1 Asian + 1 ASEAN (the AFC's "3 + 1": the extra place can only be filled by a player from an Asian nation, the ASEAN place by one from Thailand, Malaysia, Vietnam, Indonesia, the Philippines or Singapore). **Argentina:** 6 registered, 5 in a matchday squad. **MLS:** 8 international slots. **A-League:** 5 visa
   players. **Brazil:** 9 foreign in a matchday squad. **J1:** 5 in a matchday squad (Thai players exempt).
 - Leagues with a matchday cap also keep the squad within five of it, so a team can always field a legal side.
 

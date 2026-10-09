@@ -44,7 +44,7 @@ const TIERS = [
     '2 · Human layer',
     {
       Scouting: ['scouting.js'],
-      'People and morale': ['people.js', 'matchday.js', 'mstyle.js'],
+      'People and morale': ['people.js', 'matchday.js', 'mstyle.js', 'asia.js'],
       'Board and fans': ['board.js'],
       'Stories and media': ['stories.js', 'media.js'],
       'Advice and analytics': ['advice.js', 'analytics.js'],

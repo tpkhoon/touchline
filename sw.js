@@ -33,6 +33,7 @@ const FILES = [
   './js/contracts.js',
   './js/people.js',
   './js/mstyle.js',
+  './js/asia.js',
   './js/scouting.js',
   './js/transfers.js',
   './js/registration.js',

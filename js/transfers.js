@@ -766,6 +766,37 @@
       }
     }
 
+    // Gulf money: an Oil-Backed club in the Saudi Pro League buys a famous name in his late twenties or thirties, paying
+    // well over the going rate in fee and wages. The league's rule on foreign places still decides if he can be registered,
+    // and the clubs he leaves in Europe and South America feel it. One or two a window.
+    if (Math.random() < 0.55 * k) {
+      const gulf = full.filter((c) => c.identity === 'oil' && c.comp === 'SA1' && !W.isUserSide(c.id));
+      const stars = gulf.length
+        ? Object.values(S.players).filter((p) => {
+            if (!p.clubId || p.loan || p.ca < 76 || W.age(p) < 27 || W.age(p) > 35 || W.ownPlayer(p) || p.pre)
+              return false;
+            const sc = S.clubs[p.clubId];
+            return sc.sim === 'full' && sc.comp !== 'SA1' && !W.isUserSide(sc.id) && !T.isSettled(p);
+          })
+        : [];
+      if (stars.length) {
+        const star = U.wpick(stars, (p) => Math.exp((p.ca - 76) / 6)),
+          price = U.roundMoney(T.askPrice(star) * 1.3);
+        const buyers = gulf.filter((c) => price <= c.budget + Math.max(0, c.balance) * 0.5 && T.canRegister(c, star));
+        if (buyers.length) {
+          const to = U.wpick(buyers, (c) => c.rep),
+            from = S.clubs[star.clubId];
+          T.execute(star, to.id, price, Math.round(T.wageDemand(star, to) * 2), { marquee: true, gulf: true });
+          FM.News.add({
+            type: 'transfer',
+            title: `Gulf money: ${W.short(star)} to ${to.name}`,
+            body: `${to.name}'s owners pay ${U.money(price)} and a wage far above the European market for ${W.name(star)} (${from.name}), at ${W.age(star)}. ${from.name} lose a ${star.ca}-rated player; the Saudi Pro League's foreign places are filling with famous names.`,
+            clubId: to.id,
+          });
+        }
+      }
+    }
+
     T.aiLoans(full, share);
     if (FM.Season.baseRound() >= 10) T.winterExits(full, share);
   };

@@ -3,7 +3,10 @@
 // problem report carries (nothing leaves the device unless the player shares a report).
 (function () {
   const FM = window.FM,
-    UI = FM.UI;
+    UI = FM.UI,
+    W = FM.W,
+    D = FM.D,
+    esc = FM.U.esc;
   const get = (k) => {
     try {
       return localStorage.getItem(k);
@@ -169,6 +172,48 @@
       'The <b>Club</b> tab has finances, training, the youth teams and the board. The game saves itself after every matchday and when you leave the app. Under Settings you can export a backup, switch save slots, and replay this tutorial.',
     ],
   ];
+  // The world primer: the league you are in, how promotion and the places in Europe work, the cups and the foreign-player rules,
+  // read from the world you are playing, so a new manager in an unfamiliar country knows what the season is about
+  UI.primer = function () {
+    const S = FM.S,
+      c = W.userClub();
+    if (!c || !S.comps[c.comp]) return UI.toast('Take a club first');
+    const L = S.comps[c.comp],
+      r = L.rules || {},
+      nat = D.NATIONS[c.nat];
+    const cont = (id) => (D.CONTINENTALS || []).find((x) => x.id === id);
+    const rows = [];
+    rows.push(
+      `<b>${esc(L.name)}</b> is tier ${L.tier} of ${esc(nat ? nat.name : '')}'s football: ${L.clubs.length} clubs, each played twice${r.splits || r.torneos ? ' (with its own format: see the league table)' : ''}.`,
+    );
+    const pr = [];
+    if (r.promote)
+      pr.push(
+        `The top ${r.promote.auto} go up${r.promote.playoff ? ` and a play-off decides ${r.promote.playoff > 1 ? 'more' : 'one more'}` : ''}.`,
+      );
+    else if (L.tier > 1) pr.push('The champions go up.');
+    if (r.relegate) pr.push(`The bottom ${r.relegate.n} go down.`);
+    else pr.push('Nobody is relegated from here.');
+    if (r.qualify) {
+      const ct = cont(r.qualify.to);
+      pr.push(`The top ${r.qualify.n} qualify for the ${ct ? esc(ct.name) : 'continental competition'}.`);
+    }
+    rows.push(pr.join(' '));
+    const cups = Object.values(S.comps).filter((x) => x.type === 'cup' && x.nat === c.nat);
+    if (cups.length)
+      rows.push(
+        `Domestic cup${cups.length > 1 ? 's' : ''}: ${cups.map((x) => esc(x.name)).join(', ')}. A cup run is money and reputation, and sometimes the only trophy you can win.`,
+      );
+    rows.push(esc(FM.Reg.describe(c.comp).join(' ')));
+    rows.push(
+      'The board judges you on its objective for the season; the fans on style and results; the players on playing time. Everything on <b>Home</b> comes back to those three.',
+    );
+    UI.sheet(
+      `<div style="line-height:1.6">${rows.map((t) => `<p style="margin:0 0 10px">${t}</p>`).join('')}</div><div class="tiny dim">Skippable, and it is always under Help.</div>`,
+      { title: '🗺️ How this world works' },
+    );
+  };
+  UI.acts.primer = () => UI.primer();
   let tutStep = 0;
   const tutHTML = (i) => {
     const [, body] = TUT[i];
@@ -270,7 +315,7 @@
       .join('\n');
   UI.helpExtras = () => {
     const n = readLog().length;
-    return `<button class="btn sm block" style="margin-top:8px" data-act="tutReplay">🎓 Replay the tutorial</button>${n ? `<div class="row small" style="margin-top:10px"><span class="grow dim">${n} error${n > 1 ? 's' : ''} logged on this device; the problem report includes them</span><button class="btn sm" data-act="errLogClear">Clear</button></div>` : ''}`;
+    return `<button class="btn sm block" style="margin-top:8px" data-act="primer">🗺️ How this world works</button><button class="btn sm block" style="margin-top:8px" data-act="tutReplay">🎓 Replay the tutorial</button>${n ? `<div class="row small" style="margin-top:10px"><span class="grow dim">${n} error${n > 1 ? 's' : ''} logged on this device; the problem report includes them</span><button class="btn sm" data-act="errLogClear">Clear</button></div>` : ''}`;
   };
   UI.acts.errLogClear = () => {
     set(LOG, '[]');

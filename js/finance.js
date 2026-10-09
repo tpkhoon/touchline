@@ -25,6 +25,12 @@
     ARG: { tv: 0.7, com: 0.8, gate: 1, sell: 0.8 },
     USA: { tv: 0.9, com: 1.2, gate: 1.05 }, // salary-capped, commercially strong
     MEX: { tv: 1, com: 1, gate: 0.95 },
+    SGP: { tv: 0.6, com: 0.9, gate: 0.8, sell: 0.5 },
+    MYS: { tv: 0.7, com: 0.9, gate: 0.9 },
+    VIE: { tv: 0.7, com: 0.9, gate: 0.9 },
+    IDN: { tv: 0.75, com: 0.85, gate: 1.0 },
+    PHI: { tv: 0.5, com: 0.7, gate: 0.7 },
+    RSA: { tv: 0.8, com: 1.0, gate: 0.8, sell: 0.7 },
     KSA: { tv: 1.3, com: 1.6, gate: 0.6, sell: 0.35 }, // state and owner money, small crowds, clubs buy more than they sell
   };
   // What the club's identity does to where its money comes from: an oil-backed club's sponsors pay over the odds, a fan-owned
@@ -100,7 +106,8 @@
 
   // ---------- Wages against revenue ----------
   F.wageBill = (c) =>
-    U.sum(W.squad(c.id), (p) => p.wage * (p.loan && p.clubId === c.id ? p.loan.share : 1)) * FM.D.WAGE_WEEKS;
+    U.sum(W.squad(c.id), (p) => (p.service ? 0 : p.wage) * (p.loan && p.clubId === c.id ? p.loan.share : 1)) *
+    FM.D.WAGE_WEEKS;
   F.wageRatio = (c) => F.wageBill(c) / Math.max(1, F.revenue(c));
   F.LIMIT = { cut: 0.7, freeze: 0.85, interest: 0.01 };
   // Weekly: interest on debt for everyone; for your club, the board steps in as the wage bill outgrows revenue

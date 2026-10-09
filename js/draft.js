@@ -13,7 +13,11 @@
   const POSW = { GK: 1, FB: 2, CB: 3, WB: 1, DM: 2, CM: 3, WM: 1, AM: 2, W: 2, ST: 3 };
   const posPool = Object.entries(POSW).flatMap(([k, n]) => Array(n).fill(k));
 
-  Dr.leagues = () => W.leagues().filter((c) => c.rules.mls && c.rules.mls.draftRounds);
+  Dr.leagues = () =>
+    W.leagues().filter((c) => (c.rules.mls && c.rules.mls.draftRounds) || (c.rules.uni && c.rules.uni.draftRounds));
+  // Japan's university route: graduates of the university leagues are signed straight into the J.League (no Americans' college draft)
+  Dr.isUni = (compId) => !!(S().comps[compId] && S().comps[compId].rules.uni);
+  Dr.word = (compId) => (Dr.isUni(compId) ? 'graduate draft' : 'draft');
   Dr.current = () => (S().draft && !S().draft.done ? S().draft : null);
 
   // A club's strength of need: fewer players at a position, and the better a prospect, the keener the pick
@@ -55,10 +59,17 @@
     const out = [];
     for (let i = 0; i < n; i++) {
       // the top of the class is much better than the bottom
-      const q = i / n,
-        ca = Math.round(U.clamp(U.gauss(54 - q * 14, 3), 28, 66)),
-        age = U.randi(20, 22);
-      const nat = U.chance(0.82) ? comp.nat : U.pick(['MEX', 'CAN', 'BRA', 'ARG', 'COL', 'ENG', 'GHA', 'NGA', 'FRA']);
+      const uni = !!comp.rules.uni,
+        q = i / n,
+        ca = Math.round(U.clamp(U.gauss((uni ? 57 : 54) - q * (uni ? 12 : 14), 3), 28, 68)),
+        age = uni ? 22 : U.randi(20, 22);
+      const nat = uni
+        ? U.chance(0.97)
+          ? comp.nat
+          : 'KOR'
+        : U.chance(0.82)
+          ? comp.nat
+          : U.pick(['MEX', 'CAN', 'BRA', 'ARG', 'COL', 'ENG', 'GHA', 'NGA', 'FRA']);
       const p = W.genPlayer({
         nat: D.NATIONS[nat] ? nat : comp.nat,
         pos: U.pick(posPool),
@@ -67,6 +78,7 @@
         pa: W.potentialFor(ca, age) + U.randi(0, 6),
       });
       p.draftYear = S().year;
+      if (uni) p.uni = true;
       out.push(p);
     }
     return out.sort((a, b) => b.pa + b.ca - (a.pa + a.ca));
@@ -74,7 +86,7 @@
 
   // Open a draft for a league (after the new season's squads are set); AI clubs pick until your turn
   Dr.start = function (comp, entry) {
-    const R = comp.rules.mls.draftRounds,
+    const R = (comp.rules.mls || comp.rules.uni).draftRounds,
       first = Dr.order(comp, entry),
       order = [];
     for (let r = 0; r < R; r++) first.forEach((id) => order.push(id));

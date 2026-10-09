@@ -23,6 +23,7 @@
     "test:import": "node tools/import-history.mjs --test",
     "test:dbimport": "node tools/dbimport.mjs --test",
     "test:tactics": "node tools/tactics.mjs",
+    "test:asia": "node tools/asia.mjs",
     "test:longrun": "node tools/longrun.mjs --check",
     "sysmap": "node tools/sysmap.mjs --write docs/SYSTEMS.md",
     "import:history": "node tools/import-history.mjs",

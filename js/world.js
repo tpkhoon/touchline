@@ -261,7 +261,7 @@
     const fit = W.fitAt(p, slotType, slot, role);
     return W.calcCA(p, slotType) * (0.62 + 0.38 * fit) * (0.8 + 0.2 * (p.fitness / 100)) * (0.95 + p.morale / 1000);
   };
-  W.available = (p) => !p.inj && !p.susp && !p.retired;
+  W.available = (p) => !p.inj && !p.susp && !p.retired && !p.service;
   // Selection weight for match fitness: fresh players are preferred, tired ones rested
   W.fitnessPick = (p) => {
     const f = p.fitness;
@@ -2422,6 +2422,73 @@
       });
   };
 
+  // Thirty seasons of league champions, runners-up and domestic cup winners before the save begins, so the archive, the club pages
+  // and the honours cards have a past. A club wins in proportion to its standing (and the weight of its history), a champion tends
+  // to win again (a dynasty), and a club cannot win before it was founded; the champions it produces are the clubs the world's own
+  // ceilings say could have been champions.
+  W.seedHistory = function (years = 30) {
+    const S = FM.S;
+    if (S.archive.length) return 0;
+    const clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim !== 'nation' && !c.parent);
+    const weight = (c, y) => {
+      if (c.founded && c.founded > y) return 0;
+      const hist =
+        { giant: 1.8, historic: 1.5, oil: 0.9, fallen: 1.4, fan: 0.8, youth: 0.9, selling: 0.9 }[c.identity] || 1;
+      return Math.exp((c.rep - 55) / 7) * hist;
+    };
+    const prev = {};
+    const cups = Object.values(S.comps).filter((x) => x.type === 'cup' && x.nat);
+    const out = [];
+    for (let i = years; i >= 1; i--) {
+      const year = S.year - i,
+        entry = {
+          year,
+          label: `${year}/${String(year + 1).slice(2)}`,
+          comps: {},
+          cups: {},
+          promoted: [],
+          relegated: [],
+          upsets: [],
+          transfers: [],
+          user: null,
+          seeded: true,
+        };
+      for (const comp of W.leagues()) {
+        const pool = clubs.filter((c) => c.comp === comp.id);
+        if (pool.length < 2) continue;
+        const w = (c) => weight(c, year) * (prev[comp.id] === c.id ? 2.4 : 1);
+        const champ = U.wpick(pool, w) || pool[0];
+        const second = U.wpick(
+          pool.filter((c) => c.id !== champ.id),
+          w,
+        );
+        prev[comp.id] = champ.id;
+        champ.titles = champ.titles || {};
+        champ.titles[comp.id] = (champ.titles[comp.id] || 0) + 1;
+        entry.comps[comp.id] = {
+          name: comp.name,
+          sim: comp.sim || 'full',
+          nat: comp.nat,
+          champion: champ.id,
+          runnerUp: second.id,
+        };
+      }
+      for (const cup of cups) {
+        const pool = clubs.filter((c) => c.nat === cup.nat);
+        if (pool.length < 2) continue;
+        // a cup is kinder to the small: the weight is flattened
+        const w = (c) => Math.sqrt(weight(c, year)) + 0.2;
+        const win = U.wpick(pool, w);
+        entry.cups[cup.id] = { name: cup.name, winner: win.id };
+        win.titles = win.titles || {};
+        win.titles[cup.id] = (win.titles[cup.id] || 0) + 1;
+      }
+      out.push(entry);
+    }
+    S.archive = out;
+    return out.length;
+  };
+
   // ---------------- Compact save format ----------------
   // Players are ~80% of a save. Attributes, hidden attributes, season stats, career spells and history are
   // stored as arrays, common keys are shortened, defaults are dropped, and derived fields (ability, value,
@@ -2595,6 +2662,10 @@
   };
 
   W.userClub = () => FM.S.clubs[FM.S.user.clubId];
+  // Lower-league realism: a part-time club (the fourth tier and below, or a tiny club) trains in the evenings, has no scouting
+  // network to speak of (two scouts at most) and pays what a community club can
+  W.partTime = (c) => !!c && c.sim !== 'nation' && ((FM.S.comps[c.comp] && FM.S.comps[c.comp].tier >= 4) || c.rep < 28);
+  W.maxScouts = () => (W.partTime(W.userClub()) ? 2 : 5);
   W.isUser = (clubId) => FM.S.user && FM.S.user.clubId === clubId;
   W.isUserNation = (id) => !!(FM.S.user && FM.S.user.nation && FM.S.user.nation === id);
   W.isMine = (id) => W.isUser(id) || W.isUserNation(id);

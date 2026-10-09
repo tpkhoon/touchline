@@ -55,6 +55,10 @@
     KOR: { never: true },
     THA: { never: true },
     NGA: { never: true },
+    SGP: { never: true },
+    MYS: { never: true },
+    VIE: { never: true },
+    IDN: { never: true },
     GHA: { never: true },
     SEN: { never: true },
     CIV: { never: true },
@@ -1557,8 +1561,8 @@
   FM.D.CLIMATE = {
     wet: ['ENG', 'SCO', 'WAL', 'IRL', 'NED', 'BEL', 'NOR', 'DEN', 'GER'],
     cold: ['NOR', 'DEN', 'POL', 'CZE', 'AUT', 'SUI', 'SRB', 'GER', 'KOR', 'SCO', 'USA', 'HUN'],
-    warm: ['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'MAR', 'ARG', 'URU', 'USA', 'JPN', 'KOR', 'FRA', 'AUS', 'KSA'],
-    tropical: ['BRA', 'THA', 'NGA', 'MEX', 'COL', 'GHA', 'CIV', 'SEN'],
+    warm: ['ESP', 'POR', 'ITA', 'GRE', 'TUR', 'MAR', 'ARG', 'URU', 'USA', 'JPN', 'KOR', 'FRA', 'AUS', 'KSA', 'RSA'],
+    tropical: ['BRA', 'THA', 'NGA', 'MEX', 'COL', 'GHA', 'CIV', 'SEN', 'SGP', 'MYS', 'VIE', 'IDN', 'PHI'],
   };
 
   FM.D.SEASON_START = 2026;
@@ -2085,7 +2089,8 @@
       sim: 'light',
       clubs: 'CLUBS_JP1',
       repBand: [64, 53],
-      rules: { qualify: { to: 'AC', n: 4 } },
+      // university route: graduates of the universities are signed through a two-round graduate draft each winter
+      rules: { qualify: { to: 'AC', n: 4 }, uni: { draftRounds: 2 } },
     },
     {
       id: 'MX1',
@@ -2412,6 +2417,72 @@
       repBand: [47, 40],
       rules: { promote: { to: 'SA1', auto: 3 } },
     },
+    {
+      id: 'SG1',
+      nat: 'SGP',
+      name: 'Singaporean Super League',
+      short: 'SG1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_SG1',
+      repBand: [46, 34],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'MY1',
+      nat: 'MYS',
+      name: 'Malaysian Super League',
+      short: 'MY1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_MY1',
+      repBand: [60, 40],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'VN1',
+      nat: 'VIE',
+      name: 'Lac Hong Premier League',
+      short: 'VN1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_VN1',
+      repBand: [52, 40],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'ID1',
+      nat: 'IDN',
+      name: 'Cendrawasih Group Premier League',
+      short: 'ID1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_ID1',
+      repBand: [54, 40],
+      rules: { qualify: { to: 'AC', n: 1 } },
+    },
+    {
+      id: 'PH1',
+      nat: 'PHI',
+      name: 'Mindanao Capital Premier League',
+      short: 'PH1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_PH1',
+      repBand: [40, 30],
+      rules: {},
+    },
+    {
+      id: 'ZA1',
+      nat: 'RSA',
+      name: 'South African Premier Soccer League',
+      short: 'ZA1',
+      tier: 1,
+      sim: 'minimal',
+      clubs: 'CLUBS_ZA1',
+      repBand: [62, 40],
+      rules: { qualify: { to: 'AF', n: 2 } },
+    },
   ];
   FM.D.CONTINENTALS = [
     { id: 'CC', region: 'Europe', name: 'European Champions Cup', short: 'EUR1', prize: 15e6 },
@@ -2485,7 +2556,7 @@
       short: 'ASI2',
       prize: 2e6,
       tier: 2,
-      feeders: { JP1: 2, KR1: 2, TH1: 2, AU1: 2 },
+      feeders: { JP1: 2, KR1: 2, TH1: 2, AU1: 2, MY1: 2, VN1: 2, ID1: 2, SG1: 1, PH1: 1 },
     },
     {
       id: 'AX',
@@ -2494,7 +2565,7 @@
       short: 'AFR2',
       prize: 1.5e6,
       tier: 2,
-      feeders: { NG1: 2, MA1: 2 },
+      feeders: { NG1: 2, MA1: 2, ZA1: 2 },
       legs: { f: 2 },
     },
   ];
@@ -2567,6 +2638,12 @@
     ['CUPUSA', 'USA', 'American Liberty Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
     ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2] }],
     ['CUPKSA', 'KSA', "Saudi King's Trophy", 'KSAC', { neutral: [2] }],
+    ['CUPSGP', 'SGP', 'Singaporean Cup', 'SGPC', { neutral: [2] }],
+    ['CUPMYS', 'MYS', 'Malaysian Cup', 'MYSC', { neutral: [2] }],
+    ['CUPVIE', 'VIE', 'Vietnamese Cup', 'VIEC', { neutral: [2] }],
+    ['CUPIDN', 'IDN', 'Indonesian Cup', 'IDNC', { neutral: [2] }],
+    ['CUPPHI', 'PHI', 'Filipino Cup', 'PHIC', { neutral: [2] }],
+    ['CUPRSA', 'RSA', 'South African National Cup', 'RSAC', { neutral: [2] }],
   ];
   // Club World Cup: last season's continental finalists (winners only from Africa and North America)
   // [competition, 0 = winner / 1 = runner-up], in seed order
@@ -2902,6 +2979,12 @@
       COL: 1,
       URU: 1,
     },
+    SG1: { SGP: 58, JPN: 10, KOR: 6, BRA: 6, SRB: 4, MYS: 6, AUS: 4, IRL: 2, NGA: 2, THA: 2 },
+    MY1: { MYS: 64, BRA: 8, ARG: 4, AUS: 4, JPN: 4, KOR: 4, SRB: 3, NGA: 2, ESP: 3, THA: 4 },
+    VN1: { VIE: 78, BRA: 8, JPN: 4, KOR: 3, NGA: 2, SRB: 2, ESP: 1, THA: 2 },
+    ID1: { IDN: 62, BRA: 8, KOR: 6, JPN: 6, ESP: 3, ARG: 3, SRB: 3, NED: 3, NGA: 2, AUS: 2, THA: 2 },
+    PH1: { PHI: 52, JPN: 10, KOR: 8, BRA: 7, ENG: 6, AUS: 5, SRB: 3, NGA: 2, USA: 5, THA: 2 },
+    ZA1: { RSA: 80, BRA: 4, NGA: 3, GHA: 3, SEN: 2, MAR: 2, ESP: 1, POR: 2, ENG: 1, ARG: 2 },
     SA2: { KSA: 72, EGY: 5, TUN: 4, MAR: 4, BRA: 3, ALG: 3, NGA: 2, SEN: 2, SRB: 1, CIV: 1, ARG: 1, POR: 1, ESP: 1 },
   });
 

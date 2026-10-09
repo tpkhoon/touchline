@@ -70,9 +70,15 @@
     JP1: { matchday: 5, exempt: ['THA'] },
     AR1: { foreign: 6, matchday: 5 },
     MX1: { foreign: 9 },
-    KR1: { foreign: 6 },
-    TH1: { foreign: 7 },
+    KR1: { foreign: 3, asian: 1, asean: 1 }, // the AFC's 3 + 1, with a place for an ASEAN player
+    TH1: { foreign: 5, asian: 1, asean: 1 },
     TR1: { foreign: 14 },
+    MY1: { foreign: 3, asian: 1, asean: 1 },
+    VN1: { foreign: 3, asian: 1, asean: 1 },
+    ID1: { foreign: 6, asian: 1, asean: 1 },
+    SG1: { foreign: 4, asian: 1 },
+    PH1: { foreign: 5 },
+    ZA1: { foreign: 7 },
     SA1: { foreign: 10 }, // ten foreign players on the squad list
     SA2: { foreign: 4 },
   };
@@ -95,7 +101,11 @@
         `At most ${r.nonEU} non-EU players${r.quasi ? ' (players from Cotonou-agreement and Euro-Med partner countries count as EU)' : ''}.`,
       );
     if (r.nonEUSign) out.push(`No more than ${r.nonEUSign} non-EU signings from abroad in a season.`);
-    if (r.foreign)
+    if (r.foreign && (r.asian || r.asean))
+      out.push(
+        `At most ${r.foreign + (r.asian || 0) + (r.asean || 0)} foreign players on the books: ${r.foreign} of any nationality${r.asian ? `, one more place only an Asian player can fill (the AFC's 3 + 1)` : ''}${r.asean ? ', and one more for a player from an ASEAN nation (Thailand, Malaysia, Vietnam, Indonesia, the Philippines, Singapore)' : ''}.`,
+      );
+    else if (r.foreign)
       out.push(`At most ${r.foreign} ${id === 'US1' ? 'international slots' : 'foreign players'} on the books.`);
     if (r.matchday) out.push(`No more than ${r.matchday} foreign players in a matchday squad.`);
     if (r.mls)
@@ -116,6 +126,27 @@
     return !(r && r.quasi && (R.COTONOU.has(nat) || R.EUROMED.has(nat)));
   };
   R.nonEU = (p, club) => R.nonEUNat(p.nat, club);
+  // Asia: the AFC's foreign-player places are "3 + 1": three of any nationality and one more that only an Asian player can fill; some
+  // leagues add an ASEAN place on top. Modelled as nested groups: all foreigners, those who are not Asian, those who are not ASEAN.
+  R.ASEAN = new Set(['THA', 'MYS', 'VIE', 'IDN', 'PHI', 'SGP', 'MYA', 'KHM']);
+  R.isAsian = (nat) => nat === 'AUS' || (D.NATIONS[nat] && D.NATIONS[nat].region === 'ASIA');
+  R.foreignGroups = function (c, r) {
+    if (!r || !r.foreign) return [];
+    const f = (p) => R.isForeign(p, c, r),
+      asian = r.asian || 0,
+      asean = r.asean || 0;
+    const out = [
+      { label: c.comp === 'US1' ? 'international players' : 'foreign players', f, cap: r.foreign + asian + asean },
+    ];
+    if (asian) out.push({ label: 'non-Asian foreign players', f: (p) => f(p) && !R.isAsian(p.nat), cap: r.foreign });
+    if (asean)
+      out.push({
+        label: 'foreign players outside ASEAN',
+        f: (p) => f(p) && !R.ASEAN.has(p.nat),
+        cap: r.foreign + asian,
+      });
+    return out;
+  };
   R.isForeign = (p, c, r) => p.nat !== c.nat && !(r && r.exempt && r.exempt.includes(p.nat));
   // Where a player grew up as a youth (his home nation) and the club that trained him: players made with the world have
   // no youth record, so each is given one when first needed (W.assignYouth): usually a club of his own nation, for a
@@ -189,6 +220,7 @@
     if (r.squad) st.nonHG = sq.filter((p) => senior(p) && !R.homegrown(p, c.nat)).length;
     if (r.nonEU) st.nonEU = sq.filter((p) => R.nonEU(p, c)).length;
     if (r.foreign || r.matchday) st.foreign = sq.filter((p) => R.isForeign(p, c, r)).length;
+    if (r.foreign) st.groups = R.foreignGroups(c, r).map((g) => ({ ...g, n: sq.filter(g.f).length }));
     if (r.nonEUSign) st.nonEUSigned = R.nonEUSigned(c);
     return st;
   };
@@ -353,10 +385,11 @@
       };
     if (r.nonEU && R.nonEU(p, c) && st.nonEU >= r.nonEU)
       return { ok: false, why: `All ${r.nonEU} non-EU places are taken.` };
-    if (r.foreign && R.isForeign(p, c, r) && st.foreign >= r.foreign)
+    const full = (st.groups || []).find((g) => g.f(p) && g.n >= g.cap);
+    if (full)
       return {
         ok: false,
-        why: `All ${r.foreign} ${c.comp === 'US1' ? 'international slots' : 'foreign-player places'} are taken.`,
+        why: `All ${full.cap} ${full.label === 'international players' ? 'international slots' : full.label === 'foreign players' ? 'foreign-player places' : `places for ${full.label}`} are taken.`,
       };
     // a matchday cap needs a squad to match: at most five more foreigners than the matchday allows
     if (r.matchday && !r.foreign && R.isForeign(p, c, r) && st.foreign >= r.matchday + 5)
@@ -371,7 +404,6 @@
   R.genNat = function (club, made, age, pick) {
     const r = R.rulesFor(club);
     if (!r) return pick();
-    const foreign = (n) => n !== club.nat && !(r.exempt && r.exempt.includes(n));
     for (let i = 0; i < 10; i++) {
       const n = pick();
       if (
@@ -382,7 +414,7 @@
       )
         continue;
       if (r.nonEU && R.nonEUNat(n, club) && made.filter((x) => R.nonEUNat(x.nat, club)).length >= r.nonEU) continue;
-      if (r.foreign && foreign(n) && made.filter((x) => foreign(x.nat)).length >= r.foreign) continue;
+      if (R.foreignGroups(club, r).some((g) => g.f({ nat: n }) && made.filter(g.f).length >= g.cap)) continue;
       return n;
     }
     return club.nat;
@@ -407,7 +439,7 @@
       out = [];
       // registration caps apply on matchday too: anyone over them can't have been registered
       if (r.nonEU) out.push({ f: (p) => R.nonEU(p, club), cap: r.nonEU });
-      if (r.foreign) out.push({ f: (p) => R.isForeign(p, club, r), cap: r.foreign });
+      R.foreignGroups(club, r).forEach((g) => out.push({ f: g.f, cap: g.cap }));
       if (r.matchday) out.push({ f: (p) => R.isForeign(p, club, r), cap: r.matchday });
       limCache.set(key, out);
     }
@@ -421,7 +453,9 @@
       bits = [];
     if (r.squad) bits.push(`non-homegrown over-21s ${st.nonHG}/${r.squad - r.hg}`);
     if (r.nonEU) bits.push(`non-EU ${st.nonEU}/${r.nonEU}`);
-    if (r.foreign) bits.push(`${c.comp === 'US1' ? 'international slots' : 'foreigners'} ${st.foreign}/${r.foreign}`);
+    (st.groups || []).forEach((g, i) =>
+      bits.push(`${i ? g.label : c.comp === 'US1' ? 'international slots' : 'foreigners'} ${g.n}/${g.cap}`),
+    );
     if (r.nonEUSign) bits.push(`non-EU signings from abroad ${st.nonEUSigned}/${r.nonEUSign}`);
     if (r.mls) {
       const ms = R.mlsStatus(c);
@@ -448,8 +482,7 @@
     };
     if (r.squad) add('non-homegrown over-21s', r.squad - r.hg, (p) => senior(p) && !R.homegrown(p, c.nat));
     if (r.nonEU) add('non-EU players', r.nonEU, (p) => R.nonEU(p, c));
-    if (r.foreign)
-      add(c.comp === 'US1' ? 'international players' : 'foreign players', r.foreign, (p) => R.isForeign(p, c, r));
+    R.foreignGroups(c, r).forEach((g) => add(g.label, g.cap, g.f));
     return out;
   };
   // Days to the registration deadline: the last day of the transfer window (null while it is shut)

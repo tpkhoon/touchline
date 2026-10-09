@@ -79,6 +79,11 @@
       `Neil Stephan Javier Oliver Kevin Patrick Diego Michael Jesse Sandro Mike Daisuke Ruben Jaime Manny Paolo Carlo Marco Angelo Dennis Jerome Mark Jeric Jovelle Rhandy Raphael Adrian Bryan Christian Gerald Joshua Lorenz Nathan Ramon Ricardo Rodel Santiago Tomas Victor Alfonso Benedict Cedric Emilio Francis Gabriel Jericho`,
       `Reyes Santos Cruz Bautista Ocampo Garcia Mendoza Torres Tomas Andrada Castillo Flores Villanueva Ramos Aquino Dela_Cruz De_Leon Gonzales Hernandez Lopez Perez Rivera Salazar Soriano Aguilar Alvarez Bernardo Cabrera Domingo Enriquez Fernandez Guevarra Ignacio Javier Lim Magno Navarro Ortega Padilla Quizon Rosales Sison Tolentino Valdez Zamora`,
     ),
+    // Singapore: Chinese, Malay and Indian families in the proportions of the island
+    singaporean: P(
+      `Ikhsan Hariss Safuwan Faris Irfan Shahdan Zulqarnaen Hafiz Amirul Danish Haziq Jun Wei Kai Jia Zhi Ryan Kieran Daniel Joshua Marcus Aaron Prakash Arun Vikram Sanjay Muhammad Ahmad Aiman Khairul Syafiq Adam Gabriel Nazrul Hami Song Yong Jordan Shawal Zulfahmi Harhys Lionel Bryan Darren Brandon Raj Dhanesh`,
+      `Tan Lim Lee Ng Goh Teo Chua Koh Ong Wong Chong Yeo Ho Sim Chan Abdullah Rahman Ismail Hassan Yusof Ibrahim Sulaiman Ahmad Mohamed Pillai Nair Krishnan Singh Kumar Menon Sharma Fandi Bakar Said Zainal Lau Foo Quek Sng Ang Tay`,
+    ),
     georgian: P(
       `Giorgi Davit Nikoloz Luka Levan Irakli Zurab Merab Vakhtang Tornike Lasha Mikheil Temur Aleksandre Beka Guram Revaz Shota Konstantine Tamaz Otar Badri Gela Gocha Kakha Soso Nika Saba Data Giga Mamuka Bidzina Archil Tengiz Zaza`,
       `Abashidze Bagrationi Chavchavadze Dadiani Eristavi Gurieli Japaridze Jgenti Khubuluri Kobakhidze Lordkipanidze Mgaloblishvili Nadiradze Orbeliani Pirtskhalava Qipiani Rurua Sanikidze Tabidze Tsereteli Ugrekhelidze Vachnadze Zhvania Meladze Svanidze Tvauri Chkheidze Davitashvili Mikeladze Khutsishvili Beridze Maisuradze Kapanadze Giorgadze Gelashvili Lomidze Tsiklauri Kiknadze Gogoladze Bregadze Chikovani Gogiashvili Janelidze`,
@@ -684,6 +689,18 @@
       0.12,
       ['THA', 'ENG', 'USA', 'JPN'],
       ['#0038A8', '#CE1126'],
+    ),
+    N(
+      'SGP',
+      'Singapore',
+      '🇸🇬',
+      'ASIA',
+      'Neat and disciplined',
+      { passing: 1.2, composure: 1, workRate: 1.2 },
+      'singaporean',
+      0.1,
+      ['MYS', 'THA', 'JPN', 'AUS'],
+      ['#EF3340', '#FFFFFF'],
     ),
     N(
       'BLR',

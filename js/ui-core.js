@@ -1050,7 +1050,30 @@
           ])}
           <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
           <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${D.facts().clubs} clubs</button></div>
+          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
           ${UI.dbCard()}
+          ${foot('')}`;
+      } else if (view === 'story') {
+        body = `<div class="h1" style="margin-top:2vh">Story starts</div><div class="tag">A club with something at stake. Tap one to see its story.</div><div class="sp"></div>
+          ${NG.stories
+            .map((x) => {
+              const l = G.entry(x.code).l,
+                n = D.NATIONS[l.nat];
+              return `<div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">${x.icon} <b style="color:#e6edf6">${esc(x.title)}</b> · ${esc(x.blurb)}</div>${row(rowOf(x.code), `Tier ${l.tier}`, G.hook(x.code), `${n.flag} ${esc(n.name)} · ${esc(l.name)}`)}<div class="tiny" style="margin:2px 0 0"><button class="btn sm" data-act="ngStoryAgain" data-id="${x.id}">Another ${esc(x.title.toLowerCase())}</button></div>`;
+            })
+            .join('')}
+          <div class="actions" style="margin-top:10px"><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button><button class="btn sm" data-act="ngView" data-v="browse">Browse all</button></div>
+          ${foot('')}`;
+      } else if (view === 'first') {
+        body = `<div class="h1" style="margin-top:2vh">Good first clubs</div><div class="tag">A fair job, a top division and a story to learn from, each in a different league.</div><div class="sp"></div>
+          ${NG.firsts
+            .map((code) => {
+              const l = G.entry(code).l,
+                n = D.NATIONS[l.nat];
+              return row(rowOf(code), `Tier ${l.tier}`, G.hook(code), `${n.flag} ${esc(n.name)} · ${esc(l.name)}`);
+            })
+            .join('')}
+          <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="ngFirst">Six others</button><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button></div>
           ${foot('')}`;
       } else if (view === 'rec') {
         body = `<div class="h1" style="margin-top:2vh">Three clubs for you</div><div class="tag">Tap one to see its story. ${NG.recs.length ? '' : 'Nothing matches that: loosen a question.'}</div><div class="sp"></div>
@@ -1262,6 +1285,22 @@
     NG.view = 'rec';
     UI.newCareer();
   };
+  UI.acts.ngStories = () => {
+    NG.stories = FM.Guide.stories();
+    NG.view = 'story';
+    UI.newCareer();
+  };
+  UI.acts.ngStoryAgain = (d) => {
+    const skip = Object.fromEntries(NG.stories.map((x) => [x.id, x.code]));
+    const fresh = FM.Guide.stories(skip).find((x) => x.id === d.id);
+    if (fresh) NG.stories = NG.stories.map((x) => (x.id === d.id ? fresh : x));
+    UI.newCareer();
+  };
+  UI.acts.ngFirst = () => {
+    NG.firsts = FM.Guide.firstClubs();
+    NG.view = 'first';
+    UI.newCareer();
+  };
   UI.acts.ngUnemployed = () => {
     NG.club = 'none';
     NG.step = 2;
@@ -1315,6 +1354,7 @@
         W.goUnemployed('start');
       } else W.takeCharge(NG.club, ngProfile());
       W.seedLegends();
+      W.seedHistory();
       FM.Stories.welcome();
       UI.slot = NG.slot;
       UI.save();

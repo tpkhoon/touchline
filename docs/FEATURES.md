@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-328 features are playable in the web prototype today. Build = the build that added it.
+337 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -308,7 +308,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
 | Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
 | Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
-| Career | Start a career in any of the 42 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
+| Career | Start a career in any of the 48 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
 | Players | Basque and Catalan heritage: players of Basque and Catalan families with their own name cultures; Eibar sign only Basque players and Andorra only Catalan ones (the Athletic Club policy), for transfers, loans, free agents, pre-contracts and trials, by you and the AI | Playtest round 10 |
 | Competitions | The Saudi Pro League and First Division (18 clubs each, most of them Oil-Backed), the King's Cup, six Asian Champions Cup places, ten foreign players a squad, riyals as a display currency | Playtest round 10 |
 | Players | Dynamic potential: a young player's potential moves each summer until 25 with his performance against his curve, ratings and game time, the academy and training, injuries and luck; news and a profile trend arrow for your players | Playtest round 10 |
@@ -354,17 +354,26 @@ Every feature from the game design document, with what is playable in the protot
 | Scouting | Second opinions: a second scout can disagree with the first and the two are averaged with a visible disagreement; each scout leans physical or technical and misjudges the other kind of player | Systems 3 |
 | Scouting | Three prices for a target: the analytics estimate, the seller or agent's ask and the sporting director's view, side by side | Systems 3 |
 | Scouting | Recommendations that depend on squad need and budget: a Sign needs a position you lack, a better player than the starter and a fee you can pay; otherwise Monitor or Avoid, with the reason | Systems 3 |
+| Asia | The AFC's foreign-player places in the leagues that have them: three of any nationality plus one that only an Asian player can fill, and an ASEAN place on top (Korea, Thailand, Malaysia, Vietnam, Indonesia, Singapore); shown on the squad screen, enforced at the deadline and on matchday, and used when the world makes squads | Systems 4 |
+| Asia | Gulf money: Oil-Backed clubs of the Saudi Pro League buy a famous name in his late twenties or thirties each window, at 1.3 times his price and double the wage, with a news story naming what the club he leaves has lost | Systems 4 |
+| Asia | Korea's military service: a Korean player is called up between 26 and 28 unless exempted (a long international career helps), is away two seasons with his contract extended and no wage paid, and returns a point or two rusty | Systems 4 |
+| Asia | Japan's university route: the J.League holds a two-round graduate draft each winter from a class of 22-year-old university players, with the same board as the American draft | Systems 4 |
+| World | Six more top flights: Singapore, Malaysia, Vietnam, Indonesia, the Philippines and South Africa (82 clubs, 828 in 48 leagues across 38 nations), each with its own club-naming culture, foreign-player rules, finances, domestic cup and Asian or African places | Systems 4 |
+| Career | Story starts (a giant awakens, last chance at promotion, against the odds, new money, the academy is the plan, the derby decides your job, football in Asia) and a short list of good first clubs, both on the club picker | Systems 4 |
+| Career | A skippable world primer under Help: your league, promotion and relegation, the continental places, the cups and the foreign-player rules, read from the world you are in | Systems 4 |
+| History | Thirty seasons of champions, runners-up and cup winners before the save begins (weighted by each club's standing and history, with dynasties, and none before a club was founded), in the archive, on club pages and in the honours cards | Systems 4 |
+| Lower leagues | Part-time clubs (the fourth tier and below, or a tiny club): players develop and recover more slowly, no more than two scouts, and a "Part-time squad" tag on the club picker | Systems 4 |
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
 
 ## Yet to be added
 
-51 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+44 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
-The **Systems** rows come from a review of how the systems feed one another (see [SYSTEMS.md](SYSTEMS.md), `npm run sysmap`): Systems 1 (done) is the map and the tactic tests, Systems 2 (done, bar collapses) the simulation's long-run believability and club identity, Systems 3 (done) tactics and scouting, Systems 4 the Asian and lower-league identity.
+The **Systems** rows come from a review of how the systems feed one another (see [SYSTEMS.md](SYSTEMS.md), `npm run sysmap`): Systems 1 (done) is the map and the tactic tests, Systems 2 (done, bar collapses) the simulation's long-run believability and club identity, Systems 3 (done) tactics and scouting, Systems 4 (done, bar the Asian Champions Cup squad places and community-club jobs) start anywhere and Asia.
 
 Design principle from here: don't make the game deeper by adding more screens â€” make the things it already has remember what happened. Transfers, managers' successes, clubs that keep fighting for trophies, youngsters who become legends and rule changes all leave a trace the world can refer back to.
 
@@ -412,12 +421,5 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Community | Sharing databases, leagues, scenarios and graphics | Post-launch |
 | DLC | Historical database packs | Post-launch |
 | World | Collapses with causes: clubs that overspend can go into administration (none do in a 20-season quiet world today), with the wage ratio and debt visible beforehand | Systems 2 |
-| Career | Start-anywhere challenge starts and story starts (a giant awakens, last chance at promotion), and a short list of good first clubs | Systems 4 |
-| Career | A skippable world primer: the leagues, how promotion works and which competitions matter, linked from the screens | Systems 4 |
-| History | Club histories before the save: past champions, famous finals and a hall of fame, seeded to be believable and consistent with the club's ceiling | Systems 4 |
-| World | Nations missing from the world: Singapore, Malaysia, Vietnam, Indonesia, the Philippines and South Africa, with leagues, rules and name cultures | Systems 4 |
-| Lower leagues | Lower-league realism: part-time squads, tiny budgets, no scouting network, community-club jobs | Systems 4 |
-| Asia | Japan's university route into the J.League, with designated players and the draft of graduates | Systems 4 |
-| Asia | Korea's military service interrupting careers | Systems 4 |
-| Asia | AFC foreign-player slots (three plus one Asian place) and ASEAN recruitment rules | Systems 4 |
-| Asia | Gulf spending that distorts the market: superstar recruitment, naturalisation and the effect on Asian competitions | Systems 4 |
+| Asia | AFC foreign-player places in the Asian Champions Cup itself (three plus one Asian player per matchday) | Systems 4 |
+| Lower leagues | Community-club jobs and wages: tiny budgets that depend on the town, volunteers on the board and managers who take a lower-league job for the story | Systems 4 |

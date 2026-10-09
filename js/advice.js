@@ -388,7 +388,11 @@
     const fee = U.roundMoney(st.wage * 4);
     if (c.balance < fee) return { ok: false, msg: 'Not enough money for the signing-on fee.' };
     if (key === 'scout') {
-      if (s.user.scouts.length >= 5) return { ok: false, msg: 'You already employ 5 scouts. Release one first.' };
+      if (s.user.scouts.length >= W.maxScouts())
+        return {
+          ok: false,
+          msg: `You already employ ${W.maxScouts()} scouts${W.maxScouts() < 5 ? ': a part-time club has no scouting network' : ''}. Release one first.`,
+        };
       s.user.scouts.push(id);
     } else {
       const old = s.user.staff[key] && s.staff[s.user.staff[key]];

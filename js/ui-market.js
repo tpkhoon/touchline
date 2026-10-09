@@ -31,8 +31,10 @@
       ['free', '🆓 Free agents'],
       ['shortlist', '⭐ Shortlist'],
       ['market', '🌍 Transfer Centre'],
-      ...(c && s.comps[c.comp].rules.mls && (FM.Draft.current() || (s.draftLog || []).length)
-        ? [['draft', '🎓 Draft']]
+      ...(c &&
+      (s.comps[c.comp].rules.mls || s.comps[c.comp].rules.uni) &&
+      (FM.Draft.current() || (s.draftLog || []).length)
+        ? [['draft', FM.Draft.isUni(c.comp) ? '🎓 Graduates' : '🎓 Draft']]
         : []),
     ]
       .map(([v, l]) => `<button class="btn sm grow" data-act="trGo" data-v="${v}">${l}</button>`)
@@ -341,7 +343,10 @@
         })
         .join('')}${own.length ? '' : ''}`;
     }
-    UI.sheet(html, { title: d ? `🎓 ${d.year} Draft` : '🎓 Draft results', full: true });
+    UI.sheet(html, {
+      title: d ? `🎓 ${d.year} ${Dr.isUni(d.comp) ? 'Graduate draft' : 'Draft'}` : '🎓 Draft results',
+      full: true,
+    });
   };
   UI.acts.draftOpen = () => UI.draftSheet();
   UI.acts.draftPick = (d) => {

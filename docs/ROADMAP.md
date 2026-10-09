@@ -35,7 +35,7 @@ flowchart TB
 
 ## Shipped
 
-The web prototype runs on a phone browser with no build step, covering 746 fictional clubs in 42 leagues (the real structure under invented names) across 32 nations in three simulation tiers, and 90 national teams. Newest build first.
+The web prototype runs on a phone browser with no build step, covering 828 fictional clubs in 48 leagues (the real structure under invented names) across 32 nations in three simulation tiers, and 90 national teams. Newest build first.
 
 ### Playtest feedback, round 10
 
@@ -95,6 +95,7 @@ The web prototype runs on a phone browser with no build step, covering 746 ficti
 - Systems pass, step 1: a systems map generated from the code (`npm run sysmap`, docs/SYSTEMS.md: each system's uses, the closed loops checked hop by hop, state nothing reads); a tactic-response test (`npm run test:tactics`: 20 expectations that a high press, a low block, build-up, width and the opponent's press change possession, ball-winning, stamina and chances by type); the engine changes it asked for (a low block breaks quickly, a high press goes in more often); and a "Why it went this way" card on the post-match summary.
 - Systems pass, step 2: every club has a market, supporters, a youth catchment and an owner, and a reputation ceiling that only a cause raises (a takeover, years of success); a season's reputation moves by a capped step toward what standing and history support; takeovers need a reason; a 30-year stability test (`npm run test:longrun`); identity now drives recruitment, fans' style expectations, players' willingness, the board's patience and revenue; and a manager profile (youth, attack, spending, stability) discovered from what you do, with your standing in each country.
 - Systems pass, step 3: an opposition report before the match (their press, width, weaker flank and danger man, from their real system and XI) and match instructions that answer it, each changing the engine's chances and judged in the post-match reading; half-time reads of the first half with a specific fix; press and block animations that match the engine; scouting second opinions and scout leans, three prices for a target, and recommendations that depend on squad need and budget.
+- Systems pass, step 4: six more top flights (Singapore, Malaysia, Vietnam, Indonesia, the Philippines, South Africa: 828 clubs in 48 leagues across 38 nations) with club-naming cultures of their own; the AFC's 3 + 1 and ASEAN foreign-player places; Gulf money buying famous names for Saudi clubs; Korea's military service; Japan's university graduate draft; part-time clubs; story starts and good first clubs on the club picker; a world primer under Help; thirty seasons of champions and cup winners before the save; and `npm run test:asia`.
 
 ### Playtest feedback, round 9
 
@@ -300,7 +301,7 @@ From a review of how the systems feed one another (docs/SYSTEMS.md). Principle: 
 - [x] **Step 1, measure:** the systems map, the tactic-response test and the post-match reading (above).
 - [x] **Step 2, the long run and club identity (done, except collapses with causes):** per-club attributes (city size, supporters, stadium and financial ceilings, youth catchment, ownership) setting a long-run reputation target; takeovers, collapses and dynasties with causes; a 30-year stability test; identity driving recruitment, fans' style, players' willingness, job security and revenue; a manager profile discovered from what you do, and reputation by league and country.
 - [x] **Step 3, tactics and scouting:** an opposition report and match instructions that answer it; half-time prompts that read the first half; press and block animations that match the engine; scouting second opinions, scout blind spots, three prices for a target, and recommendations that depend on need and budget.
-- [ ] **Step 4, start anywhere and Asia:** the missing nations (Singapore, Malaysia, Vietnam, Indonesia, the Philippines, South Africa), lower-league realism, challenge and story starts, a world primer, club histories before the save, Japan's university route, Korea's military service, the AFC foreign-player slots and ASEAN recruitment, Gulf spending.
+- [x] **Step 4, start anywhere and Asia (done, bar the Asian Champions Cup squad places and community-club jobs):** the missing nations (Singapore, Malaysia, Vietnam, Indonesia, the Philippines, South Africa), lower-league realism, challenge and story starts, a world primer, club histories before the save, Japan's university route, Korea's military service, the AFC foreign-player slots and ASEAN recruitment, Gulf spending.
 
 ## Next
 
