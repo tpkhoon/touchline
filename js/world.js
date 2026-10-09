@@ -2046,6 +2046,7 @@
         short,
         nick: info[1] || '', // its nickname, where it has a well-known one
         founded: info[2] || null, // the year it was founded, where the world has one
+        crest: info[3] || null, // a design of its own: [shape, pattern, emblem] (a world definition's)
         city,
         nat,
         colors: [c1, c2],

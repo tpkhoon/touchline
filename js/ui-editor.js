@@ -778,6 +778,131 @@
           : ''
       }`;
   };
+  // ---------- Crest, money, facilities and supporters ----------
+  // A club's own crest design, its cash and transfer budget, its facilities and the size of its supporters and market. Left alone,
+  // the game works each of them out from the club's reputation, identity and ground.
+  const CREST_NAMES = {
+    shape: ['Classic shield', 'Round badge', 'Flat-topped heater', 'Rounded plaque'],
+    pattern: [
+      'Top band',
+      'Twin stripes',
+      'Sash',
+      'Halves',
+      'Hoops',
+      'Quarters',
+      'Pinstripes',
+      'Centre stripe',
+      'Cross',
+      'Chevron',
+      'Bottom band',
+    ],
+    emblem: [
+      'Ball',
+      'Star',
+      'Crown',
+      'Tower',
+      'Diamond',
+      'Ring',
+      'Paw',
+      'Wings',
+      'Anchor',
+      'Tree',
+      'Crossed hammers',
+      'Sun',
+      'Sailing boat',
+      'Mountains',
+      'Waves',
+    ],
+  };
+  const FACILITY_NAMES = {
+    training: 'Training ground',
+    academy: 'Academy',
+    medical: 'Medical centre',
+    analytics: 'Analytics',
+    stadium: 'Stadium',
+    fanzone: 'Fan zone',
+    museum: 'Museum',
+  };
+  const OWNERS = [
+    ['private', 'A private owner'],
+    ['sovereign', 'A state or sovereign wealth fund'],
+    ['fans', 'The supporters'],
+    ['investors', 'An investment group'],
+  ];
+  const draftCrest = () => {
+    const c = ED.def.clubs.find((x) => x.id === ED.cid);
+    const v = (id) => +(($('#ed-' + id) || {}).value ?? -1);
+    return UI.C.crest({ ...c, crest: [v('xcs'), v('xcp'), v('xce')] }, 72);
+  };
+  UI.acts.edSaveClubX = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const crest = [+v('xcs'), +v('xcp'), +v('xce')];
+    const money = (id) => (v(id) === '' ? undefined : Math.round(+v(id) * 1e6));
+    const finance = { balance: money('xbal'), budget: money('xbud') };
+    const r = WD.editor(ED.def, null).setClub(ED.cid, {
+      crest: crest.every((n) => n < 0) ? null : crest,
+      finance: finance.balance == null && finance.budget == null ? null : finance,
+      facilities: $('#ed-xfacon').checked
+        ? Object.fromEntries(WD.FACILITIES.map((k) => [k, Math.round(+v('xf-' + k))]))
+        : null,
+      attr: $('#ed-xattron').checked
+        ? {
+            market: +v('xa-market'),
+            support: +v('xa-support'),
+            catchment: +v('xa-catchment'),
+            own: v('xown'),
+          }
+        : undefined,
+    });
+    if (!r.ok) {
+      ED.err = r.errors;
+      return UI.worldEditor();
+    }
+    ED.view = 'club';
+    ED.err = [];
+    UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  UI.acts.edClearClubX = () => {
+    const c = ED.def.clubs.find((x) => x.id === ED.cid);
+    const base = builtIn().get(ED.cid);
+    for (const k of ['crest', 'finance', 'facilities']) c[k] = null;
+    if (base && base.attr) c.attr = base.attr;
+    else delete c.attr;
+    ED.view = 'club';
+    UI.worldEditor();
+  };
+  const clubxView = () => {
+    const c = ED.def.clubs.find((x) => x.id === ED.cid);
+    if (!c) return leagueView();
+    const cr = c.crest || [-1, -1, -1],
+      fin = c.finance || {},
+      fac = c.facilities || {},
+      at = c.attr || {};
+    const sel = (id, list, cur) =>
+      `<select id="ed-${id}"><option value="-1" ${cur < 0 ? 'selected' : ''}>The game's choice</option>${list.map((n, i) => `<option value="${i}" ${cur === i ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+    const slider = (id, label, min, max, step, val, suffix = '') =>
+      `<div class="row" style="gap:10px;align-items:center;margin-top:6px"><span class="small" style="width:120px;flex:none">${esc(label)}</span><input type="range" id="ed-${id}" min="${min}" max="${max}" step="${step}" value="${val}" style="flex:1"><b id="ed-${id}v" style="width:34px;text-align:right">${val}${suffix}</b></div>`;
+    return `<div class="h1" style="margin-top:2vh">${esc(c.name)}</div><div class="tag">The crest, the money, the facilities and the supporters. Anything you leave alone the game works out from the club's reputation, identity and ground.</div>
+      ${errBox()}
+      <div class="ng-label">Crest</div>
+      <div class="row" style="gap:14px;align-items:center"><div id="ed-crestprev" style="flex:none">${UI.C.crest({ ...c, crest: cr }, 72)}</div><div class="grow">
+        ${sel('xcs', CREST_NAMES.shape, cr[0])}<div style="height:6px"></div>${sel('xcp', CREST_NAMES.pattern, cr[1])}<div style="height:6px"></div>${sel('xce', CREST_NAMES.emblem, cr[2])}</div></div>
+      <div class="ng-label">Money <span class="tiny dim">· millions; empty: the game's figure</span></div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Cash in the bank</div><input type="number" id="ed-xbal" step="0.5" inputmode="decimal" value="${fin.balance != null ? fin.balance / 1e6 : ''}"></div><div style="flex:1"><div class="tiny dim">Transfer budget</div><input type="number" id="ed-xbud" step="0.5" min="0" inputmode="decimal" value="${fin.budget != null ? fin.budget / 1e6 : ''}"></div></div>
+      <div class="ng-label">Facilities</div>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ed-xfacon" ${c.facilities ? 'checked' : ''}> I set them (otherwise the game gives each a level of its own)</label>
+      ${WD.FACILITIES.map((k) => slider('xf-' + k, FACILITY_NAMES[k], 1, 5, 1, fac[k] || 3)).join('')}
+      <div class="ng-label">Supporters and owner</div>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ed-xattron" ${c.attr ? 'checked' : ''}> I set them (otherwise the game works them out)</label>
+      ${slider('xa-market', 'Market', 1, 10, 0.5, at.market ?? 5)}
+      ${slider('xa-support', 'Supporters', 1, 10, 0.5, at.support ?? 5)}
+      ${slider('xa-catchment', 'Youth catchment', 1, 10, 0.5, at.catchment ?? 5)}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">The market is the size of the town and its commercial pull, supporters how many there are and how loyal, and the catchment how many young players the area brings. Together with the owner they set how high the club can grow.</div>
+      <div class="ng-label">Owner</div><select id="ed-xown">${OWNERS.map(([k, n]) => `<option value="${k}" ${(at.own || 'private') === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
+      <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edClearClubX">Back to the game's figures</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="club" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClubX">Save</button></div>`;
+  };
   const clubView = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     if (!c) return leagueView();
@@ -804,7 +929,8 @@
       ${sameNat.length > 1 ? `<div class="ng-label">League</div><select id="ed-league">${lgOpts}</select>` : ''}
       ${managerFields(c)}
       ${derbyFields(c)}
-      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edStaff" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Coaches and scouts</div><div class="tiny dim">${(ED.def.staff || []).filter((s) => s.club === c.id).length} come with this job</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="clubx" data-cid="${esc(c.id)}"><div class="row" style="gap:10px"><div style="flex:none">${UI.C.crest(c, 28)}</div><div class="grow"><div class="small b">Crest, money, facilities and supporters</div><div class="tiny dim">${[c.crest ? 'own crest' : '', c.finance ? 'own money' : '', c.facilities ? 'own facilities' : '', c.attr ? 'own supporters' : ''].filter(Boolean).join(' · ') || 'As the game works them out'}</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edStaff" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Coaches and scouts</div><div class="tiny dim">${(ED.def.staff || []).filter((s) => s.club === c.id).length} come with this job</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Players</div><div class="tiny dim">${playersOf(c.id).length} made for this club</div></div><span class="dim">›</span></div></div>
       ${!added ? '<div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edRevertClub">Put the game\'s version back</button></div>' : ''}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelClub">${added ? 'Delete this club' : 'Take this club out of the world'}</button></div>
@@ -1851,6 +1977,7 @@
     const views = {
       league: leagueView,
       club: clubView,
+      clubx: clubxView,
       squad: squadView,
       player: playerView,
       cups: cupsView,
@@ -1895,6 +2022,12 @@
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
     bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
     bind('ed-mrep', (v) => ($('#ed-mrepv').textContent = v));
+    if (ED.view === 'clubx') {
+      for (const id of ['xcs', 'xcp', 'xce']) bind('ed-' + id, () => ($('#ed-crestprev').innerHTML = draftCrest()));
+      for (const k of WD.FACILITIES) bind('ed-xf-' + k, (v) => ($('#ed-xf-' + k + 'v').textContent = v));
+      for (const k of ['market', 'support', 'catchment'])
+        bind('ed-xa-' + k, (v) => ($('#ed-xa-' + k + 'v').textContent = v));
+    }
     bind('ed-sjudge', (v) => ($('#ed-sjudgev').textContent = v));
     for (const r of Object.keys(D.REGIONS)) bind('ed-sreg-' + r, (v) => ($('#ed-sregv-' + r).textContent = v + '%'));
     bind('ed-ncoef', (v) => ($('#ed-ncoefv').textContent = v));

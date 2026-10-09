@@ -120,6 +120,9 @@
         parent: c.parent || null,
         founded: c.founded || null,
         attr: c.attr ? { ...c.attr } : undefined, // market, support, catchment, owner and the ceiling (W.clubAttr)
+        crest: c.crest ? c.crest.slice() : null,
+        finance: { balance: Math.round(c.balance), budget: Math.round(c.budget) },
+        facilities: { ...c.facilities },
         stadium: { name: c.stadium.name, cap: c.stadium.cap0 || c.stadium.cap },
       });
       if (c.rival && c.id < c.rival) def.rivals.push([c.id, c.rival, c.derby || 'Derby']);
@@ -319,6 +322,7 @@
       league: l.id,
       parent: r[9] ? 'c_' + r[9] : null,
       founded: info[2] || null,
+      crest: info[3] || null,
       stadium: { name: r[7] || `${r[2]} Stadium`, cap: r[8] || Math.round((8000 + (r[6] - 40) * 900) / 500) * 500 },
     };
   };
@@ -414,6 +418,7 @@
       ];
       if (m.parent) row.push(codeOf(m.parent));
       const info = [m.short || code, m.nick || '', m.founded || 0];
+      if (m.crest) info.push(m.crest.slice(0, 3));
       if (cur) {
         const pick = (x) => ({
           n: x.name,
@@ -425,6 +430,7 @@
           r: x.rep,
           p: x.parent || null,
           f: x.founded || 0,
+          cr: x.crest || null,
           sn: x.stadium.name,
           sc: x.stadium.cap,
         });
@@ -692,6 +698,9 @@
 
   // ---------- Validation ----------
   const isInt = (v) => Number.isInteger(v);
+  // The crest designs the game draws (shapes, patterns, emblems: see C.crest in js/ui-core.js) and a club's facilities
+  WD.CREST = { shapes: 4, patterns: 11, emblems: 15 };
+  WD.FACILITIES = ['training', 'academy', 'medical', 'analytics', 'stadium', 'fanzone', 'museum'];
   WD.validateClub = function (c, ctx = {}) {
     const e = [],
       w = [];
@@ -705,6 +714,32 @@
     if (!c.stadium || !(c.stadium.cap >= 1000)) e.push(`${at}: stadium needs a name and a capacity of at least 1000`);
     if (c.identity && D.IDENTITY && !D.IDENTITY[c.identity]) e.push(`${at}: unknown identity "${c.identity}"`);
     if (c.nat && !D.NATIONS[c.nat]) e.push(`${at}: unknown nation "${c.nat}"`);
+    if (c.crest != null) {
+      const n = [WD.CREST.shapes, WD.CREST.patterns, WD.CREST.emblems];
+      if (!(
+        Array.isArray(c.crest) &&
+        c.crest.length === 3 &&
+        c.crest.every((v, i) => Number.isInteger(v) && v >= -1 && v < n[i])
+      ))
+        e.push(`${at}: a crest is a shape, a pattern and an emblem (-1: the automatic one)`);
+    }
+    if (c.finance) {
+      const f = c.finance;
+      if (f.balance != null && !(f.balance >= -1e8 && f.balance <= 5e9))
+        e.push(`${at}: the cash in the bank is between -100 million and 5 billion`);
+      if (f.budget != null && !(f.budget >= 0 && f.budget <= 2e9))
+        e.push(`${at}: the transfer budget is between 0 and 2 billion`);
+    }
+    if (c.facilities)
+      for (const [k, v] of Object.entries(c.facilities))
+        if (!WD.FACILITIES.includes(k) || !(Number.isInteger(v) && v >= 1 && v <= 5))
+          e.push(`${at}: facility "${k}" is a level from 1 to 5`);
+    if (c.attr) {
+      for (const k of ['market', 'support', 'catchment'])
+        if (c.attr[k] != null && !(c.attr[k] >= 1 && c.attr[k] <= 10)) e.push(`${at}: ${k} is from 1 to 10`);
+      if (c.attr.own != null && !['private', 'sovereign', 'fans', 'investors'].includes(c.attr.own))
+        e.push(`${at}: unknown owner "${c.attr.own}"`);
+    }
     if (ctx.leagues && c.league && !ctx.leagues.has(c.league))
       e.push(`${at}: league "${c.league}" is not in the definition`);
     return { errors: e, warnings: w };
@@ -1068,7 +1103,21 @@
         ['market', 'support', 'catchment', 'hist', 'ceil', 'floor'].every((k) => typeof d.attr[k] === 'number')
       )
         c.attr = { ...d.attr };
-      else if (d.rep != null && c.attr) delete c.attr; // (a new reputation: its attributes are worked out afresh)
+      else if (d.attr) {
+        // some of them given (the editor's): the rest worked out afresh from the club's standing
+        delete c.attr;
+        const a = W.clubAttr(c);
+        for (const k of ['market', 'support', 'catchment']) if (typeof d.attr[k] === 'number') a[k] = d.attr[k];
+        if (d.attr.own) a.own = d.attr.own;
+        a.ceil = W.repCeiling(a, c.rep);
+        a.floor = Math.max(20, c.rep - (6 + a.market * 0.8) * W.REP_SLACK);
+      } else if (d.rep != null && c.attr) delete c.attr; // (a new reputation: its attributes are worked out afresh)
+      if (d.crest) c.crest = d.crest.slice(0, 3);
+      if (d.finance) {
+        if (d.finance.balance != null) c.balance = d.finance.balance;
+        if (d.finance.budget != null) c.budget = d.finance.budget;
+      }
+      if (d.facilities) Object.assign(c.facilities, d.facilities);
       if (d.stadium) {
         c.stadium.name = d.stadium.name || c.stadium.name;
         if (d.stadium.cap) c.stadium.cap = c.stadium.cap0 = d.stadium.cap;

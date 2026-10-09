@@ -115,13 +115,19 @@
     );
   };
   let crestN = 0;
+  // (a club can carry its own design, club.crest = [shape, pattern, emblem] with -1 for the automatic one; the editor's
+  // pickers need the numbers of each)
+  C.CREST_COUNTS = { shapes: CREST_SHAPES.length, patterns: CREST_PATTERNS.length, emblems: CREST_EMBLEMS.length };
+  const pick = (own, list, auto) => (Number.isInteger(own) && own >= 0 ? own % list.length : auto);
   C.crest = function (club, size = 36) {
     if (!club) return '';
     const [c1, c2] = club.colors,
       h = U.hash(club.id),
-      shape = CREST_SHAPES.at(h % CREST_SHAPES.length),
-      [pattern, busy] = CREST_PATTERNS.at(Math.floor(h / CREST_SHAPES.length) % CREST_PATTERNS.length),
-      emblem = CREST_EMBLEMS[crestEmblem(club, h)];
+      own = club.crest || [],
+      shape = CREST_SHAPES[pick(own[0], CREST_SHAPES, h % CREST_SHAPES.length)],
+      [pattern, busy] =
+        CREST_PATTERNS[pick(own[1], CREST_PATTERNS, Math.floor(h / CREST_SHAPES.length) % CREST_PATTERNS.length)],
+      emblem = CREST_EMBLEMS[pick(own[2], CREST_EMBLEMS, crestEmblem(club, h))];
     // every crest its own clip: a shared id breaks the clipping when the first copy sits in a hidden part of the page
     const id = `cl${++crestN}`;
     // the emblem in the second colour (or the colour that reads on the first), on a disc of the main colour over a
@@ -982,7 +988,7 @@
       };
       const row = (r, div, note, where) => {
         const [name, short, , c1, c2, idt] = r;
-        const fake = { id: 'c_' + short, short, colors: [c1, c2] };
+        const fake = { id: 'c_' + short, short, colors: [c1, c2], crest: (D.CLUB_INFO[short] || [])[3] || null };
         const I = D.IDENTITY[idt],
           d = G.diff(short),
           on = NG.club === fake.id;

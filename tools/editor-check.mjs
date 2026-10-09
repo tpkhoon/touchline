@@ -35,6 +35,24 @@ let r = E.setClub(d1[0].id, {
   stadium: { name: 'The Test', cap: 61000 },
 });
 check(r.ok, 'a valid club edit was refused: ' + r.errors.join('; '));
+// crest, money, facilities and supporters: bad ones are refused, good ones kept
+const X = d1[0].id;
+check(!E.setClub(X, { crest: [9, 0, 0] }).ok, 'a crest shape that does not exist was accepted');
+check(!E.setClub(X, { crest: [0, 0] }).ok, 'a crest of two numbers was accepted');
+check(!E.setClub(X, { facilities: { training: 7 } }).ok, 'a facility of level 7 was accepted');
+check(!E.setClub(X, { facilities: { pool: 3 } }).ok, 'a facility the game does not have was accepted');
+check(!E.setClub(X, { finance: { budget: -5 } }).ok, 'a negative transfer budget was accepted');
+check(!E.setClub(X, { attr: { market: 12 } }).ok, 'a market of 12 was accepted');
+check(!E.setClub(X, { attr: { own: 'aliens' } }).ok, 'an owner of aliens was accepted');
+check(
+  E.setClub(X, {
+    crest: [1, 4, 6],
+    finance: { balance: 250e6, budget: 80e6 },
+    facilities: { training: 5, academy: 5, medical: 4, analytics: 4, stadium: 3, fanzone: 2, museum: 1 },
+    attr: { market: 9, support: 8.5, catchment: 7, own: 'sovereign' },
+  }).ok,
+  'valid club extras were refused',
+);
 r = E.setClub(d1[1].id, { colors: ['red', '#ffffff'] });
 check(!r.ok, 'a club with a colour that is not #rrggbb was accepted');
 r = E.setClub(d1[1].id, { rep: 5 });
@@ -407,6 +425,28 @@ check(
   rn.name === 'Renamed Rovers' && rn.colors[0] === '#cc0000' && rn.stadium.cap === 61000,
   'the renamed club did not keep its changes',
 );
+{
+  const x = S.clubs[X];
+  check(
+    x.crest && x.crest.join() === '1,4,6' && FM.D.CLUB_INFO[X.slice(2)][3].join() === '1,4,6',
+    'the crest did not reach the world and the picker',
+  );
+  check(x.balance === 250e6 && x.budget === 80e6, 'the money did not reach the club');
+  check(
+    x.facilities.training === 5 && x.facilities.academy === 5 && x.facilities.museum === 1,
+    'the facilities did not reach the club',
+  );
+  check(
+    x.attr &&
+      x.attr.market === 9 &&
+      x.attr.support === 8.5 &&
+      x.attr.own === 'sovereign' &&
+      x.attr.ceil > x.rep &&
+      x.attr.hist === x.rep,
+    'the supporters and owner did not reach the club',
+  );
+  check(!S.clubs[d1[2].id].crest, 'a club with no crest of its own was given one');
+}
 check(
   S.comps.D1.clubs.includes(moved.id) && !S.comps.D2.clubs.includes(moved.id),
   'the moved club is not in its new league',
@@ -634,6 +674,7 @@ check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n
 // a save keeps the database, and a plain new world afterwards has none of it
 check(FM.S.database && FM.S.database.name === 'Editor test', 'the world does not remember its database');
 DB.clear();
+check(!(FM.D.CLUB_INFO[X.slice(2)] || [])[3], 'clearing the database left the crest in the picker data');
 check(
   FM.D.AGENT_FIRMS.length === 12 && FM.D.AGENT_FIRMS[0] === 'Apex Sports Group',
   'clearing the database left the agent firms changed',

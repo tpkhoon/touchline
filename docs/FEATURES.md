@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-366 features are playable in the web prototype today. Build = the build that added it.
+367 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -376,6 +376,7 @@ Every feature from the game design document, with what is playable in the protot
 | International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
 | Editor | World editor: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
 | Editor | World editor players: a squad screen for each club and a screen for each player (name, nationality, position, foot, age, contract, the 14 attributes with the ability they make, set from an ability if you prefer, potential); made players are added to the generated squads, or replace the squad of any club given eleven or more | Playtest round 11 |
+| Editor | World editor, club extras: a club's own crest (shape, pattern, emblem, with a preview), cash and transfer budget, the level of its seven facilities, and its market, supporters, youth catchment and owner | Playtest round 11 |
 | Editor | World editor, staff: a coach or scout's personality, contract, wage and a scout's regional network and judgement; a manager's reputation, personality and system; every manager made, listed; the agent firms renamed, added and removed | Playtest round 11 |
 | Editor | World editor, competitions: a league played once each or home and away, five tie-break orders, simulation tier and strength, play-offs for promotion (four clubs) or relegation, and a cup of your own for a nation that has none | Playtest round 11 |
 | Editor | World editor, international football: tournament names, the World Championship's places by part of the world, the year of the four it is played in, the invitationals' names and hosts, how each national team plays, and past tournament winners (the nation's titles, and the Trophy's invitations) | Playtest round 11 |
