@@ -162,12 +162,14 @@
       const o = euroDef(id) ? euroDef(id).opts : D.DOMESTIC_CUPS.find((c) => c[0] === id)[4];
       return {
         legs: ((o && o.legs) || []).slice(),
-        neutral: o && o.neutral === 'all' ? 'all' : ((o && o.neutral) || [2]).slice(),
-      }; // (no list: the final)
+        neutral: o && o.neutral === 'all' ? 'all' : ((o && o.neutral) || [2]).slice(), // (no list: the final)
+        prize: euroDef(id) ? euroDef(id).prize : (o && o.prize) || 3e6,
+        tiers: (o && o.tiers) || 0, // the lowest division that enters (0: every division)
+      };
     }
     if (kind === 'cont') {
       const d = D.CONTINENTALS.find((c) => c.id === id);
-      return { legs: { qf: 2, sf: 2, f: 1, ...(d.legs || {}) }, central: !!d.central };
+      return { legs: { qf: 2, sf: 2, f: 1, ...(d.legs || {}) }, central: !!d.central, prize: d.prize };
     }
     return null;
   };
@@ -183,11 +185,15 @@
       if (!rounds(f.legs || []))
         e.push(`${at}: legs must list rounds by clubs left (2 = the final, 4 = semi-finals, 8 ...)`);
       if (f.neutral !== 'all' && !rounds(f.neutral || [])) e.push(`${at}: neutral must be "all" or a list of rounds`);
+      if (f.tiers != null && !(Number.isInteger(f.tiers) && f.tiers >= 0 && f.tiers <= 6))
+        e.push(`${at}: tiers is the lowest division that enters (0: every division)`);
     } else {
       for (const k of ['qf', 'sf', 'f'])
         if (![1, 2].includes((f.legs || {})[k])) e.push(`${at}: ${k} is played over one or two legs`);
       if (f.central != null && typeof f.central !== 'boolean') e.push(`${at}: central is true or false`);
     }
+    if (f.prize != null && !(f.prize >= 1e5 && f.prize <= 1e9))
+      e.push(`${at}: the prize is between 100,000 and 1,000,000,000`);
     return e;
   };
 
@@ -371,7 +377,12 @@
       mix: new Set(Object.keys(D.NAT_MIX)),
       cups: D.DOMESTIC_CUPS.map((c) => JSON.stringify(c[4] || {})),
       euro: (D.EURO_CUPS || []).map((c) => JSON.stringify(c.opts || {})),
-      conts: D.CONTINENTALS.map((c) => ({ legs: c.legs && JSON.stringify(c.legs), central: c.central })),
+      conts: D.CONTINENTALS.map((c) => ({
+        legs: c.legs && JSON.stringify(c.legs),
+        central: c.central,
+        prize: c.prize,
+      })),
+      euroPrize: (D.EURO_CUPS || []).map((c) => c.prize),
     };
     for (const l of patch.leagues) {
       let cur = D.LEAGUES.find((x) => x.id === l.id);
@@ -421,8 +432,11 @@
       if (c.kind === 'cont') {
         const d = D.CONTINENTALS.find((x) => x.id === c.id);
         if (d) ((d.legs = { ...c.format.legs }), (d.central = !!c.format.central));
-      } else if (euroDef(c.id)) euroDef(c.id).opts = JSON.parse(JSON.stringify(c.format));
-      else {
+        if (d && c.format.prize != null) d.prize = c.format.prize;
+      } else if (euroDef(c.id)) {
+        euroDef(c.id).opts = JSON.parse(JSON.stringify(c.format));
+        if (c.format.prize != null) euroDef(c.id).prize = c.format.prize;
+      } else {
         const row = D.DOMESTIC_CUPS.find((x) => x[0] === c.id);
         if (row) row[4] = JSON.parse(JSON.stringify(c.format));
       }
@@ -441,13 +455,14 @@
       Object.assign(D.CLUB_INFO, snap.info);
       D.RIVALS.splice(0, D.RIVALS.length, ...snap.rivals.map((r) => r.slice()));
       D.DOMESTIC_CUPS.forEach((c, i) => (c[4] = JSON.parse(snap.cups[i])));
-      (D.EURO_CUPS || []).forEach((c, i) => (c.opts = JSON.parse(snap.euro[i])));
+      (D.EURO_CUPS || []).forEach((c, i) => ((c.opts = JSON.parse(snap.euro[i])), (c.prize = snap.euroPrize[i])));
       D.CONTINENTALS.forEach((c, i) => {
         const s = snap.conts[i];
         if (s.legs) c.legs = JSON.parse(s.legs);
         else delete c.legs;
         if (s.central === undefined) delete c.central;
         else c.central = s.central;
+        c.prize = s.prize;
       });
       for (const k of Object.keys(D.NAT_MIX)) if (!snap.mix.has(k)) delete D.NAT_MIX[k];
     };
@@ -695,6 +710,13 @@
       else if (s.year >= year) errors.push(`season ${s.year}: past seasons must be before the start year ${year}`);
       if (years.has(s.year)) errors.push(`Two past seasons for ${s.year}`);
       years.add(s.year);
+      for (const [id, c] of Object.entries(s.cups || {})) {
+        if (!D.DOMESTIC_CUPS.some((x) => x[0] === id))
+          errors.push(`season ${s.year}: "${id}" is not a domestic cup the game has`);
+        if (!clubs.has(c.winner)) errors.push(`season ${s.year} ${id}: winner "${c.winner}" is not in the definition`);
+        if (c.runnerUp && !clubs.has(c.runnerUp))
+          errors.push(`season ${s.year} ${id}: runner-up "${c.runnerUp}" is not in the definition`);
+      }
       for (const [id, c] of Object.entries(s.comps || {})) {
         if (!leagues.has(id)) errors.push(`season ${s.year}: league "${id}" is not in the definition`);
         const t = c.table || [];
@@ -888,6 +910,12 @@
             ];
           }),
         ),
+        cups: Object.fromEntries(
+          Object.entries(s.cups || {}).map(([id, c]) => [
+            id,
+            { name: (S.comps[id] || {}).name || id, winner: c.winner, runnerUp: c.runnerUp || null, awards: null },
+          ]),
+        ),
         promoted: [],
         relegated: [],
         upsets: [],
@@ -899,6 +927,11 @@
     for (const e of past)
       for (const [id, c] of Object.entries(e.comps)) {
         const club = S.clubs[c.champion];
+        if (club) ((club.titles = club.titles || {}), (club.titles[id] = (club.titles[id] || 0) + 1));
+      }
+    for (const e of past)
+      for (const [id, c] of Object.entries(e.cups)) {
+        const club = S.clubs[c.winner];
         if (club) ((club.titles = club.titles || {}), (club.titles[id] = (club.titles[id] || 0) + 1));
       }
     rep.seasons = past.length;

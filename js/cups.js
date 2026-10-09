@@ -38,10 +38,16 @@
 
   // qualified: { CC: [clubIds], ... } from last season's tables, or null in the first season
   // A domestic cup's entrants: every club in that nation's leagues, fully or lightly simulated (League One is in the FA Cup)
-  Cu.entrants = (c) =>
-    Object.values(S().clubs).filter(
+  // (a cup's format can keep it to the top divisions: opts.tiers = the lowest division that enters; too few clubs and it is open to all)
+  Cu.entrants = (c) => {
+    const all = Object.values(S().clubs).filter(
       (x) => x.nat === c.nat && x.comp && S().comps[x.comp] && S().comps[x.comp].nat === c.nat && x.sim !== 'minimal',
     );
+    const t = (Cu.optsOf(c) || {}).tiers;
+    if (!t) return all;
+    const some = all.filter((x) => (S().comps[x.comp].tier || 1) <= t);
+    return some.length >= 8 ? some : all;
+  };
   Cu.setupSeason = function (qualified) {
     for (const c of W.cups()) {
       // (the European knockout cups take their clubs after the continental cups have, below)
@@ -250,7 +256,17 @@
   };
   // Saves made before a competition existed get it (empty until the next season's draw)
   Cu.addDomestic = (s, id, nat, name, short, opts) =>
-    (s.comps[id] = { id, type: 'cup', nat, name, short, clubs: [], rounds: [], prize: 3e6, opts: opts || {} });
+    (s.comps[id] = {
+      id,
+      type: 'cup',
+      nat,
+      name,
+      short,
+      clubs: [],
+      rounds: [],
+      prize: (opts && opts.prize) || 3e6,
+      opts: opts || {},
+    });
   // A European knockout cup (the Holders' Cup, the Summer Cup): a cup of its own with no nation, the entrants chosen by rule
   Cu.addEuro = (s, d) =>
     (s.comps[d.id] = {

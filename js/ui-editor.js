@@ -871,6 +871,17 @@
     f.central = d.v === 'true';
     setFormat(f);
   };
+  UI.acts.edCupTiers = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    f.tiers = +d.n;
+    setFormat(f);
+  };
+  // The prize fund is saved as you type it
+  const saveCupPrize = () => {
+    const v = +(($('#ed-cupprize') || {}).value || 0) * 1e6;
+    if (!(v >= 1e5 && v <= 1e9)) return;
+    WD.editor(ED.def, null).setCup(ED.cup, { format: { ...clone(fmtNow(ED.cup)), prize: v } });
+  };
   UI.acts.edCupReset = () => {
     ED.def.competitions = (ED.def.competitions || []).filter((x) => x.id !== ED.cup);
     ED.view = 'cups';
@@ -964,10 +975,30 @@
         ])}
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">The group stage is the same everywhere. Two-legged ties need the world's two-legged knockouts rule (on the first screen); without it every tie is one match.</div>`;
     }
+    const entry =
+      kind === 'opts' && c.group !== 'Continental'
+        ? `<div class="ng-label">Who enters</div>${seg(
+            'edCupTiers',
+            f.tiers || 0,
+            [
+              [0, 'Every division'],
+              [1, 'Top flight'],
+              [2, 'Top two'],
+              [3, 'Top three'],
+            ],
+            '',
+            'n',
+          )}<div class="tiny dim" style="margin-top:6px;line-height:1.5">Clubs of minimal leagues never enter. With fewer than eight clubs in the chosen divisions the cup is open to all.</div>`
+        : '';
+    const prize = kind
+      ? `<div class="ng-label">Prize fund <span class="tiny dim">· millions; the winner and the clubs that play share it</span></div><input type="number" id="ed-cupprize" min="0.1" max="1000" step="0.5" inputmode="decimal" value="${(f.prize || 3e6) / 1e6}">`
+      : '';
     return `<div class="h1" style="margin-top:2vh">${esc(o.name)}</div><div class="tag">${esc(c.group)}</div>
       ${errBox()}
       <div class="ng-names"><input type="text" id="ed-cupname" maxlength="48" value="${esc(o.name)}"><input type="text" id="ed-cupshort" maxlength="6" style="max-width:84px" value="${esc(o.short || c.short)}"></div>
       ${body}
+      ${entry}
+      ${prize}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edCupReset">Put the game's name and format back</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button></div>`;
   };
@@ -1176,6 +1207,26 @@
     ED.err = [];
     UI.worldEditor();
   };
+  UI.acts.edSeasonCup = (d) => {
+    ED.view = 'seasoncup';
+    ED.hc = d.cup;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edSaveSeasonCup = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const s = seasonOf(ED.hy);
+    s.cups = s.cups || {};
+    if (!v('cw')) delete s.cups[ED.hc];
+    else if (v('cw') === v('cr')) {
+      ED.err = ['The winner and the runner-up are different clubs'];
+      return UI.worldEditor();
+    } else s.cups[ED.hc] = { winner: v('cw'), runnerUp: v('cr') || null };
+    ED.view = 'season';
+    ED.err = [];
+    UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
   UI.acts.edFillHistory = (d) => {
     ED.def.meta.fillHistory = d.v === 'true';
     UI.worldEditor();
@@ -1266,11 +1317,30 @@
               const e = s.comps[l.id];
               return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonLeague" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.champion))} · ${esc(nameOf(e.runnerUp))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
             })
+            .join('')}${D.DOMESTIC_CUPS.filter((k) => k[1] === nat)
+            .map((k) => {
+              const e = (s.cups || {})[k[0]];
+              return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonCup" data-cup="${k[0]}"><div class="row"><div class="grow"><div class="small b">${esc((compOf(k[0]) || { name: k[2] }).name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.winner))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
+            })
             .join('')}`;
         })
         .join('')}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelSeason">Delete this season</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="history" aria-label="Back">←</button></div>`;
+  };
+  const seasonCupView = () => {
+    const s = seasonOf(ED.hy),
+      k = D.DOMESTIC_CUPS.find((x) => x[0] === ED.hc);
+    if (!s || !k) return historyView();
+    const e = (s.cups || {})[k[0]] || {};
+    const clubs = ED.def.clubs.filter((c) => c.nat === k[1]).sort((a, b) => a.name.localeCompare(b.name));
+    const sel = (id, cur, none) =>
+      `<select id="ed-${id}"><option value="">${none}</option>${clubs.map((c) => `<option value="${esc(c.id)}" ${c.id === cur ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
+    return `<div class="h1" style="margin-top:2vh">${esc((compOf(k[0]) || { name: k[2] }).name)}</div><div class="tag">${yy(s.year)}. The winner's cup titles are counted in the club's honours.</div>
+      ${errBox()}
+      <div class="ng-label">Winner</div>${sel('cw', e.winner, 'Not filled in')}
+      <div class="ng-label">Runner-up <span class="tiny dim">· optional</span></div>${sel('cr', e.runnerUp, 'Not chosen')}
+      <div class="actions ng-foot"><button class="btn sm" data-act="edSeason" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveSeasonCup">Save</button></div>`;
   };
   const seasonLeagueView = () => {
     const s = seasonOf(ED.hy),
@@ -1338,36 +1408,24 @@
   UI.worldEditor = function () {
     if (!ED) return UI.newCareer();
     const app = $('#app');
-    const body =
-      ED.view === 'league'
-        ? leagueView()
-        : ED.view === 'club'
-          ? clubView()
-          : ED.view === 'squad'
-            ? squadView()
-            : ED.view === 'player'
-              ? playerView()
-              : ED.view === 'cups'
-                ? cupsView()
-                : ED.view === 'cup'
-                  ? cupView()
-                  : ED.view === 'staff'
-                    ? staffView()
-                    : ED.view === 'staffer'
-                      ? stafferView()
-                      : ED.view === 'nations'
-                        ? nationsView()
-                        : ED.view === 'nation'
-                          ? nationView()
-                          : ED.view === 'history'
-                            ? historyView()
-                            : ED.view === 'season'
-                              ? seasonView()
-                              : ED.view === 'seasonleague'
-                                ? seasonLeagueView()
-                                : ED.view === 'newleague'
-                                  ? newLeagueView()
-                                  : homeView();
+    const views = {
+      league: leagueView,
+      club: clubView,
+      squad: squadView,
+      player: playerView,
+      cups: cupsView,
+      cup: cupView,
+      staff: staffView,
+      staffer: stafferView,
+      nations: nationsView,
+      nation: nationView,
+      history: historyView,
+      season: seasonView,
+      seasoncup: seasonCupView,
+      seasonleague: seasonLeagueView,
+      newleague: newLeagueView,
+    };
+    const body = (views[ED.view] || homeView)();
     app.innerHTML = `<div class="title">${body}</div>`;
     window.scrollTo(0, 0);
     // fields that update the definition as you type
@@ -1391,6 +1449,7 @@
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
     bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
     bind('ed-ncoef', (v) => ($('#ed-ncoefv').textContent = v));
+    bind('ed-cupprize', () => saveCupPrize());
     bind('ed-cupname', () => saveCupNames());
     bind('ed-cupshort', () => saveCupNames());
     if (ED.view === 'player') {

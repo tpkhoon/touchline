@@ -114,14 +114,22 @@ def.rules.subs = 3;
 // cup formats: a bad one is refused, a good one is kept; a continental cup played in single matches at one venue
 check(!E.setCup('CUPENG', { format: { legs: [3], neutral: [] } }).ok, 'a cup with a round of 3 clubs was accepted');
 check(
-  !E.setCup('AC', { format: { legs: { qf: 3, sf: 1, f: 1 }, central: true } }).ok,
+  !E.setCup('AC', { format: { legs: { qf: 3, sf: 1, f: 1 }, central: true, prize: 6e6 } }).ok,
   'a three-legged tie was accepted',
 );
 check(!E.setCup('CWC', { format: { legs: [2] } }).ok, 'a format for a cup the game gives none was accepted');
-check(E.setCup('CUPENG', { format: { legs: [4, 2], neutral: 'all' } }).ok, 'a valid domestic cup format was refused');
+check(
+  !E.setCup('CUPENG', { format: { legs: [], neutral: [], tiers: 9 } }).ok,
+  'a cup open to division nine was accepted',
+);
+check(!E.setCup('CUPENG', { format: { legs: [], neutral: [], prize: 5 } }).ok, 'a prize of 5 was accepted');
+check(
+  E.setCup('CUPENG', { format: { legs: [4, 2], neutral: 'all', tiers: 2, prize: 7e6 } }).ok,
+  'a valid domestic cup format was refused',
+);
 check(E.setCup('CUPFRA', { format: { legs: [], neutral: [] } }).ok, 'a valid French cup format was refused');
 check(
-  E.setCup('AF', { format: { legs: { qf: 1, sf: 1, f: 1 }, central: true } }).ok,
+  E.setCup('AF', { format: { legs: { qf: 1, sf: 1, f: 1 }, central: true, prize: 6e6 } }).ok,
   'a valid continental format was refused',
 );
 check(E.setCup('HC', { format: { legs: [], neutral: [2] } }).ok, 'a valid Holders cup format was refused');
@@ -193,6 +201,16 @@ check(
   'a valid past season was refused',
 );
 check(!E.addSeason({ year: def.meta.startYear + 2, comps: {} }).ok, 'a season after the start was accepted');
+// a past cup final, and a cup winner who is not in the right nation is refused
+const cupClub = def.clubs.find((c) => c.nat === 'ENG' && c.league === 'D1').id;
+check(
+  E.addSeason({ year: def.meta.startYear - 2, comps: {}, cups: { CUPENG: { winner: cupClub, runnerUp: null } } }).ok,
+  'a season with a cup winner was refused',
+);
+check(
+  !E.addSeason({ year: def.meta.startYear - 3, comps: {}, cups: { NOSUCH: { winner: cupClub } } }).ok,
+  'a season with a cup the game does not have was accepted',
+);
 def.meta.fillHistory = true;
 const chk = DB.check(def);
 // refusing what would break a league
@@ -298,6 +316,18 @@ console.log(`D1 has ${n1} clubs`);
     'the African cup format did not reach the world',
   );
   check(FM.Cups.formatOf(S.comps.CC).legs.qf === 2, 'a continental cup that was not edited changed');
+  check(S.comps.CUPENG.prize === 7e6 && S.comps.AF.prize === 6e6, 'the prize funds did not reach the world');
+  check(
+    S.comps.CUPENG.clubs.length > 8 &&
+      S.comps.CUPENG.clubs.every((id) => S.comps[S.clubs[id].comp].tier <= 2) &&
+      S.comps.CUPESP.clubs.some((id) => S.comps[S.clubs[id].comp].tier > 2),
+    'the cup kept to the top two divisions did not, or another cup was cut down',
+  );
+  check(
+    S.archive.some((e) => e.year === S.year - 2 && e.cups.CUPENG && e.cups.CUPENG.winner === cupClub) &&
+      S.clubs[cupClub].titles.CUPENG >= 1,
+    'the past cup winner is not in the archive and the honours',
+  );
   check(
     S.clubs[drb[0].id].rival === drb[1].id && S.clubs[drb[0].id].derby === 'The Editor Derby',
     'the new derby is not in the world',
