@@ -369,7 +369,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-54 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+61 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -416,6 +416,13 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | World | Legacy screen for long saves: a "your football world" history of club rise and fall, league-structure changes (new leagues, mergers, a new continental competition), generational waves by nation, dynasties and collapses. It reads from the season archive, adds a timeline of structural changes and can be shared as a card. Already in: club season-by-season history. | Living world |
 | World | Dynasties, decline and surprise rises driven by club dynamics rather than match randomness: fan base, finances, infrastructure and ownership drift with results, so great clubs fade and small ones climb. Bankruptcies, surprise promotions and tactical trends feed the world news, and the champion-from-top-three rate stays inside the real 70â€“90% range. Already in: takeovers with causes and the 30-year stability test. | Living world |
 | Presentation | Newspaper and database look: front pages, match programmes, a transfer-site style market and scouting reports as a shared set of components that reskin existing screens. The media outlets already have voices; this is the visual layer, with the club-colour accent and readable at phone width. | Alpha 2 |
+| Competitions | Second-tier cup for every confederation: the UEFA Conference League, AFC Champions League Two, CAF Confederation Cup and Copa Sudamericana are in; CONCACAF gets a second-tier cup (Central American Cup and Caribbean Cup style) with its own places from the Americas leagues, so every confederation has a top and a second competition | Living world |
+| Competitions | Intertoto Cup: a summer qualifying cup for the clubs that just miss Europe, whose winners take the last UEFA Cup places; present in the eras whose rules include it (as the real one from 1995 to 2008) and switchable as a rule in a modern world | Alpha 2 |
+| Competitions | Cup Winners' Cup: a European knockout cup for each country's domestic cup winners, with the cup runner-up taking the place when one club wins both; part of the era rules (as the real one ran from 1960 to 1999), so domestic cup winners no longer take a Europa League place in those eras | Alpha 2 |
+| Competitions | Balkan Cup: a regional cup for Balkan clubs, a group stage and a final each season, built on one regional-cup framework shared with the Eastern European and Scandinavian cups | Living world |
+| Competitions | Eastern European cup: a regional cup for clubs from Eastern and Central Europe (Mitropa and Danube cup style) on the shared regional-cup framework, with its own entrants, calendar days and prize money | Living world |
+| Competitions | Scandinavian cup: a Nordic club cup (Royal League style) for clubs from Norway, Denmark and neighbouring leagues, a group stage and a final over the winter break, on the shared regional-cup framework | Living world |
+| International | Confederations Cup equivalent: a national-team tournament between the continental champions, the World Cup holders and the host (as the FIFA Confederations Cup ran from 1992 to 2017), played in the year before a World Cup; present or absent by era or rule | Alpha 2 |
 | Platform | Compile and test the native apps on Android and iOS devices; app icons and splash screens | Mobile readiness |
 | Match | Live passing network and heat map during the match | Beta |
 | Performance | Profile and optimise simulation for 30+ full leagues | Beta |
