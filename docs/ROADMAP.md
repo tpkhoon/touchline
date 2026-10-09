@@ -140,8 +140,7 @@ The web prototype runs on a phone browser with no build step, covering 828 ficti
 - Transfers closer to real life (free transfers about a fifth of the market, home-first buying for small clubs, selling leagues and clubs, blockbusters between giants, veterans to MLS).
 - A coefficient ranking instead of Elo.
 - An evenly spaced bottom bar.
-- Six more domestic cups (Coppa Italia, Taça de Portugal, KNVB Cup, Copa Argentina, U.S.
-- Open Cup, Emperor's Cup) and three more continental cups (Conference League, AFC Champions League Two, CAF Confederation Cup).
+- Six more domestic cups (Coppa Italia, Taça de Portugal, KNVB Cup, Copa Argentina, U.S. Open Cup, Emperor's Cup) and three more continental cups (Conference League, AFC Champions League Two, CAF Confederation Cup).
 - Real rules per competition ([COMPETITION_RULES.md](COMPETITION_RULES.md)): each league's tiebreakers, two-legged and neutral-ground cup rounds, centralised AFC knockouts, two-legged CAF and CONCACAF finals, two-legged play-off finals in Spain and Italy, German relegation play-offs, no away goals.
 - A bug sweep (pre-contracts against squad limits, keepers after rollover, double sales, a league table crash).
 - Real-life club abbreviations and nicknames.
@@ -157,8 +156,7 @@ The web prototype runs on a phone browser with no build step, covering 828 ficti
 - Player stats view, keeper numbers (saves, save %, clean sheets, goals prevented), season-by-season history kept forever, club seasons and league leaderboards.
 - Money by country (TV in England, gates in Germany, sales in Brazil and Portugal), attendance that reacts, wage pressure up to administration.
 - UEFA Europa League and Copa Sudamericana.
-- Six more divisions (League Two, Primera Federación, 2. and 3.
-- Liga, Serie B, Ligue 2): 664 clubs in 36 leagues.
+- Six more divisions (League Two, Primera Federación, 2. and 3. Liga, Serie B, Ligue 2): 664 clubs in 36 leagues.
 - B teams (Castilla, Barça Atlètic, Stuttgart II, ...) that can never go up to their parent's division, with the parent's players; U21 and U18 sides and youth leagues.
 - Follow clubs, competitions, nations and players.
 - More natural match movement (a back line, marking, jockeying, early runs, spacing).
