@@ -386,7 +386,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-51 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+61 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -396,7 +396,17 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams and history; a squad for each national team (who is called up), qualifying formats, a cup's group sizes, past transfers and eras of their own are still to come. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
+| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams, history, club extras and international football; the pieces still to come are listed on the Editor rows below. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
+| Editor | National team squads in the editor: choose who is called up for a nation, instead of the game picking its best 23 by ability (the pool of players a nation can pick from has to be built around the choice) | Alpha 2 |
+| Editor | Qualifying formats in the editor: how nations qualify for the World Championship and the continental championships (groups, play-offs, places) | Alpha 2 |
+| Editor | Cup group sizes in the editor: groups of other sizes in the continental cups, which means reworking the draw built around groups of four | Alpha 2 |
+| Editor | Split leagues in the editor: Scottish-style splits and the other fixed formats (zones, conferences, two tournaments a year) as choices, each with its own shape | Alpha 2 |
+| Editor | Taking out the game's own cups and tournaments in the editor (today only a cup of your own can be added and deleted) | Alpha 2 |
+| Editor | Past transfers in the editor's history screen: who moved where in a past season, beside the tables, cup winners and tournament winners it records now | Alpha 2 |
+| Editor | Bulk player import inside the editor: a spreadsheet or real-stats file turned into players on a screen (the converter exists; the editor has no screen for it) | Alpha 2 |
+| Editor | Club kit designs in the editor: home and away kits beyond the two club colours, shown on the match view | Alpha 2 |
+| Editor | Sharing databases: a library of databases and a way to share them (today a database is saved and loaded as a file) | Alpha 2 |
+| Editor | Club data packs: club names, crests and kits as swappable data with a pack format to import and share, so real-name packs can be made on top of the fictional default | Alpha 2 |
 | History | Historical eras from 1992 with era-appropriate rules | Alpha 2 |
 | History | Alternate-history setup and scenario creator | Alpha 2 |
 | Youth | University draft, graduates, scholarships, overseas trials | Alpha 2 |
