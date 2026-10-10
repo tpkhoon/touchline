@@ -1,5 +1,5 @@
 // Docs check: the headline numbers (clubs, leagues, nations, national teams, cups) in the README and docs must match the
-// data (FM.D.facts, js/data.js). Run `npm run check:docs`; it fails when a doc has gone stale. A line about a past
+// data (FM.D.facts, js/data.js), and so must the number of save slots and the nations named under each simulation tier. Run `npm run check:docs`; it fails when a doc has gone stale. A line about a past
 // build ("Playtest feedback, batch 6 ... 664 clubs in 36 leagues") is history and is left alone: only the present-tense
 // phrases below are checked.
 import fs from 'node:fs';
@@ -35,6 +35,27 @@ for (const f of FILES) {
         bad++;
         console.log(`✗ ${f}: "${m[0]}" — should be "${say}"`);
       }
+}
+// the README's other present-tense facts: how many save slots there are, and which nations have a league in each tier
+{
+  const text = fs.readFileSync(path.join(ROOT, 'README.md'), 'utf8');
+  const slots = FM.Save.SLOTS.length;
+  for (const m of text.matchAll(/There are (\d+) slots/g))
+    if (+m[1] !== slots) {
+      bad++;
+      console.log(`✗ README.md: "${m[0]}" — should be "There are ${slots} slots"`);
+    }
+  const ALIAS = { 'United States': ['USA', 'United States'] }; // (how the README writes a nation)
+  for (const tier of ['full', 'light', 'minimal']) {
+    const line = text.split('\n').find((l) => l.toLowerCase().startsWith(`- **${tier}:**`));
+    if (!line) continue;
+    const nations = new Set(FM.D.LEAGUES.filter((l) => l.sim === tier).map((l) => FM.D.NATIONS[l.nat].name));
+    for (const n of nations)
+      if (!(ALIAS[n] || [n]).some((a) => line.includes(a))) {
+        bad++;
+        console.log(`✗ README.md: the ${tier} tier leaves out ${n}, which has a ${tier} league`);
+      }
+  }
 }
 console.log(
   bad

@@ -10,7 +10,7 @@ Leagues are described by nation and level here, since their names are generated:
 
 - **Full:** England's top two divisions, and the top flights of Spain, Germany, France and Brazil.
 - **Light:** England's third and fourth tiers, Spain's second and third, Germany's second and third, Italy's top two, France's second, and the top flights of Portugal, the Netherlands, Argentina, the USA, Japan and Saudi Arabia.
-- **Minimal:** the top flights of Belgium, Turkey, Czechia, Greece, Norway, Poland, Denmark, Austria, Switzerland, Scotland, Serbia, Hungary, Ireland, Wales, Australia, Mexico, South Korea, Thailand, Nigeria and Morocco, and Saudi Arabia's second tier.
+- **Minimal:** the top flights of Belgium, Turkey, Czechia, Greece, Norway, Poland, Denmark, Austria, Switzerland, Scotland, Serbia, Hungary, Ireland, Wales, Australia, Mexico, South Korea, Thailand, Singapore, Malaysia, Vietnam, Indonesia, the Philippines, Nigeria, Morocco and South Africa, and Saudi Arabia's second tier.
 
 Your own league and the leagues just above and below it always run in the full engine.
 
@@ -44,7 +44,7 @@ Then open http://localhost:5173.
 ## Saves
 
 - Saves go to IndexedDB in the browser, or to real files in the native app.
-- There are 3 slots, with autosave after every matchday and whenever the app goes to the background.
+- There are 5 slots, with autosave after every matchday and whenever the app goes to the background.
 - Older saves are upgraded automatically (the original is kept as a backup); only saves from before Alpha 1 can't be.
 - Club → Settings exports a compressed `.touchline` backup and imports one (also from the title screen).
 
@@ -55,7 +55,7 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | Command                                                                 | Purpose                                                                                                                                                  |
 | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run serve`                                                         | Serve the folder on port 5173 (same as the `python -m http.server` above).                                                                                |
-| `npm test`                                                              | Headless regression test: two seeded seasons plus invariants, save pack/unpack and migrations (about a minute).                                          |
+| `npm test`                                                              | Headless regression test: two seeded seasons plus invariants, save pack/unpack and migrations (slow: ten minutes or more).                                          |
 | `npm run test:quick`                                                    | The same regression test over one season.                                                                                                                |
 | `npm run calibrate`                                                     | Calibration report: three seeded seasons compared with real football, 49 measures.                                                                       |
 | `npm run test:regens`                                                   | Regen test: academy intakes aged year by year, checked for realistic career shapes (about 20 seconds).                                                   |
@@ -89,7 +89,7 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 
 ### Regression test
 
-`npm test` runs two seasons with a seeded RNG through the same code the app uses (including the Web Worker's JSON hand-off), then checks invariants, save pack/unpack and save migrations. It takes about a minute and exits non-zero on failure. `npm run test:quick` plays one season.
+`npm test` runs two seasons with a seeded RNG through the same code the app uses (including the Web Worker's JSON hand-off), then checks invariants, save pack/unpack and save migrations. It exits non-zero on failure and is slow: a season takes several minutes on a laptop (five to ten on a slow machine), so two seasons is a wait of ten minutes or more. `npm run test:quick` plays one season.
 
 ### Calibration
 
@@ -131,7 +131,7 @@ The wider suite (`tools/suite.mjs`) has a manager play every match for three sea
 - that no club drifts into impossible debt or wealth;
 - that the world keeps its size and shape.
 
-It takes about two minutes a season. In the app, the developer panel has the matching UI smoke test: it opens every tab, sub-tab and a sample of sheets and reports what threw or showed a broken value.
+It takes several minutes a season. In the app, the developer panel has the matching UI smoke test: it opens every tab, sub-tab and a sample of sheets and reports what threw or showed a broken value.
 
 ### Wonderkid test
 
