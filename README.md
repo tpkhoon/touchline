@@ -69,7 +69,8 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | `npm run test:tactics`                                                  | Tactic-response test: a high press, a low block, build-up, width and the opponent's press must change possession, ball-winning, stamina and chances by type; match instructions must pay against the side they answer and cost against the wrong one; the post-match reading must name them. |
 | `npm run test:longrun`                                                  | 30-year stability test: the world plays itself and the pecking order, upstarts, falls, dynasties and club bounds are checked (about 25 minutes). |
 | `npm run sysmap`                                                        | Systems map: how each system uses the others, the closed loops checked hop by hop, and state nothing reads (writes docs/SYSTEMS.md). |
-| `npm run test:dbimport`                                                 | Tests for the database import framework.          |
+| `npm run test:dbimport`                                                 | Tests for the database import framework.                                                                                    |
+| `npm run test:editor`                                                   | World editor test: an edited world (clubs, leagues, cups, players, staff, national teams, history, packs) is built the way the new-career screen builds it and plays a season. Slow: several minutes. |
 | `npm run import:history -- --dir data/samples/history --out world.json` | Run the historical importer on a folder of data.                                                                                                         |
 | `npm run dev-tools`                                                     | Start the developer dashboard on http://localhost:5190.                                                                                                  |
 | `npm run names -- --kind clubs --nat SCO --count 20 --seed 3`           | Name generator (`tools/namegen.mjs`): players, towns, clubs, grounds, nicknames, leagues and sponsors by nation and seed, flagging names that would be rejected. |
@@ -136,12 +137,13 @@ It takes about two minutes a season. In the app, the developer panel has the mat
 
 ### Data tools
 
-These serve the editor and club packs (`npm run test:realstats`, `test:worlddef`, `test:import`, `import:history`):
+These serve the editor and club packs (`npm run test:realstats`, `test:worlddef`, `test:import`, `test:editor`, `import:history`):
 
 - **Real-stats converter:** `js/realstats.js`, command line `tools/realstats.mjs players.csv`. Turns a real player's numbers into attributes and ability.
 - **World definition:** `js/worlddef.js`, command line `tools/worlddef.mjs --export world.json`. The world as data, apart from a save: export, validation, an editing API and loading onto a new world.
 - **Historical importer:** `tools/import-history.mjs`. Reads season tables, player stats and club details into a definition through the converter; a synthetic sample is in `data/samples/history`.
 - **Database import:** `js/dbimport.js` (`FM.DbImport`), `js/histimport.js` (the CSV adapter, also used by `tools/import-history.mjs`) and `tools/dbimport.mjs` (`--check file.json`, `--test`). The in-app way to start a career in a database of your own: adapters turn a file format into a world definition (`read`, `check`, `stage`, `build`, `export`), and the new-career screen's Database card runs it. A definition can add clubs and leagues, change the game's own and replace every player; the changes to the game's data are a small patch (`FM.WorldDef.patchOf`, `useStatic`) that the picker, the save and the simulation worker apply. Adapters: world-definition JSON (`node tools/worlddef.mjs --export`, or Settings → Database in the game) and historical CSV tables; more register with `FM.DbImport.register`.
+- **World editor:** `js/ui-editor.js`, opened from the Database card on the new-career screen (Edit this world). It edits a world definition through the validated calls of `FM.WorldDef.editor` and hands it back as the database the career is made from, or saves it as a file. It covers leagues (formats, tie-breakers, splits, promotion, relegation and play-offs, continental places, simulation tier), clubs (names, looks, crest, kit shirts, ground, ratings, money, facilities, supporters, derbies, B teams, managers), players and free agents (also imported from a spreadsheet through the real-stats converter), coaches, scouts and agent firms, the rules, the cups (names, formats, prize funds, entry, new cups, cups taken out), international football (tournaments, qualifying, national teams, squads), past seasons (tables, cup and tournament winners, big transfers), a library of worlds kept on the device, and club data packs (names and looks only, which fit any world). `tools/editor-check.mjs` (`npm run test:editor`) is its test.
 
 ### Name generator
 
@@ -296,6 +298,7 @@ js/names.js     name pools, demographics and heritage; js/nations.js: more cultu
 js/world.js      world generation, player model, XI selection, competitions, calendar
 js/worlddef.js  the world as data: definitions, validation, patches to the game's clubs and leagues
 js/dbimport.js  database import: adapters, staging, building a world from a file, export
+js/ui-editor.js the world editor screens (opened from the new-career screen)
 js/histimport.js the historical CSV tables adapter
 js/realstats.js real statistics to attributes
 js/draft.js     the American league's college draft
@@ -334,4 +337,4 @@ tools/           namegen.mjs (name generator), sim-test.mjs (regression test), c
 
 ## Not yet built (next candidates)
 
-See [docs/ROADMAP.md](docs/ROADMAP.md). Next is the last playtest feedback batch (platform), then Alpha 2: the database and world editor, historical eras and scenarios, the youth pathway, player and manager career histories, relationships, deeper economics and database export/import. The Living world backlog follows (Football World screen, club philosophy, deeper staff, tactical evolution, agents, media); device builds come before Beta.
+See [docs/ROADMAP.md](docs/ROADMAP.md). Next is the last playtest feedback batch (platform), then Alpha 2: the rest of the world editor (zones, conferences and two-tournament formats as choices), historical eras and scenarios, the youth pathway, player and manager career histories, relationships, deeper economics and database export/import. The Living world backlog follows (Football World screen, club philosophy, deeper staff, tactical evolution, agents, media); device builds come before Beta.
