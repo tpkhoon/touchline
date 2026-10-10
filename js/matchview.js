@@ -29,20 +29,42 @@
     const t = opp.tactic,
       slots = D.FORMATIONS[t.formation] || [];
     const { xi } = W.pickXI(opp.id, t);
+    const name = (p) =>
+      `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p === key ? ' <span title="Danger man">★</span>' : ''}`;
+    // The lines are the formation's own (3-4-2-1 is three, four, two and one, wing-backs among the four), not the
+    // positions' groups: slots from the back of the pitch forward, cut by the numbers in its name
+    const nums = String(t.formation).split('-').map(Number);
+    const outfield = slots.map((s, i) => ({ s, i })).filter((x) => x.i > 0);
+    const rows = [];
+    if (nums.length >= 3 && nums.reduce((a, b) => a + b, 0) === outfield.length) {
+      const sorted = outfield.slice().sort((a, b) => a.s.x - b.s.x || a.s.y - b.s.y);
+      let at = 0;
+      for (const n of nums) {
+        rows.push(sorted.slice(at, at + n));
+        at += n;
+      }
+    }
+    const lineOf = (list) =>
+      list
+        .sort((a, b) => a.s.y - b.s.y)
+        .map(({ i }) => xi[i])
+        .filter(Boolean)
+        .map(name)
+        .join(' · ');
     const line = (g) =>
       xi
         .map((p, i) => (p && slots[i] && D.POS_GROUP[slots[i].t] === g ? p : null))
         .filter(Boolean)
-        .map(
-          (p) =>
-            `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p === key ? ' <span title="Danger man">★</span>' : ''}`,
-        )
+        .map(name)
         .join(' · ');
     const out = W.squad(opp.id).filter((p) => !W.available(p));
-    const row = (l, g) =>
-      `<div class="row small" style="margin-top:6px;gap:8px;align-items:flex-start"><span class="dim" style="width:34px">${l}</span><span class="grow" style="line-height:1.7">${line(g)}</span></div>`;
+    const row = (l, text) =>
+      `<div class="row small" style="margin-top:6px;gap:8px;align-items:flex-start"><span class="dim" style="width:34px">${l}</span><span class="grow" style="line-height:1.7">${text}</span></div>`;
+    const lines = rows.length
+      ? rows.map((r, k) => row(k === 0 ? 'DEF' : k === rows.length - 1 ? 'ATT' : 'MID', lineOf(r)))
+      : [row('DEF', line('DEF')), row('MID', line('MID')), row('ATT', line('ATT'))];
     return `<div class="card"><div class="row"><div class="h3 grow">Predicted XI</div><span class="tiny dim">${esc(t.formation)}</span></div>
-      ${row('GK', 'GK')}${row('DEF', 'DEF')}${row('MID', 'MID')}${row('ATT', 'ATT')}
+      ${row('GK', line('GK'))}${lines.join('')}
       ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
   };
   const DANGER_POS = { ST: 1, W: 0.96, AM: 0.96, WM: 0.9, CM: 0.82, WB: 0.74, FB: 0.7, DM: 0.68, CB: 0.6, GK: 0.2 };

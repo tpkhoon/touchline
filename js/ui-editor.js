@@ -243,7 +243,9 @@
     const lg = v('league') || ED.lid;
     const patch = {
       name: (v('name') || '').trim(),
-      short: (v('short') || '').trim().toUpperCase(),
+      short:
+        (v('short') || '').trim().toUpperCase() ||
+        U.abbrev(v('name'), new Set(ED.def.clubs.filter((x) => x.id !== ED.cid).map((x) => x.short))),
       nick: (v('nick') || '').trim(),
       city: (v('city') || '').trim(),
       colors: [v('c1'), v('c2')],

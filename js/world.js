@@ -920,11 +920,13 @@
     // spells and career totals agree with the rows: the current spell covers at least its rows, an earlier club gets one
     const mine = spellAt[c.id];
     if (mine) {
-      if (mine.apps > sp.apps) {
+      // a spell that began inside the rows (he came from another club) is exactly its rows; one that began before them
+      // (a long-serving player) also has the seasons the rows do not go back to
+      if (mine.apps > sp.apps || here < seasons) {
         p.career.apps += mine.apps - sp.apps;
         sp.apps = mine.apps;
       }
-      sp.goals = Math.max(sp.goals || 0, mine.goals);
+      sp.goals = here < seasons ? mine.goals : Math.max(sp.goals || 0, mine.goals);
     }
     if (prev && spellAt[prev.id] && spellAt[prev.id].apps > 0) {
       const e = spellAt[prev.id];
@@ -1983,7 +1985,7 @@
       policyV1: 1,
       intro: { year: opts.startYear || D.SEASON_START, n: 0, derby: false, met: {} }, // the first season introduces the world as it goes
       compRules: 3, // and each league's real promotion, relegation and play-off rules
-      clubAbbr: 2, // clubs show their real abbreviations and nicknames
+      clubAbbr: 3, // clubs show their real abbreviations and nicknames
       rules: {
         win: opts.win || 3,
         subs: opts.subs || 5,
@@ -2703,7 +2705,8 @@
   W.army = (c) => !!(c && c.policy && c.policy.military);
   // Lower-league realism: a part-time club (the fourth tier and below, or a tiny club) trains in the evenings, has no scouting
   // network to speak of (two scouts at most) and pays what a community club can
-  W.partTime = (c) => !!c && c.sim !== 'nation' && ((FM.S.comps[c.comp] && FM.S.comps[c.comp].tier >= 4) || c.rep < 28);
+  W.partTime = (c) =>
+    !!c && c.sim !== 'nation' && D.partTime(c.nat, (FM.S.comps[c.comp] && FM.S.comps[c.comp].tier) || 1, c.rep);
   W.maxScouts = () => (W.partTime(W.userClub()) ? 2 : 5);
   W.isUser = (clubId) => FM.S.user && FM.S.user.clubId === clubId;
   W.isUserNation = (id) => !!(FM.S.user && FM.S.user.nation && FM.S.user.nation === id);

@@ -296,14 +296,22 @@
       xgOp = op.xg.toFixed(1),
       unlucky = !won && me.xg > op.xg + 0.5,
       lucky = !lost && op.xg > me.xg + 0.5;
+    const early = FM.Season.gamesPlayed(club.id) <= 3; // (nothing has been going on "for weeks" after one game)
     const say = {
       opt: won
-        ? ['Another win. This team is going places 🚀', 'Every week it clicks a bit more. {mgr} has this right']
+        ? early
+          ? ['What a start. This team is going places 🚀', 'A win on the board. {mgr} has this right']
+          : ['Another win. This team is going places 🚀', 'Every week it clicks a bit more. {mgr} has this right']
         : lost
-          ? [
-              'One bad day. We go again — this squad is better than that',
-              'Heads up, lads. We have been brilliant for weeks 💪',
-            ]
+          ? early
+            ? [
+                'One bad day. We go again — this squad is better than that',
+                "Heads up, lads. It's early, plenty of season left 💪",
+              ]
+            : [
+                'One bad day. We go again — this squad is better than that',
+                'Heads up, lads. We have been brilliant for weeks 💪',
+              ]
           : ["Plenty to build on. We'll win the next one", 'A point and a lot of positives 👏'],
       doom: won
         ? ["Won, but we'll be punished for that defending eventually", 'Enjoy it. {worst} will cost us soon enough']

@@ -20,7 +20,13 @@
   Sea.gamesPlayed = function (clubId) {
     const c = clubId && FM.S.clubs[clubId],
       comp = c && FM.S.comps[c.comp];
-    return comp && comp.fixtures ? W.roundsBefore(comp, Sea.leagueRound()) : Sea.baseRound();
+    if (!(comp && comp.fixtures)) return Sea.baseRound();
+    // (the rounds before today's league day, and today's own once it has been played: the day does not move on until you
+    // continue, so the match you have just played would otherwise not count)
+    const r = Sea.leagueRound(),
+      k = W.roundOn(comp, r),
+      today = k >= 0 && comp.fixtures[k] ? comp.fixtures[k] : [];
+    return W.roundsBefore(comp, r) + (today.some((f) => f.res && (f.h === clubId || f.a === clubId)) ? 1 : 0);
   };
   // "Matchday 12" for our league (or the first league with a game that day)
   Sea.matchdayLabel = function (cal) {

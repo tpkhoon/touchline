@@ -149,6 +149,59 @@
     plural: (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`,
   });
 
+  // ---------- A club's abbreviation ----------
+  // Three letters from the club's name: the first word that is not a generic one (Little, Real, Club, Associazione,
+  // Atlético ...), then the next letters of it or the start of the next word, never a rude or silly code, and one nobody
+  // else has. Fan accounts and the live match header use it, so "Little Tarncaster City" is TAR, not LIE.
+  const GENERIC = new Set(
+    `fc afc cf sc ac as ssc sv fk bk if sk bsc tsv vfl vfb rc ud cd sd cs ca ec club clube clubs associazione associacao
+    asociacion calcio futbol football sports sport sporting society social little great new old north south east west upper
+    lower real atletico athletic deportivo deportes deportiva olympique olympic racing royal stade stadium union unione
+    united inter dinamo dynamo al el la le los las de del da do di der die the b ii iii reserves city town rovers wanderers
+    albion county rangers argyle harriers alexandra wednesday hotspur borough academical thistle vale welfare orient villa
+    saint`.split(/\s+/),
+  );
+  const BAD_CODES = new Set(
+    `ASS ARS POO PEE SEX GAY FAG FAP CUM TIT WTF KKK NAZ NZI HIV DIE LIE DED BUM GAS PIG HAG SAD BAD DIM FAT WAR CUN CNT
+    COC COK DIK FUK FUC SHT PIS JAP KYS RAT BUB GUG`.split(/\s+/),
+  );
+  U.abbrev = function (name, taken = new Set(), isRude = () => false) {
+    const words = String(name || '')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .split(/[^a-z]+/)
+      .filter(Boolean);
+    const core = words.filter((w) => !GENERIC.has(w)),
+      c0 = core[0] || words[0] || 'xxx',
+      c1 = core[1] || '';
+    const generic = words.filter((w) => GENERIC.has(w));
+    const rest = (core.slice(1).concat(generic).join('') || 'x').split('');
+    const cands = [];
+    if (c0.length >= 3) cands.push(c0.slice(0, 3));
+    if (c1 || generic.length) cands.push(c0.slice(0, 2) + (c1 || generic[0])[0]);
+    if (c0.length >= 3) {
+      const cons = c0.slice(1).replace(/[aeiou]/g, '');
+      if (cons.length >= 2) cands.push(c0[0] + cons.slice(0, 2));
+      for (let k = 2; k < c0.length; k++) cands.push(c0[0] + c0[1] + c0[k]);
+      for (let k = 2; k < c0.length - 1; k++) cands.push(c0[0] + c0[k] + c0[k + 1]);
+    }
+    cands.push(
+      words
+        .map((w) => w[0])
+        .join('')
+        .slice(0, 3),
+    );
+    cands.push((c0 + rest.join('')).slice(0, 3));
+    for (let k = 1; k < Math.min(rest.length, 6); k++) cands.push((c0.slice(0, 2) + rest[k]).padEnd(3, 'x'));
+    for (const l of 'abcdefghijklmnopqrstuvwxyz') cands.push(c0.slice(0, 2).padEnd(2, 'x') + l);
+    for (const raw of cands) {
+      const c = raw.toUpperCase().padEnd(3, 'X').slice(0, 3);
+      if (c.length === 3 && !taken.has(c) && !BAD_CODES.has(c) && !isRude(c)) return c;
+    }
+    return c0.slice(0, 3).toUpperCase().padEnd(3, 'X');
+  };
+
   // Save format version. Bump it with a migration in save.js whenever the saved state changes shape.
   FM.VERSION = '0.5.0'; // the game's version (package.json)
   FM.SAVE_VERSION = 7;

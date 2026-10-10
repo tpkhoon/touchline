@@ -2615,6 +2615,9 @@
   // How each league splits clubs level on points, in order (the real rules): gd = goal difference, gf = goals
   // scored, wins = number of wins, h2h = head-to-head among the clubs level (points, then goal difference, then goals).
   // Anything after these falls to the club's name (a real league would hold a play-off or draw lots).
+  // A part-time squad (trains in the evenings, a thin scouting network): a tiny club anywhere, or a modest one in the fourth
+  // tier and below. English fourth-tier clubs (League Two) are fully professional, and so is a big name that has fallen.
+  FM.D.partTime = (nat, tier, rep) => rep < 28 || (tier >= (nat === 'ENG' ? 5 : 4) && rep < 45);
   FM.D.TIEBREAK_DEFAULT = ['gd', 'gf'];
   FM.D.TIEBREAK = {
     ES1: ['h2h', 'gd', 'gf'], // LaLiga: head-to-head first
@@ -2737,8 +2740,8 @@
   // Squad sizes per tier (+ academy prospects)
   FM.D.SQUAD_TIER = {
     // deep enough to cover injuries, suspensions and rotation (full: 26 senior players, three of them keepers)
-    full: { GK: 3, CB: 5, FB: 3, WB: 1, DM: 2, CM: 4, WM: 2, AM: 2, W: 2, ST: 2 },
-    light: { GK: 2, CB: 3, FB: 2, WB: 1, DM: 2, CM: 3, WM: 1, AM: 2, W: 2, ST: 2 },
+    full: { GK: 3, CB: 5, FB: 3, WB: 1, DM: 2, CM: 3, WM: 2, AM: 2, W: 2, ST: 3 }, // (three strikers: a squad with two is one injury from none)
+    light: { GK: 2, CB: 3, FB: 2, WB: 1, DM: 1, CM: 3, WM: 1, AM: 2, W: 2, ST: 3 },
     minimal: { GK: 2, CB: 3, FB: 2, DM: 1, CM: 2, WM: 1, AM: 1, W: 1, ST: 2 },
   };
   FM.D.ACADEMY_TIER = { full: 2, light: 2, minimal: 1 };

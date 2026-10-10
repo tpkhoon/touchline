@@ -184,8 +184,8 @@
       }
     }
     // abbreviations come from the club's own name now (many carried the codes of its old, real-life name: CHE3, CON)
-    if (s.clubAbbr !== 2 && s.clubs && FM.D.CLUB_INFO) {
-      s.clubAbbr = 2;
+    if ((s.clubAbbr || 0) < 3 && s.clubs && FM.D.CLUB_INFO) {
+      s.clubAbbr = 3;
       // (only where the club still has the name the abbreviation was made from)
       const named = new Map(FM.D.LEAGUES.flatMap((l) => FM.D[l.clubs] || []).map((r) => [r[1], r[0]]));
       for (const [id, c] of Object.entries(s.clubs)) {

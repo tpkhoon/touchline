@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-377 features are playable in the web prototype today. Build = the build that added it.
+383 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -376,6 +376,12 @@ Every feature from the game design document, with what is playable in the protot
 | International | Continental Champions Trophy: in the summer before each World Cup the champions of the four continental championships, the world champions, a host and the best-ranked others (eight nations) play two groups, semi-finals and a final, with awards and a team of the tournament; an invitation, so a national team manager is not judged on it | Playtest round 11 |
 | Editor | World editor: from the Database card on the new-career screen, every league and club can be edited (name, short name, nickname, city, colours, identity, reputation, ground, capacity, founding year, league), clubs added to any league, a club put back as the game has it, and the world named, saved as a file or used for the new career | Playtest round 11 |
 | Editor | World editor players: a squad screen for each club and a screen for each player (name, nationality, position, foot, age, contract, the 14 attributes with the ability they make, set from an ability if you prefer, potential); made players are added to the generated squads, or replace the squad of any club given eleven or more | Playtest round 11 |
+| Clubs | Club abbreviations from the first non-generic word of the name, never rude or silly, unique (TAR, not LIE), rebuilt by `npm run abbrevs` | Playtest round 12 |
+| Matchday | A match left unfinished is played to the end when the save opens, with a full-time screen (score, goals, why it counts) | Playtest round 12 |
+| Home | The hub counts the match you have just played (matchday and league card) | Playtest round 12 |
+| Players | Season rows that agree with the career panel for a player who joined from another club; earlier seasons beside their own club | Playtest round 12 |
+| Matchday | The predicted XI lists the formation's own lines, and the live match header shortens long club names | Playtest round 12 |
+| Clubs | Part-time squads only where they are real (not English fourth-tier clubs or big names), three strikers in a generated squad, text and layout fixes from the playtest | Playtest round 12 |
 | Editor | World editor, national team squads: players made for a country called up, picked ahead of better players for three years | Playtest round 11 |
 | Editor | World editor, qualifying: groups of four, groups of three or pairs home and away for the World Championship and the continental championships | Playtest round 11 |
 | Editor | World editor, cup groups: groups of three, four, five or six clubs in the continental cups | Playtest round 11 |

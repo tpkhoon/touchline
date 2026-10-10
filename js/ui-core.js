@@ -182,11 +182,19 @@
       ' ',
     ),
   );
+  const HEAD = new Set(
+    'little great new old north south east west upper lower real atletico atlético athletic club clube deportivo sporting associazione calcio'.split(
+      ' ',
+    ),
+  );
   C.shortName = (club, max = 14) => {
     const words = String(club.name).split(' ');
     while (words.join(' ').length > max && words.length > 1 && TAIL.has(words[words.length - 1].toLowerCase()))
       words.pop();
-    return words.join(' ');
+    // still too long: the generic opening words go too (Little, West, Real, Athletic ...), and the abbreviation is the last resort
+    while (words.join(' ').length > max && words.length > 1 && HEAD.has(words[0].toLowerCase())) words.shift();
+    const out = words.join(' ');
+    return out.length > max + 3 && club.short ? club.short : out;
   };
   // His flag, and a smaller one beside it for a second nationality he is eligible for
   C.flags = (p) => {
@@ -366,6 +374,33 @@
       setTimeout(() => last.remove(), 220);
     }
   };
+  // A match left unfinished (the app closed or reloaded mid-match) is played to the end when the save opens, from the seed
+  // saved at kick-off. This is the full-time screen for it: what happened, and why it is already counted.
+  UI.matchLeft = function (m) {
+    const S = FM.S,
+      r = m.result(),
+      [H, A] = m.sides,
+      mine = S.user && S.user.clubId,
+      us = H.club.id === mine ? 0 : A.club.id === mine ? 1 : -1;
+    const g = [r.hg, r.ag],
+      verdict = us < 0 ? '' : g[us] > g[1 - us] ? 'You won.' : g[us] < g[1 - us] ? 'You lost.' : 'It was a draw.';
+    const name = (id) => (S.players[id] ? FM.W.name(S.players[id]) : 'Unknown');
+    const goals = r.goals
+      .slice()
+      .sort((x, y) => x.min - y.min)
+      .map(
+        (e) =>
+          `<div class="row small" style="gap:8px;padding:3px 0"><span class="dim" style="width:34px">${String(e.min).replace(/'/g, '')}'</span><span class="grow">${esc(name(e.pid))}${e.pen ? ' (pen)' : ''}</span><span class="tiny dim">${esc((e.side === 0 ? H : A).club.short)}</span></div>`,
+      )
+      .join('');
+    UI.sheet(
+      `<div class="center" style="padding:6px 0 10px"><div class="small dim">${esc(FM.Season.seasonLabel())}</div><div class="row" style="justify-content:center;gap:12px;align-items:center;margin-top:8px">${C.crest(H.club, 34)}<div class="h1" style="margin:0">${r.hg} – ${r.ag}</div>${C.crest(A.club, 34)}</div><div class="small" style="margin-top:6px">${esc(H.club.name)} v ${esc(A.club.name)}</div>${verdict ? `<div class="b" style="margin-top:6px">${verdict}</div>` : ''}</div>
+      ${goals ? `<div class="small b" style="margin-top:8px">Goals</div>${goals}` : '<div class="small dim">No goals.</div>'}
+      <div class="tiny dim" style="margin-top:12px;line-height:1.5">The match was not finished when the game closed, so it was played to the end for you, from the same kick-off, and it counts: the table, the board and the supporters have all moved. Leave a match only after full time, or you will find a result you did not see.</div>
+      <div class="actions" style="margin-top:12px"><button class="btn pri block" data-act="closeSheet">Continue</button></div>`,
+      { title: 'Played while you were away' },
+    );
+  };
   UI.closeAllSheets = () => document.querySelectorAll('.sheet-wrap').forEach((s) => s.remove());
   UI.refreshSheet = function (html) {
     const all = document.querySelectorAll('.sheet-wrap');
@@ -418,15 +453,7 @@
       const left = FM.Season.resolveLive();
       if (left) {
         UI.save();
-        const r = left.result();
-        setTimeout(
-          () =>
-            UI.toast(
-              `The match you left was played to the end: ${FM.clubOf(left.o.h).name} ${r.hg}–${r.ag} ${FM.clubOf(left.o.a).name}`,
-              4500,
-            ),
-          500,
-        );
+        setTimeout(() => UI.matchLeft(left), 700);
       }
       return true;
     } catch (e) {
@@ -1065,7 +1092,7 @@
             .map((x) => {
               const l = G.entry(x.code).l,
                 n = D.NATIONS[l.nat];
-              return `<div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">${x.icon} <b style="color:#e6edf6">${esc(x.title)}</b> · ${esc(x.blurb)}</div>${row(rowOf(x.code), `Tier ${l.tier}`, G.hook(x.code), `${n.flag} ${esc(n.name)} · ${esc(l.name)}`)}<div class="tiny" style="margin:2px 0 0"><button class="btn sm" data-act="ngStoryAgain" data-id="${x.id}">Another ${esc(x.title.toLowerCase())}</button></div>`;
+              return `<div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">${x.icon} <b style="color:#e6edf6">${esc(x.title)}</b> · ${esc(x.blurb)}</div>${row(rowOf(x.code), `Tier ${l.tier}`, G.hook(x.code), `${n.flag} ${esc(n.name)} · ${esc(l.name)}`)}<div class="tiny" style="margin:2px 0 0"><button class="btn sm" data-act="ngStoryAgain" data-id="${x.id}">Show another club like this</button></div>`;
             })
             .join('')}
           <div class="actions" style="margin-top:10px"><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button><button class="btn sm" data-act="ngView" data-v="browse">Browse all</button></div>

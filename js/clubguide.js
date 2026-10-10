@@ -166,7 +166,7 @@
     if (pol) out.push(`Only ${pol.label} players`);
     if (G.rival(code)) out.push('Derby club');
     if (e.bigGround) out.push('Big ground');
-    if (e.l.tier >= 4 || e.row[6] < 28) out.push('Part-time squad');
+    if (D.partTime(e.l.nat, e.l.tier, e.row[6])) out.push('Part-time squad');
     const f = G.info(code).founded;
     if (f && f < 1890) out.push(`Est. ${f}`);
     else if (f && f > 1975) out.push('Young club');

@@ -33,6 +33,8 @@
     "docs:synced": "node tools/docsync.mjs --mark",
     "dev-tools": "node tools/devserver.mjs",
     "names": "node tools/namegen.mjs",
+    "abbrevs": "node tools/abbrevs.mjs",
+    "test:abbrevs": "node tools/abbrevs.mjs --check",
     "test:wonderkids": "node tools/wonderkids.mjs --seasons 10",
     "lint": "eslint .",
     "format": "prettier --write .",

@@ -2162,9 +2162,10 @@ main {
   flex-direction: row; /* one row, not the stacked .actions column */
   align-items: stretch;
   gap: 6px;
-  padding: 10px 0 4px;
-  background: #06090d;
-  box-shadow: 0 -14px 12px -6px #06090d;
+  padding: 22px 0 4px;
+  /* fades into the page instead of a solid block over the background's glow, so nothing looks cut off behind it */
+  background: linear-gradient(to bottom, rgba(5, 7, 10, 0), rgba(5, 7, 10, 0.94) 55%);
+  margin-top: 8px;
 }
 .title .ng-foot .btn {
   width: auto;
