@@ -677,6 +677,8 @@ Step 1 is done: the game installs to the home screen and plays offline (web app 
 - [x] Build step (concatenate + esbuild minify, hashed URLs), headless season sim as an automatic regression test (`npm test`)
 - [x] Lint (ESLint) and formatting (Prettier) checks on every deploy
 - [x] Package with Capacitor for iOS and Android (projects generated; not yet compiled)
+- [ ] CI smoke test: `npm run test:smoke` (a world, a few matchdays, a save packed and unpacked, the save migrations, the cheap data checks) runs before every deploy; the full suite stays a pre-release step
+- [ ] Compressed autosaves: gzip the save written after every matchday (about 3.6 times smaller), read either format by its first bytes, base64 in the native files and the localStorage fallback, plain JSON where the device cannot compress; pack, compress and write times in the developer panel to time it on a cheap Android phone
 - [ ] Compile and test on real Android and iOS devices; app icons and splash screens
 
 **Beta · Native mobile (store readiness, 2–4 weeks)**

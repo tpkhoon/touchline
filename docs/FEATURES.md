@@ -402,7 +402,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-52 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+55 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -414,6 +414,9 @@ Design principle from here: don't make the game deeper by adding more screens �
 | --- | --- | --- |
 | Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams, history, club extras and international football; the pieces still to come are listed on the Editor rows below. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
 | Editor | League formats with a shape of their own as choices in the editor: zones, conferences and two tournaments a year with a title play-off (today they stay as the game has them) | Alpha 2 |
+| Editor | Eras in the editor: a world definition with its own start year, rules (points for a win, substitutes, foreign-player limits, two-legged ties) and tactical mix, so a world from 1992 plays like 1992; the editor side of the historical eras below | Alpha 2 |
+| Tooling | CI smoke test: `npm run test:smoke` builds a world, plays a few matchdays, packs and unpacks a save and runs the save migrations, with the cheap data checks, before the deploy (the full suite stays a pre-release step) | Mobile readiness |
+| Platform | Compressed autosaves: gzip the save written after every matchday (about 3.6 times smaller: 12 MB to 3.3 MB), read either format by its first bytes, base64 in the native files and the localStorage fallback, plain JSON where the device cannot compress; with pack, compress and write times in the developer panel to time it on a cheap Android phone | Mobile readiness |
 | History | Historical eras from 1992 with era-appropriate rules | Alpha 2 |
 | History | Alternate-history setup and scenario creator | Alpha 2 |
 | Youth | University draft, graduates, scholarships, overseas trials | Alpha 2 |
