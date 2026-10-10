@@ -159,6 +159,7 @@
           foot: p.foot,
           attrs,
           pa: Math.max(p.pa, W.calcCA({ attrs }, p.pos)),
+          ...(p.ntUntil >= S.year ? { callup: true } : {}),
           club: p.clubId || null,
           contract: p.contract,
         });
@@ -205,7 +206,12 @@
     }
     if (kind === 'cont') {
       const d = D.CONTINENTALS.find((c) => c.id === id);
-      return { legs: { qf: 2, sf: 2, f: 1, ...(d.legs || {}) }, central: !!d.central, prize: d.prize };
+      return {
+        legs: { qf: 2, sf: 2, f: 1, ...(d.legs || {}) },
+        central: !!d.central,
+        prize: d.prize,
+        groupSize: d.groupSize || 4,
+      };
     }
     return null;
   };
@@ -227,6 +233,8 @@
       for (const k of ['qf', 'sf', 'f'])
         if (![1, 2].includes((f.legs || {})[k])) e.push(`${at}: ${k} is played over one or two legs`);
       if (f.central != null && typeof f.central !== 'boolean') e.push(`${at}: central is true or false`);
+      if (f.groupSize != null && ![3, 4, 5, 6].includes(f.groupSize))
+        e.push(`${at}: the groups have three, four, five or six clubs`);
     }
     if (f.prize != null && !(f.prize >= 1e5 && f.prize <= 1e9))
       e.push(`${at}: the prize is between 100,000 and 1,000,000,000`);
@@ -250,7 +258,12 @@
   const tournList = () => Object.values(I().TOURNS).flat();
   WD.intlNow = () => ({
     cycle: I().CYCLE,
-    tourns: Object.fromEntries(tournList().map((tn) => [tn.id, { name: tn.name, slots: tn.pools.map(([, n]) => n) }])),
+    tourns: Object.fromEntries(
+      tournList().map((tn) => [
+        tn.id,
+        { name: tn.name, slots: tn.pools.map(([, n]) => n), ...(tn.pools.length ? { qual: tn.qualSize || 4 } : {}) },
+      ]),
+    ),
     invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host })),
   });
   WD.validateIntl = function (x) {
@@ -265,6 +278,8 @@
         continue;
       }
       if (v.name != null && !String(v.name).trim()) e.push(`tournament ${id}: needs a name`);
+      if (v.qual != null && (!tn.pools.length || ![2, 3, 4].includes(v.qual)))
+        e.push(`tournament ${id}: qualifying groups have two, three or four nations`);
       if (v.slots) {
         if (
           !Array.isArray(v.slots) ||
@@ -295,6 +310,7 @@
       if (!tn) continue;
       if (v.name) ((tn.name = v.name), (I().TNAME[id] = v.name));
       if (v.slots) tn.pools.forEach((p, i) => (p[1] = v.slots[i]));
+      if (v.qual) tn.qualSize = v.qual;
     }
     if (x.invitesAll) {
       // the ones the world keeps, in the game's order (the others are taken out)
@@ -545,6 +561,7 @@
         legs: c.legs && JSON.stringify(c.legs),
         central: c.central,
         prize: c.prize,
+        groupSize: c.groupSize,
       })),
       euroPrize: (D.EURO_CUPS || []).map((c) => c.prize),
       intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE }),
@@ -607,6 +624,7 @@
         const d = D.CONTINENTALS.find((x) => x.id === c.id);
         if (d) ((d.legs = { ...c.format.legs }), (d.central = !!c.format.central));
         if (d && c.format.prize != null) d.prize = c.format.prize;
+        if (d && c.format.groupSize) d.groupSize = c.format.groupSize;
       } else if (euroDef(c.id)) {
         euroDef(c.id).opts = JSON.parse(JSON.stringify(c.format));
         if (c.format.prize != null) euroDef(c.id).prize = c.format.prize;
@@ -658,6 +676,8 @@
         if (s.central === undefined) delete c.central;
         else c.central = s.central;
         c.prize = s.prize;
+        if (s.groupSize === undefined) delete c.groupSize;
+        else c.groupSize = s.groupSize;
       });
       for (const k of Object.keys(D.NAT_MIX)) if (!snap.mix.has(k)) delete D.NAT_MIX[k];
     };
@@ -698,6 +718,29 @@
         !r.tiebreak.every((k) => ['h2h', 'wins', 'gd', 'gf'].includes(k))
       )
         e.push(`${at}: the tie-breakers are some of head-to-head, wins, goal difference and goals scored`);
+    }
+    if (r.split) {
+      const s = r.split,
+        n = def.clubs.filter((c) => c.league === l.id).length;
+      if (r.zones || r.conferences || r.torneos || r.rounds || r.legs)
+        e.push(`${at}: a split league cannot also be in zones or conferences, play two tournaments, or play once each`);
+      const g = s.groups;
+      if (!Array.isArray(g) || g.length < 2 || g.length > 4 || !g.every((x) => Number.isInteger(x) && x >= 2))
+        e.push(`${at}: a split makes two to four groups of at least two clubs`);
+      else {
+        if (n && g.reduce((a, b) => a + b, 0) !== n)
+          e.push(`${at}: the groups add up to ${g.reduce((a, b) => a + b, 0)} clubs but the league has ${n}`);
+        if (
+          !Array.isArray(s.rounds) ||
+          s.rounds.length !== g.length ||
+          !s.rounds.every((x) => ['none', 'single', 'double'].includes(x))
+        )
+          e.push(`${at}: each group plays no more games, once each or home and away`);
+        if (!Array.isArray(s.names) || s.names.length !== g.length || !s.names.every((x) => String(x || '').trim()))
+          e.push(`${at}: each group needs a name`);
+      }
+      if (!Number.isInteger(s.after) || s.after < 1 || (n && (s.after < n - 1 || s.after > 3 * (n - 1))))
+        e.push(`${at}: the table splits after ${n ? `${n - 1} to ${3 * (n - 1)}` : 'a number of'} rounds`);
     }
     const p = r.promote;
     if (p) {
@@ -782,6 +825,7 @@
     if (!isInt(p.born) || (ctx.year && (ctx.year - p.born < 15 || ctx.year - p.born > 45)))
       e.push(`${at}: born ${p.born} gives an age outside 15–45`);
     if (p.foot && !FEET.includes(p.foot)) e.push(`${at}: foot must be Left, Right or Both`);
+    if (p.callup != null && typeof p.callup !== 'boolean') e.push(`${at}: callup is true or false`);
     const a = p.attrs || {};
     for (const k of D.ATTRS)
       if (!(a[k] >= 1 && a[k] <= 20)) e.push(`${at}: attribute ${k} must be 1–20 (it is ${a[k]})`);
@@ -889,6 +933,12 @@
     for (const p of def.players) {
       push(WD.validatePlayer(p, { clubs, year }));
       if (p.club) perClub[p.club] = (perClub[p.club] || 0) + 1;
+    }
+    {
+      const per = {};
+      for (const p of def.players) if (p.callup) per[p.nat] = (per[p.nat] || 0) + 1;
+      for (const [nat, n] of Object.entries(per))
+        if (n > 26) errors.push(`national team ${nat}: ${n} players called up, a squad is at most 26`);
     }
     if (def.meta.players === 'replace') {
       if (!def.players.length) errors.push('meta.players is "replace" but the definition has no players');
@@ -1346,6 +1396,7 @@
       if (d.contract) p.contract = d.contract;
       else if (!d.club) p.contract = S.year; // (a free agent, like the ones the world makes)
       p.defId = d.id;
+      if (d.callup) p.ntUntil = S.year + 3; // picked for his country ahead of better players for three years
       W.claimName(`${p.fn} ${p.ln}`);
       S.players[p.id] = p;
       if (d.club && S.clubs[d.club]) W.startSpell(p, d.club);

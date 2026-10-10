@@ -203,9 +203,12 @@ check(
 def.removeCups = ['CUPFRA', 'CUPJPN'];
 check(E.setCup('CUPITA', { format: { legs: [], neutral: [] } }).ok, 'a valid Italian cup format was refused');
 check(
-  E.setCup('AF', { format: { legs: { qf: 1, sf: 1, f: 1 }, central: true, prize: 6e6 } }).ok,
+  E.setCup('AF', { format: { legs: { qf: 1, sf: 1, f: 1 }, central: true, prize: 6e6, groupSize: 3 } }).ok,
   'a valid continental format was refused',
 );
+check(!E.setCup('NC', { format: { legs: { qf: 2, sf: 2, f: 2 }, groupSize: 7 } }).ok, 'groups of seven were accepted');
+check(!E.setCup('NC', { format: { legs: { qf: 2, sf: 2, f: 2 }, groupSize: 2 } }).ok, 'groups of two were accepted');
+check(E.setCup('NC', { format: { legs: { qf: 2, sf: 2, f: 2 }, groupSize: 5 } }).ok, 'groups of five were refused');
 check(E.setCup('HC', { format: { legs: [], neutral: [2] } }).ok, 'a valid Holders cup format was refused');
 // derbies and B teams
 const drb = def.clubs.filter((c) => c.league === 'D1' && !c.parent && c.id !== mine);
@@ -399,8 +402,59 @@ check(
     'the new-career import did not read the pack: ' + (imp.errors || []).join('; '),
   );
 }
+// a league split into groups: bad splits are refused, a good one is played
+{
+  const pt = def.clubs.filter((c) => c.league === 'PT1').length;
+  const base = lg('PT1').rules;
+  const split = (over) => ({
+    rules: {
+      ...base,
+      split: {
+        after: 34,
+        groups: [9, 9],
+        rounds: ['single', 'single'],
+        names: ['Championship', 'Relegation'],
+        halve: true,
+        ...over,
+      },
+    },
+  });
+  check(!E.setLeague('PT1', split({ groups: [8, 9] })).ok, 'groups that do not add up to the clubs were accepted');
+  check(!E.setLeague('PT1', split({ groups: [1, 17] })).ok, 'a group of one club was accepted');
+  check(
+    !E.setLeague('PT1', split({ rounds: ['single', 'triple'] })).ok,
+    'a group playing a triple round-robin was accepted',
+  );
+  check(!E.setLeague('PT1', split({ names: ['Championship', ''] })).ok, 'a group with no name was accepted');
+  check(!E.setLeague('PT1', split({ after: 3 })).ok, 'a split after three rounds was accepted');
+  check(
+    !E.setLeague('PT1', { rules: { ...base, legs: 1, split: split({}).rules.split } }).ok,
+    'a split league played once each was accepted',
+  );
+  check(pt === 18, `expected eighteen clubs in the Portuguese league, found ${pt}`);
+  check(E.setLeague('PT1', split({})).ok, 'a valid split was refused');
+}
+// a player called up for his country (and too many of them)
+{
+  const fr = def.players.find((p) => p.ln === 'Freeman');
+  check(E.updatePlayer(fr.id, { callup: true }).ok, 'a player could not be called up');
+  const bad = JSON.parse(JSON.stringify(def));
+  for (let i = 0; i < 27; i++) bad.players.push({ ...fr, id: 'dp_cu' + i, ln: 'Cu' + i, callup: true });
+  check(
+    WD.validate(bad, null).errors.some((e) => /national team ENG: 2\d players called up/.test(e)),
+    'twenty-seven players called up for one nation were accepted',
+  );
+}
 // international football: bad settings are refused, good ones kept
 check(!E.setIntl({ cycle: 9 }).ok, 'a World Championship year of 9 was accepted');
+check(
+  !E.setIntl({ tourns: { EC: { ...WD.intlNow().tourns.EC, qual: 5 } } }).ok,
+  'qualifying groups of five were accepted',
+);
+check(
+  !E.setIntl({ tourns: { CT: { name: 'Trophy', slots: [], qual: 3 } } }).ok,
+  'qualifying groups for an invitation were accepted',
+);
 check(
   !E.setIntl({ tourns: { WC: { name: 'Global Cup', slots: [9, 3, 2, 1, 2] } } }).ok,
   'seventeen places in a sixteen-nation cup were accepted',
@@ -417,7 +471,11 @@ check(
 check(
   E.setIntl({
     cycle: 0,
-    tourns: { WC: { name: 'Global Cup', slots: [8, 4, 2, 1, 1] }, EC: { name: 'Euro Test Cup' } },
+    tourns: {
+      WC: { name: 'Global Cup', slots: [8, 4, 2, 1, 1], qual: 3 },
+      EC: { ...WD.intlNow().tourns.EC, name: 'Euro Test Cup', qual: 3 },
+      SA: { ...WD.intlNow().tourns.SA, qual: 2 },
+    },
     invites: [{ id: 'KIR', name: 'Test Invitational', host: 'ESP' }],
   }).ok,
   'valid international settings were refused',
@@ -624,6 +682,31 @@ console.log(`D1 has ${n1} clubs`);
     S.comps.CUPITA.opts.legs.length === 0 && S.comps.CUPITA.opts.neutral.length === 0,
     'the Italian cup kept its old format',
   );
+  check(
+    S.comps.PT1.rules.split && S.comps.PT1.rules.split.halve && S.comps.PT1.rules.split.groups.join() === '9,9',
+    'the split did not reach the league',
+  );
+  check(
+    S.comps.AF.groups.length >= 2 &&
+      S.comps.AF.groups.every((g) => g.clubs.length === 3) &&
+      S.comps.AF.groups[0].fixtures.length === 6,
+    'the African cup does not play in groups of three',
+  );
+  check(
+    S.comps.NC.groups.every((g) => g.clubs.length === 5) && S.comps.NC.groups[0].fixtures.length === 5,
+    'the North American cup does not play groups of five once each',
+  );
+  check(
+    S.quals &&
+      S.quals.groups.some((g) => g.tn === 'SA') &&
+      S.quals.groups.filter((g) => g.tn === 'SA').every((g) => g.teams.length <= 2) &&
+      S.quals.groups.filter((g) => g.tn === 'EC').every((g) => g.teams.length <= 3),
+    'the qualifying groups are not the size set',
+  );
+  check(
+    FM.Intl.squad('ENG').some((p) => p.ln === 'Freeman') && FM.Intl.pool('ENG')[0].ln === 'Freeman',
+    'the player called up is not first in his nations pool',
+  );
   check(!S.comps.CUPFRA && !S.comps.CUPJPN && S.comps.CUPENG, 'the cups taken out are still in the world');
   check(
     FM.Intl.INVITES.length === 1 && FM.Intl.INVITES[0].id === 'KIR',
@@ -793,6 +876,21 @@ check(
   check(
     FM.S.comps.D2.clubs.length === d2n && FM.S.comps.D3.clubs.length === d3n,
     'the relegation play-off pair changed the sizes of its leagues',
+  );
+}
+{
+  const pt = arch && arch.comps.PT1 && arch.comps.PT1.table;
+  check(
+    pt && pt.length === 18 && pt.every((r) => r.p === 42),
+    'the split league did not play 34 rounds and then eight more: ' +
+      (pt && [...new Set(pt.map((r) => r.p))].join('/')),
+  );
+  check(
+    pt &&
+      arch.comps.PT1.split &&
+      arch.comps.PT1.split.groups.length === 2 &&
+      arch.comps.PT1.split.names[0] === 'Championship',
+    'the archive has no record of the split',
   );
 }
 check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n1} to ${FM.S.comps.D1.clubs.length})`);

@@ -93,10 +93,15 @@
         );
       }
       // (groups of four; three groups do not make a bracket, so the weakest four entrants wait for another year)
-      const raw = Math.floor(entrants.length / 4),
+      // (a cup's format can set groups of three, four, five or six: def.groupSize)
+      const GS = def.groupSize || 4;
+      const raw = Math.floor(entrants.length / GS),
         G = raw === 3 ? 2 : Math.max(1, raw);
       // (more entrants than places: the weakest wait, whichever league they come from)
-      c.clubs = (entrants.length > G * 4 ? entrants.slice().sort((a, b) => rep(b) - rep(a)) : entrants).slice(0, G * 4);
+      c.clubs = (entrants.length > G * GS ? entrants.slice().sort((a, b) => rep(b) - rep(a)) : entrants).slice(
+        0,
+        G * GS,
+      );
       // Seeded draw: pots of G by reputation, one from each pot per group, avoiding same-nation clashes where possible
       const seeded = c.clubs.slice().sort((a, b) => rep(b) - rep(a));
       const groupsIds = [...Array(G)].map(() => []);
@@ -124,17 +129,18 @@
           name,
           clubs: ids,
           table: mkTable(ids),
-          fixtures: W.roundRobin(ids).map((rd, r) =>
-            rd.map(([h, a]) => ({
-              id: FM.nextId('f'),
-              comp: c.id,
-              group: name,
-              round: r,
-              h,
-              a,
-              res: null,
-              po: `Group ${name} · MD${r + 1}`,
-            })),
+          fixtures: (GS >= 5 ? W.roundRobin(ids).slice(0, W.roundRobin(ids).length / 2) : W.roundRobin(ids)).map(
+            (rd, r) =>
+              rd.map(([h, a]) => ({
+                id: FM.nextId('f'),
+                comp: c.id,
+                group: name,
+                round: r,
+                h,
+                a,
+                res: null,
+                po: `Group ${name} · MD${r + 1}`,
+              })),
           ),
         }));
       c.ko = { qf: [], qf2: null, sf: [], sf2: null, final: null };

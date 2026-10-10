@@ -286,6 +286,17 @@
     const game = (D.TIEBREAK[l.id] || D.TIEBREAK_DEFAULT).join();
     if (tb.join() === game) delete rules.tiebreak;
     else rules.tiebreak = tb;
+    if ($('#ed-spa')) {
+      const count = document.querySelectorAll('[id^=ed-spg-]').length;
+      const each = (id, f) => Array.from({ length: count }, (_, i) => f(v(`${id}-${i}`)));
+      rules.split = {
+        after: Math.round(+v('spa')),
+        groups: each('spg', (x) => Math.round(+x)),
+        rounds: each('spr', (x) => x),
+        names: each('spn', (x) => String(x || '').trim()),
+        halve: v('sph') === 'yes',
+      };
+    }
     const r = WD.editor(ED.def, null).setLeague(ED.lid, {
       name: (v('lname') || '').trim(),
       short: (v('lshort') || '').trim().toUpperCase() || ED.lid,
@@ -482,15 +493,48 @@
   const leagueFormat = (l) => {
     const r = l.rules || {},
       fixed = r.split || r.zones || r.conferences || r.rounds || r.torneos;
+    const canSplit = !(r.zones || r.conferences || r.torneos || r.rounds || r.legs);
+    const n = clubsOf(l.id).length,
+      sp = r.split;
+    const splitBox = !canSplit
+      ? ''
+      : !sp
+        ? `<div class="ng-label">Split</div><div class="tiny dim" style="line-height:1.5">After the regular season the table can divide into groups (a championship group and a relegation group, say) that play each other again.</div><div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edSplitOn">Split this league</button></div>`
+        : `<div class="ng-label">Split <span class="tiny dim">· ${n} clubs</span></div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Regular season rounds</div><input type="number" id="ed-spa" min="${Math.max(1, n - 1)}" max="${3 * Math.max(1, n - 1)}" inputmode="numeric" value="${sp.after}"></div><div style="flex:1"><div class="tiny dim">Points at the split</div><select id="ed-sph"><option value="no" ${sp.halve ? '' : 'selected'}>Carry over</option><option value="yes" ${sp.halve ? 'selected' : ''}>Halved</option></select></div></div>
+      ${sp.groups
+        .map(
+          (g, i) =>
+            `<div class="ng-names" style="margin-top:6px"><input type="text" id="ed-spn-${i}" maxlength="24" value="${esc(sp.names[i] || '')}"><input type="number" id="ed-spg-${i}" min="2" max="${n}" inputmode="numeric" style="max-width:70px" value="${g}" aria-label="Clubs"><select id="ed-spr-${i}" style="max-width:120px">${[
+              ['single', 'Once each'],
+              ['double', 'Home and away'],
+              ['none', 'No more games'],
+            ]
+              .map(([k, t]) => `<option value="${k}" ${sp.rounds[i] === k ? 'selected' : ''}>${t}</option>`)
+              .join('')}</select></div>`,
+        )
+        .join('')}
+      <div class="tiny dim" style="margin:6px 0 4px">Groups (from the top of the table down)</div>${segV(
+        'edSplitN',
+        sp.groups.length,
+        [
+          [2, 'Two'],
+          [3, 'Three'],
+          [4, 'Four'],
+        ],
+      )}
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edSplitOff">No split</button></div>`;
     const opts = WD.TIEBREAKS.slice();
     if (!opts.some(([k]) => k.join() === tbKey(l))) opts.push([tbKey(l).split(','), 'As the game has it']);
-    return `<div class="ng-label">Matches</div>${
-      fixed
-        ? '<div class="tiny dim" style="line-height:1.5">This league has a format of its own (a split, zones, conferences or two tournaments), which stays.</div>'
-        : segV('edLegs', r.legs || 2, [
-            [2, 'Home and away'],
-            [1, 'Once each'],
-          ])
+    return `${splitBox}<div class="ng-label">Matches</div>${
+      fixed && !canSplit
+        ? '<div class="tiny dim" style="line-height:1.5">This league has a format of its own (zones, conferences or two tournaments), which stays.</div>'
+        : r.split
+          ? '<div class="tiny dim" style="line-height:1.5">A split league plays its regular season home and away.</div>'
+          : segV('edLegs', r.legs || 2, [
+              [2, 'Home and away'],
+              [1, 'Once each'],
+            ])
     }
       <div class="ng-label">Level on points</div><select id="ed-tb">${opts
         .map(([k, t]) => `<option value="${k.join()}" ${k.join() === tbKey(l) ? 'selected' : ''}>${esc(t)}</option>`)
@@ -563,6 +607,43 @@
     const keep = ED.err;
     UI.acts.edSaveLeague({ quiet: true });
     ED.err = keep;
+  };
+  // The split of a league: default groups for a number of them (the clubs shared out evenly from the top)
+  const SPLIT_NAMES = {
+    2: ['Championship', 'Relegation'],
+    3: ['Championship', 'Middle', 'Relegation'],
+    4: ['Championship', 'Upper middle', 'Lower middle', 'Relegation'],
+  };
+  const defaultSplit = (n, k, after) => {
+    const sizes = Array.from({ length: k }, (_, i) => Math.floor(n / k) + (i < n % k ? 1 : 0));
+    return {
+      after: after || (n <= 14 ? 2 * (n - 1) : n - 1),
+      groups: sizes,
+      rounds: sizes.map(() => 'single'),
+      names: SPLIT_NAMES[k],
+      halve: false,
+    };
+  };
+  UI.acts.edSplitOn = () => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    l.rules.split = defaultSplit(clubsOf(l.id).length, 2);
+    ED.err = WD.validateLeagueRules(l, ED.def);
+    UI.worldEditor();
+  };
+  UI.acts.edSplitOff = () => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    if (l.rules) delete l.rules.split;
+    UI.worldEditor();
+  };
+  UI.acts.edSplitN = (d) => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    l.rules.split = defaultSplit(clubsOf(l.id).length, +d.v, l.rules.split && l.rules.split.after);
+    ED.err = WD.validateLeagueRules(l, ED.def);
+    UI.worldEditor();
   };
   UI.acts.edUpDown = (d) => {
     stashLeague();
@@ -1275,6 +1356,7 @@
       foot: v('foot'),
       contract: Math.round(+v('contract')) || null,
       pa: Math.round(+v('pa')),
+      callup: $('#ed-pcall').checked || undefined,
       attrs: readAttrs(),
     });
     if (!r.ok) {
@@ -1369,6 +1451,11 @@
   UI.acts.edCupLegs = (d) => {
     const f = clone(fmtNow(ED.cup));
     f.legs[d.k] = +d.n;
+    setFormat(f);
+  };
+  UI.acts.edCupGroup = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    f.groupSize = +d.n;
     setFormat(f);
   };
   UI.acts.edCupCentral = (d) => {
@@ -1538,6 +1625,18 @@
             )}`,
         )
         .join('')}
+        <div class="tiny dim" style="margin:10px 0 4px">Clubs in a group</div>${seg(
+          'edCupGroup',
+          f.groupSize || 4,
+          [
+            [3, 'Three'],
+            [4, 'Four'],
+            [5, 'Five'],
+            [6, 'Six'],
+          ],
+          '',
+          'n',
+        )}<div class="tiny dim" style="margin-top:4px;line-height:1.5">Groups of three and four play home and away, five and six once each (the six group days). The two best of each group go through; with eight groups or more the best runners-up fill the quarter-finals. Clubs beyond whole groups wait for another year.</div>
         <div class="tiny dim" style="margin:10px 0 4px">Knockouts at one venue</div>${seg('edCupCentral', !!f.central, [
           [false, 'No'],
           [true, 'Yes'],
@@ -1794,6 +1893,7 @@
       tourns[tn.id] = {
         name: (v('iname-' + tn.id) || '').trim(),
         slots,
+        ...(tn.pools.length ? { qual: Math.round(+v('iqual-' + tn.id)) || 4 } : {}),
       };
     }
     const invites = FM.Intl.INVITES.filter((o) => ($('#ed-iinc-' + o.id) || {}).checked).map((o) => ({
@@ -1844,6 +1944,25 @@
             .join(''),
         )
         .join('')}
+      <div class="ng-label">Qualifying <span class="tiny dim">· how the nations of a part of the world play for their places</span></div>
+      ${Object.values(FM.Intl.TOURNS)
+        .flat()
+        .filter((tn) => tn.pools.length)
+        .map(
+          (tn) =>
+            `<div class="ng-names" style="margin-top:6px;align-items:center"><div class="small grow">${esc(cur.tourns[tn.id] ? cur.tourns[tn.id].name : tn.name)}</div><select id="ed-iqual-${tn.id}" style="max-width:190px">${[
+              [4, 'Groups of four'],
+              [3, 'Groups of three'],
+              [2, 'Pairs, home and away'],
+            ]
+              .map(
+                ([k, t]) =>
+                  `<option value="${k}" ${((cur.tourns[tn.id] || {}).qual || 4) === k ? 'selected' : ''}>${t}</option>`,
+              )
+              .join('')}</select></div>`,
+        )
+        .join('')}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">The nations of each part of the world are drawn into groups by ranking, and the group winners go through first, then the runners-up, until the places are filled. Groups of four and three play each other once, pairs home and away; the two windows of the season have four match days.</div>
       <div class="ng-label">Invitational tournaments <span class="tiny dim">· one a season, in turn: a host and three guests</span></div>
       ${FM.Intl.INVITES.map((o) => {
         const have = cur.invites.find((x) => x.id === o.id);
@@ -1907,6 +2026,18 @@
     UI.toast('National team saved', 1500);
     UI.worldEditor();
   };
+  const madeFor = (code) =>
+    (ED.def.players || [])
+      .filter((p) => p.nat === code)
+      .sort((a, b) => abilityOf(b.attrs, b.pos) - abilityOf(a.attrs, a.pos))
+      .slice(0, 60);
+  UI.acts.edToggleCall = (d) => {
+    const p = ED.def.players.find((x) => x.id === d.pid);
+    if (!p) return;
+    const r = WD.editor(ED.def, null).updatePlayer(p.id, { callup: p.callup ? undefined : true });
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
   UI.acts.edClearNation = () => {
     WD.editor(ED.def, null).clearNation(ED.code);
     ED.view = 'nations';
@@ -1952,6 +2083,16 @@
           '',
         )}</select><select id="ed-nbuild" style="flex:1">${D.BUILDUP.map((k) => `<option ${tac.buildup === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
       <div class="ng-names"><select id="ed-npress" style="flex:1">${D.PRESS.map((k) => `<option ${tac.press === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-nwidth" style="flex:1">${D.WIDTH.map((k) => `<option ${tac.width === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
+      <div class="ng-label">Squad <span class="tiny dim">· players you made for this country</span></div>
+      ${
+        madeFor(ED.code)
+          .map(
+            (p) =>
+              `<div class="row" style="gap:10px;margin:4px 0;align-items:center"><button class="btn sm" data-act="edToggleCall" data-pid="${esc(p.id)}" aria-label="Call up">${p.callup ? '🌐' : '＋'}</button><div class="grow small"><b>${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</b> <span class="tiny dim">${esc(D.POS_NAME[p.pos] || p.pos)} · ability ${abilityOf(p.attrs, p.pos)}${p.callup ? ' · called up' : ''}</span></div></div>`,
+          )
+          .join('') ||
+        '<div class="tiny dim" style="line-height:1.5">None yet. The squad is the nation\'s best twenty-three players. Players you make for this country (on a club\'s Players screen) can be called up here: they are picked ahead of better players for three years.</div>'
+      }
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edClearNation">Put the game's version back</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="nations" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveNation">Save</button></div>`;
   };
@@ -2266,7 +2407,7 @@
         list
           .map((p) => {
             const ca = abilityOf(p.attrs, p.pos);
-            return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edPlayer" data-pid="${esc(p.id)}"><div class="row"><div class="grow"><div class="small b">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</div><div class="tiny dim">${esc(D.POS_NAME[p.pos] || p.pos)} · ${year - p.born} · ability ${ca} · potential ${p.pa ?? ca}</div></div><span class="dim">›</span></div></div>`;
+            return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edPlayer" data-pid="${esc(p.id)}"><div class="row"><div class="grow"><div class="small b">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</div><div class="tiny dim">${p.callup ? '🌐 ' : ''}${esc(D.POS_NAME[p.pos] || p.pos)} · ${year - p.born} · ability ${ca} · potential ${p.pa ?? ca}</div></div><span class="dim">›</span></div></div>`;
           })
           .join('') || `<div class="empty">No players made ${free ? 'as free agents' : 'for this club'} yet.</div>`
       }
@@ -2291,6 +2432,7 @@
       <div style="display:grid;gap:6px">${D.ATTRS.map(sl).join('')}</div>
       <div class="ng-label">Or set them from an ability</div>
       <div class="row" style="gap:10px;align-items:center"><input type="range" id="ed-ca" min="20" max="95" step="1" value="${ca}" style="flex:1"><b id="ed-cas" style="width:28px;text-align:right">${ca}</b><button class="btn sm" data-act="edSuggest">Fill in</button></div>
+      <label class="small" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="ed-pcall" ${p.callup ? 'checked' : ''}> Called up by ${esc((D.NATIONS[p.nat] || { name: 'his country' }).name)} <span class="tiny dim">(picked ahead of better players for three years)</span></label>
       <div class="ng-label">Potential <b id="ed-pav" style="color:#e6edf6">${p.pa ?? ca}</b> <span class="tiny dim">(never below his ability)</span></div>
       <input type="range" id="ed-pa" min="${ca}" max="96" step="1" value="${Math.max(ca, p.pa ?? ca)}" style="width:100%">
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelPlayer">Delete this player</button></div>

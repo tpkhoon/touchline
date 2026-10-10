@@ -186,11 +186,14 @@
   I.nationOf = (p) => p.alleg || p.nat;
   I.uncapped = (p) => !(p.intl && p.intl.caps > 0);
   I.repFromCoef = (c) => U.clamp(Math.round(60 + ((c - 50) * 10) / 12), 30, 97);
-  I.pool = (code) =>
-    Object.values(S().players)
+  // (a player a world definition called up for his country comes ahead of better players until p.ntUntil)
+  I.pool = (code) => {
+    const yr = S().year;
+    return Object.values(S().players)
       .filter((p) => I.nationOf(p) === code && !p.retired && W.age(p) >= 17)
-      .sort((a, b) => b.ca - a.ca)
+      .sort((a, b) => (b.ntUntil >= yr) - (a.ntUntil >= yr) || b.ca - a.ca)
       .slice(0, 30);
+  };
   I.rating = (code) => {
     const xi = I.pool(code).slice(0, 11);
     return xi.length ? U.avg(xi, (p) => p.ca) : 40;
@@ -252,7 +255,7 @@
             q.direct[key] = teams.map((t) => t.id);
             return;
           }
-          const g = Math.max(1, Math.ceil(teams.length / 4));
+          const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || 4)));
           const groups = [...Array(g)].map(() => []);
           teams.forEach((t, i) => {
             const row = Math.floor(i / g),
@@ -262,7 +265,11 @@
           groups.forEach((ids, gi) => {
             const rr = W.roundRobin(ids);
             const rounds = ids.length === 2 ? rr : rr.slice(0, rr.length / 2); // pairs play home and away; bigger groups once each
-            const name = `${tn.id === 'WC' ? '' : tn.id + ' '}${I.REGION_NAME[regions[0]]}${regions.length > 1 ? '+' : ''} ${String.fromCharCode(65 + gi)}`;
+            const letter =
+              gi < 26
+                ? String.fromCharCode(65 + gi)
+                : String.fromCharCode(64 + Math.floor(gi / 26)) + String.fromCharCode(65 + (gi % 26));
+            const name = `${tn.id === 'WC' ? '' : tn.id + ' '}${I.REGION_NAME[regions[0]]}${regions.length > 1 ? '+' : ''} ${letter}`;
             q.groups.push({
               key,
               tn: tn.id,
