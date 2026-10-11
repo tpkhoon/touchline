@@ -7,7 +7,7 @@
 //   node tools/abbrevs.mjs --check    exit 1 if any abbreviation is rude, silly, doubled or built from a generic word
 import fs from 'node:fs';
 import { parseArgs, loadSim } from './harness.mjs';
-import { isRude } from './namelib.mjs';
+import { isRude, malformedName } from './namelib.mjs';
 
 const args = parseArgs();
 const { FM } = loadSim(1);
@@ -66,8 +66,12 @@ if ('check' in args) {
   // the data as it stands
   const bad = rows.filter((c) => isRude(old(c)) || /^(LIE|ASS|POO)$/.test(old(c)));
   const dup = rows.filter((c, i) => rows.findIndex((o) => old(o) === old(c)) !== i);
-  console.log(`${bad.length} rude or silly now, ${dup.length} doubled now`);
-  process.exit(bad.length || dup.length ? 1 : 0);
+  // a malformed name (a stray article before "de", a word said twice) in a club, a ground, a nickname or a city
+  const names = D.LEAGUES.flatMap((l) => (D[l.clubs] || []).flatMap((r) => [r[0], r[2], r[7]].filter(Boolean)));
+  const malformed = names.map((n) => [n, malformedName(n)]).filter(([, why]) => why);
+  for (const [n, why] of malformed) console.log(`malformed: ${n} (${why})`);
+  console.log(`${bad.length} rude or silly now, ${dup.length} doubled now, ${malformed.length} malformed names`);
+  process.exit(bad.length || dup.length || malformed.length ? 1 : 0);
 }
 if ('write' in args) {
   const file = 'js/clubs.js';

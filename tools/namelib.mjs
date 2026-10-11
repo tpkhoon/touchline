@@ -1974,13 +1974,38 @@ export function stem(L, r) {
   if (L.gap) return `${cap(a)}${L.gap}${cap(b)}`;
   return cap(a + b).replace(/(.)\1\1+/g, '$1$1');
 }
+const fold = (t) =>
+  String(t)
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z]/g, '');
+// A name that is plainly malformed: a stray article before "de" ("La de Aranjero"), a word said twice ("Beau-Beauens", "Sporting
+// Sporting"), or a hyphenated start that repeats itself
+export const malformedName = (name) => {
+  const words = String(name)
+    .split(/[\s-]+/)
+    .filter(Boolean);
+  if (/(^|\s)(La|El|Los|Las|Le|Les|Il|Lo) de /.test(name)) return 'an article before "de"';
+  for (let i = 1; i < words.length; i++)
+    if (words[i].length > 2 && fold(words[i]) === fold(words[i - 1])) return `"${words[i]}" twice`;
+  for (const w of String(name).split(/\s+/)) {
+    const m = w.split('-');
+    if (m.length > 1 && m[1].length >= 3 && fold(m[1]).startsWith(fold(m[0]).slice(0, 4)) && fold(m[0]).length >= 4)
+      return `"${w}" repeats itself`;
+  }
+  return '';
+};
 export function placeName(L, r) {
   const roll = r();
   let s = stem(L, r);
   if (roll < 0.1 && L.pre.length) {
     const p = r.pick(L.pre);
+    // (no "La de Aranjero": an article takes no "de"; and no "Beau-Beauens": a prefix the stem already starts with is dropped)
+    const article = /^(La|El|Los|Las|Le|Les|Il|Lo)$/.test(p);
+    if (fold(s).startsWith(fold(p).slice(0, 4))) return s;
     s =
-      L.preDe && r() < L.preDe
+      L.preDe && !article && r() < L.preDe
         ? `${p} de ${s}`
         : `${p}${L.preGap}${L.preGap || p.endsWith('-') ? s : s.charAt(0).toLowerCase() + s.slice(1)}`;
   } else if (roll < 0.15 && L.joins.length) s += r.pick(L.joins);

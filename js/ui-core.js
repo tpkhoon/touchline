@@ -457,7 +457,9 @@
       const left = FM.Season.resolveLive();
       if (left) {
         UI.save();
-        setTimeout(() => UI.matchLeft(left), 700);
+        // (the card waits for the rest of the day to be simulated: shown over the progress layer it would sit blurred behind it)
+        const showLeft = () => (UI.simBusy ? setTimeout(showLeft, 250) : UI.matchLeft(left));
+        setTimeout(showLeft, 700);
       }
       return true;
     } catch (e) {

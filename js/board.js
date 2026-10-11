@@ -21,12 +21,13 @@
   };
 
   // ---------- Demands ----------
-  const leagueDemand = function (club) {
-    const s = S(),
-      comp = s.comps[club.comp],
-      R = comp.rules || {},
-      n = comp.clubs.length,
-      exp = Sea().expectedPos(club),
+  // What the board asks of the league table, from where the club is expected to finish. A pure function of the league's rules and
+  // size and of that expectation, so the club guide (before a career starts) says the same thing the board then asks.
+  //   ctx: { id, name, rules, n, exp, ccName (the continental cup of its first places) }
+  B.aim = function (ctx) {
+    const R = ctx.rules || {},
+      n = ctx.n,
+      exp = ctx.exp,
       rel = R.relegate ? R.relegate.n : 0,
       safe = rel ? n - rel : n - 1,
       half = Math.ceil(n / 2);
@@ -43,17 +44,16 @@
       else ((aim = { t: half, text: 'Finish in the top half' }), (min = { t: safe, text: 'stay up' }));
     } else {
       const places = R.qualify ? R.qualify.n : 0,
-        cc = places && s.comps[R.qualify.to],
-        seconds = D.CONTINENTALS.filter((x) => x.feeders && x.feeders[comp.id] && (x.tier || 1) < 4).sort(
+        seconds = D.CONTINENTALS.filter((x) => x.feeders && x.feeders[ctx.id] && (x.tier || 1) < 4).sort(
           (a, b) => (a.tier || 1) - (b.tier || 1),
         ),
         second = seconds[0],
-        europe = places + seconds.reduce((t, x) => t + x.feeders[comp.id], 0);
+        europe = places + seconds.reduce((t, x) => t + x.feeders[ctx.id], 0);
       if (exp === 1)
-        ((aim = { t: 1, text: `Win ${comp.name}` }),
-          (min = places ? { t: places, text: `${cc.name} qualification` } : { t: 2, text: 'second place' }));
+        ((aim = { t: 1, text: `Win ${ctx.name}` }),
+          (min = places ? { t: places, text: `${ctx.ccName} qualification` } : { t: 2, text: 'second place' }));
       else if (places && exp <= places)
-        ((aim = { t: places, text: `Qualify for the ${cc.name} (top ${places})` }),
+        ((aim = { t: places, text: `Qualify for the ${ctx.ccName} (top ${places})` }),
           (min =
             europe > places
               ? { t: europe, text: `a ${second.region === 'Europe' ? 'European' : second.name} place (top ${europe})` }
@@ -78,6 +78,19 @@
       promo: !!aim.promo,
       weight: 'critical',
     };
+  };
+  const leagueDemand = function (club) {
+    const s = S(),
+      comp = s.comps[club.comp],
+      R = comp.rules || {};
+    return B.aim({
+      id: comp.id,
+      name: comp.name,
+      rules: R,
+      n: comp.clubs.length,
+      exp: Sea().expectedPos(club),
+      ccName: R.qualify && s.comps[R.qualify.to] ? s.comps[R.qualify.to].name : '',
+    });
   };
   // Cup demands: added when the club is in the competition (the draw comes after the season's first day)
   const cupDemands = function (club) {
@@ -139,7 +152,15 @@
       fallen: { id: 'pos2', text: 'Show the club is rising again: finish above expectations', weight: 'important' },
     }[club.identity];
     // (no derby without a rival; a fallen giant expected near the top already has the league aim to meet)
-    if (idObj && !(idObj.id === 'derby' && !club.rival) && !(idObj.id === 'pos2' && Sea().expectedPos(club) <= 3))
+    // (a weak squad is not asked to dominate: 2+ goals a game only where the club is expected in the top half)
+    const comp = S().comps[club.comp],
+      weak = comp && Sea().expectedPos(club) > Math.ceil(comp.clubs.length / 2);
+    if (
+      idObj &&
+      !(idObj.id === 'derby' && !club.rival) &&
+      !(idObj.id === 'pos2' && Sea().expectedPos(club) <= 3) &&
+      !(idObj.id === 'goals' && idObj.gpg >= 2 && weak)
+    )
       out.push(idObj);
     return out;
   };

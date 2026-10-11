@@ -1353,13 +1353,13 @@
         <div class="row" style="align-items:flex-end;gap:5px;height:70px;margin-top:10px">${p.form.length ? p.form.map((r) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div class="tiny b">${r.toFixed(1)}</div><div style="width:100%;border-radius:4px;height:${(r - 4) * 8}px;background:${r >= 7.5 ? 'var(--good)' : r >= 6.5 ? 'var(--acc2)' : 'var(--bad)'}"></div></div>`).join('') : '<div class="dim small">No appearances yet.</div>'}</div>
 </div>
       ${UI.statsCard(p, avg)}
-      <div class="card"><div class="h3">Career</div><div class="row small" style="margin:8px 0"><span class="grow muted">Total</span><b>${p.career.apps} games · ${p.pos === 'GK' ? `${(p.history || []).reduce((t, h) => t + (h.cs || 0), 0) + (p.season.cs || 0)} clean sheets` : `${p.career.goals} goals`}</b></div>
+      <div class="card"><div class="h3">Career</div><div class="row small" style="margin:8px 0"><span class="grow muted">Total</span><b>${p.career.apps} games · ${p.pos === 'GK' ? gkSheets(p) : `${p.career.goals} goals`}</b></div>
         ${p.career.spells
           .slice()
           .reverse()
           .map(
             (sp) =>
-              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow ${CL(sp.c) ? 'tap' : ''}" ${CL(sp.c) ? `data-act="clubView" data-id="${sp.c}"` : ''}>${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : ''}${sp.from}–${sp.to || 'now'}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
+              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow ${CL(sp.c) ? 'tap' : ''}" ${CL(sp.c) ? `data-act="clubView" data-id="${sp.c}"` : ''}>${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : ''}${sp.to ? seasonSpan(sp.from, sp.to) : `${seasonSpan(sp.from, null)}–now`}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
           )
           .join('')}
         <div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${p.intl && p.intl.caps ? natLink(`${C.flag(playsFor)} ${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'} · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goal${p.intl.goals === 1 ? '' : 's'}`}`) : `<span class="dim" style="font-weight:600">Uncapped${p.nat2 ? ' · free to choose' : ''}</span>`}</b></div>
@@ -1371,6 +1371,18 @@
       ${UI.seasonsCard(p, history)}
       ${injuryCard(p)}`;
   }
+  // A keeper's clean sheets are counted only in the seasons the game has a record of: said so when his career is longer
+  const gkSheets = (p) => {
+    const cs = (p.history || []).reduce((t, h) => t + (h.cs || 0), 0) + (p.season.cs || 0),
+      tracked = (p.history || []).reduce((t, h) => t + (h.apps || 0), 0) + (p.season.apps || 0);
+    return p.career.apps > tracked + 2 ? `${cs} clean sheets in ${tracked} games on record` : `${cs} clean sheets`;
+  };
+  // A span of seasons as the season rows write them: his first and last season at a club (years are the seasons' starts)
+  const seasonSpan = (from, to) => {
+    const lab = (y) => `${y}/${String((y + 1) % 100).padStart(2, '0')}`;
+    return to && to !== from ? `${lab(from)}–${lab(to)}` : lab(from);
+  };
+  UI.seasonSpan = seasonSpan;
   // This season's numbers: keepers their own (clean sheets, saves, save %, goals prevented), outfielders theirs,
   // with per-90 figures where they say more than totals
   UI.statsCard = function (p, avg) {
@@ -1412,7 +1424,6 @@
   };
   // This season so far and every season he has played, a row per club (a mid-season move gets two)
   UI.seasonsCard = function (p, history) {
-    if (!history.length) return '';
     const gk = p.pos === 'GK';
     const head = gk ? ['Apps', 'CS', 'Conc', 'Rtg'] : ['Apps', 'G', 'A', 'Rtg'];
     const row = (h) => {
@@ -1441,6 +1452,7 @@
       const c = h.c && CL(h.c);
       return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.short) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td></tr>`;
     };
+    if (!history.length && !extra.length) return '';
     const tot = history.concat(extra).reduce(
       (t, h) => ({
         apps: t.apps + h.apps,
@@ -1525,7 +1537,7 @@
     const earlier = p.career.apps - p.career.spells.reduce((t, x) => t + x.apps, 0);
     const moves = sp.map((x, i) => {
       const club = cn(x.c),
-        span = x.to && x.to !== x.from ? `${x.from}–${x.to}` : `${x.from}`;
+        span = UI.seasonSpan(x.from, x.to);
       if (x.loan) return `On loan at ${club} (${span}).`;
       if (i === 0 && earlier > 30)
         return `By ${x.from} he was at ${club}, with about ${earlier} games already behind him.`;

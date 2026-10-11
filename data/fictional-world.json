@@ -2074,9 +2074,9 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Unión El de Calatosa",
+    "Unión Calatosa",
     "MAL",
-    "El de Calatosa",
+    "Calatosa",
     "#0073CF",
     "#FFFFFF",
     "fallen",
@@ -2110,14 +2110,14 @@
    "league": "ES2",
    "nat": "ESP",
    "row": [
-    "Racing La de Aranjero",
+    "Racing Aranjero",
     "ZAR",
-    "La de Aranjero",
+    "Aranjero",
     "#FFFFFF",
     "#0A3A82",
     "fallen",
     54,
-    "Campo de La de Aranjero",
+    "Campo de Aranjero",
     33608
    ],
    "short": "LAA",
@@ -4174,9 +4174,9 @@
    "league": "FR2",
    "nat": "FRA",
    "row": [
-    "FC Beau-Beauens",
+    "FC Beauens",
     "EAG",
-    "Beau-Beauens",
+    "Beauens",
     "#E2001A",
     "#000000",
     "fan",
@@ -15250,7 +15250,7 @@
   [
    "MAL",
    "GRA",
-   "El de Calatosa–Montino Derby"
+   "Calatosa–Montino Derby"
   ],
   [
    "LPA",
@@ -15260,7 +15260,7 @@
   [
    "ZAR",
    "HUE",
-   "La de Aranjero–Fuentena Derby"
+   "Aranjero–Fuentena Derby"
   ],
   [
    "ALA",

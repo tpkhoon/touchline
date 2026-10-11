@@ -85,20 +85,24 @@
     const e = G.entry(code);
     if (!e) return '';
     const r = e.l.rules || {},
-      pos = e.rank + 1,
       idt = e.row[5];
-    const relN = r.relegate ? r.relegate.n : 0,
-      promN = r.promote ? r.promote.auto : 0,
-      qual = r.qualify ? r.qualify.n : 0;
-    const cont = qual && D.CONTINENTALS.find((c) => c.id === r.qualify.to);
-    let o;
-    if (pos <= Math.max(1, Math.round(e.n * 0.06))) o = 'Win the league';
-    else if (cont && pos <= qual + 1) o = `Qualify for the ${cont.name}`;
-    else if (e.l.tier > 1 && promN && pos <= promN + 2) o = 'Win promotion';
-    else if (relN && pos > e.n - relN - 2) o = 'Avoid relegation';
-    else if (pos <= e.n / 2) o = 'Finish in the top half';
-    else o = relN ? 'Stay up and build' : 'Climb the table';
-    const twist = { youth: 'play academy graduates', selling: 'turn a profit', fan: 'play attacking football' }[idt];
+    const cont = r.qualify && D.CONTINENTALS.find((c) => c.id === r.qualify.to);
+    // the board's own rule (FM.Board.aim), from the club's place in the league by reputation, as the board will judge it
+    const o = FM.Board.aim({
+      id: e.l.id,
+      name: e.l.name,
+      rules: r,
+      n: e.n,
+      exp: e.rank + 1,
+      ccName: cont ? cont.name : '',
+    }).text;
+    // and what the club's identity adds (the same conditions as the board's)
+    const twist = {
+      youth: 'play academy graduates',
+      selling: 'turn a profit',
+      fan: 'play attacking football',
+      oil: e.rank + 1 <= Math.ceil(e.n / 2) ? 'score freely' : '',
+    }[idt];
     return twist ? `${o}, and ${twist}` : o;
   };
 
@@ -121,7 +125,7 @@
     fan: [
       'Fan-owned and flying: the supporters own the dream.',
       'Run by the fans, for the fans, and within their means.',
-      'Fan-owned and fragile: every pound counts, every point matters.',
+      'Fan-owned and fragile: every coin counts, every point matters.',
     ],
     youth: [
       'A famous academy and a first team good enough to win with it.',
@@ -202,7 +206,8 @@
       icon: '🦁',
       title: 'A giant awakens',
       blurb: 'A famous name that has lost its way. The fans remember the trophies; the squad does not.',
-      ok: (e) => ['fallen', 'giant', 'historic'].includes(e.row[5]) && e.pct > 0.3 && e.pct < 0.85 && e.l.tier <= 2,
+      // (a name that has lost its way: a fallen or declining giant, never a squad at full strength or a comfortable old club)
+      ok: (e) => ['fallen', 'giant'].includes(e.row[5]) && e.pct > 0.3 && e.pct < 0.9 && e.l.tier <= 2,
     },
     {
       id: 'promotion',
@@ -217,14 +222,15 @@
       title: 'Against the odds',
       blurb:
         'The weakest squad, the smallest budget, the lowest expectations. Stay up and the city will not forget it.',
-      ok: (e) => G.diffKey(e.row[1]) === 'brutal' && e.l.tier <= 2,
+      ok: (e) => G.diffKey(e.row[1]) === 'brutal' && e.pct > 0.6 && e.l.tier <= 2,
     },
     {
       id: 'money',
       icon: '🛢️',
       title: 'New money, big promises',
       blurb: 'Rich owners, a thin squad and an impatient board. Spend it well.',
-      ok: (e) => e.row[5] === 'oil' && e.pct > 0.2,
+      // (the squad really is thin for the money, so the job is not rated Relaxed)
+      ok: (e) => e.row[5] === 'oil' && e.pct > 0.3 && e.pct < 0.95 && G.diffKey(e.row[1]) !== 'relaxed',
     },
     {
       id: 'academy',

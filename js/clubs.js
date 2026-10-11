@@ -137,19 +137,9 @@
     ],
     ['Club Segovón', 'LPA', 'Segovón', '#FFE400', '#0055A5', 'fan', 56, 'Nuevo Estadio Segovón', 32400],
     ['Benavete Atlético', 'VLD', 'Benavete', '#5B2C83', '#FFFFFF', 'fallen', 56, 'Ciudad Deportiva Benavete', 27618],
-    ['Unión El de Calatosa', 'MAL', 'El de Calatosa', '#0073CF', '#FFFFFF', 'fallen', 55, 'Estadio Valino', 30044],
+    ['Unión Calatosa', 'MAL', 'Calatosa', '#0073CF', '#FFFFFF', 'fallen', 55, 'Estadio Valino', 30044],
     ['Racing Salamedo', 'ALM', 'Salamedo', '#EE1119', '#FFFFFF', 'oil', 55, 'Estadio Municipal de Salamedo', 15274],
-    [
-      'Racing La de Aranjero',
-      'ZAR',
-      'La de Aranjero',
-      '#FFFFFF',
-      '#0A3A82',
-      'fallen',
-      54,
-      'Campo de La de Aranjero',
-      33608,
-    ],
+    ['Racing Aranjero', 'ZAR', 'Aranjero', '#FFFFFF', '#0A3A82', 'fallen', 54, 'Campo de Aranjero', 33608],
     ['CD Nava', 'LEG', 'Nava', '#FFFFFF', '#0B3F8C', 'youth', 54, 'Estadio Nerjero', 12454],
     ['Atlético Montino', 'GRA', 'Montino', '#C8102E', '#FFFFFF', 'selling', 54, 'Estadio Calpedo', 19336],
     ['Real Olmero', 'SPG', 'Olmero', '#E30613', '#FFFFFF', 'historic', 53, 'Estadio La Salama', 29371],
@@ -439,7 +429,7 @@
     ['Olympique Lunmont', 'MHS', 'Lunmont', '#F58025', '#1B3A6B', 'selling', 56, 'Stade Municipal de Lunmont', 32900],
     ['SC Clerières', 'STE', 'Clerières', '#009A44', '#FFFFFF', 'fallen', 58, 'Stade de la Maron', 41965],
     ['Racing Club de Pauières', 'SDR', 'Pauières', '#E2001A', '#FFFFFF', 'selling', 56, 'Stade de la Courlieu', 21029],
-    ['FC Beau-Beauens', 'EAG', 'Beau-Beauens', '#E2001A', '#000000', 'fan', 50, 'Stade Fonlac', 18378],
+    ['FC Beauens', 'EAG', 'Beauens', '#E2001A', '#000000', 'fan', 50, 'Stade Fonlac', 18378],
     ['Athlétic Saint-Cherault', 'PAU', 'Cherault', '#FFD700', '#005CA9', 'fan', 47, 'Complexe Nanlieu', 4031],
     [
       'Stade Château-Clermont',
@@ -551,9 +541,9 @@
     ['RCD', 'GIR', 'Cervar–Valdemosa Derby'],
     ['OVI', 'SPG', 'Corvar–Olmero Derby'],
     ['RAY', 'LEG', 'Olmador–Nava Derby'],
-    ['MAL', 'GRA', 'El de Calatosa–Montino Derby'],
+    ['MAL', 'GRA', 'Calatosa–Montino Derby'],
     ['LPA', 'TEN', 'Segovón–Rondiel Derby'],
-    ['ZAR', 'HUE', 'La de Aranjero–Fuentena Derby'],
+    ['ZAR', 'HUE', 'Aranjero–Fuentena Derby'],
     ['ALA', 'EIB', 'Villa Roblón–Arrasti Derby'],
     ['VLD', 'BGS', 'Benavete–Moralero Derby'],
     ['BAY', 'BVB', 'Dillhafen–Althof im Tal Derby'],
@@ -1745,7 +1735,7 @@ FCM|VAR|Grenats|1896
 MHS|LNM|Oranges|1913
 STE|CLE|Verts|1880
 SDR|PAU|Pêcheurs|1948
-EAG|BEB|Rouges|1921
+EAG|BEF|Rouges|1921
 PAU|CHR|Renards|1894
 ANN|CEA|Gladiateurs|1912
 LAV|CTE|Oranges|1954

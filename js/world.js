@@ -912,7 +912,8 @@
         rc: Math.random() < 0.04 ? 1 : 0,
       });
       const sk = club.id;
-      spellAt[sk] = spellAt[sk] || { apps: 0, goals: 0, from: y };
+      spellAt[sk] = spellAt[sk] || { apps: 0, goals: 0, from: null };
+      if (apps > 0 && spellAt[sk].from === null) spellAt[sk].from = y; // (his first season with games: the rows, not a year without)
       spellAt[sk].apps += apps;
       spellAt[sk].goals += g;
     }
@@ -930,7 +931,13 @@
     }
     if (prev && spellAt[prev.id] && spellAt[prev.id].apps > 0) {
       const e = spellAt[prev.id];
-      p.career.spells.splice(-1, 0, { c: prev.id, from: e.from, to: sp.from - 1, apps: e.apps, goals: e.goals });
+      p.career.spells.splice(-1, 0, {
+        c: prev.id,
+        from: e.from ?? sp.from - 1,
+        to: sp.from - 1,
+        apps: e.apps,
+        goals: e.goals,
+      });
       p.career.apps += e.apps;
       p.career.goals += e.goals;
     }

@@ -328,8 +328,16 @@
     if (T.buildup === 'Direct') lines.push(['🚀', 'They go long early: win the first ball.']);
     if (T.buildup === 'Counter') lines.push(['↩️', 'Built to counter: do not leave space behind us.']);
     if (fb.side && fb.gap >= 6)
-      lines.push(['🎯', `Their ${fb.side} side is the weaker: ${fb.gap} rating points between their flanks.`]);
-    if (key && lead >= 5) lines.push(['⭐', `${W.name(key)} is their danger: ${lead} points clear of the rest.`]);
+      lines.push([
+        '🎯',
+        `Their ${fb.side} side is the weaker: ${fb.gap >= 10 ? 'a big gap' : 'a clear step down'} between their flanks.`,
+      ]);
+    // (in words: everything else in the game uses stars, not rating points)
+    if (key && lead >= 5)
+      lines.push([
+        '⭐',
+        `${W.name(key)} is their danger: ${lead >= 14 ? 'in a different class from' : lead >= 9 ? 'far better than' : 'clearly better than'} their other attackers.`,
+      ]);
     const advice = Object.keys(Md.INS)
       .map((id) => {
         const [s, why] = Md.INS[id].fit(rep);
