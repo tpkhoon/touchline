@@ -570,6 +570,50 @@ Priority order. Principle: make what the game already has remember what happened
 - [x] Injuries as events: history, recurrence, rehab, surgery, "risk him?" dilemmas — done in the careers and injuries pass
 - [ ] Stadium histories: expansions, new stands, moves, renaming
 
+**Review ideas: conversations, a believable market, scouting and memory (external review, October 2026)**
+
+Checked against the game: already in are AI clubs filling the positions they lack, selling surplus and replacing ageing starters before they decline, individual ageing clocks and career arcs, two scouts disagreeing, a manager profile built from what you do, AI managers settling in with a new tactic, and the long-run test. These are the rest, each a change to rules and text rather than a new screen.
+
+- [ ] Proportional reactions to broken promises: missing a target by one game earns a grumble, not a crisis, and an injury excuses it; the size of the reaction follows the size of the miss and the player's personality
+- [ ] Players remember what you told them: feed lines quote the talk or promise back ("You told me in January I'd get more games"), so a saved game reads as a conversation
+- [ ] Renegotiating a promise: when things change (a better player signed, a long injury), one tap offers a new deal on the promise at a small cost in trust
+- [ ] Complaints spread through friendships: unrest reaches the player's friends and the influential teammates only, never the whole squad (builds on the relationships row)
+- [ ] The captain steps in first: before a minor issue becomes a dressing-room row, a card says the captain has had a word with him and offers one quick decision; a good captain settles more of them
+- [ ] AI clubs avoid bloated wage bills: they stop signing, sell or loan out surplus wages and renew less generously when the bill passes what their revenue carries (long-run test: no club carries a wage bill it cannot pay for twenty seasons)
+- [ ] Development leans more on playing time and coaching quality, on top of the individual ageing clocks and career arcs already in: the same prospect grows differently at a club that plays him
+- [ ] Fit for how we play: a report says when a good player suits the squad or the system badly (position, role, style), beyond his star rating
+- [ ] Role expectations in a report: a scout warns that a target will expect to be a key player, so a wasted negotiation is avoided
+- [ ] Stats from weaker leagues count for less: a scouting report discounts numbers made in a weaker league by the league's strength, so the small leagues do not hand over every bargain
+- [ ] Staff take positions in the feed ("your Head of Youth wants Mace promoted"), alongside the disagreements already there, and only when it matters
+- [ ] A board with a long-term plan: aims over three years (reduce the debt, build the academy, a stadium) that fit the club's identity (Selling Club, Oil-Backed, Fan-Owned) and are judged alongside the season's league target, so the club card and the board agree
+- [ ] The world remembers: press questions that refer back to earlier events (the final lost, the player sold, the promise broken)
+- [ ] Transfer sagas that build over several weeks: interest, a bid, a refusal, a rival's offer and the outcome as a thread in the feed
+- [ ] Commentary that mentions past finals and meetings between the two clubs
+- [ ] Captains become club legends: a long-serving captain's years as captain count towards the club's legends card and are told when he leaves
+- [ ] Rest defence as one choice: keep two, three or four back when we attack
+- [ ] AI managers adjust in the match (a back five to protect a lead, a second striker when chasing) and the commentary says so
+- [ ] Pressing every three days costs: tired players make mistakes late on, shown in the match and the squad's fitness, not through a new menu
+- [ ] Set-piece report: how the opposition defends and attacks corners and free kicks, and the routine that answers it
+- [ ] National-team chemistry: players who are often picked together play better together, a simple boost without a training-camp system
+
+**Review ideas: variety, specialists, pathways and accessibility (external review, October 2026)**
+
+Checked against the game: the training-ground cap and stadium expansion, saved filters, Plan A and Plan B with the opposition report and its instructions, agent personalities with back-and-forth offers, fan mood, loan recalls and a system-wide reduced-motion setting are already in. These are the rest, each one small on a phone and each one visible to the player.
+
+- [ ] Scrappy goals: a rebound after a save, a deflected shot and a goalmouth scramble as outcomes of their own in the engine (not only commentary on a blocked shot), so results feel less samey
+- [ ] Build-up goals told as moves: a goal that follows a long passing sequence is described that way ("a ten-pass move ends with ...") in the commentary, key moments and match report
+- [ ] Set-piece coach: a specialist role with one job, more goals from corners and free kicks, shown as a visible result ("set-piece goals up from 4 to 9 since she joined")
+- [ ] Sports psychologist: a specialist role that helps players recover from bad form and handle big matches, pairing with the Big-Match Nerves and Clutch traits; each hire reports its effect in the feed
+- [ ] Youth hub with clear pathways: one card per youngster saying where he is, what comes next and who blocks him ("Mace (18), ready for first-team minutes in about a year, blocked by Fouda")
+- [ ] Loan objectives: one simple goal per loan ("15 league starts", "play as a striker"); the monthly loan report says whether it is on track and offers the recall if it is not
+- [ ] Negotiation moments with a little drama: at key points two or three choices (the agent says another club has offered more: match it, call the bluff or walk away), with the agent's personality changing how each deal goes
+- [ ] Tactics for the opponent: save a tactic as "use against high-pressing teams" or "use away at big clubs" and the assistant suggests it on the matchday screen when the opponent fits
+- [ ] Colour-blind mode: team colours on the pitch and in the match view stay distinguishable when both sides wear similar colours (red against red)
+- [ ] Reduced motion setting inside the game: tones down the ball trail, slow motion and screen animations (the system's own setting is already honoured)
+- [ ] Public comments show their effect: a press conference answer says what it did to the fans ("Fans approved of your defence of the captain: mood +3")
+- [ ] A visual of the ground growing: the stadium picture changes with each expansion and with the training ground's level
+- [ ] Saved searches that alert you: a saved filter ("young left-backs under 2M") tells you in the feed when a new player matches it
+
 **Identity and living world (external review, October 2026)**
 
 Feedback said Touchline needs a stronger identity than "Football Manager, smaller": a football management sandbox, where you create a football universe, manage within it and watch it evolve. Four pillars: **Manage** (run your club), **Build** (players, facilities, finances), **Shape** (edit or create football structures) and **Simulate** (a world that evolves without you). Most of the review is already planned (editor, historical eras, club philosophy, national youth pathways, rivalries, media); these items are the ones that were missing, and pull some Alpha 2 and Living world items forward. Suggested order: 1, 2, 3, then the rest.

@@ -417,7 +417,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-54 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+88 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -481,3 +481,37 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | World | Collapses with causes: clubs that overspend can go into administration (none do in a 20-season quiet world today), with the wage ratio and debt visible beforehand | Systems 2 |
 | Asia | AFC foreign-player places in the Asian Champions Cup itself (three plus one Asian player per matchday) | Systems 4 |
 | Lower leagues | Community-club jobs and wages: tiny budgets that depend on the town, volunteers on the board and managers who take a lower-league job for the story | Systems 4 |
+| Players | Proportional reactions to broken promises: missing a target by one game earns a grumble, not a crisis, and an injury excuses it; the size of the reaction follows the size of the miss and the player's personality | Living world |
+| Players | Players remember what you told them: feed lines quote the talk or promise back ("You told me in January I'd get more games"), so a saved game reads as a conversation | Living world |
+| Players | Renegotiating a promise: when things change (a better player signed, a long injury), one tap offers a new deal on the promise at a small cost in trust | Living world |
+| Relationships | Complaints spread through friendships: unrest reaches the player's friends and the influential teammates only, never the whole squad (builds on the relationships row) | Living world |
+| Squad | The captain steps in first: before a minor issue becomes a dressing-room row, a card says the captain has had a word with him and offers one quick decision; a good captain settles more of them | Living world |
+| Transfers | AI clubs avoid bloated wage bills: they stop signing, sell or loan out surplus wages and renew less generously when the bill passes what their revenue carries (long-run test: no club carries a wage bill it cannot pay for twenty seasons) | Living world |
+| Players | Development leans more on playing time and coaching quality, on top of the individual ageing clocks and career arcs already in: the same prospect grows differently at a club that plays him | Living world |
+| Scouting | Fit for how we play: a report says when a good player suits the squad or the system badly (position, role, style), beyond his star rating | Living world |
+| Scouting | Role expectations in a report: a scout warns that a target will expect to be a key player, so a wasted negotiation is avoided | Living world |
+| Scouting | Stats from weaker leagues count for less: a scouting report discounts numbers made in a weaker league by the league's strength, so the small leagues do not hand over every bargain | Living world |
+| Staff | Staff take positions in the feed ("your Head of Youth wants Mace promoted"), alongside the disagreements already there, and only when it matters | Living world |
+| Board | A board with a long-term plan: aims over three years (reduce the debt, build the academy, a stadium) that fit the club's identity (Selling Club, Oil-Backed, Fan-Owned) and are judged alongside the season's league target, so the club card and the board agree | Living world |
+| Stories | The world remembers: press questions that refer back to earlier events (the final lost, the player sold, the promise broken) | Living world |
+| Stories | Transfer sagas that build over several weeks: interest, a bid, a refusal, a rival's offer and the outcome as a thread in the feed | Living world |
+| Stories | Commentary that mentions past finals and meetings between the two clubs | Living world |
+| Legacy | Captains become club legends: a long-serving captain's years as captain count towards the club's legends card and are told when he leaves | Living world |
+| Tactics | Rest defence as one choice: keep two, three or four back when we attack | Living world |
+| Match | AI managers adjust in the match (a back five to protect a lead, a second striker when chasing) and the commentary says so | Living world |
+| Match | Pressing every three days costs: tired players make mistakes late on, shown in the match and the squad's fitness, not through a new menu | Living world |
+| Tactics | Set-piece report: how the opposition defends and attacks corners and free kicks, and the routine that answers it | Living world |
+| International | National-team chemistry: players who are often picked together play better together, a simple boost without a training-camp system | Living world |
+| Match | Scrappy goals: a rebound after a save, a deflected shot and a goalmouth scramble as outcomes of their own in the engine (not only commentary on a blocked shot), so results feel less samey | Living world |
+| Match | Build-up goals told as moves: a goal that follows a long passing sequence is described that way ("a ten-pass move ends with ...") in the commentary, key moments and match report | Living world |
+| Staff | Set-piece coach: a specialist role with one job, more goals from corners and free kicks, shown as a visible result ("set-piece goals up from 4 to 9 since she joined") | Living world |
+| Staff | Sports psychologist: a specialist role that helps players recover from bad form and handle big matches, pairing with the Big-Match Nerves and Clutch traits; each hire reports its effect in the feed | Living world |
+| Youth | Youth hub with clear pathways: one card per youngster saying where he is, what comes next and who blocks him ("Mace (18), ready for first-team minutes in about a year, blocked by Fouda") | Living world |
+| Transfers | Loan objectives: one simple goal per loan ("15 league starts", "play as a striker"); the monthly loan report says whether it is on track and offers the recall if it is not | Living world |
+| Transfers | Negotiation moments with a little drama: at key points two or three choices (the agent says another club has offered more: match it, call the bluff or walk away), with the agent's personality changing how each deal goes | Living world |
+| Tactics | Tactics for the opponent: save a tactic as "use against high-pressing teams" or "use away at big clubs" and the assistant suggests it on the matchday screen when the opponent fits | Living world |
+| UX | Colour-blind mode: team colours on the pitch and in the match view stay distinguishable when both sides wear similar colours (red against red) | Beta |
+| UX | Reduced motion setting inside the game: tones down the ball trail, slow motion and screen animations (the system's own setting is already honoured) | Beta |
+| Stories | Public comments show their effect: a press conference answer says what it did to the fans ("Fans approved of your defence of the captain: mood +3") | Living world |
+| Club | A visual of the ground growing: the stadium picture changes with each expansion and with the training ground's level | Living world |
+| Scouting | Saved searches that alert you: a saved filter ("young left-backs under 2M") tells you in the feed when a new player matches it | Living world |
