@@ -207,7 +207,11 @@
         : '')
     );
   };
-  C.flag = (nat) => (D.NATIONS[nat] ? D.NATIONS[nat].flag : '🏳️');
+  // Northern Ireland has no flag emoji (it would show the UK's): the Ulster Banner is drawn instead, wherever a flag sits in
+  // a screen (plain-text places, like a news story or a drop-down list, keep the emoji)
+  const ULSTER =
+    '<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" role="img" aria-label="Northern Ireland" style="vertical-align:-0.12em"><rect width="30" height="20" fill="#fff"/><path d="M0 8.4h30v3.2H0zM13.4 0h3.2v20h-3.2z" fill="#c8102e"/><circle cx="15" cy="10" r="4.6" fill="#fff"/><path d="M15 6.1l1.1 2.2 2.4.1-1.9 1.5.7 2.4-2.3-1.4-2.3 1.4.7-2.4-1.9-1.5 2.4-.1z" fill="#c8102e"/><circle cx="15" cy="10.2" r="1" fill="#fff"/></svg>';
+  C.flag = (nat) => (nat === 'NIR' ? ULSTER : D.NATIONS[nat] ? D.NATIONS[nat].flag : '🏳️');
   // The manager's avatar (older careers without one get a neutral face)
   C.avatar = (user, size = 40) => {
     const a = (user && user.avatar) || { e: '🧑‍💼', bg: '#243042' };
@@ -756,7 +760,6 @@
     fn: '',
     ln: '',
     nat: 'ENG',
-    fav: '',
     avatar: { e: '🧑', bg: '#1f6feb' },
     club: null,
     q: '', // club picker search
@@ -861,7 +864,6 @@
     fn: NG.fn.trim() || 'New', // only if the name check is bypassed; not a real person's name
     ln: NG.ln.trim() || 'Manager',
     nat: NG.nat,
-    fav: NG.fav || null,
     avatar: NG.avatar,
   });
   UI.acts.newCareer = () => {
@@ -957,18 +959,11 @@
     let body = '';
     if (NG.step === 0) {
       const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
-      const favName = NG.fav && (D.LEAGUES.flatMap((l) => D[l.clubs]).find((r) => 'c_' + r[1] === NG.fav) || [])[0];
-      const favOpts = D.LEAGUES.map(
-        (l) =>
-          `<optgroup label="${esc(l.name)} · ${esc(D.NATIONS[l.nat].name)}">${D[l.clubs].map((r) => `<option value="c_${r[1]}" ${NG.fav === 'c_' + r[1] ? 'selected' : ''}>${esc(r[0])}</option>`).join('')}</optgroup>`,
-      ).join('');
       body = `<div class="h1" style="margin-top:4vh">Who are you?</div><div class="tag">Every legend starts somewhere.</div>
-        <div class="row" style="gap:14px;margin-top:18px;align-items:center">${C.avatar({ avatar: NG.avatar }, 64)}<div class="grow"><div class="b" id="ng-preview" style="font-size:18px">${esc(`${NG.fn} ${NG.ln}`.trim() || 'Your name')}</div><div class="small" style="color:#9fb0c5">${C.flag(NG.nat)} ${esc(D.NATIONS[NG.nat].name)}${favName ? ` · ❤️ ${esc(favName)}` : ''}</div></div></div>
+        <div class="row" style="gap:14px;margin-top:18px;align-items:center">${C.avatar({ avatar: NG.avatar }, 64)}<div class="grow"><div class="b" id="ng-preview" style="font-size:18px">${esc(`${NG.fn} ${NG.ln}`.trim() || 'Your name')}</div><div class="small" style="color:#9fb0c5">${C.flag(NG.nat)} ${esc(D.NATIONS[NG.nat].name)}</div></div></div>
         <div class="ng-names"><input type="text" id="ng-fn" placeholder="First name" maxlength="16" value="${esc(NG.fn)}" autocomplete="given-name"><input type="text" id="ng-ln" placeholder="Last name" maxlength="20" value="${esc(NG.ln)}" autocomplete="family-name"></div><div class="ng-err" id="ng-err" role="alert" hidden></div>
         <div class="ng-label">Country <span style="color:#6f7f96">· your own national team will know your name</span></div>
         <select id="ng-nat">${nations.map(([k, n]) => `<option value="${k}" ${NG.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
-        <div class="ng-label">Favourite club <span style="color:#6f7f96">· managing them is a homecoming; their rivals won't forget</span></div>
-        <select id="ng-fav"><option value="">No favourite club</option>${favOpts}</select>
         <div class="ng-label">Avatar</div>
         <div class="avgrid">${W.AVATARS.map((e) => `<button class="avpick ${NG.avatar.e === e ? 'on' : ''}" data-act="ngAvatar" data-e="${e}" aria-label="Avatar ${e}">${e}</button>`).join('')}</div>
         <div class="swatches">${W.AVATAR_BG.map((bg) => `<button class="swatch ${NG.avatar.bg === bg ? 'on' : ''}" style="background:${bg}" data-act="ngAvatarBg" data-bg="${bg}" aria-label="Avatar background"></button>`).join('')}</div>
@@ -1188,8 +1183,7 @@
       });
     const fn = $('#ng-fn'),
       ln = $('#ng-ln'),
-      nat = $('#ng-nat'),
-      fav = $('#ng-fav');
+      nat = $('#ng-nat');
     if (fn)
       fn.addEventListener('input', () => {
         NG.fn = fn.value;
@@ -1205,11 +1199,6 @@
     if (nat)
       nat.addEventListener('change', () => {
         NG.nat = nat.value;
-        UI.newCareer();
-      });
-    if (fav)
-      fav.addEventListener('change', () => {
-        NG.fav = fav.value;
         UI.newCareer();
       });
   };

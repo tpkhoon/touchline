@@ -74,8 +74,14 @@
   };
   Sea.seasonLabel = () => `${FM.S.year}/${String((FM.S.year + 1) % 100).padStart(2, '0')}`;
 
-  // Fixtures played on the current day (creates playoff ties lazily)
+  // Fixtures played on the current day (creates playoff ties lazily); each is stamped with the calendar day it was played
+  // on, which is what the fixture list reads
   Sea.dayFixtures = function () {
+    const out = dayFixtures();
+    for (const f of out) if (f.day === undefined) f.day = FM.S.day;
+    return out;
+  };
+  function dayFixtures() {
     const S = FM.S,
       cal = Sea.today();
     if (!cal) return [];
@@ -221,7 +227,7 @@
       }
     }
     return out;
-  };
+  }
   // Title playoffs, in one engine for every league that has them. c.ko[t] holds tournament t's seeds and each round's ties
   // (M1..M4, made when that day comes from the round before). Single matches hosted by the better seed.
   //   mls       seven a conference: Round One (the top seed byes), Conference Semifinals and Finals, the MLS Cup
@@ -398,6 +404,90 @@
     return r.pens[0] > r.pens[1] ? fx.h : fx.a;
   }
   Sea.winnerOf = winnerOf;
+  // A club's season in date order: every match it has played or has been drawn, the cups it is still in (the round to be
+  // drawn, on the next day that cup is played), the days of rest before each match and how crowded the spell is.
+  //   { d: calendar day, dn: its date, f: the fixture (or null), comp: its competition, tbd: not yet drawn, rest: days
+  //   since the club's last match, load: matches in the 14 days up to and including this one }
+  Sea.schedule = function (clubId) {
+    const S = FM.S,
+      cal = S.calendar,
+      club = S.clubs[clubId],
+      comp = club && S.comps[club.comp];
+    const mine = (f) => f && (f.h === clubId || f.a === clubId);
+    const rows = [],
+      seen = new Set();
+    const add = (d, f, c) => {
+      if (!f || seen.has(f.id)) return;
+      seen.add(f.id);
+      rows.push({ d, dn: cal[d].dn, f, comp: c, tbd: false });
+    };
+    // league rounds: the calendar day on which each of the club's rounds falls
+    if (comp && comp.fixtures)
+      cal.forEach((e, d) => {
+        if (e.type !== 'league') return;
+        const k = W.roundOn(comp, e.round);
+        if (k >= 0) add(d, (comp.fixtures[k] || []).find(mine), comp);
+      });
+    // pre-season friendlies booked
+    cal.forEach((e, d) => {
+      if (e.type === 'pre' && W.isUser(clubId)) {
+        const plan = S.user.preseason && S.user.preseason[e.idx];
+        if (plan && plan.fx) add(d, plan.fx, S.comps.FR);
+      }
+    });
+    // continental group games have their days from the calendar's stages; every other tie, from the day it was played on
+    cal.forEach((e, d) => {
+      if (e.type !== 'cup' || !e.stage || e.stage[0] !== 'G') return;
+      for (const id of e.comps) {
+        const c = S.comps[id];
+        for (const g of (c && c.groups) || []) add(d, (g.fixtures[+e.stage.slice(1) - 1] || []).find(mine), c);
+      }
+    });
+    for (const f of FM.Cups.allFixtures())
+      if (mine(f) && f.day !== undefined && cal[f.day] && S.comps[f.comp].type !== 'league')
+        add(f.day, f, S.comps[f.comp]);
+    // a league's play-offs: promotion play-offs, title play-offs and relegation play-off legs, from the day each was played on
+    const koTies = (c) => [
+      ...(c.playoff ? [...c.playoff.sf, ...(c.playoff.sf2 || []), c.playoff.final, c.playoff.final2] : []),
+      ...(c.ko || []).flatMap((m) => (m ? ['M1', 'M2', 'M3', 'M4'].flatMap((k) => m[k] || []) : [])),
+    ];
+    if (comp) for (const f of koTies(comp)) if (mine(f) && f.day !== undefined && cal[f.day]) add(f.day, f, comp);
+    for (const t of Object.values(S.relTies || {}))
+      for (const f of [t.leg1, t.leg2])
+        if (mine(f) && f.day !== undefined && cal[f.day]) add(f.day, f, S.comps[f.comp] || comp);
+    // the cups the club is still in: the next round to be drawn, at the next day that cup is played
+    if (club && club.comp) {
+      const known = new Set(rows.map((r) => r.comp.id + ':' + r.d));
+      for (const st of FM.Cups.status(clubId)) {
+        if (st.alive === false || st.text === 'Winners' || st.text === 'Knocked out') continue;
+        for (let d = Math.max(S.day, 0); d < cal.length; d++) {
+          const e = cal[d];
+          if (e.type !== 'cup' || !e.comps.includes(st.c.id) || known.has(st.c.id + ':' + d)) continue;
+          if (rows.some((r) => r.comp.id === st.c.id && r.d >= d && !r.f.res)) break;
+          rows.push({ d, dn: e.dn, f: null, comp: st.c, tbd: true, text: st.text });
+          break;
+        }
+      }
+    }
+    rows.sort((a, b) => a.d - b.d);
+    let last = null;
+    const played = [];
+    for (const r of rows) {
+      r.rest = last ? r.dn - last.dn : null;
+      if (!r.tbd) {
+        played.push(r.dn);
+        r.load = played.filter((x) => x > r.dn - 14 && x <= r.dn).length;
+        last = r;
+      }
+    }
+    return rows;
+  };
+  // Days of rest before the next match, and matches in the spell around it (null when nothing is booked)
+  Sea.restBefore = function (clubId) {
+    const rows = Sea.schedule(clubId).filter((r) => !r.tbd);
+    const next = rows.find((r) => !r.f.res);
+    return next ? { rest: next.rest, load: next.load, dn: next.dn } : null;
+  };
   // Our fixture today that is still to be played (once our result is in, the rest of the day can be simulated)
   Sea.userFixture = () => Sea.dayFixtures().find((f) => (W.isMine(f.h) || W.isMine(f.a)) && !f.res) || null;
 
@@ -415,8 +505,7 @@
   };
 
   Sea.updTable = function (table, fx, res) {
-    const S = FM.S,
-      th = table[fx.h],
+    const th = table[fx.h],
       ta = table[fx.a];
     th.p++;
     ta.p++;
@@ -427,13 +516,13 @@
     if (res.hg > res.ag) {
       th.w++;
       ta.l++;
-      th.pts += S.rules.win;
+      th.pts += W.rule(fx.comp, 'win');
       th.form.push('W');
       ta.form.push('L');
     } else if (res.hg < res.ag) {
       ta.w++;
       th.l++;
-      ta.pts += S.rules.win;
+      ta.pts += W.rule(fx.comp, 'win');
       th.form.push('L');
       ta.form.push('W');
     } else {
@@ -1037,6 +1126,9 @@
     }
     // weekly processes
     const recUser = employed ? FM.Staff.impact('physio').rec : 0; // a good physio gets your players fit sooner
+    // (days of rest count: three days to the next match give less back than four, a week more)
+    const nextDay = S.calendar[S.day + 1],
+      gapK = today && nextDay && today.dn !== undefined ? U.clamp((nextDay.dn - today.dn) / 3.5, 0.45, 1.5) : 1;
     Object.values(S.players).forEach((p) => {
       if (p.retired) return;
       // older legs recover more slowly between matches (so veterans get rested more often)
@@ -1047,7 +1139,7 @@
         Math.max(0, W.age(p) - 29) * Sea.AGE_RECOVERY +
         (recUser && W.isUser(p.clubId) ? recUser : 0) +
         FM.Training.recK(p);
-      p.fitness = U.clamp(p.fitness + Math.max(5, rec), 0, 100);
+      p.fitness = U.clamp(p.fitness + Math.max(5, rec * gapK), 0, 100);
       if (p.susp && !p.suspNew) p.susp--;
       delete p.suspNew;
     });
@@ -1130,11 +1222,8 @@
     for (let i = initial ? 3 : 1; i > 0 && pool.length; i--) {
       const c = U.wpick(
         pool,
-        (x) =>
-          (100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5) *
-          (x.id === u.favClub ? 3 : 1) *
-          (1 + 0.6 * FM.Style.match(x)),
-      ); // your boyhood club keeps an eye on you
+        (x) => (100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5) * (1 + 0.6 * FM.Style.match(x)),
+      );
       pool.splice(pool.indexOf(c), 1);
       u.offers.push({
         id: c.id,
@@ -1732,7 +1821,6 @@
     FM.Youth.fixBTeams().forEach(applyMove);
 
     W.applySimFocus(); // after promotion and relegation: your (possibly new) league and its neighbours go full
-    Sea.favClubNews(entry);
     // User evaluation (out of work: the season is recorded, but there is nothing to judge)
     if (!club) {
       S.archive.push(entry);
@@ -1842,29 +1930,6 @@
     delete S.eraLog;
     if (!e || e.n < 200) return;
     S.era = U.clamp((S.era || 1) * Math.pow(FM.CAL.targetGoals / (e.g / e.n), 0.6), 0.85, 1.15);
-  };
-  // Your boyhood club's big moments reach your feed (unless you manage it — then they're your moments)
-  Sea.favClubNews = function (entry) {
-    const S = FM.S,
-      id = S.user && S.user.favClub,
-      c = id && S.clubs[id];
-    if (!c || W.isUser(id)) return;
-    const won = Object.values(entry.comps)
-      .filter((x) => x.champion === id)
-      .map((x) => x.name)
-      .concat(
-        Object.values(entry.cups || {})
-          .filter((x) => x.winner === id)
-          .map((x) => x.name),
-      );
-    const line = won.length
-      ? `They won the ${won.join(' and the ')}. Somewhere, you're smiling.`
-      : entry.promoted.includes(id)
-        ? 'They won promotion — a good day to have grown up a fan.'
-        : entry.relegated.includes(id)
-          ? 'They were relegated. It still hurts.'
-          : null;
-    if (line) FM.News.add({ type: 'club', title: `Your boyhood club: ${c.name}`, body: line, clubId: id });
   };
   Sea.newSeason = function (entry) {
     const S = FM.S;

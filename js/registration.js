@@ -83,8 +83,32 @@
     SA2: { foreign: 4 },
   };
   // In words: what a league's registration rules ask of a squad (for the new-career screen and the rules pages)
+  // A league's rules as they stand: the table above, and what a world definition set for the league itself (rules.squad:
+  // places for foreign players on the books and in a matchday squad, 0 for no limit)
+  R.ruleOf = function (id) {
+    const base = R.RULES[id],
+      c = FM.S && FM.S.comps && FM.S.comps[id],
+      o = c && c.rules && c.rules.squad;
+    if (!o) return base || null;
+    const r = { ...(base || {}) };
+    // (a setting of 0, off or an empty list takes that rule away; listSize and homegrown are the squad list and its homegrown places)
+    const KEY = { listSize: 'squad', homegrown: 'hg' };
+    for (const [k, v] of Object.entries(o)) {
+      if (v == null) continue;
+      const key = KEY[k] || k;
+      if (!v || (Array.isArray(v) && !v.length)) delete r[key];
+      else r[key] = JSON.parse(JSON.stringify(v));
+    }
+    if (!r.foreign) {
+      delete r.asian;
+      delete r.asean;
+    }
+    if (!r.squad) delete r.hg;
+    else if (r.hg == null) r.hg = 8;
+    return Object.keys(r).length ? r : null;
+  };
   R.describe = function (id) {
-    const r = R.RULES[id];
+    const r = R.ruleOf(id);
     if (!r) return ['No foreign-player limits: a club can field and register any number of foreign players.'];
     const nm = (code) => (D.NATIONS[code] ? D.NATIONS[code].name : code);
     const out = [];
@@ -116,7 +140,7 @@
     return out;
   };
   R.real = () => FM.S.rules.reg === 'real';
-  R.rulesFor = (c) => (R.real() && c && c.comp && R.RULES[c.comp]) || null;
+  R.rulesFor = (c) => (R.real() && c && c.comp && R.ruleOf(c.comp)) || null;
 
   R.isEU = (p) => R.EU.has(p.nat);
   // Does he count against the non-EU limit at this club? (Spain and France exempt Cotonou and Euro-Med nationals)

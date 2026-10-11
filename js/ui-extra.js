@@ -742,9 +742,15 @@
 
   // ---------- Shared filters for Reports, Search and Free agents ----------
   // Everything is judged on what your scouts know (their estimates), never the hidden truth
-  UI._sf = {
-    pos: 'any',
+  const SF_DEFAULT = () => ({
+    pos: 'any', // 'any', or the list of positions wanted
+    side: 'any',
+    foot: 'any',
     age: 'any',
+    ageMin: '',
+    ageMax: '',
+    ability: 'any',
+    potential: 'any',
     level: 'any',
     price: 'any',
     wage: 'any',
@@ -752,15 +758,22 @@
     nat: 'any',
     comp: 'any',
     avail: 'any',
-    more: false,
-    sort: 'default',
-    rev: false,
-  };
+  });
+  UI._sf = { ...SF_DEFAULT(), more: false, sort: 'default', rev: false, limit: 50 };
   const SF_AGE = { any: [0, 99], u19: [0, 19], u21: [0, 21], u23: [0, 23], prime: [24, 29], vet: [30, 99] };
   const SF_PRICE = { any: Infinity, m1: 1e6, m5: 5e6, m20: 2e7 };
   const SF_WAGE = { any: Infinity, k10: 1e4, k25: 2.5e4, k50: 5e4, k100: 1e5 };
-  const sfActive = () =>
-    Object.entries(UI._sf).filter(([k, v]) => k !== 'more' && k !== 'sort' && k !== 'rev' && v !== 'any').length;
+  const SF_STARS = [
+    ['any', 'Any'],
+    ['2', '2★+'],
+    ['3', '3★+'],
+    ['3.5', '3.5★+'],
+    ['4', '4★+'],
+    ['4.5', '4.5★+'],
+  ];
+  const SF_KEYS = Object.keys(SF_DEFAULT());
+  const sfIsOn = (k, v) => (Array.isArray(v) ? v.length > 0 : v !== 'any' && v !== '');
+  const sfActive = () => SF_KEYS.filter((k) => sfIsOn(k, UI._sf[k])).length;
   // Your XI's level: "a starter for us" means at least that
   const myLevel = () => {
     const c = club();
@@ -772,21 +785,31 @@
       s = S(),
       me = club(),
       lvl = f.level === 'any' ? 0 : myLevel();
+    const aMin = f.ageMin === '' ? 0 : +f.ageMin,
+      aMax = f.ageMax === '' ? 99 : +f.ageMax;
+    const needView = f.level !== 'any' || f.price !== 'any' || f.ability !== 'any' || f.potential !== 'any';
     return players.filter((p) => {
-      if (f.pos !== 'any' && p.pos !== f.pos) return false;
+      if (Array.isArray(f.pos) && f.pos.length && !f.pos.includes(p.pos)) return false;
+      if (f.side !== 'any' && p.side !== f.side) return false;
+      if (f.foot !== 'any' && p.foot !== f.foot) return false;
       const a = W.age(p),
         [lo, hi] = SF_AGE[f.age];
-      if (a < lo || a > hi) return false;
-      if (f.nat !== 'any' && p.nat !== f.nat) return false;
+      if (a < lo || a > hi || a < aMin || a > aMax) return false;
+      if (f.nat === 'home' && !(me && p.nat === me.nat)) return false;
+      if (f.nat === 'foreign' && !(me && p.nat !== me.nat)) return false;
+      if (f.nat !== 'any' && f.nat !== 'home' && f.nat !== 'foreign' && p.nat !== f.nat) return false;
       if (f.comp !== 'any' && !(p.clubId && CL(p.clubId).comp === f.comp)) return false;
       if (f.contract !== 'any' && !(p.clubId && p.contract <= s.year + (f.contract === 'now' ? 0 : 1))) return false;
       if (f.avail === 'free' && p.clubId) return false;
       if (f.avail === 'loan' && !(p.clubId && !p.loan && FM.Transfers.loanTerms(p).available)) return false;
       if (f.avail === 'cheap' && !(p.clubId && FM.Market.wantsAway(p))) return false;
-      if (f.level !== 'any' || f.price !== 'any') {
+      if (f.avail === 'listed' && !(p.clubId && p.listed)) return false;
+      if (needView) {
         const v = FM.Scouting.view(p),
           ca = mid(v.ca),
           pa = mid(v.pa);
+        if (f.ability !== 'any' && !(ca != null && +W.stars(ca, p.pos) >= +f.ability)) return false;
+        if (f.potential !== 'any' && !(pa != null && +W.stars(pa, p.pos) >= +f.potential)) return false;
         if (f.level === 'starter' && !(ca != null && ca >= lvl)) return false;
         if (f.level === 'squad' && !(ca != null && ca >= lvl - 6)) return false;
         if (f.level === 'prospect' && !(a <= 21 && pa != null && pa >= lvl + 2)) return false;
@@ -801,12 +824,15 @@
     });
   }
   // Sorting a list of players by what you know of them: his ability or potential as your scouts judge it (a range's
-  // middle; unknown last), or his value. 'default' keeps each list's own order.
+  // middle; unknown last), his value, age, or when his contract ends. 'default' keeps each list's own order.
   const SF_SORTS = [
     ['default', 'Best known'],
     ['ca', 'Ability'],
     ['pa', 'Potential'],
     ['value', 'Value'],
+    ['age', 'Youngest'],
+    ['wage', 'Wage'],
+    ['contract', 'Contract ends'],
   ];
   const sfSortRow = () =>
     `<div class="chips noswipe" style="margin-top:6px"><span class="chip-lbl">Sort</span>${SF_SORTS.map(([v, l]) => `<button class="chip ${UI._sf.sort === v ? 'on' : ''}" data-act="sf" data-k="sort" data-v="${v}">${l}</button>`).join('')}${UI._sf.sort === 'default' ? '' : `<button class="chip on" data-act="sfRev" title="Reverse the order">${UI._sf.rev ? '↑ Low to high' : '↓ High to low'}</button>`}</div>`;
@@ -820,21 +846,96 @@
     const key = (x) => {
       const p = getP(x),
         v = FM.Scouting.view(p);
-      return k === 'value'
-        ? p.value
-        : (mid(k === 'ca' ? v.ca : v.pa) ?? (v.own ? (k === 'ca' ? p.ca : p.pa) : null) ?? -1);
+      if (k === 'value') return p.value;
+      if (k === 'age') return -W.age(p);
+      if (k === 'wage') return p.wage || 0;
+      if (k === 'contract') return p.clubId ? -p.contract : -S().year;
+      return mid(k === 'ca' ? v.ca : v.pa) ?? (v.own ? (k === 'ca' ? p.ca : p.pa) : null) ?? -1;
     };
     return list.sort((a, b) => (UI._sf.rev ? key(a) - key(b) : key(b) - key(a)));
   };
-  function sfPanel() {
+  // The saved filters of a list (Search, Free agents, Reports), kept with the manager
+  let sfScope = 'search';
+  const sfPresets = () => {
+    const u = S().user;
+    u.filterPresets = u.filterPresets || {};
+    return (u.filterPresets[sfScope] = u.filterPresets[sfScope] || []);
+  };
+  const sfSnapshot = () => Object.fromEntries(SF_KEYS.map((k) => [k, JSON.parse(JSON.stringify(UI._sf[k]))]));
+  // Position chips for any list: All, the four groups (a tap picks or drops the whole group) and each position
+  UI.posFilter = (on, actPos, actGroup) => {
+    const group = (g) => D.POS.filter((x) => D.POS_GROUP[x] === g);
+    const chip = (act, v, l, isOn) =>
+      `<button class="chip ${isOn ? 'on' : ''}" data-act="${act}" data-v="${v}">${l}</button>`;
+    return `<div class="chips noswipe">${chip(actPos, 'any', 'All', !on.length)}${['GK', 'DEF', 'MID', 'ATT']
+      .map((g) =>
+        chip(
+          actGroup,
+          g,
+          g,
+          group(g).every((x) => on.includes(x)),
+        ),
+      )
+      .join('')}</div>
+      <div class="chips noswipe" style="margin-top:4px">${D.POS.map((x) => chip(actPos, x, x, on.includes(x))).join('')}</div>`;
+  };
+  const posChips = () => UI.posFilter(Array.isArray(UI._sf.pos) ? UI._sf.pos : [], 'sfPos', 'sfPosGroup');
+  // (how many match, and a button for more when the list is cut short)
+  const sfFoot = (total, shown) =>
+    total > shown
+      ? `<div class="row" style="margin:6px 0 0;gap:8px"><span class="tiny dim grow">Showing ${shown} of ${total}</span><button class="btn sm" data-act="sfShowMore">Show 50 more</button></div>`
+      : total > 0
+        ? `<div class="tiny dim" style="margin:6px 2px 0">${total} player${total === 1 ? '' : 's'}</div>`
+        : '';
+  function sfPanel(scope = 'search', total = null) {
+    sfScope = scope;
     const f = UI._sf,
       n = sfActive();
     const row = (k, opts) =>
-      `<div class="chips" style="margin-top:4px">${opts.map(([v, l]) => `<button class="chip ${f[k] === v ? 'on' : ''}" data-act="sf" data-k="${k}" data-v="${v}">${l}</button>`).join('')}</div>`;
+      `<div class="chips noswipe" style="margin-top:4px">${opts.map(([v, l]) => `<button class="chip ${f[k] === v ? 'on' : ''}" data-act="sf" data-k="${k}" data-v="${v}">${l}</button>`).join('')}</div>`;
     const sel = (k, opts) =>
       `<select data-input="sfSel" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${opts.map(([v, l]) => `<option value="${esc(v)}" ${f[k] === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+    const num = (k, ph) =>
+      `<input type="number" inputmode="numeric" min="14" max="45" placeholder="${ph}" value="${esc(f[k])}" data-input="sfNum" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">`;
+    const lbl = (t) => `<div class="tiny dim" style="margin:8px 0 0">${t}</div>`;
     const more = f.more
-      ? `<div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">${sel('wage', [
+      ? `${lbl('Foot and side')}<div class="chips noswipe" style="margin-top:4px">${[
+          ['foot', 'any', 'Any foot'],
+          ['foot', 'Left', 'Left foot'],
+          ['foot', 'Right', 'Right foot'],
+          ['foot', 'Both', 'Two-footed'],
+        ]
+          .map(
+            ([k, v, l]) =>
+              `<button class="chip ${f[k] === v ? 'on' : ''}" data-act="sf" data-k="${k}" data-v="${v}">${l}</button>`,
+          )
+          .join('')}${[
+          ['any', 'Either side'],
+          ['L', 'Left side'],
+          ['R', 'Right side'],
+        ]
+          .map(
+            ([v, l]) =>
+              `<button class="chip ${f.side === v ? 'on' : ''}" data-act="sf" data-k="side" data-v="${v}">${l}</button>`,
+          )
+          .join('')}</div>
+        ${lbl('Age')}<div class="row" style="gap:6px;margin-top:4px">${num('ageMin', 'From')}<span class="dim">–</span>${num('ageMax', 'To')}</div>
+        ${lbl('Ability, as your scouts see it')}${row('ability', SF_STARS)}
+        ${lbl('Potential, as your scouts see it')}${row('potential', SF_STARS)}
+        ${lbl('Level')}${row('level', [
+          ['any', 'Any level'],
+          ['starter', 'Would start for us'],
+          ['squad', 'Squad player'],
+          ['prospect', 'Prospect'],
+        ])}
+        ${lbl('Fee')}${row('price', [
+          ['any', 'Any fee'],
+          ['budget', 'Within budget'],
+          ['m1', `≤ ${U.money(1e6)}`],
+          ['m5', `≤ ${U.money(5e6)}`],
+          ['m20', `≤ ${U.money(2e7)}`],
+        ])}
+        <div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap">${sel('wage', [
           ['any', 'Any wage'],
           ...Object.keys(SF_WAGE)
             .filter((k) => k !== 'any')
@@ -846,6 +947,8 @@
         ])}</div>
         <div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap">${sel('nat', [
           ['any', 'Any nationality'],
+          ['home', 'From my country'],
+          ['foreign', 'Foreign'],
           ...Object.entries(D.NATIONS)
             .sort((a, b) => a[1].name.localeCompare(b[1].name))
             .map(([k, x]) => [k, `${x.flag} ${x.name}`]),
@@ -854,62 +957,116 @@
           ['any', 'Any availability'],
           ['loan', 'Available on loan'],
           ['cheap', 'Wants away / sells cheaply'],
+          ['listed', 'Transfer-listed'],
           ['free', 'Free agents only'],
         ])}</div>`
       : '';
+    const saved = sfPresets();
+    const presets = `<div class="chips noswipe" style="margin-top:8px"><span class="chip-lbl">Saved</span>${saved
+      .map(
+        (p, i) =>
+          `<button class="chip" data-act="sfApplyPreset" data-i="${i}">${esc(p.name)}</button><button class="chip" data-act="sfDelPreset" data-i="${i}" aria-label="Delete ${esc(p.name)}">✕</button>`,
+      )
+      .join('')}${saved.length ? '' : '<span class="tiny dim">none yet</span>'}</div>`;
     return `<div class="card flat" style="padding:8px 10px;margin-bottom:8px">
-      ${row('pos', [['any', 'All'], ...D.POS.map((x) => [x, x])])}
+      ${posChips()}
       ${sfSortRow()}
-      ${
-        f.more
-          ? [
-              row('age', [
-                ['any', 'Any age'],
-                ['u19', '≤19'],
-                ['u21', '≤21'],
-                ['u23', '≤23'],
-                ['prime', '24–29'],
-                ['vet', '30+'],
-              ]),
-              row('level', [
-                ['any', 'Any level'],
-                ['starter', 'Would start for us'],
-                ['squad', 'Squad player'],
-                ['prospect', 'Prospect'],
-              ]),
-              row('price', [
-                ['any', 'Any fee'],
-                ['budget', 'Within budget'],
-                ['m1', `≤ ${U.money(1e6)}`],
-                ['m5', `≤ ${U.money(5e6)}`],
-                ['m20', `≤ ${U.money(2e7)}`],
-              ]),
-            ].join('')
-          : ''
-      }
+      ${row('age', [
+        ['any', 'Any age'],
+        ['u19', '≤19'],
+        ['u21', '≤21'],
+        ['u23', '≤23'],
+        ['prime', '24–29'],
+        ['vet', '30+'],
+      ])}
       ${more}
-      <div class="row" style="margin-top:6px;gap:6px"><button class="btn sm" data-act="sfMore">${f.more ? 'Fewer filters ▴' : 'More filters ▾'}</button><span class="grow"></span>${n ? `<button class="btn sm" data-act="sfReset">Clear ${n} filter${n === 1 ? '' : 's'}</button>` : ''}</div></div>`;
+      ${presets}
+      <div class="row" style="margin-top:6px;gap:6px"><button class="btn sm" data-act="sfMore">${f.more ? 'Fewer filters ▴' : 'More filters ▾'}</button>${n ? `<input type="text" id="sf-name" maxlength="18" placeholder="Name" style="width:90px;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><button class="btn sm" data-act="sfSave">Save these</button>` : ''}<span class="grow"></span>${n ? `<button class="btn sm" data-act="sfReset">Clear ${n} filter${n === 1 ? '' : 's'}</button>` : ''}</div>${total != null && n ? `<div class="tiny dim" style="margin-top:6px">${total} match${total === 1 ? '' : 'es'}</div>` : ''}</div>`;
   }
+  const sfReset = () => {
+    Object.assign(UI._sf, SF_DEFAULT(), { limit: 50 });
+  };
   UI.acts.sf = (d) => {
     UI._sf[d.k] = d.v;
+    UI._sf.limit = 50;
     UI.render();
   };
   UI.acts.sfSel = (d, el) => {
     UI._sf[d.k] = el.value;
+    UI._sf.limit = 50;
     UI.render();
+  };
+  UI.acts.sfPos = (d) => {
+    const f = UI._sf;
+    if (d.v === 'any') f.pos = 'any';
+    else {
+      const on = Array.isArray(f.pos) ? f.pos.slice() : [];
+      f.pos = on.includes(d.v) ? on.filter((x) => x !== d.v) : [...on, d.v];
+      if (!f.pos.length) f.pos = 'any';
+    }
+    f.limit = 50;
+    UI.render();
+  };
+  UI.acts.sfPosGroup = (d) => {
+    const f = UI._sf,
+      grp = D.POS.filter((x) => D.POS_GROUP[x] === d.v),
+      on = Array.isArray(f.pos) ? f.pos : [];
+    f.pos = grp.every((x) => on.includes(x)) ? on.filter((x) => !grp.includes(x)) : [...new Set([...on, ...grp])];
+    if (!f.pos.length) f.pos = 'any';
+    f.limit = 50;
+    UI.render();
+  };
+  // (a typed number is applied once he stops typing, and the box keeps the cursor)
+  let sfT;
+  UI.acts.sfNum = (d, el) => {
+    UI._sf[d.k] = el.value;
+    clearTimeout(sfT);
+    sfT = setTimeout(() => {
+      UI._sf.limit = 50;
+      UI.render();
+      const i = document.querySelector(`[data-input="sfNum"][data-k="${d.k}"]`);
+      if (i) {
+        i.focus();
+        i.setSelectionRange(i.value.length, i.value.length);
+      }
+    }, 450);
   };
   UI.acts.sfMore = () => {
     UI._sf.more = !UI._sf.more;
     UI.render();
   };
+  UI.acts.sfShowMore = () => {
+    UI._sf.limit += 50;
+    UI.render();
+  };
   UI.acts.sfReset = () => {
-    const more = UI._sf.more,
-      sort = UI._sf.sort,
-      rev = UI._sf.rev;
-    Object.keys(UI._sf).forEach((k) => (UI._sf[k] = 'any'));
-    UI._sf.more = more;
-    UI._sf.sort = sort;
-    UI._sf.rev = rev;
+    sfReset();
+    UI.render();
+  };
+  UI.acts.sfSave = () => {
+    const box = document.getElementById('sf-name'),
+      name = (box && box.value) || '';
+    if (!name.trim()) return UI.toast('Type a name for these filters first', 2000);
+    const list = sfPresets();
+    const at = list.findIndex((p) => p.name === name.trim());
+    const entry = { name: name.trim().slice(0, 18), f: sfSnapshot() };
+    if (at >= 0) list[at] = entry;
+    else list.push(entry);
+    if (list.length > 6) list.shift();
+    UI.save();
+    UI.toast('Filters saved', 1500);
+    UI.render();
+  };
+  UI.acts.sfApplyPreset = (d) => {
+    const p = sfPresets()[+d.i];
+    if (!p) return;
+    sfReset();
+    Object.assign(UI._sf, { ...SF_DEFAULT(), ...JSON.parse(JSON.stringify(p.f)) });
+    UI.render();
+  };
+  UI.acts.sfDelPreset = (d) => {
+    sfPresets().splice(+d.i, 1);
+    UI.save();
     UI.render();
   };
 
@@ -945,7 +1102,7 @@
         (id) => P(id) && !W.isUser(P(id).clubId) && FM.Scouting.view(P(id)).grade === g,
       ).length;
     return `<div class="row" style="gap:6px;margin-bottom:8px">${['A', 'B', 'C', 'D'].map((g) => `<div class="kpi tap grow" style="padding:8px;text-align:center" data-act="rf" data-k="grade" data-v="${f.grade === g ? 'all' : g}">${gradeBadge(g, 24)}<div class="tiny dim" style="margin-top:4px">${cnt(g)}</div></div>`).join('')}</div>
-      ${sfPanel()}
+      ${sfPanel('reports', reps.length)}
       <div class="row" style="justify-content:flex-end;gap:6px;margin:-2px 0 6px;flex-wrap:wrap">${nDis ? `<button class="btn sm ${f.dismissed ? 'pri' : ''}" data-act="rfDismissed">${f.dismissed ? '← Back to reports' : `Dismissed (${nDis})`}</button>` : ''}${!f.dismissed && cnt('C') + cnt('D') ? `<button class="btn sm" data-act="dismissWeak">🗑 Dismiss all C & D (${cnt('C') + cnt('D')})</button>` : ''}</div>
       ${chipRow('rf', 'sort', f.sort, [
         ['grade', 'Sort: grade'],
@@ -961,12 +1118,12 @@
           ? disList.map((p) => reportRow(p, FM.Scouting.view(p), '', 'restore')).join('') ||
             '<div class="empty">Nothing dismissed.</div>'
           : reps
-              .slice(0, 60)
+              .slice(0, UI._sf.limit)
               .map(({ p, v, r }) =>
                 reportRow(p, v, r.isNew ? ' · <span style="color:var(--acc)">NEW</span>' : '', true),
               )
               .join('') || '<div class="empty">No reports match. Assign scouts from the Hub.</div>'
-      }</div>`;
+      }</div>${f.dismissed ? '' : sfFoot(reps.length, Math.min(reps.length, UI._sf.limit))}`;
   }
   UI.acts.rf = (d) => {
     UI._rf[d.k] = d.k === 'age' ? +d.v : d.v;
@@ -993,14 +1150,14 @@
     );
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
       <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
-      ${sfPanel()}
+      ${sfPanel('search', ps.length)}
       ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">🏛️ ${esc(W.userClub().name)} only sign ${esc(W.userClub().policy.label)} players, so only they are scouted and listed.</div>` : ''}
       <div class="card flat list" style="padding:4px 12px">${
         ps
-          .slice(0, 50)
+          .slice(0, UI._sf.limit)
           .map((p) => reportRow(p, FM.Scouting.view(p)))
           .join('') || '<div class="empty">No matches</div>'
-      }</div>`;
+      }</div>${sfFoot(ps.length, Math.min(ps.length, UI._sf.limit))}`;
   }
   UI.acts.q = (d) => {
     UI._q[d.k] = d.v;
@@ -1016,13 +1173,13 @@
       (a, b) => b.v.score - a.v.score || b.p.ca - a.p.ca,
     );
     return `<div class="small muted" style="margin:0 2px 8px">Out-of-contract players can sign any time, window open or not — no fee, but they want a signing-on bonus and slightly higher wages. Scout them to see what you're getting.</div>
-      ${sfPanel()}
+      ${sfPanel('free', ps.length)}
       <div class="card flat list" style="padding:4px 12px">${
         ps
-          .slice(0, 60)
+          .slice(0, UI._sf.limit)
           .map(({ p, v }) => reportRow(p, v))
           .join('') || '<div class="empty">No free agents.</div>'
-      }</div>`;
+      }</div>${sfFoot(ps.length, Math.min(ps.length, UI._sf.limit))}`;
   }
   UI.acts.fq = (d) => {
     UI._fq[d.k] = d.v;
@@ -1035,6 +1192,68 @@
       : '<div class="empty">Your shortlist is empty. Tap ☆ on a player card.</div>';
   }
   UI._mk = 'all';
+  // The Transfer Centre's own filters: who (name or club), the position, the league or country of either club, the size of the fee
+  UI._tf = { text: '', pos: [], nat: 'any', fee: 'any', dir: 'any', limit: 60 };
+  const TF_FEE = {
+    any: ['Any fee', 0],
+    m1: ['≥ 1M', 1e6],
+    m5: ['≥ 5M', 5e6],
+    m20: ['≥ 20M', 2e7],
+    m50: ['≥ 50M', 5e7],
+  };
+  const tfActive = () =>
+    (UI._tf.text.trim() !== '') +
+    (UI._tf.pos.length > 0) +
+    (UI._tf.nat !== 'any') +
+    (UI._tf.fee !== 'any') +
+    (UI._tf.dir !== 'any');
+  UI.acts.tfSet = (d) => {
+    UI._tf[d.k] = d.v;
+    UI._tf.limit = 60;
+    UI.render();
+  };
+  UI.acts.tfSel = (d, el) => {
+    UI._tf[d.k] = el.value;
+    UI._tf.limit = 60;
+    UI.render();
+  };
+  UI.acts.tfText = (d, el) => {
+    UI._tf.text = el.value;
+    UI._tf.limit = 60;
+    clearTimeout(UI._tfT);
+    UI._tfT = setTimeout(() => {
+      UI.render();
+      const i = document.querySelector('[data-input="tfText"]');
+      if (i) {
+        i.focus();
+        i.setSelectionRange(i.value.length, i.value.length);
+      }
+    }, 250);
+  };
+  UI.acts.tfPos = (d) => {
+    const f = UI._tf;
+    f.pos = d.v === 'any' ? [] : f.pos.includes(d.v) ? f.pos.filter((x) => x !== d.v) : [...f.pos, d.v];
+    f.limit = 60;
+    UI.render();
+  };
+  UI.acts.tfPosGroup = (d) => {
+    const f = UI._tf,
+      grp = D.POS.filter((x) => D.POS_GROUP[x] === d.v);
+    f.pos = grp.every((x) => f.pos.includes(x))
+      ? f.pos.filter((x) => !grp.includes(x))
+      : [...new Set([...f.pos, ...grp])];
+    f.limit = 60;
+    UI.render();
+  };
+  UI.acts.tfMore = () => {
+    UI._tf.limit += 60;
+    UI.render();
+  };
+  UI.acts.tfReset = () => {
+    UI._tf = { text: '', pos: [], nat: 'any', fee: 'any', dir: 'any', limit: 60 };
+    UI._mk = 'all';
+    UI.render();
+  };
   function marketView() {
     const s = S();
     const all = s.seasonLog.transfers.slice().reverse();
@@ -1047,7 +1266,11 @@
       flows[k].n++;
       flows[k].fee += t.fee;
     });
-    const list =
+    const f = UI._tf,
+      q = f.text.trim().toLowerCase();
+    const posOf = (t) => (s.players[t.pid] || {}).pos;
+    const natOf = (id) => (id && CL(id) ? CL(id).nat : null);
+    let list =
       UI._mk === 'intl'
         ? intl
         : UI._mk === 'loans'
@@ -1055,7 +1278,26 @@
           : UI._mk === 'mine'
             ? all.filter((t) => W.isUser(t.to) || W.isUser(t.from))
             : all;
+    list = list.filter((t) => {
+      if (
+        q &&
+        !(t.name + ' ' + (t.from && CL(t.from) ? CL(t.from).name : '') + ' ' + (CL(t.to) ? CL(t.to).name : ''))
+          .toLowerCase()
+          .includes(q)
+      )
+        return false;
+      if (f.pos.length && !f.pos.includes(posOf(t))) return false;
+      if (f.nat !== 'any' && natOf(t.from) !== f.nat && natOf(t.to) !== f.nat) return false;
+      if (t.fee < TF_FEE[f.fee][1]) return false;
+      if (f.dir === 'in' && !W.isUser(t.to)) return false;
+      if (f.dir === 'out' && !W.isUser(t.from)) return false;
+      if (f.dir === 'free' && !(t.fee === 0 && !t.loan)) return false;
+      return true;
+    });
     const spend = U.sum(all, (t) => t.fee);
+    const nations = [...new Set(all.flatMap((t) => [natOf(t.from), natOf(t.to)]).filter(Boolean))].sort((a, b) =>
+      D.NATIONS[a].name.localeCompare(D.NATIONS[b].name),
+    );
     return `<div class="kpis"><div class="kpi"><div class="v">${all.length}</div><div class="l">Deals</div></div><div class="kpi"><div class="v">${intl.length}</div><div class="l">International</div></div><div class="kpi"><div class="v">${U.money(spend)}</div><div class="l">Total fees</div></div></div>
       ${
         Object.keys(flows).length
@@ -1078,17 +1320,38 @@
         ['mine', 'My club'],
       ]
         .map(([k, l]) => `<button class="chip ${UI._mk === k ? 'on' : ''}" data-act="mk" data-v="${k}">${l}</button>`)
+        .join('')}${[
+        ['in', 'Signed by us'],
+        ['out', 'Sold by us'],
+        ['free', 'Free transfers'],
+      ]
+        .map(
+          ([k, l]) =>
+            `<button class="chip ${f.dir === k ? 'on' : ''}" data-act="tfSet" data-k="dir" data-v="${f.dir === k ? 'any' : k}">${l}</button>`,
+        )
         .join('')}</div>
+      <input type="text" placeholder="Search a player or club…" value="${esc(f.text)}" data-input="tfText" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 4px">
+      ${UI.posFilter(f.pos, 'tfPos', 'tfPosGroup')}
+      <div class="row" style="gap:6px;margin:6px 0">
+        <select data-input="tfSel" data-k="nat" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${[['any', 'Any country'], ...nations.map((n) => [n, `${D.NATIONS[n].flag} ${D.NATIONS[n].name}`])].map(([v, l]) => `<option value="${v}" ${f.nat === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+        <select data-input="tfSel" data-k="fee" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${Object.entries(
+          TF_FEE,
+        )
+          .map(([v, [l]]) => `<option value="${v}" ${f.fee === v ? 'selected' : ''}>${l}</option>`)
+          .join('')}</select>
+      </div>
+      <div class="row" style="margin:0 0 6px;gap:6px"><span class="tiny dim grow">${tfActive() ? `${list.length} deal${list.length === 1 ? '' : 's'} match` : ''}</span>${tfActive() ? `<button class="btn sm" data-act="tfReset">Clear ${tfActive()} filter${tfActive() === 1 ? '' : 's'}</button>` : ''}</div>
       <div class="card flat" style="padding:2px 12px">${
         list
-          .slice(0, 60)
+          .slice(0, f.limit)
           .map((t) => {
             const from = t.from && CL(t.from),
               to = CL(t.to);
             return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''} ${t.intl ? '<span class="pill acc">INTL</span>' : ''}</div><div class="tiny dim ellip">${from ? `${C.flag(from.nat)} ${esc(from.short)}` : 'Free agent'} → ${C.flag(to.nat)} ${esc(to.name)}${t.age ? ` · age ${t.age}` : ''}</div></div>${C.fee(t.fee, W.isUser(t.to) ? 'in' : W.isUser(t.from) ? 'out' : null, t.loan)}</div>`;
           })
-          .join('') || '<div class="empty">No deals yet this season.</div>'
-      }</div>`;
+          .join('') ||
+        `<div class="empty">${all.length ? 'No deals match these filters.' : 'No deals yet this season.'}</div>`
+      }</div>${list.length > f.limit ? `<div class="row" style="margin:6px 0 0;gap:8px"><span class="tiny dim grow">Showing ${f.limit} of ${list.length}</span><button class="btn sm" data-act="tfMore">Show 60 more</button></div>` : ''}`;
   }
   UI.acts.mk = (d) => {
     UI._mk = d.v;

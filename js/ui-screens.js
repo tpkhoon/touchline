@@ -41,7 +41,7 @@
       const f1 = fx.first && FM.Cups.findFixture(fx.first);
       const aggNote =
         f1 && f1.res
-          ? `First leg: ${TM(f1.h).short} ${f1.res.hg}–${f1.res.ag} ${TM(f1.a).short}${s.rules.awayGoals ? ' · away goals count' : ''}`
+          ? `First leg: ${TM(f1.h).short} ${f1.res.hg}–${f1.res.ag} ${TM(f1.a).short}${W.rule(f1.comp, 'awayGoals') ? ' · away goals count' : ''}`
           : '';
       // Their last result: clubs keep one; national teams read the international log
       const lr = (() => {
@@ -633,7 +633,8 @@
                 : squadView())
     );
   };
-  UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false, rev: false };
+  const SQ_DEFAULT = () => ({ text: '', pos: [], age: 'any', nat: 'any', contract: 'any', foot: 'any', level: 'any' });
+  UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false, rev: false, more: false, ...SQ_DEFAULT() };
   // which sorts run low to high by themselves (the rest high to low); the arrow button turns either around
   const SQ_ASC = new Set(['fit', 'age', 'contract']);
   const SQ_SORT = {
@@ -643,6 +644,12 @@
     fit: ['Fitness', (a, b) => a.fitness - b.fitness],
     age: ['Age', (a, b) => W.age(a) - W.age(b)],
     wage: ['Wage', (a, b) => b.wage - a.wage],
+    value: ['Value', (a, b) => b.value - a.value],
+    apps: ['Appearances', (a, b) => (b.season.apps || 0) - (a.season.apps || 0) || b.ca - a.ca],
+    goals: [
+      'Goals',
+      (a, b) => (b.season.goals || 0) - (a.season.goals || 0) || (b.season.ast || 0) - (a.season.ast || 0),
+    ],
     contract: ['Contract', (a, b) => a.contract - b.contract || b.ca - a.ca],
     form: [
       'Form',
@@ -657,6 +664,67 @@
     tired: ['Tired (<75%)', (p) => p.fitness < 75],
     expiring: ['Contract ending', (p) => p.contract <= S().year + 1],
     young: ['21 & under', (p) => W.age(p) <= 21],
+    loan: ['On loan to us', (p) => !!p.loan],
+    listed: ['Listed', (p) => !!(p.listed || p.loanListed)],
+    bench: ['Out of the squad', (p, xi, bench) => !xi.has(p.id) && !bench.has(p.id)],
+  };
+  const SQ_AGE = {
+    any: ['Any age', () => true],
+    u21: ['≤21', (a) => a <= 21],
+    mid: ['22–26', (a) => a >= 22 && a <= 26],
+    prime: ['27–31', (a) => a >= 27 && a <= 31],
+    old: ['32+', (a) => a >= 32],
+  };
+  // the extra filters of the squad screen, all at once: name, positions, age, nationality, contract, foot and role
+  const sqActive = () => {
+    const q = UI._sq;
+    return (
+      (q.filter !== 'all') +
+      (q.text.trim() !== '') +
+      (q.pos.length > 0) +
+      ['age', 'nat', 'contract', 'foot', 'level'].filter((k) => q[k] !== 'any').length
+    );
+  };
+  UI.acts.sqText = (d, el) => {
+    UI._sq.text = el.value;
+    clearTimeout(UI._sqT);
+    UI._sqT = setTimeout(() => {
+      UI.render();
+      const i = document.querySelector('[data-input="sqText"]');
+      if (i) {
+        i.focus();
+        i.setSelectionRange(i.value.length, i.value.length);
+      }
+    }, 250);
+  };
+  UI.acts.sqSet = (d) => {
+    UI._sq[d.k] = d.v;
+    UI.render();
+  };
+  UI.acts.sqSel = (d, el) => {
+    UI._sq[d.k] = el.value;
+    UI.render();
+  };
+  UI.acts.sqPos = (d) => {
+    const q = UI._sq;
+    q.pos = d.v === 'any' ? [] : q.pos.includes(d.v) ? q.pos.filter((x) => x !== d.v) : [...q.pos, d.v];
+    UI.render();
+  };
+  UI.acts.sqPosGroup = (d) => {
+    const q = UI._sq,
+      grp = D.POS.filter((x) => D.POS_GROUP[x] === d.v);
+    q.pos = grp.every((x) => q.pos.includes(x))
+      ? q.pos.filter((x) => !grp.includes(x))
+      : [...new Set([...q.pos, ...grp])];
+    UI.render();
+  };
+  UI.acts.sqMore = () => {
+    UI._sq.more = !UI._sq.more;
+    UI.render();
+  };
+  UI.acts.sqReset = () => {
+    Object.assign(UI._sq, SQ_DEFAULT(), { filter: 'all' });
+    UI.render();
   };
   // His standout stat in words, against the players in his position in his league (blank when you know too little of
   // him to say, or nothing stands out): " · Finishing: outstanding"
@@ -705,6 +773,32 @@
             ? `<span class="tiny dim">to ${p.contract}</span>`
             : '';
   };
+  const sqMore = (q) => {
+    const sel = (k, opts) =>
+      `<select data-input="sqSel" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${opts.map(([v, l]) => `<option value="${v}" ${q[k] === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+    return `<div class="row" style="gap:6px;margin-top:6px">${sel('nat', [
+      ['any', 'Any nationality'],
+      ['home', 'Homegrown nationals'],
+      ['foreign', 'Foreign players'],
+    ])}${sel('contract', [
+      ['any', 'Any contract'],
+      ['now', 'Ends this season'],
+      ['next', 'Ends within a year'],
+      ['long', 'Three years or more'],
+    ])}</div>
+      <div class="row" style="gap:6px;margin-top:6px">${sel('level', [
+        ['any', 'Any role'],
+        ['xi', 'Starting XI'],
+        ['rotation', 'Rotation players'],
+        ['prospect', 'Prospects (21 and under)'],
+        ['surplus', 'Surplus: outside the squad'],
+      ])}${sel('foot', [
+        ['any', 'Any foot'],
+        ['Left', 'Left foot'],
+        ['Right', 'Right foot'],
+        ['Both', 'Two-footed'],
+      ])}</div>`;
+  };
   function squadView() {
     const sq = W.squad(club().id),
       q = UI._sq;
@@ -720,7 +814,31 @@
     const expiring = sq.filter((p) => !p.loan && p.contract <= S().year).length;
     const extra = (p) =>
       `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${q.sort === 'pa' ? ` · potential ${C.starText(p.pa, p.pos)}` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
-    const list = sq.filter((p) => SQ_FILTER[q.filter][1](p, starters)).sort(SQ_SORT[q.sort][1]);
+    const benchIds = new Set(
+      W.pickXI(club().id, S().user.tactic)
+        .bench.filter(Boolean)
+        .map((p) => p.id),
+    );
+    const t = q.text.trim().toLowerCase(),
+      xiAvg = U.avg(xi.filter(Boolean), (p) => p.ca);
+    const keep = (p) => {
+      if (!SQ_FILTER[q.filter][1](p, starters, benchIds)) return false;
+      if (t && !(W.name(p) + ' ' + p.nat).toLowerCase().includes(t)) return false;
+      if (q.pos.length && !q.pos.includes(p.pos)) return false;
+      if (!SQ_AGE[q.age][1](W.age(p))) return false;
+      if (q.nat === 'home' && p.nat !== club().nat) return false;
+      if (q.nat === 'foreign' && p.nat === club().nat) return false;
+      if (q.contract === 'now' && !(!p.loan && p.contract <= S().year)) return false;
+      if (q.contract === 'next' && !(!p.loan && p.contract <= S().year + 1)) return false;
+      if (q.contract === 'long' && !(!p.loan && p.contract >= S().year + 3)) return false;
+      if (q.foot !== 'any' && p.foot !== q.foot) return false;
+      if (q.level === 'xi' && !starters.has(p.id)) return false;
+      if (q.level === 'rotation' && !(!starters.has(p.id) && p.ca >= xiAvg - 6)) return false;
+      if (q.level === 'prospect' && !(W.age(p) <= 21 && p.pa >= xiAvg)) return false;
+      if (q.level === 'surplus' && !(!starters.has(p.id) && !benchIds.has(p.id) && p.ca < xiAvg - 6)) return false;
+      return true;
+    };
+    const list = sq.filter(keep).sort(SQ_SORT[q.sort][1]);
     if (q.rev && q.sort !== 'pos') list.reverse();
     const asc = SQ_ASC.has(q.sort) !== !!(q.rev && q.sort !== 'pos');
     const chipsRow = (act, cur, map, label = '', more = '') =>
@@ -742,8 +860,18 @@
         : `<div class="card flat list" style="padding:4px 12px">${list.map((p) => C.playerRow(p, extra(p), contractTag(p, q.sort === 'contract'))).join('')}</div>`;
     return `<div class="row small dim" style="margin:0 2px 8px"><span>${sq.length} players</span><span>·</span><span>Wages ${U.money(U.sum(sq, (p) => p.wage))}/wk</span><span class="grow"></span><span>Foreign ${foreign}${FM.Reg.real() ? '' : ` (${W.foreignLimitText()} in squad)`}</span></div>${UI.regLine(club())}
       ${expiring ? `<button class="warnline tap" style="width:100%;text-align:left;border:0" data-act="sqFilter" data-v="expiring">⏳ ${expiring} contract${expiring === 1 ? '' : 's'} expire this season — unsigned players leave on a free. Show them ›</button>` : ''}
+      <input type="text" placeholder="Search your squad…" value="${esc(q.text)}" data-input="sqText" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:4px">
       ${chipsRow('sqSort', q.sort, SQ_SORT, 'Sort', q.sort === 'pos' ? '' : `<button class="chip on" data-act="sqRev" title="Reverse the order">${asc ? '↑ Low to high' : '↓ High to low'}</button>`)}${chipsRow('sqFilter', q.filter, SQ_FILTER, 'Show', `<button class="chip ${q.stat ? 'on' : ''}" data-act="sqStat">Stats in words</button><button class="chip ${q.alt ? 'on' : ''}" data-act="sqAlt">Other positions</button>`)}
-      ${list.length ? body : '<div class="empty">No players match this filter.</div>'}`;
+      ${UI.posFilter(q.pos, 'sqPos', 'sqPosGroup')}
+      <div class="chips noswipe">${Object.entries(SQ_AGE)
+        .map(
+          ([k, [l]]) =>
+            `<button class="chip ${q.age === k ? 'on' : ''}" data-act="sqSet" data-k="age" data-v="${k}">${l}</button>`,
+        )
+        .join('')}</div>
+      ${q.more ? sqMore(q) : ''}
+      <div class="row" style="margin:6px 0 8px;gap:6px"><button class="btn sm" data-act="sqMore">${q.more ? 'Fewer filters ▴' : 'More filters ▾'}</button><span class="tiny dim grow">${sqActive() ? `${list.length} of ${sq.length} players` : ''}</span>${sqActive() ? `<button class="btn sm" data-act="sqReset">Clear ${sqActive()} filter${sqActive() === 1 ? '' : 's'}</button>` : ''}</div>
+      ${list.length ? body : '<div class="empty">No players match these filters.</div>'}`;
   }
   function academyView() {
     const c = club();
@@ -2027,27 +2155,120 @@
     return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" ${r ? `data-act="matchReport" data-id="${f.id}"` : ''}>${f.po && !f.group ? `<span class="pill">${stagePill(f.po)}</span>` : ''}<span class="grow ellip" style="text-align:right;${W.isUser(f.h) ? 'font-weight:800' : ''}" data-act="clubView" data-id="${f.h}">${esc(CL(f.h).name)}</span>${C.crest(CL(f.h), 18)}<b style="min-width:44px;text-align:center">${r ? `${r.hg}–${r.ag}` : 'v'}</b>${C.crest(CL(f.a), 18)}<span class="grow ellip" style="${W.isUser(f.a) ? 'font-weight:800' : ''}" data-act="clubView" data-id="${f.a}">${esc(CL(f.a).name)}</span></div>${r && (r.pens || r.agg) ? `<div class="tiny dim center">${r.agg ? `agg ${r.agg[0]}–${r.agg[1]}${r.pens ? '' : r.agg[0] === r.agg[1] && r.win != null ? ' · away goals' : ''}` : ''}${r.agg && r.pens ? ' · ' : ''}${r.pens ? `pens ${r.pens[0]}–${r.pens[1]}` : ''}</div>` : ''}`;
   }
   UI.fxLine = fxLine;
+  // Where your league or cups play by rules of their own (a world definition's), in a line each
+  UI.ownRules = () => {
+    const c = club(),
+      s = S();
+    if (!c) return '';
+    const lines = [];
+    const text = (id, label) => {
+      const p = W.playRules(id),
+        bits = [];
+      if (p.win != null) bits.push(`${p.win} points for a win`);
+      if (p.subs != null) bits.push(`${p.subs} substitutes`);
+      if (p.extraTime === false) bits.push('no extra time');
+      if (p.awayGoals === true) bits.push('away goals count');
+      if (bits.length) lines.push(`${label}: <b>${bits.join(', ')}</b>`);
+    };
+    text(c.comp, esc(s.comps[c.comp].name));
+    for (const cc of [...W.cups(), ...W.continentals()]) if (cc.clubs.includes(c.id)) text(cc.id, esc(cc.name));
+    return lines.length ? `${lines.join('<br>')}<br>` : '';
+  };
+  // Your fixtures: the whole season in date order, every competition, with the days of rest before each match
+  UI._fx = { comp: 'all', when: 'next' };
+  UI.acts.fxSet = (d) => {
+    UI._fx[d.k] = d.v;
+    UI.render();
+  };
+  const restPill = (r) =>
+    r.rest == null
+      ? ''
+      : `<span class="tiny b" style="color:var(--${r.rest <= 2 ? 'bad' : r.rest === 3 ? 'warn' : 'dim'})">${r.rest}d rest</span>`;
   function fixturesView() {
     const s = S(),
       c = club();
     if (!c) return '<div class="empty">Take a job to see your fixtures.</div>';
-    const comp = s.comps[c.comp];
-    const mine = comp.fixtures
-      .map((rd, i) => ({ i, f: rd.find((f) => f.h === c.id || f.a === c.id) }))
-      .filter((x) => x.f);
-    const cal = FM.Season.today();
-    const lastRound = cal && cal.type === 'league' ? W.roundsBefore(comp, cal.round) - 1 : comp.fixtures.length - 1;
-    const rr = lastRound >= 0 ? comp.fixtures[lastRound] : null;
-    return `${rr ? `<div class="sec"><div class="h3">Latest round</div><span class="dim small">MD ${lastRound + 1}</span></div><div class="card flat" style="padding:2px 12px">${rr.map(fxLine).join('')}</div>` : ''}
-      ${(() => {
-        const ties = FM.Cups.allFixtures().filter(
-          (f) => f.comp !== c.comp && (f.h === c.id || f.a === c.id) && s.comps[f.comp].type !== 'league',
-        );
-        return ties.length
-          ? `<div class="sec"><div class="h3">Cup ties</div></div><div class="card flat" style="padding:2px 12px">${ties.map((f) => `<div class="row tiny dim" style="padding-top:6px">${esc(s.comps[f.comp].name)} · ${esc(f.po || '')}</div>${fxLine(f)}`).join('')}</div>`
-          : '';
-      })()}
-      <div class="sec"><div class="h3">Your fixtures</div></div><div class="card flat" style="padding:2px 12px">${mine.map(({ i, f }) => `<div class="row tiny dim" style="padding-top:6px">MD ${i + 1}${c.rival === (f.h === c.id ? f.a : f.h) ? ' · ⚔️ Derby' : ''}</div>${fxLine(f)}`).join('')}</div>`;
+    const all = FM.Season.schedule(c.id),
+      q = UI._fx;
+    const kindOf = (r) =>
+      r.comp.type === 'league'
+        ? 'league'
+        : r.comp.type === 'continental' || r.comp.type === 'world'
+          ? 'continental'
+          : 'cups';
+    const isPast = (r) => !r.tbd && r.f.res;
+    let rows = all.filter((r) => q.comp === 'all' || kindOf(r) === q.comp);
+    if (q.when === 'next') rows = rows.filter((r) => !isPast(r));
+    else if (q.when === 'played') rows = rows.filter(isPast);
+    // the spell ahead: how many matches in the next fortnight, and how short the rest is
+    const today = (s.calendar[s.day] || {}).dn ?? 0,
+      ahead = all.filter((r) => !r.tbd && !isPast(r) && r.dn <= today + 14);
+    const crowded = ahead.filter((r) => r.rest != null && r.rest <= 3).length;
+    const spell = `<div class="card flat small"><div class="row"><span class="grow">Next 14 days</span><b>${ahead.length} match${ahead.length === 1 ? '' : 'es'}</b></div>${
+      crowded >= 2
+        ? `<div class="tiny" style="color:var(--warn);margin-top:6px">⚠️ ${crowded} of them come within three days of another match. Rotate: tired players tire more and get hurt more.</div>`
+        : `<div class="tiny dim" style="margin-top:6px">${ahead.length > 2 ? 'A busy spell, but with room to recover.' : 'A light spell: a good time for a friendly or to rest the first team.'}</div>`
+    }</div>`;
+    const bar = `<div class="chips noswipe">${[
+      ['all', 'All'],
+      ['league', 'League'],
+      ['cups', 'Cups'],
+      ['continental', 'Continental'],
+    ]
+      .map(
+        ([v, l]) =>
+          `<button class="chip ${q.comp === v ? 'on' : ''}" data-act="fxSet" data-k="comp" data-v="${v}">${l}</button>`,
+      )
+      .join('')}</div><div class="chips noswipe">${[
+      ['next', 'Coming up'],
+      ['played', 'Played'],
+      ['all', 'Whole season'],
+    ]
+      .map(
+        ([v, l]) =>
+          `<button class="chip ${q.when === v ? 'on' : ''}" data-act="fxSet" data-k="when" data-v="${v}">${l}</button>`,
+      )
+      .join('')}</div>`;
+    const line = (r) => {
+      const day = W.seasonDate(r.dn),
+        wd = day.getUTCDay(),
+        mid = wd >= 2 && wd <= 4;
+      const left = `<div style="width:70px"><div class="tiny b">${W.dateText(r.dn)}</div><div class="tiny dim">${mid ? 'Midweek' : 'Weekend'}</div></div>`;
+      if (r.tbd)
+        return `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px">${left}<div class="grow"><div class="b ellip">${esc(r.comp.name)}</div><div class="tiny dim">${esc(r.text || 'Next round')} · opponent not yet drawn</div></div>${restPill(r)}</div>`;
+      const f = r.f,
+        home = f.h === c.id,
+        opp = CL(home ? f.a : f.h),
+        res = f.res;
+      const out = res
+        ? (home ? res.hg : res.ag) > (home ? res.ag : res.hg) || (res.win != null && res.win === (home ? 0 : 1))
+          ? ['W', 'good']
+          : (home ? res.hg : res.ag) < (home ? res.ag : res.hg)
+            ? ['L', 'bad']
+            : res.pens
+              ? (home ? res.pens[0] > res.pens[1] : res.pens[1] > res.pens[0])
+                ? ['W', 'good']
+                : ['L', 'bad']
+              : ['D', 'dim']
+        : null;
+      const where =
+        r.comp.type === 'league'
+          ? ''
+          : `${esc(r.comp.short || r.comp.name)}${f.po ? ' · ' + esc(f.po) : f.group ? ' · Group' : ''} · `;
+      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line);gap:8px" ${res ? `data-act="matchReport" data-id="${f.id}"` : `data-act="clubView" data-id="${opp.id}"`}>${left}${C.crest(opp, 22)}<div class="grow" style="min-width:0"><div class="b ellip">${home ? 'v' : 'at'} ${esc(opp.name)}${c.rival === opp.id ? ' ⚔️' : ''}</div><div class="tiny dim ellip">${where}${home ? 'Home' : f.neutral ? 'Neutral' : 'Away'}${r.load >= 4 ? ` · <span style="color:var(--warn)">${r.load} games in 14 days</span>` : ''}</div></div>${res ? `<span class="b" style="color:var(--${out[1]})">${out[0]} ${home ? res.hg : res.ag}–${home ? res.ag : res.hg}</span>` : restPill(r)}</div>`;
+    };
+    let month = '';
+    const body = rows.length
+      ? rows
+          .map((r) => {
+            const m = W.seasonDate(r.dn).toLocaleString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }),
+              head = m !== month ? `<div class="tiny b dim" style="padding:12px 0 2px">${m.toUpperCase()}</div>` : '';
+            month = m;
+            return head + line(r);
+          })
+          .join('')
+      : '<div class="empty">Nothing here.</div>';
+    return `${spell}${bar}<div class="card flat" style="padding:2px 12px">${body}</div>`;
   }
   UI._statsComp = null;
   // Team of the week for any league (a round at a time, newest first) and the team of the season so far
@@ -2387,7 +2608,7 @@
                       (r, i) =>
                         `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td title="${{ top: 'Group won', through: 'Through to the knockouts', out: 'Eliminated' }[mk[r.id]] || ''}" style="color:${mk[r.id] === 'out' ? 'var(--bad)' : 'var(--good)'};font-weight:800">${{ top: '★', through: '✓', out: '✗' }[mk[r.id]] || ''}</td></tr>`,
                     )
-                    .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4))}</table>`,
+                    .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4, c.id))}</table>`,
             )
             .join('') +
           (c.groups && c.groups.length
@@ -2856,8 +3077,7 @@
     if (st.trophies >= 2) tags.push(['🏆', 'Serial Winner']);
     if (u.tactic.buildup === 'Possession' && st.w > st.l && st.games >= 10) tags.push(['🧠', 'Tactical Innovator']);
     if (st.sold >= 3) tags.push(['💼', 'Wheeler-Dealer']);
-    const fav = u.favClub && S().clubs[u.favClub];
-    return `<div class="card"><div class="row" style="gap:12px">${C.avatar(u, 52)}<div class="grow"><div class="h2">${u.nat ? C.flag(u.nat) + ' ' : ''}${esc(u.name)}</div><div class="small dim">${esc(u.badges)} licence · ${club() ? `Manager of ${esc(club().name)}` : 'Out of work'}${fav ? ` · ❤️ ${esc(fav.name)}` : ''}</div></div></div>
+    return `<div class="card"><div class="row" style="gap:12px">${C.avatar(u, 52)}<div class="grow"><div class="h2">${u.nat ? C.flag(u.nat) + ' ' : ''}${esc(u.name)}</div><div class="small dim">${esc(u.badges)} licence · ${club() ? `Manager of ${esc(club().name)}` : 'Out of work'}</div></div></div>
       <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.stars(U.repStars(u.rep))}</div></div>
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
       ${teamTalkCard(u)}
@@ -2933,7 +3153,7 @@
             `<button class="${(s.settings.currency || 'auto') === v ? 'on' : ''}" data-act="currency" data-v="${v}">${l}</button>`,
         )
         .join('')}</div></div>
-      <div class="card"><div class="h3">World rules</div><div class="small muted" style="margin-top:6px;line-height:1.6">Points for a win: <b>${s.rules.win}</b> · Subs: <b>${s.rules.subs}</b> · Foreign players in squad: <b>${W.foreignLimitText()}</b><br>Rules may change as the football world evolves.</div></div>
+      <div class="card"><div class="h3">World rules</div><div class="small muted" style="margin-top:6px;line-height:1.6">Points for a win: <b>${s.rules.win}</b> · Subs: <b>${s.rules.subs}</b> · Foreign players in squad: <b>${W.foreignLimitText()}</b><br>${UI.ownRules()}Rules may change as the football world evolves.</div></div>
       ${UI.textSizeCard()}
       ${UI.installCard()}
       <div class="card"><div class="row"><div class="grow"><div class="h3">Save slot ${UI.slot}</div><div class="small dim">Autosaves after every matchday and whenever you leave the app · ${esc(FM.Save.backend())}</div></div><button class="btn sm" data-act="saveNow">Save now</button></div>

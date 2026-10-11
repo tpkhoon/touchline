@@ -1574,6 +1574,35 @@
     return rounds.concat(second);
   };
 
+  // Fixtures put where the manager wanted them (a world definition's pins: { round, h, a }, round counted from 0). Swapping
+  // the clubs of a round-robin around keeps it a round-robin, so the pinned matches are placed by choosing which club plays
+  // which part of the pattern: a search over the pins in turn. Returns the rounds with the clubs swapped, or null.
+  W.pinRounds = function (rounds, pins) {
+    const map = {},
+      used = {};
+    const place = (i) => {
+      if (i === pins.length) return true;
+      const p = pins[i];
+      for (const [x, y] of rounds[p.round] || []) {
+        if ((map[x] ?? p.h) !== p.h || (map[y] ?? p.a) !== p.a) continue;
+        const setX = map[x] === undefined,
+          setY = map[y] === undefined;
+        if ((setX && used[p.h] !== undefined) || (setY && used[p.a] !== undefined)) continue;
+        if (setX) ((map[x] = p.h), (used[p.h] = x));
+        if (setY) ((map[y] = p.a), (used[p.a] = y));
+        if (place(i + 1)) return true;
+        if (setX) (delete map[x], delete used[p.h]);
+        if (setY) (delete map[y], delete used[p.a]);
+      }
+      return false;
+    };
+    if (!place(0)) return null;
+    const ids = [...new Set(rounds.flat(2))],
+      free = ids.filter((id) => used[id] === undefined);
+    ids.filter((id) => map[id] === undefined).forEach((id, i) => (map[id] = free[i]));
+    return rounds.map((rd) => rd.map(([h, a]) => [map[h], map[a]]));
+  };
+
   // Conference membership of a league's clubs (comp.conf: club id -> conference). Clubs the rules don't name (a club
   // that arrived by promotion, say) join the smaller conference.
   W.conferenceOf = function (comp) {
@@ -1704,6 +1733,23 @@
       for (let i = W.splitRounds(R.split); i > 0; i--) rounds.push([]);
       comp.split = { done: false };
     }
+    // matches fixed by hand: those whose clubs are in the league and whose matchday exists (the rest of the pins give way
+    // one at a time if no schedule can hold them all)
+    if (R.pins && R.pins.length && !R.conferences && !R.zones) {
+      const regular = R.split ? R.split.after : rounds.length;
+      let pins = R.pins
+        .filter((p) => comp.clubs.includes(p.h) && comp.clubs.includes(p.a) && p.round >= 1 && p.round <= regular)
+        .map((p) => ({ round: p.round - 1, h: p.h, a: p.a }));
+      for (; pins.length; pins.pop())
+        for (let i = 0; i < 6; i++) {
+          const fixed = W.pinRounds(rounds, pins);
+          if (fixed) {
+            rounds = fixed;
+            pins = [];
+            break;
+          }
+        }
+    }
     comp.fixtures = rounds.map((rd, r) =>
       rd.map(([h, a]) => ({ id: FM.nextId('f'), comp: comp.id, round: r, h, a, res: null })),
     );
@@ -1785,7 +1831,7 @@
             if (!f.res || !ids.has(f.h) || !ids.has(f.a)) continue;
             const H = mini[f.h],
               A = mini[f.a],
-              win = FM.S.rules.win;
+              win = W.rule(comp.id, 'win');
             H.gf += f.res.hg;
             A.gf += f.res.ag;
             H.gd += f.res.hg - f.res.ag;
@@ -1836,6 +1882,19 @@
   W.continentals = () => Object.values(FM.S.comps).filter((c) => c.type === 'continental');
 
   W.worldCups = () => Object.values(FM.S.comps).filter((c) => c.type === 'world');
+  // A competition's own rules: points for a win and substitutes (leagues and group tables), extra time and away goals (cups
+  // and play-offs). Each is the world's rule unless the competition has set its own (a world definition's, in rules.play for
+  // a league, opts.play for a domestic cup, play for a continental cup)
+  W.playRules = (compId) => {
+    const c = FM.S.comps[compId];
+    return (
+      (c && (c.type === 'league' ? c.rules && c.rules.play : c.type === 'cup' ? c.opts && c.opts.play : c.play)) || {}
+    );
+  };
+  W.rule = (compId, key) => {
+    const v = W.playRules(compId)[key];
+    return v != null ? v : key === 'extraTime' ? true : FM.S.rules[key];
+  };
   W.simOf = (compId) => (FM.S.comps[compId] && FM.S.comps[compId].sim) || 'full';
 
   // The season has as many league days as the longest league has rounds (S.rounds). Every league spreads its own
@@ -1962,7 +2021,107 @@
     // International tournament finals in the summer at the end of this season
     if (S.nteams && FM.Intl.tournamentFor(S.year))
       FM.Intl.tournamentStages(S.year).forEach((stage) => cal.push({ type: 'tourn', stage }));
+    return W.dateCalendar(W.spreadCalendar(cal));
+  };
+
+  // Midweek football. A club's league games are the weekend and its cups are midweek, so at most one cup day sits in the gap
+  // between two league rounds: a cup day that would follow another one (or that falls on an international break) moves to
+  // the next gap, in the same order, so no club plays three days in a row because several competitions share a round. What
+  // is left over after the last league round is played on consecutive midweeks before the play-offs.
+  W.spreadCalendar = function (cal) {
+    let last = -1;
+    cal.forEach((e, i) => {
+      if (e.type === 'league') last = i;
+    });
+    if (last < 0) return cal;
+    const out = [],
+      queue = [];
+    for (let i = 0; i <= last; i++) {
+      const e = cal[i];
+      if (e.type === 'cup') {
+        queue.push(e);
+        continue;
+      }
+      out.push(e);
+      if (e.type === 'league' && queue.length) out.push(queue.shift());
+    }
+    let i = last + 1;
+    while (i < cal.length && cal[i].type === 'cup') queue.push(cal[i++]);
+    out.push(...queue, ...cal.slice(i));
+    return out;
+  };
+
+  // Every day of the calendar gets a date: dn = days since the first league day (a Saturday at the start of August). A league day
+  // follows the last by a week and a cup day sits three or four days from a league day, so a long season is squeezed
+  // into early August to the end of May; each day then goes to the nearest weekday that suits it (league games Friday to
+  // Sunday, cups Tuesday to Thursday, international breaks Thursday and Monday).
+  W.CAL_BUDGET = 300; // days from the first league day to the last
+  const DAYS = { L: [5, 6, 0], C: [2, 3, 4], I: [4, 1], X: [0, 1, 2, 3, 4, 5, 6] },
+    TIGHT = [3, 5, 6, 0]; // (a season too long for a week a round plays some league rounds midweek)
+  W.dateCalendar = function (cal, year = FM.S.year) {
+    const kind = (e) => (e.type === 'league' ? 'L' : e.type === 'cup' ? 'C' : e.type === 'intl' ? 'I' : 'X');
+    const pre = cal.filter((e) => e.type === 'pre');
+    const main = cal.filter((e) => e.type !== 'pre');
+    const lastL = main.reduce((m, e, i) => (e.type === 'league' ? i : m), 0);
+    const base = (d) => W.seasonDate(d, year).getUTCDay();
+    const gaps = main.map((e, i) => {
+      const a = i ? kind(main[i - 1]) : null,
+        b = kind(e);
+      return !a
+        ? 0
+        : a === 'L' && b === 'L'
+          ? 7
+          : a === 'L' && b === 'C'
+            ? 3
+            : a === 'C' && b === 'L'
+              ? 4
+              : a === 'C' && b === 'C'
+                ? 2
+                : a === 'I' && b === 'I'
+                  ? 3
+                  : a === 'I' || b === 'I'
+                    ? 4
+                    : e.type === 'playoff' || e.type === 'tourn'
+                      ? 2
+                      : 3;
+    });
+    const total = gaps.slice(0, lastL + 1).reduce((s, g) => s + g, 0);
+    const f = Math.min(1, W.CAL_BUDGET / total);
+    let prev = -1,
+      at = 0;
+    main.forEach((e, i) => {
+      at = i <= lastL ? at + gaps[i] * f : prev + gaps[i]; // (after the last league day, from where it fell)
+      const k = kind(e),
+        pk = i ? kind(main[i - 1]) : null,
+        from = prev + (k === 'L' && pk === 'L' ? 3 : pk && k !== 'X' && pk !== 'X' && pk !== k ? 2 : 1);
+      let best = Math.max(Math.round(at), from);
+      if (e.type !== 'playoff' && e.type !== 'tourn') {
+        let dist = 99;
+        for (let d = from; d <= Math.max(Math.round(at), from) + 6; d++) {
+          // (a Saturday is the day for a league game, a Friday or Sunday next to it)
+          const off = Math.abs(d - at) + (k === 'L' && base(d) !== 6 ? 1.2 : 0);
+          if ((f < 1 && k === 'L' ? TIGHT : DAYS[k]).includes(base(d)) && off < dist) {
+            best = d;
+            dist = off;
+          }
+        }
+      }
+      e.dn = prev = best;
+    });
+    pre.forEach((e, i) => (e.dn = -(pre.length - i) * 4));
     return cal;
+  };
+  // The date of a day number: the first Saturday on or after 1 August of the season's year
+  W.seasonDate = function (dn, year = FM.S.year) {
+    const d = new Date(Date.UTC(year, 7, 1));
+    d.setUTCDate(1 + ((6 - d.getUTCDay() + 7) % 7) + dn);
+    return d;
+  };
+  const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  W.dateText = function (dn, year = FM.S.year) {
+    const d = W.seasonDate(dn, year);
+    return `${DOW[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}`;
   };
 
   // ---------------- New world ----------------
@@ -2166,7 +2325,7 @@
 
   // Attach the human manager to a club
   // The manager's own profile, independent of any club (a new career creates it; it survives every job)
-  // who: a name, or a profile { fn, ln, nat, fav, avatar: { e, bg } } from the new-career screen
+  // who: a name, or a profile { fn, ln, nat, avatar: { e, bg } } from the new-career screen
   W.newManager = function (who, rep, nat) {
     const S = FM.S,
       prof = typeof who === 'string' ? { name: who } : who || {};
@@ -2196,7 +2355,6 @@
       fn: prof.fn || mgrName.split(' ')[0],
       ln: prof.ln || mgrName.split(' ').slice(1).join(' '),
       nat: prof.nat || nat,
-      favClub: prof.fav && S.clubs[prof.fav] ? prof.fav : null,
       avatar: prof.avatar || null,
       clubId: null,
       rep: Math.round(rep),
@@ -2377,29 +2535,6 @@
     if (club.manager && S.staff[club.manager] && FM.Records) FM.Records.managerLeft(S.staff[club.manager], clubId);
     club.manager = null;
     club.boardConf = 70;
-    // Your favourite club: a homecoming buys goodwill; its rivals' fans will take some winning over
-    const fav = S.user.favClub && S.clubs[S.user.favClub];
-    if (fav && fav.id === clubId) {
-      club.fanMood = Math.min(100, club.fanMood + 12);
-      club.boardConf += 8;
-      if (FM.Stories)
-        FM.Stories.share({
-          kicker: 'HOMECOMING',
-          title: `${S.user.name} takes charge of boyhood club ${club.name}`,
-          sub: 'The supporters know one of their own when they see one.',
-          big: '❤️',
-          clubId,
-        });
-    } else if (fav && club.rival === fav.id) {
-      club.fanMood = Math.max(0, club.fanMood - 10);
-      if (FM.News)
-        FM.News.add({
-          type: 'dressing',
-          title: 'Fans wary of the new manager',
-          body: `Supporters haven't forgotten that ${S.user.name} grew up following ${fav.name}. Results will have to do the talking.`,
-          clubId,
-        });
-    }
     S.user.joinedClubYear = S.year;
     S.user.tactic = club.tactic;
     if (S.user.tactic.fam == null) S.user.tactic.fam = 55; // tactical familiarity 0–100

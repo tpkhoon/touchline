@@ -25,6 +25,14 @@
   // ---------------- Preview ----------------
   // The opposition's likely XI, line by line (from the same pick the match will use for them, unless they have
   // injuries or suspensions by then), with the danger man starred and who they are missing
+  // Days since our last match, when they are few: the spell is crowded and the legs show it
+  MV.restLine = (fx, me, nt) => {
+    if (nt || !me || !me.id) return '';
+    const row = FM.Season.schedule(me.id).find((r) => !r.tbd && r.f.id === fx.id);
+    if (!row || row.rest == null || row.rest > 3) return '';
+    const tired = FM.W.pickXI(me.id, FM.S.user.tactic).xi.filter((p) => p && p.fitness < 80).length;
+    return `<div class="warnline">⏱ ${row.rest} day${row.rest === 1 ? '' : 's'} since your last match${row.load >= 3 ? ` — ${row.load} games in 14 days` : ''}.${tired ? ` ${tired} of the XI below 80% fitness: think about rotating.` : ''}</div>`;
+  };
   MV.predictedXI = function (opp, key) {
     const t = opp.tactic,
       slots = D.FORMATIONS[t.formation] || [];
@@ -120,7 +128,8 @@
         <div class="q" style="margin-top:10px;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13px;border-left:3px solid var(--acc2)"><b class="tiny dim" style="display:block">${esc(asst.fn + ' ' + asst.ln)} · Assistant</b>“${tip}”</div></div>
       ${MV.predictedXI(opp, key)}
       ${MV.conditions(fx, me, opp, nt)}
-      ${f1 && f1.res ? `<div class="warnline" style="margin-bottom:8px">Second leg. First leg: ${esc(CL(f1.h).name)} ${f1.res.hg}–${f1.res.ag} ${esc(CL(f1.a).name)}${s.rules.awayGoals ? ' · away goals count' : ''}. Level on aggregate after 90 minutes → extra time${s.rules.awayGoals ? ' (unless away goals decide it)' : ''}.</div>` : fx.leg === 1 ? '<div class="warnline" style="margin-bottom:8px">First leg — no extra time tonight. The tie is decided in the return match.</div>' : ''}
+      ${MV.restLine(fx, me, nt)}
+      ${f1 && f1.res ? `<div class="warnline" style="margin-bottom:8px">Second leg. First leg: ${esc(CL(f1.h).name)} ${f1.res.hg}–${f1.res.ag} ${esc(CL(f1.a).name)}${W.rule(fx.comp, 'awayGoals') ? ' · away goals count' : ''}. Level on aggregate after 90 minutes → ${W.rule(fx.comp, 'extraTime') === false ? 'penalties' : 'extra time'}${W.rule(fx.comp, 'awayGoals') ? ' (unless away goals decide it)' : ''}.</div>` : fx.leg === 1 ? '<div class="warnline" style="margin-bottom:8px">First leg — no extra time tonight. The tie is decided in the return match.</div>' : ''}
       <div class="card"><div class="row"><div class="h3 grow">Your XI · ${myTactic.formation}</div><button class="btn sm" data-act="${nt ? 'goNation' : 'goTactics'}">${nt ? 'Squad' : 'Tactics'}</button></div>
         <div class="small muted" style="margin-top:8px;line-height:1.7">${xi
           .filter(Boolean)
@@ -1008,7 +1017,7 @@
     const render = () => {
       const on = m.onPitch(sd);
       const bench = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id));
-      return `<div class="small muted">Subs left: <b>${sd.subsLeft}</b> of ${FM.S.rules.subs}</div>
+      return `<div class="small muted">Subs left: <b>${sd.subsLeft}</b> of ${W.rule(m.comp, 'subs')}</div>
         <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? '🚑' : ''}${sd.yc[p.id] ? '🟨' : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
         <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + C.starText(W.effAt(p, sd.slots[MV._subOut].t), sd.slots[MV._subOut].t) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
         <button class="btn block" style="margin-top:12px" data-act="mResume">Done</button>`;

@@ -44,8 +44,6 @@
     followed(n) {
       const f = FM.News.follows(),
         S = FM.S;
-      const fav = S.user && S.user.favClub;
-      if (fav && n.clubId === fav) return true; // your boyhood club counts as followed
       if (!f.clubs.length && !f.players.length && !f.comps.length && !f.nations.length) return false;
       if (n.clubId && f.clubs.includes(n.clubId)) return true;
       if (n.pid && f.players.includes(n.pid)) return true;

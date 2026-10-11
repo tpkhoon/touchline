@@ -299,6 +299,11 @@
         halve: v('sph') === 'yes',
       };
     }
+    if (rules.conferences && $('#ed-cn0')) {
+      const old = Object.keys(rules.conferences),
+        nu = [v('cn0'), v('cn1')].map((x, i) => (x || '').trim() || old[i]);
+      if (nu[0] !== nu[1]) rules.conferences = Object.fromEntries(old.map((k, i) => [nu[i], rules.conferences[k]]));
+    }
     const r = WD.editor(ED.def, null).setLeague(ED.lid, {
       name: (v('lname') || '').trim(),
       short: (v('lshort') || '').trim().toUpperCase() || ED.lid,
@@ -342,7 +347,7 @@
           : ''
       }
       ${errBox()}
-      <div class="ng-label">Rules</div>
+      <div class="ng-label">Rules <span class="tiny dim">· for every league and cup; each can have its own on its screen</span></div>
       ${[
         [
           'win',
@@ -392,9 +397,15 @@
               .join('')}</div>`,
         )
         .join('')}
+      <div class="ng-label">Promotion and relegation <span class="tiny dim">· for every league; each pair of leagues has its own switch too</span></div>
+      ${segV('edWorldProRel', ED.def.rules.proRel === false ? 'off' : 'on', [
+        ['on', 'On'],
+        ['off', 'Off: closed leagues'],
+      ])}
       <div class="ng-label">Beyond the clubs</div>
       ${[
-        ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names and formats`],
+        ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names, formats and rules`],
+        ['calendar', '📅 Season calendar', calendarSummary()],
         ['library', '📚 Library, files and packs', 'worlds kept on this device, files, and club data packs'],
         [
           'staffhub',
@@ -530,7 +541,7 @@
     if (!opts.some(([k]) => k.join() === tbKey(l))) opts.push([tbKey(l).split(','), 'As the game has it']);
     return `${splitBox}<div class="ng-label">Matches</div>${
       fixed && !canSplit
-        ? '<div class="tiny dim" style="line-height:1.5">This league has a format of its own (zones, conferences or two tournaments), which stays.</div>'
+        ? '<div class="tiny dim" style="line-height:1.5">This league has a format of its own (zones or conferences), set under League structure below.</div>'
         : r.split
           ? '<div class="tiny dim" style="line-height:1.5">A split league plays its regular season home and away.</div>'
           : segV('edLegs', r.legs || 2, [
@@ -553,14 +564,449 @@
   };
   const segV = (act, cur, vals) =>
     `<div class="seg" style="margin:0">${vals.map(([v, t]) => `<button class="${cur === v ? 'on' : ''}" data-act="${act}" data-v="${v}">${t}</button>`).join('')}</div>`;
+  // The rules a competition plays by where they differ from the world's: a choice for each, "As the world has it" being none
+  const playSeg = (act, k, cur, vals, extra = '', first = 'As the world') =>
+    `<div class="seg" style="margin:0">${[['', first]]
+      .concat(vals)
+      .map(
+        ([v, t]) =>
+          `<button class="${String(cur ?? '') === String(v) ? 'on' : ''}" data-act="${act}" data-k="${k}" data-v="${v}" ${extra}>${t}</button>`,
+      )
+      .join('')}</div>`;
+  const worldRule = (k) => ED.def.rules[k];
+  const leaguePlay = (l) => {
+    const r = l.rules || {},
+      p = r.play || {},
+      sq = r.squad || {},
+      game = FM.Reg.RULES[l.id] || {};
+    const KEY = { listSize: 'squad', homegrown: 'hg' };
+    const gameVal = (k) => game[KEY[k] || k];
+    const gameText = (k, unit = '') => `the game has ${gameVal(k) ? gameVal(k) + unit : 'none'}`;
+    const lbl = (t, extra = '') =>
+      `<div class="tiny dim" style="margin:10px 0 4px">${t}${extra ? ` <span>(${extra})</span>` : ''}</div>`;
+    const reg = (k, label, vals) =>
+      `${lbl(label, gameText(k))}${playSeg('edPlaySquad', k, sq[k], [[0, 'None'], ...vals.map((n) => [n, String(n)])], '', 'As the game')}`;
+    const flag = (k, label, on, off) =>
+      `${lbl(label, game[KEY[k] || k] ? 'the game has it on' : 'the game has it off')}${playSeg(
+        'edPlaySquad',
+        k,
+        sq[k],
+        [
+          [true, on],
+          [false, off],
+        ],
+        '',
+        'As the game',
+      )}`;
+    const exempt = sq.exempt || game.exempt || [];
+    const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const mls = sq.mls != null ? sq.mls : game.mls;
+    const poType = (r.playoffs || {}).type;
+    const poBuiltIn = (D.LEAGUES.find((x) => x.id === l.id) || { rules: {} }).rules.playoffs;
+    const fixedFormat = r.zones || r.conferences;
+    const n = clubsOf(l.id).length;
+    const exp = (ED.def.expansion || {})[l.id];
+    return `<div class="ng-label">Rules of this league <span class="tiny dim">· the world has ${worldRule('win')} points for a win and ${worldRule('subs')} substitutes</span></div>
+      ${lbl('Points for a win')}${playSeg('edPlay', 'win', p.win, [
+        [2, '2'],
+        [3, '3'],
+      ])}
+      ${lbl('Substitutes')}${playSeg('edPlay', 'subs', p.subs, [
+        [3, '3'],
+        [5, '5'],
+        [7, '7'],
+      ])}
+      ${lbl('Matches a club plays', r.rounds ? `${r.rounds} set` : `${(n % 2 ? n : n - 1) * (r.legs === 1 ? 1 : 2)} in a full season`)}
+      <div class="row" style="gap:6px"><input type="number" id="ed-lrounds" min="1" max="${4 * Math.max(1, n - 1)}" inputmode="numeric" placeholder="Full season" value="${r.rounds || ''}" style="flex:1"><button class="btn sm" data-act="edRounds">Set</button></div>
+      <div class="ng-label">League structure</div>
+      ${segV('edStructure', r.zones ? 'zones' : r.conferences ? 'conf' : 'single', [
+        ['single', 'One table'],
+        ['zones', 'Two zones'],
+        ['conf', 'Two conferences'],
+      ])}
+      ${structureBox(l, r)}
+      ${
+        fixedFormat
+          ? ''
+          : `${lbl('Title play-off', poBuiltIn ? `the game has a ${poBuiltIn.type} play-off` : 'the game has none')}${playSeg(
+              'edFormat',
+              'playoffs',
+              poType || (poBuiltIn ? '' : 'none'),
+              [
+                ['none', 'None'],
+                ['finals6', 'Finals series: the top six'],
+                ['liguilla', 'Liguilla: the top ten'],
+              ],
+              '',
+              'As the game',
+            )}
+        ${lbl('Two tournaments a year', r.torneos ? `${r.torneos.join(' and ')}` : 'one table')}${segV(
+          'edTorneos',
+          r.torneos ? 'on' : 'off',
+          [
+            ['off', 'One table'],
+            ['on', 'Apertura and Clausura'],
+          ],
+        )}
+        <div class="tiny dim" style="margin-top:4px;line-height:1.5">Two tournaments each play half the season and finish with the title play-off, so they need one.</div>`
+      }
+      <div class="ng-label">Registration rules <span class="tiny dim">· who a club may sign and field</span></div>
+      <div class="tiny dim" style="line-height:1.5">${FM.Reg.describe(l.id).join(' ')}</div>
+      ${reg('listSize', 'Squad list of players over 21', [20, 23, 25, 28])}
+      ${sq.listSize || (game.squad && sq.listSize == null) ? reg('homegrown', 'Homegrown places on the list', [4, 6, 8, 10, 12]) : ''}
+      ${flag('permit', 'Work permits for players from abroad', 'Needed', 'Not needed')}
+      ${reg('nonEU', 'Players from outside the EU on the books', [2, 3, 4, 5, 6])}
+      ${flag('quasi', 'Players from partner nations count as EU', 'They do', 'They do not')}
+      ${reg('nonEUSign', 'Non-EU signings from abroad in a season', [1, 2, 3])}
+      ${reg('foreign', 'Foreign players on the books', [3, 4, 5, 6, 8, 10, 12, 14])}
+      ${reg('asian', 'Extra place only an Asian player can fill', [1, 2])}
+      ${reg('asean', 'Extra place only a Southeast Asian player can fill', [1])}
+      ${reg('matchday', 'Foreign players in a matchday squad', [3, 5, 9])}
+      ${lbl('Nations that never count as foreign', 'the game has ' + (game.exempt ? game.exempt.join(', ') : 'none'))}
+      <div class="chips" style="flex-wrap:wrap">${exempt
+        .map(
+          (c) =>
+            `<button class="chip on" data-act="edExemptDel" data-c="${c}">${(D.NATIONS[c] || {}).flag || ''} ${esc((D.NATIONS[c] || { name: c }).name)} ✕</button>`,
+        )
+        .join('')}</div>
+      <div class="row" style="gap:6px;margin-top:6px"><select data-input="edExemptAdd" style="flex:1;min-width:0"><option value="">Add a nation…</option>${nations
+        .filter(([c]) => !exempt.includes(c))
+        .map(([c, x]) => `<option value="${c}">${x.flag} ${esc(x.name)}</option>`)
+        .join(
+          '',
+        )}</select>${sq.exempt ? '<button class="btn sm" data-act="edExemptReset">As the game</button>' : ''}</div>
+      ${lbl('Salary budget', mls ? `${U.money(mls.cap)} over the ${mls.counted} biggest charges` : game.mls ? 'the game has one' : 'the game has none')}
+      ${segV('edBudget', sq.mls === undefined ? 'game' : sq.mls ? 'on' : 'off', [
+        ['game', 'As the game'],
+        ['off', 'None'],
+        ['on', 'A salary budget'],
+      ])}
+      ${
+        sq.mls
+          ? `<div class="ng-names" style="margin-top:6px">${[
+              ['cap', 'Budget (M a year)', sq.mls.cap / 1e6, 0.5],
+              ['maxCharge', 'Max charge (K)', sq.mls.maxCharge / 1e3, 10],
+              ['dp', 'Designated players', sq.mls.dp, 1],
+              ['roster', 'Roster size', sq.mls.roster, 1],
+              ['counted', 'Charges counted', sq.mls.counted, 1],
+            ]
+              .map(
+                ([k, t, v, st]) =>
+                  `<div style="flex:1;min-width:80px"><div class="tiny dim">${t}</div><input type="number" id="ed-mls-${k}" step="${st}" min="0" inputmode="decimal" value="${v}"></div>`,
+              )
+              .join(
+                '',
+              )}</div><div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edBudgetSave">Save the budget</button></div>`
+          : ''
+      }
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Registration rules apply where the world follows each league's own rules (the default), a setting of None takes a rule away, and a cup's own rules are on its screen.</div>
+      <div class="ng-label">Expansion draft <span class="tiny dim">· for clubs that join this league</span></div>
+      ${segV('edExp', exp ? 'on' : 'off', [
+        ['off', 'No draft'],
+        ['on', 'Draft from the others'],
+      ])}
+      ${
+        exp
+          ? `<div class="tiny dim" style="margin:8px 0 4px">The clubs that take part</div><div class="chips" style="flex-wrap:wrap">${clubsOf(
+              l.id,
+            )
+              .slice()
+              .sort((a, b) => b.rep - a.rep)
+              .map(
+                (c) =>
+                  `<button class="chip ${exp.clubs.includes(c.id) ? 'on' : ''}" data-act="edExpClub" data-cid="${esc(c.id)}">${esc(c.short || c.name)}</button>`,
+              )
+              .join('')}</div>
+        ${lbl('Players each of the others protects')}${seg(
+          'edExpSet',
+          exp.protect,
+          [8, 10, 12, 15, 18].map((x) => [x, String(x)]),
+          'data-k="protect"',
+          'n',
+        )}
+        ${lbl('Most players one club can lose')}${seg(
+          'edExpSet',
+          exp.maxLoss,
+          [1, 2, 3].map((x) => [x, String(x)]),
+          'data-k="maxLoss"',
+          'n',
+        )}
+        ${lbl('Players each new club drafts')}${seg(
+          'edExpSet',
+          exp.size,
+          [14, 18, 20, 23, 25].map((x) => [x, String(x)]),
+          'data-k="size"',
+          'n',
+        )}
+        <div class="tiny dim" style="margin-top:6px;line-height:1.5">Each club that takes part picks in turn, the best player it can take (keeping a balanced squad), until it has that many; a club that loses a player signs a younger one. What the new club's own squad had is replaced, and players you made for it stay.</div>`
+          : `<div class="tiny dim" style="margin-top:6px;line-height:1.5">A club you add to the league can start with players taken from the clubs already in it, as expansion teams do.</div>`
+      }
+      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edView" data-v="pins" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">📌 Fixed fixtures</div><div class="tiny dim">${(r.pins || []).length ? `${r.pins.length} match${r.pins.length === 1 ? '' : 'es'} put on a matchday` : 'Put a derby or the opening day where you want it'}</div></div><span class="dim">›</span></div></div>`;
+  };
+  // Two zones (Argentina's format: the clubs split into two zones by reputation, two tournaments a year, a play-off of the top
+  // eight of each zone) or two conferences (the American league's: a table of its own for each, cross-conference matches, seven
+  // clubs a conference in the play-off, a college draft)
+  const confCode = (id) => String(id).replace(/^c_/, '');
+  const autoConfs = (l, names) => {
+    const sorted = clubsOf(l.id)
+      .slice()
+      .sort((a, b) => b.rep - a.rep);
+    const out = { [names[0]]: [], [names[1]]: [] };
+    sorted.forEach((c, i) => out[names[i % 4 === 0 || i % 4 === 3 ? 0 : 1]].push(confCode(c.id)));
+    return out;
+  };
+  const structureBox = (l, r) => {
+    if (r.zones)
+      return `<div class="tiny dim" style="margin-top:6px;line-height:1.5">The clubs split into two zones by reputation (best clubs spread across both). Each zone plays itself once and the other zone once, twice a year (${(r.torneos || []).join(' and ')}), and the top eight of each zone play off for the title. Needs at least sixteen clubs.</div>`;
+    if (!r.conferences) return '';
+    const names = Object.keys(r.conferences);
+    const inOf = (c) => names.find((n) => r.conferences[n].includes(confCode(c.id)));
+    return `<div class="ng-names" style="margin-top:8px">${names.map((n, i) => `<input type="text" id="ed-cn${i}" maxlength="20" value="${esc(n)}">`).join('')}</div>
+      <div class="chips" style="flex-wrap:wrap;margin-top:6px">${clubsOf(l.id)
+        .slice()
+        .sort((a, b) => b.rep - a.rep)
+        .map((c) => {
+          const n = inOf(c);
+          return `<button class="chip ${n === names[1] ? 'on' : ''}" data-act="edConfClub" data-cid="${esc(c.id)}">${esc(c.short || c.name)} · ${n ? esc(n.slice(0, 1)) : names[0].slice(0, 1) + '?'}</button>`;
+        })
+        .join('')}</div>
+      <div class="tiny dim" style="margin-top:4px">${names.map((n) => `${esc(n)} ${r.conferences[n].filter((x) => clubsOf(l.id).some((c) => confCode(c.id) === x)).length}`).join(' · ')} · tap a club to move it to the other conference</div>
+      <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edConfSplit">Split them by reputation again</button></div>
+      <div class="tiny dim" style="margin:10px 0 4px">College draft rounds</div>${seg(
+        'edConfDraft',
+        (r.mls || {}).draftRounds || 0,
+        [0, 1, 2, 3, 4].map((n) => [n, String(n)]),
+        '',
+        'n',
+      )}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Each conference plays a table of its own, a conference round-robin plus cross-conference matches (up to the matches a club plays, set above), and seven clubs a conference go to the play-off, which ends in a cup final. Each conference needs at least seven clubs.</div>`;
+  };
+  // the league's rules changed through a function; refused (with the reasons) when the league no longer validates
+  const tryRules = (change) => {
+    stashLeague();
+    const l = leagueOf(ED.lid),
+      was = clone(l.rules || {});
+    l.rules = clone(l.rules || {});
+    change(l.rules, l);
+    const errs = WD.validateLeagueRules(l, ED.def);
+    if (errs.length) l.rules = was;
+    ED.err = errs;
+    UI.worldEditor();
+  };
+  UI.acts.edStructure = (d) =>
+    tryRules((r, l) => {
+      const was = r.zones ? 'zones' : r.conferences ? 'conf' : 'single';
+      if (d.v === was) return;
+      if (was === 'zones') {
+        delete r.zones;
+        delete r.torneos;
+        delete r.playoffs;
+      }
+      if (was === 'conf') {
+        delete r.conferences;
+        delete r.mls;
+      }
+      if (d.v === 'zones') {
+        r.zones = true;
+        r.torneos = ['Apertura', 'Clausura'];
+        r.playoffs = { type: 'zones' };
+        for (const k of ['split', 'legs', 'rounds']) delete r[k];
+      } else if (d.v === 'conf') {
+        r.conferences = autoConfs(l, ['East', 'West']);
+        r.mls = { playoff: 7, draftRounds: 0 };
+        for (const k of ['split', 'legs', 'torneos', 'playoffs']) delete r[k];
+        r.rounds = r.rounds || 34;
+      }
+    });
+  UI.acts.edConfClub = (d) =>
+    tryRules((r) => {
+      const names = Object.keys(r.conferences),
+        code = confCode(d.cid);
+      const from = names.find((n) => r.conferences[n].includes(code));
+      const to = from === names[1] ? names[0] : names[1];
+      if (from) r.conferences[from] = r.conferences[from].filter((x) => x !== code);
+      r.conferences[to].push(code);
+    });
+  UI.acts.edConfSplit = () => tryRules((r, l) => (r.conferences = autoConfs(l, Object.keys(r.conferences))));
+  UI.acts.edConfDraft = (d) =>
+    tryRules((r) => {
+      r.mls = { ...(r.mls || { playoff: 7 }), draftRounds: +d.n };
+    });
+  // Promotion and relegation: off for a pair (the places are kept for turning it on again), or for the whole world
+  UI.acts.edProRel = (d) => {
+    stashLeague();
+    const l = leagueOf(ED.lid),
+      up = upperOf(l);
+    if (!up) return;
+    const pr = pairOf(l, up);
+    ED.prevPR = ED.prevPR || {};
+    if (d.v === 'off') {
+      ED.prevPR[l.id] = pr.n;
+      setPair(l, up, { n: 0, mode: 'auto', legs: pr.legs });
+    } else setPair(l, up, { n: ED.prevPR[l.id] || 2, mode: pr.mode, legs: pr.legs });
+    UI.worldEditor();
+  };
+  UI.acts.edWorldProRel = (d) => {
+    ED.def.rules.proRel = d.v !== 'off';
+    UI.worldEditor();
+  };
+  UI.acts.edPlay = (d) => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    const p = (l.rules.play = l.rules.play || {});
+    if (d.v === '') delete p[d.k];
+    else p[d.k] = +d.v;
+    if (!Object.keys(p).length) delete l.rules.play;
+    UI.worldEditor();
+  };
+  // A registration rule: a number, on or off, or the game's own (the League's setting is dropped)
+  UI.acts.edPlaySquad = (d) => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    const p = (l.rules.squad = l.rules.squad || {});
+    if (d.v === '') delete p[d.k];
+    else p[d.k] = d.v === 'true' ? true : d.v === 'false' ? false : +d.v;
+    if (d.k === 'listSize' && p.listSize && p.homegrown == null) p.homegrown = 8;
+    if (!Object.keys(p).length) delete l.rules.squad;
+    UI.worldEditor();
+  };
+  const squadRules = () => {
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    return (l.rules.squad = l.rules.squad || {});
+  };
+  const dropEmptySquad = () => {
+    const l = leagueOf(ED.lid);
+    if (l.rules.squad && !Object.keys(l.rules.squad).length) delete l.rules.squad;
+  };
+  UI.acts.edExemptAdd = (d, el) => {
+    if (!el.value) return;
+    stashLeague();
+    const sq = squadRules(),
+      game = FM.Reg.RULES[ED.lid] || {};
+    sq.exempt = [...new Set([...(sq.exempt || game.exempt || []), el.value])];
+    UI.worldEditor();
+  };
+  UI.acts.edExemptDel = (d) => {
+    stashLeague();
+    const sq = squadRules(),
+      game = FM.Reg.RULES[ED.lid] || {};
+    sq.exempt = (sq.exempt || game.exempt || []).filter((c) => c !== d.c);
+    UI.worldEditor();
+  };
+  UI.acts.edExemptReset = () => {
+    stashLeague();
+    delete squadRules().exempt;
+    dropEmptySquad();
+    UI.worldEditor();
+  };
+  UI.acts.edBudget = (d) => {
+    stashLeague();
+    const sq = squadRules();
+    if (d.v === 'game') delete sq.mls;
+    else if (d.v === 'off') sq.mls = 0;
+    else sq.mls = sq.mls || { cap: 5.2e6, maxCharge: 7e5, dp: 3, roster: 30, counted: 20 };
+    dropEmptySquad();
+    UI.worldEditor();
+  };
+  UI.acts.edBudgetSave = () => {
+    const sq = squadRules(),
+      v = (k) => +($('#ed-mls-' + k) || {}).value;
+    sq.mls = {
+      cap: v('cap') * 1e6,
+      maxCharge: v('maxCharge') * 1e3,
+      dp: Math.round(v('dp')),
+      roster: Math.round(v('roster')),
+      counted: Math.round(v('counted')),
+    };
+    UI.worldEditor();
+  };
+  // How many matches a club plays, the title play-off and two tournaments a year
+  UI.acts.edRounds = () => {
+    stashLeague();
+    const l = leagueOf(ED.lid),
+      v = Math.round(+($('#ed-lrounds') || {}).value);
+    l.rules = l.rules || {};
+    if (v >= 1) l.rules.rounds = v;
+    else delete l.rules.rounds;
+    UI.worldEditor();
+  };
+  UI.acts.edFormat = (d) => {
+    stashLeague();
+    const l = leagueOf(ED.lid),
+      game = (D.LEAGUES.find((x) => x.id === l.id) || { rules: {} }).rules;
+    l.rules = l.rules || {};
+    if (d.k === 'playoffs') {
+      if (d.v === '' && game.playoffs) l.rules.playoffs = clone(game.playoffs);
+      else if (d.v === 'none' || d.v === '') {
+        delete l.rules.playoffs;
+        delete l.rules.torneos; // (two tournaments need a title play-off)
+      } else l.rules.playoffs = { type: d.v };
+    }
+    UI.worldEditor();
+  };
+  UI.acts.edTorneos = (d) => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    if (d.v === 'on') {
+      l.rules.torneos = ['Apertura', 'Clausura'];
+      l.rules.playoffs = l.rules.playoffs || { type: 'liguilla' };
+      delete l.rules.split;
+      delete l.rules.legs;
+    } else delete l.rules.torneos;
+    UI.worldEditor();
+  };
+  // The expansion draft of a league: on (the clubs the world added to it take part), off, and its settings
+  const expSet = (spec) => {
+    const r = WD.editor(ED.def, null).setExpansion(ED.lid, spec);
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  UI.acts.edExp = (d) => {
+    stashLeague();
+    if (d.v === 'off') return expSet(null);
+    const added = clubsOf(ED.lid)
+      .filter((c) => isNew(c.id))
+      .map((c) => c.id);
+    const clubs = added.length ? added : [];
+    // (without a club of its own to take part, the draft is held but refused until one is chosen)
+    ED.def.expansion = ED.def.expansion || {};
+    ED.def.expansion[ED.lid] = { ...WD.EXPANSION, clubs };
+    ED.err = clubs.length ? [] : ['Choose the clubs that take part in the draft'];
+    UI.worldEditor();
+  };
+  UI.acts.edExpClub = (d) => {
+    stashLeague();
+    const x = ED.def.expansion[ED.lid];
+    x.clubs = x.clubs.includes(d.cid) ? x.clubs.filter((c) => c !== d.cid) : [...x.clubs, d.cid];
+    ED.err = WD.validateExpansion(ED.lid, x, ED.def);
+    UI.worldEditor();
+  };
+  UI.acts.edExpSet = (d) => {
+    stashLeague();
+    const x = ED.def.expansion[ED.lid];
+    x[d.k] = +d.n;
+    ED.err = WD.validateExpansion(ED.lid, x, ED.def);
+    UI.worldEditor();
+  };
   const leagueRules = (l) => {
     const r = l.rules || {},
       up = upperOf(l),
-      out = [leagueFormat(l)];
+      out = [leagueFormat(l), leaguePlay(l)];
     if (up) {
       const pr = pairOf(l, up);
       out.push(
-        `<div class="ng-label">Promotion and relegation with the ${esc(up.name)}</div>${segN('edUpDown', pr.n, [0, 1, 2, 3, 4])}${
+        `<div class="ng-label">Promotion and relegation with the ${esc(up.name)}</div>${segV(
+          'edProRel',
+          pr.n ? 'on' : 'off',
+          [
+            ['on', 'On'],
+            ['off', 'Off'],
+          ],
+        )}${pr.n ? `<div class="tiny dim" style="margin:10px 0 4px">Places</div>${segN('edUpDown', pr.n, [1, 2, 3, 4])}` : ''}${
           pr.n
             ? `<div class="tiny dim" style="margin:10px 0 4px">After those ${pr.n}</div>${segV('edPairMode', pr.mode, [
                 ['auto', 'Nothing more'],
@@ -590,11 +1036,16 @@
     }
     if (l.tier === 1) {
       const cur = r.qualify ? r.qualify.n : 0,
-        cc = D.CONTINENTALS.find(
-          (c) => c.id === ((r.qualify && r.qualify.to) || CONT[(D.NATIONS[l.nat] || {}).region]),
-        );
+        region = regionOfLeague(l),
+        options = contsOf(region, 1),
+        toId = (r.qualify && r.qualify.to) || CONT[(D.NATIONS[l.nat] || {}).region],
+        cc = options.find((c) => c.id === toId) || options[0];
       out.push(
-        `<div class="ng-label">Places in the ${esc(cc ? cc.name : 'continental cup')}</div>${cc ? segN('edQualify', cur, [0, 1, 2, 3, 4, 5, 6]) : '<div class="tiny dim">No continental cup for this part of the world.</div>'}`,
+        `<div class="ng-label">Places in the ${esc(cc ? cc.name : 'continental cup')}</div>${cc ? segN('edQualify', cur, [0, 1, 2, 3, 4, 5, 6]) : '<div class="tiny dim">No continental cup for this part of the world.</div>'}${
+          options.length > 1
+            ? `<div class="row" style="gap:6px;margin-top:6px"><select data-input="edQualifyTo" style="flex:1;min-width:0">${options.map((c) => `<option value="${c.id}" ${cc && cc.id === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>`
+            : ''
+        }`,
       );
     }
     if (!D.LEAGUES.some((x) => x.id === l.id))
@@ -1381,7 +1832,7 @@
   const domCups = () => [
     ...D.DOMESTIC_CUPS.map(([id, nat, name, short]) => ({ id, nat, name, short, removed: outCups().has(id) })),
     ...(ED.def.competitions || [])
-      .filter((c) => c.isNew)
+      .filter((c) => c.isNew && c.kind !== 'cont')
       .map((c) => ({ id: c.id, nat: c.nat, name: c.name, short: c.short, isNew: true })),
   ];
   const cupList = () => [
@@ -1394,6 +1845,9 @@
       group: (D.NATIONS[c.nat] || {}).name || c.nat,
     })),
     ...D.CONTINENTALS.map((c) => ({ id: c.id, name: c.name, short: c.short, group: 'Continental' })),
+    ...(ED.def.competitions || [])
+      .filter((c) => c.isNew && c.kind === 'cont')
+      .map((c) => ({ id: c.id, name: c.name, short: c.short, isNew: true, group: 'Continental' })),
     ...D.EURO_CUPS.map((c) => ({ id: c.id, name: c.name, short: c.short, group: 'Continental' })),
     { id: 'CWC', name: 'FIFA Club World Cup', short: 'CWC', group: 'Continental' },
   ];
@@ -1455,6 +1909,14 @@
     f.legs[d.k] = +d.n;
     setFormat(f);
   };
+  UI.acts.edCupPlay = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    f.play = f.play || {};
+    if (d.v === '') delete f.play[d.k];
+    else f.play[d.k] = d.v === 'true' ? true : d.v === 'false' ? false : +d.v;
+    if (!Object.keys(f.play).length) delete f.play;
+    setFormat(f);
+  };
   UI.acts.edCupGroup = (d) => {
     const f = clone(fmtNow(ED.cup));
     f.groupSize = +d.n;
@@ -1477,6 +1939,8 @@
     WD.editor(ED.def, null).setCup(ED.cup, { format: { ...clone(fmtNow(ED.cup)), prize: v } });
   };
   UI.acts.edDelCup = () => {
+    for (const l of ED.def.leagues)
+      if (l.rules && l.rules.qualify && l.rules.qualify.to === ED.cup) delete l.rules.qualify;
     WD.editor(ED.def, null).removeCup(ED.cup);
     ED.view = 'cups';
     UI.worldEditor();
@@ -1501,6 +1965,7 @@
   };
   UI.acts.edNewCup = () => {
     ED.view = 'newcup';
+    ED.newKind = 'domestic';
     ED.err = [];
     UI.worldEditor();
   };
@@ -1518,8 +1983,24 @@
     UI.worldEditor();
   };
   const newCupView = () => {
-    const nats = cupNations();
-    return `<div class="h1" style="margin-top:2vh">Add a cup</div><div class="tag">A knockout cup for a nation that has none. Every club in its fully or lightly simulated leagues enters.</div>
+    const nats = cupNations(),
+      kind = ED.newKind || 'domestic';
+    const kinds = segV('edNewKind', kind, [
+      ['domestic', 'A cup for a nation'],
+      ['cont', 'A continental competition'],
+    ]);
+    if (kind === 'cont')
+      return `<div class="h1" style="margin-top:2vh">Add a competition</div><div class="tag">A continental competition of a part of the world, in one of four tiers.</div>
+      ${kinds}
+      ${errBox()}
+      <div class="ng-label">Name</div><input type="text" id="ed-ccname" maxlength="48" placeholder="e.g. Pacific Champions League">
+      <div class="ng-label">Short name</div><input type="text" id="ed-ccshort" maxlength="6" placeholder="e.g. PAC1">
+      <div class="ng-label">Part of the world</div><select id="ed-ccregion">${WD.REGIONS.map((r) => `<option>${r}</option>`).join('')}</select>
+      <div class="ng-label">Tier</div><select id="ed-cctier">${[1, 2, 3, 4].map((t) => `<option value="${t}" ${t === 2 ? 'selected' : ''}>Tier ${t} · ${['Champions Cup', 'Shield (the next places)', 'Trophy (the places after that)', 'Regional cup'][t - 1]}</option>`).join('')}</select>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Tier 1 takes the places leagues send to it (set on each league's screen, like the Champions Cup). Tiers 2 to 4 name the leagues that feed them and how many clubs each sends, after the cups above have taken theirs: tier 2 is the Europa League's place, tier 3 the Conference League's, tier 4 a small regional cup. Every cup has a group stage and knockouts.</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateCont">Add the competition</button></div>`;
+    return `<div class="h1" style="margin-top:2vh">Add a competition</div><div class="tag">A knockout cup for a nation that has none. Every club in its fully or lightly simulated leagues enters.</div>
+      ${kinds}
       ${errBox()}
       ${
         nats.length
@@ -1645,6 +2126,48 @@
         ])}
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">The group stage is the same everywhere. Two-legged ties need the world's two-legged knockouts rule (on the first screen); without it every tie is one match.</div>`;
     }
+    // the competition's own rules, where they differ from the world's
+    const pl = f && f.play ? f.play : {};
+    const rules = kind
+      ? `<div class="ng-label">Rules of this cup <span class="tiny dim">· the world has ${worldRule('win')} points for a win and ${worldRule('subs')} substitutes</span></div>
+        <div class="tiny dim" style="margin:6px 0 4px">Substitutes</div>${playSeg('edCupPlay', 'subs', pl.subs, [
+          [3, '3'],
+          [5, '5'],
+          [7, '7'],
+        ])}
+        <div class="tiny dim" style="margin:10px 0 4px">Level after 90 minutes</div>${playSeg(
+          'edCupPlay',
+          'extraTime',
+          pl.extraTime,
+          [
+            [true, 'Extra time'],
+            [false, 'Straight to penalties'],
+          ],
+        )}
+        <div class="tiny dim" style="margin:10px 0 4px">Away goals in a two-legged tie</div>${playSeg(
+          'edCupPlay',
+          'awayGoals',
+          pl.awayGoals,
+          [
+            [false, 'Do not count'],
+            [true, 'Count'],
+          ],
+        )}
+        ${
+          kind === 'cont'
+            ? `<div class="tiny dim" style="margin:10px 0 4px">Points for a win in the groups</div>${playSeg(
+                'edCupPlay',
+                'win',
+                pl.win,
+                [
+                  [2, '2'],
+                  [3, '3'],
+                ],
+              )}`
+            : ''
+        }
+        <div class="tiny dim" style="margin-top:6px;line-height:1.5">Away goals only matter where a round is played over two legs, and a round played over two legs needs the world's two-legged knockouts rule.</div>`
+      : '';
     const entry =
       kind === 'opts' && c.group !== 'Continental'
         ? `<div class="ng-label">Who enters</div>${seg(
@@ -1663,10 +2186,12 @@
     const prize = kind
       ? `<div class="ng-label">Prize fund <span class="tiny dim">· millions; the winner and the clubs that play share it</span></div><input type="number" id="ed-cupprize" min="0.1" max="1000" step="0.5" inputmode="decimal" value="${(f.prize || 3e6) / 1e6}">`
       : '';
-    return `<div class="h1" style="margin-top:2vh">${esc(o.name)}</div><div class="tag">${esc(c.group)}</div>
+    return `<div class="h1" style="margin-top:2vh">${esc(o.name)}</div><div class="tag">${esc(c.group)}${kind === 'cont' ? ` · tier ${contTier(c.id)} · ${esc(contRegion(c.id) || '')}` : ''}</div>
       ${errBox()}
       <div class="ng-names"><input type="text" id="ed-cupname" maxlength="48" value="${esc(o.name)}"><input type="text" id="ed-cupshort" maxlength="6" style="max-width:84px" value="${esc(o.short || c.short)}"></div>
       ${body}
+      ${kind === 'cont' ? contFeeders(c, f) : ''}
+      ${rules}
       ${entry}
       ${prize}
       <div class="actions" style="margin-top:14px">${
@@ -1682,6 +2207,269 @@
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button></div>`;
   };
 
+  // ---------- The season calendar ----------
+  // When each competition is played, in league rounds on the game's 22-round scale (the season's days stretch to a longer league
+  // season, and a competition's days that would fall together spread over the following weeks). Kept in the definition as
+  // calendar { preseason, cup, cont, world, intl }.
+  const calNow = () => clone({ ...WD.calendarNow(), ...(ED.def.calendar || {}) });
+  const calSet = (c) => {
+    const bad = WD.validateCalendar(c);
+    ED.err = bad;
+    if (!bad.length) ED.def.calendar = c;
+    UI.worldEditor();
+  };
+  const calendarSummary = () => {
+    const c = ED.def.calendar,
+      cur = WD.calendarNow();
+    return c && Object.keys(c).some((k) => JSON.stringify(c[k]) !== JSON.stringify(cur[k]))
+      ? 'changed · pre-season, cups, continental stages and breaks'
+      : 'when the cups and breaks are played';
+  };
+  const CONT_NAME = {
+    G1: 'Group day 1',
+    G2: 'Group day 2',
+    G3: 'Group day 3',
+    G4: 'Group day 4',
+    G5: 'Group day 5',
+    G6: 'Group day 6',
+    QF1: 'Quarter-final, first leg',
+    QF2: 'Quarter-final, second leg',
+    SF1: 'Semi-final, first leg',
+    SF2: 'Semi-final, second leg',
+    F: 'Final',
+  };
+  const WORLD_NAME = { QF: 'Quarter-finals', SF: 'Semi-finals', F: 'Final' };
+  const calendarView = () => {
+    const c = calNow(),
+      cur = WD.calendarNow();
+    const mover = (kind, key, round, label) =>
+      `<div class="row" style="gap:8px;margin:4px 0"><div class="grow small">${esc(label)}</div><button class="btn sm" data-act="edCalMove" data-kind="${kind}" data-key="${esc(key)}" data-d="-1" aria-label="Earlier">‹</button><b style="min-width:92px;text-align:center" class="small">after round ${round + 1}</b><button class="btn sm" data-act="edCalMove" data-kind="${kind}" data-key="${esc(key)}" data-d="1" aria-label="Later">›</button></div>`;
+    // the season at a glance: what falls after each round
+    const at = Array.from({ length: 22 }, () => []);
+    c.cup.forEach((r) => at[r].push('Cup'));
+    Object.entries(c.cont).forEach(([st, r]) => at[r].push(st));
+    Object.entries(c.world).forEach(([st, r]) => at[r].push('CWC ' + st));
+    c.intl.forEach((r) => at[r].push('Break'));
+    const glance = `<div class="card flat" style="padding:4px 10px;margin-top:6px">${at
+      .map(
+        (ev, r) =>
+          `<div class="row tiny" style="padding:3px 0;border-top:${r ? '1px solid var(--line)' : '0'}"><span class="dim" style="width:64px">Round ${r + 1}</span><span class="grow">${ev.length ? ev.map(esc).join(' · ') : '<span class="dim">·</span>'}</span></div>`,
+      )
+      .join('')}</div>`;
+    return `<div class="h1" style="margin-top:2vh">Season calendar</div><div class="tag">When the cups and international breaks fall. Rounds are counted on the game's 22-round scale; a longer league season stretches them to fit.</div>
+      ${errBox()}
+      <div class="ng-label">Pre-season</div>${seg(
+        'edCalPre',
+        c.preseason,
+        [1, 2, 3, 4, 5, 6].map((n) => [n, `${n} day${n === 1 ? '' : 's'}`]),
+        '',
+        'n',
+      )}
+      <div class="ng-label">Domestic cup rounds <span class="tiny dim">· ${c.cup.length}</span></div>
+      ${c.cup.map((r, i) => mover('cup', String(i), r, `Round ${i + 1}`)).join('')}
+      <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edCalCup" data-d="1">＋ Add a cup round</button><button class="btn sm" data-act="edCalCup" data-d="-1">− Take the last away</button></div>
+      <div class="tiny dim" style="margin-top:4px;line-height:1.5">The biggest cup needs a day for each of its rounds; the game adds days when a cup has more than you give it.</div>
+      <div class="ng-label">Continental club cups</div>
+      ${WD.CONT_STAGES.map((st) => mover('cont', st, c.cont[st], CONT_NAME[st])).join('')}
+      <div class="ng-label">Club World Cup</div>
+      ${WD.WORLD_STAGES.map((st) => mover('world', st, c.world[st], WORLD_NAME[st])).join('')}
+      <div class="ng-label">International breaks <span class="tiny dim">· two matchdays each</span></div>
+      ${c.intl.map((r, i) => mover('intl', String(i), r, `Break ${i + 1}`)).join('')}
+      <div class="ng-label">The season at a glance</div>${glance}
+      <div class="tiny dim" style="margin-top:8px;line-height:1.5">${JSON.stringify(c) === JSON.stringify(cur) ? 'As the game has it.' : "Changed from the game's own calendar."} At most one cup day falls between two league rounds: a day that would fall with another moves to the next gap.</div>
+      <div class="actions" style="margin-top:12px"><button class="btn sm" data-act="edCalReset">Put the game's calendar back</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edCalPre = (d) => {
+    const c = calNow();
+    c.preseason = +d.n;
+    calSet(c);
+  };
+  UI.acts.edCalMove = (d) => {
+    const c = calNow(),
+      step = +d.d;
+    if (d.kind === 'cup' || d.kind === 'intl') {
+      c[d.kind][+d.key] += step;
+      if (d.kind === 'cup') c.cup.sort((a, b) => a - b);
+    } else c[d.kind][d.key] += step;
+    calSet(c);
+  };
+  UI.acts.edCalCup = (d) => {
+    const c = calNow();
+    if (+d.d > 0) {
+      const free = Array.from({ length: 22 }, (_, i) => i).find((i) => i > Math.max(...c.cup) && !c.cup.includes(i));
+      if (free === undefined) {
+        ED.err = ['The season has no later round to add a cup round to'];
+        return UI.worldEditor();
+      }
+      c.cup.push(free);
+    } else c.cup.pop();
+    calSet(c);
+  };
+  UI.acts.edCalReset = () => {
+    delete ED.def.calendar;
+    ED.err = [];
+    UI.worldEditor();
+  };
+
+  // ---------- Fixed fixtures ----------
+  // Matches put on a matchday by hand (rules.pins), kept per league
+  const pinsView = () => {
+    const l = leagueOf(ED.lid),
+      r = l.rules || {},
+      pins = (r.pins || []).slice().sort((a, b) => a.round - b.round),
+      cl = clubsOf(l.id)
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name));
+    const name = (id) => (cl.find((c) => c.id === id) || { name: id }).name;
+    const limit = WD.pinLimit(l, cl.length);
+    const blocked = r.zones || r.conferences || r.torneos;
+    const sel = (id) =>
+      `<select id="${id}" style="flex:1;min-width:0">${cl.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>`;
+    return `<div class="h1" style="margin-top:2vh">Fixed fixtures</div><div class="tag">${esc(l.name)} · ${cl.length} clubs · ${limit} matchdays</div>
+      ${errBox()}
+      ${
+        blocked
+          ? '<div class="tiny dim" style="line-height:1.5">This league has zones, conferences or two tournaments, so its schedule is made by the game.</div>'
+          : `<div class="tiny dim" style="line-height:1.5;margin-top:6px">Put a match on a matchday, the home side first. The game makes the rest of the schedule around it each season (a club that has left the league drops its fixtures). If no schedule can hold every match you fix, the form refuses it.</div>
+      <div class="ng-label">Fix a match</div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Matchday</div><input type="number" id="ed-pinr" min="1" max="${limit}" inputmode="numeric" value="1"></div></div>
+      <div class="ng-names" style="margin-top:6px"><div style="flex:1"><div class="tiny dim">Home</div>${sel('ed-pinh')}</div><div style="flex:1"><div class="tiny dim">Away</div>${sel('ed-pina')}</div></div>
+      <div class="actions" style="margin-top:8px"><button class="btn sm pri" data-act="edAddPin">Fix this match</button></div>
+      <div class="ng-label">Matches fixed <span class="tiny dim">· ${pins.length}</span></div>
+      ${
+        pins.length
+          ? pins
+              .map(
+                (p, i) =>
+                  `<div class="row small" style="gap:8px;padding:6px 0;border-top:${i ? '1px solid var(--line)' : '0'}"><span class="dim" style="width:84px">Matchday ${p.round}</span><span class="grow ellip">${esc(name(p.h))} v ${esc(name(p.a))}</span><button class="btn sm" data-act="edDelPin" data-i="${r.pins.indexOf(p)}" aria-label="Remove">✕</button></div>`,
+              )
+              .join('')
+          : '<div class="tiny dim">None yet.</div>'
+      }`
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" data-lid="${esc(l.id)}" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edAddPin = () => {
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    const pin = { round: Math.round(+$('#ed-pinr').value), h: $('#ed-pinh').value, a: $('#ed-pina').value };
+    const before = l.rules.pins;
+    l.rules.pins = [...(before || []), pin];
+    const bad = WD.validatePins(l, ED.def);
+    if (bad.length) {
+      if (before) l.rules.pins = before;
+      else delete l.rules.pins;
+    }
+    ED.err = bad;
+    UI.worldEditor();
+  };
+  UI.acts.edDelPin = (d) => {
+    const l = leagueOf(ED.lid);
+    l.rules.pins.splice(+d.i, 1);
+    if (!l.rules.pins.length) delete l.rules.pins;
+    ED.err = [];
+    UI.worldEditor();
+  };
+
+  // ---------- Continental cups of the definition's own ----------
+  // A tier from 1 to 4: a champions cup (its places come from the leagues' qualify rules), a shield, a trophy, or a regional cup
+  // (these take the places named in their feeders, after the cups above them have taken theirs)
+  const REGION_OF = {
+    EUR: 'Europe',
+    ENG: 'Europe',
+    SAM: 'South America',
+    ASIA: 'Asia',
+    AFR: 'Africa',
+    NAM: 'North America',
+  };
+  const regionOfLeague = (l) => REGION_OF[(D.NATIONS[l.nat] || {}).region];
+  const contTier = (id) => {
+    const own = compOf(id);
+    if (own && own.kind === 'cont') return own.tier || 1;
+    return (D.CONTINENTALS.find((c) => c.id === id) || {}).tier || 1;
+  };
+  const contRegion = (id) => {
+    const own = compOf(id);
+    return own && own.kind === 'cont' ? own.region : (D.CONTINENTALS.find((c) => c.id === id) || {}).region;
+  };
+  // the continental cups of a tier in a part of the world (the game's and the definition's)
+  const contsOf = (region, tier) => [
+    ...D.CONTINENTALS.filter((c) => c.region === region && (c.tier || 1) === tier).map((c) => ({
+      id: c.id,
+      name: c.name,
+    })),
+    ...(ED.def.competitions || [])
+      .filter((c) => c.isNew && c.kind === 'cont' && c.region === region && (c.tier || 1) === tier)
+      .map((c) => ({ id: c.id, name: c.name })),
+  ];
+  const contFeeders = (c, f) => {
+    const region = contRegion(c.id),
+      tier = contTier(c.id);
+    if (tier === 1) {
+      const sending = ED.def.leagues.filter((l) => l.rules && l.rules.qualify && l.rules.qualify.to === c.id);
+      const total = sending.reduce((t, l) => t + l.rules.qualify.n, 0);
+      return `<div class="ng-label">Where its clubs come from <span class="tiny dim">· ${total} places</span></div>
+        <div class="tiny dim" style="line-height:1.5">A tier 1 cup takes the places that leagues send to it. Open a league and choose it under "Places in the continental cup".</div>
+        ${sending.map((l) => `<div class="small" style="padding:4px 0">${natOf(l).flag} ${esc(l.name)} · <b>${l.rules.qualify.n}</b></div>`).join('') || '<div class="tiny" style="color:#f87171">No league sends clubs to it yet.</div>'}`;
+    }
+    const feeders = f.feeders || {};
+    const total = Object.values(feeders).reduce((t, x) => t + x, 0);
+    const leagues = ED.def.leagues.filter(
+      (l) => (regionOfLeague(l) === region && (l.sim || 'full') !== 'minimal') || feeders[l.id],
+    );
+    return `<div class="ng-label">Where its clubs come from <span class="tiny dim">· ${total} places, after the cups above have their clubs</span></div>
+      ${leagues
+        .map(
+          (l) =>
+            `<div class="row" style="gap:8px;margin:4px 0"><div class="grow small ellip">${natOf(l).flag} ${esc(l.name)}</div><select data-input="edFeed" data-lid="${esc(l.id)}" style="width:70px">${[0, 1, 2, 3, 4, 5, 6, 8].map((n) => `<option value="${n}" ${(feeders[l.id] || 0) === n ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`,
+        )
+        .join('')}
+      <div class="tiny dim" style="margin-top:4px;line-height:1.5">A league's places in a cup go to the clubs that finish next below the places it sends to the cups above (tier ${tier - 1} first). Fewer than eight clubs in all and the world cannot be used.</div>`;
+  };
+  UI.acts.edFeed = (d, el) => {
+    const f = clone(fmtNow(ED.cup));
+    f.feeders = f.feeders || {};
+    if (+el.value > 0) f.feeders[d.lid] = +el.value;
+    else delete f.feeders[d.lid];
+    setFormat(f);
+  };
+  // Add a competition: a cup for a nation, or a continental cup of a chosen tier
+  UI.acts.edNewKind = (d) => {
+    ED.newKind = d.v;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edCreateCont = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const name = (v('ccname') || '').trim(),
+      short = (v('ccshort') || '').trim().toUpperCase(),
+      region = v('ccregion'),
+      tier = +v('cctier');
+    const used = new Set([...D.CONTINENTALS.map((c) => c.id), ...ED.def.competitions.map((c) => c.id)]);
+    let id = 'CN1';
+    for (let i = 2; used.has(id); i++) id = 'CN' + i;
+    const prize = { 1: 8e6, 2: 4e6, 3: 2.5e6, 4: 1.2e6 }[tier];
+    const r = WD.editor(ED.def, null).addContinental({
+      id,
+      name,
+      short: short || id,
+      region,
+      tier,
+      format: { legs: { qf: 2, sf: 2, f: 1 }, prize, groupSize: 4, feeders: {} },
+    });
+    ED.err = r.ok ? [] : r.errors;
+    if (r.ok) ((ED.view = 'cup'), (ED.cup = id));
+    UI.worldEditor();
+  };
+  // A league's qualify rule can name any tier 1 cup of its part of the world
+  UI.acts.edQualifyTo = (d, el) => {
+    stashLeague();
+    const l = leagueOf(ED.lid);
+    l.rules = l.rules || {};
+    l.rules.qualify = { to: el.value, n: (l.rules.qualify && l.rules.qualify.n) || 1 };
+    UI.worldEditor();
+  };
   // ---------- Coaches and scouts ----------
   // Staff made for a club come with the job when you take charge of it (they replace the ones a new manager is given); staff made
   // with no club are on offer for hire in the first season.
@@ -2454,6 +3242,8 @@
       player: playerView,
       cups: cupsView,
       cup: cupView,
+      calendar: calendarView,
+      pins: pinsView,
       newcup: newCupView,
       staff: staffView,
       staffhub: staffHubView,

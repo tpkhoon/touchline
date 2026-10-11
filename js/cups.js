@@ -18,9 +18,9 @@
   // (UEFA's group tiebreakers: head-to-head points, goal difference and goals, then overall)
   Cu.groupTable = (g) => W.sortedTable({ table: g.table, fixtures: g.fixtures, tiebreak: ['h2h', 'gd', 'gf'] });
   // Top two go through. With the games left, who is already through (or top), and who can no longer make it?
-  Cu.groupMarks = function (g, wide) {
+  Cu.groupMarks = function (g, wide, compId) {
     if (wide) return {}; // (the runners-up are ranked across the groups, so a group's own table cannot say)
-    const win = S().rules.win,
+    const win = W.rule(compId, 'win'),
       left = {};
     g.clubs.forEach((id) => (left[id] = g.fixtures.flat().filter((f) => !f.res && (f.h === id || f.a === id)).length));
     const rows = Cu.groupTable(g).map((r) => ({ id: r.id, pts: r.pts, max: r.pts + left[r.id] * win }));
@@ -864,7 +864,7 @@
       const g = c.groups.find((x) => x.clubs.includes(clubId));
       const pos = Cu.groupTable(g).findIndex((r) => r.id === clubId) + 1;
       const groupsDone = g.fixtures.flat().every((f) => f.res);
-      const mark = !groupsDone && Cu.groupMarks(g, c.groups.length > 4)[clubId];
+      const mark = !groupsDone && Cu.groupMarks(g, c.groups.length > 4, c.id)[clubId];
       out.push({
         c,
         text: koOut

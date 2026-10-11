@@ -314,7 +314,7 @@
     let body = `Halfway verdict: ${U.ordinal(pos)} (expected ${U.ordinal(exp)}). Board confidence ${conf}%.`;
     if (conf < 35 && !firstSeason) {
       const row = s.comps[c.comp].table[c.id];
-      u().board.ultimatum = { from: row.p, pts: row.pts, games: 5, need: s.rules.win * 2 + 1, done: false };
+      u().board.ultimatum = { from: row.p, pts: row.pts, games: 5, need: W.rule(c.comp, 'win') * 2 + 1, done: false };
       body += `\n\nULTIMATUM: take at least ${u().board.ultimatum.need} points from the next 5 league games — or you're gone.`;
     } else
       body +=
@@ -347,7 +347,7 @@
       });
       return false;
     }
-    if (played >= x.games || got + (x.games - played) * S().rules.win < x.need) {
+    if (played >= x.games || got + (x.games - played) * W.rule(c.comp, 'win') < x.need) {
       x.done = true;
       return true;
     }

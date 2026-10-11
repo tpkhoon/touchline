@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-383 features are playable in the web prototype today. Build = the build that added it.
+397 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -162,7 +162,7 @@ Every feature from the game design document, with what is playable in the protot
 | Clubs | Real club names in all 20 leagues with real colours, cities, stadiums and capacities, and real derbies; ratings, identities and finances are the game's own | Real clubs and free agents |
 | Transfers | Free agents are mostly lower-league standard; a top-quality free agent is rare (usually a veteran star whose contract wasn't renewed) | Real clubs and free agents |
 | Competitions | Real league and competition names at real league sizes (401 clubs in 20 leagues; MLS and Argentina in their real shorter formats); every league runs August to May on one shared calendar | Real leagues |
-| Setup | Manager profile at a new career: first and last name, country, favourite club and avatar; your country's national team knows you, your favourite club is a homecoming (their rivals' fans are wary) and its big moments reach your feed | Manager profile and lighter lower leagues |
+| Setup | Manager profile at a new career: first and last name, country and avatar; your country's national team knows you | Manager profile and lighter lower leagues |
 | Competitions | League One and the Segunda División use the light simulation (faster seasons); clubs change tier with promotion and relegation, the club you manage is always fully simulated, and lower-league clubs still play in the domestic cups | Manager profile and lighter lower leagues |
 | Competitions | Dynamic simulation tiers: your league and the leagues directly above and below always play in the full engine; every other league runs at its own tier | World expansion and dynamic tiers |
 | Competitions | Ten more leagues in minimal simulation in UEFA coefficient order (Belgium, Turkey, Czechia, Greece, Norway, Poland, Denmark, Austria, Switzerland, Scotland) with real clubs and derbies; six new nations and national teams | World expansion and dynamic tiers |
@@ -399,10 +399,24 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | World editor, cup money and past cups: a prize fund for every cup, a domestic cup kept to the top one, two or three divisions, and the winner and runner-up of each domestic cup in a past season (counted in the club's honours) | Playtest round 11 |
 | Editor | World editor, the rest of the game: cups open to a format (rounds as one match, neutral or two legs; a continental cup's legs and one-venue knockouts), derbies and B teams, coaches and scouts (made for a club, they come with the job; made with no club, they are on offer in the staff market), national teams (name, colours, ranking points) and past seasons (champion, runner-up and third of each league, with a full table made to fit) | Playtest round 11 |
 | Editor | World editor, the rest of the world: free agents, a manager for each club, the rules (points for a win, substitutes, two-legged ties, away goals), cup names, whole new leagues in any nation with their promotion, relegation and continental places, and the game's own clubs taken out of the world and put back | Playtest round 11 |
+| Calendar | Midweek football: every calendar day has a date; league days fall Friday to Sunday (some midweek in a long season), cup days Tuesday to Thursday, and at most one cup day sits between two league rounds | Playtest round 13 |
+| Calendar | Days of rest and congestion: recovery follows the days to the next match, the match preview warns of few days since the last match and tired starters, and the fixtures screen counts the games in a fortnight | Playtest round 13 |
+| League | Fixtures screen: your whole season in date order across every competition (league, cups, continental, friendlies), the days of rest before each match, the next cup round marked 'to be drawn', league / cups / continental and coming up / played filters | Playtest round 13 |
+| Squad | Squad filters: name search, positions (several at once), age bands, home or foreign, contract, foot, role (starters, rotation, prospects, surplus), status (on loan, listed, out of the squad), and sort by value, appearances or goals | Playtest round 13 |
+| Scouting | More scouting filters: several positions at once, side and foot, an age range, ability and potential in stars, listed players, sorts by age, wage and contract, 'show more', a count and up to six saved filters per list | Playtest round 13 |
+| Transfers | Transfer Centre filters: search by player or club, position, country, fee and who signed or sold, with 'show more' | Playtest round 13 |
+| Editor | World editor, rules of a single competition: each league's points for a win, substitutes and foreign-player limits; each cup's substitutes, extra time or straight to penalties, away goals and points in the groups (the world's away-goals rule now applies) | Playtest round 13 |
+| Editor | World editor, schedule creator: a Season calendar screen (pre-season, the domestic cup's rounds, every continental stage, the Club World Cup and the international breaks) and Fixed fixtures (a match put on a matchday, home side first, the rest of the schedule built around it) | Playtest round 13 |
+| Presentation | Northern Ireland's own flag (the Ulster Banner) in the game's screens | Playtest round 14 |
+| Editor | World editor, all league rules: registration (squad list and homegrown places, work permits, non-EU limits, foreign players, Asian and Southeast Asian places, exempt nations, salary budget), the matches a club plays, a title play-off and two tournaments a year | Playtest round 14 |
+| Editor | World editor, expansion drafts: clubs added to a league take players from the clubs already in it (protected players, a limit on losses, a balanced squad, replacements for the losers) | Playtest round 14 |
+| Editor | World editor, competitions of its own: continental competitions in tiers 1 to 4 (champions cup, shield, trophy, regional cup) for any part of the world, fed by league places or named feeders, with the game's own lower-tier feeders editable | Playtest round 14 |
+| Editor | World editor, league structures: any league as one table, two zones (Argentina's) or two conferences (the American league's, with its club-by-club conferences, names and draft rounds); the Argentine and American structures can be edited or removed | Playtest round 14 |
+| Editor | World editor, promotion and relegation on or off: for each pair of leagues (the places are remembered) and for the whole world (closed leagues) | Playtest round 14 |
 
 ## Yet to be added
 
-55 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+54 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -412,8 +426,7 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams, history, club extras and international football; the pieces still to come are listed on the Editor rows below. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
-| Editor | League formats with a shape of their own as choices in the editor: zones, conferences and two tournaments a year with a title play-off (today they stay as the game has them) | Alpha 2 |
+| Editor | Database and world editor — architecture and the screens for leagues, clubs, players, managers, rules (world-wide and for each league and cup), the season calendar, fixed fixtures and cup names done, and so are coaches and scouts, cup formats, derbies and B teams, national teams, history, club extras and international football; the pieces still to come are listed on the Editor rows below. World (countries, cities, continents, rules) · Clubs (clubs, stadiums, facilities, finances, rivalries) · Players (attributes, contracts, personalities, nationalities) · Staff (managers, coaches, scouts, agents) · Competitions (leagues, cups, continental, international) · Rules (promotion/relegation, registration, foreign players, transfer windows, points, playoffs, prize money) · History (historical starts, events, scenarios, alternate history) | Alpha 2 |
 | Editor | Eras in the editor: a world definition with its own start year, rules (points for a win, substitutes, foreign-player limits, two-legged ties) and tactical mix, so a world from 1992 plays like 1992; the editor side of the historical eras below | Alpha 2 |
 | Tooling | CI smoke test: `npm run test:smoke` builds a world, plays a few matchdays, packs and unpacks a save and runs the save migrations, with the cheap data checks, before the deploy (the full suite stays a pre-release step) | Mobile readiness |
 | Platform | Compressed autosaves: gzip the save written after every matchday (about 3.6 times smaller: 12 MB to 3.3 MB), read either format by its first bytes, base64 in the native files and the localStorage fallback, plain JSON where the device cannot compress; with pack, compress and write times in the developer panel to time it on a cheap Android phone | Mobile readiness |

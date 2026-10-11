@@ -573,7 +573,8 @@
       ${at.last.map(([y, gf, ga, home, comp, pens]) => `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="dim" style="width:44px">${y}</span><span class="pill" style="min-width:26px;text-align:center;color:${gf > ga ? 'var(--good)' : gf < ga ? 'var(--bad)' : 'var(--ink3)'}">${gf > ga ? 'W' : gf < ga ? 'L' : 'D'}</span><span class="grow" style="margin-left:8px">${gf}–${ga}${pens ? ` (${pens[0]}–${pens[1]} pens)` : ''} ${home ? 'home' : 'away'}</span><span class="tiny dim ellip" style="max-width:40%">${esc(s.comps[comp] ? s.comps[comp].name : '')}</span></div>`).join('')}</div>`
       : '';
     // The next five fixtures in date order: walk the calendar from today (a cup round shows once it's drawn)
-    const upcoming = [];
+    const upcoming = [],
+      dates = new Map();
     for (let d = s.day; d < s.calendar.length && upcoming.length < 5; d++) {
       const cal = s.calendar[d];
       let fs = [];
@@ -585,12 +586,16 @@
             return cc.groups.flatMap((g) => g.fixtures[+cal.stage.slice(1) - 1] || []);
           return cupFx.filter((f) => f.comp === cid);
         });
-      for (const f of fs) if (mine(f) && !f.res && !upcoming.includes(f)) upcoming.push(f);
+      for (const f of fs)
+        if (mine(f) && !f.res && !upcoming.includes(f)) {
+          upcoming.push(f);
+          dates.set(f, cal.dn);
+        }
     }
     const vsRow = (f) =>
       `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span class="grow ellip" style="text-align:right;${f.h === id ? 'font-weight:700' : ''}">${esc(s.clubs[f.h].name)}</span>${C.crest(s.clubs[f.h], 18)}<b style="min-width:44px;text-align:center" class="dim">v</b>${C.crest(s.clubs[f.a], 18)}<span class="grow ellip" style="${f.a === id ? 'font-weight:700' : ''}">${esc(s.clubs[f.a].name)}</span></div>`;
     const nextCard = upcoming.length
-      ? `<div class="card"><div class="h3">Next fixtures</div>${upcoming.map((f) => `<div class="tiny dim" style="padding-top:6px">${esc(fxWhere(f))}</div>${vsRow(f)}`).join('')}</div>`
+      ? `<div class="card"><div class="h3">Next fixtures</div>${upcoming.map((f) => `<div class="tiny dim" style="padding-top:6px">${dates.get(f) !== undefined ? W.dateText(dates.get(f)) + ' · ' : ''}${esc(fxWhere(f))}</div>${vsRow(f)}`).join('')}</div>`
       : '';
     // Transfer history: permanent moves in and out, newest first, from the players' career timelines
     const moves = [];

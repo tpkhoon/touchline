@@ -228,3 +228,29 @@ A player who has lived in a country for a number of seasons after turning 18 can
   (Mexico); each is one table.
 - The FA Cup has no replays (the real competition has been dropping them).
 - Squad registration for the continental cups follows the club's league rules, not UEFA's A and B lists.
+
+## Rules of a single competition
+
+The rules above are the world's. A world definition (the editor) can give a league or a cup rules of its own, and
+everything else keeps the world's:
+
+- **League:** points for a win (2 or 3), substitutes, and the foreign-player limits (places on the books, and in a
+  matchday squad), which apply where the world follows each league's own registration rules.
+- **Cup:** substitutes, extra time (or straight to penalties when a knockout tie is level after 90 minutes), away goals
+  in a two-legged tie (off everywhere by default), and, in a continental cup, points for a win in the groups.
+- **Fixtures:** a league that plays a plain round-robin can have a match put on a matchday by hand; the rest of the
+  schedule is built around it.
+- **Calendar:** the days of pre-season, the domestic cup's rounds, each stage of the continental cups, the Club World Cup
+  and the two international breaks can be moved. A league day falls Friday to Sunday (some midweek in a long season), a
+  cup day Tuesday to Thursday, and at most one cup day sits between two league rounds.
+
+- **Registration (a league):** the squad list and its homegrown places, work permits, non-EU limits and signings from abroad,
+  foreign players on the books and in a matchday squad, the Asian and Southeast Asian places, the nations that never count
+  as foreign and a salary budget can each be set or taken away for a league.
+- **Format (a league):** the matches a club plays, a title play-off (a finals series of the top six, or a liguilla of the top
+  ten) and two tournaments a year.
+- **Competitions of their own:** a continental competition at a tier from 1 to 4 for any part of the world. Tier 1 takes the
+  places leagues send to it; tiers 2 to 4 take the places named in their feeders, after the cups above have their clubs.
+- **Expansion draft:** clubs added to a league can draft their players from the others, which protect their best.
+- **Structure (a league):** one table, two zones (Argentina's format) or two conferences (the American league's). Promotion
+  and relegation can be switched off for a pair of leagues or for the whole world.

@@ -156,6 +156,7 @@
       this.o = o;
       this.comp = o.comp;
       this.knockout = !!o.knockout;
+      this.extraTime = W.rule(o.comp, 'extraTime') !== false; // some cups go straight to penalties
       this.neutral = !!o.neutral; // finals and tournaments: no home advantage
       // Second leg of a two-legged tie: goals already scored in leg 1 by [this home side, this away side]
       this.agg = o.agg || null;
@@ -219,7 +220,7 @@
         slots,
         xi: xi.slice(),
         bench: bench.slice(),
-        subsLeft: FM.S.rules.subs,
+        subsLeft: W.rule(this.comp, 'subs'),
         subWindows: 3,
         st: {},
         rating: {},
@@ -524,7 +525,11 @@
       const out = { ev, events: [] };
       if (ev === 'HT') out.events.push({ k: 'period', text: 'Half-time', min: "45'" });
       if (ev === 'FT90') {
-        if (this.knockout && this.tied()) {
+        if (this.knockout && this.tied() && !this.extraTime) {
+          this.shootout(out, "90'");
+          this.finish();
+          out.ev = 'FT';
+        } else if (this.knockout && this.tied()) {
           this.addExtraTime();
           out.events.push({ k: 'period', text: 'Extra time!', min: "90'" });
           out.ev = 'ET';
@@ -1173,7 +1178,7 @@
       return ev;
     }
 
-    shootout(out) {
+    shootout(out, min = "120'") {
       const kick = (sd) => {
         const on = this.onPitch(sd),
           first = FM.Matchday.taker(sd, 'pen', on);
@@ -1206,7 +1211,7 @@
       }
       this.pens = sc;
       this.penLog = log;
-      out.events.push({ k: 'pens', text: `Penalties: ${sc[0]}–${sc[1]}`, min: "120'", big: true });
+      out.events.push({ k: 'pens', text: `Penalties: ${sc[0]}–${sc[1]}`, min, big: true });
     }
 
     // Is the tie still level? Single matches compare goals; second legs compare the aggregate (then away goals if in use)
@@ -1435,7 +1440,7 @@
     const f1 = FM.Cups.findFixture(fx.first);
     if (!f1 || !f1.res) return o;
     // leg 1 was played with the sides reversed
-    return { ...o, agg: [f1.res.ag, f1.res.hg], awayGoals: false }; // no competition has used away goals since 2021–22
+    return { ...o, agg: [f1.res.ag, f1.res.hg], awayGoals: !!W.rule(fx.comp, 'awayGoals') }; // (off unless the competition's rules turn it on)
   };
   // The forecast for a fixture, fixed once you've seen it (your pre-match screen) so the match is played in it
   Match.forecast = function (fx) {

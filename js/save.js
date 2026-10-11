@@ -111,6 +111,8 @@
       fixRoles(s.user.tactic);
       fixRoles(s.user.tactic2);
     }
+    // calendar days have dates (midweek and weekend, days of rest): a save from before them is dated now, in its own order
+    if (s.calendar && s.calendar.some((e) => e.dn === undefined) && FM.W) FM.W.dateCalendar(s.calendar, s.year);
     // squad numbers arrived later: number every club's players (existing numbers stay)
     if (s.players && FM.W) FM.W.numberAll(s.players);
     // wing-backs arrived as a position: each club's most attacking full-backs become wing-backs, as many as its
