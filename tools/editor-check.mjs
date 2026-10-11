@@ -107,14 +107,14 @@ const gone = d3[d3.length - 1].id;
 def.clubs = def.clubs.filter((c) => c.id !== gone);
 def.removeClubs.push(gone);
 const urus = Array.from({ length: 10 }, (_, i) => ({
-  ...mk('c_URU' + (i + 1), 'Montevideo ' + (i + 1), 'URU1'),
-  nat: 'URU',
+  ...mk('c_PER' + (i + 1), 'Lima ' + (i + 1), 'PER1'),
+  nat: 'PER',
 }));
 def.leagues.push({
-  id: 'URU1',
+  id: 'PER1',
   name: 'Uruguayan Test League',
-  short: 'URU',
-  nat: 'URU',
+  short: 'PER',
+  nat: 'PER',
   tier: 1,
   sim: 'light',
   repBand: [70, 45],
@@ -220,7 +220,7 @@ check(E.clearDerby(builtDerby[0]).ok && !E.derbyOf(builtDerby[0]), 'a derby of t
 const hasB = new Set(def.clubs.filter((c) => c.parent).map((c) => c.parent));
 const parent = drb.find((c) => !hasB.has(c.id) && c.id !== drb[0].id && c.id !== drb[1].id).id;
 check(!E.setParent(drb[0].id, drb[1].id).ok, 'a B team in the same division as its parent was accepted');
-check(!E.setParent('c_ZZB1', 'c_URU1').ok, 'a B team of a club in another nation was accepted');
+check(!E.setParent('c_ZZB1', 'c_PER1').ok, 'a B team of a club in another nation was accepted');
 check(E.setParent('c_ZZB1', parent).ok, 'a B team could not be made');
 // coaches and scouts: a club's own staff, and a coach on offer
 const aid = E.addStaff({
@@ -321,21 +321,21 @@ check(
   E.setLeague('D2', { rules: { ...lg('D2').rules, relegate: { to: 'D3', n: 2, playoff: true } } }).ok,
   'a relegation play-off was refused',
 );
-check(E.setLeague('URU1', { repBand: [60, 40] }).ok, 'a league strength was refused');
+check(E.setLeague('PER1', { repBand: [60, 40] }).ok, 'a league strength was refused');
 check(
   !E.addCup({ id: 'CUPXX', nat: 'ENG', name: 'Another English Cup', short: 'AEC' }).ok,
   'a second cup for England was accepted',
 );
-check(!E.addCup({ id: 'FOO', nat: 'URU', name: 'Bad Id Cup', short: 'BIC' }).ok, 'a cup id without CUP was accepted');
+check(!E.addCup({ id: 'FOO', nat: 'PER', name: 'Bad Id Cup', short: 'BIC' }).ok, 'a cup id without CUP was accepted');
 check(
   !E.addCup({ id: 'CUPMAR', nat: 'MAR', name: 'Moroccan Cup', short: 'MC' }).ok,
   'a cup for a nation with no simulated clubs was accepted',
 );
 check(
   E.addCup({
-    id: 'CUPURU',
-    nat: 'URU',
-    name: 'Uruguayan Test Cup',
+    id: 'CUPPER',
+    nat: 'PER',
+    name: 'Peruvian Test Cup',
     short: 'UTC',
     format: { legs: [4], neutral: [2], prize: 2e6, tiers: 0 },
   }).ok,
@@ -661,12 +661,12 @@ check(
 }
 check(!S.clubs[gone], 'the club taken out is still in the world');
 check(
-  S.clubs.c_URU1 && S.comps.URU1 && S.comps.URU1.clubs.length === 10,
+  S.clubs.c_PER1 && S.comps.PER1 && S.comps.PER1.clubs.length === 10,
   'the new league in a new nation is not in the world',
 );
-check(W.squad('c_URU1').length >= 16, 'a club of the new league has no squad');
+check(W.squad('c_PER1').length >= 16, 'a club of the new league has no squad');
 check(
-  S.comps.CL.clubs.length === 8 && S.comps.CL.groups.length === 2,
+  S.comps.CL.clubs.length === 16 && S.comps.CL.groups.length === 4,
   `the South American cup has ${S.comps.CL.clubs.length} clubs in ${S.comps.CL.groups.length} groups with the new league's place`,
 );
 const n1 = S.comps.D1.clubs.length,
@@ -744,10 +744,10 @@ console.log(`D1 has ${n1} clubs`);
     'the past World Championship is not in the archive and the nations titles',
   );
   check(
-    S.comps.CUPURU &&
-      S.comps.CUPURU.name === 'Uruguayan Test Cup' &&
-      S.comps.CUPURU.clubs.length === 10 &&
-      S.comps.CUPURU.prize === 2e6,
+    S.comps.CUPPER &&
+      S.comps.CUPPER.name === 'Peruvian Test Cup' &&
+      S.comps.CUPPER.clubs.length === 10 &&
+      S.comps.CUPPER.prize === 2e6,
     'the definitions own cup is not in the world',
   );
   check(
@@ -864,7 +864,7 @@ check(
   `clubs played ${t && [...new Set(t.map((x) => x.p))].join('/')} games, not ${(n1 - 1) * 2}`,
 );
 check(
-  arch && arch.cups && arch.cups.CUPURU && arch.cups.CUPURU.winner && FM.S.comps.CUPURU.clubs.length === 10,
+  arch && arch.cups && arch.cups.CUPPER && arch.cups.CUPPER.winner && FM.S.comps.CUPPER.clubs.length === 10,
   'the definitions own cup was not played',
 );
 {
@@ -895,7 +895,7 @@ check(
 }
 check(FM.S.comps.D1.clubs.length === n1, `the Premier Division changed size (${n1} to ${FM.S.comps.D1.clubs.length})`);
 {
-  const u = arch && arch.comps.URU1 && arch.comps.URU1.table;
+  const u = arch && arch.comps.PER1 && arch.comps.PER1.table;
   check(u && u.length === 10 && u.every((r) => r.p === 18), 'the new league did not play its season');
   const t3 = arch && arch.comps.D3 && arch.comps.D3.table;
   check(

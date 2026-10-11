@@ -89,9 +89,13 @@ check(
 check(gulf > 0, `Saudi clubs hold famous names bought from elsewhere (${gulf} players of 76+ at 27 or older)`);
 check(drafted > 0, `Japan's graduate draft signed university players (${drafted})`);
 const kr = Object.values(FM.S.clubs).find((c) => c.comp === 'KR1');
+// (the rule itself: a small club from the fourth tier down is part-time, England's from the fifth; a club in the world follows it)
 check(
-  W.partTime(Object.values(FM.S.clubs).find((c) => FM.S.comps[c.comp] && FM.S.comps[c.comp].tier >= 4)),
-  'a fourth-tier club is part-time',
+  FM.D.partTime('GER', 4, 40) &&
+    !FM.D.partTime('GER', 4, 60) &&
+    !FM.D.partTime('ENG', 4, 40) &&
+    FM.D.partTime('ENG', 5, 40),
+  'a small fourth-tier club is part-time',
 );
 check(!W.partTime(kr), 'a top-flight club is not');
 const st = FM.Guide.stories();

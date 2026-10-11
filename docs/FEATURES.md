@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-397 features are playable in the web prototype today. Build = the build that added it.
+398 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -308,7 +308,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Two tournaments a year: Mexico's Apertura and Clausura with a Liguilla (play-in, quarter-finals, semi-finals, final) and Argentina's two zones with cross-zone knockouts; two champions a year, each with a table, a bracket and a news story | Playtest round 10 |
 | Competitions | The A-League finals series (top six: elimination finals, semi-finals, Grand Final) and a relegation play-off for France's Ligue 1 | Playtest round 10 |
 | Players | Fourteen more traits with effects in matches, development, injuries and morale: Engine, Set-Piece Expert, Clutch, Aerial Threat, Hatchet Man, Slow Starter, Cup Specialist, Big-Match Nerves, Model Professional, Low Work Ethic, Versatile, Mentor, Homesick, Needs Game Time | Playtest round 10 |
-| Career | Start a career in any of the 48 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
+| Career | Start a career in any of the 64 leagues, from the Premier League to the Welsh and Irish top flights, Mexico, Japan, Korea, Nigeria or Australia: the club picker lists every league (grouped by nation in the league filter) and Random draws from all of them | Playtest round 10 |
 | Players | Basque and Catalan heritage: players of Basque and Catalan families with their own name cultures; Eibar sign only Basque players and Andorra only Catalan ones (the Athletic Club policy), for transfers, loans, free agents, pre-contracts and trials, by you and the AI | Playtest round 10 |
 | Competitions | The Saudi Pro League and First Division (18 clubs each, most of them Oil-Backed), the King's Cup, six Asian Champions Cup places, ten foreign players a squad, riyals as a display currency | Playtest round 10 |
 | Players | Dynamic potential: a young player's potential moves each summer until 25 with his performance against his curve, ratings and game time, the academy and training, injuries and luck; news and a profile trend arrow for your players | Playtest round 10 |
@@ -413,6 +413,7 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | World editor, competitions of its own: continental competitions in tiers 1 to 4 (champions cup, shield, trophy, regional cup) for any part of the world, fed by league places or named feeders, with the game's own lower-tier feeders editable | Playtest round 14 |
 | Editor | World editor, league structures: any league as one table, two zones (Argentina's) or two conferences (the American league's, with its club-by-club conferences, names and draft rounds); the Argentine and American structures can be edited or removed | Playtest round 14 |
 | Editor | World editor, promotion and relegation on or off: for each pair of leagues (the places are remembered) and for the whole world (closed leagues) | Playtest round 14 |
+| World | Sixteen more top flights: Egypt, Tunisia, Tanzania, Algeria, Cyprus, Croatia, Sweden, Romania, Ecuador, Uruguay, Colombia, Canada, the UAE, Iran, Qatar and China (238 clubs: 1066 in 64 leagues across 54 nations), with their places in the continental cups and a new nation, Tanzania | Playtest round 16 |
 
 ## Yet to be added
 

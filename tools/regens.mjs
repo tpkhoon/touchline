@@ -223,7 +223,8 @@ const checks = [
     15,
   ],
   ['Median peak age (everyone followed)', peaksAll[Math.floor(peaksAll.length / 2)], 25, 29],
-  ['Followed players reaching CA 80+ %', pc(reached(80), done.length), 1, 8],
+  // (every player followed counts, so the sixteen leagues added in round 16, whose academies are small and modest, bring the share down: 1.13 before them)
+  ['Followed players reaching CA 80+ %', pc(reached(80), done.length), 0.6, 8],
 ];
 console.log('\nChecks:');
 let fail = 0;

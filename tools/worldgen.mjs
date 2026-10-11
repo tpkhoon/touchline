@@ -89,6 +89,22 @@ const DEMONYM = {
   SUI: 'Swiss',
   AUS: 'Australian',
   HUN: 'Hungarian',
+  EGY: 'Egyptian',
+  TUN: 'Tunisian',
+  TAN: 'Tanzanian',
+  ALG: 'Algerian',
+  CYP: 'Cypriot',
+  CRO: 'Croatian',
+  SWE: 'Swedish',
+  ROU: 'Romanian',
+  ECU: 'Ecuadorian',
+  URU: 'Uruguayan',
+  COL: 'Colombian',
+  CAN: 'Canadian',
+  UAE: 'Emirati',
+  IRN: 'Iranian',
+  QAT: 'Qatari',
+  CHN: 'Chinese',
 };
 const CONTINENT_WORD = {
   Europe: 'European',
@@ -131,12 +147,14 @@ const colourName = (hex) => {
 };
 
 // ---------------------------------------------------------------- the world
-export function generate(real, seed = 1) {
+// avoid: names already in a world (clubs, towns, grounds) that the new names must not repeat, for a league added to a world
+export function generate(real, seed = 1, avoid = []) {
   const out = JSON.parse(JSON.stringify(real));
   const usedPlace = new Set(Object.values(real.clubs).flatMap((c) => [c.row[2], c.row[0]])), // never a real town or club
-    usedName = new Set(),
+    usedName = new Set(avoid),
     usedShort = new Set(),
-    usedGround = new Set();
+    usedGround = new Set(avoid);
+  for (const a of avoid) usedPlace.add(a);
   const checks = nameChecks(
     // (real towns and the town-like first words of real clubs' names)
     Object.values(real.clubs).flatMap((c) => [c.row[2], c.row[0].split(' ').find((w) => w.length >= 5) || '']),

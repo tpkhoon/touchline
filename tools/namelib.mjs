@@ -1953,6 +1953,102 @@ NATION_L.RSA = {
   cups: ['Challenge Cup', 'National Cup'],
   quirk: ['Old', 'New', 'Upper', 'Lower'],
 };
+// Egypt: the Arabic pattern with Egyptian town stems and the old sporting-society words (Ittihad, Ahly, Masry)
+NATION_L.EGY = {
+  ...LANG.arab,
+  a: words('Dam Man Ass Suh Aswa Min Tan Zag Isma Sues Port Dami Kafr Bani Fay Luxo Qen Sohag Beni Hur'),
+  b: words('anhur iut ouan ura ta ia ailia ghada said ietta sheikh suef um eg or ag'),
+  elide: true,
+  pre: ['Kafr', 'Port', 'Beni', 'Ras'],
+  club: [
+    ...cross(
+      'Al {w}',
+      'Ahly Masry Ittihad Nasr Zohra Nahda Salam Shams Tahrir Wafa Hilal Najah Tawfiq Zafer Falaki Fursan Sakr Nile',
+    ),
+    '{c} SC',
+    'Al {c}',
+    '{c} FC',
+    'Ittihad {c}',
+    '{c} Sporting',
+  ],
+  tiers: ['Premier League', 'Second Division A', 'Second Division B'],
+  cup: 'Cup',
+  quirk: ['Kafr', 'Port', 'Beni'],
+};
+// Tanzania: Swahili town words, the clubs of the big port city (Young Africans, Simba) and their "Stars" and "Sugar" sides
+NATION_L.TAN = {
+  ...LANG.eng,
+  a: words('Dar Moro Dodo Tanga Mwan Kigo Singi Mbey Iring Bukob Lindi Tabo Gei Mtwa Ruvu Kili Songe Arush Same Kibo'),
+  b: words('goma ma za ga ya ta ra sa na kili tuma ndi wera anga uta oni mba'),
+  elide: true,
+  pre: [],
+  joins: [],
+  club: [
+    ...rep(['{c} United', '{c} City', '{c} FC'], 2),
+    '{c} Stars',
+    '{c} Sugar',
+    'Young {c}',
+    '{c} Warriors',
+    '{c} Coastal',
+    '{c} Jiji',
+  ],
+  ground: ['{x} Stadium', '{c} National Stadium', '{x} Sports Ground', '{c} Uhuru Ground'],
+  misc: words('Stars Lions Warriors Simbas Elephants Buffaloes Eagles Cheetahs'),
+  colourAlt: null,
+  tiers: ['Premier League', 'Championship', 'First League'],
+  cup: 'Cup',
+  quirk: ['Old', 'New'],
+};
+// Iran: the Persian pattern (Esteghlal, Persepolis, Sepahan: one-word names and the big industrial sponsors)
+NATION_L.IRN = {
+  ...LANG.arab,
+  a: words('Sha Esh Tab Ahv Sir Qaz Yaz Kerm Ham Bush Arda Ras Zan Ilam Mash Gor Bir Sem Orum Qom Rey'),
+  b: words('raz fahan riz az jan vin dan man shahr bad kan dar tan abad ijan ud'),
+  elide: true,
+  pre: ['Bandar', 'Shahr', 'Dasht'],
+  preGap: ' ',
+  club: [
+    ...cross(
+      '{w} {c}',
+      'Esteghlal Sepahan Foolad Fajr Naft Mes Zob Gol Nassaji Paykan Shahin Havadar Pas Mohammedan Bargh Sanat',
+    ),
+    '{c} FC',
+    '{c} FC',
+    'Shahrdari {c}',
+    'Sanat {c}',
+  ],
+  ground: ['{x} Stadium', 'Azadi {c} Stadium', '{c} Takhti Stadium', '{x} Sports Complex'],
+  tiers: ['Pro League', 'Azadegan League', 'Division Two'],
+  cup: 'Hazfi Cup',
+  quirk: ['Bandar', 'Shahr'],
+};
+// China: pinyin town stems, written as one word or two, and the plain "City / United / Athletic" clubs of the Chinese leagues
+NATION_L.CHN = {
+  ...LANG.kor,
+  a: words('Han Shu Qing Lan Jin Yun Hai Nan Bei Long Feng Tian Bao Hu Mei Zhu Wu Xi Dong Chang Ning Heng Shen Kai'),
+  b: words('zhou chang ning yang cheng gang shan jiang tai hai chuan ping men lin yuan'),
+  elide: true,
+  link: undefined,
+  gap: undefined,
+  pre: [],
+  joins: [],
+  club: [
+    ...rep(['{c} FC', '{c} City', '{c} United'], 2),
+    '{c} Athletic',
+    '{c} Sports',
+    '{c} Dragons',
+    '{c} Rongcheng',
+    '{c} Port',
+    '{c} Taishan',
+  ],
+  ground: ['{x} Sports Center', '{c} Olympic Stadium', '{x} Stadium', '{c} Gymnasium Stadium'],
+  misc: words('Dragons Tigers Cranes Pandas Phoenixes Lions Eagles Stars'),
+  tiers: ['Super League', 'League One', 'League Two'],
+  cup: 'FA Cup',
+};
+// Cyprus plays in Greek, Canada in English
+NATION_L.CYP = LANG.gre;
+NATION_L.CAN = LANG.eng;
 NATION_L.CIV = NATION_L.SEN; // (the two share the West African French pattern)
 // every nation code the library can write names for (some are not in the game yet)
 export const libraryNations = () =>

@@ -84,6 +84,11 @@
       `Ikhsan Hariss Safuwan Faris Irfan Shahdan Zulqarnaen Hafiz Amirul Danish Haziq Jun Wei Kai Jia Zhi Ryan Kieran Daniel Joshua Marcus Aaron Prakash Arun Vikram Sanjay Muhammad Ahmad Aiman Khairul Syafiq Adam Gabriel Nazrul Hami Song Yong Jordan Shawal Zulfahmi Harhys Lionel Bryan Darren Brandon Raj Dhanesh`,
       `Tan Lim Lee Ng Goh Teo Chua Koh Ong Wong Chong Yeo Ho Sim Chan Abdullah Rahman Ismail Hassan Yusof Ibrahim Sulaiman Ahmad Mohamed Pillai Nair Krishnan Singh Kumar Menon Sharma Fandi Bakar Said Zainal Lau Foo Quek Sng Ang Tay`,
     ),
+    swahili: P(
+      `Mbwana Simon Aishi Novatus Feisal Abdul Kelvin Ibrahim Himid Bakari Dickson Nickson Mudathir Yusuph Said Shomari Kennedy Abdallah Salum Haji Juma Rashid Hassan Idd Mzamiru Clatous Zawadi Ally Shaaban Deus
+      Mwinyi Ndolanga Mkude Msuva Samatta Mbwana Kapombe Kibu Chama Bocco Okwi Banda Kagoma Tshabalala Kiemba Kaseke Ngassa Lyanga Msomali Mkandawire Mohamed Athumani Mushi Mwakyusa Massawe Nyoni Kasanga Msuya Makame Zayd Fumo`,
+      `Mwinyi Samatta Msuva Kapombe Mkude Bocco Banda Kibu Mudathir Aziz Chama Okwi Mushi Massawe Mwakyusa Nyoni Msuya Makame Fumo Kagoma Lyanga Ngassa Kaseke Athumani Mohamed Hassan Juma Rashid Said Salum Mbaga Mrisho Mgunda Mbwambo Kimaro Lyimo Mallya Minja Shirima Swai Temba Urio Wilson Chuma Sanga Mwamba Mwakalebela`,
+    ),
     georgian: P(
       `Giorgi Davit Nikoloz Luka Levan Irakli Zurab Merab Vakhtang Tornike Lasha Mikheil Temur Aleksandre Beka Guram Revaz Shota Konstantine Tamaz Otar Badri Gela Gocha Kakha Soso Nika Saba Data Giga Mamuka Bidzina Archil Tengiz Zaza`,
       `Abashidze Bagrationi Chavchavadze Dadiani Eristavi Gurieli Japaridze Jgenti Khubuluri Kobakhidze Lordkipanidze Mgaloblishvili Nadiradze Orbeliani Pirtskhalava Qipiani Rurua Sanikidze Tabidze Tsereteli Ugrekhelidze Vachnadze Zhvania Meladze Svanidze Tvauri Chkheidze Davitashvili Mikeladze Khutsishvili Beridze Maisuradze Kapanadze Giorgadze Gelashvili Lomidze Tsiklauri Kiknadze Gogoladze Bregadze Chikovani Gogiashvili Janelidze`,
@@ -447,6 +452,18 @@
       0.25,
       ['POR', 'BEL', 'BRA', 'FRA'],
       ['#CC092F', '#000000'],
+    ),
+    N(
+      'TAN',
+      'Tanzania',
+      '🇹🇿',
+      'AFR',
+      'Spirited and quick',
+      { pace: 1.3, stamina: 1.2, workRate: 1.2 },
+      'swahili',
+      0.2,
+      ['ENG', 'BEL', 'RSA', 'TUR'],
+      ['#1EB53A', '#00A3DD'],
     ),
     N(
       'CAN',

@@ -14625,6 +14625,4290 @@
    "short": "ULU",
    "nick": "Lions",
    "founded": 1980
+  },
+  "ALD": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Zafer",
+    "ALD",
+    "Benighada",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    66,
+    "Damighada Arena",
+    75000
+   ],
+   "short": "ALL",
+   "nick": "Sandstorm",
+   "founded": 1922
+  },
+  "ZMK": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Najah",
+    "ZMK",
+    "Huranhur",
+    "#FFFFFF",
+    "#E30613",
+    "giant",
+    62,
+    "Huranhur Sports City",
+    45000
+   ],
+   "short": "AAL",
+   "nick": "Whites",
+   "founded": 1935
+  },
+  "PYR": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Nile",
+    "PYR",
+    "Benighada",
+    "#6CACE4",
+    "#FFFFFF",
+    "oil",
+    58,
+    "Dameg Arena",
+    30000
+   ],
+   "short": "ALN",
+   "nick": "Horsemen",
+   "founded": 1917
+  },
+  "MSR": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Tawfiq",
+    "MSR",
+    "Manietta",
+    "#00843D",
+    "#000000",
+    "historic",
+    50,
+    "King Luxailia Sports City",
+    18000
+   ],
+   "short": "ALT",
+   "nick": "Greens",
+   "founded": 1939
+  },
+  "ISM": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Salam",
+    "ISM",
+    "Port Tanura",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    49,
+    "Prince Assiut Stadium",
+    20000
+   ],
+   "short": "ALS",
+   "nick": "Foxes",
+   "founded": 1938
+  },
+  "ITA": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Ittihad Assta",
+    "ITA",
+    "Assta",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    47,
+    "King Damia Sports City",
+    25000
+   ],
+   "short": "ITT",
+   "nick": "Horsemen",
+   "founded": 1914
+  },
+  "FUT": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Faum Sporting",
+    "FUT",
+    "Benighada",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    46,
+    "King Kafrsheikh Sports City",
+    30000
+   ],
+   "short": "FAU",
+   "nick": "Gazelles",
+   "founded": 1971
+  },
+  "ZED": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Kafriut FC",
+    "ZED",
+    "Benighada",
+    "#001F5B",
+    "#FFD100",
+    "oil",
+    46,
+    "Benighada Sports City",
+    12000
+   ],
+   "short": "KAF",
+   "nick": "Camels",
+   "founded": 1961
+  },
+  "CEC": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Damag FC",
+    "CEC",
+    "Benighada",
+    "#0057B8",
+    "#FFD100",
+    "oil",
+    45,
+    "Prince Kafrsheikh Stadium",
+    10000
+   ],
+   "short": "DAM",
+   "nick": "Blues",
+   "founded": 1986
+  },
+  "SMO": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Port Assta",
+    "SMO",
+    "Assta",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    44,
+    "Ismia Stadium",
+    13000
+   ],
+   "short": "ALP",
+   "nick": "Lions",
+   "founded": 2008
+  },
+  "MOA": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Tahrir",
+    "MOA",
+    "Benighada",
+    "#E30613",
+    "#000000",
+    "oil",
+    44,
+    "Prince Hurghada Stadium",
+    14000
+   ],
+   "short": "ATA",
+   "nick": "Reds",
+   "founded": 1965
+  },
+  "ENP": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Ittihad",
+    "ENP",
+    "Benighada",
+    "#001F5B",
+    "#FFFFFF",
+    "selling",
+    44,
+    "Qeneg Arena",
+    15000
+   ],
+   "short": "ALI",
+   "nick": "Navy",
+   "founded": 1981
+  },
+  "PHA": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Sohaganhur FC",
+    "PHA",
+    "Assta",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    43,
+    "Prince Tanailia Stadium",
+    10000
+   ],
+   "short": "SOH",
+   "nick": "Reds",
+   "founded": 1994
+  },
+  "PTJ": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Beni Damiut FC",
+    "PTJ",
+    "Beni Damiut",
+    "#FFD100",
+    "#00843D",
+    "selling",
+    43,
+    "Beni Damiut Club Stadium",
+    18000
+   ],
+   "short": "BEN",
+   "nick": "Yellows",
+   "founded": 1936
+  },
+  "GOU": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Zohra",
+    "GOU",
+    "Suhiut",
+    "#6CACE4",
+    "#FFFFFF",
+    "youth",
+    43,
+    "King Tansheikh Sports City",
+    8000
+   ],
+   "short": "ALZ",
+   "nick": "Sandstorm",
+   "founded": 2003
+  },
+  "NBE": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Ittihad Damura",
+    "NBE",
+    "Benighada",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Prince Huror Stadium",
+    8000
+   ],
+   "short": "ITD",
+   "nick": "Greens",
+   "founded": 1971
+  },
+  "TEG": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Hilal",
+    "TEG",
+    "Benighada",
+    "#FFD100",
+    "#000000",
+    "historic",
+    42,
+    "Prince Damsuef Stadium",
+    10000
+   ],
+   "short": "ALH",
+   "nick": "Sandstorm",
+   "founded": 1934
+  },
+  "HEH": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Suesta",
+    "HEH",
+    "Assta",
+    "#0057B8",
+    "#000000",
+    "fan",
+    41,
+    "Kafria Arena",
+    9000
+   ],
+   "short": "ASU",
+   "nick": "Blues",
+   "founded": 1960
+  },
+  "ESA": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "AS Moneau",
+    "ESA",
+    "Moneau",
+    "#E30613",
+    "#FFD100",
+    "giant",
+    52,
+    "Complexe Grenange",
+    30000
+   ],
+   "short": "MON",
+   "nick": "Rouges",
+   "founded": 1928
+  },
+  "CAF": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "FC Moneau",
+    "CAF",
+    "Moneau",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    50,
+    "Stade de la Fonac",
+    40000
+   ],
+   "short": "MOU",
+   "nick": "Brasseurs",
+   "founded": 1927
+  },
+  "ETS": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "AS Vendlac",
+    "ETS",
+    "Vendlac",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    48,
+    "Parc des Sports de Vendlac",
+    28000
+   ],
+   "short": "VEN",
+   "nick": "Mouettes",
+   "founded": 1921
+  },
+  "CSS": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "ES Arange",
+    "CSS",
+    "Arange",
+    "#000000",
+    "#FFFFFF",
+    "historic",
+    46,
+    "Parc des Sports de Arange",
+    22000
+   ],
+   "short": "ARA",
+   "nick": "Noirs",
+   "founded": 1909
+  },
+  "USM": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "AS Beaueau",
+    "USM",
+    "Beaueau",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Stade Municipal de Beaueau",
+    12000
+   ],
+   "short": "BEA",
+   "nick": "Bleus",
+   "founded": 1987
+  },
+  "STA": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Olympique Sarault",
+    "STA",
+    "Moneau",
+    "#E30613",
+    "#00843D",
+    "historic",
+    41,
+    "Stade Municipal de Moneau",
+    18000
+   ],
+   "short": "OLY",
+   "nick": "Faucons",
+   "founded": 1939
+  },
+  "JSK": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "US Mont-Vendbourg",
+    "JSK",
+    "Vendbourg",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Stade de la Grenlac",
+    12000
+   ],
+   "short": "MOT",
+   "nick": "Verts",
+   "founded": 1967
+  },
+  "ASA": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Stade Château-Belières",
+    "ASA",
+    "Belières",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    39,
+    "Stade Municipal de Belières",
+    6000
+   ],
+   "short": "CHA",
+   "nick": "Aigles",
+   "founded": 1972
+  },
+  "UBG": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Bourlac-lès-Bois FC",
+    "UBG",
+    "Bourlac-lès-Bois",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    39,
+    "Stade Municipal de Bourlac-lès-Bois",
+    7000
+   ],
+   "short": "BOU",
+   "nick": "Ours",
+   "founded": 1945
+  },
+  "CAB": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "FC Cherières",
+    "CAB",
+    "Cherières",
+    "#00843D",
+    "#000000",
+    "historic",
+    39,
+    "Stade de la Moncourt",
+    15000
+   ],
+   "short": "CHE",
+   "nick": "Verts",
+   "founded": 1902
+  },
+  "ASG": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Sporting Naneau",
+    "ASG",
+    "Naneau",
+    "#0057B8",
+    "#FFD100",
+    "fan",
+    38,
+    "Complexe Chaault",
+    8000
+   ],
+   "short": "NAN",
+   "nick": "Pêcheurs",
+   "founded": 1967
+  },
+  "ESM": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Étoile de Mont-Mirange",
+    "ESM",
+    "Mirange",
+    "#E30613",
+    "#000000",
+    "fan",
+    38,
+    "Stade Paugnan",
+    6000
+   ],
+   "short": "MNT",
+   "nick": "Comètes",
+   "founded": 1949
+  },
+  "OBE": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Union Nancourt",
+    "OBE",
+    "Nancourt",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Stade Monac",
+    10000
+   ],
+   "short": "NAT",
+   "nick": "Rouges",
+   "founded": 1937
+  },
+  "SGB": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Union Naneau",
+    "SGB",
+    "Naneau",
+    "#E30613",
+    "#00843D",
+    "fan",
+    37,
+    "Stade de la Dambourg",
+    8000
+   ],
+   "short": "NAU",
+   "nick": "Rouges",
+   "founded": 1988
+  },
+  "YAN": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Tabanga Warriors",
+    "YAN",
+    "Tabanga",
+    "#00843D",
+    "#FFD100",
+    "giant",
+    44,
+    "Tabanga Uhuru Ground",
+    60000
+   ],
+   "short": "TAB",
+   "nick": "Cheetahs",
+   "founded": 1932
+  },
+  "SIM": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Tabanga City",
+    "SIM",
+    "Tabanga",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    44,
+    "Tangatuma Sports Ground",
+    60000
+   ],
+   "short": "TAA",
+   "nick": "Reds",
+   "founded": 1897
+  },
+  "AZB": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Samekili Sugar",
+    "AZB",
+    "Tabanga",
+    "#6CACE4",
+    "#FFFFFF",
+    "oil",
+    40,
+    "Tabanga National Stadium",
+    15000
+   ],
+   "short": "SAM",
+   "nick": "Sky Blues",
+   "founded": 1923
+  },
+  "SBS": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Old Ruvuna Coastal",
+    "SBS",
+    "Ruvuna",
+    "#FFD100",
+    "#0057B8",
+    "oil",
+    38,
+    "Ruvuna National Stadium",
+    10000
+   ],
+   "short": "RUV",
+   "nick": "Yellows",
+   "founded": 1995
+  },
+  "NAM": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Moroma Stanley",
+    "NAM",
+    "Moroma",
+    "#001F5B",
+    "#FFFFFF",
+    "fan",
+    35,
+    "Moroma National Stadium",
+    6000
+   ],
+   "short": "MOR",
+   "nick": "Navy",
+   "founded": 1974
+  },
+  "COA": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Tabotuma Colliery Athletic",
+    "COA",
+    "Tabotuma",
+    "#0057B8",
+    "#FFD100",
+    "historic",
+    35,
+    "Tabotuma Uhuru Ground",
+    10000
+   ],
+   "short": "TMA",
+   "nick": "Blues",
+   "founded": 1937
+  },
+  "MAA": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "New Tabokili Jiji",
+    "MAA",
+    "Tabokili",
+    "#E30613",
+    "#00843D",
+    "fan",
+    34,
+    "Kigomba Sports Ground",
+    5000
+   ],
+   "short": "TAI",
+   "nick": "Warriors",
+   "founded": 1923
+  },
+  "KAG": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Mtwawera Corinthians",
+    "KAG",
+    "Mtwawera",
+    "#FFD100",
+    "#000000",
+    "selling",
+    34,
+    "Kigomba Stadium",
+    8000
+   ],
+   "short": "MTW",
+   "nick": "Yellows",
+   "founded": 1970
+  },
+  "TAP": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Old Kibondi Sugar",
+    "TAP",
+    "Kibondi",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    34,
+    "Kibondi National Stadium",
+    8000
+   ],
+   "short": "KIB",
+   "nick": "Elephants",
+   "founded": 1961
+  },
+  "MTI": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Kigondi City",
+    "MTI",
+    "Kigondi",
+    "#00843D",
+    "#FFFFFF",
+    "selling",
+    34,
+    "Kigondi Uhuru Ground",
+    10000
+   ],
+   "short": "KIG",
+   "nick": "Eagles",
+   "founded": 1935
+  },
+  "KMC": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Songanga City",
+    "KMC",
+    "Tabanga",
+    "#6CACE4",
+    "#FFFFFF",
+    "fan",
+    33,
+    "Kibogoma Stadium",
+    7000
+   ],
+   "short": "SON",
+   "nick": "Elephants",
+   "founded": 1986
+  },
+  "DOJ": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Samema Royals",
+    "DOJ",
+    "Samema",
+    "#00843D",
+    "#FFD100",
+    "fan",
+    33,
+    "Tangagoma Stadium",
+    8000
+   ],
+   "short": "SAA",
+   "nick": "Simbas",
+   "founded": 1913
+  },
+  "PAM": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Morotuma Sugar",
+    "PAM",
+    "Morotuma",
+    "#E30613",
+    "#000000",
+    "historic",
+    33,
+    "Morotuma Uhuru Ground",
+    9000
+   ],
+   "short": "MOA",
+   "nick": "Reds",
+   "founded": 1898
+  },
+  "JKT": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "New Kibogoma United",
+    "JKT",
+    "Tabanga",
+    "#00843D",
+    "#000000",
+    "fan",
+    33,
+    "Mwantuma Stadium",
+    6000
+   ],
+   "short": "KIA",
+   "nick": "Eagles",
+   "founded": 1917
+  },
+  "TAB": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Young Kigotuma",
+    "TAB",
+    "Kigotuma",
+    "#0057B8",
+    "#E30613",
+    "fan",
+    32,
+    "Kigotuma Uhuru Ground",
+    7000
+   ],
+   "short": "YOU",
+   "nick": "Blues",
+   "founded": 1964
+  },
+  "GEI": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Kibya United",
+    "GEI",
+    "Kibya",
+    "#FFD100",
+    "#0057B8",
+    "selling",
+    32,
+    "Songemba Sports Ground",
+    6000
+   ],
+   "short": "KYA",
+   "nick": "Stars",
+   "founded": 1961
+  },
+  "JSA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "RC Chaville",
+    "JSA",
+    "Chaville",
+    "#FFD100",
+    "#00843D",
+    "giant",
+    50,
+    "Complexe Vileau",
+    18000
+   ],
+   "short": "CLE",
+   "nick": "Jaunes",
+   "founded": 1901
+  },
+  "MCA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "AS Thoières",
+    "MCA",
+    "Thoières",
+    "#E30613",
+    "#00843D",
+    "giant",
+    49,
+    "Complexe Maray",
+    40000
+   ],
+   "short": "THO",
+   "nick": "Rouges",
+   "founded": 1932
+  },
+  "CRB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "FC Thoières",
+    "CRB",
+    "Thoières",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    48,
+    "Stade Tourières",
+    40000
+   ],
+   "short": "THS",
+   "nick": "Renards",
+   "founded": 1938
+  },
+  "USA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "AJ Mont-Grencourt",
+    "USA",
+    "Thoières",
+    "#E30613",
+    "#000000",
+    "historic",
+    47,
+    "Stade de la Pauières",
+    50000
+   ],
+   "short": "MOG",
+   "nick": "Cerfs",
+   "founded": 1899
+  },
+  "ESS": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "FC Nanlac",
+    "ESS",
+    "Nanlac",
+    "#000000",
+    "#FFFFFF",
+    "historic",
+    46,
+    "Complexe Lavon",
+    30000
+   ],
+   "short": "NAC",
+   "nick": "Corbeaux",
+   "founded": 1928
+  },
+  "JSB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Olympique de Mirlieu",
+    "JSB",
+    "Mirlieu",
+    "#00843D",
+    "#E30613",
+    "selling",
+    41,
+    "Complexe Joybourg",
+    20000
+   ],
+   "short": "OLE",
+   "nick": "Pêcheurs",
+   "founded": 1928
+  },
+  "PAA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Racing Beauac",
+    "PAA",
+    "Thoières",
+    "#FFFFFF",
+    "#0057B8",
+    "youth",
+    41,
+    "Parc des Sports de Thoières",
+    8000
+   ],
+   "short": "BEC",
+   "nick": "Mineurs",
+   "founded": 1968
+  },
+  "MCO": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Union Sportive Clercourt",
+    "MCO",
+    "Clercourt",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Stade de la Vendens",
+    40000
+   ],
+   "short": "SPO",
+   "nick": "Rouges",
+   "founded": 1926
+  },
+  "CSC": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "FC Monville",
+    "CSC",
+    "Monville",
+    "#00843D",
+    "#000000",
+    "historic",
+    40,
+    "Complexe Mirmont",
+    30000
+   ],
+   "short": "MOE",
+   "nick": "Verts",
+   "founded": 1927
+  },
+  "UKH": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Union Tourault",
+    "UKH",
+    "Tourault",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    39,
+    "Parc des Sports de Tourault",
+    10000
+   ],
+   "short": "TOU",
+   "nick": "Verts",
+   "founded": 1959
+  },
+  "NCM": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Sporting Sarange",
+    "NCM",
+    "Sarange",
+    "#00843D",
+    "#FFD100",
+    "fan",
+    38,
+    "Stade Aubourg",
+    8000
+   ],
+   "short": "SAR",
+   "nick": "Mineurs",
+   "founded": 1961
+  },
+  "MEB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Union Villeneuve-Bourgnan",
+    "MEB",
+    "Bourgnan",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Parc des Sports de Bourgnan",
+    8000
+   ],
+   "short": "VIL",
+   "nick": "Cerfs",
+   "founded": 1915
+  },
+  "ESB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Athlétic Fonières",
+    "ESB",
+    "Thoières",
+    "#00843D",
+    "#FFD100",
+    "fan",
+    38,
+    "Stade Montgnan",
+    6000
+   ],
+   "short": "FON",
+   "nick": "Ours",
+   "founded": 1943
+  },
+  "USC": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "AS Château-Pauange",
+    "USC",
+    "Pauange",
+    "#00843D",
+    "#E30613",
+    "fan",
+    38,
+    "Parc des Sports de Pauange",
+    12000
+   ],
+   "short": "CHU",
+   "nick": "Verts",
+   "founded": 1958
+  },
+  "OAK": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Stade Lanens",
+    "OAK",
+    "Lanens",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Stade Laveau",
+    7000
+   ],
+   "short": "LAN",
+   "nick": "Bleus",
+   "founded": 1951
+  },
+  "ASO": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "US Château-Arcourt",
+    "ASO",
+    "Arcourt",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Stade Municipal de Arcourt",
+    20000
+   ],
+   "short": "CAU",
+   "nick": "Rouges",
+   "founded": 1928
+  },
+  "APO": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Xanópoli FC",
+    "APO",
+    "Xanópoli",
+    "#FFD100",
+    "#0057B8",
+    "giant",
+    52,
+    "Stadio Trópoli",
+    22000
+   ],
+   "short": "XAN",
+   "nick": "Kítrinoi",
+   "founded": 1934
+  },
+  "OMO": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "GS Xanópoli",
+    "OMO",
+    "Xanópoli",
+    "#00843D",
+    "#FFFFFF",
+    "giant",
+    51,
+    "Dimotiko Stadio Xanópoli",
+    22000
+   ],
+   "short": "XAI",
+   "nick": "Ierakes",
+   "founded": 1915
+  },
+  "ANO": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "AO Seránia",
+    "ANO",
+    "Seránia",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    49,
+    "Ethniko Stadio Seránia",
+    10000
+   ],
+   "short": "SER",
+   "nick": "Taýroi",
+   "founded": 1916
+  },
+  "AEA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Ethnikos Seránia",
+    "AEA",
+    "Seránia",
+    "#FFD100",
+    "#000000",
+    "historic",
+    46,
+    "Stadio Ioanópoli",
+    8000
+   ],
+   "short": "SEA",
+   "nick": "Kítrinoi",
+   "founded": 1926
+  },
+  "AEB": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Panathlitikos Kypánia",
+    "AEB",
+    "Kypánia",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    44,
+    "Kalos Arena",
+    13000
+   ],
+   "short": "KYP",
+   "nick": "Arkoúdes",
+   "founded": 1929
+  },
+  "APL": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Kypánia FC",
+    "APL",
+    "Kypánia",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Ethniko Stadio Kypánia",
+    10000
+   ],
+   "short": "KYF",
+   "nick": "Galázioi",
+   "founded": 1925
+  },
+  "ARA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Niki Mesos",
+    "ARA",
+    "Kypánia",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    40,
+    "Alexaki Arena",
+    8000
+   ],
+   "short": "MES",
+   "nick": "Kítrinoi",
+   "founded": 1925
+  },
+  "PAF": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "PAE Ioania",
+    "PAF",
+    "Ioania",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    43,
+    "Stadio Alexouli",
+    8000
+   ],
+   "short": "IOA",
+   "nick": "Galázioi",
+   "founded": 1973
+  },
+  "ETH": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Panathlitikos Larina",
+    "ETH",
+    "Larina",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Dimotiko Stadio Larina",
+    5000
+   ],
+   "short": "LAR",
+   "nick": "Léontes",
+   "founded": 1968
+  },
+  "DOX": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "GS Xania",
+    "DOX",
+    "Xania",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    36,
+    "Stadio Lamia",
+    4000
+   ],
+   "short": "XAA",
+   "nick": "Prásinoi",
+   "founded": 1934
+  },
+  "OLN": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Panathlitikos Trikos",
+    "OLN",
+    "Xanópoli",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    37,
+    "Stadio Xanópetra",
+    6000
+   ],
+   "short": "TRI",
+   "nick": "Prásinoi",
+   "founded": 1917
+  },
+  "NEA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "AO Kypia",
+    "NEA",
+    "Kypia",
+    "#FFFFFF",
+    "#0057B8",
+    "fallen",
+    37,
+    "Ethniko Stadio Kypia",
+    5500
+   ],
+   "short": "KYK",
+   "nick": "Psarádes",
+   "founded": 1942
+  },
+  "KAA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "AE Kavánia",
+    "KAA",
+    "Kavánia",
+    "#0057B8",
+    "#FFD100",
+    "youth",
+    36,
+    "Ethniko Stadio Kavánia",
+    5000
+   ],
+   "short": "KAV",
+   "nick": "Spartiátes",
+   "founded": 1985
+  },
+  "ENA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "AO Marópoli",
+    "ENA",
+    "Marópoli",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    36,
+    "Argánia Arena",
+    5000
+   ],
+   "short": "MAR",
+   "nick": "Ippótes",
+   "founded": 1945
+  },
+  "DIN": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "AO Belany",
+    "DIN",
+    "Belany",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Slagrad Arena",
+    35000
+   ],
+   "short": "BEL",
+   "nick": "Plavi",
+   "founded": 1899
+  },
+  "HAJ": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "SK Kamovac",
+    "HAJ",
+    "Kamovac",
+    "#FFFFFF",
+    "#0057B8",
+    "giant",
+    55,
+    "Gradski Stadion Kamovac",
+    34000
+   ],
+   "short": "KAM",
+   "nick": "Pivari",
+   "founded": 1926
+  },
+  "RIJ": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "FC Turina",
+    "RIJ",
+    "Turina",
+    "#FFFFFF",
+    "#0057B8",
+    "historic",
+    52,
+    "Stadion Mir Turina",
+    8000
+   ],
+   "short": "TUR",
+   "nick": "Beli",
+   "founded": 1912
+  },
+  "OSI": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Radnički Ostina",
+    "OSI",
+    "Ostina",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    48,
+    "Stadion Mir Ostina",
+    13000
+   ],
+   "short": "RAD",
+   "nick": "Lavovi",
+   "founded": 1922
+  },
+  "LOK": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Rudar Belany",
+    "LOK",
+    "Belany",
+    "#E30613",
+    "#0057B8",
+    "youth",
+    46,
+    "Belany Park",
+    5000
+   ],
+   "short": "RUD",
+   "nick": "Crveni",
+   "founded": 2008
+  },
+  "IST": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Partizan Plesovo",
+    "IST",
+    "Plesovo",
+    "#00843D",
+    "#FFD100",
+    "selling",
+    44,
+    "Gradski Stadion Plesovo",
+    3500
+   ],
+   "short": "PAR",
+   "nick": "Zeleni",
+   "founded": 1985
+  },
+  "VAR": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "MFK Petica",
+    "VAR",
+    "Petica",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    43,
+    "Petica Park",
+    6000
+   ],
+   "short": "PET",
+   "nick": "Lisice",
+   "founded": 1968
+  },
+  "GOA": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Rapid Rybpol",
+    "GOA",
+    "Rybpol",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    43,
+    "Bogice Arena",
+    5000
+   ],
+   "short": "RAP",
+   "nick": "Sokolovi",
+   "founded": 2008
+  },
+  "SLB": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "MFK Velin",
+    "SLB",
+    "Velin",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Hradin Arena",
+    4000
+   ],
+   "short": "VEL",
+   "nick": "Bikovi",
+   "founded": 1938
+  },
+  "SIB": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Mladost Gorek",
+    "SIB",
+    "Gorek",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    42,
+    "Stadion Mir Gorek",
+    8000
+   ],
+   "short": "MLA",
+   "nick": "Beli",
+   "founded": 1972
+  },
+  "MAB": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "FC Hedrud",
+    "MAB",
+    "Hedrud",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    62,
+    "Hedrud Arena",
+    22500
+   ],
+   "short": "HED",
+   "nick": "Bjørner",
+   "founded": 1866
+  },
+  "AIK": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Dyrfors IF",
+    "AIK",
+    "Dyrfors",
+    "#000000",
+    "#FFD100",
+    "giant",
+    57,
+    "Marborg Park",
+    50000
+   ],
+   "short": "DYR",
+   "nick": "Bjørne",
+   "founded": 1900
+  },
+  "DIF": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Gammelstad FK",
+    "DIF",
+    "Gammelstad",
+    "#0057B8",
+    "#E30613",
+    "giant",
+    56,
+    "Kilnæs Stadion",
+    30000
+   ],
+   "short": "GAM",
+   "nick": "De Blå",
+   "founded": 1867
+  },
+  "HAA": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "FC Gammelstad",
+    "HAA",
+    "Gammelstad",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    55,
+    "Gammelstad Idrætsanlæg",
+    33000
+   ],
+   "short": "GAD",
+   "nick": "Rever",
+   "founded": 1893
+  },
+  "IFK": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Holgård Boldklub",
+    "IFK",
+    "Holgård",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    53,
+    "Kilvang Stadion",
+    18000
+   ],
+   "short": "HOL",
+   "nick": "De Blå",
+   "founded": 1881
+  },
+  "HAB": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Fremad Holgård",
+    "HAB",
+    "Holgård",
+    "#FFD100",
+    "#000000",
+    "selling",
+    52,
+    "Nordlund Stadion",
+    6500
+   ],
+   "short": "HOD",
+   "nick": "De Gule",
+   "founded": 1927
+  },
+  "ELF": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Dyrud BK",
+    "ELF",
+    "Dyrud",
+    "#FFD100",
+    "#000000",
+    "historic",
+    50,
+    "Dyrud Idrætsanlæg",
+    16000
+   ],
+   "short": "DYD",
+   "nick": "Elge",
+   "founded": 1879
+  },
+  "NOR": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "IK Sønderby",
+    "NOR",
+    "Sønderby",
+    "#FFFFFF",
+    "#0057B8",
+    "historic",
+    50,
+    "Sønderby Arena",
+    17000
+   ],
+   "short": "SND",
+   "nick": "De Hvide",
+   "founded": 1875
+  },
+  "KAL": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Ålstrup FK",
+    "KAL",
+    "Ålstrup",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    46,
+    "Ålstrup Arena",
+    12000
+   ],
+   "short": "AUP",
+   "nick": "Fiskere",
+   "founded": 1876
+  },
+  "SIR": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Østernordstad IF",
+    "SIR",
+    "Østernordstad",
+    "#0057B8",
+    "#FFFFFF",
+    "youth",
+    46,
+    "Nordgård Park",
+    9000
+   ],
+   "short": "STE",
+   "nick": "De Blå",
+   "founded": 1966
+  },
+  "MJA": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Bjørnstad IF",
+    "MJA",
+    "Bjørnstad",
+    "#FFD100",
+    "#000000",
+    "fan",
+    45,
+    "Brogård Park",
+    7000
+   ],
+   "short": "BJR",
+   "nick": "De Gule",
+   "founded": 1911
+  },
+  "BRA": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "FC Søndernæs",
+    "BRA",
+    "Gammelstad",
+    "#E30613",
+    "#000000",
+    "youth",
+    44,
+    "Havby Stadion",
+    8000
+   ],
+   "short": "SNS",
+   "nick": "De Røde",
+   "founded": 1923
+  },
+  "HAL": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Storløkke IF",
+    "HAL",
+    "Storløkke",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    43,
+    "Storløkke Arena",
+    15000
+   ],
+   "short": "STO",
+   "nick": "De Blå",
+   "founded": 1887
+  },
+  "DEG": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Storø BK",
+    "DEG",
+    "Storø",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Storø Arena",
+    7000
+   ],
+   "short": "STR",
+   "nick": "De Røde",
+   "founded": 1909
+  },
+  "VBO": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "FC Dyrby",
+    "VBO",
+    "Dyrby",
+    "#00843D",
+    "#000000",
+    "fan",
+    41,
+    "Dyrby Arena",
+    4500
+   ],
+   "short": "DYY",
+   "nick": "De Grønne",
+   "founded": 1903
+  },
+  "GAI": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Sydlund FK",
+    "GAI",
+    "Holgård",
+    "#00843D",
+    "#000000",
+    "fallen",
+    42,
+    "Nordfors Idrætspark",
+    13000
+   ],
+   "short": "SYD",
+   "nick": "Rever",
+   "founded": 1903
+  },
+  "FCA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Metalac Donji Lubpol",
+    "FCA",
+    "Donji Lubpol",
+    "#E30613",
+    "#0057B8",
+    "giant",
+    58,
+    "Kamec Arena",
+    55000
+   ],
+   "short": "MET",
+   "nick": "Bikovi",
+   "founded": 1919
+  },
+  "CFR": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "FC Stari Slaovice",
+    "CFR",
+    "Stari Slaovice",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Stadion Bogec",
+    23000
+   ],
+   "short": "STA",
+   "nick": "Medvedi",
+   "founded": 1990
+  },
+  "CRC": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Zenit Stari Polpol",
+    "CRC",
+    "Stari Polpol",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    53,
+    "Stari Polpol Park",
+    30000
+   ],
+   "short": "ZEN",
+   "nick": "Plavi",
+   "founded": 1929
+  },
+  "RAA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Spartak Donji Lubpol",
+    "RAA",
+    "Donji Lubpol",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    52,
+    "Stadion Jasgrad",
+    14000
+   ],
+   "short": "SPA",
+   "nick": "Plavi",
+   "founded": 1934
+  },
+  "DIB": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Spartak Belgrad",
+    "DIB",
+    "Donji Lubpol",
+    "#E30613",
+    "#FFFFFF",
+    "fallen",
+    50,
+    "Stadion Kamany",
+    15000
+   ],
+   "short": "SPK",
+   "nick": "Lavovi",
+   "founded": 1927
+  },
+  "UTA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Metalac Liptovice",
+    "UTA",
+    "Liptovice",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    47,
+    "Liptovice Park",
+    12000
+   ],
+   "short": "MEC",
+   "nick": "Crveni",
+   "founded": 1922
+  },
+  "FAA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "FK Donji Malik",
+    "FAA",
+    "Donji Malik",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    48,
+    "Stadion Ostovo",
+    15000
+   ],
+   "short": "DON",
+   "nick": "Lavovi",
+   "founded": 1966
+  },
+  "SEP": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "AO Liptica",
+    "SEP",
+    "Liptica",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    45,
+    "Gradski Stadion Liptica",
+    8000
+   ],
+   "short": "LIP",
+   "nick": "Bikovi",
+   "founded": 1930
+  },
+  "PET": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Union Dolnava",
+    "PET",
+    "Dolnava",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    45,
+    "Dolnava Park",
+    15000
+   ],
+   "short": "DOL",
+   "nick": "Lavovi",
+   "founded": 1921
+  },
+  "HEB": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Union Kamgrad",
+    "HEB",
+    "Kamgrad",
+    "#E30613",
+    "#FFFFFF",
+    "selling",
+    43,
+    "Tarovice Arena",
+    4500
+   ],
+   "short": "KAD",
+   "nick": "Crveni",
+   "founded": 1928
+  },
+  "OTE": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "SK Bratava",
+    "OTE",
+    "Bratava",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    42,
+    "Stadion Mir Bratava",
+    13000
+   ],
+   "short": "BRA",
+   "nick": "Orlovi",
+   "founded": 1909
+  },
+  "BOA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Rapid Nova Dolnek",
+    "BOA",
+    "Nova Dolnek",
+    "#0057B8",
+    "#FFD100",
+    "fan",
+    42,
+    "Plesin Arena",
+    8000
+   ],
+   "short": "RID",
+   "nick": "Plavi",
+   "founded": 1952
+  },
+  "VOA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "KS Petek",
+    "VOA",
+    "Petek",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Stadion Gorovac",
+    2500
+   ],
+   "short": "PEK",
+   "nick": "Plavi",
+   "founded": 1911
+  },
+  "UNA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "FC Donji Mikina",
+    "UNA",
+    "Donji Mikina",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Stadion Bogava",
+    5000
+   ],
+   "short": "DOI",
+   "nick": "Baroni",
+   "founded": 1942
+  },
+  "CSI": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Radnički Bratek",
+    "CSI",
+    "Bratek",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Stadion Bratovac",
+    3000
+   ],
+   "short": "RAI",
+   "nick": "Ribari",
+   "founded": 1966
+  },
+  "IAS": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Lokomotiv Lubovac",
+    "IAS",
+    "Lubovac",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Lubovac Park",
+    11000
+   ],
+   "short": "LOK",
+   "nick": "Plavi",
+   "founded": 1939
+  },
+  "LDU": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Valdemiel CF",
+    "LDU",
+    "Valdemiel",
+    "#FFFFFF",
+    "#0057B8",
+    "giant",
+    58,
+    "Estadio Municipal de Valdemiel",
+    41000
+   ],
+   "short": "VAL",
+   "nick": "Blancos",
+   "founded": 1926
+  },
+  "BSA": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Real Arroar",
+    "BSA",
+    "Arroar",
+    "#FFD100",
+    "#000000",
+    "giant",
+    57,
+    "Estadio Nerjar",
+    57000
+   ],
+   "short": "ARR",
+   "nick": "Rayos",
+   "founded": 1925
+  },
+  "EME": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Club Arroar",
+    "EME",
+    "Arroar",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    55,
+    "Estadio Municipal de Arroar",
+    40000
+   ],
+   "short": "AAR",
+   "nick": "Lobos",
+   "founded": 1922
+  },
+  "IDV": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Club Hinojiel",
+    "IDV",
+    "Hinojiel",
+    "#000000",
+    "#0057B8",
+    "youth",
+    56,
+    "Ciudad Deportiva Hinojiel",
+    12000
+   ],
+   "short": "HIN",
+   "nick": "Negros",
+   "founded": 1950
+  },
+  "AUA": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Racing Valdemiel",
+    "AUA",
+    "Valdemiel",
+    "#FFD100",
+    "#E30613",
+    "historic",
+    47,
+    "Campo de Valdemiel",
+    20000
+   ],
+   "short": "VAV",
+   "nick": "Amarillos",
+   "founded": 1932
+  },
+  "DCA": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Deportivo Pozara",
+    "DCA",
+    "Pozara",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    45,
+    "Ciudad Deportiva Pozara",
+    16000
+   ],
+   "short": "POZ",
+   "nick": "Lobos",
+   "founded": 1898
+  },
+  "ENB": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Deportivo Mayorador",
+    "ENB",
+    "Valdemiel",
+    "#E30613",
+    "#FFFFFF",
+    "fallen",
+    45,
+    "Ciudad Deportiva Valdemiel",
+    35000
+   ],
+   "short": "MAY",
+   "nick": "Rojos",
+   "founded": 1942
+  },
+  "DEL": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Talero Balompié",
+    "DEL",
+    "Talero",
+    "#FFD100",
+    "#0057B8",
+    "selling",
+    44,
+    "Campo de Talero",
+    20000
+   ],
+   "short": "TAL",
+   "nick": "Águilas",
+   "founded": 2005
+  },
+  "ORE": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "UD Liorero",
+    "ORE",
+    "Liorero",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    42,
+    "Nuevo Estadio Liorero",
+    16000
+   ],
+   "short": "LIO",
+   "nick": "Amarillos",
+   "founded": 1913
+  },
+  "TEU": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Deportivo Guadero",
+    "TEU",
+    "Guadero",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Estadio Bailiel",
+    18000
+   ],
+   "short": "GUA",
+   "nick": "Cóndores",
+   "founded": 1982
+  },
+  "MAE": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Atlético Guadero",
+    "MAE",
+    "Guadero",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Estadio La Fresnanes",
+    18000
+   ],
+   "short": "GUO",
+   "nick": "Azules",
+   "founded": 1913
+  },
+  "MUS": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Alto Aranjino Balompié",
+    "MUS",
+    "Guadero",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    40,
+    "Estadio Plasara",
+    8000
+   ],
+   "short": "ALO",
+   "nick": "Blancos",
+   "founded": 1931
+  },
+  "LIB": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "SD Liora",
+    "LIB",
+    "Liora",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    39,
+    "Estadio La Yestar",
+    8000
+   ],
+   "short": "SDD",
+   "nick": "Blancos",
+   "founded": 1941
+  },
+  "UCE": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Real Aranjador",
+    "UCE",
+    "Valdemiel",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Estadio Jarandilla",
+    40000
+   ],
+   "short": "AOR",
+   "nick": "Azules",
+   "founded": 1938
+  },
+  "CUM": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Sporting Santa Oñatanes",
+    "CUM",
+    "Valdemiel",
+    "#E30613",
+    "#FFFFFF",
+    "youth",
+    38,
+    "Estadio La Benedo",
+    6000
+   ],
+   "short": "ONA",
+   "nick": "Leñadores",
+   "founded": 1925
+  },
+  "IMB": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Real Club Roblar",
+    "IMB",
+    "Roblar",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Estadio La Olmete",
+    10000
+   ],
+   "short": "ROB",
+   "nick": "Halcones",
+   "founded": 1967
+  },
+  "PEA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Estudiantes de Ortas",
+    "PEA",
+    "Ortas",
+    "#FFD100",
+    "#000000",
+    "giant",
+    58,
+    "Estadio Hereda",
+    40000
+   ],
+   "short": "ORT",
+   "nick": "Amarillos",
+   "founded": 1894
+  },
+  "NAA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Defensores de Ortas",
+    "NAA",
+    "Ortas",
+    "#FFFFFF",
+    "#0057B8",
+    "giant",
+    58,
+    "Cancha de Ortas",
+    35000
+   ],
+   "short": "ORS",
+   "nick": "Albos",
+   "founded": 1921
+  },
+  "DEF": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Club de Regatas Cabreda",
+    "DEF",
+    "Ortas",
+    "#6A1B9A",
+    "#FFFFFF",
+    "historic",
+    47,
+    "Estadio Municipal de Ortas",
+    18000
+   ],
+   "short": "REG",
+   "nick": "Arrieros",
+   "founded": 1909
+  },
+  "DAA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Puesilla FC",
+    "DAA",
+    "Ortas",
+    "#FFFFFF",
+    "#000000",
+    "youth",
+    46,
+    "Estadio Rodas",
+    18000
+   ],
+   "short": "PUE",
+   "nick": "Leones",
+   "founded": 1999
+  },
+  "WAN": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Rodeda FC",
+    "WAN",
+    "Ortas",
+    "#FFFFFF",
+    "#000000",
+    "historic",
+    44,
+    "Estadio Herui",
+    8000
+   ],
+   "short": "ROD",
+   "nick": "Matadores",
+   "founded": 1921
+  },
+  "LVM": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Club Deportivo Velona",
+    "LVM",
+    "Ortas",
+    "#000000",
+    "#0057B8",
+    "historic",
+    43,
+    "Estadio Mirona",
+    9000
+   ],
+   "short": "VEA",
+   "nick": "Negros",
+   "founded": 1890
+  },
+  "RPM": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Sportivo Lavar",
+    "RPM",
+    "Ortas",
+    "#FFFFFF",
+    "#E30613",
+    "historic",
+    42,
+    "Estadio Lavas",
+    12000
+   ],
+   "short": "LAV",
+   "nick": "Gladiadores",
+   "founded": 1893
+  },
+  "CLA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Independiente Bustini",
+    "CLA",
+    "Bustini",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Estadio Dorreda",
+    9000
+   ],
+   "short": "BUS",
+   "nick": "Azules",
+   "founded": 1945
+  },
+  "PRO": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Club Deportivo Castona",
+    "PRO",
+    "Ortas",
+    "#0057B8",
+    "#E30613",
+    "fan",
+    40,
+    "Estadio Arrona",
+    6000
+   ],
+   "short": "CAS",
+   "nick": "Azules",
+   "founded": 1905
+  },
+  "RAB": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Club Atlético Sarini",
+    "RAB",
+    "Ortas",
+    "#FFFFFF",
+    "#0057B8",
+    "historic",
+    40,
+    "Estadio Monumental Pellini",
+    6000
+   ],
+   "short": "SAI",
+   "nick": "Cruzados",
+   "founded": 1889
+  },
+  "PLC": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Club Atlético Rodilla",
+    "PLC",
+    "Rodilla",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    40,
+    "Estadio Alverero",
+    7000
+   ],
+   "short": "ROA",
+   "nick": "Albos",
+   "founded": 1917
+  },
+  "MIB": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Estudiantes de Escón",
+    "MIB",
+    "Ortas",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    38,
+    "Estadio Alveras",
+    5000
+   ],
+   "short": "ESC",
+   "nick": "Gladiadores",
+   "founded": 1948
+  },
+  "CED": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Defensores de Pellona",
+    "CED",
+    "Ortas",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    40,
+    "Estadio Garini",
+    10000
+   ],
+   "short": "PEL",
+   "nick": "Rayos",
+   "founded": 1922
+  },
+  "BOS": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Club Sportivo Belona",
+    "BOS",
+    "Belona",
+    "#00843D",
+    "#FFFFFF",
+    "selling",
+    39,
+    "Estadio Puesui",
+    5000
+   ],
+   "short": "BNA",
+   "nick": "Verdes",
+   "founded": 1968
+  },
+  "MCT": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Gimnasia de Molar",
+    "MCT",
+    "Ortas",
+    "#6CACE4",
+    "#FFFFFF",
+    "oil",
+    42,
+    "Estadio Ferini",
+    6000
+   ],
+   "short": "MOL",
+   "nick": "Matadores",
+   "founded": 1900
+  },
+  "ALE": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Sportivo Castui",
+    "ALE",
+    "Ortas",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Estadio Monumental Ortano",
+    4000
+   ],
+   "short": "CAI",
+   "nick": "Halcones",
+   "founded": 1922
+  },
+  "NCL": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Valal Balompié",
+    "NCL",
+    "Valal",
+    "#00843D",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Estadio Municipal de Valal",
+    45000
+   ],
+   "short": "VAB",
+   "nick": "Verdes",
+   "founded": 1917
+  },
+  "MIC": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Sporting Poza",
+    "MIC",
+    "Poza",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    58,
+    "Estadio Marbiel",
+    36000
+   ],
+   "short": "POA",
+   "nick": "Toros",
+   "founded": 1921
+  },
+  "AMB": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Racing Cabral",
+    "AMB",
+    "Cabral",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    54,
+    "Nuevo Estadio Cabral",
+    42000
+   ],
+   "short": "CAB",
+   "nick": "Rojos",
+   "founded": 1900
+  },
+  "JUN": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Pedares Balompié",
+    "JUN",
+    "Pedares",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    55,
+    "Nuevo Estadio Pedares",
+    46000
+   ],
+   "short": "PED",
+   "nick": "Rojos",
+   "founded": 1916
+  },
+  "SAF": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Real Club Poza",
+    "SAF",
+    "Poza",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    52,
+    "Estadio La Marbilla",
+    36000
+   ],
+   "short": "PZA",
+   "nick": "Rojos",
+   "founded": 1894
+  },
+  "DCB": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Cabral Balompié",
+    "DCB",
+    "Cabral",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    50,
+    "Estadio La Cabrosa",
+    42000
+   ],
+   "short": "CAL",
+   "nick": "Verdes",
+   "founded": 1911
+  },
+  "ONC": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Gandón del Mar CF",
+    "ONC",
+    "Gandón del Mar",
+    "#FFFFFF",
+    "#000000",
+    "historic",
+    47,
+    "Nuevo Estadio Gandón del Mar",
+    30000
+   ],
+   "short": "GAN",
+   "nick": "Blancos",
+   "founded": 1908
+  },
+  "TOA": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Racing Marbares",
+    "TOA",
+    "Marbares",
+    "#E30613",
+    "#FFD100",
+    "historic",
+    48,
+    "Nuevo Estadio Marbares",
+    28000
+   ],
+   "short": "MAS",
+   "nick": "Gladiadores",
+   "founded": 1896
+  },
+  "IMD": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportivo Valal",
+    "IMD",
+    "Valal",
+    "#E30613",
+    "#0057B8",
+    "historic",
+    50,
+    "Nuevo Estadio Valal",
+    45000
+   ],
+   "short": "VVA",
+   "nick": "Rojos",
+   "founded": 1922
+  },
+  "BUC": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "SD Orihilla",
+    "BUC",
+    "Orihilla",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    44,
+    "Campo de Orihilla",
+    28000
+   ],
+   "short": "SSD",
+   "nick": "Toros",
+   "founded": 1933
+  },
+  "PAS": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Unión Bailara",
+    "PAS",
+    "Bailara",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    42,
+    "Estadio Osunana",
+    20000
+   ],
+   "short": "BAI",
+   "nick": "Amarillos",
+   "founded": 1900
+  },
+  "ENV": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Real Club Villa Fuentar",
+    "ENV",
+    "Villa Fuentar",
+    "#FFD100",
+    "#F26522",
+    "youth",
+    43,
+    "Estadio La Jarandino",
+    12000
+   ],
+   "short": "FUE",
+   "nick": "Halcones",
+   "founded": 1904
+  },
+  "AGU": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportivo Cervera",
+    "AGU",
+    "Cervera",
+    "#FFD100",
+    "#000000",
+    "selling",
+    42,
+    "Estadio Zafra",
+    14000
+   ],
+   "short": "CER",
+   "nick": "Amarillos",
+   "founded": 1903
+  },
+  "ALI": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Unión Elchena",
+    "ALI",
+    "Elchena",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    40,
+    "Estadio La Torranes",
+    12000
+   ],
+   "short": "ELC",
+   "nick": "Titanes",
+   "founded": 1962
+  },
+  "EQU": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Real Club Nueva Montilla",
+    "EQU",
+    "Poza",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Estadio Cuenador",
+    10000
+   ],
+   "short": "NUE",
+   "nick": "Cóndores",
+   "founded": 1950
+  },
+  "JAA": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Sporting Lucal",
+    "JAA",
+    "Lucal",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    40,
+    "Estadio Municipal de Lucal",
+    12000
+   ],
+   "short": "LUC",
+   "nick": "Amarillos",
+   "founded": 1966
+  },
+  "PER": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "UD Tarifador",
+    "PER",
+    "Tarifador",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    43,
+    "Nuevo Estadio Tarifador",
+    30000
+   ],
+   "short": "TAR",
+   "nick": "Jaguares",
+   "founded": 1961
+  },
+  "FOR": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Real Unión Cuenejo",
+    "FOR",
+    "Poza",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Nuevo Estadio Poza",
+    8000
+   ],
+   "short": "CUE",
+   "nick": "Leñadores",
+   "founded": 1954
+  },
+  "LLB": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportivo Bajo Almazero",
+    "LLB",
+    "Almazero",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Estadio Municipal de Almazero",
+    10000
+   ],
+   "short": "BAJ",
+   "nick": "Rojos",
+   "founded": 1917
+  },
+  "BCH": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Unión Nueva Tarifino",
+    "BCH",
+    "Tarifino",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    39,
+    "Estadio Tordedo",
+    8000
+   ],
+   "short": "NUA",
+   "nick": "Mineros",
+   "founded": 1894
+  },
+  "FOA": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Barborough Hotspur",
+    "FOA",
+    "Barborough",
+    "#F26522",
+    "#000000",
+    "youth",
+    42,
+    "Tamouth Lane",
+    6000
+   ],
+   "short": "BAR",
+   "nick": "Oranges",
+   "founded": 1973
+  },
+  "CAV": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Grenworth North End",
+    "CAV",
+    "Grenworth",
+    "#E30613",
+    "#000000",
+    "selling",
+    40,
+    "Witbury Green",
+    6000
+   ],
+   "short": "GRE",
+   "nick": "Saints",
+   "founded": 1931
+  },
+  "PCF": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Upper Bournshall County",
+    "PCF",
+    "Bournshall",
+    "#6A1B9A",
+    "#FFFFFF",
+    "youth",
+    36,
+    "Plywood Lane",
+    6000
+   ],
+   "short": "BOL",
+   "nick": "Maroons",
+   "founded": 1969
+  },
+  "OTT": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "AFC Horstead",
+    "OTT",
+    "Horstead",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Hunworth Park",
+    24000
+   ],
+   "short": "HOR",
+   "nick": "Posh",
+   "founded": 1957
+  },
+  "YRK": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Tivmere City",
+    "YRK",
+    "Tivmere",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    35,
+    "Tivmere Park",
+    4000
+   ],
+   "short": "TIV",
+   "nick": "Falcons",
+   "founded": 1922
+  },
+  "HFX": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Cobport Dynamo",
+    "HFX",
+    "Cobport",
+    "#6CACE4",
+    "#000000",
+    "fan",
+    35,
+    "Sedbridge Road",
+    6000
+   ],
+   "short": "COB",
+   "nick": "Skyhawks",
+   "founded": 1978
+  },
+  "VAA": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Clifwich City",
+    "VAA",
+    "Clifwich",
+    "#F26522",
+    "#000000",
+    "fan",
+    34,
+    "The Chelingham Stadium",
+    6000
+   ],
+   "short": "CLI",
+   "nick": "Flames",
+   "founded": 1942
+  },
+  "VFC": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Hayhaven Wanderers",
+    "VFC",
+    "Hayhaven",
+    "#00843D",
+    "#000000",
+    "fan",
+    33,
+    "The Warthorpe Stadium",
+    6000
+   ],
+   "short": "HAY",
+   "nick": "Badgers",
+   "founded": 1974
+  },
+  "AIA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Burj",
+    "AIA",
+    "Wadi Majum",
+    "#FFD100",
+    "#6A1B9A",
+    "oil",
+    60,
+    "Yanan Stadium",
+    25000
+   ],
+   "short": "ALB",
+   "nick": "Lions",
+   "founded": 1940
+  },
+  "SAH": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Izz",
+    "SAH",
+    "Jedat",
+    "#E30613",
+    "#000000",
+    "oil",
+    58,
+    "Sakum Arena",
+    12000
+   ],
+   "short": "AIZ",
+   "nick": "Reds",
+   "founded": 1989
+  },
+  "SHA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Majmaah",
+    "SHA",
+    "Majmaah",
+    "#FFFFFF",
+    "#0057B8",
+    "oil",
+    56,
+    "Majmaah Club Stadium",
+    11000
+   ],
+   "short": "ALM",
+   "nick": "Whites",
+   "founded": 1989
+  },
+  "WSL": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Jabal",
+    "WSL",
+    "Jedat",
+    "#FFD100",
+    "#000000",
+    "historic",
+    54,
+    "Jedat Club Stadium",
+    12000
+   ],
+   "short": "ALJ",
+   "nick": "Hawks",
+   "founded": 1939
+  },
+  "JAZ": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Watan",
+    "JAZ",
+    "Jedir",
+    "#E30613",
+    "#000000",
+    "oil",
+    53,
+    "Bura Stadium",
+    42000
+   ],
+   "short": "ALW",
+   "nick": "Hawks",
+   "founded": 1986
+  },
+  "WAH": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Jedir Club",
+    "WAH",
+    "Jedir",
+    "#F26522",
+    "#000000",
+    "oil",
+    52,
+    "King Ulik Sports City",
+    11000
+   ],
+   "short": "AJE",
+   "nick": "Oranges",
+   "founded": 1957
+  },
+  "NSA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Yaqin",
+    "NSA",
+    "Jedat",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    47,
+    "Burmaah Stadium",
+    12000
+   ],
+   "short": "ALY",
+   "nick": "Tigers",
+   "founded": 1907
+  },
+  "AJM": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Sharq",
+    "AJM",
+    "Sakabah",
+    "#F26522",
+    "#FFFFFF",
+    "fan",
+    43,
+    "Prince Majir Stadium",
+    5000
+   ],
+   "short": "ASH",
+   "nick": "Oranges",
+   "founded": 1948
+  },
+  "KHF": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Rimal",
+    "KHF",
+    "Mahan",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Mahan Club Stadium",
+    4000
+   ],
+   "short": "ALR",
+   "nick": "Sandstorm",
+   "founded": 1935
+  },
+  "BAA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Dhahab",
+    "BAA",
+    "Jedir",
+    "#E30613",
+    "#000000",
+    "fan",
+    44,
+    "Jedir Sports City",
+    9000
+   ],
+   "short": "ALD",
+   "nick": "Gazelles",
+   "founded": 1954
+  },
+  "DHA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Hurriya",
+    "DHA",
+    "Turud",
+    "#00843D",
+    "#E30613",
+    "fan",
+    42,
+    "Turud Sports City",
+    7000
+   ],
+   "short": "AHU",
+   "nick": "Greens",
+   "founded": 1978
+  },
+  "BAB": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Nawras",
+    "BAB",
+    "Taiman",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    41,
+    "Jubum Arena",
+    4000
+   ],
+   "short": "ANA",
+   "nick": "Yellows",
+   "founded": 1922
+  },
+  "KAB": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Falah",
+    "KAB",
+    "Rafum",
+    "#FFD100",
+    "#000000",
+    "fan",
+    41,
+    "Rafum Club Stadium",
+    6000
+   ],
+   "short": "ALF",
+   "nick": "Yellows",
+   "founded": 1945
+  },
+  "ORA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Sahab",
+    "ORA",
+    "Majmaah",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Turan Arena",
+    3000
+   ],
+   "short": "ASA",
+   "nick": "Lions",
+   "founded": 1975
+  },
+  "PRS": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Mes Qazud",
+    "PRS",
+    "Qazud",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    58,
+    "Hamvin Stadium",
+    78000
+   ],
+   "short": "MEQ",
+   "nick": "Tigers",
+   "founded": 1911
+  },
+  "ESC": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Nassaji Qazud",
+    "ESC",
+    "Qazud",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    57,
+    "Reyfahan Stadium",
+    78000
+   ],
+   "short": "NAS",
+   "nick": "Camels",
+   "founded": 1915
+  },
+  "SPB": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Gol Shahr Yazvin",
+    "SPB",
+    "Shahr Yazvin",
+    "#FFD100",
+    "#000000",
+    "historic",
+    54,
+    "Mashud Stadium",
+    75000
+   ],
+   "short": "GOL",
+   "nick": "Gazelles",
+   "founded": 1929
+  },
+  "TRC": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Fajr Orumabad",
+    "TRC",
+    "Orumabad",
+    "#E30613",
+    "#000000",
+    "giant",
+    52,
+    "Orumabad Takhti Stadium",
+    66000
+   ],
+   "short": "FAJ",
+   "nick": "Reds",
+   "founded": 1934
+  },
+  "FOL": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Paykan Hamfahan",
+    "FOL",
+    "Hamfahan",
+    "#E30613",
+    "#FFD100",
+    "historic",
+    48,
+    "Azadi Hamfahan Stadium",
+    30000
+   ],
+   "short": "PAY",
+   "nick": "Reds",
+   "founded": 1932
+  },
+  "GGO": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Zob Bandar Reyfahan",
+    "GGO",
+    "Reyfahan",
+    "#FFD100",
+    "#00843D",
+    "oil",
+    47,
+    "Bushkan Stadium",
+    10000
+   ],
+   "short": "ZOB",
+   "nick": "Yellows",
+   "founded": 1999
+  },
+  "NAB": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Nassaji Zanabad",
+    "NAB",
+    "Zanabad",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    42,
+    "Shavin Sports Complex",
+    15000
+   ],
+   "short": "NAI",
+   "nick": "Yellows",
+   "founded": 1915
+  },
+  "MAG": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Naft Shahr Shatan",
+    "MAG",
+    "Shahr Shatan",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    42,
+    "Birman Sports Complex",
+    10000
+   ],
+   "short": "NAF",
+   "nick": "Eagles",
+   "founded": 1914
+  },
+  "ZOB": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Pas Shahr Yazvin",
+    "ZOB",
+    "Shahr Yazvin",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Tabkan Sports Complex",
+    15000
+   ],
+   "short": "PAS",
+   "nick": "Falcons",
+   "founded": 1916
+  },
+  "ALU": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Gol Bandar Eshabad",
+    "ALU",
+    "Bandar Eshabad",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    42,
+    "Bandar Eshabad Takhti Stadium",
+    15000
+   ],
+   "short": "GOB",
+   "nick": "Blues",
+   "founded": 2007
+  },
+  "PAY": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Paykan Semriz",
+    "PAY",
+    "Qazud",
+    "#FFD100",
+    "#000000",
+    "historic",
+    41,
+    "Ilambad Stadium",
+    10000
+   ],
+   "short": "PAN",
+   "nick": "Sandstorm",
+   "founded": 1903
+  },
+  "HAD": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Mohammedan Bandar Ilaman",
+    "HAD",
+    "Qazud",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Mashbad Stadium",
+    5000
+   ],
+   "short": "MOH",
+   "nick": "Blues",
+   "founded": 1939
+  },
+  "MES": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Sepahan Yazkan",
+    "MES",
+    "Yazkan",
+    "#F26522",
+    "#000000",
+    "selling",
+    41,
+    "Mashjan Stadium",
+    15000
+   ],
+   "short": "SEP",
+   "nick": "Lions",
+   "founded": 2008
+  },
+  "SHM": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Bargh Bandar Qazriz",
+    "SHM",
+    "Bandar Qazriz",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    40,
+    "Bandar Qazriz Takhti Stadium",
+    5000
+   ],
+   "short": "BAH",
+   "nick": "Yellows",
+   "founded": 1941
+  },
+  "KHE": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Fajr Bandar Bushshahr",
+    "KHE",
+    "Bushshahr",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    39,
+    "Azadi Bushshahr Stadium",
+    10000
+   ],
+   "short": "FAR",
+   "nick": "Lions",
+   "founded": 1985
+  },
+  "CHC": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Shahin Dasht Sirdan",
+    "CHC",
+    "Dasht Sirdan",
+    "#F26522",
+    "#000000",
+    "selling",
+    40,
+    "Hamtan Sports Complex",
+    5000
+   ],
+   "short": "SHA",
+   "nick": "Oranges",
+   "founded": 1956
+  },
+  "SAD": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Ihsan",
+    "SAD",
+    "Bahaydah",
+    "#FFFFFF",
+    "#000000",
+    "oil",
+    58,
+    "Jedum Arena",
+    15000
+   ],
+   "short": "AIH",
+   "nick": "Tigers",
+   "founded": 1988
+  },
+  "DUH": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Bahaydah SC",
+    "DUH",
+    "Bahaydah",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    56,
+    "King Rafayma Sports City",
+    40000
+   ],
+   "short": "BAS",
+   "nick": "Reds",
+   "founded": 1997
+  },
+  "RAF": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Umm Sakabah",
+    "RAF",
+    "Umm Sakabah",
+    "#E30613",
+    "#000000",
+    "oil",
+    52,
+    "Umm Sakabah Sports City",
+    44000
+   ],
+   "short": "ALU",
+   "nick": "Reds",
+   "founded": 1977
+  },
+  "GHA": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Ulir",
+    "GHA",
+    "Bahaydah",
+    "#FFFFFF",
+    "#000000",
+    "oil",
+    50,
+    "Zulaydah Arena",
+    21000
+   ],
+   "short": "AUL",
+   "nick": "Whites",
+   "founded": 1954
+  },
+  "ARC": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Gharb",
+    "ARC",
+    "Bahaydah",
+    "#FFFFFF",
+    "#E30613",
+    "historic",
+    48,
+    "Prince Zulabah Stadium",
+    15000
+   ],
+   "short": "ALG",
+   "nick": "Hawks",
+   "founded": 1899
+  },
+  "WKR": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Riyma SC",
+    "WKR",
+    "Riyma",
+    "#FFD100",
+    "#000000",
+    "fan",
+    45,
+    "Prince Ulir Stadium",
+    20000
+   ],
+   "short": "RIY",
+   "nick": "Yellows",
+   "founded": 1944
+  },
+  "QSC": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Dira",
+    "QSC",
+    "Bahaydah",
+    "#8A1538",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Bahaydah Club Stadium",
+    13000
+   ],
+   "short": "ADI",
+   "nick": "Maroons",
+   "founded": 1926
+  },
+  "UMS": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Ain Mahabah SC",
+    "UMS",
+    "Ain Mahabah",
+    "#FFD100",
+    "#000000",
+    "fan",
+    43,
+    "Ain Mahabah Sports City",
+    12000
+   ],
+   "short": "AIN",
+   "nick": "Yellows",
+   "founded": 1930
+  },
+  "SHC": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Buruf Club",
+    "SHC",
+    "Buruf",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Buruf Sports City",
+    10000
+   ],
+   "short": "ABU",
+   "nick": "Gazelles",
+   "founded": 1926
+  },
+  "AHD": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Bura Club",
+    "AHD",
+    "Bahaydah",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    42,
+    "Khaydah Arena",
+    7000
+   ],
+   "short": "ALC",
+   "nick": "Greens",
+   "founded": 1909
+  },
+  "KHR": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Abhayma Club",
+    "KHR",
+    "Abhayma",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "King Jubum Sports City",
+    12000
+   ],
+   "short": "ALA",
+   "nick": "Blues",
+   "founded": 1928
+  },
+  "MRK": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Shamal",
+    "MRK",
+    "Bahaydah",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Prince Taimabah Stadium",
+    3000
+   ],
+   "short": "AL2",
+   "nick": "Lions",
+   "founded": 1932
+  },
+  "SHP": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Meimen Sports",
+    "SHP",
+    "Meimen",
+    "#E30613",
+    "#000000",
+    "oil",
+    66,
+    "Qingmen Sports Center",
+    72000
+   ],
+   "short": "MEI",
+   "nick": "Cranes",
+   "founded": 1977
+  },
+  "SHT": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Jinyuan United",
+    "SHT",
+    "Jinyuan",
+    "#F26522",
+    "#000000",
+    "giant",
+    62,
+    "Jinyuan Olympic Stadium",
+    54000
+   ],
+   "short": "JIN",
+   "nick": "Stars",
+   "founded": 1898
+  },
+  "SHS": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Meimen Dragons",
+    "SHS",
+    "Meimen",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Jincheng Sports Center",
+    52000
+   ],
+   "short": "MEN",
+   "nick": "Blues",
+   "founded": 1938
+  },
+  "BGA": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Dongang FC",
+    "BGA",
+    "Dongang",
+    "#00843D",
+    "#FFD100",
+    "giant",
+    62,
+    "Hayuan Stadium",
+    66000
+   ],
+   "short": "DOG",
+   "nick": "Eagles",
+   "founded": 1899
+  },
+  "CHD": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Kaizhou FC",
+    "CHD",
+    "Kaizhou",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Kaizhou Gymnasium Stadium",
+    40000
+   ],
+   "short": "KAI",
+   "nick": "Reds",
+   "founded": 1976
+  },
+  "ZHE": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Hengping Dragons",
+    "ZHE",
+    "Hengping",
+    "#00843D",
+    "#FFFFFF",
+    "youth",
+    52,
+    "Hengping Olympic Stadium",
+    50000
+   ],
+   "short": "HEN",
+   "nick": "Greens",
+   "founded": 1960
+  },
+  "TJT": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Baoshan City",
+    "TJT",
+    "Baoshan",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    48,
+    "Baoshan Gymnasium Stadium",
+    54000
+   ],
+   "short": "BAO",
+   "nick": "Blues",
+   "founded": 1915
+  },
+  "HEN": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Longping Port",
+    "HEN",
+    "Longping",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    46,
+    "Kaicheng Sports Center",
+    29000
+   ],
+   "short": "LON",
+   "nick": "Yellows",
+   "founded": 1966
+  },
+  "WUH": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Beyuan City",
+    "WUH",
+    "Beyuan",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    50,
+    "Tiantai Sports Center",
+    52000
+   ],
+   "short": "BEY",
+   "nick": "Reds",
+   "founded": 1981
+  },
+  "CHY": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Wujiang Athletic",
+    "CHY",
+    "Wujiang",
+    "#FFD100",
+    "#00843D",
+    "historic",
+    48,
+    "Hanmen Stadium",
+    38000
+   ],
+   "short": "WUJ",
+   "nick": "Yellows",
+   "founded": 1932
+  },
+  "MEI": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Baolin FC",
+    "MEI",
+    "Baolin",
+    "#E30613",
+    "#000000",
+    "fan",
+    45,
+    "Hayang Sports Center",
+    20000
+   ],
+   "short": "BAN",
+   "nick": "Eagles",
+   "founded": 1914
+  },
+  "QWC": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Shenping Port",
+    "QWC",
+    "Shenping",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Shenshan Stadium",
+    18000
+   ],
+   "short": "SHE",
+   "nick": "Pandas",
+   "founded": 1983
+  },
+  "CAN": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Changlin Taishan",
+    "CAN",
+    "Changlin",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Changlin Olympic Stadium",
+    30000
+   ],
+   "short": "CHN",
+   "nick": "Pandas",
+   "founded": 1925
+  },
+  "DAB": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Meyang United",
+    "DAB",
+    "Meyang",
+    "#0057B8",
+    "#FFFFFF",
+    "fallen",
+    46,
+    "Shenyang Stadium",
+    55000
+   ],
+   "short": "MEY",
+   "nick": "Cranes",
+   "founded": 1926
+  },
+  "NAD": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Changhai Dragons",
+    "NAD",
+    "Changhai",
+    "#0057B8",
+    "#FFD100",
+    "fan",
+    42,
+    "Xitai Stadium",
+    18000
+   ],
+   "short": "CHI",
+   "nick": "Blues",
+   "founded": 1978
+  },
+  "SHZ": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Xyang Port",
+    "SHZ",
+    "Xyang",
+    "#E30613",
+    "#0057B8",
+    "fan",
+    43,
+    "Xyang Olympic Stadium",
+    30000
+   ],
+   "short": "XYA",
+   "nick": "Reds",
+   "founded": 1928
   }
  },
  "leagues": {
@@ -14915,6 +19199,102 @@
    "tier": 1,
    "name": "South African Premier Soccer League",
    "short": "ZA1"
+  },
+  "EG1": {
+   "nat": "EGY",
+   "tier": 1,
+   "name": "Harbor Premier League",
+   "short": "EG1"
+  },
+  "TN1": {
+   "nat": "TUN",
+   "tier": 1,
+   "name": "Zenith Ligue Nationale",
+   "short": "TN1"
+  },
+  "TZ1": {
+   "nat": "TAN",
+   "tier": 1,
+   "name": "Redwater Elite Division",
+   "short": "TZ1"
+  },
+  "DZ1": {
+   "nat": "ALG",
+   "tier": 1,
+   "name": "Vantage Division Nationale",
+   "short": "DZ1"
+  },
+  "CY1": {
+   "nat": "CYP",
+   "tier": 1,
+   "name": "Cypriot Alfa Liga",
+   "short": "CY1"
+  },
+  "HR1": {
+   "nat": "CRO",
+   "tier": 1,
+   "name": "Croatian Prva Liga",
+   "short": "HR1"
+  },
+  "SE1": {
+   "nat": "SWE",
+   "tier": 1,
+   "name": "Swedish Topliga",
+   "short": "SE1"
+  },
+  "RO1": {
+   "nat": "ROU",
+   "tier": 1,
+   "name": "Evergreen Liga Întâi",
+   "short": "RO1"
+  },
+  "EC1": {
+   "nat": "ECU",
+   "tier": 1,
+   "name": "Helix Primera Honor",
+   "short": "EC1"
+  },
+  "UY1": {
+   "nat": "URU",
+   "tier": 1,
+   "name": "Uruguayan Liga Mayor",
+   "short": "UY1"
+  },
+  "CO1": {
+   "nat": "COL",
+   "tier": 1,
+   "name": "Pinnacle Primera Honor",
+   "short": "CO1"
+  },
+  "CA1": {
+   "nat": "CAN",
+   "tier": 1,
+   "name": "Canadian Premier Union",
+   "short": "CA1"
+  },
+  "AE1": {
+   "nat": "UAE",
+   "tier": 1,
+   "name": "Solara Premier League",
+   "short": "AE1"
+  },
+  "IR1": {
+   "nat": "IRN",
+   "tier": 1,
+   "name": "Orbis Pro League",
+   "short": "IR1"
+  },
+  "QA1": {
+   "nat": "QAT",
+   "tier": 1,
+   "name": "Qatari Premier League",
+   "short": "QA1"
+  },
+  "CS1": {
+   "nat": "CHN",
+   "tier": 1,
+   "name": "Meridian Super League",
+   "short": "CS1"
   }
  },
  "continentals": {
@@ -15831,6 +20211,171 @@
    "AMA",
    "GLA",
    "Thabstad Derby"
+  ],
+  [
+   "ALD",
+   "ZMK",
+   "Benighada–Huranhur Derby"
+  ],
+  [
+   "PYR",
+   "FUT",
+   "Benighada Derby"
+  ],
+  [
+   "ITA",
+   "SMO",
+   "Assta Derby"
+  ],
+  [
+   "ESA",
+   "CAF",
+   "Moneau Derby"
+  ],
+  [
+   "ASG",
+   "SGB",
+   "Naneau Derby"
+  ],
+  [
+   "YAN",
+   "SIM",
+   "Tabanga Derby"
+  ],
+  [
+   "AZB",
+   "KMC",
+   "Tabanga Derby"
+  ],
+  [
+   "MCA",
+   "USA",
+   "Thoières Derby"
+  ],
+  [
+   "CRB",
+   "PAA",
+   "Thoières Derby"
+  ],
+  [
+   "APO",
+   "OMO",
+   "Xanópoli Derby"
+  ],
+  [
+   "ANO",
+   "AEA",
+   "Seránia Derby"
+  ],
+  [
+   "AEB",
+   "APL",
+   "Kypánia Derby"
+  ],
+  [
+   "DIN",
+   "HAJ",
+   "Belany–Kamovac Derby"
+  ],
+  [
+   "MAB",
+   "IFK",
+   "Hedrud–Holgård Derby"
+  ],
+  [
+   "AIK",
+   "DIF",
+   "Dyrfors–Gammelstad Derby"
+  ],
+  [
+   "HAA",
+   "BRA",
+   "Gammelstad Derby"
+  ],
+  [
+   "FCA",
+   "DIB",
+   "Donji Lubpol Derby"
+  ],
+  [
+   "LDU",
+   "IDV",
+   "Valdemiel–Hinojiel Derby"
+  ],
+  [
+   "AUA",
+   "ENB",
+   "Valdemiel Derby"
+  ],
+  [
+   "BSA",
+   "EME",
+   "Arroar Derby"
+  ],
+  [
+   "PEA",
+   "NAA",
+   "Ortas Derby"
+  ],
+  [
+   "DEF",
+   "DAA",
+   "Ortas Derby"
+  ],
+  [
+   "NCL",
+   "IMD",
+   "Valal Derby"
+  ],
+  [
+   "MIC",
+   "SAF",
+   "Poza Derby"
+  ],
+  [
+   "AMB",
+   "DCB",
+   "Cabral Derby"
+  ],
+  [
+   "AIA",
+   "SAH",
+   "Wadi Majum–Jedat Derby"
+  ],
+  [
+   "WSL",
+   "NSA",
+   "Jedat Derby"
+  ],
+  [
+   "SHA",
+   "ORA",
+   "Majmaah Derby"
+  ],
+  [
+   "PRS",
+   "ESC",
+   "Qazud Derby"
+  ],
+  [
+   "SPB",
+   "ZOB",
+   "Shahr Yazvin Derby"
+  ],
+  [
+   "SAD",
+   "DUH",
+   "Bahaydah Derby"
+  ],
+  [
+   "GHA",
+   "ARC",
+   "Bahaydah Derby"
+  ],
+  [
+   "SHP",
+   "SHS",
+   "Meimen Derby"
   ]
  ],
  "nations": {
@@ -15919,7 +20464,10 @@
   "MYS": "Malaysia",
   "VIE": "Vietnam",
   "IDN": "Indonesia",
-  "PHI": "Philippines"
+  "PHI": "Philippines",
+  "TAN": "Tanzania",
+  "UAE": "United Arab Emirates",
+  "QAT": "Qatar"
  },
  "format": "touchline-names",
  "version": 1,

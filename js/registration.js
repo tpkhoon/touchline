@@ -81,6 +81,11 @@
     ZA1: { foreign: 7 },
     SA1: { foreign: 10 }, // ten foreign players on the squad list
     SA2: { foreign: 4 },
+    AE1: { foreign: 5, asian: 1 }, // six foreign places, one of them for an Asian player
+    QA1: { foreign: 4, asian: 1 },
+    IR1: { foreign: 4, asian: 1 },
+    CS1: { foreign: 5, asian: 1 },
+    TZ1: { foreign: 12 },
   };
   // In words: what a league's registration rules ask of a squad (for the new-career screen and the rules pages)
   // A league's rules as they stand: the table above, and what a world definition set for the league itself (rules.squad:

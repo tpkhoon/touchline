@@ -30,7 +30,7 @@ W.goUnemployed('test');
 
 const NEW = ['N2', 'AA', 'CT', 'NR', 'HC', 'SM'];
 // (the European knockout cups: the Holders' Cup takes each nation's cup winner, the Summer Cup eight clubs)
-const WANT = { HC: [12, 24], SM: [8, 8] };
+const WANT = { HC: [12, 32], SM: [8, 8] };
 const report = (label) => {
   for (const id of NEW) {
     const c = FM.S.comps[id];

@@ -13625,6 +13625,4290 @@
    "short": "MRG",
    "nick": "The Gallants",
    "founded": 2018
+  },
+  "ALD": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Ahly",
+    "ALD",
+    "Cairo",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    66,
+    "Cairo Stadium",
+    75000
+   ],
+   "short": "ALD",
+   "nick": "",
+   "founded": ""
+  },
+  "ZMK": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Zamalek",
+    "ZMK",
+    "Giza",
+    "#FFFFFF",
+    "#E30613",
+    "giant",
+    62,
+    "Giza Stadium",
+    45000
+   ],
+   "short": "ZMK",
+   "nick": "",
+   "founded": ""
+  },
+  "PYR": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Pyramids FC",
+    "PYR",
+    "Cairo",
+    "#6CACE4",
+    "#FFFFFF",
+    "oil",
+    58,
+    "Cairo Stadium",
+    30000
+   ],
+   "short": "PYR",
+   "nick": "",
+   "founded": ""
+  },
+  "MSR": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Masry",
+    "MSR",
+    "Port Said",
+    "#00843D",
+    "#000000",
+    "historic",
+    50,
+    "Port Said Stadium",
+    18000
+   ],
+   "short": "MSR",
+   "nick": "",
+   "founded": ""
+  },
+  "ISM": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Ismaily",
+    "ISM",
+    "Ismailia",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    49,
+    "Ismailia Stadium",
+    20000
+   ],
+   "short": "ISM",
+   "nick": "",
+   "founded": ""
+  },
+  "ITA": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Al Ittihad Alexandria",
+    "ITA",
+    "Alexandria",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    47,
+    "Alexandria Stadium",
+    25000
+   ],
+   "short": "ITA",
+   "nick": "",
+   "founded": ""
+  },
+  "FUT": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Future FC",
+    "FUT",
+    "Cairo",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    46,
+    "Cairo Stadium",
+    30000
+   ],
+   "short": "FUT",
+   "nick": "",
+   "founded": ""
+  },
+  "ZED": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Zed FC",
+    "ZED",
+    "Cairo",
+    "#001F5B",
+    "#FFD100",
+    "oil",
+    46,
+    "Cairo Stadium",
+    12000
+   ],
+   "short": "ZED",
+   "nick": "",
+   "founded": ""
+  },
+  "CEC": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Ceramica Cleopatra",
+    "CEC",
+    "Cairo",
+    "#0057B8",
+    "#FFD100",
+    "oil",
+    45,
+    "Cairo Stadium",
+    10000
+   ],
+   "short": "CEC",
+   "nick": "",
+   "founded": ""
+  },
+  "SMO": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Smouha",
+    "SMO",
+    "Alexandria",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    44,
+    "Alexandria Stadium",
+    13000
+   ],
+   "short": "SMO",
+   "nick": "",
+   "founded": ""
+  },
+  "MOA": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Modern Sport",
+    "MOA",
+    "Cairo",
+    "#E30613",
+    "#000000",
+    "oil",
+    44,
+    "Cairo Stadium",
+    14000
+   ],
+   "short": "MOA",
+   "nick": "",
+   "founded": ""
+  },
+  "ENP": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "ENPPI",
+    "ENP",
+    "Cairo",
+    "#001F5B",
+    "#FFFFFF",
+    "selling",
+    44,
+    "Cairo Stadium",
+    15000
+   ],
+   "short": "ENP",
+   "nick": "",
+   "founded": ""
+  },
+  "PHA": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Pharco FC",
+    "PHA",
+    "Alexandria",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    43,
+    "Alexandria Stadium",
+    10000
+   ],
+   "short": "PHA",
+   "nick": "",
+   "founded": ""
+  },
+  "PTJ": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Petrojet",
+    "PTJ",
+    "Suez",
+    "#FFD100",
+    "#00843D",
+    "selling",
+    43,
+    "Suez Stadium",
+    18000
+   ],
+   "short": "PTJ",
+   "nick": "",
+   "founded": ""
+  },
+  "GOU": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "El Gouna",
+    "GOU",
+    "Hurghada",
+    "#6CACE4",
+    "#FFFFFF",
+    "youth",
+    43,
+    "Hurghada Stadium",
+    8000
+   ],
+   "short": "GOU",
+   "nick": "",
+   "founded": ""
+  },
+  "NBE": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "National Bank of Egypt",
+    "NBE",
+    "Cairo",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Cairo Stadium",
+    8000
+   ],
+   "short": "NBE",
+   "nick": "",
+   "founded": ""
+  },
+  "TEG": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Tala'ea El Gaish",
+    "TEG",
+    "Cairo",
+    "#FFD100",
+    "#000000",
+    "historic",
+    42,
+    "Cairo Stadium",
+    10000
+   ],
+   "short": "TEG",
+   "nick": "",
+   "founded": ""
+  },
+  "HEH": {
+   "league": "EG1",
+   "nat": "EGY",
+   "row": [
+    "Haras El Hodoud",
+    "HEH",
+    "Alexandria",
+    "#0057B8",
+    "#000000",
+    "fan",
+    41,
+    "Alexandria Stadium",
+    9000
+   ],
+   "short": "HEH",
+   "nick": "",
+   "founded": ""
+  },
+  "ESA": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Espérance de Tunis",
+    "ESA",
+    "Tunis",
+    "#E30613",
+    "#FFD100",
+    "giant",
+    52,
+    "Tunis Stadium",
+    30000
+   ],
+   "short": "ESA",
+   "nick": "",
+   "founded": ""
+  },
+  "CAF": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Club Africain",
+    "CAF",
+    "Tunis",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    50,
+    "Tunis Stadium",
+    40000
+   ],
+   "short": "CAF",
+   "nick": "",
+   "founded": ""
+  },
+  "ETS": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Étoile du Sahel",
+    "ETS",
+    "Sousse",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    48,
+    "Sousse Stadium",
+    28000
+   ],
+   "short": "ETS",
+   "nick": "",
+   "founded": ""
+  },
+  "CSS": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "CS Sfaxien",
+    "CSS",
+    "Sfax",
+    "#000000",
+    "#FFFFFF",
+    "historic",
+    46,
+    "Sfax Stadium",
+    22000
+   ],
+   "short": "CSS",
+   "nick": "",
+   "founded": ""
+  },
+  "USM": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "US Monastir",
+    "USM",
+    "Monastir",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Monastir Stadium",
+    12000
+   ],
+   "short": "USM",
+   "nick": "",
+   "founded": ""
+  },
+  "STA": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Stade Tunisien",
+    "STA",
+    "Tunis",
+    "#E30613",
+    "#00843D",
+    "historic",
+    41,
+    "Tunis Stadium",
+    18000
+   ],
+   "short": "STA",
+   "nick": "",
+   "founded": ""
+  },
+  "JSK": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "JS Kairouanaise",
+    "JSK",
+    "Kairouan",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Kairouan Stadium",
+    12000
+   ],
+   "short": "JSK",
+   "nick": "",
+   "founded": ""
+  },
+  "ASA": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "AS Marsa",
+    "ASA",
+    "La Marsa",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    39,
+    "La Marsa Stadium",
+    6000
+   ],
+   "short": "ASA",
+   "nick": "",
+   "founded": ""
+  },
+  "UBG": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "US Ben Guerdane",
+    "UBG",
+    "Ben Guerdane",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    39,
+    "Ben Guerdane Stadium",
+    7000
+   ],
+   "short": "UBG",
+   "nick": "",
+   "founded": ""
+  },
+  "CAB": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "CA Bizertin",
+    "CAB",
+    "Bizerte",
+    "#00843D",
+    "#000000",
+    "historic",
+    39,
+    "Bizerte Stadium",
+    15000
+   ],
+   "short": "CAB",
+   "nick": "",
+   "founded": ""
+  },
+  "ASG": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "AS Gabès",
+    "ASG",
+    "Gabès",
+    "#0057B8",
+    "#FFD100",
+    "fan",
+    38,
+    "Gabès Stadium",
+    8000
+   ],
+   "short": "ASG",
+   "nick": "",
+   "founded": ""
+  },
+  "ESM": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "ES Métlaoui",
+    "ESM",
+    "Métlaoui",
+    "#E30613",
+    "#000000",
+    "fan",
+    38,
+    "Métlaoui Stadium",
+    6000
+   ],
+   "short": "ESM",
+   "nick": "",
+   "founded": ""
+  },
+  "OBE": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Olympique Béja",
+    "OBE",
+    "Béja",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Béja Stadium",
+    10000
+   ],
+   "short": "OBE",
+   "nick": "",
+   "founded": ""
+  },
+  "SGB": {
+   "league": "TN1",
+   "nat": "TUN",
+   "row": [
+    "Stade Gabésien",
+    "SGB",
+    "Gabès",
+    "#E30613",
+    "#00843D",
+    "fan",
+    37,
+    "Gabès Stadium",
+    8000
+   ],
+   "short": "SGB",
+   "nick": "",
+   "founded": ""
+  },
+  "YAN": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Young Africans",
+    "YAN",
+    "Dar es Salaam",
+    "#00843D",
+    "#FFD100",
+    "giant",
+    44,
+    "Dar es Salaam Stadium",
+    60000
+   ],
+   "short": "YAN",
+   "nick": "",
+   "founded": ""
+  },
+  "SIM": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Simba SC",
+    "SIM",
+    "Dar es Salaam",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    44,
+    "Dar es Salaam Stadium",
+    60000
+   ],
+   "short": "SIM",
+   "nick": "",
+   "founded": ""
+  },
+  "AZB": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Azam FC",
+    "AZB",
+    "Dar es Salaam",
+    "#6CACE4",
+    "#FFFFFF",
+    "oil",
+    40,
+    "Dar es Salaam Stadium",
+    15000
+   ],
+   "short": "AZB",
+   "nick": "",
+   "founded": ""
+  },
+  "SBS": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Singida Big Stars",
+    "SBS",
+    "Singida",
+    "#FFD100",
+    "#0057B8",
+    "oil",
+    38,
+    "Singida Stadium",
+    10000
+   ],
+   "short": "SBS",
+   "nick": "",
+   "founded": ""
+  },
+  "NAM": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Namungo FC",
+    "NAM",
+    "Lindi",
+    "#001F5B",
+    "#FFFFFF",
+    "fan",
+    35,
+    "Lindi Stadium",
+    6000
+   ],
+   "short": "NAM",
+   "nick": "",
+   "founded": ""
+  },
+  "COA": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Coastal Union",
+    "COA",
+    "Tanga",
+    "#0057B8",
+    "#FFD100",
+    "historic",
+    35,
+    "Tanga Stadium",
+    10000
+   ],
+   "short": "COA",
+   "nick": "",
+   "founded": ""
+  },
+  "MAA": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Mashujaa FC",
+    "MAA",
+    "Kigoma",
+    "#E30613",
+    "#00843D",
+    "fan",
+    34,
+    "Kigoma Stadium",
+    5000
+   ],
+   "short": "MAA",
+   "nick": "",
+   "founded": ""
+  },
+  "KAG": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Kagera Sugar",
+    "KAG",
+    "Bukoba",
+    "#FFD100",
+    "#000000",
+    "selling",
+    34,
+    "Bukoba Stadium",
+    8000
+   ],
+   "short": "KAG",
+   "nick": "",
+   "founded": ""
+  },
+  "TAP": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Tanzania Prisons",
+    "TAP",
+    "Mbeya",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    34,
+    "Mbeya Stadium",
+    8000
+   ],
+   "short": "TAP",
+   "nick": "",
+   "founded": ""
+  },
+  "MTI": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Mtibwa Sugar",
+    "MTI",
+    "Morogoro",
+    "#00843D",
+    "#FFFFFF",
+    "selling",
+    34,
+    "Morogoro Stadium",
+    10000
+   ],
+   "short": "MTI",
+   "nick": "",
+   "founded": ""
+  },
+  "KMC": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "KMC FC",
+    "KMC",
+    "Dar es Salaam",
+    "#6CACE4",
+    "#FFFFFF",
+    "fan",
+    33,
+    "Dar es Salaam Stadium",
+    7000
+   ],
+   "short": "KMC",
+   "nick": "",
+   "founded": ""
+  },
+  "DOJ": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Dodoma Jiji",
+    "DOJ",
+    "Dodoma",
+    "#00843D",
+    "#FFD100",
+    "fan",
+    33,
+    "Dodoma Stadium",
+    8000
+   ],
+   "short": "DOJ",
+   "nick": "",
+   "founded": ""
+  },
+  "PAM": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Pamba Jiji",
+    "PAM",
+    "Mwanza",
+    "#E30613",
+    "#000000",
+    "historic",
+    33,
+    "Mwanza Stadium",
+    9000
+   ],
+   "short": "PAM",
+   "nick": "",
+   "founded": ""
+  },
+  "JKT": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "JKT Tanzania",
+    "JKT",
+    "Dar es Salaam",
+    "#00843D",
+    "#000000",
+    "fan",
+    33,
+    "Dar es Salaam Stadium",
+    6000
+   ],
+   "short": "JKT",
+   "nick": "",
+   "founded": ""
+  },
+  "TAB": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Tabora United",
+    "TAB",
+    "Tabora",
+    "#0057B8",
+    "#E30613",
+    "fan",
+    32,
+    "Tabora Stadium",
+    7000
+   ],
+   "short": "TAB",
+   "nick": "",
+   "founded": ""
+  },
+  "GEI": {
+   "league": "TZ1",
+   "nat": "TAN",
+   "row": [
+    "Geita Gold",
+    "GEI",
+    "Geita",
+    "#FFD100",
+    "#0057B8",
+    "selling",
+    32,
+    "Geita Stadium",
+    6000
+   ],
+   "short": "GEI",
+   "nick": "",
+   "founded": ""
+  },
+  "JSA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "JS Kabylie",
+    "JSA",
+    "Tizi Ouzou",
+    "#FFD100",
+    "#00843D",
+    "giant",
+    50,
+    "Tizi Ouzou Stadium",
+    18000
+   ],
+   "short": "JSA",
+   "nick": "",
+   "founded": ""
+  },
+  "MCA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "MC Alger",
+    "MCA",
+    "Algiers",
+    "#E30613",
+    "#00843D",
+    "giant",
+    49,
+    "Algiers Stadium",
+    40000
+   ],
+   "short": "MCA",
+   "nick": "",
+   "founded": ""
+  },
+  "CRB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "CR Belouizdad",
+    "CRB",
+    "Algiers",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    48,
+    "Algiers Stadium",
+    40000
+   ],
+   "short": "CRB",
+   "nick": "",
+   "founded": ""
+  },
+  "USA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "USM Alger",
+    "USA",
+    "Algiers",
+    "#E30613",
+    "#000000",
+    "historic",
+    47,
+    "Algiers Stadium",
+    50000
+   ],
+   "short": "USA",
+   "nick": "",
+   "founded": ""
+  },
+  "ESS": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "ES Sétif",
+    "ESS",
+    "Sétif",
+    "#000000",
+    "#FFFFFF",
+    "historic",
+    46,
+    "Sétif Stadium",
+    30000
+   ],
+   "short": "ESS",
+   "nick": "",
+   "founded": ""
+  },
+  "JSB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "JS Saoura",
+    "JSB",
+    "Béchar",
+    "#00843D",
+    "#E30613",
+    "selling",
+    41,
+    "Béchar Stadium",
+    20000
+   ],
+   "short": "JSB",
+   "nick": "",
+   "founded": ""
+  },
+  "PAA": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Paradou AC",
+    "PAA",
+    "Algiers",
+    "#FFFFFF",
+    "#0057B8",
+    "youth",
+    41,
+    "Algiers Stadium",
+    8000
+   ],
+   "short": "PAA",
+   "nick": "",
+   "founded": ""
+  },
+  "MCO": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "MC Oran",
+    "MCO",
+    "Oran",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Oran Stadium",
+    40000
+   ],
+   "short": "MCO",
+   "nick": "",
+   "founded": ""
+  },
+  "CSC": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "CS Constantine",
+    "CSC",
+    "Constantine",
+    "#00843D",
+    "#000000",
+    "historic",
+    40,
+    "Constantine Stadium",
+    30000
+   ],
+   "short": "CSC",
+   "nick": "",
+   "founded": ""
+  },
+  "UKH": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "USM Khenchela",
+    "UKH",
+    "Khenchela",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    39,
+    "Khenchela Stadium",
+    10000
+   ],
+   "short": "UKH",
+   "nick": "",
+   "founded": ""
+  },
+  "NCM": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "NC Magra",
+    "NCM",
+    "M'Sila",
+    "#00843D",
+    "#FFD100",
+    "fan",
+    38,
+    "M'Sila Stadium",
+    8000
+   ],
+   "short": "NCM",
+   "nick": "",
+   "founded": ""
+  },
+  "MEB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "MC El Bayadh",
+    "MEB",
+    "El Bayadh",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "El Bayadh Stadium",
+    8000
+   ],
+   "short": "MEB",
+   "nick": "",
+   "founded": ""
+  },
+  "ESB": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "ES Ben Aknoun",
+    "ESB",
+    "Algiers",
+    "#00843D",
+    "#FFD100",
+    "fan",
+    38,
+    "Algiers Stadium",
+    6000
+   ],
+   "short": "ESB",
+   "nick": "",
+   "founded": ""
+  },
+  "USC": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "US Biskra",
+    "USC",
+    "Biskra",
+    "#00843D",
+    "#E30613",
+    "fan",
+    38,
+    "Biskra Stadium",
+    12000
+   ],
+   "short": "USC",
+   "nick": "",
+   "founded": ""
+  },
+  "OAK": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "Olympique Akbou",
+    "OAK",
+    "Akbou",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Akbou Stadium",
+    7000
+   ],
+   "short": "OAK",
+   "nick": "",
+   "founded": ""
+  },
+  "ASO": {
+   "league": "DZ1",
+   "nat": "ALG",
+   "row": [
+    "ASO Chlef",
+    "ASO",
+    "Chlef",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Chlef Stadium",
+    20000
+   ],
+   "short": "ASO",
+   "nick": "",
+   "founded": ""
+  },
+  "APO": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "APOEL",
+    "APO",
+    "Nicosia",
+    "#FFD100",
+    "#0057B8",
+    "giant",
+    52,
+    "Nicosia Stadium",
+    22000
+   ],
+   "short": "APO",
+   "nick": "",
+   "founded": ""
+  },
+  "OMO": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Omonia",
+    "OMO",
+    "Nicosia",
+    "#00843D",
+    "#FFFFFF",
+    "giant",
+    51,
+    "Nicosia Stadium",
+    22000
+   ],
+   "short": "OMO",
+   "nick": "",
+   "founded": ""
+  },
+  "ANO": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Anorthosis",
+    "ANO",
+    "Larnaca",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    49,
+    "Larnaca Stadium",
+    10000
+   ],
+   "short": "ANO",
+   "nick": "",
+   "founded": ""
+  },
+  "AEA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "AEK Larnaca",
+    "AEA",
+    "Larnaca",
+    "#FFD100",
+    "#000000",
+    "historic",
+    46,
+    "Larnaca Stadium",
+    8000
+   ],
+   "short": "AEA",
+   "nick": "",
+   "founded": ""
+  },
+  "AEB": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "AEL Limassol",
+    "AEB",
+    "Limassol",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    44,
+    "Limassol Stadium",
+    13000
+   ],
+   "short": "AEB",
+   "nick": "",
+   "founded": ""
+  },
+  "APL": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Apollon Limassol",
+    "APL",
+    "Limassol",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Limassol Stadium",
+    10000
+   ],
+   "short": "APL",
+   "nick": "",
+   "founded": ""
+  },
+  "ARA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Aris Limassol",
+    "ARA",
+    "Limassol",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    40,
+    "Limassol Stadium",
+    8000
+   ],
+   "short": "ARA",
+   "nick": "",
+   "founded": ""
+  },
+  "PAF": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Pafos FC",
+    "PAF",
+    "Paphos",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    43,
+    "Paphos Stadium",
+    8000
+   ],
+   "short": "PAF",
+   "nick": "",
+   "founded": ""
+  },
+  "ETH": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Ethnikos Achna",
+    "ETH",
+    "Achna",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Achna Stadium",
+    5000
+   ],
+   "short": "ETH",
+   "nick": "",
+   "founded": ""
+  },
+  "DOX": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Doxa Katokopias",
+    "DOX",
+    "Katokopia",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    36,
+    "Katokopia Stadium",
+    4000
+   ],
+   "short": "DOX",
+   "nick": "",
+   "founded": ""
+  },
+  "OLN": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Olympiakos Nicosia",
+    "OLN",
+    "Nicosia",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    37,
+    "Nicosia Stadium",
+    6000
+   ],
+   "short": "OLN",
+   "nick": "",
+   "founded": ""
+  },
+  "NEA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Nea Salamina",
+    "NEA",
+    "Famagusta",
+    "#FFFFFF",
+    "#0057B8",
+    "fallen",
+    37,
+    "Famagusta Stadium",
+    5500
+   ],
+   "short": "NEA",
+   "nick": "",
+   "founded": ""
+  },
+  "KAA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Karmiotissa",
+    "KAA",
+    "Polemidia",
+    "#0057B8",
+    "#FFD100",
+    "youth",
+    36,
+    "Polemidia Stadium",
+    5000
+   ],
+   "short": "KAA",
+   "nick": "",
+   "founded": ""
+  },
+  "ENA": {
+   "league": "CY1",
+   "nat": "CYP",
+   "row": [
+    "Enosis Neon Paralimni",
+    "ENA",
+    "Paralimni",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    36,
+    "Paralimni Stadium",
+    5000
+   ],
+   "short": "ENA",
+   "nick": "",
+   "founded": ""
+  },
+  "DIN": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Dinamo Zagreb",
+    "DIN",
+    "Zagreb",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Zagreb Stadium",
+    35000
+   ],
+   "short": "DIN",
+   "nick": "",
+   "founded": ""
+  },
+  "HAJ": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "Hajduk Split",
+    "HAJ",
+    "Split",
+    "#FFFFFF",
+    "#0057B8",
+    "giant",
+    55,
+    "Split Stadium",
+    34000
+   ],
+   "short": "HAJ",
+   "nick": "",
+   "founded": ""
+  },
+  "RIJ": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "HNK Rijeka",
+    "RIJ",
+    "Rijeka",
+    "#FFFFFF",
+    "#0057B8",
+    "historic",
+    52,
+    "Rijeka Stadium",
+    8000
+   ],
+   "short": "RIJ",
+   "nick": "",
+   "founded": ""
+  },
+  "OSI": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "NK Osijek",
+    "OSI",
+    "Osijek",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    48,
+    "Osijek Stadium",
+    13000
+   ],
+   "short": "OSI",
+   "nick": "",
+   "founded": ""
+  },
+  "LOK": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "NK Lokomotiva",
+    "LOK",
+    "Zagreb",
+    "#E30613",
+    "#0057B8",
+    "youth",
+    46,
+    "Zagreb Stadium",
+    5000
+   ],
+   "short": "LOK",
+   "nick": "",
+   "founded": ""
+  },
+  "IST": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "NK Istra 1961",
+    "IST",
+    "Pula",
+    "#00843D",
+    "#FFD100",
+    "selling",
+    44,
+    "Pula Stadium",
+    3500
+   ],
+   "short": "IST",
+   "nick": "",
+   "founded": ""
+  },
+  "VAR": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "NK Varaždin",
+    "VAR",
+    "Varaždin",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    43,
+    "Varaždin Stadium",
+    6000
+   ],
+   "short": "VAR",
+   "nick": "",
+   "founded": ""
+  },
+  "GOA": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "HNK Gorica",
+    "GOA",
+    "Velika Gorica",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    43,
+    "Velika Gorica Stadium",
+    5000
+   ],
+   "short": "GOA",
+   "nick": "",
+   "founded": ""
+  },
+  "SLB": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "NK Slaven Belupo",
+    "SLB",
+    "Koprivnica",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Koprivnica Stadium",
+    4000
+   ],
+   "short": "SLB",
+   "nick": "",
+   "founded": ""
+  },
+  "SIB": {
+   "league": "HR1",
+   "nat": "CRO",
+   "row": [
+    "HNK Šibenik",
+    "SIB",
+    "Šibenik",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    42,
+    "Šibenik Stadium",
+    8000
+   ],
+   "short": "SIB",
+   "nick": "",
+   "founded": ""
+  },
+  "MAB": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Malmö FF",
+    "MAB",
+    "Malmö",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    62,
+    "Malmö Stadium",
+    22500
+   ],
+   "short": "MAB",
+   "nick": "",
+   "founded": ""
+  },
+  "AIK": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "AIK",
+    "AIK",
+    "Solna",
+    "#000000",
+    "#FFD100",
+    "giant",
+    57,
+    "Solna Stadium",
+    50000
+   ],
+   "short": "AIK",
+   "nick": "",
+   "founded": ""
+  },
+  "DIF": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Djurgårdens IF",
+    "DIF",
+    "Stockholm",
+    "#0057B8",
+    "#E30613",
+    "giant",
+    56,
+    "Stockholm Stadium",
+    30000
+   ],
+   "short": "DIF",
+   "nick": "",
+   "founded": ""
+  },
+  "HAA": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Hammarby IF",
+    "HAA",
+    "Stockholm",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    55,
+    "Stockholm Stadium",
+    33000
+   ],
+   "short": "HAA",
+   "nick": "",
+   "founded": ""
+  },
+  "IFK": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "IFK Göteborg",
+    "IFK",
+    "Gothenburg",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    53,
+    "Gothenburg Stadium",
+    18000
+   ],
+   "short": "IFK",
+   "nick": "",
+   "founded": ""
+  },
+  "HAB": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "BK Häcken",
+    "HAB",
+    "Gothenburg",
+    "#FFD100",
+    "#000000",
+    "selling",
+    52,
+    "Gothenburg Stadium",
+    6500
+   ],
+   "short": "HAB",
+   "nick": "",
+   "founded": ""
+  },
+  "ELF": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "IF Elfsborg",
+    "ELF",
+    "Borås",
+    "#FFD100",
+    "#000000",
+    "historic",
+    50,
+    "Borås Stadium",
+    16000
+   ],
+   "short": "ELF",
+   "nick": "",
+   "founded": ""
+  },
+  "NOR": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "IFK Norrköping",
+    "NOR",
+    "Norrköping",
+    "#FFFFFF",
+    "#0057B8",
+    "historic",
+    50,
+    "Norrköping Stadium",
+    17000
+   ],
+   "short": "NOR",
+   "nick": "",
+   "founded": ""
+  },
+  "KAL": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Kalmar FF",
+    "KAL",
+    "Kalmar",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    46,
+    "Kalmar Stadium",
+    12000
+   ],
+   "short": "KAL",
+   "nick": "",
+   "founded": ""
+  },
+  "SIR": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "IK Sirius",
+    "SIR",
+    "Uppsala",
+    "#0057B8",
+    "#FFFFFF",
+    "youth",
+    46,
+    "Uppsala Stadium",
+    9000
+   ],
+   "short": "SIR",
+   "nick": "",
+   "founded": ""
+  },
+  "MJA": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Mjällby AIF",
+    "MJA",
+    "Hällevik",
+    "#FFD100",
+    "#000000",
+    "fan",
+    45,
+    "Hällevik Stadium",
+    7000
+   ],
+   "short": "MJA",
+   "nick": "",
+   "founded": ""
+  },
+  "BRA": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "IF Brommapojkarna",
+    "BRA",
+    "Stockholm",
+    "#E30613",
+    "#000000",
+    "youth",
+    44,
+    "Stockholm Stadium",
+    8000
+   ],
+   "short": "BRA",
+   "nick": "",
+   "founded": ""
+  },
+  "HAL": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Halmstads BK",
+    "HAL",
+    "Halmstad",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    43,
+    "Halmstad Stadium",
+    15000
+   ],
+   "short": "HAL",
+   "nick": "",
+   "founded": ""
+  },
+  "DEG": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Degerfors IF",
+    "DEG",
+    "Degerfors",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Degerfors Stadium",
+    7000
+   ],
+   "short": "DEG",
+   "nick": "",
+   "founded": ""
+  },
+  "VBO": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "Varbergs BoIS",
+    "VBO",
+    "Varberg",
+    "#00843D",
+    "#000000",
+    "fan",
+    41,
+    "Varberg Stadium",
+    4500
+   ],
+   "short": "VBO",
+   "nick": "",
+   "founded": ""
+  },
+  "GAI": {
+   "league": "SE1",
+   "nat": "SWE",
+   "row": [
+    "GAIS",
+    "GAI",
+    "Gothenburg",
+    "#00843D",
+    "#000000",
+    "fallen",
+    42,
+    "Gothenburg Stadium",
+    13000
+   ],
+   "short": "GAI",
+   "nick": "",
+   "founded": ""
+  },
+  "FCA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "FCSB",
+    "FCA",
+    "Bucharest",
+    "#E30613",
+    "#0057B8",
+    "giant",
+    58,
+    "Bucharest Stadium",
+    55000
+   ],
+   "short": "FCA",
+   "nick": "",
+   "founded": ""
+  },
+  "CFR": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "CFR Cluj",
+    "CFR",
+    "Cluj-Napoca",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Cluj-Napoca Stadium",
+    23000
+   ],
+   "short": "CFR",
+   "nick": "",
+   "founded": ""
+  },
+  "CRC": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Universitatea Craiova",
+    "CRC",
+    "Craiova",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    53,
+    "Craiova Stadium",
+    30000
+   ],
+   "short": "CRC",
+   "nick": "",
+   "founded": ""
+  },
+  "RAA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Rapid București",
+    "RAA",
+    "Bucharest",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    52,
+    "Bucharest Stadium",
+    14000
+   ],
+   "short": "RAA",
+   "nick": "",
+   "founded": ""
+  },
+  "DIB": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Dinamo București",
+    "DIB",
+    "Bucharest",
+    "#E30613",
+    "#FFFFFF",
+    "fallen",
+    50,
+    "Bucharest Stadium",
+    15000
+   ],
+   "short": "DIB",
+   "nick": "",
+   "founded": ""
+  },
+  "UTA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "UTA Arad",
+    "UTA",
+    "Arad",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    47,
+    "Arad Stadium",
+    12000
+   ],
+   "short": "UTA",
+   "nick": "",
+   "founded": ""
+  },
+  "FAA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Farul Constanța",
+    "FAA",
+    "Constanța",
+    "#0057B8",
+    "#FFFFFF",
+    "oil",
+    48,
+    "Constanța Stadium",
+    15000
+   ],
+   "short": "FAA",
+   "nick": "",
+   "founded": ""
+  },
+  "SEP": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Sepsi OSK",
+    "SEP",
+    "Sfântu Gheorghe",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    45,
+    "Sfântu Gheorghe Stadium",
+    8000
+   ],
+   "short": "SEP",
+   "nick": "",
+   "founded": ""
+  },
+  "PET": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Petrolul Ploiești",
+    "PET",
+    "Ploiești",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    45,
+    "Ploiești Stadium",
+    15000
+   ],
+   "short": "PET",
+   "nick": "",
+   "founded": ""
+  },
+  "HEB": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Hermannstadt",
+    "HEB",
+    "Sibiu",
+    "#E30613",
+    "#FFFFFF",
+    "selling",
+    43,
+    "Sibiu Stadium",
+    4500
+   ],
+   "short": "HEB",
+   "nick": "",
+   "founded": ""
+  },
+  "OTE": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Oțelul Galați",
+    "OTE",
+    "Galați",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    42,
+    "Galați Stadium",
+    13000
+   ],
+   "short": "OTE",
+   "nick": "",
+   "founded": ""
+  },
+  "BOA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "FC Botoșani",
+    "BOA",
+    "Botoșani",
+    "#0057B8",
+    "#FFD100",
+    "fan",
+    42,
+    "Botoșani Stadium",
+    8000
+   ],
+   "short": "BOA",
+   "nick": "",
+   "founded": ""
+  },
+  "VOA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "FC Voluntari",
+    "VOA",
+    "Voluntari",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Voluntari Stadium",
+    2500
+   ],
+   "short": "VOA",
+   "nick": "",
+   "founded": ""
+  },
+  "UNA": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Unirea Slobozia",
+    "UNA",
+    "Slobozia",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Slobozia Stadium",
+    5000
+   ],
+   "short": "UNA",
+   "nick": "",
+   "founded": ""
+  },
+  "CSI": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Csíkszereda",
+    "CSI",
+    "Miercurea Ciuc",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Miercurea Ciuc Stadium",
+    3000
+   ],
+   "short": "CSI",
+   "nick": "",
+   "founded": ""
+  },
+  "IAS": {
+   "league": "RO1",
+   "nat": "ROU",
+   "row": [
+    "Poli Iași",
+    "IAS",
+    "Iași",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Iași Stadium",
+    11000
+   ],
+   "short": "IAS",
+   "nick": "",
+   "founded": ""
+  },
+  "LDU": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "LDU Quito",
+    "LDU",
+    "Quito",
+    "#FFFFFF",
+    "#0057B8",
+    "giant",
+    58,
+    "Quito Stadium",
+    41000
+   ],
+   "short": "LDU",
+   "nick": "",
+   "founded": ""
+  },
+  "BSA": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Barcelona SC",
+    "BSA",
+    "Guayaquil",
+    "#FFD100",
+    "#000000",
+    "giant",
+    57,
+    "Guayaquil Stadium",
+    57000
+   ],
+   "short": "BSA",
+   "nick": "",
+   "founded": ""
+  },
+  "EME": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Emelec",
+    "EME",
+    "Guayaquil",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    55,
+    "Guayaquil Stadium",
+    40000
+   ],
+   "short": "EME",
+   "nick": "",
+   "founded": ""
+  },
+  "IDV": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Independiente del Valle",
+    "IDV",
+    "Sangolquí",
+    "#000000",
+    "#0057B8",
+    "youth",
+    56,
+    "Sangolquí Stadium",
+    12000
+   ],
+   "short": "IDV",
+   "nick": "",
+   "founded": ""
+  },
+  "AUA": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Aucas",
+    "AUA",
+    "Quito",
+    "#FFD100",
+    "#E30613",
+    "historic",
+    47,
+    "Quito Stadium",
+    20000
+   ],
+   "short": "AUA",
+   "nick": "",
+   "founded": ""
+  },
+  "DCA": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Deportivo Cuenca",
+    "DCA",
+    "Cuenca",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    45,
+    "Cuenca Stadium",
+    16000
+   ],
+   "short": "DCA",
+   "nick": "",
+   "founded": ""
+  },
+  "ENB": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "El Nacional",
+    "ENB",
+    "Quito",
+    "#E30613",
+    "#FFFFFF",
+    "fallen",
+    45,
+    "Quito Stadium",
+    35000
+   ],
+   "short": "ENB",
+   "nick": "",
+   "founded": ""
+  },
+  "DEL": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Delfín SC",
+    "DEL",
+    "Manta",
+    "#FFD100",
+    "#0057B8",
+    "selling",
+    44,
+    "Manta Stadium",
+    20000
+   ],
+   "short": "DEL",
+   "nick": "",
+   "founded": ""
+  },
+  "ORE": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Orense SC",
+    "ORE",
+    "Machala",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    42,
+    "Machala Stadium",
+    16000
+   ],
+   "short": "ORE",
+   "nick": "",
+   "founded": ""
+  },
+  "TEU": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Técnico Universitario",
+    "TEU",
+    "Ambato",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Ambato Stadium",
+    18000
+   ],
+   "short": "TEU",
+   "nick": "",
+   "founded": ""
+  },
+  "MAE": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Macará",
+    "MAE",
+    "Ambato",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    41,
+    "Ambato Stadium",
+    18000
+   ],
+   "short": "MAE",
+   "nick": "",
+   "founded": ""
+  },
+  "MUS": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Mushuc Runa",
+    "MUS",
+    "Ambato",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    40,
+    "Ambato Stadium",
+    8000
+   ],
+   "short": "MUS",
+   "nick": "",
+   "founded": ""
+  },
+  "LIB": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Libertad FC",
+    "LIB",
+    "Loja",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    39,
+    "Loja Stadium",
+    8000
+   ],
+   "short": "LIB",
+   "nick": "",
+   "founded": ""
+  },
+  "UCE": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Universidad Católica del Ecuador",
+    "UCE",
+    "Quito",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Quito Stadium",
+    40000
+   ],
+   "short": "UCE",
+   "nick": "",
+   "founded": ""
+  },
+  "CUM": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Cumbayá FC",
+    "CUM",
+    "Quito",
+    "#E30613",
+    "#FFFFFF",
+    "youth",
+    38,
+    "Quito Stadium",
+    6000
+   ],
+   "short": "CUM",
+   "nick": "",
+   "founded": ""
+  },
+  "IMB": {
+   "league": "EC1",
+   "nat": "ECU",
+   "row": [
+    "Imbabura SC",
+    "IMB",
+    "Ibarra",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Ibarra Stadium",
+    10000
+   ],
+   "short": "IMB",
+   "nick": "",
+   "founded": ""
+  },
+  "PEA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Peñarol",
+    "PEA",
+    "Montevideo",
+    "#FFD100",
+    "#000000",
+    "giant",
+    58,
+    "Montevideo Stadium",
+    40000
+   ],
+   "short": "PEA",
+   "nick": "",
+   "founded": ""
+  },
+  "NAA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Nacional",
+    "NAA",
+    "Montevideo",
+    "#FFFFFF",
+    "#0057B8",
+    "giant",
+    58,
+    "Montevideo Stadium",
+    35000
+   ],
+   "short": "NAA",
+   "nick": "",
+   "founded": ""
+  },
+  "DEF": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Defensor Sporting",
+    "DEF",
+    "Montevideo",
+    "#6A1B9A",
+    "#FFFFFF",
+    "historic",
+    47,
+    "Montevideo Stadium",
+    18000
+   ],
+   "short": "DEF",
+   "nick": "",
+   "founded": ""
+  },
+  "DAA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Danubio",
+    "DAA",
+    "Montevideo",
+    "#FFFFFF",
+    "#000000",
+    "youth",
+    46,
+    "Montevideo Stadium",
+    18000
+   ],
+   "short": "DAA",
+   "nick": "",
+   "founded": ""
+  },
+  "WAN": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Montevideo Wanderers",
+    "WAN",
+    "Montevideo",
+    "#FFFFFF",
+    "#000000",
+    "historic",
+    44,
+    "Montevideo Stadium",
+    8000
+   ],
+   "short": "WAN",
+   "nick": "",
+   "founded": ""
+  },
+  "LVM": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Liverpool Montevideo",
+    "LVM",
+    "Montevideo",
+    "#000000",
+    "#0057B8",
+    "historic",
+    43,
+    "Montevideo Stadium",
+    9000
+   ],
+   "short": "LVM",
+   "nick": "",
+   "founded": ""
+  },
+  "RPM": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "River Plate Montevideo",
+    "RPM",
+    "Montevideo",
+    "#FFFFFF",
+    "#E30613",
+    "historic",
+    42,
+    "Montevideo Stadium",
+    12000
+   ],
+   "short": "RPM",
+   "nick": "",
+   "founded": ""
+  },
+  "CLA": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Cerro Largo",
+    "CLA",
+    "Melo",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Melo Stadium",
+    9000
+   ],
+   "short": "CLA",
+   "nick": "",
+   "founded": ""
+  },
+  "PRO": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Progreso",
+    "PRO",
+    "Montevideo",
+    "#0057B8",
+    "#E30613",
+    "fan",
+    40,
+    "Montevideo Stadium",
+    6000
+   ],
+   "short": "PRO",
+   "nick": "",
+   "founded": ""
+  },
+  "RAB": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Racing Montevideo",
+    "RAB",
+    "Montevideo",
+    "#FFFFFF",
+    "#0057B8",
+    "historic",
+    40,
+    "Montevideo Stadium",
+    6000
+   ],
+   "short": "RAB",
+   "nick": "",
+   "founded": ""
+  },
+  "PLC": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Plaza Colonia",
+    "PLC",
+    "Colonia",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    40,
+    "Colonia Stadium",
+    7000
+   ],
+   "short": "PLC",
+   "nick": "",
+   "founded": ""
+  },
+  "MIB": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Miramar Misiones",
+    "MIB",
+    "Montevideo",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    38,
+    "Montevideo Stadium",
+    5000
+   ],
+   "short": "MIB",
+   "nick": "",
+   "founded": ""
+  },
+  "CED": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Cerro",
+    "CED",
+    "Montevideo",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    40,
+    "Montevideo Stadium",
+    10000
+   ],
+   "short": "CED",
+   "nick": "",
+   "founded": ""
+  },
+  "BOS": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Boston River",
+    "BOS",
+    "Florida",
+    "#00843D",
+    "#FFFFFF",
+    "selling",
+    39,
+    "Florida Stadium",
+    5000
+   ],
+   "short": "BOS",
+   "nick": "",
+   "founded": ""
+  },
+  "MCT": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Montevideo City Torque",
+    "MCT",
+    "Montevideo",
+    "#6CACE4",
+    "#FFFFFF",
+    "oil",
+    42,
+    "Montevideo Stadium",
+    6000
+   ],
+   "short": "MCT",
+   "nick": "",
+   "founded": ""
+  },
+  "ALE": {
+   "league": "UY1",
+   "nat": "URU",
+   "row": [
+    "Albion FC",
+    "ALE",
+    "Montevideo",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Montevideo Stadium",
+    4000
+   ],
+   "short": "ALE",
+   "nick": "",
+   "founded": ""
+  },
+  "NCL": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Atlético Nacional",
+    "NCL",
+    "Medellín",
+    "#00843D",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Medellín Stadium",
+    45000
+   ],
+   "short": "NCL",
+   "nick": "",
+   "founded": ""
+  },
+  "MIC": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Millonarios",
+    "MIC",
+    "Bogotá",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    58,
+    "Bogotá Stadium",
+    36000
+   ],
+   "short": "MIC",
+   "nick": "",
+   "founded": ""
+  },
+  "AMB": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "América de Cali",
+    "AMB",
+    "Cali",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    54,
+    "Cali Stadium",
+    42000
+   ],
+   "short": "AMB",
+   "nick": "",
+   "founded": ""
+  },
+  "JUN": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Junior",
+    "JUN",
+    "Barranquilla",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    55,
+    "Barranquilla Stadium",
+    46000
+   ],
+   "short": "JUN",
+   "nick": "",
+   "founded": ""
+  },
+  "SAF": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Independiente Santa Fe",
+    "SAF",
+    "Bogotá",
+    "#E30613",
+    "#FFFFFF",
+    "historic",
+    52,
+    "Bogotá Stadium",
+    36000
+   ],
+   "short": "SAF",
+   "nick": "",
+   "founded": ""
+  },
+  "DCB": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportivo Cali",
+    "DCB",
+    "Cali",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    50,
+    "Cali Stadium",
+    42000
+   ],
+   "short": "DCB",
+   "nick": "",
+   "founded": ""
+  },
+  "ONC": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Once Caldas",
+    "ONC",
+    "Manizales",
+    "#FFFFFF",
+    "#000000",
+    "historic",
+    47,
+    "Manizales Stadium",
+    30000
+   ],
+   "short": "ONC",
+   "nick": "",
+   "founded": ""
+  },
+  "TOA": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportes Tolima",
+    "TOA",
+    "Ibagué",
+    "#E30613",
+    "#FFD100",
+    "historic",
+    48,
+    "Ibagué Stadium",
+    28000
+   ],
+   "short": "TOA",
+   "nick": "",
+   "founded": ""
+  },
+  "IMD": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Independiente Medellín",
+    "IMD",
+    "Medellín",
+    "#E30613",
+    "#0057B8",
+    "historic",
+    50,
+    "Medellín Stadium",
+    45000
+   ],
+   "short": "IMD",
+   "nick": "",
+   "founded": ""
+  },
+  "BUC": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Atlético Bucaramanga",
+    "BUC",
+    "Bucaramanga",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    44,
+    "Bucaramanga Stadium",
+    28000
+   ],
+   "short": "BUC",
+   "nick": "",
+   "founded": ""
+  },
+  "PAS": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportivo Pasto",
+    "PAS",
+    "Pasto",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    42,
+    "Pasto Stadium",
+    20000
+   ],
+   "short": "PAS",
+   "nick": "",
+   "founded": ""
+  },
+  "ENV": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Envigado",
+    "ENV",
+    "Envigado",
+    "#FFD100",
+    "#F26522",
+    "youth",
+    43,
+    "Envigado Stadium",
+    12000
+   ],
+   "short": "ENV",
+   "nick": "",
+   "founded": ""
+  },
+  "AGU": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Águilas Doradas",
+    "AGU",
+    "Rionegro",
+    "#FFD100",
+    "#000000",
+    "selling",
+    42,
+    "Rionegro Stadium",
+    14000
+   ],
+   "short": "AGU",
+   "nick": "",
+   "founded": ""
+  },
+  "ALI": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Alianza FC",
+    "ALI",
+    "Valledupar",
+    "#FFD100",
+    "#00843D",
+    "fan",
+    40,
+    "Valledupar Stadium",
+    12000
+   ],
+   "short": "ALI",
+   "nick": "",
+   "founded": ""
+  },
+  "EQU": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "La Equidad",
+    "EQU",
+    "Bogotá",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Bogotá Stadium",
+    10000
+   ],
+   "short": "EQU",
+   "nick": "",
+   "founded": ""
+  },
+  "JAA": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Jaguares de Córdoba",
+    "JAA",
+    "Montería",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    40,
+    "Montería Stadium",
+    12000
+   ],
+   "short": "JAA",
+   "nick": "",
+   "founded": ""
+  },
+  "PER": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Deportivo Pereira",
+    "PER",
+    "Pereira",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    43,
+    "Pereira Stadium",
+    30000
+   ],
+   "short": "PER",
+   "nick": "",
+   "founded": ""
+  },
+  "FOR": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Fortaleza CEIF",
+    "FOR",
+    "Bogotá",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Bogotá Stadium",
+    8000
+   ],
+   "short": "FOR",
+   "nick": "",
+   "founded": ""
+  },
+  "LLB": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Llaneros FC",
+    "LLB",
+    "Villavicencio",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    38,
+    "Villavicencio Stadium",
+    10000
+   ],
+   "short": "LLB",
+   "nick": "",
+   "founded": ""
+  },
+  "BCH": {
+   "league": "CO1",
+   "nat": "COL",
+   "row": [
+    "Boyacá Chicó",
+    "BCH",
+    "Tunja",
+    "#FFFFFF",
+    "#0057B8",
+    "fan",
+    39,
+    "Tunja Stadium",
+    8000
+   ],
+   "short": "BCH",
+   "nick": "",
+   "founded": ""
+  },
+  "FOA": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Forge FC",
+    "FOA",
+    "Hamilton",
+    "#F26522",
+    "#000000",
+    "youth",
+    42,
+    "Hamilton Stadium",
+    6000
+   ],
+   "short": "FOA",
+   "nick": "",
+   "founded": ""
+  },
+  "CAV": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Cavalry FC",
+    "CAV",
+    "Calgary",
+    "#E30613",
+    "#000000",
+    "selling",
+    40,
+    "Calgary Stadium",
+    6000
+   ],
+   "short": "CAV",
+   "nick": "",
+   "founded": ""
+  },
+  "PCF": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Pacific FC",
+    "PCF",
+    "Langford",
+    "#6A1B9A",
+    "#FFFFFF",
+    "youth",
+    36,
+    "Langford Stadium",
+    6000
+   ],
+   "short": "PCF",
+   "nick": "",
+   "founded": ""
+  },
+  "OTT": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Atlético Ottawa",
+    "OTT",
+    "Ottawa",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    37,
+    "Ottawa Stadium",
+    24000
+   ],
+   "short": "OTT",
+   "nick": "",
+   "founded": ""
+  },
+  "YRK": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "York United",
+    "YRK",
+    "Toronto",
+    "#00843D",
+    "#FFFFFF",
+    "fan",
+    35,
+    "Toronto Stadium",
+    4000
+   ],
+   "short": "YRK",
+   "nick": "",
+   "founded": ""
+  },
+  "HFX": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "HFX Wanderers",
+    "HFX",
+    "Halifax",
+    "#6CACE4",
+    "#000000",
+    "fan",
+    35,
+    "Halifax Stadium",
+    6000
+   ],
+   "short": "HFX",
+   "nick": "",
+   "founded": ""
+  },
+  "VAA": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Valour FC",
+    "VAA",
+    "Winnipeg",
+    "#F26522",
+    "#000000",
+    "fan",
+    34,
+    "Winnipeg Stadium",
+    6000
+   ],
+   "short": "VAA",
+   "nick": "",
+   "founded": ""
+  },
+  "VFC": {
+   "league": "CA1",
+   "nat": "CAN",
+   "row": [
+    "Vancouver FC",
+    "VFC",
+    "Langley",
+    "#00843D",
+    "#000000",
+    "fan",
+    33,
+    "Langley Stadium",
+    6000
+   ],
+   "short": "VFC",
+   "nick": "",
+   "founded": ""
+  },
+  "AIA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Ain",
+    "AIA",
+    "Al Ain",
+    "#FFD100",
+    "#6A1B9A",
+    "oil",
+    60,
+    "Al Ain Stadium",
+    25000
+   ],
+   "short": "AIA",
+   "nick": "",
+   "founded": ""
+  },
+  "SAH": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Shabab Al Ahli",
+    "SAH",
+    "Dubai",
+    "#E30613",
+    "#000000",
+    "oil",
+    58,
+    "Dubai Stadium",
+    12000
+   ],
+   "short": "SAH",
+   "nick": "",
+   "founded": ""
+  },
+  "SHA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Sharjah",
+    "SHA",
+    "Sharjah",
+    "#FFFFFF",
+    "#0057B8",
+    "oil",
+    56,
+    "Sharjah Stadium",
+    11000
+   ],
+   "short": "SHA",
+   "nick": "",
+   "founded": ""
+  },
+  "WSL": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Wasl",
+    "WSL",
+    "Dubai",
+    "#FFD100",
+    "#000000",
+    "historic",
+    54,
+    "Dubai Stadium",
+    12000
+   ],
+   "short": "WSL",
+   "nick": "",
+   "founded": ""
+  },
+  "JAZ": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Jazira",
+    "JAZ",
+    "Abu Dhabi",
+    "#E30613",
+    "#000000",
+    "oil",
+    53,
+    "Abu Dhabi Stadium",
+    42000
+   ],
+   "short": "JAZ",
+   "nick": "",
+   "founded": ""
+  },
+  "WAH": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Wahda",
+    "WAH",
+    "Abu Dhabi",
+    "#F26522",
+    "#000000",
+    "oil",
+    52,
+    "Abu Dhabi Stadium",
+    11000
+   ],
+   "short": "WAH",
+   "nick": "",
+   "founded": ""
+  },
+  "NSA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Nasr",
+    "NSA",
+    "Dubai",
+    "#FFD100",
+    "#0057B8",
+    "historic",
+    47,
+    "Dubai Stadium",
+    12000
+   ],
+   "short": "NSA",
+   "nick": "",
+   "founded": ""
+  },
+  "AJM": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Ajman",
+    "AJM",
+    "Ajman",
+    "#F26522",
+    "#FFFFFF",
+    "fan",
+    43,
+    "Ajman Stadium",
+    5000
+   ],
+   "short": "AJM",
+   "nick": "",
+   "founded": ""
+  },
+  "KHF": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Khor Fakkan",
+    "KHF",
+    "Khor Fakkan",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    42,
+    "Khor Fakkan Stadium",
+    4000
+   ],
+   "short": "KHF",
+   "nick": "",
+   "founded": ""
+  },
+  "BAA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Baniyas",
+    "BAA",
+    "Abu Dhabi",
+    "#E30613",
+    "#000000",
+    "fan",
+    44,
+    "Abu Dhabi Stadium",
+    9000
+   ],
+   "short": "BAA",
+   "nick": "",
+   "founded": ""
+  },
+  "DHA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Dhafra",
+    "DHA",
+    "Madinat Zayed",
+    "#00843D",
+    "#E30613",
+    "fan",
+    42,
+    "Madinat Zayed Stadium",
+    7000
+   ],
+   "short": "DHA",
+   "nick": "",
+   "founded": ""
+  },
+  "BAB": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Bataeh",
+    "BAB",
+    "Al Bataeh",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    41,
+    "Al Bataeh Stadium",
+    4000
+   ],
+   "short": "BAB",
+   "nick": "",
+   "founded": ""
+  },
+  "KAB": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Ittihad Kalba",
+    "KAB",
+    "Kalba",
+    "#FFD100",
+    "#000000",
+    "fan",
+    41,
+    "Kalba Stadium",
+    6000
+   ],
+   "short": "KAB",
+   "nick": "",
+   "founded": ""
+  },
+  "ORA": {
+   "league": "AE1",
+   "nat": "UAE",
+   "row": [
+    "Al Orooba",
+    "ORA",
+    "Sharjah",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Sharjah Stadium",
+    3000
+   ],
+   "short": "ORA",
+   "nick": "",
+   "founded": ""
+  },
+  "PRS": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Persepolis",
+    "PRS",
+    "Tehran",
+    "#E30613",
+    "#FFFFFF",
+    "giant",
+    58,
+    "Tehran Stadium",
+    78000
+   ],
+   "short": "PRS",
+   "nick": "",
+   "founded": ""
+  },
+  "ESC": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Esteghlal",
+    "ESC",
+    "Tehran",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    57,
+    "Tehran Stadium",
+    78000
+   ],
+   "short": "ESC",
+   "nick": "",
+   "founded": ""
+  },
+  "SPB": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Sepahan",
+    "SPB",
+    "Isfahan",
+    "#FFD100",
+    "#000000",
+    "historic",
+    54,
+    "Isfahan Stadium",
+    75000
+   ],
+   "short": "SPB",
+   "nick": "",
+   "founded": ""
+  },
+  "TRC": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Tractor",
+    "TRC",
+    "Tabriz",
+    "#E30613",
+    "#000000",
+    "giant",
+    52,
+    "Tabriz Stadium",
+    66000
+   ],
+   "short": "TRC",
+   "nick": "",
+   "founded": ""
+  },
+  "FOL": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Foolad",
+    "FOL",
+    "Ahvaz",
+    "#E30613",
+    "#FFD100",
+    "historic",
+    48,
+    "Ahvaz Stadium",
+    30000
+   ],
+   "short": "FOL",
+   "nick": "",
+   "founded": ""
+  },
+  "GGO": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Gol Gohar",
+    "GGO",
+    "Sirjan",
+    "#FFD100",
+    "#00843D",
+    "oil",
+    47,
+    "Sirjan Stadium",
+    10000
+   ],
+   "short": "GGO",
+   "nick": "",
+   "founded": ""
+  },
+  "NAB": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Nassaji Mazandaran",
+    "NAB",
+    "Qaemshahr",
+    "#FFD100",
+    "#E30613",
+    "fan",
+    42,
+    "Qaemshahr Stadium",
+    15000
+   ],
+   "short": "NAB",
+   "nick": "",
+   "founded": ""
+  },
+  "MAG": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Malavan",
+    "MAG",
+    "Bandar Anzali",
+    "#0057B8",
+    "#FFFFFF",
+    "historic",
+    42,
+    "Bandar Anzali Stadium",
+    10000
+   ],
+   "short": "MAG",
+   "nick": "",
+   "founded": ""
+  },
+  "ZOB": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Zob Ahan",
+    "ZOB",
+    "Isfahan",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Isfahan Stadium",
+    15000
+   ],
+   "short": "ZOB",
+   "nick": "",
+   "founded": ""
+  },
+  "ALU": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Aluminium Arak",
+    "ALU",
+    "Arak",
+    "#0057B8",
+    "#FFFFFF",
+    "selling",
+    42,
+    "Arak Stadium",
+    15000
+   ],
+   "short": "ALU",
+   "nick": "",
+   "founded": ""
+  },
+  "PAY": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Paykan",
+    "PAY",
+    "Tehran",
+    "#FFD100",
+    "#000000",
+    "historic",
+    41,
+    "Tehran Stadium",
+    10000
+   ],
+   "short": "PAY",
+   "nick": "",
+   "founded": ""
+  },
+  "HAD": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Havadar",
+    "HAD",
+    "Tehran",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Tehran Stadium",
+    5000
+   ],
+   "short": "HAD",
+   "nick": "",
+   "founded": ""
+  },
+  "MES": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Mes Rafsanjan",
+    "MES",
+    "Rafsanjan",
+    "#F26522",
+    "#000000",
+    "selling",
+    41,
+    "Rafsanjan Stadium",
+    15000
+   ],
+   "short": "MES",
+   "nick": "",
+   "founded": ""
+  },
+  "SHM": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Shams Azar",
+    "SHM",
+    "Qazvin",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    40,
+    "Qazvin Stadium",
+    5000
+   ],
+   "short": "SHM",
+   "nick": "",
+   "founded": ""
+  },
+  "KHE": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Kheybar Khorramabad",
+    "KHE",
+    "Khorramabad",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    39,
+    "Khorramabad Stadium",
+    10000
+   ],
+   "short": "KHE",
+   "nick": "",
+   "founded": ""
+  },
+  "CHC": {
+   "league": "IR1",
+   "nat": "IRN",
+   "row": [
+    "Chadormalu",
+    "CHC",
+    "Ardakan",
+    "#F26522",
+    "#000000",
+    "selling",
+    40,
+    "Ardakan Stadium",
+    5000
+   ],
+   "short": "CHC",
+   "nick": "",
+   "founded": ""
+  },
+  "SAD": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Sadd",
+    "SAD",
+    "Doha",
+    "#FFFFFF",
+    "#000000",
+    "oil",
+    58,
+    "Doha Stadium",
+    15000
+   ],
+   "short": "SAD",
+   "nick": "",
+   "founded": ""
+  },
+  "DUH": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Duhail",
+    "DUH",
+    "Doha",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Doha Stadium",
+    40000
+   ],
+   "short": "DUH",
+   "nick": "",
+   "founded": ""
+  },
+  "RAF": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Rayyan",
+    "RAF",
+    "Al Rayyan",
+    "#E30613",
+    "#000000",
+    "oil",
+    52,
+    "Al Rayyan Stadium",
+    44000
+   ],
+   "short": "RAF",
+   "nick": "",
+   "founded": ""
+  },
+  "GHA": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Gharafa",
+    "GHA",
+    "Doha",
+    "#FFFFFF",
+    "#000000",
+    "oil",
+    50,
+    "Doha Stadium",
+    21000
+   ],
+   "short": "GHA",
+   "nick": "",
+   "founded": ""
+  },
+  "ARC": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Arabi",
+    "ARC",
+    "Doha",
+    "#FFFFFF",
+    "#E30613",
+    "historic",
+    48,
+    "Doha Stadium",
+    15000
+   ],
+   "short": "ARC",
+   "nick": "",
+   "founded": ""
+  },
+  "WKR": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Wakrah",
+    "WKR",
+    "Al Wakrah",
+    "#FFD100",
+    "#000000",
+    "fan",
+    45,
+    "Al Wakrah Stadium",
+    20000
+   ],
+   "short": "WKR",
+   "nick": "",
+   "founded": ""
+  },
+  "QSC": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Qatar SC",
+    "QSC",
+    "Doha",
+    "#8A1538",
+    "#FFFFFF",
+    "historic",
+    44,
+    "Doha Stadium",
+    13000
+   ],
+   "short": "QSC",
+   "nick": "",
+   "founded": ""
+  },
+  "UMS": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Umm Salal",
+    "UMS",
+    "Umm Salal",
+    "#FFD100",
+    "#000000",
+    "fan",
+    43,
+    "Umm Salal Stadium",
+    12000
+   ],
+   "short": "UMS",
+   "nick": "",
+   "founded": ""
+  },
+  "SHC": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Shamal",
+    "SHC",
+    "Madinat ash Shamal",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Madinat ash Shamal Stadium",
+    10000
+   ],
+   "short": "SHC",
+   "nick": "",
+   "founded": ""
+  },
+  "AHD": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Ahli Doha",
+    "AHD",
+    "Doha",
+    "#00843D",
+    "#FFFFFF",
+    "historic",
+    42,
+    "Doha Stadium",
+    7000
+   ],
+   "short": "AHD",
+   "nick": "",
+   "founded": ""
+  },
+  "KHR": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Khor",
+    "KHR",
+    "Al Khor",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    41,
+    "Al Khor Stadium",
+    12000
+   ],
+   "short": "KHR",
+   "nick": "",
+   "founded": ""
+  },
+  "MRK": {
+   "league": "QA1",
+   "nat": "QAT",
+   "row": [
+    "Al Markhiya",
+    "MRK",
+    "Doha",
+    "#E30613",
+    "#FFFFFF",
+    "fan",
+    40,
+    "Doha Stadium",
+    3000
+   ],
+   "short": "MRK",
+   "nick": "",
+   "founded": ""
+  },
+  "SHP": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Shanghai Port",
+    "SHP",
+    "Shanghai",
+    "#E30613",
+    "#000000",
+    "oil",
+    66,
+    "Shanghai Stadium",
+    72000
+   ],
+   "short": "SHP",
+   "nick": "",
+   "founded": ""
+  },
+  "SHT": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Shandong Taishan",
+    "SHT",
+    "Jinan",
+    "#F26522",
+    "#000000",
+    "giant",
+    62,
+    "Jinan Stadium",
+    54000
+   ],
+   "short": "SHT",
+   "nick": "",
+   "founded": ""
+  },
+  "SHS": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Shanghai Shenhua",
+    "SHS",
+    "Shanghai",
+    "#0057B8",
+    "#FFFFFF",
+    "giant",
+    60,
+    "Shanghai Stadium",
+    52000
+   ],
+   "short": "SHS",
+   "nick": "",
+   "founded": ""
+  },
+  "BGA": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Beijing Guoan",
+    "BGA",
+    "Beijing",
+    "#00843D",
+    "#FFD100",
+    "giant",
+    62,
+    "Beijing Stadium",
+    66000
+   ],
+   "short": "BGA",
+   "nick": "",
+   "founded": ""
+  },
+  "CHD": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Chengdu Rongcheng",
+    "CHD",
+    "Chengdu",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    56,
+    "Chengdu Stadium",
+    40000
+   ],
+   "short": "CHD",
+   "nick": "",
+   "founded": ""
+  },
+  "ZHE": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Zhejiang FC",
+    "ZHE",
+    "Hangzhou",
+    "#00843D",
+    "#FFFFFF",
+    "youth",
+    52,
+    "Hangzhou Stadium",
+    50000
+   ],
+   "short": "ZHE",
+   "nick": "",
+   "founded": ""
+  },
+  "TJT": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Tianjin Jinmen Tiger",
+    "TJT",
+    "Tianjin",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    48,
+    "Tianjin Stadium",
+    54000
+   ],
+   "short": "TJT",
+   "nick": "",
+   "founded": ""
+  },
+  "HEN": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Henan FC",
+    "HEN",
+    "Zhengzhou",
+    "#FFD100",
+    "#0057B8",
+    "fan",
+    46,
+    "Zhengzhou Stadium",
+    29000
+   ],
+   "short": "HEN",
+   "nick": "",
+   "founded": ""
+  },
+  "WUH": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Wuhan Three Towns",
+    "WUH",
+    "Wuhan",
+    "#E30613",
+    "#FFFFFF",
+    "oil",
+    50,
+    "Wuhan Stadium",
+    52000
+   ],
+   "short": "WUH",
+   "nick": "",
+   "founded": ""
+  },
+  "CHY": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Changchun Yatai",
+    "CHY",
+    "Changchun",
+    "#FFD100",
+    "#00843D",
+    "historic",
+    48,
+    "Changchun Stadium",
+    38000
+   ],
+   "short": "CHY",
+   "nick": "",
+   "founded": ""
+  },
+  "MEI": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Meizhou Hakka",
+    "MEI",
+    "Meizhou",
+    "#E30613",
+    "#000000",
+    "fan",
+    45,
+    "Meizhou Stadium",
+    20000
+   ],
+   "short": "MEI",
+   "nick": "",
+   "founded": ""
+  },
+  "QWC": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Qingdao West Coast",
+    "QWC",
+    "Qingdao",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Qingdao Stadium",
+    18000
+   ],
+   "short": "QWC",
+   "nick": "",
+   "founded": ""
+  },
+  "CAN": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Cangzhou Mighty Lions",
+    "CAN",
+    "Cangzhou",
+    "#0057B8",
+    "#FFFFFF",
+    "fan",
+    44,
+    "Cangzhou Stadium",
+    30000
+   ],
+   "short": "CAN",
+   "nick": "",
+   "founded": ""
+  },
+  "DAB": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Dalian Yingbo",
+    "DAB",
+    "Dalian",
+    "#0057B8",
+    "#FFFFFF",
+    "fallen",
+    46,
+    "Dalian Stadium",
+    55000
+   ],
+   "short": "DAB",
+   "nick": "",
+   "founded": ""
+  },
+  "NAD": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Nantong Zhiyun",
+    "NAD",
+    "Nantong",
+    "#0057B8",
+    "#FFD100",
+    "fan",
+    42,
+    "Nantong Stadium",
+    18000
+   ],
+   "short": "NAD",
+   "nick": "",
+   "founded": ""
+  },
+  "SHZ": {
+   "league": "CS1",
+   "nat": "CHN",
+   "row": [
+    "Shenzhen Peng City",
+    "SHZ",
+    "Shenzhen",
+    "#E30613",
+    "#0057B8",
+    "fan",
+    43,
+    "Shenzhen Stadium",
+    30000
+   ],
+   "short": "SHZ",
+   "nick": "",
+   "founded": ""
   }
  },
  "leagues": {
@@ -13915,6 +18199,102 @@
    "tier": 1,
    "name": "Premier Soccer League",
    "short": "PSL"
+  },
+  "EG1": {
+   "nat": "EGY",
+   "tier": 1,
+   "name": "Egyptian Premier League",
+   "short": "EG1"
+  },
+  "TN1": {
+   "nat": "TUN",
+   "tier": 1,
+   "name": "Tunisian Ligue Professionnelle 1",
+   "short": "TN1"
+  },
+  "TZ1": {
+   "nat": "TAN",
+   "tier": 1,
+   "name": "Tanzanian Premier League",
+   "short": "TZ1"
+  },
+  "DZ1": {
+   "nat": "ALG",
+   "tier": 1,
+   "name": "Algerian Ligue Professionnelle 1",
+   "short": "DZ1"
+  },
+  "CY1": {
+   "nat": "CYP",
+   "tier": 1,
+   "name": "Cypriot First Division",
+   "short": "CY1"
+  },
+  "HR1": {
+   "nat": "CRO",
+   "tier": 1,
+   "name": "Croatian Football League",
+   "short": "HR1"
+  },
+  "SE1": {
+   "nat": "SWE",
+   "tier": 1,
+   "name": "Allsvenskan",
+   "short": "SE1"
+  },
+  "RO1": {
+   "nat": "ROU",
+   "tier": 1,
+   "name": "Liga I",
+   "short": "RO1"
+  },
+  "EC1": {
+   "nat": "ECU",
+   "tier": 1,
+   "name": "Ecuadorian Serie A",
+   "short": "EC1"
+  },
+  "UY1": {
+   "nat": "URU",
+   "tier": 1,
+   "name": "Uruguayan Primera División",
+   "short": "UY1"
+  },
+  "CO1": {
+   "nat": "COL",
+   "tier": 1,
+   "name": "Categoría Primera A",
+   "short": "CO1"
+  },
+  "CA1": {
+   "nat": "CAN",
+   "tier": 1,
+   "name": "Canadian Premier League",
+   "short": "CA1"
+  },
+  "AE1": {
+   "nat": "UAE",
+   "tier": 1,
+   "name": "UAE Pro League",
+   "short": "AE1"
+  },
+  "IR1": {
+   "nat": "IRN",
+   "tier": 1,
+   "name": "Persian Gulf Pro League",
+   "short": "IR1"
+  },
+  "QA1": {
+   "nat": "QAT",
+   "tier": 1,
+   "name": "Qatar Stars League",
+   "short": "QA1"
+  },
+  "CS1": {
+   "nat": "CHN",
+   "tier": 1,
+   "name": "Chinese Super League",
+   "short": "CS1"
   }
  },
  "continentals": {
@@ -14831,6 +19211,171 @@
    "AMA",
    "GLA",
    "Durban Derby"
+  ],
+  [
+   "ALD",
+   "ZMK",
+   "Derby"
+  ],
+  [
+   "PYR",
+   "FUT",
+   "Derby"
+  ],
+  [
+   "ITA",
+   "SMO",
+   "Derby"
+  ],
+  [
+   "ESA",
+   "CAF",
+   "Derby"
+  ],
+  [
+   "ASG",
+   "SGB",
+   "Derby"
+  ],
+  [
+   "YAN",
+   "SIM",
+   "Derby"
+  ],
+  [
+   "AZB",
+   "KMC",
+   "Derby"
+  ],
+  [
+   "MCA",
+   "USA",
+   "Derby"
+  ],
+  [
+   "CRB",
+   "PAA",
+   "Derby"
+  ],
+  [
+   "APO",
+   "OMO",
+   "Derby"
+  ],
+  [
+   "ANO",
+   "AEA",
+   "Derby"
+  ],
+  [
+   "AEB",
+   "APL",
+   "Derby"
+  ],
+  [
+   "DIN",
+   "HAJ",
+   "Derby"
+  ],
+  [
+   "MAB",
+   "IFK",
+   "Derby"
+  ],
+  [
+   "AIK",
+   "DIF",
+   "Derby"
+  ],
+  [
+   "HAA",
+   "BRA",
+   "Derby"
+  ],
+  [
+   "FCA",
+   "DIB",
+   "Derby"
+  ],
+  [
+   "LDU",
+   "IDV",
+   "Derby"
+  ],
+  [
+   "AUA",
+   "ENB",
+   "Derby"
+  ],
+  [
+   "BSA",
+   "EME",
+   "Derby"
+  ],
+  [
+   "PEA",
+   "NAA",
+   "Derby"
+  ],
+  [
+   "DEF",
+   "DAA",
+   "Derby"
+  ],
+  [
+   "NCL",
+   "IMD",
+   "Derby"
+  ],
+  [
+   "MIC",
+   "SAF",
+   "Derby"
+  ],
+  [
+   "AMB",
+   "DCB",
+   "Derby"
+  ],
+  [
+   "AIA",
+   "SAH",
+   "Derby"
+  ],
+  [
+   "WSL",
+   "NSA",
+   "Derby"
+  ],
+  [
+   "SHA",
+   "ORA",
+   "Derby"
+  ],
+  [
+   "PRS",
+   "ESC",
+   "Derby"
+  ],
+  [
+   "SPB",
+   "ZOB",
+   "Derby"
+  ],
+  [
+   "SAD",
+   "DUH",
+   "Derby"
+  ],
+  [
+   "GHA",
+   "ARC",
+   "Derby"
+  ],
+  [
+   "SHP",
+   "SHS",
+   "Derby"
   ]
  ],
  "nations": {
@@ -14919,7 +19464,10 @@
   "MYS": "Malaysia",
   "VIE": "Vietnam",
   "IDN": "Indonesia",
-  "PHI": "Philippines"
+  "PHI": "Philippines",
+  "TAN": "Tanzania",
+  "UAE": "United Arab Emirates",
+  "QAT": "Qatar"
  },
  "format": "touchline-names",
  "version": 1,
