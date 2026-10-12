@@ -9,6 +9,8 @@
 // --matches  match ids (default: every match in matches.json that has tracking files)
 // --step     use every Nth frame (default 5: two frames a second, plenty for averages and fast to read)
 // --out      the table to write (default data/shape-table.json)
+// --detected use only players the broadcast camera saw in that frame (default: all 22, off-camera ones extrapolated by SkillCorner).
+//            The camera follows the ball, so seen players cluster round it and the shape comes out too compact; use this to compare.
 // --check    print the table's summary without writing it
 //
 // What it measures, with every team turned to attack left to right (x 0 = own goal line, 1 = the goal it attacks; y 0..1
@@ -130,7 +132,15 @@ export async function readMatch(dir, id, step, tables) {
   const byId = new Map();
   for (const p of match.players || []) {
     const pos = gamePos(p.player_role);
-    const rec = { pos, home: p.team_id === homeId, unknown: p.player_role ? p.player_role.acronym : null };
+    // the frames he was on the pitch (a substitute who never played, or one off the pitch, is not part of the shape)
+    const pt = p.playing_time ? p.playing_time.total : undefined; // (null: never on the pitch; none given: no limit)
+    const rec = {
+      pos,
+      home: p.team_id === homeId,
+      unknown: p.player_role ? p.player_role.acronym : null,
+      from: pt === undefined ? -1 : pt ? pt.start_frame : null,
+      to: pt ? pt.end_frame : null,
+    };
     byId.set(p.id, rec);
     if (p.trackable_object != null) byId.set(p.trackable_object, rec);
   }
@@ -171,11 +181,12 @@ export async function readMatch(dir, id, step, tables) {
       { home: false, pl: [] },
     ];
     for (const p of f.player_data || []) {
-      if (p.is_detected === false) continue; // (extrapolated positions are guesses)
+      if (p.is_detected === false && args.detected) continue; // (extrapolated positions are SkillCorner's estimate of players off camera)
       const x = num(p.x),
         y = num(p.y);
       if (x === null || y === null) continue;
       const rec = byId.get(p.player_id);
+      if (rec && (rec.from === null || f.frame < rec.from || (rec.to !== null && f.frame > rec.to))) continue;
       if (!rec) {
         stats.unmatched++;
         continue;
