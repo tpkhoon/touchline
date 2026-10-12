@@ -212,7 +212,7 @@ The **Names** tab is the name generator: players, towns, clubs, grounds, nicknam
 
 **Game** shows the game in a frame with the in-game developer panel switched on. Open **Settings (⚙️) → Help → Developer tools** for the world check, market summary, wonderkid list, speed test, "play a season" (a season on a copy) and the UI smoke test. They run on a copy of your save and put the real one back.
 
-`js/devtools.js` (the panel) is added to the game only inside the dashboard, never to `index.html`, the build, a built app or the Pages site.
+`js/devtools.js` (the panel) is added to the game only inside the dashboard, never to `index.html`, the build, a built app or the Pages site. The panel's **Goal replay** plays 19 real Liverpool goals (the Last Row data, `js/devclips.js`, made by `npm run clips -- --data <folder with liverpool_2019.csv>`, loaded only when the replay is opened) beside goals of the match view, which it records from a match you watch.
 
 ## Docs syncing
 

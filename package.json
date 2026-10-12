@@ -45,7 +45,8 @@
     "shots": "node --max-old-space-size=6144 tools/wyscout-shots.mjs",
     "passes": "node --max-old-space-size=6144 tools/wyscout-passes.mjs",
     "movement": "node --max-old-space-size=4096 tools/metrica-movement.mjs",
-    "setpieces": "node --max-old-space-size=6144 tools/wyscout-setpieces.mjs"
+    "setpieces": "node --max-old-space-size=6144 tools/wyscout-setpieces.mjs",
+    "clips": "node tools/lastrow-clips.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",
