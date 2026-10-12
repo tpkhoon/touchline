@@ -78,6 +78,75 @@
     return a.tv + a.com + a.gate;
   };
 
+  // ---------- Prize money ----------
+  // Every competition pays: a league by final position, a domestic cup by round, a continental or world cup by results (the
+  // fund is the competition's prize, in dollars like all money). A payment goes into the club's balance, its season's income
+  // (c.fin.prize) and, for your club, a line in the season's prize list on the Finances tab.
+  F.prize = function (c, amt, why) {
+    amt = Math.round(amt);
+    if (!c || !(amt > 0)) return 0;
+    c.balance += amt;
+    c.fin = c.fin || { tv: 0, com: 0, gate: 0, att: 0, homes: 0 };
+    c.fin.prize = (c.fin.prize || 0) + amt;
+    const log = W.isUser(c.id) && S().seasonLog;
+    if (log) {
+      log.prizes = log.prizes || [];
+      const row = log.prizes.find((x) => x.why === why);
+      if (row) row.amt += amt;
+      else log.prizes.push({ why, amt });
+    }
+    return amt;
+  };
+  // A league's prize money by position (best first). The editor can set a fund (comp.rules.prize); otherwise each club's
+  // share is a part of its own revenue potential, the richer the club the more it gets. A set fund is shared by position:
+  // the champion gets about three times the last club.
+  F.LEAGUE_PRIZE = { share: 0.12, spread: 2.2, curve: 1.6 };
+  F.leaguePrizes = function (comp, table) {
+    const n = table.length,
+      fund = comp.rules && comp.rules.prize;
+    if (fund > 0) {
+      const w = table.map(
+          (_, i) => 1 + F.LEAGUE_PRIZE.spread * Math.pow(n > 1 ? (n - 1 - i) / (n - 1) : 1, F.LEAGUE_PRIZE.curve),
+        ),
+        tot = U.sum(w, (x) => x);
+      return w.map((x) => (fund * x) / tot);
+    }
+    return table.map((r, i) => {
+      const c = S().clubs[r.id];
+      return c && c.sim === 'full' ? FM.Season.revenuePotential(c) * F.LEAGUE_PRIZE.share * ((n - i) / n) : 0;
+    });
+  };
+  // What a league pays its champion and its last club, for the screens
+  F.leaguePrizeRange = function (comp) {
+    const fund = comp.rules && comp.rules.prize;
+    if (!(fund > 0)) return null;
+    const n = Math.max(2, comp.clubs.length),
+      a = F.leaguePrizes(
+        comp,
+        Array.from({ length: n }, () => ({ id: null })),
+      );
+    return { fund, first: a[0], last: a[n - 1] };
+  };
+  // A domestic cup's prize ladder: each tie won pays its winner a part of the fund (the final the most), the shares
+  // adding up to the fund over the whole cup
+  const tieShare = (k) => (k === 1 ? 0.3 : k === 2 ? 0.12 : k === 4 ? 0.06 : 0.03 * Math.pow(8 / k, 1.2));
+  F.cupLadder = function (entrants) {
+    const rounds = [];
+    for (let n = Math.max(2, entrants); n > 1;) {
+      const p = 2 ** Math.floor(Math.log2(n)),
+        k = n === p ? n / 2 : n - p;
+      rounds.push(k);
+      n = n === p ? n / 2 : p;
+    }
+    const z = U.sum(rounds, (k) => k * tieShare(k));
+    return { rounds, z };
+  };
+  // What winning a tie in a round of k ties pays, from a cup of this many entrants
+  F.cupPayout = function (fund, entrants, k) {
+    const { z } = F.cupLadder(entrants);
+    return (fund * tieShare(k)) / z;
+  };
+
   // ---------- Attendance ----------
   F.TICKETS = {
     Low: { fill: 0.08, price: 0.8, mood: 0.2 },

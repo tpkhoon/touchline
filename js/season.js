@@ -1706,9 +1706,10 @@
       // Merit payments + reputation drift toward league standing
       const n = t.length,
         [repTop, repBot] = comp.repBand || { 1: [88, 60], 2: [62, 46], 3: [50, 38] }[comp.tier] || [60, 40];
+      const prizes = FM.Finance.leaguePrizes(comp, t);
       t.forEach((r, i) => {
         const c = S.clubs[r.id];
-        if (c.sim === 'full') c.balance += Sea.revenuePotential(c) * 0.12 * ((n - i) / n);
+        if (c.sim === 'full') FM.Finance.prize(c, prizes[i], comp.name + ' prize money');
         W.driftRep(c, repTop - ((repTop - repBot) * i) / (n - 1));
         if (i < 3 && n >= 8) W.growClub(c, 0.04);
       });
@@ -2042,7 +2043,7 @@
       const age = U.randi(22, 31),
         ca = W.freeAgentCA(),
         p = W.genPlayer({
-          nat: U.pick(Object.keys(D.NATIONS)),
+          nat: U.pick(D.nationCodes()),
           pos: U.pick(D.POS),
           age,
           ca,

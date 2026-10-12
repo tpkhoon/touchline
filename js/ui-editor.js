@@ -20,6 +20,9 @@
   let ED = null;
 
   const clone = (o) => JSON.parse(JSON.stringify(o));
+  // The nations of the game (Catalonia and the Basque Country only when the world adds them)
+  const natEntries = () =>
+    Object.entries(D.NATIONS).filter(([, n]) => !n.optional || (ED && ED.def.rules.regionNations));
   const natOf = (l) => D.NATIONS[l.nat] || { flag: '', name: l.nat };
   const clubsOf = (lid) => ED.def.clubs.filter((c) => c.league === lid);
   const leagueOf = (id) => ED.def.leagues.find((l) => l.id === id);
@@ -288,6 +291,11 @@
     const game = (D.TIEBREAK[l.id] || D.TIEBREAK_DEFAULT).join();
     if (tb.join() === game) delete rules.tiebreak;
     else rules.tiebreak = tb;
+    if ($('#ed-lprize')) {
+      const n = parseFloat(v('lprize'));
+      if (n > 0) rules.prize = Math.round(n * 1e6);
+      else delete rules.prize;
+    }
     if ($('#ed-spa')) {
       const count = document.querySelectorAll('[id^=ed-spg-]').length;
       const each = (id, f) => Array.from({ length: count }, (_, i) => f(v(`${id}-${i}`)));
@@ -397,6 +405,16 @@
               .join('')}</div>`,
         )
         .join('')}
+      <div class="ng-label">Catalonia and the Basque Country <span class="tiny dim">· as nations of their own: players of Catalan or Basque family can choose them, and they field national teams</span></div>
+      <div class="seg" style="margin:0">${[
+        [false, 'Part of Spain'],
+        [true, 'Nations'],
+      ]
+        .map(
+          ([v, t]) =>
+            `<button class="${!!ED.def.rules.regionNations === v ? 'on' : ''}" data-act="edRule" data-k="regionNations" data-v="${v}">${t}</button>`,
+        )
+        .join('')}</div>
       <div class="ng-label">Promotion and relegation <span class="tiny dim">· for every league; each pair of leagues has its own switch too</span></div>
       ${segV('edWorldProRel', ED.def.rules.proRel === false ? 'off' : 'on', [
         ['on', 'On'],
@@ -599,7 +617,7 @@
         'As the game',
       )}`;
     const exempt = sq.exempt || game.exempt || [];
-    const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const mls = sq.mls != null ? sq.mls : game.mls;
     const poType = (r.playoffs || {}).type;
     const poBuiltIn = (D.LEAGUES.find((x) => x.id === l.id) || { rules: {} }).rules.playoffs;
@@ -995,7 +1013,11 @@
   const leagueRules = (l) => {
     const r = l.rules || {},
       up = upperOf(l),
-      out = [leagueFormat(l), leaguePlay(l)];
+      out = [
+        leagueFormat(l),
+        leaguePlay(l),
+        `<div class="ng-label">Prize money <span class="tiny dim">· millions, shared out by final position; empty: automatic (a part of each club's own revenue)</span></div><input type="number" id="ed-lprize" min="0.1" max="20000" step="0.5" inputmode="decimal" placeholder="Automatic" value="${r.prize ? r.prize / 1e6 : ''}">`,
+      ];
     if (up) {
       const pr = pairOf(l, up);
       out.push(
@@ -1229,7 +1251,7 @@
     UI.worldEditor();
   };
   const newLeagueView = () => {
-    const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const has = new Set(ED.def.leagues.map((l) => l.nat));
     return `<div class="h1" style="margin-top:2vh">Add a league</div><div class="tag">Its clubs are made for you with placeholder names: open each one to name it. A nation with no league yet gets its first.</div>
       ${errBox()}
@@ -1268,7 +1290,7 @@
   const managerOf = (cid) => (ED.def.managers || []).find((m) => m.club === cid);
   const managerFields = (c) => {
     const m = managerOf(c.id) || {};
-    const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     return `<div class="ng-label">Manager <span class="tiny dim">· leave the names empty to keep the one the game gives the club</span></div>
       <div class="ng-names" style="margin-top:0"><input type="text" id="ed-mfn" maxlength="24" placeholder="First name" value="${esc(m.fn || '')}"><input type="text" id="ed-mln" maxlength="28" placeholder="Last name" value="${esc(m.ln || '')}"></div>
       <div class="ng-names"><select id="ed-mnat" style="flex:1">${nations.map(([k, n]) => `<option value="${k}" ${(m.nat || c.nat) === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-mage" min="28" max="80" inputmode="numeric" style="max-width:84px" value="${m.age || 48}" aria-label="Age"></div>
@@ -1922,6 +1944,12 @@
     f.groupSize = +d.n;
     setFormat(f);
   };
+  UI.acts.edCupDrop = (d, el) => {
+    const f = clone(fmtNow(ED.cup));
+    if (el.value) f.drop = el.value;
+    else delete f.drop;
+    setFormat(f);
+  };
   UI.acts.edCupCentral = (d) => {
     const f = clone(fmtNow(ED.cup));
     f.central = d.v === 'true';
@@ -1952,7 +1980,7 @@
         .filter((c) => !c.removed)
         .map((c) => c.nat),
     );
-    return Object.entries(D.NATIONS)
+    return natEntries()
       .filter(([code]) => !have.has(code))
       .map(([code, n]) => {
         const lgs = new Set(
@@ -2124,6 +2152,21 @@
           [false, 'No'],
           [true, 'Yes'],
         ])}
+        ${(() => {
+          const reg = contRegion(c.id),
+            tier = contTier(c.id),
+            below = [1, 2, 3, 4].filter((t) => t > tier).flatMap((t) => contsOf(reg, t));
+          return below.length
+            ? `<div class="tiny dim" style="margin:10px 0 4px">Clubs that finish third in a group</div><select data-input="edCupDrop" style="width:100%"><option value="">Are out of the competition</option>${below
+                .map(
+                  (x) =>
+                    `<option value="${x.id}" ${f.drop === x.id ? 'selected' : ''}>Drop into the ${esc(x.name)}</option>`,
+                )
+                .join(
+                  '',
+                )}</select><div class="tiny dim" style="margin-top:4px;line-height:1.5">The third-placed clubs play the runners-up of the other cup's groups, one match at the runner-up's ground, for a place in its quarter-finals (a day of its own before the knockouts). The cup they drop into needs four groups.</div>`
+            : '';
+        })()}
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">The group stage is the same everywhere. Two-legged ties need the world's two-legged knockouts rule (on the first screen); without it every tie is one match.</div>`;
     }
     // the competition's own rules, where they differ from the world's
@@ -2641,7 +2684,7 @@
   const stafferView = () => {
     const s = (ED.def.staff || []).find((x) => x.id === ED.sid);
     if (!s) return staffView();
-    const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     return `<div class="h1" style="margin-top:2vh">${esc(((s.fn || '') + ' ' + (s.ln || '')).trim() || 'New staff')}</div><div class="tag">${s.role === 'Scout' ? 'A scout knows the region they come from best; the game works out the rest of the network.' : 'The better the ability, the more the club gets from the role.'}</div>
       ${errBox()}
       <div class="ng-label">Role</div><select id="ed-srole">${STAFF_ROLES.map((r) => `<option ${s.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>
@@ -2698,7 +2741,7 @@
   };
   const intlView = () => {
     const cur = intlNow(),
-      nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+      nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const kinds = {
       world: 'Every four years',
       continental: 'Two years on',
@@ -2768,10 +2811,105 @@
         )
         .join('')}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveIntl">Save the tournaments</button></div>
-      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="nations"><div class="row"><div class="grow"><div class="small b">National teams</div><div class="tiny dim">${(ED.def.nations || []).length} changed · name, colours, ranking points, how they play</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="confeds"><div class="row"><div class="grow"><div class="small b">Confederations</div><div class="tiny dim">${confedSummary()}</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:6px 0 0;padding:10px 12px" data-act="edView" data-v="nations"><div class="row"><div class="grow"><div class="small b">National teams</div><div class="tiny dim">${(ED.def.nations || []).length} changed · name, colours, ranking points, how they play</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:6px 0 0;padding:10px 12px" data-act="edView" data-v="history"><div class="row"><div class="grow"><div class="small b">Past tournaments</div><div class="tiny dim">Who won each one is entered with the past seasons</div></div><span class="dim">›</span></div></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
   };
+
+  // ---------- Confederations ----------
+  // Which confederation each nation is in, and the confederations a world adds. Qualifying for the World Championship, the
+  // continental championships and the Nations League go by confederation; a new one with four nations or more gets a place at
+  // the World Championship and a championship of its own.
+  const CF = () => (ED.def.confeds = ED.def.confeds || { names: {}, members: {} });
+  const I_ = () => FM.Intl;
+  const cfBase = (code) => I_().baseConfed(code);
+  const cfOf = (code) => CF().members[code] || cfBase(code);
+  const cfName = (id) => CF().names[id] || I_().CONFEDS[id] || id;
+  const cfIds = () => [...Object.keys(I_().CONFEDS), ...Object.keys(CF().names).filter((id) => !I_().CONFEDS[id])];
+  const cfNations = () => natEntries().filter(([code]) => D.NATIONS[code]);
+  const cfMembers = (id) => cfNations().filter(([code]) => cfOf(code) === id);
+  const confedSummary = () => {
+    const c = CF(),
+      n = Object.keys(c.members).length,
+      k = Object.keys(c.names).filter((id) => !I_().CONFEDS[id]).length;
+    return k || n
+      ? `${k} added · ${n} nation${n === 1 ? '' : 's'} moved`
+      : 'Europe, South America, Africa, Asia and North America · add your own and move nations between them';
+  };
+  UI.acts.edNewConfed = () => {
+    const v = (id) => (($('#ed-' + id) || {}).value || '').trim();
+    const id = v('cfid').toUpperCase(),
+      name = v('cfname');
+    const errs = [];
+    if (!/^[A-Z0-9]{2,6}$/.test(id)) errs.push('The short name is 2 to 6 letters or digits');
+    else if (cfIds().includes(id)) errs.push(`There is already a confederation called ${id}`);
+    if (!name) errs.push('A confederation needs a name');
+    if (errs.length) {
+      ED.err = errs;
+      return UI.worldEditor();
+    }
+    CF().names[id] = name;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edRenameConfed = (d, el) => {
+    const name = (el.value || '').trim();
+    if (!name) return;
+    if (name === I_().CONFEDS[d.id]) delete CF().names[d.id];
+    else CF().names[d.id] = name;
+  };
+  UI.acts.edDelConfed = (d) => {
+    const c = CF();
+    delete c.names[d.id];
+    for (const [code, id] of Object.entries(c.members)) if (id === d.id) delete c.members[code];
+    UI.worldEditor();
+  };
+  UI.acts.edNationConfed = (d, el) => {
+    const c = CF();
+    if (el.value === cfBase(d.code)) delete c.members[d.code];
+    else c.members[d.code] = el.value;
+    const open = document.querySelector('details[data-cf][open]');
+    ED.cfOpen = open ? open.dataset.cf : null;
+    const y = window.scrollY;
+    UI.worldEditor();
+    window.scrollTo(0, y);
+  };
+  UI.acts.edResetConfeds = () => {
+    ED.def.confeds = { names: {}, members: {} };
+    UI.worldEditor();
+  };
+  const confedsView = () => {
+    const ids = cfIds(),
+      c = CF();
+    return `<div class="h1" style="margin-top:2vh">Confederations</div><div class="tag">Which confederation each nation is in. A nation's confederation sets who it qualifies with, its Nations League and its continental championship.</div>
+      ${errBox()}
+      ${ids
+        .map((id) => {
+          const mem = cfMembers(id),
+            custom = !I_().CONFEDS[id];
+          return `<details class="card" data-cf="${id}" style="margin:8px 0;padding:10px 12px" ${ED.cfOpen === id ? 'open' : ''}><summary class="small b">${esc(cfName(id))} <span class="tiny dim">· ${id} · ${mem.length} nation${mem.length === 1 ? '' : 's'}${custom && mem.length < 4 ? ' · needs 4 for a championship' : ''}</span></summary>
+            <div class="row" style="gap:6px;margin-top:10px"><input type="text" maxlength="40" value="${esc(cfName(id))}" data-input="edRenameConfed" data-id="${id}" style="flex:1;min-width:0">${custom ? `<button class="btn sm" data-act="edDelConfed" data-id="${id}">Remove</button>` : ''}</div>
+            ${
+              mem
+                .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                .map(
+                  ([code, n]) =>
+                    `<div class="row" style="gap:8px;margin-top:6px;align-items:center"><div class="grow small ellip">${C_flag(code)} ${esc(n.name)}${c.members[code] ? ' <span class="tiny dim">· moved</span>' : ''}</div><select data-input="edNationConfed" data-code="${code}" style="max-width:150px">${ids
+                      .map((x) => `<option value="${x}" ${x === id ? 'selected' : ''}>${esc(cfName(x))}</option>`)
+                      .join('')}</select></div>`,
+                )
+                .join('') || '<div class="tiny dim" style="margin-top:8px">No nations.</div>'
+            }</details>`;
+        })
+        .join('')}
+      <div class="ng-label">A new confederation</div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><input type="text" id="ed-cfname" maxlength="40" placeholder="Name, for example Oceania"></div><div style="flex:1;max-width:110px"><input type="text" id="ed-cfid" maxlength="6" placeholder="Short, OFC" style="text-transform:uppercase"></div></div>
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewConfed">＋ Add it</button>${Object.keys(c.names).length || Object.keys(c.members).length ? '<button class="btn sm" data-act="edResetConfeds">Put the game’s back</button>' : ''}</div>
+      <div class="tiny dim" style="margin-top:8px;line-height:1.5">Open one, then use the lists to move a nation in or out. A confederation of four nations or more gets one place at the World Championship (taken from the biggest part of the world) and a championship of its own; a smaller one just plays its Nations League.</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
+  };
+  const C_flag = (code) => UI.C.flag(code);
 
   // ---------- National teams ----------
   // The name, short name, colours and ranking points a national team starts with (a nation too thin in players to field a team
@@ -2835,7 +2973,7 @@
   };
   const nationsView = () => {
     const by = {};
-    for (const [code, n] of Object.entries(D.NATIONS)) (by[n.region] = by[n.region] || []).push([code, n]);
+    for (const [code, n] of natEntries()) (by[n.region] = by[n.region] || []).push([code, n]);
     return `<div class="h1" style="margin-top:2vh">National teams</div><div class="tag">Name, colours and ranking points of each national team. Tap one. A nation with too few players to field a squad has no team in the world.</div>
       ${Object.entries(by)
         .map(
@@ -3113,7 +3251,7 @@
     const s = seasonOf(ED.hy);
     if (!s) return historyView();
     const nameOf = (id) => (ED.def.clubs.find((c) => c.id === id) || { name: id || 'free' }).name;
-    const nats = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const nats = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     return `<div class="h1" style="margin-top:2vh">Big transfers</div><div class="tag">${yy(s.year)}. The biggest deals of the season: the archive shows the record deal. Up to twenty.</div>
       ${errBox()}
       ${
@@ -3156,7 +3294,7 @@
     const s = seasonOf(ED.hy);
     if (!s || !tName(ED.ht)) return historyView();
     const e = (s.intl || {})[ED.ht] || {};
-    const nats = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const nats = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const sel = (id, cur, none) =>
       `<select id="ed-${id}"><option value="">${none}</option>${nats.map(([k, n]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>`;
     return `<div class="h1" style="margin-top:2vh">${esc(tName(ED.ht))}</div><div class="tag">${yy(s.year)}. The winner counts a title for the nation, and the Continental Champions Trophy invites the continental champions.</div>
@@ -3209,7 +3347,7 @@
     if (!p) return squadView();
     const year = yearOf(),
       ca = abilityOf(p.attrs, p.pos),
-      nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+      nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const sl = (k) =>
       `<div class="row" style="gap:10px;align-items:center"><span class="small" style="width:96px;flex:none">${esc(D.ATTR_LABEL[k])}</span><input type="range" id="ed-a-${k}" min="1" max="20" step="1" value="${p.attrs[k]}" style="flex:1"><b id="ed-av-${k}" style="width:22px;text-align:right">${p.attrs[k]}</b></div>`;
     return `<div class="h1" style="margin-top:2vh">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim() || 'New player')}</div><div class="tag">A player of your own. The game builds the rest of him (wage, personality, second positions) when the world starts.</div>
@@ -3251,6 +3389,7 @@
       agents: agentsView,
       staffer: stafferView,
       nations: nationsView,
+      confeds: confedsView,
       nation: nationView,
       history: historyView,
       season: seasonView,

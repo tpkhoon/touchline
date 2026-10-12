@@ -542,7 +542,7 @@
   W.dualNat = function (nat, heritage, poolKey) {
     if (!heritage || Math.random() > 0.7) return null;
     if (!poolKey) poolKey = D.HERITAGE_POOL[heritage] ? U.pick(D.HERITAGE_POOL[heritage]) : heritage;
-    const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.NATIONS[n]);
+    const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.nationOn(n));
     return list.length ? U.pick(list) : null;
   };
   // One-word names, as Brazilian and Portuguese players often have: a diminutive or a nickname made from his first name
@@ -1112,14 +1112,14 @@
   W.natFor = function (club) {
     const mix = club.comp && D.NAT_MIX[club.comp];
     if (mix) return D.pickNat(mix);
-    return Math.random() < 0.88 ? club.nat : U.pick(Object.keys(D.NATIONS));
+    return Math.random() < 0.88 ? club.nat : U.pick(D.nationCodes());
   };
   W.youthNat = (club) =>
     D.YOUTH_MIX[club.nat]
       ? D.pickNat(D.YOUTH_MIX[club.nat])
       : Math.random() < 0.95
         ? club.nat
-        : U.pick(Object.keys(D.NATIONS));
+        : U.pick(D.nationCodes());
 
   // A squad for a club. `have`: players it already has (a database that fixes some of them): only the gaps are filled
   function genSquad(club, have = []) {
@@ -1273,7 +1273,7 @@
     S.staffPool = [];
     roles.forEach((r) => {
       for (let i = 0; i < 2; i++) {
-        const nat = U.pick(Object.keys(D.NATIONS));
+        const nat = U.pick(D.nationCodes());
         const st = W.genStaff(r, nat, { ability: Math.round(U.clamp(U.gauss(12, 3.5), 5, 20)) });
         if (r === 'Scout') (Object.assign(st, W.scoutProfile(nat, st.ability)), (st.wage = W.staffWage(st)));
         S.staffPool.push(st.id);
@@ -1953,9 +1953,28 @@
       }
       return out;
     };
-    const CC = at(D.CC_AFTER),
-      CWC = at(D.CWC_AFTER),
+    let CC = at(D.CC_AFTER);
+    const CWC = at(D.CWC_AFTER),
       INTL = at(D.INTL_AFTER);
+    // Clubs that drop down from a continental cup into the one below play a knockout play-off before the quarter-finals: a
+    // day of its own where the quarter-finals began, and the rest of the knockouts a day later
+    if (W.continentals().some((c) => c.drop && S.comps[c.drop])) {
+      const seq = Object.entries(CC)
+          .map(([k, st]) => [+k, st])
+          .sort((a, b) => a[0] - b[0]),
+        qi = seq.findIndex(([, st]) => /^(QF|SF)/.test(st));
+      if (qi >= 0) {
+        seq.splice(qi, 0, [seq[qi][0], 'PO']);
+        const moved = {};
+        let last = -1;
+        for (const [k, st] of seq) {
+          const at2 = Math.max(k, last + 1);
+          moved[at2] = st;
+          last = at2;
+        }
+        CC = moved;
+      }
+    }
     // Domestic cup days: enough rounds for the biggest cup (byes even out the first round), spread through the season
     const cupDays = Math.max(Object.keys(D.CUP_AFTER).length, ...W.domesticCups().map((c) => FM.Cups.daysNeeded(c)));
     const CUP = {},
@@ -2159,9 +2178,15 @@
         reg: opts.reg === undefined ? 'real' : opts.reg, // 'real': each league's own registration rules (FM.Reg)
         twoLegs: opts.twoLegs ?? true,
         awayGoals: !!opts.awayGoals,
+        regionNations: !!opts.regionNations, // Catalonia and the Basque Country as nations (D.OPTIONAL_NATIONS)
         v: 2, // rules version: older saves move to the real rules on load (Sv.repair)
       },
       user: null,
+      // the confederations a world adds or changes (names, and which confederation a nation is in): { names, members }
+      confeds:
+        opts.confeds && (Object.keys(opts.confeds.names || {}).length || Object.keys(opts.confeds.members || {}).length)
+          ? JSON.parse(JSON.stringify({ names: opts.confeds.names || {}, members: opts.confeds.members || {} }))
+          : null,
       settings: FM.S?.settings || { theme: 'dark', speed: 1 },
       // how much of the world each league is simulated in (full, light, minimal) where the player chose it before the
       // save began; a league not listed runs at its default tier from the data
@@ -2252,7 +2277,7 @@
         manager:
           sim === 'minimal'
             ? null
-            : W.genStaff('Manager', U.chance(0.75) ? nat : U.pick(Object.keys(D.NATIONS)), {
+            : W.genStaff('Manager', U.chance(0.75) ? nat : U.pick(D.nationCodes()), {
                 rep: Math.round(rep * U.rand(0.8, 1.05)),
               }).id,
       };
@@ -2299,7 +2324,7 @@
       const age = U.randi(19, 34),
         ca = W.freeAgentCA(),
         pos = U.pick(D.POS);
-      const p = W.genPlayer({ nat: U.pick(Object.keys(D.NATIONS)), pos, age, ca, pa: W.potentialFor(ca, age) });
+      const p = W.genPlayer({ nat: U.pick(D.nationCodes()), pos, age, ca, pa: W.potentialFor(ca, age) });
       p.contract = S.year;
       S.players[p.id] = p;
     }
@@ -2578,7 +2603,7 @@
         const poss = ['ST', 'W', 'ST', 'AM', 'CM', 'CB', 'GK', 'CM', 'FB'];
         c.legends = [0, 1, 2, 3, 4]
           .map((i) => {
-            const nat = U.chance(0.88) ? c.nat : U.pick(Object.keys(D.NATIONS));
+            const nat = U.chance(0.88) ? c.nat : U.pick(D.nationCodes());
             const yrs = U.randi(7, 16),
               from = U.randi(first, Math.max(first, Math.min(2012, now - yrs - 1))),
               pos = i < 2 ? U.pick(['ST', 'ST', 'W', 'AM']) : U.pick(poss);

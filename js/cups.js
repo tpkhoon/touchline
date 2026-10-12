@@ -143,11 +143,12 @@
               })),
           ),
         }));
-      c.ko = { qf: [], qf2: null, sf: [], sf2: null, final: null };
+      c.ko = { po: [], qf: [], qf2: null, sf: [], sf2: null, final: null };
+      c.dropped = [];
       c.winner = null;
       c.awards = null;
       c.runnerUp = null;
-      c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.13)); // participation fee
+      c.clubs.forEach((id) => pay(id, c.prize * 0.13, c, 'participation')); // participation fee
     }
     Cu.setupEuro(qualified);
     for (const c of W.worldCups()) Cu.setupWorld(c);
@@ -201,7 +202,7 @@
       c.winner = null;
       c.runnerUp = null;
       c.awards = null;
-      c.clubs.forEach((id) => (S().clubs[id].balance += c.prize * 0.1)); // an appearance fee
+      c.clubs.forEach((id) => pay(id, c.prize * 0.1, c, 'participation')); // an appearance fee
     }
   };
   // Who the Holders' Cup takes at the end of a season: each nation's domestic cup winner, or the runner-up when the winner is
@@ -233,7 +234,7 @@
       .slice(0, incoming.length);
     incoming.forEach((id, i) => {
       Cu.swapEntrant(uc, out[i], id);
-      S().clubs[id].balance += uc.prize * 0.13;
+      pay(id, uc.prize * 0.13, uc, 'participation');
       FM.News.add({
         type: W.isUser(id) ? 'club' : 'world',
         title: `${S().clubs[id].name} take a ${uc.name} place`,
@@ -339,7 +340,7 @@
     c.winner = null;
     c.awards = null;
     c.runnerUp = null;
-    c.clubs.forEach((id) => (S().clubs[id].balance += 2e6));
+    c.clubs.forEach((id) => pay(id, 2e6, c, 'participation'));
   };
 
   // Fixtures a cup plays on the current calendar day (draws are made lazily, on the day)
@@ -505,6 +506,7 @@
         inR = (a) => (a || []).some((f) => f && (f.h === id || f.a === id));
       if (inR(ko.sf) || inR(ko.sf2)) return 'Semi-finals';
       if (inR(ko.qf) || inR(ko.qf2)) return 'Quarter-finals';
+      if (inR(ko.po)) return 'Knockout play-off';
       return c.clubs && c.clubs.includes(id) ? 'Group stage' : null;
     }
     return null;
@@ -543,8 +545,63 @@
     }
     return pairs;
   };
+  // Clubs knocked out of a cup drop into the one below (the editor's "drop down": cup.drop names the lower cup). The third-placed
+  // clubs of the groups of the cup above play the runners-up of this cup's groups for a place in the quarter-finals: a play-off
+  // of single matches at the runner-up's ground, before the quarter-finals. Works for a cup with the classic four groups.
+  const better = (a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || rep(b.id) - rep(a.id);
+  Cu.dropSources = (c) => W.continentals().filter((x) => x.drop === c.id && x.groups && x.groups.length);
+  Cu.dropOn = (c) => !!(c.groups && c.groups.length === 4 && Cu.dropSources(c).length);
+  Cu.dropRound = function (c) {
+    if (!Cu.dropOn(c)) return [];
+    c.ko.po = c.ko.po || [];
+    if (c.ko.po.length) return c.ko.po;
+    const done = (x) => x.groups.every((g) => g.fixtures.flat().every((f) => f.res));
+    if (!done(c) || !Cu.dropSources(c).every(done)) return [];
+    const thirds = Cu.dropSources(c)
+        .flatMap((x) => x.groups.map((g) => Cu.groupTable(g)[2]))
+        .filter(Boolean)
+        .sort(better),
+      runners = c.groups
+        .map((g) => Cu.groupTable(g)[1])
+        .filter(Boolean)
+        .sort(better),
+      n = Math.min(thirds.length, runners.length, 4);
+    if (!n) return [];
+    const involved = runners.slice(runners.length - n); // the weakest runners-up meet the clubs that dropped
+    c.ko.po = involved.map((r, i) => ({
+      id: FM.nextId('f'),
+      comp: c.id,
+      h: r.id,
+      a: thirds[n - 1 - i].id, // (the best runner-up of those meets the weakest drop)
+      res: null,
+      ko: true,
+      po: 'Knockout play-off',
+    }));
+    c.dropped = c.ko.po.map((f) => f.a);
+    c.clubs = c.clubs.concat(c.dropped.filter((id) => !c.clubs.includes(id)));
+    FM.News.add({
+      type: 'world',
+      title: `${c.name}: the knockout play-offs`,
+      body: c.ko.po
+        .map(
+          (f) =>
+            `${S().clubs[f.h].name} v ${S().clubs[f.a].name} (dropped from the ${Cu.dropSources(c)
+              .map((x) => x.name)
+              .join('/')})`,
+        )
+        .join('\n'),
+      big: true,
+    });
+    return c.ko.po;
+  };
+  // Who a runner-up becomes after the play-off (a club that drew a dropped club may be knocked out by it)
+  Cu.afterDrop = (c, id) => {
+    const t = ((c.ko && c.ko.po) || []).find((f) => f.h === id);
+    return t && t.res ? winnerOf(t) : id;
+  };
   function continental(c, stage) {
     if (!stage || !c.groups) return [];
+    if (stage === 'PO') return Cu.dropRound(c);
     if (stage[0] === 'G') return c.groups.flatMap((g) => g.fixtures[+stage.slice(1) - 1] || []);
     const fmt = Cu.formatOf(c);
     const groupsDone = () => c.groups.every((g) => g.fixtures.flat().every((f) => f.res));
@@ -559,12 +616,15 @@
       return round('qf', 'Quarter-final', () => {
         if (!groupsDone()) return null;
         if (c.groups.length > 4) return Cu.wideQuarters(c);
-        const [A, B, Cc, Dd] = c.groups.map(Cu.groupTable);
+        if (Cu.dropOn(c) && !(c.ko.po || []).length) return null; // (the play-offs are drawn first)
+        if ((c.ko.po || []).some((f) => !f.res)) return null;
+        const [A, B, Cc, Dd] = c.groups.map(Cu.groupTable),
+          up = (r) => Cu.afterDrop(c, r.id);
         return [
-          [A[0].id, B[1].id],
-          [B[0].id, A[1].id],
-          [Cc[0].id, Dd[1].id],
-          [Dd[0].id, Cc[1].id],
+          [A[0].id, up(B[1])],
+          [B[0].id, up(A[1])],
+          [Cc[0].id, up(Dd[1])],
+          [Dd[0].id, up(Cc[1])],
         ];
       });
     }
@@ -713,30 +773,38 @@
   }
 
   // Called by Season.apply for every cup/continental result
-  // What a result is worth: a national cup's amount, a regional one's small share of it, or a prize-based figure
-  Cu.purse = (c, cupAmt, other) => (c.type === 'regional' ? cupAmt * 0.1 : c.type === 'cup' ? cupAmt : other);
+  // What a result is worth. A domestic cup pays its fund down the rounds (FM.Finance.cupPayout); a regional cup a small
+  // share of a flat figure; a continental or world cup a part of its prize fund for each group win and knockout win.
+  const pay = (id, amt, c, why) => FM.Finance.prize(S().clubs[id], amt, `${c.name} ${why}`);
+  Cu.roundOf = (c, fx) =>
+    (c.rounds || []).find((r) => [...(r.ties || []), ...(r.ties2 || [])].some((f) => f.id === fx.id));
+  Cu.purse = function (c, fx, w) {
+    if (c.type === 'regional') return 2e5 * 0.2;
+    if (c.type === 'cup') {
+      const r = Cu.roundOf(c, fx);
+      return FM.Finance.cupPayout(c.prize || 3e6, c.clubs.length, r ? r.ties.length : 8);
+    }
+    return (c.prize || 0) * 0.25;
+  };
   Cu.onResult = function (fx) {
     const c = S().comps[fx.comp],
       r = fx.res;
     if (fx.group) {
       const g = c.groups.find((x) => x.name === fx.group);
       FM.Season.updTable(g.table, fx, r);
-      const w = r.hg > r.ag ? fx.h : r.ag > r.hg ? fx.a : null;
-      const pay = c.prize * 0.1;
-      if (w) S().clubs[w].balance += pay;
+      const w = r.hg > r.ag ? fx.h : r.ag > r.hg ? fx.a : null,
+        amt = (c.prize || 0) * 0.1;
+      if (w) pay(w, amt, c, 'group wins');
       else {
-        S().clubs[fx.h].balance += pay / 3;
-        S().clubs[fx.a].balance += pay / 3;
+        pay(fx.h, amt / 3, c, 'group wins');
+        pay(fx.a, amt / 3, c, 'group wins');
       }
       return;
     }
-    if (!Cu.decides(fx)) {
-      S().clubs[fx.h].balance += Cu.purse(c, 2e5, c.prize * 0.08);
-      return;
-    } // first leg: gate receipts
+    if (!Cu.decides(fx)) return; // a first leg: nothing yet
     const w = winnerOf(fx),
       l = w === fx.h ? fx.a : fx.h;
-    S().clubs[w].balance += Cu.purse(c, 4e5, c.prize * 0.25);
+    pay(w, Cu.purse(c, fx, w), c, 'knockout wins'); // (the title's prize is paid in Cu.finish)
     if (fx.final) Cu.finish(c, w, l);
   };
   // (the tail of Cu.finish below: a Summer Cup final hands out its European places)
@@ -748,7 +816,7 @@
     c.lastFinal = { w, r: l, year: S().year };
     if (FM.Records) FM.Records.finishComp(c); // its awards and team of the tournament
     club.titles[c.id] = (club.titles[c.id] || 0) + 1;
-    club.balance += c.prize || 0;
+    pay(w, c.type === 'cup' ? (c.prize || 0) * 0.25 : c.prize || 0, c, c.type === 'cup' ? 'winners' : 'title'); // (a domestic cup's ladder has paid most of its fund by now)
     W.nudgeRep(club, c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5);
     club.fanMood = Math.min(100, club.fanMood + 15);
     if (W.isUser(w)) {
@@ -776,6 +844,7 @@
   Cu.koList = (c) =>
     c.ko
       ? [
+          ...(c.ko.po || []),
           ...(c.ko.qf || []),
           ...(c.ko.qf2 || []),
           ...(c.ko.sf || []),

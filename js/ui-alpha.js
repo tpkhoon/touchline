@@ -1010,7 +1010,43 @@
         }</div>
         ${mineFirst.map((g) => nfold('q_' + g.name, `<div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>`, miniTable(g.table, g.teams, 1, u.nation), g.teams.includes(u.nation), 'card flat')).join('')}`;
     }
+    top += nationsLeagueSection(s, u);
     return top + origIntl();
+  };
+  // The Nations League: a fold for each confederation (yours first), its leagues and their groups
+  const nationsLeagueSection = (s, u) => {
+    const I = FM.Intl,
+      nl = s.nl;
+    if (!nl) {
+      const hist = (s.nlHistory || []).slice(0, 5);
+      return hist.length
+        ? `<div class="card"><div class="h3">Nations League</div><div class="small dim" style="margin-top:4px">No Nations League this season (a qualifying year). Last played:</div>${hist.map((h) => `<div class="row small" style="margin-top:6px"><span class="dim" style="width:48px">${h.year + 1}</span><span class="grow ellip">${esc(h.name)}</span><b>${C.flag(T(h.winner).code)} ${esc(T(h.winner).name)}</b></div>`).join('')}</div>`
+        : '';
+    }
+    const club = FM.W.userClub && FM.W.userClub(),
+      focus = u.nation ? T(u.nation).code : club && club.nat,
+      mine = focus && D.NATIONS[focus] ? I.region(focus) : null,
+      id = u.nation;
+    const cfs = Object.values(nl.confeds).sort((a, b) => (b.id === mine ? 1 : 0) - (a.id === mine ? 1 : 0));
+    return `<div class="sec"><div class="h3">Nations League ${nl.year + 1}</div></div>
+      <div class="small muted" style="margin:0 2px 8px">Every nation plays the other three in its group on the first three matchdays of the breaks: no friendlies. The group winners go up a league, the last in each group go down, and the best League A group winner is the champion.</div>
+      ${cfs
+        .map((c) => {
+          const body = c.leagues
+            .map(
+              (lg, li) =>
+                `<div class="small b dim" style="margin:12px 0 2px">${esc(lg.name.toUpperCase())}</div>${lg.groups
+                  .map(
+                    (g) =>
+                      `<div class="tiny dim" style="margin:8px 0 2px">${esc(g.label)}</div>${miniTable(g.table, g.teams, 1, id || (focus && g.teams.find((x) => T(x).code === focus)))}`,
+                  )
+                  .join('')}`,
+            )
+            .join('');
+          const summary = `<div class="row"><div class="h3 grow">🌍 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${C.flag(T(c.winner).code)} ${esc(T(c.winner).name)}</span>` : ''}</div>`;
+          return nfold('nl_' + c.id, summary, body, c.id === mine);
+        })
+        .join('')}`;
   };
   UI.acts.ntTake = (d) => {
     const r = FM.Intl.takeJob(d.id);

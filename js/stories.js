@@ -932,7 +932,7 @@
         const last = (nm.career || []).filter((x) => S.clubs[x[0]]).at(-1);
         body += ` ${nm.fn} ${nm.ln} (${D.NATIONS[nm.nat].flag}) returns to management${last ? ` after leaving ${S.clubs[last[0]].name}${last[2] && last[2] < S.year ? ` in ${last[2]}` : ' earlier this year'}` : ''}.`;
       } else {
-        nm = W.genStaff('Manager', U.chance(0.7) ? c.nat : U.pick(Object.keys(D.NATIONS)), { rep: c.rep });
+        nm = W.genStaff('Manager', U.chance(0.7) ? c.nat : U.pick(D.nationCodes()), { rep: c.rep });
         body += ` ${nm.fn} ${nm.ln} (${D.NATIONS[nm.nat].flag}) is appointed.`;
       }
     }

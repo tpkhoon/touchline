@@ -13,11 +13,27 @@
   // Clubs and national teams share the match engine; this resolves either
   FM.clubOf = (id) => FM.S.clubs[id] || (FM.S.nteams && FM.S.nteams[id]);
   const T = (id) => S().nteams[id];
-  I.region = (code) => {
+  // Confederations: each nation belongs to one. The game's own are the parts of the world (England is in Europe); a world can
+  // rename them, move nations between them and add confederations of its own (S.confeds: { names: { id: name }, members:
+  // { nation code: id } }, from the world editor). Qualifying, the continental championships and the Nations League all go by
+  // confederation.
+  I.CONFEDS = { EUR: 'Europe', SAM: 'South America', AFR: 'Africa', ASIA: 'Asia', NAM: 'North America' };
+  I.REGION_NAME = I.CONFEDS;
+  I.baseConfed = (code) => {
     const r = D.NATIONS[code].region;
     return r === 'ENG' ? 'EUR' : r;
   };
-  I.REGION_NAME = { EUR: 'Europe', SAM: 'South America', AFR: 'Africa', ASIA: 'Asia', NAM: 'North America' };
+  I.region = (code) => {
+    const c = S() && S().confeds,
+      m = c && c.members && c.members[code];
+    return m || I.baseConfed(code);
+  };
+  I.confedName = (id) => (S() && S().confeds && S().confeds.names && S().confeds.names[id]) || I.CONFEDS[id] || id;
+  // The game's confederations, then the world's own
+  I.confedIds = () => [
+    ...Object.keys(I.CONFEDS),
+    ...Object.keys((S() && S().confeds && S().confeds.names) || {}).filter((id) => !I.CONFEDS[id]),
+  ];
 
   // Tournament formats. pools: [[regions], slots]
   I.TOURNS = {
@@ -43,6 +59,34 @@
       { id: 'AS', name: 'Asia-Pacific Nations Cup', size: 4, pools: [[['ASIA', 'NAM'], 4]] },
     ],
   };
+  // The tournaments of a kind in this world: a confederation of the world's own (four nations or more) gets a place at the World
+  // Championship, taken from the biggest part of the world, and a continental championship of its own
+  I.tournsFor = function (kind) {
+    const base = I.TOURNS[kind] || [],
+      extra = I.confedIds().filter(
+        (id) =>
+          !I.CONFEDS[id] && Object.values((S() && S().nteams) || {}).filter((t) => I.region(t.code) === id).length >= 4,
+      );
+    if (!extra.length) return base;
+    if (kind === 'world')
+      return base.map((tn) => {
+        const pools = tn.pools.map(([r, n]) => [r.slice(), n]);
+        let take = extra.length;
+        while (take-- > 0) {
+          const big = pools.reduce((m, p) => (p[1] > m[1] ? p : m), pools[0]);
+          if (big[1] > 1) big[1]--;
+        }
+        return { ...tn, pools: pools.concat(extra.map((id) => [[id], 1])) };
+      });
+    if (kind === 'continental')
+      return base.concat(
+        extra.map((id) => {
+          I.TNAME['X' + id] = `${I.confedName(id)} Championship`;
+          return { id: 'X' + id, name: I.TNAME['X' + id], size: 4, pools: [[[id], 4]] };
+        }),
+      );
+    return base;
+  };
   I.TNAME = {
     WC: 'FIFA World Cup',
     EC: 'UEFA European Championship',
@@ -50,6 +94,7 @@
     AF: 'Africa Cup of Nations',
     AS: 'Asia-Pacific Nations Cup',
     CT: 'Continental Champions Trophy',
+    NL: 'Nations League',
   }; // Asia and North America share one tournament here, so it keeps its own name
 
   // Invitational tournaments in the international windows: a host and three invited nations play semi-finals on the first day
@@ -95,6 +140,7 @@
   I.topUp = function (all) {
     const s = S();
     for (const code in D.NATIONS) {
+      if (!D.nationOn(code)) continue;
       if (!all && !(s.nteams && s.nteams['n_' + code])) continue; // (a world's later summers: only nations that have a team)
       const have = I.pool(code).length;
       if (have >= I.MIN_POOL) continue;
@@ -119,12 +165,34 @@
       ),
     );
 
+  // The regions that are nations (Catalonia, the Basque Country) start with the players of their families who are not in their
+  // own country's squad: a player eligible through family (p.nat2) and uncapped chooses the region when his country has no
+  // use for him. The rest choose later (I.allegianceTick), as with any second nationality.
+  I.regionAllegiance = function () {
+    const s = S();
+    for (const code in D.NATIONS) {
+      if (!D.NATIONS[code].optional || !D.nationOn(code)) continue;
+      const top = {};
+      for (const p of Object.values(s.players)) {
+        if (p.nat2 !== code || p.retired || W.age(p) < 17 || !I.uncapped(p) || I.nationOf(p) !== p.nat) continue;
+        if (!top[p.nat])
+          top[p.nat] = new Set(
+            I.pool(p.nat)
+              .slice(0, 23)
+              .map((x) => x.id),
+          );
+        if (!top[p.nat].has(p.id)) p.alleg = code;
+      }
+    }
+  };
   I.setup = function () {
     const s = S();
     s.nteams = {};
     s.intlLog = [];
+    I.regionAllegiance();
     I.topUp(true);
     for (const code in D.NATIONS) {
+      if (!D.nationOn(code)) continue;
       const N = D.NATIONS[code];
       // a nation too thin in players to field a squad has no national team in this world (its players still play)
       if (I.pool(code).length < 16) continue;
@@ -161,6 +229,7 @@
       games = 12;
     s.intlGames = s.intlGames || {};
     for (const code in D.NATIONS) {
+      if (!D.nationOn(code)) continue;
       s.intlGames[code] = { [s.year - 1]: games };
       I.pool(code)
         .slice(0, 23)
@@ -247,7 +316,7 @@
     const kind = I.tournamentFor(s.year);
     if (kind && kind !== 'confed') {
       const q = { kind, year: s.year, groups: [], direct: {} };
-      I.TOURNS[kind].forEach((tn) =>
+      I.tournsFor(kind).forEach((tn) =>
         tn.pools.forEach(([regions, slots], pi) => {
           const teams = I.ranked().filter((t) => regions.includes(I.region(t.code)));
           const key = `${tn.id}:${pi}`;
@@ -269,7 +338,7 @@
               gi < 26
                 ? String.fromCharCode(65 + gi)
                 : String.fromCharCode(64 + Math.floor(gi / 26)) + String.fromCharCode(65 + (gi % 26));
-            const name = `${tn.id === 'WC' ? '' : tn.id + ' '}${I.REGION_NAME[regions[0]]}${regions.length > 1 ? '+' : ''} ${letter}`;
+            const name = `${tn.id === 'WC' ? '' : tn.id + ' '}${I.confedName(regions[0])}${regions.length > 1 ? '+' : ''} ${letter}`;
             q.groups.push({
               key,
               tn: tn.id,
@@ -287,10 +356,133 @@
       // A nation can't be in two qualifying groups at once (the World Championship takes priority)
       s.quals = q;
     }
+    s.nl = I.nlBuild();
     s.invite = I.planInvite();
     I.topUp();
     I.allegianceTick();
     I.refreshJobs();
+  };
+
+  // ---------- The Nations League ----------
+  // Every confederation plays one in the seasons with no qualifying (the year with no tournament and the year of the
+  // Continental Champions Trophy): its nations in leagues of sixteen, four groups of four a league, one match against each
+  // group-mate on the first three matchdays of the breaks. The group winners of a league go up at the end, the last in each
+  // group go down, and the champions are the best group winner of League A. This is what the breaks are for: no friendlies.
+  I.NL = { group: 4, groups: 4 };
+  I.nlYear = (year) => {
+    const k = I.tournamentFor(year);
+    return !k || k === 'confed';
+  };
+  I.nlBuild = function () {
+    const s = S();
+    if (!I.nlYear(s.year)) return null;
+    const by = {};
+    Object.values(s.nteams).forEach((t) => (by[I.region(t.code)] = by[I.region(t.code)] || []).push(t));
+    const nl = { year: s.year, confeds: {} },
+      per = I.NL.group * I.NL.groups;
+    for (const cid of I.confedIds()) {
+      const teams = by[cid] || [];
+      if (teams.length < 2) continue;
+      // last time's order (promotion and relegation already done); a first time or a changed membership: by ranking
+      const prev = (s.nlOrder || {})[cid],
+        codes = new Set(teams.map((t) => t.code)),
+        order =
+          prev && prev.length === teams.length && prev.every((c) => codes.has(c))
+            ? prev.map((c) => s.nteams['n_' + c])
+            : teams.slice().sort((a, b) => b.coef - a.coef);
+      let L = Math.max(1, Math.ceil(order.length / per));
+      if (L > 1 && order.length - per * (L - 1) < I.NL.group) L--;
+      nl.confeds[cid] = {
+        id: cid,
+        name: `${I.confedName(cid)} Nations League`,
+        order: order.map((t) => t.code),
+        leagues: Array.from({ length: L }, (_, li) => {
+          const lt = order.slice(li * per, li === L - 1 ? undefined : (li + 1) * per),
+            g = Math.max(1, Math.ceil(lt.length / I.NL.group)),
+            groups = [...Array(g)].map(() => []),
+            letter = String.fromCharCode(65 + li);
+          lt.forEach((t, i) => {
+            const row = Math.floor(i / g),
+              col = i % g;
+            groups[row % 2 ? g - 1 - col : col].push(t.id);
+          });
+          return {
+            name: `League ${letter}`,
+            groups: groups.map((ids, gi) => {
+              const rr = W.roundRobin(ids);
+              return {
+                name: `${cid}-${letter}${gi + 1}`,
+                label: `Group ${gi + 1}`,
+                teams: ids,
+                table: Object.fromEntries(
+                  ids.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }]),
+                ),
+                rounds: (ids.length === 2 ? rr : rr.slice(0, rr.length / 2)).map((rd) =>
+                  rd.map(([h, a]) => ({ h, a })),
+                ),
+              };
+            }),
+          };
+        }),
+      };
+    }
+    return Object.keys(nl.confeds).length ? nl : null;
+  };
+  I.nlGroups = (nl = S().nl) =>
+    nl
+      ? Object.values(nl.confeds).flatMap((c) =>
+          c.leagues.flatMap((lg, li) => lg.groups.map((g) => ({ ...g, g, league: lg.name, li, confed: c }))),
+        )
+      : [];
+  I.nlGroupOf = (id) => I.nlGroups().find((x) => x.teams.includes(id));
+  // At the end of the third matchday: the order for next time (winners up, last down) and the champions
+  I.nlFinish = function () {
+    const s = S(),
+      nl = s.nl;
+    if (!nl || nl.done) return;
+    nl.done = true;
+    s.nlOrder = s.nlOrder || {};
+    s.nlHistory = s.nlHistory || [];
+    for (const c of Object.values(nl.confeds)) {
+      const keys = [],
+        winners = [];
+      c.leagues.forEach((lg, li) =>
+        lg.groups.forEach((g) => {
+          const tab = W.sortedTable({ table: g.table });
+          g.final = tab.map((r) => r.id);
+          if (li === 0) winners.push(tab[0]);
+          tab.forEach((r, pos) =>
+            keys.push({
+              id: r.id,
+              pos,
+              ppg: r.p ? r.pts / r.p : 0,
+              gd: r.gd,
+              key: li + (pos === 0 && li > 0 ? -0.6 : pos === tab.length - 1 && li < c.leagues.length - 1 ? 0.45 : 0),
+            }),
+          );
+        }),
+      );
+      keys.sort(
+        (a, b) => a.key - b.key || a.pos - b.pos || b.ppg - a.ppg || b.gd - a.gd || T(b.id).coef - T(a.id).coef,
+      );
+      s.nlOrder[c.id] = keys.map((k) => T(k.id).code);
+      winners.sort(
+        (a, b) => b.pts / (b.p || 1) - a.pts / (a.p || 1) || b.gd - a.gd || b.gf - a.gf || T(b.id).coef - T(a.id).coef,
+      );
+      const champ = winners[0] && T(winners[0].id);
+      if (!champ) continue;
+      c.winner = champ.id;
+      champ.titles.NL = (champ.titles.NL || 0) + 1;
+      s.nlHistory.unshift({ year: s.year, confed: c.id, name: c.name, winner: champ.id });
+      if (s.nlHistory.length > 60) s.nlHistory.length = 60;
+      const mine = s.user && s.user.nation && I.region(T(s.user.nation).code) === c.id;
+      FM.News.add({
+        type: 'world',
+        title: `${champ.name} win the ${c.name}`,
+        body: `${champ.name} finish top of their League A group (${winners[0].pts} points from ${winners[0].p} games). Group winners in the other leagues go up; the last in each group go down.`,
+        big: !!mine,
+      });
+    }
   };
 
   // The Continental Champions Trophy's invitations: the champions of the last continental championships, the world champions and
@@ -304,7 +496,11 @@
     for (let i = (s.archive || []).length - 1; i >= 0; i--)
       for (const r of s.archive[i].intl || []) if (r.winner && s.nteams[r.winner] && !won[r.id]) won[r.id] = r.winner;
     const add = (id) => id && !ids.includes(id) && ids.push(id);
-    for (const [tid, regions] of Object.entries(I.CONFED_FROM))
+    const from = { ...I.CONFED_FROM };
+    I.confedIds()
+      .filter((id) => !I.CONFEDS[id])
+      .forEach((id) => (from['X' + id] = [id]));
+    for (const [tid, regions] of Object.entries(from))
       add(won[tid] || (I.ranked().find((t) => regions.includes(I.region(t.code))) || {}).id);
     add(won.WC || I.ranked()[0].id);
     const hosts = I.ranked()
@@ -325,6 +521,9 @@
     const busy = new Set();
     ((s.quals && s.quals.groups) || []).forEach((g) =>
       [2, 3].forEach((md) => (g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
+    );
+    I.nlGroups().forEach((x) =>
+      [2, 3].forEach((md) => (x.g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
     );
     if (busy.has(host.id)) return null;
     const pool = U.shuffle(
@@ -446,7 +645,7 @@
     return rows.slice(0, slots).map((r) => r.id);
   };
   I.qualifiedFor = (tnId) => {
-    const tn = I.TOURNS[S().quals ? S().quals.kind : 'world'].find((x) => x.id === tnId);
+    const tn = I.tournsFor(S().quals ? S().quals.kind : 'world').find((x) => x.id === tnId);
     return tn ? tn.pools.flatMap((_, pi) => I.poolQualifiers(`${tnId}:${pi}`)) : [];
   };
 
@@ -501,12 +700,15 @@
     }
     // The season's invitational, in the second window
     fx.push(...I.inviteDay(tag, busy));
-    // Everyone else plays a friendly against a similarly ranked side
-    const free = I.ranked().filter((t) => !busy.has(t.id)),
-      order = [];
-    for (let i = 0; i < free.length; i += 4) order.push(...U.shuffle(free.slice(i, i + 4)));
-    for (let i = 0; i + 1 < order.length; i += 2)
-      fx.push(mkFx(order[i].id, order[i + 1].id, 'International friendly', { kind: 'friendly' }));
+    // The Nations League (no friendlies: a nation with nothing to play in a window rests)
+    I.nlGroups().forEach((x) =>
+      (x.g.rounds[md] || []).forEach(({ h, a }) => {
+        if (busy.has(h) || busy.has(a)) return;
+        busy.add(h);
+        busy.add(a);
+        fx.push(mkFx(h, a, `${x.confed.name} · ${x.league} ${x.label}`, { kind: 'nl', group: x.name }));
+      }),
+    );
     return fx;
   };
 
@@ -514,7 +716,7 @@
   I.setupTournaments = function () {
     const s = S(),
       kind = I.tournamentFor(s.year);
-    s.tourns = (I.TOURNS[kind] || []).map((tn) => {
+    s.tourns = I.tournsFor(kind).map((tn) => {
       let teams = (tn.confed ? I.confedTeams() : I.qualifiedFor(tn.id)).map(T);
       if (teams.length < tn.size)
         teams = teams
@@ -680,7 +882,8 @@
     const score = r.hg > r.ag ? 1 : r.hg < r.ag ? 0 : r.pens ? (r.pens[0] > r.pens[1] ? 0.6 : 0.4) : 0.5;
     const gd = Math.abs(r.hg - r.ag),
       K =
-        (tourn ? 45 : fx.kind === 'qual' ? 35 : fx.kind === 'invite' ? 28 : 22) * (gd <= 1 ? 1 : gd === 2 ? 1.5 : 1.75);
+        (tourn ? 45 : fx.kind === 'qual' ? 35 : fx.kind === 'nl' ? 30 : fx.kind === 'invite' ? 28 : 22) *
+        (gd <= 1 ? 1 : gd === 2 ? 1.5 : 1.75);
     const delta = (K * (score - exp)) / 10;
     H.club.coef = Math.round((H.club.coef + delta) * 10) / 10;
     A.club.coef = Math.round((A.club.coef - delta) * 10) / 10;
@@ -700,6 +903,10 @@
       const g = s.quals.groups.find((x) => x.name === fx.group);
       if (g) FM.Season.updTable(g.table, fx, r);
     }
+    if (fx.kind === 'nl') {
+      const g = I.nlGroups().find((x) => x.name === fx.group);
+      if (g) FM.Season.updTable(g.g.table, fx, r);
+    }
     if (tourn) {
       const t = s.tourns.find((x) => x.id === fx.tid);
       t.games.push(rec);
@@ -716,6 +923,7 @@
       FM.Stories.intlWindow(s.intlBreak);
       s.intlBreak = [];
     }
+    if (cal.type === 'intl' && cal.tag === 'I2a' && s.nl) I.nlFinish();
     if (cal.type === 'tourn' && cal.stage === 'F' && s.tourns)
       s.tourns.forEach((t) => t.ko.final && t.ko.final.res && !t.winner && I.finishTournament(t));
   };
@@ -1058,9 +1266,15 @@
         text: `Qualify for the ${s.quals.kind === 'world' ? 'World Championship' : 'continental championships'}: ${g.slots} place${g.slots === 1 ? '' : 's'} from ${g.name.trim()}`,
         group: g,
       };
+    const nlg = I.nlGroupOf(id);
+    if (nlg)
+      return {
+        text: `${nlg.confed.name}, ${nlg.league}: win ${nlg.label} to go up${nlg.li ? '' : ' and stay among the best'}, and finish above the bottom to stay up`,
+        group: nlg.g,
+      };
     if (s.quals && Object.values(s.quals.direct).flat().includes(id))
-      return { text: 'Already qualified for the finals: use the friendlies to build the side' };
-    return { text: 'No qualifying this year: friendlies only, a chance to build for the next campaign' };
+      return { text: 'Already qualified for the finals: a quiet year to build the side' };
+    return { text: 'No qualifying this year: a chance to build for the next campaign' };
   };
   // Upcoming international matches for your nation (qualifiers named, friendlies drawn on the day)
   I.upcoming = function () {
@@ -1068,7 +1282,8 @@
       id = s.user.nation;
     if (!id) return [];
     const out = [];
-    const g = s.quals && s.quals.groups.find((x) => x.teams.includes(id));
+    const g = (s.quals && s.quals.groups.find((x) => x.teams.includes(id))) || (I.nlGroupOf(id) || {}).g;
+    const label = s.quals && s.quals.groups.includes(g) ? `${I.TNAME[g.tn]} qualifier` : g ? 'Nations League' : '';
     const played = g ? g.table[id].p : 0;
     let ix = 0;
     s.calendar.slice(s.day).forEach((d, k) => {
@@ -1080,7 +1295,7 @@
         md: ++ix,
         opp: fx ? T(fx.h === id ? fx.a : fx.h) : null,
         home: fx ? fx.h === id : null,
-        label: fx ? `${I.TNAME[g.tn]} qualifier` : 'Friendly',
+        label: fx ? label : 'Rest',
       });
     });
     return out.slice(0, 4);

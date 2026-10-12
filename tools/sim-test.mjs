@@ -283,9 +283,25 @@ for (let s = 0; s < SEASONS; s++) {
   }
   // every nation keeps a national team (a thin one is topped up with unattached players), and unattached internationals stay
   check(
-    !FM.S.nteams || Object.keys(FM.S.nteams).length === Object.keys(FM.D.NATIONS).length,
-    `season ${s + 1}: ${Object.keys(FM.S.nteams || {}).length} national teams for ${Object.keys(FM.D.NATIONS).length} nations`,
+    !FM.S.nteams || Object.keys(FM.S.nteams).length === FM.D.nationCodes().length,
+    `season ${s + 1}: ${Object.keys(FM.S.nteams || {}).length} national teams for ${FM.D.nationCodes().length} nations`,
   );
+  // no international friendlies: the breaks are for qualifiers, the Nations League and the invitationals
+  check(
+    !(FM.S.intlLog || []).some((g) => /friendly/i.test(g.label || '')),
+    `season ${s + 1}: an international friendly was played`,
+  );
+  // a league's prize fund is shared by position (the champion more than the last club) and adds up to the fund
+  {
+    const pr = FM.Finance.leaguePrizes(
+      { rules: { prize: 1e8 } },
+      Array.from({ length: 20 }, (_, i) => ({ id: 'x' + i })),
+    );
+    check(
+      pr[0] > pr[19] && Math.abs(pr.reduce((t, x) => t + x, 0) - 1e8) < 1,
+      `season ${s + 1}: league prize money is not shared by position`,
+    );
+  }
   // a new season starts clean: no split yet (last year's groups gone), and each title-playoff day is on the calendar once
   {
     const stale = W.leagues().filter((c) => c.rules.split && c.split && !c.split.done && c.groups);

@@ -37,7 +37,7 @@
       startYear: null,
       players: 'overlay',
     },
-    rules: { win: 3, subs: 5, reg: 'real', foreignLimit: 99, twoLegs: true, awayGoals: false },
+    rules: { win: 3, subs: 5, reg: 'real', foreignLimit: 99, twoLegs: true, awayGoals: false, regionNations: false },
     leagues: [],
     clubs: [],
     players: [],
@@ -53,6 +53,7 @@
     agents: [], // the names of the agent firms (empty: the game's own)
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
     nations: [], // national teams: { code, name, short, colors, coef }
+    confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
     history: { seasons: [] },
   });
 
@@ -70,6 +71,7 @@
       foreignLimit: S.rules.foreignLimit,
       twoLegs: S.rules.twoLegs,
       awayGoals: S.rules.awayGoals,
+      regionNations: !!S.rules.regionNations,
     };
     for (const c of Object.values(S.comps)) {
       if (c.type === 'league')
@@ -108,6 +110,7 @@
         },
       });
     def.intl = WD.intlNow();
+    if (S.confeds) def.confeds = JSON.parse(JSON.stringify(S.confeds));
     def.calendar = WD.calendarNow();
     for (const c of Object.values(S.clubs)) {
       def.clubs.push({
@@ -217,6 +220,7 @@
         central: !!d.central,
         prize: d.prize,
         groupSize: d.groupSize || 4,
+        ...(d.drop ? { drop: d.drop } : {}),
         ...(d.feeders ? { feeders: { ...d.feeders } } : {}),
         ...(d.play ? { play: JSON.parse(JSON.stringify(d.play)) } : {}),
       };
@@ -257,6 +261,17 @@
       if (f.central != null && typeof f.central !== 'boolean') e.push(`${at}: central is true or false`);
       if (f.groupSize != null && ![3, 4, 5, 6].includes(f.groupSize))
         e.push(`${at}: the groups have three, four, five or six clubs`);
+      if (f.drop != null) {
+        const info = (x) => {
+          const own = ((def && def.competitions) || []).find((c) => c.id === x && c.isNew && c.kind === 'cont');
+          return own ? { region: own.region, tier: own.tier || 1 } : D.CONTINENTALS.find((c) => c.id === x);
+        };
+        const me = info(id),
+          to = info(f.drop);
+        if (!to || f.drop === id) e.push(`${at}: clubs can only drop into another continental cup`);
+        else if (me && (to.region !== me.region || (to.tier || 1) <= (me.tier || 1)))
+          e.push(`${at}: clubs drop into a cup of the same part of the world one tier down`);
+      }
       if (f.feeders != null) {
         const ids = new Set([...D.LEAGUES.map((l) => l.id), ...((def && def.leagues) || []).map((l) => l.id)]);
         if (!f.feeders || typeof f.feeders !== 'object' || Array.isArray(f.feeders))
@@ -712,6 +727,7 @@
             ...(f.legs ? { legs: { ...f.legs } } : {}),
             ...(f.central ? { central: true } : {}),
             ...(f.groupSize ? { groupSize: f.groupSize } : {}),
+            ...(f.drop ? { drop: f.drop } : {}),
             ...(f.feeders && (c.tier || 1) > 1 ? { feeders: { ...f.feeders } } : {}),
             ...(f.play ? { play: JSON.parse(JSON.stringify(f.play)) } : {}),
           });
@@ -796,6 +812,7 @@
         central: c.central,
         prize: c.prize,
         groupSize: c.groupSize,
+        drop: c.drop,
         play: c.play && JSON.stringify(c.play),
         feeders: c.feeders && JSON.stringify(c.feeders),
       })),
@@ -883,6 +900,8 @@
         if (d && c.format.prize != null) d.prize = c.format.prize;
         if (d && c.format.groupSize) d.groupSize = c.format.groupSize;
         if (d) {
+          if (c.format.drop) d.drop = c.format.drop;
+          else delete d.drop;
           if (c.format.play) d.play = JSON.parse(JSON.stringify(c.format.play));
           else delete d.play;
           if (c.format.feeders && d.feeders) d.feeders = { ...c.format.feeders };
@@ -941,6 +960,8 @@
         c.prize = s.prize;
         if (s.groupSize === undefined) delete c.groupSize;
         else c.groupSize = s.groupSize;
+        if (s.drop) c.drop = s.drop;
+        else delete c.drop;
         if (s.play) c.play = JSON.parse(s.play);
         else delete c.play;
         if (s.feeders) c.feeders = JSON.parse(s.feeders);
@@ -1076,6 +1097,8 @@
     const e = [],
       r = l.rules || {},
       at = `league ${l.id}`;
+    if (r.prize != null && !(r.prize >= 1e5 && r.prize <= 2e10))
+      e.push(`${at}: the prize fund is between 100,000 and 20 billion`);
     if (r.legs != null && ![1, 2].includes(r.legs)) e.push(`${at}: matches are played once each or home and away`);
     if (r.tiebreak != null) {
       if (
@@ -1536,6 +1559,20 @@
         if (s.role === 'Scout' && perStaff[k] > 5) errors.push(`club ${s.club}: more than five scouts`);
       }
     }
+    {
+      const cf = def.confeds || {},
+        known = new Set([...Object.keys((FM.Intl && FM.Intl.CONFEDS) || {}), ...Object.keys(cf.names || {})]);
+      for (const [id, nm] of Object.entries(cf.names || {}))
+        if (!String(nm || '').trim() || String(nm).length > 40)
+          errors.push(`confederation ${id}: needs a name (up to 40 characters)`);
+      for (const [id] of Object.entries(cf.names || {}))
+        if (!/^[A-Za-z0-9]{2,6}$/.test(id)) errors.push(`confederation ${id}: the short name is 2–6 letters or digits`);
+      for (const [code, id] of Object.entries(cf.members || {})) {
+        if (!D.NATIONS[code]) errors.push(`confederation ${id}: the game has no nation "${code}"`);
+        else if (!known.has(id))
+          errors.push(`${D.NATIONS[code].name} is in a confederation that does not exist (${id})`);
+      }
+    }
     const nts = new Set();
     for (const n of def.nations || []) {
       const at = `national team ${n.code}`;
@@ -1961,7 +1998,7 @@
     const patch = WD.patchOf(def);
     try {
       WD.useStatic(patch);
-      W.newWorld({ ...def.rules, ...rules, startYear: def.meta.startYear || undefined });
+      W.newWorld({ ...def.rules, ...rules, startYear: def.meta.startYear || undefined, confeds: def.confeds });
       const rep = WD.apply(def);
       rep.patch = patch;
       return rep;

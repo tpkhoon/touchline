@@ -2589,12 +2589,13 @@
       : 'single-leg knockouts';
     // each cup's own knockout format: the Asian cup plays single matches at one venue, and the African and North
     // American finals are over two legs
-    const cupFormat = (c) => {
+    const cupFormat0 = (c) => {
       if (!s.rules.twoLegs) return `${legs} · neutral final`;
       const f = FM.Cups.formatOf(c),
         one = f.legs.qf === 1 && f.legs.sf === 1;
       return `${one ? 'single-match knockouts' + (f.central ? ' at one venue' : '') : legs} · ${f.legs.f === 2 ? 'two-legged final' : 'neutral final'}`;
     };
+    const cupFormat = (c) => cupFormat0(c) + (c.prize ? ` · 💰 ${U.money(c.prize)} prize fund` : '');
     const wc = W.worldCups()
       .filter((c) => v === 'world' || (v === 'mine' && inIt(c)))
       .map(
@@ -2675,7 +2676,7 @@
     const dom = W.cups()
       .filter((c) => (v === 'domestic' && !c.euro) || (v === 'continental' && c.euro) || (v === 'mine' && inIt(c)))
       .map((c) => {
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? '⭐' : '🏆'} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${c.clubs.length} clubs · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties</div>
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? '⭐' : '🏆'} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${c.clubs.length} clubs · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties${c.prize ? ` · 💰 ${U.money(c.prize)} fund, paid down the rounds` : ''}</div>
         ${
           (c.rounds || [])
             .slice()
@@ -3154,17 +3155,14 @@
       <div class="card"><div class="row"><div class="grow"><div class="h3">Season preview popup</div><div class="small dim">Show it automatically in pre-season (it's always on the Home screen)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.skipPreview ? 'on' : ''}" data-act="setFlag" data-k="skipPreview" data-v="0">On</button><button class="${s.settings.skipPreview ? 'on' : ''}" data-act="setFlag" data-k="skipPreview" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Haptics</div><div class="small dim">A light tap on every button (phones that support it)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="0">On</button><button class="${s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Matchday digest</div><div class="small dim">A round-up card in the feed after every league matchday</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="0">On</button><button class="${s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="1">Off</button></div></div></div>
-      <div class="card"><div class="row"><div class="grow"><div class="h3">Currency</div><div class="small dim">Auto uses your club's: £ in Britain, € in the eurozone, $ elsewhere</div></div></div><div class="seg" style="margin-top:8px">${[
-        ['auto', 'Auto'],
-        ['GBP', '£'],
-        ['EUR', '€'],
-        ['USD', '$'],
-      ]
+      <div class="card"><div class="row"><div class="grow"><div class="h3">Currency</div><div class="small dim">Auto uses your club's country's currency; prices are converted at fixed rates (the game keeps its money in dollars)</div></div></div><select data-input="currency" style="width:100%;margin-top:8px"><option value="auto" ${(s.settings.currency || 'auto') === 'auto' ? 'selected' : ''}>Auto (${esc(U.currency().name)})</option>${Object.entries(
+        U.CURRENCIES,
+      )
         .map(
-          ([v, l]) =>
-            `<button class="${(s.settings.currency || 'auto') === v ? 'on' : ''}" data-act="currency" data-v="${v}">${l}</button>`,
+          ([k, c]) =>
+            `<option value="${k}" ${s.settings.currency === k ? 'selected' : ''}>${esc(c.name)} (${esc(c.sym.trim())})</option>`,
         )
-        .join('')}</div></div>
+        .join('')}</select></div>
       <div class="card"><div class="h3">World rules</div><div class="small muted" style="margin-top:6px;line-height:1.6">Points for a win: <b>${s.rules.win}</b> · Subs: <b>${s.rules.subs}</b> · Foreign players in squad: <b>${W.foreignLimitText()}</b><br>${UI.ownRules()}Rules may change as the football world evolves.</div></div>
       ${UI.textSizeCard()}
       ${UI.installCard()}
@@ -3179,8 +3177,8 @@
       <button class="btn block" data-act="toTitle" style="margin-bottom:10px">Main menu</button>
       <div class="tiny dim center" style="margin-top:14px;line-height:1.6">TOUCHLINE prototype · one-time purchase · no energy · no packs · no pay-to-win</div>`;
   }
-  UI.acts.currency = (d) => {
-    S().settings.currency = d.v;
+  UI.acts.currency = (d, el) => {
+    S().settings.currency = (el && el.value) || d.v;
     UI.save();
     UI.render();
   };

@@ -454,13 +454,37 @@
       <div class="tiny dim" style="margin-top:8px">Instalments fall due a year apart; add-ons when the player reaches the appearances agreed.</div></div>`;
   };
 
+  // ---------- Prize money ----------
+  // What each competition pays and what your club has won from them this season
+  UI.prizeCard = function (c) {
+    const s = S(),
+      won = (s.seasonLog && s.seasonLog.prizes) || [],
+      comp = s.comps[c.comp],
+      pr = comp && FM.Finance.leaguePrizeRange(comp),
+      cups = Object.values(s.comps).filter(
+        (x) => (x.type === 'cup' || x.type === 'continental' || x.type === 'world') && (x.clubs || []).includes(c.id),
+      );
+    const list = [
+      pr
+        ? `${esc(comp.name)}: a fund of ${U.money(pr.fund)}, ${U.money(pr.first)} to the champions and ${U.money(pr.last)} to the last club.`
+        : comp
+          ? `${esc(comp.name)}: prize money by finishing position, more for a richer club.`
+          : '',
+      ...cups.map((x) => `${esc(x.name)}: prize fund ${U.money(x.prize || 0)}`),
+    ].filter(Boolean);
+    return `<div class="card"><div class="row"><div class="h3 grow">Prize money</div><b>${U.money(U.sum(won, (x) => x.amt))}</b></div>
+      ${won.map((x) => `<div class="row small" style="margin-top:6px"><span class="grow ellip">${esc(x.why)}</span><b>${U.money(x.amt)}</b></div>`).join('') || '<div class="small dim" style="margin-top:6px">Nothing won yet this season.</div>'}
+      ${list.length ? `<div class="tiny dim" style="margin-top:10px;line-height:1.6">${list.join('<br>')}</div>` : ''}</div>`;
+  };
+
   // ---------- Income, attendance, the wage bill ----------
   UI.incomeCard = function (c) {
     const F = FM.Finance,
       f = c.fin || { tv: 0, com: 0, gate: 0, att: 0, homes: 0 },
       a = F.annual(c),
       mix = F.mix(c);
-    const total = f.tv + f.com + f.gate || 1;
+    const pz = f.prize || 0,
+      total = f.tv + f.com + f.gate + pz || 1;
     const row = (l, v, note) =>
       `<div class="row small" style="margin-top:8px"><span style="width:110px" class="dim">${l}</span><div class="grow">${C.bar((v / total) * 100, 'var(--good)')}</div><b style="width:72px;text-align:right">${U.money(v)}</b></div>${note ? `<div class="tiny dim" style="margin-left:110px">${note}</div>` : ''}`;
     const ratio = F.wageRatio(c),
@@ -470,12 +494,14 @@
       avg = f.homes ? Math.round(f.att / f.homes) : 0,
       cap = c.stadium.cap;
     const fp = S().user.finPressure;
-    return `<div class="card"><div class="row"><div class="h3 grow">Income this season</div><b>${U.money(f.tv + f.com + f.gate)}</b></div>
+    return `<div class="card"><div class="row"><div class="h3 grow">Income this season</div><b>${U.money(f.tv + f.com + f.gate + pz)}</b></div>
       ${row('TV money', f.tv, mix.tv >= 1.3 ? 'A rich TV deal: the biggest share of income here' : mix.tv <= 0.75 ? 'TV money is thin in this league' : '')}
       ${row('Commercial', f.com)}
       ${row('Matchday', f.gate, mix.gate >= 1.2 ? 'Packed grounds and cheap tickets: gate receipts matter most here' : '')}
+      ${pz ? row('Prize money', pz) : ''}
       ${mix.sell >= 0.75 ? `<div class="tiny dim" style="margin-top:8px">A selling league: ${Math.round(mix.sell * 100)}% of every fee you receive goes back into the transfer budget.</div>` : ''}
-      <div class="tiny dim" style="margin-top:6px">Expected over a season: ${U.money(a.tv + a.com + a.gate)}.</div></div>
+      <div class="tiny dim" style="margin-top:6px">Expected over a season: ${U.money(a.tv + a.com + a.gate)} before prize money.</div></div>
+      ${UI.prizeCard(c)}
       <div class="card"><div class="row"><div class="h3 grow">Attendance</div><span class="small b">${avg ? `${avg.toLocaleString()} average` : 'No home games yet'}</span></div>
         ${avg ? `<div style="margin-top:8px">${C.bar((avg / cap) * 100, 'var(--acc2)')}</div><div class="tiny dim" style="margin-top:4px">${Math.round((avg / cap) * 100)}% of ${cap.toLocaleString()} · last ${(f.last || 0).toLocaleString()} · results, fan mood, the opponent and derbies move it</div>` : ''}
         <div class="h3" style="margin-top:12px">Ticket prices</div>

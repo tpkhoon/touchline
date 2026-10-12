@@ -37,6 +37,15 @@ flowchart TB
 
 The web prototype runs on a phone browser with no build step, covering 1066 fictional clubs in 64 leagues (the real structure under invented names) across 54 nations in three simulation tiers, and 90 national teams. Newest build first.
 
+### Playtest feedback, round 17
+
+- The Nations League replaces the international friendlies: each confederation plays one in the seasons with no qualifying (the year with no tournament and the year of the Continental Champions Trophy), in leagues of sixteen nations and groups of four, on the first three matchdays of the breaks. Group winners go up, the last in each group go down, and the best League A group winner is champion. A nation with nothing to play in a window rests.
+- Confederations in the world editor: International football → Confederations lists the five and any you add, and moves a nation between them. A confederation sets qualifying, the Nations League and the continental championship; one with four nations or more gets a World Championship place and a championship of its own.
+- Prize money for leagues, cups and competitions: a league pays by final position from a fund the editor can set (automatic is a part of each club's revenue), a domestic cup pays its fund down the rounds, a continental or world cup pays per win and for the title; the Finances tab lists what the club won, the cups and league screens show the funds.
+- A currency picker in Settings with 38 currencies at fixed rates (Auto follows the club's country).
+- Catalonia and the Basque Country can be added as nations (new-career screen and the world editor): players of Catalan or Basque family can choose them, and each fields a national team with its own flag.
+- Dropping down in the editor: a continental cup can send the clubs that finish third in a group into the cup one tier below, to play its group runners-up in a knockout play-off before the quarter-finals (tier 1 into tier 2, tier 2 into tier 3).
+
 ### Playtest feedback, round 10
 
 - Scotland, Wales, Ireland, the USA and Australia get club-name styles of their own (Thistle and Academical, Vale and Welfare, Celtic and Swifts, FC/SC and mascots, Strikers) with their own grounds, nicknames, division and cup names; league sponsors are local companies per nation; England and Nigeria keep "Premier Division".

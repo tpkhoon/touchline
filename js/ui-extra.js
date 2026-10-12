@@ -637,7 +637,7 @@
     // Nationality: the nations of the chosen region, or the nationalities actually playing in the chosen league
     const natOpts = (
       a.type === 'region'
-        ? Object.keys(D.NATIONS).filter((k) => D.NATIONS[k].region === a.region)
+        ? Object.keys(D.NATIONS).filter((k) => D.nationOn(k) && D.NATIONS[k].region === a.region)
         : [...new Set(s.comps[a.comp].clubs.flatMap((id) => W.squad(id).map((p) => p.nat)))]
     ).sort((x, y) => D.NATIONS[x].name.localeCompare(D.NATIONS[y].name));
     if (a.nat !== 'any' && !natOpts.includes(a.nat)) a.nat = 'any';
@@ -950,6 +950,7 @@
           ['home', 'From my country'],
           ['foreign', 'Foreign'],
           ...Object.entries(D.NATIONS)
+            .filter(([k]) => D.nationOn(k))
             .sort((a, b) => a[1].name.localeCompare(b[1].name))
             .map(([k, x]) => [k, `${x.flag} ${x.name}`]),
         ])}${sel('comp', [['any', 'Any league'], ...W.leagues().map((c) => [c.id, c.name.replace('The ', '')])])}</div>

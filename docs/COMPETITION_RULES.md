@@ -126,6 +126,45 @@ Six more top flights, each one division in the game: the **Singapore Premier Lea
   They count as friendlies for fitness and call-ups and a little more than a friendly for the national-team coefficient.
   The winner is recorded with the season's international results.
 
+## The Nations League
+
+- Played in the seasons with no qualifying: the year with no tournament and the year of the Continental Champions Trophy.
+  Every confederation has one. Its nations are ranked into leagues of sixteen (League A the best), each of four groups of
+  four (a last league with fewer nations has groups of three or four, a group of two plays home and away). Each nation plays
+  the others in its group once, on the first three matchdays of the breaks; the fourth matchday has no international. The
+  invitational tournament takes a place only when its nations have no Nations League match that day.
+- At the end the winner of each group goes up a league and the last club of each group goes down (the top league has nothing
+  above it, the bottom nothing below); the next Nations League starts from that order. The champions are the best League A
+  group winner (points per game, goal difference, goals, ranking).
+- The coefficient moves a little more than for a friendly (30 against 22), less than for a qualifier (35).
+- There are no international friendlies. In a qualifying year a nation whose pool has already qualified rests.
+
+## Confederations
+
+- Europe (with England), South America, Africa, Asia and North America, or the world's own (the editor renames them, moves
+  nations between them and adds more). A confederation of four nations or more added by the editor has one World Championship
+  place (taken from the biggest part of the world) and a continental championship of four nations; a smaller one has only its
+  Nations League.
+
+## Prize money
+
+- **League:** at the end of the season, by final position. With no fund set, a club gets a part of its own revenue (12% of its
+  potential, scaled by the place: the champion all of it, the last club a small share). With a fund set in the editor the fund
+  is shared by position, the champion about three times the last club.
+- **Domestic cup:** the fund is paid down the rounds to the winner of each tie (the final the most, 30% of the fund), and the
+  holders get a title bonus of 25% on top. A regional cup pays a small flat amount.
+- **Continental and world cups:** 13% of the fund for taking part, 10% for a group win (a third for a draw), 25% for each
+  knockout win, and the whole fund for the title.
+- Each payment goes to the club's balance and, for your club, a line in the season's prize list on the Finances tab.
+
+## Dropping down (the world editor)
+
+- A continental cup can name the cup below it (the same part of the world, a lower tier): the clubs that finish third in a
+  group drop into it. They play the runners-up of that cup's groups (the best of the weakest runners-up against the weakest
+  dropped club), one match at the runner-up's ground, on a day of its own after the group stage; the winners go on to the
+  quarter-finals with the group winners. The cup they drop into needs four groups, and a cup with fewer groups above sends
+  fewer clubs. Off in the game's own world.
+
 ## Domestic cups
 
 Single matches with extra time and penalties, the lower-division club at home in the real draws (here: random

@@ -414,6 +414,12 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | World editor, league structures: any league as one table, two zones (Argentina's) or two conferences (the American league's, with its club-by-club conferences, names and draft rounds); the Argentine and American structures can be edited or removed | Playtest round 14 |
 | Editor | World editor, promotion and relegation on or off: for each pair of leagues (the places are remembered) and for the whole world (closed leagues) | Playtest round 14 |
 | World | Sixteen more top flights: Egypt, Tunisia, Tanzania, Algeria, Cyprus, Croatia, Sweden, Romania, Ecuador, Uruguay, Colombia, Canada, the UAE, Iran, Qatar and China (238 clubs: 1066 in 64 leagues across 54 nations), with their places in the continental cups and a new nation, Tanzania | Playtest round 16 |
+| International | Nations League: every confederation plays one in the years with no qualifying (leagues of sixteen, groups of four, promotion and relegation between leagues, a champion each time), in place of the international friendlies | Playtest round 17 |
+| Editor | World editor, confederations: the five parts of the world and confederations of your own, nations moved between them; a confederation of four nations or more gets a World Championship place and a continental championship | Playtest round 17 |
+| Finance | Prize money for leagues (by final position, from a fund the editor can set), domestic cups (down the rounds) and continental and world cups (per win and for the title), with a prize card on the Finances tab | Playtest round 17 |
+| Settings | Currency picker: 38 currencies at fixed rates, Auto by the club's country | Playtest round 17 |
+| World | Catalonia and the Basque Country as optional nations: national teams of the players of Catalan or Basque family who choose them, with their own flags | Playtest round 17 |
+| Editor | World editor, dropping down: a continental cup's third-placed group clubs drop into the cup one tier below and play its runners-up in a knockout play-off | Playtest round 17 |
 
 ## Yet to be added
 

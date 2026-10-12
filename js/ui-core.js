@@ -211,7 +211,27 @@
   // a screen (plain-text places, like a news story or a drop-down list, keep the emoji)
   const ULSTER =
     '<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" role="img" aria-label="Northern Ireland" style="vertical-align:-0.12em"><rect width="30" height="20" fill="#fff"/><path d="M0 8.4h30v3.2H0zM13.4 0h3.2v20h-3.2z" fill="#c8102e"/><circle cx="15" cy="10" r="4.6" fill="#fff"/><path d="M15 6.1l1.1 2.2 2.4.1-1.9 1.5.7 2.4-2.3-1.4-2.3 1.4.7-2.4-1.9-1.5 2.4-.1z" fill="#c8102e"/><circle cx="15" cy="10.2" r="1" fill="#fff"/></svg>';
-  C.flag = (nat) => (nat === 'NIR' ? ULSTER : D.NATIONS[nat] ? D.NATIONS[nat].flag : '🏳️');
+  // Catalonia (the Senyera) and the Basque Country (the Ikurriña) have no flag emoji either
+  const flagSvg = (label, body) =>
+    `<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" role="img" aria-label="${label}" style="vertical-align:-0.12em">${body}</svg>`;
+  const SENYERA = flagSvg(
+    'Catalonia',
+    '<rect width="30" height="20" fill="#fcdd09"/><path d="M0 2.2h30M0 6.7h30M0 11.1h30M0 15.6h30" stroke="#da121a" stroke-width="2.2"/>',
+  );
+  const IKURRINA = flagSvg(
+    'Basque Country',
+    '<rect width="30" height="20" fill="#d52b1e"/><path d="M0 0L30 20M30 0L0 20" stroke="#009b48" stroke-width="2.4"/><path d="M15 0v20M0 10h30" stroke="#fff" stroke-width="2.4"/>',
+  );
+  C.flag = (nat) =>
+    nat === 'NIR'
+      ? ULSTER
+      : nat === 'CAT'
+        ? SENYERA
+        : nat === 'EUS'
+          ? IKURRINA
+          : D.NATIONS[nat]
+            ? D.NATIONS[nat].flag
+            : '🏳️';
   // The manager's avatar (older careers without one get a neutral face)
   C.avatar = (user, size = 40) => {
     const a = (user && user.avatar) || { e: '🧑‍💼', bg: '#243042' };
@@ -772,6 +792,7 @@
     recs: [],
     db: null, // an imported database (FM.DbImport.import result) the world is built from, or null for the built-in world
     slot: 1,
+    regionNations: false, // Catalonia and the Basque Country as nations of the world
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
   // The simulation tiers a world can run each league in (the new-career screen lets you choose before the save starts).
@@ -960,12 +981,24 @@
     const app = $('#app');
     let body = '';
     if (NG.step === 0) {
-      const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
+      const nations = Object.entries(D.NATIONS)
+        .filter(([, n]) => !n.optional || NG.regionNations)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name));
       body = `<div class="h1" style="margin-top:4vh">Who are you?</div><div class="tag">Every legend starts somewhere.</div>
         <div class="row" style="gap:14px;margin-top:18px;align-items:center">${C.avatar({ avatar: NG.avatar }, 64)}<div class="grow"><div class="b" id="ng-preview" style="font-size:18px">${esc(`${NG.fn} ${NG.ln}`.trim() || 'Your name')}</div><div class="small" style="color:#9fb0c5">${C.flag(NG.nat)} ${esc(D.NATIONS[NG.nat].name)}</div></div></div>
         <div class="ng-names"><input type="text" id="ng-fn" placeholder="First name" maxlength="16" value="${esc(NG.fn)}" autocomplete="given-name"><input type="text" id="ng-ln" placeholder="Last name" maxlength="20" value="${esc(NG.ln)}" autocomplete="family-name"></div><div class="ng-err" id="ng-err" role="alert" hidden></div>
         <div class="ng-label">Country <span style="color:#6f7f96">· your own national team will know your name</span></div>
         <select id="ng-nat">${nations.map(([k, n]) => `<option value="${k}" ${NG.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
+        <div class="ng-label">Catalonia and the Basque Country <span style="color:#6f7f96">· as nations of their own, with national teams</span></div>
+        <div class="seg">${[
+          [false, 'Part of Spain'],
+          [true, 'Nations'],
+        ]
+          .map(
+            ([v, t]) =>
+              `<button class="${!!NG.regionNations === v ? 'on' : ''}" data-act="ngRegions" data-v="${v}">${t}</button>`,
+          )
+          .join('')}</div>
         <div class="ng-label">Avatar</div>
         <div class="avgrid">${W.AVATARS.map((e) => `<button class="avpick ${NG.avatar.e === e ? 'on' : ''}" data-act="ngAvatar" data-e="${e}" aria-label="Avatar ${e}">${e}</button>`).join('')}</div>
         <div class="swatches">${W.AVATAR_BG.map((bg) => `<button class="swatch ${NG.avatar.bg === bg ? 'on' : ''}" style="background:${bg}" data-act="ngAvatarBg" data-bg="${bg}" aria-label="Avatar background"></button>`).join('')}</div>
@@ -1204,6 +1237,11 @@
         UI.newCareer();
       });
   };
+  UI.acts.ngRegions = (d) => {
+    NG.regionNations = d.v === 'true';
+    if (!NG.regionNations && D.NATIONS[NG.nat].optional) NG.nat = 'ESP';
+    UI.newCareer();
+  };
   UI.acts.ngSlot = (d) => {
     NG.slot = +d.n;
     UI.newCareer();
@@ -1278,7 +1316,7 @@
   UI._dbRules = (def) => {
     const r = (def && def.rules) || {};
     return Object.fromEntries(
-      ['win', 'subs', 'twoLegs', 'awayGoals'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
+      ['win', 'subs', 'twoLegs', 'awayGoals', 'regionNations'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
     );
   };
   UI._ng = () => NG;
@@ -1371,14 +1409,19 @@
       let built = false;
       if (NG.db && NG.db.ok) {
         try {
-          FM.DbImport.build(NG.db.def, { ...W.REAL_RULES, ...UI._dbRules(NG.db.def), sims });
+          FM.DbImport.build(NG.db.def, {
+            ...W.REAL_RULES,
+            ...UI._dbRules(NG.db.def),
+            ...(NG.regionNations ? { regionNations: true } : {}),
+            sims,
+          });
           built = true;
         } catch (e) {
           console.warn(e);
           UI.toast('⚠️ The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
         }
       }
-      if (!built) W.newWorld({ ...W.REAL_RULES, sims });
+      if (!built) W.newWorld({ ...W.REAL_RULES, regionNations: NG.regionNations, sims });
       FM.S.settings = theme;
       FM.Season.init();
       if (NG.club === 'none') {
