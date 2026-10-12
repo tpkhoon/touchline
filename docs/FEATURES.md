@@ -423,7 +423,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-100 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+106 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -533,3 +533,9 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Match | Highlights only: a viewing mode that shows just the chances, goals and key moments and skips the rest of the match | Beta |
 | Match | Proper restarts of play: after a goal and at half-time (and after extra time) the players return to their halves and the match kicks off from the centre spot as in a real game | Beta |
 | Match | Set pieces shown properly: corners, free kicks, penalties, throw-ins and goal kicks are set up on the pitch with the taker, the wall and the runs into the box before the ball is played | Beta |
+| Editor | Replacing national teams and cups: a world can bring its own set of national teams (nations, squads, colours, rankings) and its own cups in place of the game's, not only rename or take them out | Alpha 2 |
+| Editor | Adapters for other games' database formats: ready-made readers for the formats of other football management games, on the pluggable adapter framework, so their worlds load into the editor and the new-career screen | Alpha 2 |
+| Editor | Import past seasons' cups and transfers from files: cup winners and runners-up, and each season's transfers, read from a spreadsheet or database file into the history (today they are entered by hand in the editor, and past league tables already import) | Alpha 2 |
+| Tactics | An evolving tactical meta: the world's tactics change over the years in each save, so every game develops metas of its own (formations, build-ups and pressing that rise and fall as clubs copy winners and counters appear), including shifts in the best tempo; what works for you changes with the era | Living world |
+| Transfers | Club strategy for the AI: each club follows a logic over the years when buying and building its squad (its identity, budget, ambition and a plan such as youth, veterans or stars, set by its owner and manager), so its signings make sense and its direction changes only for reasons | Living world |
+| Youth | Regens overhaul: newly generated players and youth intakes rebuilt so they feel like individuals (distinct development paths, nationality and region of origin, playing styles and personalities) and the pool keeps its shape over long saves | Living world |
