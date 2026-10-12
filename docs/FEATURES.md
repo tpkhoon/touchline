@@ -420,6 +420,7 @@ Every feature from the game design document, with what is playable in the protot
 | Settings | Currency picker: 38 currencies at fixed rates, Auto by the club's country | Playtest round 17 |
 | World | Catalonia and the Basque Country as optional nations: national teams of the players of Catalan or Basque family who choose them, with their own flags | Playtest round 17 |
 | Editor | World editor, dropping down: a continental cup's third-placed group clubs drop into the cup one tier below and play its runners-up in a knockout play-off | Playtest round 17 |
+| Match | Visual engine positioning from tracking data: where each position stands now follows a table measured from 20 SkillCorner open-data matches (`npm run shapes`, `js/shapes.js`), for the ball anywhere on the pitch with and without it, instead of one fixed shift toward the ball; teams are drawn about half as long as before (real teams span about 30 m) with the lines closer together; the match itself plays the same | Playtest round 17 |
 
 ## Yet to be added
 

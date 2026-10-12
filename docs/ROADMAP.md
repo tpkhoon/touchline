@@ -45,6 +45,7 @@ The web prototype runs on a phone browser with no build step, covering 1066 fict
 - A currency picker in Settings with 38 currencies at fixed rates (Auto follows the club's country).
 - Catalonia and the Basque Country can be added as nations (new-career screen and the world editor): players of Catalan or Basque family can choose them, and each fields a national team with its own flag.
 - Dropping down in the editor: a continental cup can send the clubs that finish third in a group into the cup one tier below, to play its group runners-up in a knockout play-off before the quarter-finals (tier 1 into tier 2, tier 2 into tier 3).
+- The visual match engine's positioning comes from real tracking data: a shape table built from SkillCorner Open Data (MIT) by `npm run shapes` moves each position with the ball, with and without it, and the lines are drawn together as in real teams. The rest of the realism plan (passes, shots, set pieces, movement) is still to do.
 
 ### Playtest feedback, round 10
 

@@ -13,6 +13,7 @@
     'names-more',
     'names-more2',
     'names-more3',
+    'shapes',
     'clubs',
     'world',
     'realstats',

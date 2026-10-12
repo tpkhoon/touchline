@@ -110,11 +110,60 @@
   // Who wins the ball back, by slot (relative): centre-backs and holding midfielders most, keepers never
   const DEF_SHARE = { GK: 0, CB: 3, FB: 2.2, WB: 2, DM: 3.2, CM: 2, WM: 1.4, AM: 0.9, W: 1, ST: 0.5 };
 
+  // How each position moves with the ball, from tracking data (FM.D.SHAPES, js/shapes.js, made by tools/skillcorner-shapes.mjs from
+  // SkillCorner Open Data): for the ball at any place on the pitch, with and without it, how far a position's players stand from
+  // where they stand on average. Smooth between the grid's cells. A position the data has no table for (the central
+  // midfielder) takes the mean of the holding and attacking midfielders'.
+  const WIDE_T = { FB: 1, WB: 1, WM: 1, W: 1 }; // (kept to their own wing; every other position follows the ball's side)
+  const shapeAt = (arr, G, bx, by) => {
+    const fx = U.clamp(bx * G.nx - 0.5, 0, G.nx - 1),
+      fy = U.clamp(by * G.ny - 0.5, 0, G.ny - 1),
+      x0 = Math.floor(fx),
+      y0 = Math.floor(fy),
+      x1 = Math.min(G.nx - 1, x0 + 1),
+      y1 = Math.min(G.ny - 1, y0 + 1),
+      tx = fx - x0,
+      ty = fy - y0;
+    const c = (cx, cy) => arr[cx * G.ny + cy];
+    const mix = (k) =>
+      (c(x0, y0)[k] * (1 - tx) + c(x1, y0)[k] * tx) * (1 - ty) + (c(x0, y1)[k] * (1 - tx) + c(x1, y1)[k] * tx) * ty;
+    return [mix(0), mix(1)];
+  };
+  // table: off for the old fixed shift toward the ball (to compare); K: how much of the measured movement is used (the data is
+  // of the ball in view of the broadcast camera, which overstates it a little)
+  // c: how much of a formation's length is kept. The slots of a formation are drawn about twice as long as real teams stand
+  // (tracking data: the outfield players of a team span about 30 m, not 60), so the lines are drawn together.
+  FM.PosShape = { table: true, K: { x: 0.8, y: 0.8, gk: 0.6 }, c: 0.6 };
+  const shapeOffset = (type, slotY, inPoss, ball) => {
+    const S = FM.D.SHAPES;
+    if (!FM.PosShape.table || !S) return null;
+    const o = S.offsets[inPoss ? 'in' : 'out'],
+      w = WIDE_T[type] ? (slotY >= 0.5 ? 1 : -1) : ball.y >= 0.5 ? 1 : -1, // (the sideways mirror: see the script's header)
+      by = 0.5 + w * (ball.y - 0.5);
+    let d;
+    if (o[type]) d = shapeAt(o[type], S.grid, ball.x, by);
+    else if (type === 'CM' && o.DM && o.AM) {
+      const a = shapeAt(o.DM, S.grid, ball.x, by),
+        b = shapeAt(o.AM, S.grid, ball.x, by);
+      d = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    } else return null;
+    return { x: d[0], y: w * d[1] };
+  };
+
   // Position of a slot's player in that side's frame (x → attacking goal)
   FM.Pos = function (side, i, inPoss, ball) {
     const s = side.slots[i];
     let x = s.x,
       y = s.y;
+    if (FM.PosShape.table && FM.D.SHAPES && s.t !== 'GK') {
+      // (the formation's length about its middle, from the outfield slots)
+      if (side.cx === undefined || side.cxN !== side.slots.length) {
+        const out = side.slots.filter((q) => q.t !== 'GK');
+        side.cx = out.reduce((a, q) => a + q.x, 0) / (out.length || 1);
+        side.cxN = side.slots.length;
+      }
+      x = side.cx + (x - side.cx) * FM.PosShape.c;
+    }
     const role = D.ROLES[s.t][side.tactic.roles[i]] || {};
     const T = side.tactic,
       front = s.t === 'ST' || s.t === 'W' || s.t === 'AM';
@@ -142,9 +191,19 @@
       if (T.press === 'Low Block' && s.t !== 'GK') y = 0.5 + (y - 0.5) * 0.88; // compact: no gaps between the lines
       if (T.buildup === 'Counter' && (s.t === 'ST' || s.t === 'W')) x += 0.06; // forwards stay up to break
     }
+    const sh = shapeOffset(s.t, s.y, inPoss, ball),
+      K = FM.PosShape.K;
     if (s.t !== 'GK') {
-      x += (ball.x - 0.5) * 0.38;
-      y += (ball.y - 0.5) * 0.22;
+      if (sh) {
+        x += sh.x * K.x;
+        y += sh.y * K.y;
+      } else {
+        x += (ball.x - 0.5) * 0.38;
+        y += (ball.y - 0.5) * 0.22;
+      }
+    } else if (sh) {
+      x = 0.04 + sh.x * K.gk; // (a keeper steps out as his side pushes up, and shuffles toward the ball's side)
+      y = 0.5 + sh.y * K.gk;
     } else {
       x = 0.03 + Math.max(0, ball.x - 0.5) * 0.12;
       y = 0.5 + (ball.y - 0.5) * 0.25;
