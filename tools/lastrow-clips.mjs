@@ -39,16 +39,14 @@ for (const ln of lines.slice(1)) {
   const f = ln.split(',');
   const play = f[ix.play];
   if (!plays.has(play)) plays.set(play, []);
-  plays
-    .get(play)
-    .push({
-      frame: +f[ix.frame],
-      player: f[ix.player],
-      team: f[ix.team],
-      x: +f[ix.x],
-      y: +f[ix.y],
-      z: f[ix.z] === '' ? 0 : +f[ix.z],
-    });
+  plays.get(play).push({
+    frame: +f[ix.frame],
+    player: f[ix.player],
+    team: f[ix.team],
+    x: +f[ix.x],
+    y: +f[ix.y],
+    z: f[ix.z] === '' ? 0 : +f[ix.z],
+  });
 }
 const r1 = (v) => Math.round(v * 1000) / 1000;
 const clips = [];
