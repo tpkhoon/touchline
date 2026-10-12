@@ -40,7 +40,8 @@
     "test:wonderkids": "node tools/wonderkids.mjs --seasons 10",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "shapes": "node tools/skillcorner-shapes.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",
