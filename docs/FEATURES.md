@@ -430,7 +430,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-113 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+118 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -553,3 +553,8 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Match | Set-piece tables from Wyscout event data: where corners are delivered (near post, middle, far post, short), who wins the first contact and what follows (shot, clearance, second ball), and where direct free kicks are shot from against crossed or passed; gives a set-piece coach something to improve | Beta |
 | Match | Physical movement in the visual engine: jogging, running and sprinting speeds measured from SkillCorner tracking, with its labelled off-ball runs (sprints for runs in behind, recovery and pressing), acceleration so players cannot turn or reach top speed instantly, ball speed that slows over a ground pass and a lofted ball that takes longer, and each defender given an attacker or a zone to cover, re-assigned as play moves | Beta |
 | Tooling | Result-realism calibration check: take the game's expected results between teams of known strength (the engine's chance of a home win, a draw and an away win, from `FM.Season.expected` and from many simulated matches between clubs of given reputations) and compare them with real league tables and bookmaker-style outcome rates (home advantage, draw share by strength gap, how often the favourite wins), and report where the home-win, draw and away-win shares are unrealistic; added to `npm run calibrate` | Beta |
+| Match | Positioning and passes, a second pass: players stand and move closer to the real tracking data (a median speed of about 1.5 m/s rather than 2.6, more time standing and walking), each defender is given an attacker or a zone to cover and keeps to it as play moves, and passes go forward as often as real ones do (57% of passes in the data, 47% now) | Beta |
+| Match | A striker who receives a through ball dribbles on goal: he takes it in his stride, runs at the keeper and shoots or rounds him, instead of the chance appearing as a pass and a shot | Beta |
+| Match | Restarts after a goal and at half-time: the players walk back to their own halves and the centre spot, the side that conceded kicks off from the centre, and the second half restarts the same way | Beta |
+| Match | Goal kicks and throw-ins on the pitch: the keeper puts the ball on the six-yard line and plays it short or long, a player takes a throw-in from the touchline with team-mates showing for it, using the real shares of short and long goal kicks and where throw-ins go | Beta |
+| Match | A defensive wall for direct free kicks (the number of men by distance, standing ten yards back), and runs into the box for free-kick crosses, throw-ins and goal kicks, so the area fills and players run onto the ball as they do from corners | Beta |
