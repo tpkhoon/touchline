@@ -423,7 +423,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-88 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+92 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -521,3 +521,7 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Stories | Public comments show their effect: a press conference answer says what it did to the fans ("Fans approved of your defence of the captain: mood +3") | Living world |
 | Club | A visual of the ground growing: the stadium picture changes with each expansion and with the training ground's level | Living world |
 | Scouting | Saved searches that alert you: a saved filter ("young left-backs under 2M") tells you in the feed when a new player matches it | Living world |
+| Match | Classic match view (a Settings choice beside Pitch and Text): a striped mown pitch with pale line markings and drawn goal nets, small numbered round tokens in the team colours with the keeper in yellow, and the match clock in the corner; a restyle only, the match plays the same | Beta |
+| Match | Classic view benches: a dugout strip beside the pitch with the substitutes' tokens, which move in and out as changes are made | Beta |
+| Match | Classic view officials and medical staff: the referee and assistants follow play and the touchline, and medical tokens run on when a player is injured | Beta |
+| Match | Classic view pressure shading: a soft tint over the penalty areas showing which side is attacking, from the momentum figures | Beta |
