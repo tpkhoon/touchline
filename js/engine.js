@@ -132,8 +132,16 @@
   // table: off for the old fixed shift toward the ball (to compare); K: how much of the measured movement is used (the data is
   // of the ball in view of the broadcast camera, which overstates it a little)
   // c: how much of a formation's length is kept. The slots of a formation are drawn about twice as long as real teams stand
-  // (tracking data: the outfield players of a team span about 30 m, not 60), so the lines are drawn together.
-  FM.PosShape = { table: true, K: { x: 0.8, y: 0.8, gk: 0.6 }, c: 0.6 };
+  // (tracking data: the outfield players of a team span about 30 m, not 60), so the lines are drawn together; shift moves the whole
+  // team up or down the pitch, with and without the ball, to where real teams stand (the formations' slots sit lower than real teams).
+  FM.PosShape = {
+    table: true,
+    K: { x: 0.8, y: 0.8, gk: 0.6 },
+    c: 0.58,
+    shift: { in: 0, out: 0 },
+    w: { in: 1.05, out: 0.88 },
+    front: 0.05,
+  };
   const shapeOffset = (type, slotY, inPoss, ball) => {
     const S = FM.D.SHAPES;
     if (!FM.PosShape.table || !S) return null;
@@ -195,7 +203,8 @@
       K = FM.PosShape.K;
     if (s.t !== 'GK') {
       if (sh) {
-        x += sh.x * K.x;
+        x +=
+          sh.x * K.x + FM.PosShape.shift[inPoss ? 'in' : 'out'] - (s.t === 'ST' || s.t === 'W' ? FM.PosShape.front : 0);
         y += sh.y * K.y;
       } else {
         x += (ball.x - 0.5) * 0.38;
@@ -208,6 +217,8 @@
       x = 0.03 + Math.max(0, ball.x - 0.5) * 0.12;
       y = 0.5 + (ball.y - 0.5) * 0.25;
     }
+    // how wide the team stands (real teams narrow when defending)
+    if (FM.PosShape.table && FM.D.SHAPES && s.t !== 'GK') y = 0.5 + (y - 0.5) * FM.PosShape.w[inPoss ? 'in' : 'out'];
     return { x: U.clamp(x, 0.02, 0.96), y: U.clamp(y, 0.04, 0.96) };
   };
 
