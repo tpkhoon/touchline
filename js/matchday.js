@@ -659,15 +659,24 @@
 
     // red cards, injuries, dead balls
     for (const e of m.events) {
-      if (e.k === 'red')
+      if (e.k === 'red') {
+        // the number left on the pitch after this red card (sent-off players so far on that side)
+        const left =
+            11 -
+            m.events.filter((x) => x.k === 'red' && x.side === e.side && m.events.indexOf(x) <= m.events.indexOf(e))
+              .length,
+          word = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][
+            Math.max(0, left)
+          ];
         add(
           'discipline',
           e.side === us ? 'bad' : 'good',
           '🟥',
           e.side === us ? 1.6 : 1.4,
-          e.side === us ? 'Down to ten' : 'They were down to ten',
+          e.side === us ? `Down to ${word}` : `They were down to ${word}`,
           `${e.side === us ? 'Your' : 'Their'} player was sent off in the ${minute(e)}th minute.`,
         );
+      }
       if (e.k === 'injury' && e.side === us && minute(e) < 45)
         add(
           'injury',

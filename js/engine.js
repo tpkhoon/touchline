@@ -79,6 +79,7 @@
     Object.keys(D.ROLES[t])
       .filter((name) => !exclude.includes(name))
       .reduce((best, name) => (FM.roleScore(p, t, name) > FM.roleScore(p, t, best) ? name : best));
+  const NUM_WORD = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven'];
   // One of each specialist role per team (a single sweeper, one No. 10 free role, one false nine)
   FM.UNIQUE_ROLES = ['Libero', 'Trequartista', 'False 9'];
   FM.bestRoles = function (xi, slots, defaults) {
@@ -1585,7 +1586,7 @@
       if (m.events.some((e) => e.k === 'red' && e.side === sd.idx) && !used.red) {
         return mk('red', {
           icon: '🟥',
-          title: 'Down to ten men',
+          title: `Down to ${NUM_WORD[Math.max(1, m.onPitch(sd).length)] || m.onPitch(sd).length} men`,
           body: 'How do we respond?',
           quote: quote(
             asst,
@@ -1609,7 +1610,7 @@
               desc: 'Keep the press on',
               apply: () => {
                 sd.mods.att += 0.03;
-                return 'We keep pressing with ten.';
+                return `We keep pressing with ${NUM_WORD[m.onPitch(sd).length] || m.onPitch(sd).length}.`;
               },
             },
           ],
