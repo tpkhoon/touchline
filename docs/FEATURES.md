@@ -431,7 +431,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-118 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+128 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -559,3 +559,13 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Match | Restarts after a goal and at half-time: the players walk back to their own halves and the centre spot, the side that conceded kicks off from the centre, and the second half restarts the same way | Beta |
 | Match | Goal kicks and throw-ins on the pitch: the keeper puts the ball on the six-yard line and plays it short or long, a player takes a throw-in from the touchline with team-mates showing for it, using the real shares of short and long goal kicks and where throw-ins go | Beta |
 | Match | A defensive wall for direct free kicks (the number of men by distance, standing ten yards back), and runs into the box for free-kick crosses, throw-ins and goal kicks, so the area fills and players run onto the ball as they do from corners | Beta |
+| Sandbox | Watch the world: a mode with no club to manage, for players who want to see the football world run: choose Simulate 1, 5 or 10 seasons, follow players and clubs, watch dynasties rise and fall, and read the press, the story feed and the records as they build | Living world |
+| Performance | Faster long simulations, and a choice of how much to keep: a season, and a run of seasons, as quick as a phone can manage, and a setting for how much detail and history to store for distant leagues (tables, champions and top scorers only, or everything), so long saves stay fast and small | Living world |
+| Records | All-time top scorers and assists for every competition (each league, cup and continental cup), with each player's career goals split by competition | Alpha 2 |
+| Stories | Nicknames for legends: a great player earns a nickname from the fans or the press (the Magician, Il Capitano) that the story feed, his profile and the commentary use | Living world |
+| Squad | First, second and third choices for each position: rank the players for each position (easier on a phone than dragging players into an XI); auto pick takes the first choice and rotates within your order for fitness and form, and never picks a player out of position while a ranked one is fit | Beta |
+| Transfers | A one-screen transfer request: "a right-back aged 22 to 28 for up to 3M" sends the scouts out and returns a shortlist; it is never empty: if nobody fits it says why and lists the closest players (a year older, a little dearer) | Beta |
+| Sandbox | Add yourself to the world: create a youngster with your own name who appears as a regen in a future youth intake of a club you choose, so you can follow him and share how his career went | Living world |
+| Competitions | Southeast Asian tournaments: the ASEAN Championship for national teams, the ASEAN U-23 Championship and the Asian Games (an under-23 tournament with overage players), giving the region's nations a calendar of their own | Living world |
+| Transfers | A fair transfer economy from the first season: a check that no club is forced to sell its best players without a reason (release clauses, wage bills, debt) in the early seasons, and a gentler failure when a club really cannot pay | Beta |
+| Tooling | A dynasty check in the long-run test: over 20 seasons no club wins more than about half of a league's titles, and the report lists the most dominant club of each league | Beta |
