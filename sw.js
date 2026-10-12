@@ -19,6 +19,7 @@ const FILES = [
   './js/shapes.js',
   './js/shots.js',
   './js/passes.js',
+  './js/setpieces.js',
   './js/movement.js',
   './js/clubs.js',
   './js/clubguide.js',

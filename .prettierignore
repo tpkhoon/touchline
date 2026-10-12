@@ -21,3 +21,5 @@ js/passes.js
 data/pass-table.json
 js/movement.js
 data/movement-table.json
+js/setpieces.js
+data/setpiece-table.json

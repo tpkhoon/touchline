@@ -819,9 +819,22 @@
       // long shot comes from outside the box with a small chance and a through ball from near the goal with a big one. The
       // average xG of each kind stays where it was, so a season's goals do not move; what changes is the spread and the place.
       const SH = FM.D.SHOTS;
-      let shotAt = null;
+      let shotAt = null,
+        cor = null; // a corner: the flag it is taken from, where it was delivered and where the shot came from (FM.D.SETPIECES, js/setpieces.js)
       const OLD_XG = { through: 0.23, cross: 0.07, cutback: 0.18, longshot: 0.0325, counter: 0.2, setpiece: 0.06 };
       const redraw = (key) => {
+        const SP = FM.D.SETPIECES;
+        if (key === 'cor' && SP && FM.CAL.shotTable !== false) {
+          // one real corner that ended in a shot: its delivery and its shot together, and the chance it was
+          const S = SP.corner.sample,
+            q = S.rows[U.randi(0, S.rows.length - 1)];
+          if (!S.mean) S.mean = S.rows.reduce((a, row) => a + row[4], 0) / S.rows.length;
+          const flag = Math.random() < 0.5 ? -1 : 1, // the y = 0 flag or the other
+            fy = (m) => (flag < 0 ? m / 68 : 1 - m / 68);
+          cor = { flag, zone: SP.corner.zoneNames[q[6]], del: { x: 1 - q[0] / 105, y: fy(q[1]) }, head: !!q[5] };
+          shotAt = { x: 1 - q[2] / 105, y: fy(q[3]) };
+          return (q[4] / S.mean) * OLD_XG.setpiece * CAL.spXg;
+        }
         const t = SH && FM.CAL.shotTable !== false && SH.types[key];
         if (!t) return xg;
         if (!t.mean) t.mean = t.sample.reduce((a, q) => a + q[2], 0) / t.sample.length;
@@ -879,9 +892,18 @@
         penTaker ||
         (sp === 'fk' && spTaker) ||
         U.wpick(sp === 'cor' && spTaker && on.length > 1 ? on.filter((o) => o !== spTaker) : on, shooterW);
-      let assister = null;
-      if (sp === 'cor' && spTaker && spTaker !== shooter) assister = spTaker;
-      else if (!['penalty', 'longshot'].includes(type) && sp !== 'fk' && on.length > 1) {
+      let assister = null,
+        shortWith = null;
+      if (sp === 'cor' && spTaker && spTaker !== shooter) {
+        assister = spTaker;
+        if (cor && cor.zone === 'short') {
+          // played short: a team-mate comes to the taker and crosses it himself
+          const near = on.filter((o) => o !== spTaker && o !== shooter);
+          shortWith = near.length ? U.pick(near) : null;
+          if (shortWith) assister = shortWith;
+        }
+      }
+      if (assister === null && !['penalty', 'longshot'].includes(type) && sp !== 'fk' && on.length > 1) {
         const pool = on.filter((o) => o !== shooter);
         assister = U.wpick(pool, (o) => {
           const t = sd.slots[o.i].t,
@@ -980,6 +1002,7 @@
         big: xg >= 0.12 || outcome === 'goal' || (sp === 'fk' && outcome === 'saved'),
       };
       if (sp) ev.sp = sp;
+      if (cor) ev.zone = cor.zone; // (where the corner went: for the commentary)
       if (howler) {
         ev.err = gk.p.id;
         od.rating[gk.p.id] -= 1.1;
@@ -1007,20 +1030,38 @@
 
       if (this.live || this.o.track) {
         // build-up to the shot on the visual pitch
-        if (assister && this.ball.slot !== assister.i)
-          out.script.push({ k: 'pass', side, from: this.ball.slot, to: assister.i });
-        if (assister)
+        const flagAt = cor && { x: 0.985, y: cor.flag < 0 ? 0.02 : 0.98 };
+        if (cor && spTaker) {
+          // a corner is a dead ball at the flag: the taker puts it down (the view), perhaps plays it short, then it is crossed
+          if (shortWith)
+            out.script.push({ k: 'pass', side, from: spTaker.i, to: shortWith.i, slow: true, flag: flagAt });
           out.script.push({
-            k: type === 'cross' ? 'cross' : 'pass',
+            k: 'cross',
             side,
-            from: assister.i,
+            from: (shortWith || spTaker).i,
             to: shooter.i,
             fast: true,
-            at: shotAt, // where the shooter takes it from (the view brings him there)
-            ctype: type, // the match view sends the runner early for a through ball or a counter
+            at: cor.del, // where it is delivered (the shooter is sent there)
+            flag: shortWith ? null : flagAt,
+            ctype: type,
+            cor: cor.zone,
           });
-        else if (this.ball.slot !== shooter.i && type !== 'penalty' && ev.sp !== 'fk')
-          out.script.push({ k: 'pass', side, from: this.ball.slot, to: shooter.i });
+        } else {
+          if (assister && this.ball.slot !== assister.i)
+            out.script.push({ k: 'pass', side, from: this.ball.slot, to: assister.i });
+          if (assister)
+            out.script.push({
+              k: type === 'cross' ? 'cross' : 'pass',
+              side,
+              from: assister.i,
+              to: shooter.i,
+              fast: true,
+              at: shotAt, // where the shooter takes it from (the view brings him there)
+              ctype: type, // the match view sends the runner early for a through ball or a counter
+            });
+          else if (this.ball.slot !== shooter.i && type !== 'penalty' && ev.sp !== 'fk')
+            out.script.push({ k: 'pass', side, from: this.ball.slot, to: shooter.i });
+        }
         // a penalty or a direct free kick is taken from a dead ball (the view puts it on the spot), not played in
         out.script.push({
           k: 'shot',
@@ -1658,14 +1699,21 @@
         return U.pick(F[ev.outcome]);
       }
       if (ev.sp === 'cor' && a) {
+        const where = {
+          short: 'after a short corner',
+          near: 'at the near post',
+          centre: 'in the middle of the six-yard box',
+          far: 'at the far post',
+          edge: 'on the edge of the box',
+        }[ev.zone];
         const K = {
           goal: [
-            `${an}'s corner is met by ${n} — it's in!`,
-            `${an} swings in the corner and ${n} powers the header home!`,
+            `${an}'s corner is met by ${n}${where ? ' ' + where : ''} — it's in!`,
+            `${an} swings in the corner and ${n} powers it home${where ? ' ' + where : ''}!`,
           ],
-          saved: [`${an}'s corner, ${n} gets his head to it — ${gn} saves!`],
-          wide: [`${an}'s corner finds ${n}, header just wide.`],
-          blocked: [`${an}'s corner is cleared at the near post.`],
+          saved: [`${an}'s corner, ${n} gets there${where ? ' ' + where : ''} — ${gn} saves!`],
+          wide: [`${an}'s corner finds ${n}${where ? ' ' + where : ''}, just wide.`],
+          blocked: [`${an}'s corner is cleared${ev.zone === 'near' ? ' at the near post' : ''}.`],
         };
         return U.pick(K[ev.outcome]);
       }

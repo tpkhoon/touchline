@@ -17,6 +17,7 @@
   MV.planActions = function (script) {
     const st = MV.st,
       sp = st.speed;
+    st.cor = null; // (a new minute: no corner is under way)
     const acts = [];
     let prevWasPass = false;
     script.forEach((a, idx) => {
@@ -26,7 +27,9 @@
         const d = from && to ? dist(from, to) : 0.2;
         // Take a touch / dribble first (more often after receiving, less when first-timing it)
         // a patient side takes a touch and looks up; a counter or a direct side plays it first time
-        if (!a.fast && MV.vr() < (prevWasPass ? (a.slow ? 0.6 : 0.5) : 0.3))
+        // a corner: the ball is put down at the flag first, and nobody dribbles it
+        if (a.flag) acts.push({ k: 'spot', side: a.side, slot: a.from, dead: 'cor', flag: a.flag, nat: 800 });
+        if (!a.flag && !a.fast && MV.vr() < (prevWasPass ? (a.slow ? 0.6 : 0.5) : 0.3))
           acts.push({ k: 'carry', side: a.side, slot: a.from, nat: MV.vrange(220, 420) * (a.slow ? 1.2 : 1) });
         const lofted = a.k === 'cross' || d > 0.36;
         acts.push({
@@ -103,13 +106,20 @@
     if (a.k === 'spot') {
       // A dead ball: on the penalty spot (or where the free kick was given), the taker a few steps behind it
       const f =
-        a.dead === 'pen'
-          ? { x: 0.885, y: 0.5 }
-          : a.at
-            ? { x: U.clamp(a.at.x, 0.6, 0.9), y: a.at.y } // (a direct free kick, from where real ones are taken)
-            : { x: MV.vrange(0.68, 0.76), y: MV.vrange(0.3, 0.7) };
+        a.dead === 'cor'
+          ? a.flag
+          : a.dead === 'pen'
+            ? { x: 0.885, y: 0.5 }
+            : a.at
+              ? { x: U.clamp(a.at.x, 0.6, 0.9), y: a.at.y } // (a direct free kick, from where real ones are taken)
+              : { x: MV.vrange(0.68, 0.76), y: MV.vrange(0.3, 0.7) };
+      if (a.dead === 'cor') st.cor = { side: a.side }; // the box fills up until the corner has been played
       const g = MV.toGlobal(a.side, f.x, f.y),
-        t = MV.toGlobal(a.side, f.x - 0.035, f.y + 0.01);
+        t = MV.toGlobal(
+          a.side,
+          f.x - (a.dead === 'cor' ? 0.02 : 0.035),
+          f.y + (a.dead === 'cor' ? (f.y < 0.5 ? 0.02 : -0.02) : 0.01),
+        );
       b.x = g.x;
       b.y = g.y;
       b.h = 0;
@@ -235,6 +245,7 @@
     st.ball.h = 0;
     if (a.k !== 'shot') st.touch = 0.22; // the receiver's first touch: the ball settles rather than sticks
     if (a.k === 'shot') {
+      st.cor = null;
       const ev = st.pendingEv.shift();
       if (ev) MV.showEvent(ev);
       if (a.outcome === 'goal') {
@@ -431,6 +442,21 @@
           });
         }
       }
+      // a corner: most of both teams crowd into the area, the attackers staggered across it, the defenders marking
+      if (st.cor)
+        targets.forEach((tg, i) => {
+          const s = sd.slots[i];
+          if (!s || s.t === 'GK') return;
+          const att = k === st.cor.side;
+          if (att ? ['FB', 'WB', 'DM'].includes(s.t) && i % 2 : s.t === 'ST' && i % 2) return; // (a couple stay back, a forward stays up)
+          const g = MV.toGlobal(
+            k,
+            att ? 0.84 + 0.1 * (((i * 7) % 5) / 4) : 0.05 + 0.1 * (((i * 7) % 5) / 4),
+            0.5 + (((i * 3) % 9) - 4) * 0.045,
+          );
+          tg.x = U.lerp(tg.x, g.x, 0.8);
+          tg.y = U.lerp(tg.y, g.y, 0.8);
+        });
       // action overrides (receiver running onto a pass, dribbler, diving keeper)
       for (const key in st.override || {}) {
         const [ks, is] = key.split(':');

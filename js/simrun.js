@@ -16,6 +16,7 @@
     'shapes',
     'shots',
     'passes',
+    'setpieces',
     'clubs',
     'world',
     'realstats',
