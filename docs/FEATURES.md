@@ -423,7 +423,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-92 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+100 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -525,3 +525,11 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Match | Classic view benches: a dugout strip beside the pitch with the substitutes' tokens, which move in and out as changes are made | Beta |
 | Match | Classic view officials and medical staff: the referee and assistants follow play and the touchline, and medical tokens run on when a player is injured | Beta |
 | Match | Classic view pressure shading: a soft tint over the penalty areas showing which side is attacking, from the momentum figures | Beta |
+| Editor | Phoenix clubs, administration and liquidation in the world editor: a club can enter administration (a points deduction and a transfer embargo), be liquidated, and a phoenix club can rise in its place lower down the pyramid; the editor sets who can fail and what follows | Alpha 2 |
+| Tooling | Real-life rules checker in the developer tools: checks the world against the real rules (squad and foreign-player limits, tiebreakers, promotion and relegation, cup formats, calendars) and lists where a league or competition departs from them | Alpha 2 |
+| Match | Past match reports show who scored, who assisted and who was booked or sent off, with the minute | Beta |
+| Match | The visual engine draws no lines between players (the formation and marking lines come out of the match view) | Beta |
+| Match | Real-time positioning and movement in the visual engine: players hold shape and move with the play, passes travel along believable paths and speeds, and shots are struck and placed like the real thing | Beta |
+| Match | Highlights only: a viewing mode that shows just the chances, goals and key moments and skips the rest of the match | Beta |
+| Match | Proper restarts of play: after a goal and at half-time (and after extra time) the players return to their halves and the match kicks off from the centre spot as in a real game | Beta |
+| Match | Set pieces shown properly: corners, free kicks, penalties, throw-ins and goal kicks are set up on the pitch with the taker, the wall and the runs into the box before the ball is played | Beta |
