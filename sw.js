@@ -18,6 +18,7 @@ const FILES = [
   './js/names-more3.js',
   './js/shapes.js',
   './js/shots.js',
+  './js/passes.js',
   './js/clubs.js',
   './js/clubguide.js',
   './js/world.js',

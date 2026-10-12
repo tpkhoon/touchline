@@ -753,7 +753,7 @@
     x.stroke();
     const c = px(0.5, 0.5);
     x.beginPath();
-    x.arc(c[0], c[1], w * 0.13, 0, Math.PI * 2);
+    x.arc(c[0], c[1], Math.max(0, w * 0.13), 0, Math.PI * 2);
     x.stroke();
     x.beginPath();
     x.arc(c[0], c[1], 2, 0, Math.PI * 2);

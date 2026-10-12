@@ -47,6 +47,7 @@ The web prototype runs on a phone browser with no build step, covering 1066 fict
 - Dropping down in the editor: a continental cup can send the clubs that finish third in a group into the cup one tier below, to play its group runners-up in a knockout play-off before the quarter-finals (tier 1 into tier 2, tier 2 into tier 3).
 - The visual match engine's positioning comes from real tracking data: a shape table built from SkillCorner Open Data (MIT) by `npm run shapes` moves each position with the ball, with and without it, and the lines are drawn together as in real teams. The rest of the realism plan (passes, shots, set pieces, movement) is still to do.
 - Shot locations and xG from real data: each chance is a real shot from the Wyscout public event data (46,000 shots; the model fits distance, angle, headers and free kicks, and matches the observed goal rate at every distance), with each kind's average chance kept so goals per match do not move. The match view's lines between players are gone.
+- Pass choice from real data with an expected-threat grid: 1.65 million Wyscout passes give the share of passes that go each way from each part of the pitch and an xT grid (best cell 41%, the penalty area's centre 16%, our own box 1%); the match view picks receivers by them, with the style on top (Direct 29 m a pass, Possession 21 m). The shape of real passing is only partly matched (47% forward against 57% in the data), because the formations' geometry limits it.
 
 ### Playtest feedback, round 10
 

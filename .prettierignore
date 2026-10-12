@@ -17,3 +17,5 @@ data/shape-table.json
 js/shapes.js
 js/shots.js
 data/shot-table.json
+js/passes.js
+data/pass-table.json

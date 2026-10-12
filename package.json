@@ -42,7 +42,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "shapes": "node tools/skillcorner-shapes.mjs",
-    "shots": "node --max-old-space-size=6144 tools/wyscout-shots.mjs"
+    "shots": "node --max-old-space-size=6144 tools/wyscout-shots.mjs",
+    "passes": "node --max-old-space-size=6144 tools/wyscout-passes.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",

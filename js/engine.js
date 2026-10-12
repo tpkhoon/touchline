@@ -158,6 +158,34 @@
     return { x: d[0], y: w * d[1] };
   };
 
+  // Where passes go, from real passes (FM.D.PASSES, js/passes.js, made by tools/wyscout-passes.mjs from the Wyscout public event
+  // data): the share of passes that go a given distance forward or back and toward the middle or the touchline from each part of
+  // the pitch, and how dangerous it is to have the ball in each part of the pitch (expected threat, xT). Match.circulate picks the
+  // next receiver by these: the share of real passes that go where he stands, a pass that moves the ball into more danger, then
+  // the team's style on top (Match.PASSING), as before.
+  FM.PassShape = { table: true, xt: 12, fwd: 2.5, back: 0.5 }; // (off: the old weights; xt: how much a gain in expected threat counts)
+  const bin = (v, edges) => {
+    let i = 0;
+    while (i < edges.length && v >= edges[i]) i++;
+    return i;
+  };
+  FM.PassShape.share = (fp, pp) => {
+    const P = FM.D.PASSES.disp,
+      zx = U.clamp(Math.floor(fp.x * P.zx), 0, P.zx - 1),
+      d = Math.abs(fp.y - 0.5) * 100,
+      zy = d < 12 ? 0 : d < 30 ? 1 : 2,
+      dx = (pp.x - fp.x) * 105,
+      di = (fp.y <= 0.5 ? 1 : -1) * (pp.y - fp.y) * 68;
+    const bx = bin(dx, P.dxEdges),
+      by = bin(di, P.dyEdges);
+    // (a share of the passes, made a density by the bin's size in metres, so a wide bin does not count for more)
+    return (P.p[zx * P.zy + zy][bx * (P.dyEdges.length + 1) + by] / (P.dxW[bx] * P.dyW[by])) * 100;
+  };
+  FM.PassShape.xtAt = (pos) => {
+    const G = FM.D.PASSES.xt;
+    return G.v[U.clamp(Math.floor(pos.x * G.nx), 0, G.nx - 1) * G.ny + U.clamp(Math.floor(pos.y * G.ny), 0, G.ny - 1)];
+  };
+
   // Position of a slot's player in that side's frame (x → attacking goal)
   FM.Pos = function (side, i, inPoss, ball) {
     const s = side.slots[i];
@@ -689,9 +717,22 @@
           const dist = Math.hypot(pp.x - fp.x, pp.y - fp.y);
           const prog = pp.x - fp.x,
             wide = Math.abs(pp.y - 0.5) > 0.25;
+          const reachK = broke ? 2 : P.reach,
+            progK = broke ? 5 : P.prog;
+          // the real share of passes that go where he stands, and the danger the pass leads to; a Short side is the real average,
+          // the other styles lean on it (shorter, longer, more direct) as they did before
+          const real =
+            FM.D.PASSES && FM.PassShape.table
+              ? Math.max(0.01, FM.PassShape.share(fp, pp)) *
+                (pp.x - fp.x > 0.03 ? FM.PassShape.fwd : pp.x - fp.x < -0.03 ? FM.PassShape.back : 1) *
+                Math.exp(-dist * (reachK - 6)) *
+                (prog >= 0 ? (1 + prog * progK) / (1 + prog * 1.2) : P.back / 0.35) *
+                Math.exp(
+                  U.clamp((FM.PassShape.xtAt(pp) - FM.PassShape.xtAt(fp)) * FM.PassShape.xt * (progK / 1.2), -1.5, 2),
+                )
+              : Math.exp(-dist * reachK) * (prog >= 0 ? 1 + prog * progK : P.back);
           return (
-            Math.exp(-dist * (broke ? 2 : P.reach)) *
-            (prog >= 0 ? 1 + prog * (broke ? 5 : P.prog) : P.back) *
+            real *
             (wide ? Math.max(0.2, 1 + wideW) : 1 - Math.min(0.3, wideW * 0.3)) *
             (sd.slots[o.i].t === 'GK' ? P.gk : 1) *
             (0.5 + o.p.attrs.passing / 20)
