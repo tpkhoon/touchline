@@ -32,7 +32,7 @@
         acts.push({
           ...a,
           lofted,
-          nat: U.clamp((d / (lofted ? 0.6 : 0.95)) * 1000, 200, 1000) * (a.fast ? 0.8 : a.slow ? 1.15 : 1),
+          nat: MV.flightMs(d, a.k === 'cross', lofted) * (a.fast ? 0.8 : a.slow ? 1.15 : 1),
         });
         prevWasPass = true;
       } else if (a.k === 'shot') {
@@ -245,6 +245,49 @@
     }
   };
 
+  // ---------- Real speeds (FM.D.MOVE, js/movement.js, from the Metrica Sports sample data) ----------
+  // How long a ball takes over a pass: the real speed for the length of the pass (9 m/s over ten metres to nearly 15 over thirty-five;
+  // a cross about 20), shown at a fixed share of real time (a twenty-metre pass takes about a quarter of a second on screen).
+  const BALL_VIEW_S = 6.5; // seconds of match time for each second on screen
+  MV.flightMs = (d, cross, lofted) => {
+    const M = FM.D.MOVE;
+    if (!M) return U.clamp((d / (lofted ? 0.6 : 0.95)) * 1000, 200, 1000);
+    const m = d * 105,
+      bins = M.ball.pass;
+    // the speed from the middle of the nearest length bands, smoothly between them
+    const mid = bins.map((b) => (b.from + Math.min(b.to, 60)) / 2),
+      sp = bins.map((b) => b.mean);
+    let v = sp[sp.length - 1];
+    if (m <= mid[0]) v = sp[0];
+    else
+      for (let i = 1; i < mid.length; i++)
+        if (m <= mid[i]) {
+          v = sp[i - 1] + ((sp[i] - sp[i - 1]) * (m - mid[i - 1])) / (mid[i] - mid[i - 1]);
+          break;
+        }
+    if (cross && M.ball.cross) v = M.ball.cross.mean;
+    return U.clamp((m / v / BALL_VIEW_S) * 1000, 140, 1000);
+  };
+  // Players: a top speed that follows pace and the real spread of speeds (a sprint is the real 99.9th percentile, an ordinary hard
+  // run the 99th), and a limit on how fast the velocity can change (3.3 m/s each second at any speed up to a sprint, a little more
+  // when slowing), so a player cannot turn or reach full speed at once. The pitch is not drawn at real time (a match minute
+  // lasts about a second), so metres a second become units of the pitch a second by a fixed scale.
+  const PLAYER_VIEW_S = 3.4; // seconds of match time for each second on screen, for a player's movement
+  MV.paceK = (pace) => 0.8 + 0.4 * (pace / 20);
+  MV.vmaxUnits = (pace, sprint) => {
+    const S = FM.D.MOVE && FM.D.MOVE.speed.out;
+    if (!S) return null;
+    return ((sprint ? S.p999 : S.p99) * MV.paceK(pace) * PLAYER_VIEW_S) / 105;
+  };
+  MV.accelUnits = (vUnits, slowing) => {
+    const M = FM.D.MOVE;
+    if (!M) return null;
+    const ms = (vUnits * 105) / PLAYER_VIEW_S,
+      bin = M.accel[Math.min(6, Math.floor(ms))] || M.accel[6];
+    const a = Math.abs((slowing ? bin.down : bin.up) || 3.3);
+    return (a * PLAYER_VIEW_S * PLAYER_VIEW_S) / 105;
+  };
+
   // ---------- Movement: steering with pace-limited acceleration ----------
   MV.moveDots = function (dt) {
     const st = MV.st,
@@ -404,10 +447,10 @@
         const energy = p && sd.st[p.id] != null ? 0.75 + 0.25 * (sd.st[p.id] / 100) : 1;
         const pace = p ? p.attrs.pace : 10;
         const ov = st.override && st.override[`${k}:${i}`];
+        const real = MV.vmaxUnits(pace, ov && ov.sprint);
         let vmax =
-          (0.13 + 0.09 * (pace / 20)) *
+          (real == null ? (0.13 + 0.09 * (pace / 20)) * (ov && ov.sprint ? 1.45 : 1) : real) *
           energy *
-          (ov && ov.sprint ? 1.45 : 1) *
           (ov && ov.dive ? 2.2 : 1) *
           Math.max(1, st.speed * 0.75);
         if (st.celebrate && st.celebrate.side === k) vmax *= 1.2;
@@ -419,9 +462,21 @@
           dvx *= vmax / sp;
           dvy *= vmax / sp;
         }
-        const acc = Math.min(1, dt * (ov ? 9 : 5));
-        d.vx += (dvx - d.vx) * acc;
-        d.vy += (dvy - d.vy) * acc;
+        // the velocity moves toward what the player wants no faster than a player can speed up, slow down or turn
+        const sp0 = Math.hypot(d.vx, d.vy),
+          aMax = MV.accelUnits(sp0, Math.hypot(dvx, dvy) < sp0);
+        if (aMax == null || (ov && ov.dive)) {
+          const acc = Math.min(1, dt * (ov ? 9 : 5));
+          d.vx += (dvx - d.vx) * acc;
+          d.vy += (dvy - d.vy) * acc;
+        } else {
+          const ex = dvx - d.vx,
+            ey = dvy - d.vy,
+            e = Math.hypot(ex, ey),
+            step = aMax * dt * Math.max(1, st.speed * 0.75) * Math.max(1, st.speed * 0.75); // (the faster the view runs, the faster players can change pace)
+          if (e <= step) ((d.vx = dvx), (d.vy = dvy));
+          else ((d.vx += (ex / e) * step), (d.vy += (ey / e) * step));
+        }
         d.x += d.vx * dt;
         d.y += d.vy * dt;
       });
