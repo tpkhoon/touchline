@@ -18,6 +18,7 @@
     const st = MV.st,
       sp = st.speed;
     st.cor = null; // (a new minute: no corner is under way)
+    st.chance = null;
     const acts = [];
     let prevWasPass = false;
     script.forEach((a, idx) => {
@@ -59,6 +60,9 @@
     acts.forEach((a) => (a.dur = Math.max(140, (a.nat / sp) * scale)));
     const total = acts.reduce((t, a) => t + a.dur, 0);
     if (total > st.minuteMs) st.minuteMs = total / 0.92;
+    // a shot is coming (not a penalty or a free kick): the attacking side fills the area, the defending side drops into its own
+    const shotAct = acts.find((a) => a.k === 'shot' && !a.dead);
+    st.chance = shotAct ? { side: shotAct.side, full: !['counter', 'longshot'].includes(shotAct.type) } : null;
     st.actions = acts;
     st.nActions = acts.length;
   };
@@ -246,6 +250,7 @@
     if (a.k !== 'shot') st.touch = 0.22; // the receiver's first touch: the ball settles rather than sticks
     if (a.k === 'shot') {
       st.cor = null;
+      st.chance = null;
       const ev = st.pendingEv.shift();
       if (ev) MV.showEvent(ev);
       if (a.outcome === 'goal') {
@@ -299,6 +304,9 @@
     return (a * PLAYER_VIEW_S * PLAYER_VIEW_S) / 105;
   };
 
+  // the final third's crowding: from where the ball is that far up the pitch (in the attacking side's frame), over how far it builds up,
+  // how many attackers join the area and how hard attackers and defenders are pulled to their places
+  const PosC = (MV.PosC = { from: 0.7, span: 0.15, att: 4, attPull: 0.95, defPull: 0.75 });
   // ---------- Movement: steering with pace-limited acceleration ----------
   MV.moveDots = function (dt) {
     const st = MV.st,
@@ -440,6 +448,50 @@
               tg.y = U.lerp(tg.y, corner.y, 0.35);
             }
           });
+        }
+      }
+      // The final third is crowded, as real goals are (the Last Row goals: about three attackers and six defenders in the area at the
+      // shot): when the ball is near the goal a few attackers go into the area around it, and most of the defending side drops into
+      // its own area, shading toward the ball's side.
+      if (!st.cor) {
+        // (a minute that ends in a shot is known to the view: the attacking side starts moving into the area from its start; a long
+        // shot or a counter brings fewer men)
+        const ch = st.chance,
+          att = ch ? ch.side : owner,
+          ba = MV.toFrame(att, b.x, b.y), // the ball in the attacking side's frame
+          wC = ch ? 1 : U.clamp((ba.x - PosC.from) / PosC.span, 0, 1),
+          few = ch && !ch.full;
+        if (wC > 0) {
+          if (k === att) {
+            const n = few ? 2 : PosC.att;
+            targets
+              .map((tg, i) => ({ tg, i, t: sd.slots[i].t, d: (tg.x - b.x) ** 2 + (tg.y - b.y) ** 2 }))
+              .filter((o) => ['ST', 'W', 'AM', 'WM', 'CM'].includes(o.t))
+              .sort((x, y) => x.d - y.d)
+              .slice(0, n)
+              .forEach((o, r) => {
+                const g = MV.toGlobal(
+                  k,
+                  U.clamp(Math.max(ba.x, 0.88) + (r % 2 ? -0.03 : 0.01), 0.86, 0.95),
+                  U.clamp(ba.y + (r - (n - 1) / 2) * 0.07, 0.3, 0.7),
+                );
+                o.tg.x = U.lerp(o.tg.x, g.x, PosC.attPull * wC);
+                o.tg.y = U.lerp(o.tg.y, g.y, PosC.attPull * wC);
+              });
+          } else {
+            const by = MV.toFrame(k, b.x, b.y).y;
+            targets.forEach((tg, i) => {
+              const s = sd.slots[i];
+              if (!s || s.t === 'GK' || ((s.t === 'ST' || s.t === 'W') && i % 2)) return; // (a forward or a winger stays up)
+              const g = MV.toGlobal(
+                k,
+                0.07 + 0.1 * (((i * 7) % 5) / 4),
+                U.clamp(0.5 + (((i * 3) % 9) - 4) * 0.04 + (by - 0.5) * 0.4, 0.2, 0.8),
+              );
+              tg.x = U.lerp(tg.x, g.x, PosC.defPull * wC * (few ? 0.5 : 1));
+              tg.y = U.lerp(tg.y, g.y, PosC.defPull * wC * (few ? 0.5 : 1));
+            });
+          }
         }
       }
       // a corner: most of both teams crowd into the area, the attackers staggered across it, the defenders marking
