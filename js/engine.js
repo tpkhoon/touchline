@@ -773,12 +773,29 @@
         penalty: [0.745, 0.765],
       }[type]; // penalties go to the designated taker, so the base rate sits a touch lower
       let xg = U.rand(XG[0], XG[1]) * (type === 'penalty' ? 1 : type === 'setpiece' ? CAL.spXg : CAL.xgScale);
+      // Where the shot is taken from and how good the chance is, drawn from real shots (FM.D.SHOTS, js/shots.js, made by
+      // tools/wyscout-shots.mjs from the Wyscout public event data): the place and the xG of one real shot of this kind, so a
+      // long shot comes from outside the box with a small chance and a through ball from near the goal with a big one. The
+      // average xG of each kind stays where it was, so a season's goals do not move; what changes is the spread and the place.
+      const SH = FM.D.SHOTS;
+      let shotAt = null;
+      const OLD_XG = { through: 0.23, cross: 0.07, cutback: 0.18, longshot: 0.0325, counter: 0.2, setpiece: 0.06 };
+      const redraw = (key) => {
+        const t = SH && FM.CAL.shotTable !== false && SH.types[key];
+        if (!t) return xg;
+        if (!t.mean) t.mean = t.sample.reduce((a, q) => a + q[2], 0) / t.sample.length;
+        const q = t.sample[U.randi(0, t.sample.length - 1)];
+        shotAt = { x: q[0], y: 0.5 + (Math.random() < 0.5 ? -1 : 1) * (q[1] - 0.5) };
+        return (q[2] / t.mean) * OLD_XG[type] * (type === 'setpiece' ? CAL.spXg : CAL.xgScale);
+      };
+      if (type !== 'setpiece' && type !== 'penalty') xg = redraw(type);
       // Set pieces: a direct free kick for the free-kick taker, or a corner delivered by the corner taker
       const Md = FM.Matchday;
       let sp = null,
         spTaker = null;
       if (type === 'setpiece') {
         sp = Math.random() < 0.3 ? 'fk' : 'cor';
+        xg = redraw(sp);
         spTaker = Md.taker(sd, sp, on);
         if (spTaker)
           xg *=
@@ -904,8 +921,8 @@
           outcome,
           m: tl.m,
           mi: this.momentum.length,
-          x: U.rand(R[0], R[1]),
-          y: U.clamp(0.5 + U.gauss(0, R[2]), 0.22, 0.78),
+          x: shotAt ? shotAt.x : U.rand(R[0], R[1]),
+          y: shotAt ? shotAt.y : U.clamp(0.5 + U.gauss(0, R[2]), 0.22, 0.78),
         });
       }
       const ev = {
@@ -958,6 +975,7 @@
             from: assister.i,
             to: shooter.i,
             fast: true,
+            at: shotAt, // where the shooter takes it from (the view brings him there)
             ctype: type, // the match view sends the runner early for a through ball or a counter
           });
         else if (this.ball.slot !== shooter.i && type !== 'penalty' && ev.sp !== 'fk')
@@ -972,6 +990,7 @@
           type,
           gk: gk && gk.i,
           big: ev.big,
+          at: shotAt,
           dead: type === 'penalty' ? 'pen' : ev.sp === 'fk' ? 'fk' : null,
         });
         const sp = FM.Pos(sd, shooter.i, true, { x: 0.8, y: 0.5 });

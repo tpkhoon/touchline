@@ -778,27 +778,6 @@
       );
     });
 
-    // pressing shapes: connect each team's back line & midfield line
-    m.sides.forEach((sd, k) => {
-      const col = MV.kit(m, k);
-      const lines = [['GK'], ['CB', 'FB', 'WB'], ['DM', 'CM', 'WM']];
-      [lines[1], lines[2]].forEach((types) => {
-        const pts = sd.slots
-          .map((s, i) => ({ s, i }))
-          .filter(({ s, i }) => types.includes(s.t) && sd.xi[i] && !sd.sentOff[sd.xi[i].id])
-          .map(({ i }) => px(st.dots[k][i].x, st.dots[k][i].y))
-          .sort((a, b) => a[0] - b[0]);
-        if (pts.length < 2) return;
-        x.strokeStyle = col;
-        x.globalAlpha = 0.28;
-        x.lineWidth = 2;
-        x.beginPath();
-        x.moveTo(...pts[0]);
-        pts.slice(1).forEach((p) => x.lineTo(...p));
-        x.stroke();
-        x.globalAlpha = 1;
-      });
-    });
     // players
     const r = Math.max(6, w * 0.022);
     m.sides.forEach((sd, k) => {

@@ -421,6 +421,8 @@ Every feature from the game design document, with what is playable in the protot
 | World | Catalonia and the Basque Country as optional nations: national teams of the players of Catalan or Basque family who choose them, with their own flags | Playtest round 17 |
 | Editor | World editor, dropping down: a continental cup's third-placed group clubs drop into the cup one tier below and play its runners-up in a knockout play-off | Playtest round 17 |
 | Match | Visual engine positioning from tracking data: where each position stands now follows a table measured from 20 SkillCorner open-data matches (`npm run shapes`, `js/shapes.js`), for the ball anywhere on the pitch with and without it, instead of one fixed shift toward the ball; teams are drawn about half as long as before (real teams span about 30 m) with the lines closer together; the match itself plays the same | Playtest round 17 |
+| Match | Shot locations and xG from real data: where a chance is taken from and how good it is now come from one real shot of that kind (a table of 100 shots for each kind of chance, from 46,000 shots in the Wyscout public event data, `npm run shots`, `js/shots.js`), so long shots come from outside the box with small chances, through balls from close with big ones, and the spread of chances is the real one; each kind's average chance is unchanged so goals per match stay where they were; the shot map uses the real places and the match view brings the shooter to them | Playtest round 17 |
+| Match | The match view draws no lines between players | Playtest round 17 |
 
 ## Yet to be added
 

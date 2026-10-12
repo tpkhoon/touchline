@@ -41,7 +41,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "shapes": "node tools/skillcorner-shapes.mjs"
+    "shapes": "node tools/skillcorner-shapes.mjs",
+    "shots": "node --max-old-space-size=6144 tools/wyscout-shots.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",

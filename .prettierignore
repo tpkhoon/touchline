@@ -15,3 +15,5 @@ data/real-world.json
 data/fictional-world.json
 data/shape-table.json
 js/shapes.js
+js/shots.js
+data/shot-table.json

@@ -14,6 +14,7 @@
     'names-more2',
     'names-more3',
     'shapes',
+    'shots',
     'clubs',
     'world',
     'realstats',

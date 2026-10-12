@@ -102,7 +102,12 @@
     }
     if (a.k === 'spot') {
       // A dead ball: on the penalty spot (or where the free kick was given), the taker a few steps behind it
-      const f = a.dead === 'pen' ? { x: 0.885, y: 0.5 } : { x: MV.vrange(0.68, 0.76), y: MV.vrange(0.3, 0.7) };
+      const f =
+        a.dead === 'pen'
+          ? { x: 0.885, y: 0.5 }
+          : a.at
+            ? { x: U.clamp(a.at.x, 0.6, 0.9), y: a.at.y } // (a direct free kick, from where real ones are taken)
+            : { x: MV.vrange(0.68, 0.76), y: MV.vrange(0.3, 0.7) };
       const g = MV.toGlobal(a.side, f.x, f.y),
         t = MV.toGlobal(a.side, f.x - 0.035, f.y + 0.01);
       b.x = g.x;
@@ -145,6 +150,14 @@
       const lead = a.k === 'win' ? 0 : a.ctype === 'through' || a.ctype === 'counter' ? 1.05 : 0.55;
       x1 = U.clamp(d.x + (tgt.x - d.x) * lead + (a.k === 'win' ? 0 : dir(a.side) * 0.012), 0.02, 0.98);
       y1 = U.clamp(d.y + (tgt.y - d.y) * lead, 0.03, 0.97);
+      // the pass to the man who shoots goes to the place the shot is taken from
+      if (a.at) {
+        x1 = U.clamp(a.at.x, 0.02, 0.98);
+        y1 = U.clamp(a.at.y, 0.03, 0.97);
+        const g = MV.toGlobal(a.side, x1, y1);
+        x1 = g.x;
+        y1 = g.y;
+      }
       st.override[`${a.side}:${a.to}`] = { x: x1, y: y1, sprint: true };
       if (lofted) arc = 0.02 + Math.min(0.05, dist(b, { x: x1, y: y1 }) * 0.09);
       if (a.k === 'cross') {
