@@ -3,6 +3,7 @@
 //   node --max-old-space-size=6144 tools/wyscout-carries.mjs --data <Wyscout folder with events_*.json> --metrica <Metrica sample-data/data folder>
 //        [--out data/carry-table.json] [--check]
 //
+// (Run this first; tools/tracking-carries.mjs then replaces the carries of the Metrica game with carries measured from the DFL tracking, `npm run carries:tracking`.)
 // From the Metrica Sports sample data (https://github.com/metrica-sports/sample-data; the README asks to be responsible with the data and to
 // acknowledge the source), game 3, whose events include carries (1,395 of them, with where each starts and ends):
 //   carries:  how often a player who has received a pass takes the ball on before he plays it, and how far: by third of the pitch (own,

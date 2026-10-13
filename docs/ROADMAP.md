@@ -42,7 +42,7 @@ The web prototype runs on a phone browser with no build step, covering 1066 fict
 - Proper restarts in the match view: after a goal and at half-time the sides walk back to their own halves, the side that did not score keeps outside the centre circle, and the ball is played from the centre spot (the second half is kicked off by the other side).
 - A striker played in by a through ball or on a counter takes it toward goal before he shoots.
 - A small shirt in each side's kit colour beside its name at the top of the match screen.
-- Goal kicks and throw-ins on the pitch, with their share and landing places from the Wyscout data (`npm run carries`); a defensive wall for direct free kicks; free-kick crosses with the box filling as for a corner; carries fitted to the Metrica sample game that records them (about one reception in six is followed by a carry of 4 m or more, median 7.5 m), a long carry taking a defender in.
+- Goal kicks and throw-ins on the pitch, with their share and landing places from the Wyscout data (`npm run carries`); a defensive wall for direct free kicks; free-kick crosses with the box filling as for a corner; carries fitted to the DFL open tracking (7 Bundesliga matches: about 37% of receptions are followed by a carry of 4 m or more, median 6.6 m; `npm run carries:tracking`), a long carry taking a defender in.
 - Fewer unrealistic passes: no pass back to the keeper from the opponent's half, fewer passes back in that half, a pass into the box with no shot behind it is usually lost, and the ball is not passed around inside the box. Carriers past halfway dribble further and more often.
 
 ### Playtest feedback, round 17
