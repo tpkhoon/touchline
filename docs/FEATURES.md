@@ -431,7 +431,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-128 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+132 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -569,3 +569,7 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Competitions | Southeast Asian tournaments: the ASEAN Championship for national teams, the ASEAN U-23 Championship and the Asian Games (an under-23 tournament with overage players), giving the region's nations a calendar of their own | Living world |
 | Transfers | A fair transfer economy from the first season: a check that no club is forced to sell its best players without a reason (release clauses, wage bills, debt) in the early seasons, and a gentler failure when a club really cannot pay | Beta |
 | Tooling | A dynasty check in the long-run test: over 20 seasons no club wins more than about half of a league's titles, and the report lists the most dominant club of each league | Beta |
+| Match | A jersey colour indicator on the match screen: a small shirt in each side's kit colours beside its name and score at the top, so the colours on the pitch are never in doubt (the match view already changes an away kit that clashes; the indicator shows which kit is being worn) | Beta |
+| Career | More options for world depth than deeper or faster: choose each part of the world on its own (how many leagues are played in full, lightly or only as results, how many countries have youth and B teams, how many seasons of history are kept, whether clubs lower down have squads of their own, how much of the transfer market and the news is simulated), with a short description and an estimate of the cost for each, and presets built from them | Beta |
+| Match | Fewer unrealistic passes and more dribbling in the match view: no pass back to the keeper once the ball is in the opponent's half (unless under heavy pressure), no passing around in the opponent's box without a shot (a player in the box shoots, crosses or is tackled within a few touches), and players who carry the ball: a dribble past a defender, a run down the wing or through the middle, with the carry length and how often it is tried taken from the real data | Beta |
+| Editor | A CSV editor and CSV databases: open a spreadsheet-style editor for the world's clubs, leagues, players and managers (add, change and delete rows, check as you type), and start a world from a CSV file you upload, one file or a set (clubs.csv, leagues.csv, players.csv), with a template to download and every problem listed by row and column | Alpha 2 |
