@@ -20,7 +20,9 @@ data/shot-table.json
 js/passes.js
 data/pass-table.json
 js/movement.js
+js/carries.js
 data/movement-table.json
+data/carry-table.json
 js/setpieces.js
 data/setpiece-table.json
 js/devclips.js

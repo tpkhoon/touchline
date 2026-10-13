@@ -1217,6 +1217,9 @@ main::-webkit-scrollbar {
   flex-direction: row-reverse;
   text-align: right;
 }
+.m-shirt {
+  flex: none;
+}
 .m-score {
   font-family: var(--display);
   font-weight: 900;

@@ -37,6 +37,14 @@ flowchart TB
 
 The web prototype runs on a phone browser with no build step, covering 1066 fictional clubs in 64 leagues (the real structure under invented names) across 54 nations in three simulation tiers, and 90 national teams. Newest build first.
 
+### Playtest feedback, round 18
+
+- Proper restarts in the match view: after a goal and at half-time the sides walk back to their own halves, the side that did not score keeps outside the centre circle, and the ball is played from the centre spot (the second half is kicked off by the other side).
+- A striker played in by a through ball or on a counter takes it toward goal before he shoots.
+- A small shirt in each side's kit colour beside its name at the top of the match screen.
+- Goal kicks and throw-ins on the pitch, with their share and landing places from the Wyscout data (`npm run carries`); a defensive wall for direct free kicks; free-kick crosses with the box filling as for a corner; carries fitted to the Metrica sample game that records them (about one reception in six is followed by a carry of 4 m or more, median 7.5 m), a long carry taking a defender in.
+- Fewer unrealistic passes: no pass back to the keeper from the opponent's half, fewer passes back in that half, a pass into the box with no shot behind it is usually lost, and the ball is not passed around inside the box. Carriers past halfway dribble further and more often.
+
 ### Playtest feedback, round 17
 
 - The Nations League replaces the international friendlies: each confederation plays one in the seasons with no qualifying (the year with no tournament and the year of the Continental Champions Trophy), in leagues of sixteen nations and groups of four, on the first three matchdays of the breaks. Group winners go up, the last in each group go down, and the best League A group winner is champion. A nation with nothing to play in a window rests.

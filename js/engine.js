@@ -622,7 +622,11 @@
 
     periodEvent(ev) {
       const out = { ev, events: [] };
-      if (ev === 'HT') out.events.push({ k: 'period', text: 'Half-time', min: "45'" });
+      if (ev === 'HT') {
+        out.events.push({ k: 'period', text: 'Half-time', min: "45'" });
+        // the second half is kicked off by the side that did not start the match, from the centre spot
+        if (this.live || this.o.track) this.ball = { side: 1, slot: this.kickoffSlot(this.sides[1]), x: 0.5, y: 0.5 };
+      }
       if (ev === 'FT90') {
         if (this.knockout && this.tied() && !this.extraTime) {
           this.shootout(out, "90'");
@@ -706,43 +710,81 @@
       let n = broke ? U.randi(1, 3) : U.randi(P.n[0], P.n[1]);
       if (leadingToChance) n = Math.min(n, 3);
       const wideW = (T.width === 'Wide' ? 0.5 : T.width === 'Narrow' ? -0.4 : 0) + (P.wide || 0);
+      // a restart the ball is in the middle of: a goal kick (the keeper has it) or a throw-in
+      let restart = !won && this.ball.restart ? this.ball.restart : null;
+      const CR = FM.D.CARRIES;
       for (let k = 0; k < n; k++) {
         const from = this.ball.slot;
         const fp = FM.Pos(sd, from, true, this.ball);
-        const deep = this.ball.x < 0.4;
-        // the keeper is part of it when a short side plays out from the back
+        // the keeper is part of it when a short side plays out from the back, and only from deep: nobody passes back to him from the
+        // opponent's half
+        const deep = fp.x < 0.3 && this.ball.x < 0.4;
+        const inBoxNow = fp.x > 0.84 && Math.abs(fp.y - 0.5) < 0.3;
         const cands = on.filter((o) => o.i !== from && (sd.slots[o.i].t !== 'GK' || (deep && P.gk && !broke)));
-        const pick = U.wpick(cands, (o) => {
-          const pp = FM.Pos(sd, o.i, true, this.ball);
-          const dist = Math.hypot(pp.x - fp.x, pp.y - fp.y);
-          const prog = pp.x - fp.x,
-            wide = Math.abs(pp.y - 0.5) > 0.25;
-          const reachK = broke ? 2 : P.reach,
-            progK = broke ? 5 : P.prog;
-          // the real share of passes that go where he stands, and the danger the pass leads to; a Short side is the real average,
-          // the other styles lean on it (shorter, longer, more direct) as they did before
-          const real =
-            FM.D.PASSES && FM.PassShape.table
-              ? Math.max(0.01, FM.PassShape.share(fp, pp)) *
-                (pp.x - fp.x > 0.03 ? FM.PassShape.fwd : pp.x - fp.x < -0.03 ? FM.PassShape.back : 1) *
-                Math.exp(-dist * (reachK - 6)) *
-                (prog >= 0 ? (1 + prog * progK) / (1 + prog * 1.2) : P.back / 0.35) *
-                Math.exp(
-                  U.clamp((FM.PassShape.xtAt(pp) - FM.PassShape.xtAt(fp)) * FM.PassShape.xt * (progK / 1.2), -1.5, 2),
-                )
-              : Math.exp(-dist * reachK) * (prog >= 0 ? 1 + prog * progK : P.back);
-          return (
-            real *
-            (wide ? Math.max(0.2, 1 + wideW) : 1 - Math.min(0.3, wideW * 0.3)) *
-            (sd.slots[o.i].t === 'GK' ? P.gk : 1) *
-            (0.5 + o.p.attrs.passing / 20)
-          );
-        });
+        // a goal kick goes where real ones land (Wyscout: nearly all of them long): the team-mate nearest that place gets it
+        let gkPick = null,
+          gkAim = null;
+        if (restart === 'gk' && CR && CR.goalkick.long.length) {
+          const G = CR.goalkick,
+            s = Math.random() < G.short ? G.shortTo : G.long,
+            tg = s[U.randi(0, s.length - 1)];
+          gkAim = { x: tg[0], y: tg[1] };
+          let gd = 9;
+          for (const o of cands) {
+            if (sd.slots[o.i].t === 'GK') continue;
+            const pp = FM.Pos(sd, o.i, true, this.ball),
+              dd = (pp.x - gkAim.x) ** 2 + (pp.y - gkAim.y) ** 2;
+            if (dd < gd) {
+              gd = dd;
+              gkPick = o;
+            }
+          }
+        }
+        const pick =
+          gkPick ||
+          U.wpick(cands, (o) => {
+            const pp = FM.Pos(sd, o.i, true, this.ball);
+            const dist = Math.hypot(pp.x - fp.x, pp.y - fp.y);
+            const prog = pp.x - fp.x,
+              wide = Math.abs(pp.y - 0.5) > 0.25;
+            const reachK = broke ? 2 : P.reach,
+              progK = broke ? 5 : P.prog;
+            // the real share of passes that go where he stands, and the danger the pass leads to; a Short side is the real average,
+            // the other styles lean on it (shorter, longer, more direct) as they did before
+            const real =
+              FM.D.PASSES && FM.PassShape.table
+                ? Math.max(0.01, FM.PassShape.share(fp, pp)) *
+                  (pp.x - fp.x > 0.03 ? FM.PassShape.fwd : pp.x - fp.x < -0.03 ? FM.PassShape.back : 1) *
+                  Math.exp(-dist * (reachK - 6)) *
+                  (prog >= 0 ? (1 + prog * progK) / (1 + prog * 1.2) : P.back / 0.35) *
+                  Math.exp(
+                    U.clamp((FM.PassShape.xtAt(pp) - FM.PassShape.xtAt(fp)) * FM.PassShape.xt * (progK / 1.2), -1.5, 2),
+                  )
+                : Math.exp(-dist * reachK) * (prog >= 0 ? 1 + prog * progK : P.back);
+            // in the opponent's half a pass goes forward or across, rarely back; in the box nobody passes it around for its own sake
+            const lateral =
+              (fp.x > 0.55 && prog < -0.03 ? 0.35 : 1) *
+              (inBoxNow && !leadingToChance && pp.x > 0.84 && Math.abs(pp.y - 0.5) < 0.3 ? 0.25 : 1);
+            return (
+              real *
+              lateral *
+              (wide ? Math.max(0.2, 1 + wideW) : 1 - Math.min(0.3, wideW * 0.3)) *
+              (sd.slots[o.i].t === 'GK' ? P.gk : 1) *
+              (0.5 + o.p.attrs.passing / 20)
+            );
+          });
         if (!pick) break;
         const to = pick.i;
         const tp = FM.Pos(sd, to, true, this.ball);
         this.ball = { side, slot: to, x: tp.x, y: tp.y };
-        out.script.push({ k: 'pass', side, from, to, fast: broke || P.fast, slow: P.slow });
+        const sc = { k: 'pass', side, from, to, fast: broke || P.fast, slow: P.slow };
+        if (restart) sc.restart = restart;
+        if (gkAim) {
+          sc.at = gkAim; // (where the kick lands; the receiver is sent there)
+          sc.long = Math.hypot((gkAim.x - 0.05) * 105, (gkAim.y - 0.5) * 68) >= 30;
+        }
+        out.script.push(sc);
+        restart = null;
         const key = from < to ? `${from}-${to}` : `${to}-${from}`;
         sd.passes[key] = (sd.passes[key] || 0) + 1;
         sd.passCount++;
@@ -751,7 +793,43 @@
           pt = sd.xi[to];
         if (pf && sd.ps[pf.id]) sd.ps[pf.id].pass++; // (passing counts in ratings at full time, in every match)
         if (pt && sd.ps[pt.id]) sd.ps[pt.id].tch++;
+        // a pass into the box that is not the build-up to a shot is blocked, cleared or intercepted (about three in four, a rate set by
+        // eye): the ball is lost there rather than passed around in the area
+        if (!leadingToChance && tp.x > 0.84 && Math.abs(tp.y - 0.5) < 0.3 && Math.random() < 0.75) {
+          this.loseBall(side, out);
+          break;
+        }
+        // a pass to a player on the touchline sometimes ends in a throw-in (Wyscout: about 44 a match): he takes it himself and plays it
+        // on with the next pass
+        if (!leadingToChance && k < n - 1 && Math.abs(tp.y - 0.5) > 0.38 && Math.random() < 0.6) restart = 'throw';
       }
+    }
+    // the side without the ball takes it where it is: the nearest defender (drawn only; tackles are counted in defend())
+    loseBall(side, out) {
+      const od = this.sides[1 - side],
+        on = this.onPitch(od);
+      if (!on.length) return;
+      // half of them go out behind: a goal kick, the keeper taking the ball to the six-yard box
+      const gk = on.find(({ i }) => od.slots[i].t === 'GK');
+      if (gk && Math.random() < 0.5) {
+        this.ball = { side: 1 - side, slot: gk.i, x: 0.05, y: 0.5, restart: 'gk' };
+        out.script.push({ k: 'win', side: 1 - side, to: gk.i });
+        return;
+      }
+      const bx = 1 - this.ball.x,
+        by = 1 - this.ball.y;
+      let best = on[0],
+        bd = 9;
+      for (const o of on) {
+        const pp = FM.Pos(od, o.i, false, { x: bx, y: by });
+        const dd = (pp.x - bx) ** 2 + (pp.y - by) ** 2;
+        if (dd < bd) {
+          bd = dd;
+          best = o;
+        }
+      }
+      this.ball = { side: 1 - side, slot: best.i, x: bx, y: by };
+      out.script.push({ k: 'win', side: 1 - side, to: best.i });
     }
     touch(sd, pos) {
       const gx = U.clamp(Math.floor(pos.x * 12), 0, 11),
@@ -892,6 +970,8 @@
         penTaker ||
         (sp === 'fk' && spTaker) ||
         U.wpick(sp === 'cor' && spTaker && on.length > 1 ? on.filter((o) => o !== spTaker) : on, shooterW);
+      // a few crosses are from a free kick in the final third (the box fills as for a corner)
+      const fkc = type === 'cross' && Math.random() < 0.12;
       let assister = null,
         shortWith = null;
       if (sp === 'cor' && spTaker && spTaker !== shooter) {
@@ -1058,6 +1138,7 @@
               fast: true,
               at: shotAt, // where the shooter takes it from (the view brings him there)
               ctype: type, // the match view sends the runner early for a through ball or a counter
+              restart: fkc ? 'fkc' : undefined,
             });
           else if (this.ball.slot !== shooter.i && type !== 'penalty' && ev.sp !== 'fk')
             out.script.push({ k: 'pass', side, from: this.ball.slot, to: shooter.i });
@@ -1079,7 +1160,14 @@
         this.touch(sd, { x: Math.max(sp.x, 0.78), y: sp.y });
         if (outcome === 'goal') this.ball = { side: 1 - side, slot: this.kickoffSlot(od), x: 0.5, y: 0.5 };
         else if (outcome === 'saved' && gk) this.ball = { side: 1 - side, slot: gk.i, x: 0.03, y: 0.5 };
-        else this.ball = { side: 1 - side, slot: gk ? gk.i : 0, x: 0.05, y: 0.5 };
+        else
+          this.ball = {
+            side: 1 - side,
+            slot: gk ? gk.i : 0,
+            x: 0.05,
+            y: 0.5,
+            restart: outcome === 'wide' && gk ? 'gk' : undefined, // (a shot wide: a goal kick)
+          };
         if (outcome === 'goal') out.script.push({ k: 'kickoff', side: 1 - side, to: this.ball.slot });
       }
       return ev;

@@ -348,7 +348,7 @@
     const ov = document.createElement('div');
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
-    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(C.shortName(H.club))}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(C.shortName(A.club))}</span></div></div>
+    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(C.shortName(H.club))}</span>${MV.shirt(m, 0)}</div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(C.shortName(A.club))}</span>${MV.shirt(m, 1)}</div></div>
       <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
@@ -549,6 +549,7 @@
     if (!out) return;
     if (out.ev === 'HT') {
       MV.ticker('⏸ Half-time');
+      st.restartNext = { side: m.ball.side, to: m.ball.slot }; // (the second half is kicked off from the centre spot)
       MV.banner('HALF-TIME', `${m.sides[0].goals}–${m.sides[1].goals}. Time for the team talk.`);
       return MV.showPrompt(FM.Prompts.halftime(m));
     }
@@ -1042,6 +1043,12 @@
     const clash = (c) => dist(rgb(c), rgb(home)) < 80;
     if (away.kit && away.kit.away && !clash(away.kit.away)) return away.kit.away;
     return clash(c1) && !clash(c2) ? c2 : c1;
+  };
+  // A small shirt in the colour the side is wearing in this match (the away kit changes when the two would look alike), by its name
+  MV.shirt = function (m, k) {
+    const c = MV.kit(m, k),
+      edge = MV.onGrass(c) || dist(rgb(c), [8, 12, 18]) < 60 ? '#fff' : 'rgba(0,0,0,.35)';
+    return `<svg class="m-shirt" viewBox="0 0 24 22" width="22" height="20" role="img" aria-label="${esc(m.sides[k].club.short)} shirt"><path d="M8 1 L1 5 L3.5 11 L6 9.6 L6 21 L18 21 L18 9.6 L20.5 11 L23 5 L16 1 Q12 4.5 8 1 Z" fill="${c}" stroke="${edge}" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
   };
   MV.onGrass = (c) => dist(rgb(c), GRASS) < 90; // a kit that blends into the pitch
   // A small pill in the side's kit colour, so every event says at a glance whose it is

@@ -18,9 +18,19 @@
     const st = MV.st,
       sp = st.speed;
     st.cor = null; // (a new minute: no corner is under way)
+    st.wall = null;
     st.chance = null;
     const acts = [];
     let prevWasPass = false;
+    // the second half starts from the centre spot: the sides walk back to their halves, then the kick-off
+    if (st.restartNext) {
+      const r = st.restartNext;
+      st.restartNext = null;
+      acts.push(
+        { k: 'restart', side: r.side, to: r.to, nat: 7000 },
+        { k: 'kickoff', side: r.side, to: r.to, nat: 420 },
+      );
+    }
     script.forEach((a, idx) => {
       if (a.k === 'pass' || a.k === 'cross') {
         const from = st.dots[a.side][a.from],
@@ -30,8 +40,39 @@
         // a patient side takes a touch and looks up; a counter or a direct side plays it first time
         // a corner: the ball is put down at the flag first, and nobody dribbles it
         if (a.flag) acts.push({ k: 'spot', side: a.side, slot: a.from, dead: 'cor', flag: a.flag, nat: 800 });
-        if (!a.flag && !a.fast && MV.vr() < (prevWasPass ? (a.slow ? 0.6 : 0.5) : 0.3))
-          acts.push({ k: 'carry', side: a.side, slot: a.from, nat: MV.vrange(220, 420) * (a.slow ? 1.2 : 1) });
+        // a goal kick, a throw-in or a free-kick cross: the ball is put down first (the box fills for a free-kick cross)
+        if (a.restart)
+          acts.push({
+            k: 'spot',
+            side: a.side,
+            slot: a.from,
+            dead: a.restart,
+            at: a.restart === 'gk' ? null : a.at,
+            nat: a.restart === 'gk' ? 700 : a.restart === 'fkc' ? 800 : 450,
+          });
+        // A carry before the pass. How often and how far is the real thing (FM.D.CARRIES, js/carries.js, from the Metrica sample game
+        // whose events include carries): about one reception in six is followed by a carry of 4 m or more (median 7.5 m, a tenth over 15),
+        // by the third of the pitch he is in; the short touches in between are drawn as before (a metre or two, not in the data).
+        const cd = st.dots[a.side][a.from],
+          CR = FM.D.CARRIES,
+          zone = cd ? Math.min(2, Math.floor(MV.toFrame(a.side, cd.x, cd.y).x * 3)) : 1;
+        if (!a.flag && !a.restart && !a.fast) {
+          const Z = CR && CR.carries.zones[zone];
+          if (Z && MV.vr() < Z.share) {
+            const s = Z.sample[Math.floor(MV.vr() * Z.sample.length)],
+              len = Math.hypot(s[0], s[1]);
+            acts.push({
+              k: 'carry',
+              side: a.side,
+              slot: a.from,
+              nat: 240 + len * 45,
+              fwd: s[0] / 105,
+              lat: s[1] / 68,
+              beat: len >= 8, // (a long run takes a defender on)
+            });
+          } else if (MV.vr() < (prevWasPass ? (a.slow ? 0.6 : 0.5) : 0.3))
+            acts.push({ k: 'carry', side: a.side, slot: a.from, nat: MV.vrange(220, 420) * (a.slow ? 1.2 : 1) });
+        }
         const lofted = a.k === 'cross' || d > 0.36;
         acts.push({
           ...a,
@@ -41,15 +82,22 @@
         prevWasPass = true;
       } else if (a.k === 'shot') {
         if (a.dead)
-          acts.push({ k: 'spot', side: a.side, slot: a.from, dead: a.dead, nat: 900 }); // the ball placed, the run-up
-        else if (MV.vr() < 0.6) acts.push({ k: 'carry', side: a.side, slot: a.from, nat: 240, pre: true });
+          acts.push({ k: 'spot', side: a.side, slot: a.from, dead: a.dead, nat: a.dead === 'fk' ? 1700 : 900 }); // the ball placed, the run-up (a free kick waits for the wall to form)
+        else {
+          // a striker who is played in by a through ball or on a counter takes it on toward goal before he shoots
+          const prev = acts[acts.length - 1],
+            thru = prev && prev.k === 'pass' && (prev.ctype === 'through' || prev.ctype === 'counter');
+          if (thru) acts.push({ k: 'carry', side: a.side, slot: a.from, nat: 520, pre: true, thru: true });
+          else if (MV.vr() < 0.6) acts.push({ k: 'carry', side: a.side, slot: a.from, nat: 240, pre: true });
+        }
         acts.push({ ...a, nat: a.type === 'longshot' ? 520 : 380 });
         prevWasPass = false;
       } else if (a.k === 'win') {
         acts.push({ ...a, nat: 260 });
         prevWasPass = false;
       } else if (a.k === 'kickoff') {
-        acts.push({ ...a, nat: 420 });
+        // after a goal the sides walk back to their own halves before the ball is played from the centre spot
+        acts.push({ k: 'restart', side: a.side, to: a.to, nat: 7000 }, { ...a, nat: 420 });
         prevWasPass = false;
       }
     });
@@ -57,7 +105,7 @@
     const budget = st.minuteMs * 0.92;
     const natural = acts.reduce((t, a) => t + a.nat / sp, 0);
     const scale = natural > budget ? Math.max(0.42, budget / natural) : 1;
-    acts.forEach((a) => (a.dur = Math.max(140, (a.nat / sp) * scale)));
+    acts.forEach((a) => (a.dur = Math.max(140, (a.nat / sp) * (a.k === 'restart' ? 1 : scale)))); // (a restart is not squeezed: the sides need the time to walk back)
     const total = acts.reduce((t, a) => t + a.dur, 0);
     if (total > st.minuteMs) st.minuteMs = total / 0.92;
     // a shot is coming (not a penalty or a free kick): the attacking side fills the area, the defending side drops into its own
@@ -88,9 +136,20 @@
         st.ball.y = U.lerp(A.y0, A.y1, e) + A.ny * bend;
         st.ball.h = A.arc ? 4 * A.arc * f * (1 - f) : 0;
       }
-      if (f >= 1) MV.endAction();
+      // a restart lasts until the sides are back in place (or a time limit), not a fixed few hundred milliseconds at the faster speeds
+      if (f >= 1 || (A.a.k === 'restart' && A.t > 500 && MV.settled())) MV.endAction();
     } else if (st.actions.length) MV.beginAction(st.actions.shift());
     if (!st.act && !st.actions.length && st.minuteT >= st.minuteMs) MV.nextMinute();
+  };
+
+  // everybody within a few steps of the place he is heading for
+  MV.settled = () => {
+    const st = MV.st;
+    return st.dots.every((side, k) =>
+      side.every(
+        (d, i) => !d || !st.targets || !st.targets[k] || !st.targets[k][i] || dist(d, st.targets[k][i]) < 0.035,
+      ),
+    );
   };
 
   MV.beginAction = function (a) {
@@ -109,21 +168,37 @@
     }
     if (a.k === 'spot') {
       // A dead ball: on the penalty spot (or where the free kick was given), the taker a few steps behind it
+      // a goal kick: on the six-yard line; a throw-in: on the touchline by the taker; a free-kick cross: wide in the final third
+      const taker = st.dots[a.side][a.slot],
+        tf = taker ? MV.toFrame(a.side, taker.x, taker.y) : { x: 0.5, y: 0.5 },
+        side = tf.y < 0.5 ? 0 : 1;
       const f =
         a.dead === 'cor'
           ? a.flag
           : a.dead === 'pen'
             ? { x: 0.885, y: 0.5 }
-            : a.at
-              ? { x: U.clamp(a.at.x, 0.6, 0.9), y: a.at.y } // (a direct free kick, from where real ones are taken)
-              : { x: MV.vrange(0.68, 0.76), y: MV.vrange(0.3, 0.7) };
-      if (a.dead === 'cor') st.cor = { side: a.side }; // the box fills up until the corner has been played
+            : a.dead === 'gk'
+              ? { x: 0.055, y: 0.5 + MV.vrange(-0.12, 0.12) }
+              : a.dead === 'throw'
+                ? { x: U.clamp(tf.x, 0.04, 0.96), y: side ? 0.995 : 0.005 }
+                : a.dead === 'fkc'
+                  ? { x: MV.vrange(0.64, 0.8), y: MV.vr() < 0.5 ? MV.vrange(0.1, 0.28) : MV.vrange(0.72, 0.9) }
+                  : a.at
+                    ? { x: U.clamp(a.at.x, 0.6, 0.9), y: a.at.y } // (a direct free kick, from where real ones are taken)
+                    : { x: MV.vrange(0.68, 0.76), y: MV.vrange(0.3, 0.7) };
+      // the box fills up until the corner or the free-kick cross has been played, and for a throw-in in the final third
+      if (a.dead === 'cor' || a.dead === 'fkc' || (a.dead === 'throw' && f.x > 0.75)) st.cor = { side: a.side };
+      // a direct free kick: the defending side builds a wall (below, in moveDots)
+      if (a.dead === 'fk') st.wall = { side: a.side, x: f.x, y: f.y };
       const g = MV.toGlobal(a.side, f.x, f.y),
-        t = MV.toGlobal(
-          a.side,
-          f.x - (a.dead === 'cor' ? 0.02 : 0.035),
-          f.y + (a.dead === 'cor' ? (f.y < 0.5 ? 0.02 : -0.02) : 0.01),
-        );
+        t =
+          a.dead === 'throw'
+            ? MV.toGlobal(a.side, f.x, f.y + (side ? -0.015 : 0.015))
+            : MV.toGlobal(
+                a.side,
+                f.x - (a.dead === 'cor' ? 0.02 : a.dead === 'gk' ? 0.02 : 0.035),
+                f.y + (a.dead === 'cor' ? (f.y < 0.5 ? 0.02 : -0.02) : 0.01),
+              );
       b.x = g.x;
       b.y = g.y;
       b.h = 0;
@@ -133,13 +208,48 @@
       st.act = { kind: 'spot', a, t: 0, dur: a.dur };
       return;
     }
+    if (a.k === 'restart') {
+      const sd = MV.m.sides[a.side],
+        pick = sd.slots.findIndex((s, i) => i !== a.to && (s.t === 'ST' || s.t === 'AM') && sd.xi[i]),
+        kicker = pick >= 0 ? pick : sd.slots.findIndex((s, i) => i !== a.to && s.t !== 'GK' && sd.xi[i]);
+      st.restart = { side: a.side, to: a.to, kicker: kicker >= 0 ? kicker : null };
+      b.x = 0.5;
+      b.y = 0.5;
+      b.h = 0;
+      b.side = a.side;
+      b.slot = st.restart.kicker != null ? st.restart.kicker : a.to;
+      st.act = { kind: 'restart', a, t: 0, dur: a.dur };
+      return;
+    }
     if (a.k === 'carry') {
       // Dribble: carrier pushes forward (and a little sideways) with the ball at his feet
       const d = st.dots[a.side][a.slot];
-      const fwd = MV.vrange(0.02, a.pre ? 0.03 : 0.065) * dir(a.side);
+      // (a fitted carry has its own length and direction from the real data; a through-ball runner cuts in toward the middle of the goal)
+      const fwd =
+        (a.fwd != null ? a.fwd : a.thru ? MV.vrange(0.05, 0.09) : MV.vrange(0.02, a.pre ? 0.03 : 0.065)) * dir(a.side);
       const tx = U.clamp(d.x + fwd, 0.03, 0.97),
-        ty = U.clamp(d.y + MV.vrange(-0.035, 0.035), 0.05, 0.95);
+        ty =
+          a.lat != null
+            ? U.clamp(d.y + a.lat * (a.side === 0 ? 1 : -1), 0.05, 0.95)
+            : a.thru
+              ? U.clamp(d.y + (0.5 - d.y) * 0.4, 0.05, 0.95)
+              : U.clamp(d.y + MV.vrange(-0.035, 0.035), 0.05, 0.95);
       st.override[`${a.side}:${a.slot}`] = { x: tx, y: ty, sprint: true };
+      if (a.beat) {
+        // a long run takes a defender on: the nearest one goes in for the ball and is left behind
+        let bj = -1,
+          bd = 9;
+        st.dots[1 - a.side].forEach((o, j) => {
+          const dd = dist(o, d);
+          if (MV.m.sides[1 - a.side].slots[j].t !== 'GK' && dd < bd) ((bd = dd), (bj = j));
+        });
+        if (bj >= 0 && bd < 0.2)
+          st.override[`${1 - a.side}:${bj}`] = {
+            x: U.lerp(d.x, tx, 0.45),
+            y: U.lerp(d.y, ty, 0.45) + 0.012,
+            sprint: true,
+          };
+      }
       b.side = a.side;
       b.slot = a.slot;
       st.act = { kind: 'carry', a, t: 0, dur: a.dur };
@@ -247,9 +357,12 @@
     st.act = null;
     st.ball.inFlight = false;
     st.ball.h = 0;
+    if (a.k === 'restart') st.restart = null;
+    if (a.restart === 'throw') st.cor = null; // (the throw-in is taken: the box empties)
     if (a.k !== 'shot') st.touch = 0.22; // the receiver's first touch: the ball settles rather than sticks
     if (a.k === 'shot') {
       st.cor = null;
+      st.wall = null;
       st.chance = null;
       const ev = st.pendingEv.shift();
       if (ev) MV.showEvent(ev);
@@ -509,6 +622,62 @@
           tg.x = U.lerp(tg.x, g.x, 0.8);
           tg.y = U.lerp(tg.y, g.y, 0.8);
         });
+      // a direct free kick: a wall of two to five (by how far from goal), nine and a bit metres from the ball on the line to the middle of
+      // the goal, the defenders nearest to that place making it
+      if (st.wall && k !== st.wall.side) {
+        const Wl = st.wall,
+          bxm = Wl.x * 105,
+          bym = Wl.y * 68,
+          dm = Math.hypot(105 - bxm, 34 - bym) || 1,
+          ux = (105 - bxm) / dm,
+          uy = (34 - bym) / dm,
+          n = dm < 20 ? 5 : dm < 26 ? 4 : dm < 32 ? 3 : 2,
+          cx = bxm + ux * 9.15,
+          cy = bym + uy * 9.15,
+          mid = MV.toGlobal(Wl.side, cx / 105, cy / 68);
+        const wallIds = new Set(),
+          ball = MV.toGlobal(Wl.side, Wl.x, Wl.y);
+        targets
+          .map((tg, i) => ({ i, d: dist(st.dots[k][i], mid) }))
+          .filter((o) => sd.slots[o.i].t !== 'GK')
+          .sort((p, q) => p.d - q.d)
+          .slice(0, n)
+          .forEach((o, r) => {
+            const off = (r - (n - 1) / 2) * 0.9,
+              g = MV.toGlobal(Wl.side, (cx - uy * off) / 105, (cy + ux * off) / 68);
+            targets[o.i] = { x: g.x, y: g.y, sprint: true };
+            st.override[`${k}:${o.i}`] = targets[o.i];
+            wallIds.add(o.i);
+          });
+        // nobody else of the defending side stands within the ten metres of the ball
+        targets.forEach((tg, i) => {
+          if (wallIds.has(i) || sd.slots[i].t === 'GK') return;
+          const dx = (tg.x - ball.x) * 105,
+            dy = (tg.y - ball.y) * 68,
+            m = Math.hypot(dx, dy);
+          if (m < 10) {
+            tg.x = ball.x + ((dx || 1) / (m || 1)) * (10 / 105);
+            tg.y = ball.y + (dy / (m || 1)) * (10 / 68);
+          }
+        });
+      }
+      // a restart from the centre spot: both sides in their own halves, the side without the ball outside the circle, the kicker on the
+      // ball with the man he passes to beside him
+      if (st.restart) {
+        const R = st.restart;
+        targets.forEach((tg, i) => {
+          const s = sd.slots[i];
+          if (!s || s.t === 'GK') return;
+          const f = MV.toFrame(k, tg.x, tg.y),
+            g = MV.toGlobal(k, Math.min(f.x, k === R.side ? 0.47 : 0.37), f.y);
+          tg.x = g.x;
+          tg.y = g.y;
+        });
+        if (k === R.side) {
+          if (R.kicker != null) targets[R.kicker] = { x: 0.5, y: 0.5 };
+          if (R.to != null && R.to !== R.kicker) targets[R.to] = MV.toGlobal(k, 0.46, 0.55);
+        }
+      }
       // action overrides (receiver running onto a pass, dribbler, diving keeper)
       for (const key in st.override || {}) {
         const [ks, is] = key.split(':');
