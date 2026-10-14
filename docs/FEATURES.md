@@ -446,7 +446,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-133 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+136 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -589,3 +589,6 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Analytics | Action maps for a player: defensive actions (tackles, interceptions, recoveries, clearances, blocks), duels and aerials won and lost, dribbles and where passes were received, drawn on a pitch from the match view's own events; plus phases of play for a club (shape in build-up, in the final third and out of possession, using the SkillCorner shape table) | Alpha 2 |
 | Analytics | Line-up card for a match: the starting XI on the pitch by formation with numbers, nationality, the substitutes and the average age; and shot placement (which part of the goal) so penalties and shots on target can be drawn on a goalmouth | Alpha 2 |
 | Career | The real world pack for the rest of the world: the squads of the other 54 leagues of the game (Portugal, the Netherlands, Brazil, Argentina, the United States, Japan and the rest), real managers and staff, and real crests (the game draws its own, as crests are trademarks); and ratings that come from real data (market values, per 90 statistics from the open data, or a dataset you supply) instead of fame | Alpha 2 |
+| Records | A roll of champions for every competition: a page for each league, domestic cup and continental cup listing every past winner and runner-up by year, how many titles each club has, the longest runs and the most dominant eras (the Football Archive lists a season at a time; this lists a competition across all of them) | Alpha 2 |
+| Awards | Season awards for every league, not only yours: a Best XI of the season, the Young Player (newcomer) of the Year, the Golden Glove, the Golden Boot and the Manager of the Year, each kept in the archive, on the winner's profile and in the story feed | Alpha 2 |
+| Tooling | Store screenshots that match the game: a script that plays a save to set points (a match, a transfer, the league table, a player card, the Analyst view) and captures the screens from the current build, so a store listing never shows something the game cannot do | 1.0 |
