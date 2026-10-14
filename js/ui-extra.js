@@ -1389,8 +1389,11 @@
       me = m.sides[us],
       op = m.sides[1 - us];
     if (t === 'shots')
-      body.innerHTML = `<div class="card"><div class="h3">Shot map</div><div class="tiny dim">Circle size = xG · filled = goal · ringed = on target · faded = off target / blocked</div>${MV.shotMap(m)}<div class="row tiny" style="justify-content:space-between;margin-top:6px"><span style="color:${colOf(op)}">◀ ${esc(op.club.short)} attack</span><span style="color:${colOf(me)}">${esc(me.club.short)} attack ▶</span></div></div>
-      <div class="card"><div class="h3">xG race</div>${MV.xgRace(m)}</div>
+      body.innerHTML = `<div class="card"><div class="h3">The match in numbers</div>${MV.matchBars(m)}</div>
+      <div class="card"><div class="h3">Shot map</div><div class="tiny dim">Circle size = xG · filled = goal · ringed = on target · faded = off target / blocked</div>${MV.shotMap(m)}<div class="row tiny" style="justify-content:space-between;margin-top:6px"><span style="color:${colOf(op)}">◀ ${esc(op.club.short)} attack</span><span style="color:${colOf(me)}">${esc(me.club.short)} attack ▶</span></div></div>
+      <div class="card"><div class="h3">xG timeline</div><div class="tiny dim">Each step is a shot; a ring is a goal; a red mark a sending-off; ▾ a substitution</div>${MV.xgTimeline(m)}</div>
+      <div class="card"><div class="h3">Who was threatening</div><div class="tiny dim">${esc(m.sides[0].club.short)} above the line, ${esc(m.sides[1].club.short)} below: how dangerous each side was, minute by minute</div>${MV.momentumChart(m)}</div>
+      <div class="card"><div class="h3">Shooters</div>${MV.shooters(m)}</div>
       <div class="card"><div class="h3">Chance types</div>${MV.typeTable(m)}</div>`;
     if (t === 'stats') body.innerHTML = MV.statTable(me) + MV.statTable(op, true);
     if (t === 'insights') {
@@ -1427,6 +1430,176 @@
       })
       .join('');
     return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;margin-top:8px;background:#1f7a3f;border-radius:10px">${lines}${dots}</svg>`;
+  };
+  // ---------- Analyst view: the match in charts ----------
+  // The tick (minute) a clock label such as 65' or 45+2' falls on: the charts run along the ticks the match was played in
+  const tickOf = (m, label) => {
+    let n = 0;
+    for (const e of m.timeline) {
+      if (!e.label) continue;
+      if (e.label === label) return n;
+      n++;
+    }
+    return n;
+  };
+  const halfTick = (m) => m.timeline.filter((e) => e.label && e.half === 1).length;
+  const sideCol = (m, k) => (k === 1 && colOf(m.sides[0]) === colOf(m.sides[1]) ? '#e9a23b' : colOf(m.sides[k]));
+  MV.matchBars = function (m) {
+    const r = m.result(),
+      [H, A] = m.sides,
+      cH = sideCol(m, 0),
+      cA = sideCol(m, 1);
+    const bar = (l, a, b, fmt = (v) => v) => {
+      const tot = a + b || 1;
+      return `<div class="sbar"><div class="lbl"><b>${fmt(a)}</b><span>${l}</span><b>${fmt(b)}</b></div><div class="tr"><i style="width:${(a / tot) * 100}%;background:${cH};margin-left:auto"></i><i style="width:${(b / tot) * 100}%;background:${cA}"></i></div></div>`;
+    };
+    return `<div class="row b small" style="justify-content:space-between;margin-bottom:6px"><span>${C.crest(H.club, 18)} ${esc(H.club.short)}</span><span>${esc(A.club.short)} ${C.crest(A.club, 18)}</span></div>${bar('Goals', r.hg, r.ag)}${bar('xG', +r.xg[0], +r.xg[1], (v) => v.toFixed(2))}${bar('Shots', r.shots[0], r.shots[1])}${bar('On target', r.sot[0], r.sot[1])}${bar('Possession', r.poss[0], r.poss[1], (v) => v + '%')}`;
+  };
+  MV.xgTimeline = function (m) {
+    const w = 340,
+      h = 190,
+      pl = 26,
+      pr = 12,
+      pt = 30,
+      pb = 24;
+    const N = Math.max(90, m.momentum.length),
+      X = (i) => pl + (i / N) * (w - pl - pr);
+    const shots = m.shotLog.slice().sort((a, b) => a.mi - b.mi);
+    const max = Math.max(1, m.sides[0].xg, m.sides[1].xg) * 1.15,
+      Y = (v) => h - pb - (v / max) * (h - pt - pb);
+    const steps = (k) => {
+      let cum = 0,
+        d = `${X(0)},${Y(0)}`;
+      for (const s of shots) {
+        if (s.side !== k) continue;
+        d += ` ${X(s.mi)},${Y(cum)}`;
+        cum += s.xg;
+        d += ` ${X(s.mi)},${Y(cum)}`;
+      }
+      return d + ` ${X(m.xgLine.length)},${Y(cum)}`;
+    };
+    const grid = [0.5, 1, 1.5, 2, 2.5, 3, 4]
+      .filter((v) => v < max)
+      .map(
+        (v) =>
+          `<line x1="${pl}" x2="${w - pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="3" y="${Y(v) + 3}" font-size="9" fill="var(--ink3)">${v}</text>`,
+      )
+      .join('');
+    const axis = [0, 15, 30, 45, 60, 75, 90]
+      .map((min) => {
+        const i = min === 0 ? 0 : min === 45 ? halfTick(m) : min > 45 ? tickOf(m, `${min}'`) + 1 : min;
+        return `<text x="${X(i)}" y="${h - 8}" font-size="9" text-anchor="middle" fill="var(--ink3)">${min}'</text>`;
+      })
+      .join('');
+    // goals, with the scorer, the minute and the score
+    let lastX = -99,
+      lift = 0;
+    const goals = m.events
+      .filter((e) => e.k === 'goal')
+      .map((e) => {
+        const mi = tickOf(m, e.min),
+          cum = m.shotLog.filter((s) => s.side === e.side && s.mi <= mi).reduce((a, s) => a + s.xg, 0),
+          x = X(mi),
+          y = Y(cum);
+        lift = x - lastX < 46 ? lift + 1 : 0;
+        lastX = x;
+        const txt = `${esc(W.short(P(e.pid)))} ${esc(e.min)}${e.score ? ' ' + e.score[0] + '–' + e.score[1] : ''}`,
+          tw = txt.length * 4.4, // (the label's width, about, at this size)
+          ly = Math.max(10, y - 12 - lift * 10),
+          lx = Math.min(w - pr - tw, Math.max(4, x - tw / 2));
+        return `<line x1="${x}" x2="${x}" y1="${y - 4}" y2="${ly + 2}" stroke="${sideCol(m, e.side)}" stroke-width="0.8"/><circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="${sideCol(m, e.side)}" stroke-width="2"/><text x="${lx}" y="${ly}" font-size="8" font-weight="700" fill="${sideCol(m, e.side)}">${txt}</text>`;
+      })
+      .join('');
+    const reds = m.events
+      .filter((e) => e.k === 'red')
+      .map(
+        (e) =>
+          `<rect x="${X(tickOf(m, e.min)) - 3}" y="${pt - 22}" width="6" height="8" rx="1" fill="#d32f2f"><title>${esc(e.min)} ${esc(W.short(P(e.pid)))} sent off</title></rect>`,
+      )
+      .join('');
+    const subs = m.events
+      .filter((e) => e.k === 'sub')
+      .map(
+        (e) =>
+          `<text x="${X(tickOf(m, e.min))}" y="${h - pb + 9}" font-size="8" text-anchor="middle" fill="${sideCol(m, e.side)}">▾<title>${esc(e.min)} ${esc(W.short(P(e.pid)))} on</title></text>`,
+      )
+      .join('');
+    const [H, A] = m.sides;
+    return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;margin-top:6px">${grid}<line x1="${X(halfTick(m))}" x2="${X(halfTick(m))}" y1="${pt - 14}" y2="${h - pb}" stroke="var(--ink3)" stroke-dasharray="3 3"/><text x="${X(halfTick(m)) + 3}" y="${pt - 6}" font-size="8" fill="var(--ink3)">HT</text><polyline points="${steps(0)}" fill="none" stroke="${sideCol(m, 0)}" stroke-width="2.4" stroke-linejoin="round"/><polyline points="${steps(1)}" fill="none" stroke="${sideCol(m, 1)}" stroke-width="2.4" stroke-linejoin="round"/>${goals}${reds}${axis}${subs}</svg>
+      <div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${sideCol(m, 0)}">■ ${esc(H.club.short)} ${H.xg.toFixed(2)} xG</span><span style="color:${sideCol(m, 1)}">■ ${esc(A.club.short)} ${A.xg.toFixed(2)} xG</span></div>`;
+  };
+  // how dangerous each side was, minute by minute (the engine's own momentum, smoothed): the home side above the line, the away side below
+  MV.momentumChart = function (m) {
+    const w = 340,
+      h = 130,
+      pl = 8,
+      pr = 8,
+      mid = h / 2;
+    const M = m.momentum,
+      N = Math.max(90, M.length),
+      X = (i) => pl + (i / N) * (w - pl - pr);
+    const sm = M.map((_, i) => {
+      let s = 0,
+        c = 0;
+      for (let j = Math.max(0, i - 2); j <= Math.min(M.length - 1, i + 2); j++) {
+        s += M[j];
+        c++;
+      }
+      return s / c;
+    });
+    const half = (k) => {
+      let d = `${X(0)},${mid}`;
+      sm.forEach((v, i) => {
+        const p = k === 0 ? Math.max(0, v) : Math.max(0, -v);
+        d += ` ${X(i + 1)},${mid + (k === 0 ? -1 : 1) * p * (mid - 14)}`;
+      });
+      d += ` ${X(sm.length)},${mid}`;
+      return `<polygon points="${d}" fill="${sideCol(m, k)}" fill-opacity="0.6" stroke="${sideCol(m, k)}" stroke-width="1"/>`;
+    };
+    const goals = m.events
+      .filter((e) => e.k === 'goal')
+      .map(
+        (e) =>
+          `<circle cx="${X(tickOf(m, e.min))}" cy="${e.side === 0 ? 8 : h - 8}" r="4.5" fill="#fff" stroke="${sideCol(m, e.side)}" stroke-width="2"><title>${esc(e.min)} ${esc(W.short(P(e.pid)))}</title></circle>`,
+      )
+      .join('');
+    const reds = m.events
+      .filter((e) => e.k === 'red')
+      .map(
+        (e) =>
+          `<rect x="${X(tickOf(m, e.min)) - 2.5}" y="${e.side === 0 ? 2 : h - 12}" width="5" height="9" rx="1" fill="#d32f2f"/>`,
+      )
+      .join('');
+    return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;margin-top:6px"><line x1="${pl}" x2="${w - pr}" y1="${mid}" y2="${mid}" stroke="var(--ink3)"/><line x1="${X(halfTick(m))}" x2="${X(halfTick(m))}" y1="0" y2="${h}" stroke="var(--ink3)" stroke-dasharray="3 3"/>${half(0)}${half(1)}${goals}${reds}</svg>`;
+  };
+  // who shot: each side's shooters by expected goals, and what they scored beside what they should have
+  MV.shooters = function (m) {
+    const side = (k) => {
+      const o = {};
+      m.shotLog
+        .filter((s) => s.side === k)
+        .forEach((s) => {
+          const x = (o[s.pid] = o[s.pid] || { n: 0, xg: 0, g: 0, sot: 0 });
+          x.n++;
+          x.xg += s.xg;
+          if (s.outcome === 'goal') x.g++;
+          if (s.outcome === 'goal' || s.outcome === 'saved') x.sot++;
+        });
+      return Object.entries(o)
+        .sort((a, b) => b[1].xg - a[1].xg)
+        .slice(0, 5)
+        .map(
+          ([pid, x]) =>
+            `<tr><td class="l ellip" style="max-width:110px">${esc(W.short(P(pid)))}</td><td>${x.n}</td><td>${x.sot}</td><td>${x.xg.toFixed(2)}</td><td style="color:${x.g > x.xg + 0.3 ? 'var(--good)' : x.g < x.xg - 0.3 ? 'var(--warn)' : 'inherit'}">${x.g}</td></tr>`,
+        )
+        .join('');
+    };
+    return [0, 1]
+      .map(
+        (k) =>
+          `<div class="row b small" style="margin:8px 0 4px;color:${sideCol(m, k)}">${C.crest(m.sides[k].club, 16)} ${esc(m.sides[k].club.name)}</div><table class="t"><tr><th class="l">Player</th><th>Shots</th><th>On</th><th>xG</th><th>Goals</th></tr>${side(k) || '<tr><td class="l dim" colspan="5">No shots</td></tr>'}</table>`,
+      )
+      .join('');
   };
   MV.xgRace = function (m) {
     const w = 320,
