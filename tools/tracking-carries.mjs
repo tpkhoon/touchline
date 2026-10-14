@@ -15,6 +15,7 @@
 // is followed by a carry, a sample of the carries (metres forward and across), how long the player holds the ball, how far the
 // ball travels. The sides' directions come from the kick-off events (the side on the left in the first half attacks to the right).
 import fs from 'node:fs';
+const LF = String.fromCharCode(10);
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
@@ -33,6 +34,7 @@ const HZ = 25,
   GAP = 6, // frames a possession may lose the ball and still be the same
   MIN_FRAMES = 10, // 0.4 s
   CARRY_M = 4,
+  SHORT_M = 1,
   MAX_BALL = 7.5; // m/s
 const r1 = (v) => Math.round(v * 10) / 10;
 const q = (arr, p) => {
@@ -117,6 +119,7 @@ export function carriesOf(match, out) {
         out.rec[zone]++;
         out.hold[zone].push(len / HZ);
         if (m >= CARRY_M && m <= 60) out.carries[zone].push([r1(dx), r1(dy), r1(len / HZ)]);
+        else if (m >= SHORT_M && m < CARRY_M) out.short[zone].push([r1(dx), r1(dy), r1(len / HZ)]); // (a short touch: 1 to 4 m)
       }
       holder = null;
     };
@@ -229,7 +232,7 @@ async function main() {
   }
   const dir = path.resolve(String(args.dfl));
   const files = fs.readdirSync(dir).filter((f) => /^DFL_04_03_positions_raw_observed_.*\.xml$/.test(f));
-  const out = { rec: [0, 0, 0], carries: [[], [], []], hold: [[], [], []], speeds: [] };
+  const out = { rec: [0, 0, 0], carries: [[], [], []], short: [[], [], []], hold: [[], [], []], speeds: [] };
   let matches = 0;
   for (const f of files.slice(0, +args.matches || files.length)) {
     const id = /DFL-MAT-(\w+)\.xml$/.exec(f)[1];
@@ -242,6 +245,51 @@ async function main() {
     carriesOf(m, out);
     matches++;
     console.log(`  match ${id}: ${out.rec.reduce((a, b) => a + b, 0)} receptions so far`);
+  }
+  // --short: only the short touches, from the DFL tracking, put into the table beside the carries (the PFF's ball is placed at the
+  // carrier by its own smoothing, so it says nothing about a touch of a metre or two)
+  if (args.short) {
+    const zones = [0, 1, 2].map((z) => {
+      const s = out.short[z],
+        sorted = [...s].sort((a, b) => Math.hypot(a[0], a[1]) - Math.hypot(b[0], b[1])),
+        sample = [];
+      for (let k = 0; k < 120 && sorted.length; k++)
+        sample.push(sorted[Math.floor(((k + 0.5) * sorted.length) / 120)].slice(0, 2));
+      return {
+        touched: s.length,
+        share: +(s.length / Math.max(1, out.rec[z])).toFixed(3),
+        median: r1(
+          q(
+            s.map(([dx, dy]) => Math.hypot(dx, dy)),
+            0.5,
+          ),
+        ),
+        forward: +(s.filter(([dx]) => dx > 0.3).length / Math.max(1, s.length)).toFixed(3),
+        sample,
+      };
+    });
+    const short = {
+      matches,
+      zones,
+      note: 'receptions whose ball travelled 1 to 4 m while the player held it (the DFL tracking)',
+    };
+    console.log('Short touches (DFL):');
+    zones.forEach((z, i) =>
+      console.log(
+        `  ${['own third', 'middle third', 'final third'][i].padEnd(12)} ${z.touched} of ${out.rec[i]} receptions (${(z.share * 100).toFixed(1)}%); median ${z.median} m, ${(z.forward * 100).toFixed(0)}% forward`,
+      ),
+    );
+    if (args.check) return;
+    const file = path.join(ROOT, 'data/carry-table.json');
+    const table = JSON.parse(fs.readFileSync(file, 'utf8'));
+    table.carries.short = short;
+    fs.writeFileSync(file, JSON.stringify(table));
+    const js = fs.readFileSync(path.join(ROOT, 'js/carries.js'), 'utf8').split(LF);
+    const i = js.findIndex((l) => l.startsWith('  window.FM.D.CARRIES = '));
+    js[i] = `  window.FM.D.CARRIES = ${JSON.stringify(table)};`;
+    fs.writeFileSync(path.join(ROOT, 'js/carries.js'), js.join(LF));
+    console.log('Wrote the short touches into data/carry-table.json and js/carries.js');
+    return;
   }
   // the PFF FC / Gradient Sports World Cup tracking, if given: read the same way and pooled with the DFL's (each source is also kept
   // on its own in the table so the two can be compared)

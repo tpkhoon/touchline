@@ -50,9 +50,9 @@
             at: a.restart === 'gk' ? null : a.at,
             nat: a.restart === 'gk' ? 700 : a.restart === 'fkc' ? 800 : 450,
           });
-        // A carry before the pass. How often and how far is the real thing (FM.D.CARRIES, js/carries.js, from the Metrica sample game
-        // whose events include carries): about one reception in six is followed by a carry of 4 m or more (median 7.5 m, a tenth over 15),
-        // by the third of the pitch he is in; the short touches in between are drawn as before (a metre or two, not in the data).
+        // A carry before the pass. How often and how far is the real thing (FM.D.CARRIES, js/carries.js, from the DFL and PFF tracking):
+        // about a third of receptions are followed by a carry of 4 m or more (median 6.7 m, a tenth over 14), and about half by a short
+        // touch of 1 to 4 m (median 2.3 m), by the third of the pitch he is in; the rest are played first time.
         const cd = st.dots[a.side][a.from],
           CR = FM.D.CARRIES,
           zone = cd ? Math.min(2, Math.floor(MV.toFrame(a.side, cd.x, cd.y).x * 3)) : 1;
@@ -68,10 +68,26 @@
               nat: 240 + len * 45,
               fwd: s[0] / 105,
               lat: s[1] / 68,
-              beat: len >= 8, // (a long run takes a defender on)
             });
-          } else if (MV.vr() < (prevWasPass ? (a.slow ? 0.6 : 0.5) : 0.3))
-            acts.push({ k: 'carry', side: a.side, slot: a.from, nat: MV.vrange(220, 420) * (a.slow ? 1.2 : 1) });
+          } else {
+            const S = CR && CR.carries.short && CR.carries.short.zones[zone];
+            if (S) {
+              // (of the receptions that are not a long carry, the share that are a short touch)
+              if (MV.vr() < S.share / Math.max(0.2, 1 - Z.share)) {
+                const s = S.sample[Math.floor(MV.vr() * S.sample.length)],
+                  len = Math.hypot(s[0], s[1]);
+                acts.push({
+                  k: 'carry',
+                  side: a.side,
+                  slot: a.from,
+                  nat: 160 + len * 70,
+                  fwd: s[0] / 105,
+                  lat: s[1] / 68,
+                });
+              }
+            } else if (MV.vr() < (prevWasPass ? (a.slow ? 0.6 : 0.5) : 0.3))
+              acts.push({ k: 'carry', side: a.side, slot: a.from, nat: MV.vrange(220, 420) * (a.slow ? 1.2 : 1) });
+          }
         }
         const lofted = a.k === 'cross' || d > 0.36;
         acts.push({
@@ -91,6 +107,9 @@
           else if (MV.vr() < 0.6) acts.push({ k: 'carry', side: a.side, slot: a.from, nat: 240, pre: true });
         }
         acts.push({ ...a, nat: a.type === 'longshot' ? 520 : 380 });
+        prevWasPass = false;
+      } else if (a.k === 'takeon') {
+        acts.push({ ...a, nat: 520 });
         prevWasPass = false;
       } else if (a.k === 'win') {
         acts.push({ ...a, nat: 260 });
@@ -221,6 +240,32 @@
       st.act = { kind: 'restart', a, t: 0, dur: a.dur };
       return;
     }
+    if (a.k === 'takeon') {
+      // The carrier runs at a defender. If he beats him he goes past (a little to one side) and the defender is left behind; if not, they
+      // meet and the defender comes away with it (the next act gives him the ball).
+      const d = st.dots[a.side][a.from],
+        o = st.dots[1 - a.side][a.vs];
+      b.side = a.side;
+      b.slot = a.from;
+      if (d && o) {
+        const L = Math.hypot(o.x - d.x, o.y - d.y) || 1,
+          ux = (o.x - d.x) / L,
+          uy = (o.y - d.y) / L,
+          side = MV.vr() < 0.5 ? -1 : 1;
+        st.override[`${a.side}:${a.from}`] = a.won
+          ? {
+              x: U.clamp(o.x + ux * 0.07 - uy * 0.03 * side, 0.03, 0.97),
+              y: U.clamp(o.y + uy * 0.07 + ux * 0.03 * side, 0.04, 0.96),
+              sprint: true,
+            }
+          : { x: o.x, y: o.y, sprint: true };
+        st.override[`${1 - a.side}:${a.vs}`] = a.won
+          ? { x: U.lerp(d.x, o.x, 0.55) + uy * 0.02 * side, y: U.lerp(d.y, o.y, 0.55) - ux * 0.02 * side, sprint: true } // (goes in and is left behind)
+          : { x: d.x + ux * 0.02, y: d.y + uy * 0.02, sprint: true };
+      }
+      st.act = { kind: 'carry', a, t: 0, dur: a.dur };
+      return;
+    }
     if (a.k === 'carry') {
       // Dribble: carrier pushes forward (and a little sideways) with the ball at his feet
       const d = st.dots[a.side][a.slot];
@@ -235,21 +280,6 @@
               ? U.clamp(d.y + (0.5 - d.y) * 0.4, 0.05, 0.95)
               : U.clamp(d.y + MV.vrange(-0.035, 0.035), 0.05, 0.95);
       st.override[`${a.side}:${a.slot}`] = { x: tx, y: ty, sprint: true };
-      if (a.beat) {
-        // a long run takes a defender on: the nearest one goes in for the ball and is left behind
-        let bj = -1,
-          bd = 9;
-        st.dots[1 - a.side].forEach((o, j) => {
-          const dd = dist(o, d);
-          if (MV.m.sides[1 - a.side].slots[j].t !== 'GK' && dd < bd) ((bd = dd), (bj = j));
-        });
-        if (bj >= 0 && bd < 0.2)
-          st.override[`${1 - a.side}:${bj}`] = {
-            x: U.lerp(d.x, tx, 0.45),
-            y: U.lerp(d.y, ty, 0.45) + 0.012,
-            sprint: true,
-          };
-      }
       b.side = a.side;
       b.slot = a.slot;
       st.act = { kind: 'carry', a, t: 0, dur: a.dur };

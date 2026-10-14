@@ -716,6 +716,39 @@
       for (let k = 0; k < n; k++) {
         const from = this.ball.slot;
         const fp = FM.Pos(sd, from, true, this.ball);
+        // A take-on: the carrier goes at a defender before he plays it. How many there are in each third of the pitch and how often it
+        // works come from the real data (FM.D.CARRIES.takeons, Wyscout: 27 a match, 60% won; 15%, 37% and 48% of them by third, won 69%,
+        // 65% and 53%); the base each third's share is divided by (250 a match, three thirds) is tuned so the match view shows about 27 a match.
+        const TK = CR && CR.takeons && CR.takeons.zones;
+        if (TK && !restart && !leadingToChance && sd.slots[from].t !== 'GK') {
+          const z = Math.min(2, Math.floor(fp.x * 3));
+          if (Math.random() < (CR.takeons.perMatch * TK[z].share) / (250 / 3)) {
+            const od = this.sides[1 - side];
+            let def = null,
+              dd = 0.25;
+            for (const o of this.onPitch(od)) {
+              if (od.slots[o.i].t === 'GK') continue;
+              const pp = FM.Pos(od, o.i, false, { x: 1 - this.ball.x, y: 1 - this.ball.y }),
+                ox = 1 - pp.x,
+                oy = 1 - pp.y,
+                d = Math.hypot(ox - fp.x, oy - fp.y);
+              if (ox > fp.x - 0.02 && d < dd) {
+                dd = d;
+                def = { i: o.i, x: pp.x, y: pp.y };
+              }
+            }
+            if (def) {
+              const beaten = Math.random() < TK[z].won;
+              out.script.push({ k: 'takeon', side, from, vs: def.i, won: beaten });
+              if (!beaten) {
+                // he loses it: the defender has the ball (drawn only)
+                this.ball = { side: 1 - side, slot: def.i, x: def.x, y: def.y };
+                out.script.push({ k: 'win', side: 1 - side, to: def.i });
+                break;
+              }
+            }
+          }
+        }
         // the keeper is part of it when a short side plays out from the back, and only from deep: nobody passes back to him from the
         // opponent's half
         const deep = fp.x < 0.3 && this.ball.x < 0.4;
@@ -801,17 +834,19 @@
         }
         // a pass to a player on the touchline sometimes ends in a throw-in (Wyscout: about 44 a match): he takes it himself and plays it
         // on with the next pass
-        if (!leadingToChance && k < n - 1 && Math.abs(tp.y - 0.5) > 0.38 && Math.random() < 0.6) restart = 'throw';
+        if (!leadingToChance && Math.abs(tp.y - 0.5) > 0.33 && Math.random() < 0.7) restart = 'throw';
       }
+      // a throw-in not yet taken goes on into the next sequence of the same side
+      if (restart === 'throw' && this.ball.side === side) this.ball.restart = 'throw';
     }
     // the side without the ball takes it where it is: the nearest defender (drawn only; tackles are counted in defend())
     loseBall(side, out) {
       const od = this.sides[1 - side],
         on = this.onPitch(od);
       if (!on.length) return;
-      // half of them go out behind: a goal kick, the keeper taking the ball to the six-yard box
+      // most of them go out behind: a goal kick, the keeper taking the ball to the six-yard box (the real 2022 World Cup had 15 a match)
       const gk = on.find(({ i }) => od.slots[i].t === 'GK');
-      if (gk && Math.random() < 0.5) {
+      if (gk && Math.random() < 0.85) {
         this.ball = { side: 1 - side, slot: gk.i, x: 0.05, y: 0.5, restart: 'gk' };
         out.script.push({ k: 'win', side: 1 - side, to: gk.i });
         return;
@@ -1558,7 +1593,8 @@
       const xi = sd.xi.filter(Boolean),
         passing = xi.length ? xi.reduce((s, p) => s + p.attrs.passing, 0) / xi.length : 12;
       const wet = { Rain: -3, Snow: -5 }[this.weather[0]] || 0; // a wet or heavy pitch costs accuracy
-      const acc = Math.round(U.clamp(78 + (poss - 50) * 0.35 + (style - 1) * 20 + (passing - 12) * 1.4 + wet, 62, 92));
+      // (real accuracy: 82.8% in the Wyscout leagues and tournaments, 84% at the 2022 World Cup (PFF: 88% unpressured, 76% under pressure))
+      const acc = Math.round(U.clamp(82 + (poss - 50) * 0.35 + (style - 1) * 20 + (passing - 12) * 1.4 + wet, 62, 92));
       return { total, acc };
     }
     result() {
