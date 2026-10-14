@@ -21,8 +21,10 @@ js/passes.js
 data/pass-table.json
 js/movement.js
 js/carries.js
+js/layouts.js
 data/movement-table.json
 data/carry-table.json
+data/layout-table.json
 js/setpieces.js
 data/setpiece-table.json
 js/devclips.js

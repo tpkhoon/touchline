@@ -19,6 +19,7 @@
       sp = st.speed;
     st.cor = null; // (a new minute: no corner is under way)
     st.wall = null;
+    st.layout = null;
     st.chance = null;
     const acts = [];
     let prevWasPass = false;
@@ -39,7 +40,7 @@
         // Take a touch / dribble first (more often after receiving, less when first-timing it)
         // a patient side takes a touch and looks up; a counter or a direct side plays it first time
         // a corner: the ball is put down at the flag first, and nobody dribbles it
-        if (a.flag) acts.push({ k: 'spot', side: a.side, slot: a.from, dead: 'cor', flag: a.flag, nat: 800 });
+        if (a.flag) acts.push({ k: 'spot', side: a.side, slot: a.from, dead: 'cor', flag: a.flag, nat: 3200 });
         // a goal kick, a throw-in or a free-kick cross: the ball is put down first (the box fills for a free-kick cross)
         if (a.restart)
           acts.push({
@@ -48,7 +49,7 @@
             slot: a.from,
             dead: a.restart,
             at: a.restart === 'gk' ? null : a.at,
-            nat: a.restart === 'gk' ? 700 : a.restart === 'fkc' ? 800 : 450,
+            nat: a.restart === 'gk' ? 2200 : a.restart === 'fkc' ? 800 : 1800, // (a goal kick, a throw-in and a corner wait for the players to take their places)
           });
         // A carry before the pass. How often and how far is the real thing (FM.D.CARRIES, js/carries.js, from the DFL and PFF tracking):
         // about a third of receptions are followed by a carry of 4 m or more (median 6.7 m, a tenth over 14), and about half by a short
@@ -124,7 +125,13 @@
     const budget = st.minuteMs * 0.92;
     const natural = acts.reduce((t, a) => t + a.nat / sp, 0);
     const scale = natural > budget ? Math.max(0.42, budget / natural) : 1;
-    acts.forEach((a) => (a.dur = Math.max(140, (a.nat / sp) * (a.k === 'restart' ? 1 : scale)))); // (a restart is not squeezed: the sides need the time to walk back)
+    acts.forEach(
+      (a) =>
+        (a.dur = Math.max(
+          140,
+          (a.nat / sp) * (a.k === 'restart' || (a.k === 'spot' && ['cor', 'gk', 'throw'].includes(a.dead)) ? 1 : scale),
+        )),
+    ); // (a restart is not squeezed: the sides need the time to walk back)
     const total = acts.reduce((t, a) => t + a.dur, 0);
     if (total > st.minuteMs) st.minuteMs = total / 0.92;
     // a shot is coming (not a penalty or a free kick): the attacking side fills the area, the defending side drops into its own
@@ -156,7 +163,12 @@
         st.ball.h = A.arc ? 4 * A.arc * f * (1 - f) : 0;
       }
       // a restart lasts until the sides are back in place (or a time limit), not a fixed few hundred milliseconds at the faster speeds
-      if (f >= 1 || (A.a.k === 'restart' && A.t > 500 && MV.settled())) MV.endAction();
+      if (
+        f >= 1 ||
+        (A.a.k === 'restart' && A.t > 500 && MV.settled()) ||
+        (A.kind === 'spot' && st.layout && A.t > 500 && MV.layoutSettled())
+      )
+        MV.endAction();
     } else if (st.actions.length) MV.beginAction(st.actions.shift());
     if (!st.act && !st.actions.length && st.minuteT >= st.minuteMs) MV.nextMinute();
   };
@@ -169,6 +181,64 @@
         (d, i) => !d || !st.targets || !st.targets[k] || !st.targets[k][i] || dist(d, st.targets[k][i]) < 0.035,
       ),
     );
+  };
+
+  // ---------- Real layouts at restarts (FM.D.LAYOUTS, js/layouts.js, from the StatsBomb 360 frames) ----------
+  // The players of a side go to the places of a real layout: each place to the nearest player still free (the taker and the keeper
+  // aside), so the side keeps its own shape as far as it can. places are in global coordinates.
+  MV.assign = function (k, places, skip) {
+    const st = MV.st,
+      sd = MV.m.sides[k],
+      pairs = [];
+    st.dots[k].forEach((d, i) => {
+      if (!d || i === skip || sd.slots[i].t === 'GK') return;
+      places.forEach((p, j) => pairs.push({ i, j, d: dist(d, p) }));
+    });
+    pairs.sort((x, y) => x.d - y.d);
+    const usedI = new Set(),
+      usedJ = new Set(),
+      out = [];
+    for (const p of pairs) {
+      if (usedI.has(p.i) || usedJ.has(p.j)) continue;
+      usedI.add(p.i);
+      usedJ.add(p.j);
+      out.push({ k, i: p.i, x: places[p.j].x, y: places[p.j].y });
+    }
+    return out;
+  };
+  // the layout for a dead ball: corner, throw-in or goal kick; f is the ball's place in the taking side's frame
+  MV.layoutFor = function (a, f, taker) {
+    const LY = FM.D.LAYOUTS;
+    if (!LY) return null;
+    const pickOf = (arr) => arr[Math.floor(MV.vr() * arr.length)];
+    const G = (side, fx, fy) => MV.toGlobal(side, U.clamp(fx, 0.01, 0.99), U.clamp(fy, 0.02, 0.98));
+    let out = [];
+    if (a.dead === 'cor' && LY.corner.layouts.length) {
+      const c = pickOf(LY.corner.layouts),
+        flip = f.y > 0.5; // (the layouts have the corner at y = 0)
+      const at = (p) => G(a.side, p[0] / 105, flip ? 1 - p[1] / 68 : p[1] / 68);
+      out = out.concat(MV.assign(a.side, c.att.map(at), a.slot), MV.assign(1 - a.side, c.def.map(at), -1));
+      const gk = MV.m.sides[1 - a.side].slots.findIndex((s) => s.t === 'GK');
+      if (c.keeper && gk >= 0) {
+        const p = at(c.keeper);
+        out.push({ k: 1 - a.side, i: gk, x: p.x, y: p.y });
+      }
+    } else if (a.dead === 'throw' || a.dead === 'gk') {
+      const list = a.dead === 'gk' ? LY.goalkick.layouts : LY.throwin.layouts[f.x < 1 / 3 ? 0 : f.x < 2 / 3 ? 1 : 2];
+      if (!list || !list.length) return null;
+      const L = pickOf(list),
+        flipSrc = L.ball[1] > 34 ? -1 : 1, // (turned so the thrower is at the top touchline; a goal kick either way)
+        s = a.dead === 'throw' ? (f.y < 0.5 ? 1 : -1) : MV.vr() < 0.5 ? 1 : -1; // (toward the inside of the pitch)
+      const at = (p) => G(a.side, f.x + p[0] / 105, f.y + (s * flipSrc * p[1]) / 68);
+      out = out.concat(MV.assign(a.side, L.mine.map(at), a.slot), MV.assign(1 - a.side, L.opp.map(at), -1));
+    }
+    return out.length ? out : null;
+  };
+
+  // everybody sent to a place of the real layout is within a few steps of it
+  MV.layoutSettled = () => {
+    const st = MV.st;
+    return st.layout.every((L) => !st.dots[L.k][L.i] || dist(st.dots[L.k][L.i], L) < 0.04);
   };
 
   MV.beginAction = function (a) {
@@ -224,6 +294,7 @@
       b.side = a.side;
       b.slot = a.slot;
       st.override[`${a.side}:${a.slot}`] = { x: t.x, y: t.y, sprint: true };
+      st.layout = MV.layoutFor(a, f, taker); // (corners, throw-ins and goal kicks: the players stand where real ones did)
       st.act = { kind: 'spot', a, t: 0, dur: a.dur };
       return;
     }
@@ -388,11 +459,13 @@
     st.ball.inFlight = false;
     st.ball.h = 0;
     if (a.k === 'restart') st.restart = null;
+    if (a.restart === 'throw' || a.restart === 'gk') st.layout = null;
     if (a.restart === 'throw') st.cor = null; // (the throw-in is taken: the box empties)
     if (a.k !== 'shot') st.touch = 0.22; // the receiver's first touch: the ball settles rather than sticks
     if (a.k === 'shot') {
       st.cor = null;
       st.wall = null;
+      st.layout = null;
       st.chance = null;
       const ev = st.pendingEv.shift();
       if (ev) MV.showEvent(ev);
@@ -638,7 +711,7 @@
         }
       }
       // a corner: most of both teams crowd into the area, the attackers staggered across it, the defenders marking
-      if (st.cor)
+      if (st.cor && !st.layout)
         targets.forEach((tg, i) => {
           const s = sd.slots[i];
           if (!s || s.t === 'GK') return;
@@ -652,6 +725,8 @@
           tg.x = U.lerp(tg.x, g.x, 0.8);
           tg.y = U.lerp(tg.y, g.y, 0.8);
         });
+      // a corner, throw-in or goal kick: the places of a real layout (StatsBomb 360), for the players assigned to them
+      if (st.layout) for (const L of st.layout) if (L.k === k) targets[L.i] = { x: L.x, y: L.y };
       // a direct free kick: a wall of two to five (by how far from goal), nine and a bit metres from the ball on the line to the middle of
       // the goal, the defenders nearest to that place making it
       if (st.wall && k !== st.wall.side) {
@@ -661,9 +736,12 @@
           dm = Math.hypot(105 - bxm, 34 - bym) || 1,
           ux = (105 - bxm) / dm,
           uy = (34 - bym) / dm,
-          n = dm < 20 ? 5 : dm < 26 ? 4 : dm < 32 ? 3 : 2,
-          cx = bxm + ux * 9.15,
-          cy = bym + uy * 9.15,
+          bd = dm < 20 ? 0 : dm < 26 ? 1 : dm < 32 ? 2 : 3,
+          WB = FM.D.LAYOUTS && FM.D.LAYOUTS.freekick.bands[bd], // (real walls: 6, 4 or 5, 2 and 1 men by distance, 9 to 10 m from the ball)
+          n = WB ? Math.max(1, Math.round(WB.wallMen)) : dm < 20 ? 5 : dm < 26 ? 4 : dm < 32 ? 3 : 2,
+          wd = WB ? WB.wallDist : 9.15,
+          cx = bxm + ux * wd,
+          cy = bym + uy * wd,
           mid = MV.toGlobal(Wl.side, cx / 105, cy / 68);
         const wallIds = new Set(),
           ball = MV.toGlobal(Wl.side, Wl.x, Wl.y);

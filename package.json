@@ -48,6 +48,7 @@
     "carries": "node --max-old-space-size=6144 tools/wyscout-carries.mjs",
     "carries:tracking": "node --max-old-space-size=4096 tools/tracking-carries.mjs",
     "events:pff": "node --max-old-space-size=4096 tools/pff-events.mjs",
+    "layouts": "node --max-old-space-size=4096 tools/statsbomb-events.mjs",
     "setpieces": "node --max-old-space-size=6144 tools/wyscout-setpieces.mjs",
     "clips": "node tools/lastrow-clips.mjs"
   },
