@@ -545,6 +545,14 @@
     const comp = S.comps[fx.comp];
     if (comp.type === 'friendly') return Sea.applyFriendly(fx, m);
     const [hc, ac] = [S.clubs[fx.h], S.clubs[fx.a]];
+    // the formation each side started with, for its profile (this season's count)
+    [hc, ac].forEach((cl, k) => {
+      const f = cl && m.sides[k].tactic && m.sides[k].tactic.formation;
+      if (f) {
+        cl.forms = cl.forms || {};
+        cl.forms[f] = (cl.forms[f] || 0) + 1;
+      }
+    });
     Sea.confidence(m, res);
     Sea.learnPositions(m);
     if (comp.type === 'league' && !fx.ko && !fx.leg) {
@@ -1941,6 +1949,7 @@
     FM.Injury.expireDecisions(true); // last season's medical questions are settled before the year turns
     S.year++;
     FM.Analytics.newSeason();
+    Object.values(S.clubs).forEach((cl) => (cl.forms = undefined)); // (the formations used are counted afresh)
     FM.Transfers.endLoans();
     // retirements, contracts, history snapshot
     Object.values(S.players).forEach((p) => {

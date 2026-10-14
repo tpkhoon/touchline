@@ -235,4 +235,159 @@
       shotsFrom: current ? 'this season' : p.shotsPrev && p.shotsPrev.length ? 'last season' : 'this season',
     };
   };
+
+  // ---------- The team profile (the Analyst view's club card) ----------
+  // A club's season in its league, per match: how much of the ball, the chances it makes and allows, how it presses, each ranked among the
+  // league's clubs; what its style is in words (its tactic and what the numbers add to it); the formations it used; the run of its xG.
+  // Worked out from the league's results (every match keeps its xG, shots and possession), so it works for any club in a league played in full.
+  const MIN_PLAYED = 4;
+  const ordinal = (n) => n + (['th', 'st', 'nd', 'rd'][((n % 100) >> 3) ^ 1 && n % 10 < 4 ? n % 10 : 0] || 'th');
+  An.teamProfile = function (id) {
+    const S = FM.S,
+      c = S.clubs[id],
+      comp = c && S.comps[c.comp];
+    if (!comp || comp.type !== 'league' || !comp.fixtures)
+      return { none: 'This club plays in no league with match details.' };
+    const by = {};
+    const rounds = comp.fixtures;
+    rounds.forEach((rd, ri) => {
+      for (const f of rd || []) {
+        if (!f || !f.res || !f.res.xg || !f.res.shots || !f.res.poss || f.ko) continue;
+        [0, 1].forEach((k) => {
+          const cid = k ? f.a : f.h,
+            r = (by[cid] = by[cid] || { n: 0, xf: 0, xa: 0, sh: 0, sha: 0, sot: 0, g: 0, ga: 0, poss: 0, run: [] });
+          r.n++;
+          r.xf += f.res.xg[k];
+          r.xa += f.res.xg[1 - k];
+          r.sh += f.res.shots[k];
+          r.sha += f.res.shots[1 - k];
+          r.sot += f.res.sot ? f.res.sot[k] : 0;
+          r.g += k ? f.res.ag : f.res.hg;
+          r.ga += k ? f.res.hg : f.res.ag;
+          r.poss += f.res.poss[k];
+          r.run.push([f.res.xg[k], f.res.xg[1 - k], ri]);
+        });
+      }
+    });
+    const mine = by[id];
+    if (!mine || mine.n < MIN_PLAYED) return { thin: true, n: mine ? mine.n : 0, need: MIN_PLAYED };
+    // tackles and interceptions per match, from the clubs' players (how much a side goes in for the ball)
+    const da = {};
+    for (const p of Object.values(S.players))
+      if (p.clubId && by[p.clubId] && p.season)
+        da[p.clubId] = (da[p.clubId] || 0) + (p.season.tk || 0) + (p.season.ic || 0);
+    const rows = Object.entries(by)
+      .filter(([, r]) => r.n >= MIN_PLAYED)
+      .map(([cid, r]) => ({
+        cid,
+        poss: r.poss / r.n,
+        xf: r.xf / r.n,
+        xa: r.xa / r.n,
+        sh: r.sh / r.n,
+        sha: r.sha / r.n,
+        sot: r.sot / r.n,
+        g: r.g / r.n,
+        ga: r.ga / r.n,
+        q: r.sh ? r.xf / r.sh : 0,
+        da: (da[cid] || 0) / r.n,
+        fin: (r.g - r.xf) / r.n,
+        diff: (r.xf - r.xa) / r.n,
+      }));
+    const me = rows.find((r) => r.cid === id),
+      N = rows.length;
+    // [key, label, higher is better, decimals, unit]
+    const defs = [
+      ['poss', 'Possession', true, 0, '%'],
+      ['xf', 'Expected goals for', true, 2],
+      ['sh', 'Shots', true, 1],
+      ['sot', 'Shots on target', true, 1],
+      ['q', 'Expected goals per shot', true, 2],
+      ['g', 'Goals scored', true, 2],
+      ['fin', 'Goals beyond expected', true, 2],
+      ['xa', 'Expected goals against', false, 2],
+      ['sha', 'Shots against', false, 1],
+      ['ga', 'Goals conceded', false, 2],
+      ['da', 'Tackles and interceptions', true, 1],
+      ['diff', 'Expected goal difference', true, 2],
+    ];
+    const metrics = defs.map(([k, label, up, dec, unit]) => {
+      const better = rows.filter((r) => (up ? r[k] > me[k] + 1e-9 : r[k] < me[k] - 1e-9)).length,
+        rank = better + 1;
+      return {
+        k,
+        label,
+        v: me[k],
+        dec,
+        unit: unit || '',
+        rank,
+        of: N,
+        pct: N > 1 ? Math.round(((N - rank) / (N - 1)) * 100) : 50,
+        text: ordinal(rank),
+      };
+    });
+    const m = (k) => metrics.find((x) => x.k === k);
+    const radar = [
+      ['Possession', m('poss').pct],
+      ['Attack', m('xf').pct],
+      ['Shot quality', m('q').pct],
+      ['Defence', m('xa').pct],
+      ['Pressing', m('da').pct],
+      ['Finishing', m('fin').pct],
+    ];
+    // the style in words: the tactic first, then what the league table of numbers says
+    const tac = W.isUser(id) ? S.user.tactic : c.tactic || {};
+    const style =
+      {
+        Possession: 'a possession-based side',
+        Short: 'a short-passing side',
+        Direct: 'a direct side',
+        Counter: 'a counter-attacking side',
+        'Wing Play': 'a side that attacks down the flanks',
+      }[tac.buildup] || 'a side';
+    const press =
+      { 'High Press': 'presses high', 'Mid Block': 'defends in a mid block', 'Low Block': 'defends deep' }[tac.press] ||
+      '';
+    const rankable = metrics
+      .filter((x) => ['poss', 'xf', 'q', 'xa', 'da', 'fin', 'diff'].includes(x.k))
+      .sort((a, b) => b.pct - a.pct);
+    const strong = rankable.filter((x) => x.pct >= 75).slice(0, 2),
+      weak = rankable.filter((x) => x.pct <= 25).slice(-1);
+    const nm = (x) => x.label.charAt(0).toLowerCase() + x.label.slice(1);
+    let summary = `${style.charAt(0).toUpperCase() + style.slice(1)}${press ? ' that ' + press : ''}${tac.formation ? ', in a ' + tac.formation : ''}.`;
+    if (strong.length) summary += ` Strongest on ${strong.map((x) => `${nm(x)} (${x.text} of ${N})`).join(' and ')}.`;
+    if (weak.length) summary += ` Weakest on ${nm(weak[0])} (${weak[0].text} of ${N}).`;
+    if (!strong.length && !weak.length) summary += ' Close to the middle of the league on everything.';
+    // the formations used this season
+    const forms = Object.entries(c.forms || {}).sort((a, b) => b[1] - a[1]),
+      total = forms.reduce((a, [, n]) => a + n, 0);
+    // attack by kind of chance (your own club: each match keeps it)
+    let mix = null;
+    if (W.isUser(id) && S.user.log && S.user.log.length) {
+      const o = {};
+      for (const row of S.user.log)
+        for (const [ty, v] of Object.entries(row.types[0] || {})) {
+          o[ty] = o[ty] || [0, 0, 0];
+          o[ty][0] += v[0];
+          o[ty][1] += v[1];
+          o[ty][2] += v[2];
+        }
+      const xt = Object.values(o).reduce((a, v) => a + v[2], 0);
+      if (xt > 0)
+        mix = Object.entries(o)
+          .map(([ty, v]) => ({ ty, n: v[0], g: v[1], xg: v[2], share: v[2] / xt }))
+          .sort((a, b) => b.share - a.share);
+    }
+    return {
+      thin: false,
+      n: mine.n,
+      of: N,
+      comp: comp.name,
+      metrics,
+      radar,
+      summary,
+      forms: forms.slice(0, 3).map(([f, n]) => ({ f, n, share: n / Math.max(1, total) })),
+      run: mine.run,
+      mix,
+    };
+  };
 })();

@@ -516,6 +516,95 @@
       title: `${esc(S().clubs[d.id].name)} · history`,
       full: true,
     });
+  // The Analyst view's team card: the club's season in its league per match, ranked among the league's clubs; a six-axis radar of its
+  // style, what it adds up to in words, the formations used, the run of its expected goals and (for your own club) where its chances come from
+  UI.teamProfileCard = function (id) {
+    const A = FM.Analytics.teamProfile(id),
+      head = '<div class="h3">Analyst profile</div>';
+    if (A.none) return '';
+    if (A.thin)
+      return `<div class="card">${head}<div class="small dim" style="margin-top:6px">${A.n ? `Only ${A.n} league matches with details so far: the numbers need ${A.need}.` : 'No league matches played yet.'}</div></div>`;
+    const c = S().clubs[id],
+      col = c.colors[0] === '#FFFFFF' || c.colors[0].toUpperCase() === '#FFFFFF' ? c.colors[1] : c.colors[0];
+    // the radar: six percentiles (the best rank in the league is the rim)
+    const cx = 130,
+      cy = 108,
+      R = 74,
+      n = A.radar.length;
+    const pt = (i, v) => {
+      const a = -Math.PI / 2 + (i / n) * 2 * Math.PI;
+      return [cx + Math.cos(a) * R * v, cy + Math.sin(a) * R * v];
+    };
+    const ring = (v) =>
+      A.radar
+        .map((_, i) =>
+          pt(i, v)
+            .map((x) => x.toFixed(1))
+            .join(','),
+        )
+        .join(' ');
+    const poly = A.radar
+      .map(([, v], i) =>
+        pt(i, Math.max(0.04, v / 100))
+          .map((x) => x.toFixed(1))
+          .join(','),
+      )
+      .join(' ');
+    const radar = `<svg viewBox="0 0 260 216" style="width:100%;max-width:340px;display:block;margin:6px auto 0"><polygon points="${ring(1)}" fill="none" stroke="var(--line)"/><polygon points="${ring(0.5)}" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>${A.radar.map((_, i) => `<line x1="${cx}" y1="${cy}" x2="${pt(i, 1)[0].toFixed(1)}" y2="${pt(i, 1)[1].toFixed(1)}" stroke="var(--line)"/>`).join('')}<polygon points="${poly}" fill="${col}" fill-opacity="0.35" stroke="${col}" stroke-width="2"/>${A.radar
+      .map(([l, v], i) => {
+        const [x, y] = pt(i, 1.2);
+        return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="9" text-anchor="middle" dominant-baseline="middle" fill="var(--ink2)">${l}<tspan x="${x.toFixed(1)}" dy="10" font-weight="700" fill="var(--ink)">${v}</tspan></text>`;
+      })
+      .join('')}</svg>`;
+    const good = (v) => (v >= 70 ? 'var(--good)' : v <= 30 ? 'var(--bad)' : 'var(--ink2)');
+    const rowsHtml = A.metrics
+      .map(
+        (m) =>
+          `<div class="row small" style="padding:4px 0;gap:8px;border-top:1px solid var(--line)"><span class="grow">${esc(m.label)}</span><b>${m.unit === '%' ? m.v.toFixed(0) + '%' : m.v.toFixed(m.dec)}</b><span style="width:46px;text-align:right;color:${good(m.pct)}">${m.text}</span></div>`,
+      )
+      .join('');
+    // the run of expected goals for and against, three-match averages
+    const run = A.run.slice(-24),
+      avg = (k, i) => {
+        const w = run.slice(Math.max(0, i - 2), i + 1);
+        return w.reduce((a, x) => a + x[k], 0) / w.length;
+      };
+    const W3 = 300,
+      H3 = 110,
+      pl = 22,
+      max = Math.max(1, ...run.map((_, i) => Math.max(avg(0, i), avg(1, i)))) * 1.15,
+      X = (i) => pl + (run.length > 1 ? (i / (run.length - 1)) * (W3 - pl - 8) : 0),
+      Y = (v) => H3 - 16 - (v / max) * (H3 - 28);
+    const line = (k) => run.map((_, i) => `${X(i).toFixed(1)},${Y(avg(k, i)).toFixed(1)}`).join(' ');
+    const trend =
+      run.length >= 3
+        ? `<svg viewBox="0 0 ${W3} ${H3}" style="width:100%;margin-top:6px">${[0.5, 1, 1.5, 2, 2.5]
+            .filter((v) => v < max)
+            .map(
+              (v) =>
+                `<line x1="${pl}" x2="${W3 - 8}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="3" y="${Y(v) + 3}" font-size="9" fill="var(--ink3)">${v}</text>`,
+            )
+            .join(
+              '',
+            )}<polyline points="${line(1)}" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="4 3"/><polyline points="${line(0)}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linejoin="round"/></svg><div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${col}">■ xG for</span><span class="dim">- - xG against</span><span class="dim">(three-match average, last ${run.length} matches)</span></div>`
+        : '';
+    const forms = A.forms.length
+      ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Formations used</div>${A.forms.map((f) => `<div class="row small" style="padding:3px 0;gap:8px"><b style="width:60px">${esc(f.f)}</b><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(f.share * 100)}%;background:${col}"></i></span><span class="dim" style="width:64px;text-align:right">${f.n} · ${Math.round(f.share * 100)}%</span></div>`).join('')}`
+      : '';
+    const TYPE = {
+      through: 'Through balls',
+      cross: 'Crosses',
+      cutback: 'Cutbacks',
+      longshot: 'Long shots',
+      counter: 'Counters',
+      setpiece: 'Set pieces',
+      penalty: 'Penalties',
+    };
+    const mix = A.mix
+      ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Where your chances come from</div>${A.mix.map((x) => `<div class="row small" style="padding:3px 0;gap:8px"><span style="width:84px">${TYPE[x.ty] || x.ty}</span><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(x.share * 100)}%;background:${col}"></i></span><span class="dim" style="width:92px;text-align:right">${Math.round(x.share * 100)}% · ${x.n} (${x.g}⚽)</span></div>`).join('')}`
+      : '';
+    return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${A.n} matches in ${esc(A.comp)}, per match, ranked among ${A.of} clubs. The radar's rim is the best in the league.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${radar}<div style="margin-top:6px">${rowsHtml}</div>${trend}${forms}${mix}</div>`;
+  };
   UI.clubSheet = function (id) {
     const s = S(),
       c = s.clubs[id];
@@ -654,6 +743,7 @@
         ${rivalTag ? `<div class="row small" style="margin-top:6px"><span class="grow muted">With your club</span><b>${rivalTag}</b></div>` : ''}
         ${row ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Form</span>${C.form(row.form)}</div>` : ''}
         ${c.sim && c.sim !== 'full' ? `<div class="tiny dim" style="margin-top:8px">${FM.Tiers.ICON[c.sim]} ${FM.Tiers.LABEL[c.sim]}</div>` : ''}</div>
+      ${UI.teamProfileCard(id)}
       ${squadHtml}
       ${nextCard}
       ${movesCard}

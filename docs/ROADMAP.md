@@ -46,6 +46,7 @@ The web prototype runs on a phone browser with no build step, covering 1066 fict
 - Fewer unrealistic passes: no pass back to the keeper from the opponent's half, fewer passes back in that half, a pass into the box with no shot behind it is usually lost, and the ball is not passed around inside the box. Carriers past halfway dribble further and more often.
 - The first Analyst view slice, in the post-match Shots & xG tab: the match in numbers, an xG timeline with each goal's scorer, minute and score, red cards and substitutions marked, a chart of who was threatening minute by minute, and each side's best shooters.
 - The Analyst profile card on every player's sheet: per-90 percentiles against his position, a written summary, a shot map and the three players most like him; the engine records expected goals, expected assists and shot places for every player in every simulated match.
+- The Analyst profile card on every club's sheet: its league season per match ranked among the league's clubs, a style radar, a written summary, the formations used, the run of its expected goals and (for your own club) where its chances come from.
 
 ### Playtest feedback, round 17
 
