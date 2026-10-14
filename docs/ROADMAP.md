@@ -48,6 +48,7 @@ The web prototype runs on a phone browser with no build step, covering 1066 fict
 - The Analyst profile card on every player's sheet: per-90 percentiles against his position, a written summary, a shot map and the three players most like him; the engine records expected goals, expected assists and shot places for every player in every simulated match.
 - The Analyst profile card on every club's sheet: its league season per match ranked among the league's clubs, a style radar, a written summary, the formations used, the run of its expected goals and (for your own club) where its chances come from.
 - League charts: a Charts tab on the league screen with five scatter plots (chances for and against, goals against expected, possession against chance quality, pressing against possession, and every scorer's goals against expected goals), your club ringed and a tap opening any club or player.
+- A real world pack (`data/packs/real-world.json`): real names for every club, league, cup and derby, and the real first-team squads of the top two divisions of England, Spain, Germany, Italy and France (198 clubs, 5,338 players) from Wikipedia and Wikidata, with ratings estimated from how well known each player is. Built by `npm run realplayers:fetch` and `realplayers:build`.
 
 ### Playtest feedback, round 17
 

@@ -253,7 +253,7 @@ The game runs on a fictional world: the same 1066 clubs, 64 leagues, cups and de
 - `data/real-world.json` holds the real structure and real names, keyed by club code (nation, league, kit colours, identity, rank, derbies). It is the source the fictional world is built from.
 - `node tools/worldgen.mjs --seed 1 --out data/fictional-world.json` generates the fictional names from it: towns, clubs, grounds, nicknames, founding years, leagues, cups, sponsors and derbies, by each nation's naming conventions (`tools/namelib.mjs`, rules in [docs/NAMING_RULES.md](docs/NAMING_RULES.md)). It is deterministic from the seed.
 - `node tools/realworld.mjs apply data/fictional-world.json` puts a names file into the game (`js/clubs.js` and `js/data.js`). Club codes and ids never change, so saves keep working. Applying `data/real-world.json` instead brings the real names back.
-- The players are always fictional: names come from each nation's pools, with known real-name combinations blocked.
+- The players are fictional in the game itself: names come from each nation's pools, with known real-name combinations blocked. The real ones are an optional pack: `data/packs/real-world.json` holds the real clubs everywhere and the real squads of the top two divisions of England, Spain, Germany, Italy and France (198 clubs, 5,338 players, from Wikipedia and Wikidata, ratings estimated); load it from Import a database. See `data/packs/README.md` for what is in it, how the ratings are made, the licence (CC BY-SA 4.0) and how to rebuild it.
 - Real club and league names are trademarks, so a store release ships the fictional set; real names are left to optional packs (a database import can carry them).
 
 ## What's in the slice

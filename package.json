@@ -49,6 +49,8 @@
     "carries:tracking": "node --max-old-space-size=4096 tools/tracking-carries.mjs",
     "events:pff": "node --max-old-space-size=4096 tools/pff-events.mjs",
     "layouts": "node --max-old-space-size=4096 tools/statsbomb-events.mjs",
+    "realplayers:fetch": "node --max-old-space-size=2048 tools/realplayers-fetch.mjs",
+    "realplayers:build": "node --max-old-space-size=4096 tools/realplayers-build.mjs",
     "setpieces": "node --max-old-space-size=6144 tools/wyscout-setpieces.mjs",
     "clips": "node tools/lastrow-clips.mjs"
   },
