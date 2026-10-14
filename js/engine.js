@@ -1081,6 +1081,19 @@
         if (outcome === 'goal' || outcome === 'saved') sd.ps[p.id].sot++;
       }
       if (assister && sd.ps[assister.p.id]) sd.ps[assister.p.id].kp++;
+      // his expected goals, the expected goals of the chances he made, and where the shot was taken from (his shot map, in every match)
+      if (sd.ps[p.id]) {
+        sd.ps[p.id].xg = (sd.ps[p.id].xg || 0) + xg;
+        const at = shotAt || { x: type === 'penalty' ? 0.885 : 0.88, y: 0.5 },
+          mine = ((sd.pshots = sd.pshots || {})[p.id] = sd.pshots[p.id] || []);
+        mine.push([
+          Math.round(at.x * 100) / 100,
+          Math.round(at.y * 100) / 100,
+          Math.round(xg * 100) / 100,
+          outcome === 'goal' ? 2 : outcome === 'saved' ? 1 : 0,
+        ]);
+      }
+      if (assister && sd.ps[assister.p.id]) sd.ps[assister.p.id].xa = (sd.ps[assister.p.id].xa || 0) + xg;
       if (this.live || this.o.track) {
         const R = {
           through: [0.86, 0.93, 0.08],

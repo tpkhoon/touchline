@@ -710,6 +710,8 @@
     xga: 0,
     yapps: 0,
     ic: 0,
+    xg: 0,
+    xa: 0,
   });
   W.STAT_KEYS = Object.keys(W.blankSeason());
   // One history row per season and club from a season's numbers ({ y, c, apps, g, a, r, ... })
@@ -2741,6 +2743,8 @@
     'xga',
     'yapps',
     'ic',
+    'xg',
+    'xa',
   ];
   const KEYS = {
     fn: 'f',

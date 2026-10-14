@@ -1249,6 +1249,64 @@
     if (!r.best.length && !r.worst.length) return '';
     return `<div class="card"><div class="h3">Against other ${esc((D.POS_NAME[p.pos] || p.pos).toLowerCase())}s ${esc(where)}</div><div class="tiny dim" style="margin-bottom:4px">His best and worst stats among ${r.n} players in his position${!own && v.k < 70 ? ' (approximate)' : ''}</div>${r.best.map((x) => line(x, true)).join('')}${r.worst.map((x) => line(x, false)).join('')}</div>`;
   };
+  // The Analyst view's player card: his numbers this season per 90 minutes as percentiles against the players of his position, what they
+  // add up to in words, where his shots came from, and the players whose numbers are nearest his (all public: the season's statistics)
+  const profileCard = (p) => {
+    const A = FM.Analytics.profile(p);
+    const head = '<div class="h3">Analyst profile</div>';
+    if (A.thin)
+      return `<div class="card">${head}<div class="small dim" style="margin-top:6px">${A.mins ? `Only ${A.mins} minutes this season: his numbers need ${A.need} before they say much.` : 'No minutes yet this season.'}</div></div>`;
+    const comp = p.clubId && S().clubs[p.clubId] && S().comps[S().clubs[p.clubId].comp];
+    const where = A.scope === 'league' && comp ? comp.name : A.scope === 'nation' ? 'his nation' : 'the world';
+    const pos = (D.POS_NAME[p.pos] || p.pos).toLowerCase();
+    const col = (v) => (v >= 70 ? 'var(--good)' : v <= 30 ? 'var(--bad)' : 'var(--warn)');
+    const fmt = (r) =>
+      r.v == null
+        ? '–'
+        : r.unit === '%'
+          ? Math.round(r.v * 100) + '%'
+          : (r.dec ? r.v.toFixed(r.dec) : Math.round(r.v)) + '';
+    const order = ['Attacking', 'Creating', 'Passing', 'Defending', 'Goalkeeping', 'Overall'];
+    const bars = order
+      .map((g) => {
+        const rs = A.rows.filter((x) => x.group === g);
+        if (!rs.length) return '';
+        return `<div class="small b dim" style="margin:10px 0 2px;text-transform:uppercase;letter-spacing:.6px">${g}</div>${rs
+          .map(
+            (x) =>
+              `<div class="row small" style="padding:3px 0;gap:8px"><span style="width:118px;flex:none">${esc(x.label)}</span><span class="dim" style="width:40px;flex:none;text-align:right">${fmt(x)}</span><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${x.pct == null ? 0 : Math.max(3, x.pct)}%;background:${x.pct == null ? 'transparent' : col(x.pct)}"></i></span><b style="width:26px;flex:none;text-align:right;color:${x.pct == null ? 'var(--ink3)' : col(x.pct)}">${x.pct == null ? '–' : x.pct}</b></div>`,
+          )
+          .join('')}`;
+      })
+      .join('');
+    // his shots, on the half of the pitch he attacks: the size is the chance, a filled circle a goal, a ring a shot on target
+    const W2 = 300,
+      H2 = 180,
+      P0 = 8,
+      px = (x) => P0 + ((x - 0.5) / 0.5) * (W2 - 2 * P0),
+      py = (y) => P0 + y * (H2 - 2 * P0);
+    const ln = 'rgba(255,255,255,.55)';
+    const shotMap = A.shots.length
+      ? `<svg viewBox="0 0 ${W2} ${H2}" style="width:100%;margin-top:6px;background:#1f7a3f;border-radius:10px"><rect x="${P0}" y="${P0}" width="${W2 - 2 * P0}" height="${H2 - 2 * P0}" fill="none" stroke="${ln}"/><rect x="${px(0.843)}" y="${py(0.2)}" width="${px(1) - px(0.843)}" height="${py(0.8) - py(0.2)}" fill="none" stroke="${ln}"/><rect x="${px(0.948)}" y="${py(0.37)}" width="${px(1) - px(0.948)}" height="${py(0.63) - py(0.37)}" fill="none" stroke="${ln}"/><circle cx="${px(0.5)}" cy="${py(0.5)}" r="26" fill="none" stroke="${ln}"/>${A.shots
+          .map(
+            ([x, y, xg, o]) =>
+              `<circle cx="${px(Math.max(0.5, x))}" cy="${py(y)}" r="${3 + xg * 16}" fill="${o === 2 ? '#fff' : 'none'}" fill-opacity="${o === 2 ? 0.95 : 0}" stroke="${o === 2 ? '#e53935' : '#fff'}" stroke-width="${o === 2 ? 1.6 : o === 1 ? 2 : 1.1}" stroke-opacity="${o ? 1 : 0.5}"><title>xG ${xg.toFixed(2)} · ${['off target or blocked', 'saved', 'goal'][o]}</title></circle>`,
+          )
+          .join(
+            '',
+          )}</svg><div class="tiny dim" style="margin-top:4px">${A.shots.length} shots ${A.shotsFrom} · ${A.shots.filter((s) => s[3] === 2).length} goals · ${A.shots.reduce((a, s) => a + s[2], 0).toFixed(1)} xG · circle size is the chance, filled is a goal, ringed is on target</div>`
+      : '<div class="small dim" style="margin-top:6px">No shots recorded yet.</div>';
+    const sim = A.similar
+      .map((s) => {
+        const q = P(s.id),
+          qc = q && q.clubId && CL(q.clubId);
+        return q
+          ? `<div class="row small tap" data-act="player" data-id="${q.id}" style="padding:6px 0;border-top:1px solid var(--line);gap:8px">${qc ? C.crest(qc, 16) : ''}<span class="grow ellip">${esc(W.name(q))}</span><span class="dim">${esc(qc ? qc.short : '')} · ${W.age(q)}</span><b>${s.match}%</b></div>`
+          : '';
+      })
+      .join('');
+    return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${A.mins} minutes this season, per 90 against ${A.n} ${esc(pos)}${A.exact ? 's' : ' and the like'} in ${esc(where)} (300 minutes or more). Higher is better.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${bars}<div class="small b dim" style="margin:14px 0 2px;text-transform:uppercase;letter-spacing:.6px">Shot map</div>${shotMap}${sim ? `<div class="small b dim" style="margin:14px 0 2px;text-transform:uppercase;letter-spacing:.6px">Players like him</div><div class="tiny dim" style="margin-bottom:2px">The nearest in how they played this season (a match of 100% would be the same profile)</div>${sim}` : ''}</div>`;
+  };
   function playerHTML(p) {
     const v = FM.Scouting.view(p),
       c = p.clubId && CL(p.clubId),
@@ -1348,7 +1406,7 @@
       ${own && p.traits.length ? `<div class="small dim" style="margin:-2px 2px 12px">${p.traits.map((t) => D.TRAITS[t].desc).join(' ')}</div>` : ''}
       ${report}
       <div class="card"><div class="row"><div class="h3 grow">Profile</div>${!own && v.k < 70 ? '<span class="pill warn">Approximate</span>' : ''}</div>${own || v.k >= 40 ? C.radar(p, !own && v.k < 70) : '<div class="lock">🔒 Profile hidden</div>'}${attrs()}</div>
-      ${own ? moodCard() : ''}${positionsCard(p, v, own)}${peerCard(p, v, own)}
+      ${own ? moodCard() : ''}${positionsCard(p, v, own)}${peerCard(p, v, own)}${profileCard(p)}
       ${p.totw ? `<div class="card"><div class="row small"><span class="grow">Team of the week</span><b>${p.totwY && p.totwY[0] === S().year ? p.totwY[1] : 0} this season · ${p.totw} career</b></div></div>` : ''}<div class="card"><div class="row"><div class="h3 grow">Form</div><span class="small dim">last ${p.form.length}</span></div>
         <div class="row" style="align-items:flex-end;gap:5px;height:70px;margin-top:10px">${p.form.length ? p.form.map((r) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div class="tiny b">${r.toFixed(1)}</div><div style="width:100%;border-radius:4px;height:${(r - 4) * 8}px;background:${r >= 7.5 ? 'var(--good)' : r >= 6.5 ? 'var(--acc2)' : 'var(--bad)'}"></div></div>`).join('') : '<div class="dim small">No appearances yet.</div>'}</div>
 </div>

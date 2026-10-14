@@ -577,6 +577,9 @@
         st.tk = (st.tk || 0) + (ps.tk || 0);
         st.ic = (st.ic || 0) + (ps.ic || 0);
         st.pas = (st.pas || 0) + (ps.pass || 0);
+        st.xg = Math.round(((st.xg || 0) + (ps.xg || 0)) * 100) / 100;
+        st.xa = Math.round(((st.xa || 0) + (ps.xa || 0)) * 100) / 100;
+        if (sd.pshots && sd.pshots[pid]) p.shots = (p.shots || []).concat(sd.pshots[pid]).slice(-40); // (his shots this season, for his shot map)
         if (conceded === 0 && mins >= 60) st.cs = (st.cs || 0) + 1;
         if (p.pos === 'GK') {
           st.sv = (st.sv || 0) + (ps.sv || 0);
@@ -1948,6 +1951,8 @@
       delete p.splits;
       Sea.rustPositions(p);
       Sea.shiftPotential(p); // young players' potential moves with how the season went
+      p.shotsPrev = p.shots; // (last season's shots stay for his shot map until he has taken enough this season)
+      p.shots = undefined;
       p.season = W.blankSeason();
       p.flagMinutes = false;
       p.lastGrowth = 0;
