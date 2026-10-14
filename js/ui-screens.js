@@ -2002,7 +2002,13 @@
     if (S().comps[t] && S().comps[t].type === 'league' && t !== mine) opts.push([t, lname(S().comps[t])]);
     opts.push(['world', '🗺️ All leagues']);
     if (W.cups().length || W.continentals().length) opts.push(['cups', 'Cups']);
-    opts.push(['fixtures', 'Fixtures'], ['totw', 'Team of the week'], ['awards', 'Awards'], ['stats', 'Stats']);
+    opts.push(
+      ['fixtures', 'Fixtures'],
+      ['totw', 'Team of the week'],
+      ['awards', 'Awards'],
+      ['stats', 'Stats'],
+      ['charts', '📈 Charts'],
+    );
     return (
       chips('league', opts) +
       (t === 'fixtures'
@@ -2011,13 +2017,15 @@
           ? totwView()
           : t === 'awards'
             ? awardsView()
-            : t === 'stats'
-              ? statsView()
-              : t === 'cups'
-                ? cupsView()
-                : t === 'world'
-                  ? worldView()
-                  : tableView(t))
+            : t === 'charts'
+              ? chartsView()
+              : t === 'stats'
+                ? statsView()
+                : t === 'cups'
+                  ? cupsView()
+                  : t === 'world'
+                    ? worldView()
+                    : tableView(t))
     );
   };
   // International football has its own tab: national teams, rankings, tournaments and your national job
@@ -2465,6 +2473,215 @@
   }
   UI.acts.awardsComp = (d) => {
     UI._awardsComp = d.v;
+    UI.render();
+  };
+  // ---------- Analyst view: league charts ----------
+  // Scatter plots of the clubs (and the scorers) of a league: who creates and allows chances, who scores more than the chances say, how
+  // the clubs differ in style. Your club (or your players) is ringed; a tap on a dot opens that club or player.
+  UI._chart = 'clx';
+  UI._chartsComp = null;
+  const CHARTS = {
+    clx: {
+      label: 'Chances for and against',
+      scope: 'club',
+      x: 'xf',
+      y: 'xa',
+      xl: 'Expected goals for, per match',
+      yl: 'Expected goals against (fewer at the top)',
+      invertY: true,
+      quad: ['Solid, but creates little', 'Strong both ways', 'Struggling', 'Open: creates and allows'],
+      help: 'The top right is the best place to be: many chances made, few allowed.',
+    },
+    clfin: {
+      label: 'Goals against expected',
+      scope: 'club',
+      x: 'xf',
+      y: 'g',
+      xl: 'Expected goals, per match',
+      yl: 'Goals scored, per match',
+      diag: true,
+      quad: ['Scoring more than the chances say', '', '', 'Scoring less than the chances say'],
+      help: 'Above the line a club scores more than its chances say it should; below, less.',
+    },
+    clstyle: {
+      label: 'Possession and chance quality',
+      scope: 'club',
+      x: 'poss',
+      y: 'q',
+      xl: 'Possession, %',
+      yl: 'Expected goals per shot',
+      quad: ['Direct and picky', 'Patient and precise', 'Direct and wasteful', 'Patient but wasteful'],
+      help: 'How much of the ball a club has, against how good the chances it takes are.',
+    },
+    clpress: {
+      label: 'Pressing and possession',
+      scope: 'club',
+      x: 'da',
+      y: 'poss',
+      xl: 'Tackles and interceptions, per match',
+      yl: 'Possession, %',
+      quad: ['Keeps the ball', 'Wins it and keeps it', 'Sits back and defends', 'Wins it, then gives it away'],
+      help: 'How hard a club goes in for the ball, against how much of it it has.',
+    },
+    plfin: {
+      label: 'Scorers: goals against expected',
+      scope: 'player',
+      x: 'xg',
+      y: 'g',
+      xl: 'Expected goals, season',
+      yl: 'Goals, season',
+      diag: true,
+      quad: ['Finishing above the chances', '', '', 'Finishing below the chances'],
+      help: 'Players with 300 minutes and at least 1 expected goal. Above the line he has scored more than his chances said.',
+    },
+  };
+  function scatter(pts, ch, W2 = 320, H2 = 270) {
+    const pad = { l: 36, r: 12, t: 14, b: 34 };
+    const xs = pts.map((p) => p.x),
+      ys = pts.map((p) => p.y);
+    let x0 = Math.min(...xs),
+      x1 = Math.max(...xs),
+      y0 = Math.min(...ys),
+      y1 = Math.max(...ys);
+    if (ch.diag) {
+      x0 = y0 = Math.min(x0, y0);
+      x1 = y1 = Math.max(x1, y1);
+    }
+    const ex = (x1 - x0) * 0.08 || 1,
+      ey = (y1 - y0) * 0.08 || 1;
+    x0 -= ex;
+    x1 += ex;
+    y0 -= ey;
+    y1 += ey;
+    const X = (v) => pad.l + ((v - x0) / (x1 - x0)) * (W2 - pad.l - pad.r),
+      Y = (v) =>
+        ch.invertY
+          ? pad.t + ((v - y0) / (y1 - y0)) * (H2 - pad.t - pad.b)
+          : H2 - pad.b - ((v - y0) / (y1 - y0)) * (H2 - pad.t - pad.b);
+    const mx = (x0 + x1) / 2,
+      my = (y0 + y1) / 2;
+    const tick = (lo, hi) => {
+      const span = hi - lo,
+        step = span > 20 ? 5 : span > 6 ? 2 : span > 2 ? 0.5 : 0.25;
+      const out = [];
+      for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) out.push(+v.toFixed(2));
+      return out;
+    };
+    const grid =
+      tick(x0, x1)
+        .map(
+          (v) =>
+            `<line x1="${X(v)}" x2="${X(v)}" y1="${pad.t}" y2="${H2 - pad.b}" stroke="var(--line)"/><text x="${X(v)}" y="${H2 - pad.b + 11}" font-size="9" text-anchor="middle" fill="var(--ink3)">${v}</text>`,
+        )
+        .join('') +
+      tick(y0, y1)
+        .map(
+          (v) =>
+            `<line x1="${pad.l}" x2="${W2 - pad.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${pad.l - 4}" y="${Y(v) + 3}" font-size="9" text-anchor="end" fill="var(--ink3)">${v}</text>`,
+        )
+        .join('');
+    const diag = ch.diag
+      ? `<line x1="${X(x0)}" y1="${Y(x0)}" x2="${X(x1)}" y2="${Y(x1)}" stroke="var(--ink3)" stroke-dasharray="4 3"/>`
+      : '';
+    // the label of the ringed dot and of the four farthest from the middle
+    const far = pts
+      .slice()
+      .sort(
+        (a, b) =>
+          Math.hypot((b.x - mx) / (x1 - x0), (b.y - my) / (y1 - y0)) -
+          Math.hypot((a.x - mx) / (x1 - x0), (a.y - my) / (y1 - y0)),
+      )
+      .slice(0, 4);
+    const lab = new Set([...far, ...pts.filter((p) => p.hi)]);
+    const dots = pts
+      .map(
+        (p) =>
+          `<g class="tap" data-act="${p.act}" data-id="${p.id}"><circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${p.hi ? 6.5 : 4.5}" fill="${p.color}" fill-opacity="0.85" stroke="${p.hi ? 'var(--ink)' : 'rgba(255,255,255,.7)'}" stroke-width="${p.hi ? 2.2 : 1}"><title>${esc(p.tip)}</title></circle></g>`,
+      )
+      .join('');
+    const labels = [...lab]
+      .map((p) => {
+        const right = X(p.x) < W2 - 90;
+        return `<text x="${X(p.x) + (right ? 8 : -8)}" y="${Y(p.y) + 3}" font-size="9" font-weight="${p.hi ? 700 : 500}" text-anchor="${right ? 'start' : 'end'}" fill="var(--ink)" pointer-events="none">${esc(p.label)}</text>`;
+      })
+      .join('');
+    const q = ch.quad || [];
+    const quad = [
+      [q[0], pad.l + 4, pad.t + 9, 'start'],
+      [q[1], W2 - pad.r - 4, pad.t + 9, 'end'],
+      [q[2], pad.l + 4, H2 - pad.b - 5, 'start'],
+      [q[3], W2 - pad.r - 4, H2 - pad.b - 5, 'end'],
+    ]
+      .filter((x) => x[0])
+      .map(
+        ([tx, x, y, a]) =>
+          `<text x="${x}" y="${y}" font-size="8" text-anchor="${a}" fill="var(--ink3)" fill-opacity="0.8">${esc(tx)}</text>`,
+      )
+      .join('');
+    return `<svg viewBox="0 0 ${W2} ${H2}" style="width:100%;margin-top:6px">${grid}${diag}${quad}${dots}${labels}<text x="${(pad.l + W2 - pad.r) / 2}" y="${H2 - 4}" font-size="9" text-anchor="middle" fill="var(--ink2)">${esc(ch.xl)}</text><text x="10" y="${(pad.t + H2 - pad.b) / 2}" font-size="9" text-anchor="middle" fill="var(--ink2)" transform="rotate(-90 10 ${(pad.t + H2 - pad.b) / 2})">${esc(ch.yl)}</text></svg>`;
+  }
+  function chartsView() {
+    const s = S(),
+      cur = UI._chartsComp && s.comps[UI._chartsComp] ? UI._chartsComp : myComp(),
+      ch = CHARTS[UI._chart] || CHARTS.clx;
+    const leagues = W.leagues().filter((l) => l.sim === 'full' || l.id === myComp());
+    const pickComp = `<div class="chips" style="flex-wrap:wrap">${leagues.map((c) => `<button class="chip ${c.id === cur ? 'on' : ''}" data-act="chartsComp" data-v="${c.id}">${C.flag(c.nat)} ${esc(c.short)}</button>`).join('')}</div>`;
+    const pickChart = `<div class="chips" style="flex-wrap:wrap">${Object.entries(CHARTS)
+      .map(
+        ([k, c]) =>
+          `<button class="chip ${k === UI._chart ? 'on' : ''}" data-act="chartsKind" data-v="${k}">${c.label}</button>`,
+      )
+      .join('')}</div>`;
+    const A = FM.Analytics.charts(cur);
+    if (A.none || A.thin)
+      return `${pickComp}${pickChart}<div class="card"><div class="small dim">${A.thin ? `Only ${A.n} clubs have four league matches with details so far: the charts start then.` : esc(A.none)}</div></div>`;
+    const me = s.user.clubId;
+    let pts,
+      lists = '';
+    if (ch.scope === 'club') {
+      pts = A.clubs.map((c) => ({
+        x: c[ch.x],
+        y: c[ch.y],
+        label: c.short,
+        color: c.color,
+        hi: c.id === me,
+        id: c.id,
+        act: 'clubView',
+        tip: `${c.name}: ${ch.x === 'poss' ? c.poss.toFixed(0) + '%' : c[ch.x].toFixed(2)} · ${ch.y === 'poss' ? c.poss.toFixed(0) + '%' : c[ch.y].toFixed(2)}`,
+      }));
+      if (UI._chart === 'clfin') {
+        const d = A.clubs.map((c) => ({ c, d: c.g - c.xf })).sort((a, b) => b.d - a.d);
+        const row = (x) =>
+          `<div class="row small tap" style="padding:5px 0;gap:8px" data-act="clubView" data-id="${x.c.id}">${C.crest(S().clubs[x.c.id], 16)}<span class="grow ellip">${esc(x.c.name)}</span><span class="dim">${x.c.xf.toFixed(2)} xG · ${x.c.g.toFixed(2)} goals</span><b style="color:var(--${x.d >= 0 ? 'good' : 'bad'});width:44px;text-align:right">${x.d >= 0 ? '+' : ''}${x.d.toFixed(2)}</b></div>`;
+        lists = `<div class="small b dim" style="margin:10px 0 2px">Scoring more than the chances say</div>${d.slice(0, 5).map(row).join('')}<div class="small b dim" style="margin:10px 0 2px">Scoring less than the chances say</div>${d.slice(-5).reverse().map(row).join('')}`;
+      }
+    } else {
+      const myPlayers = (id) => S().players[id] && S().players[id].clubId === me;
+      pts = A.players.map((p) => ({
+        x: p.xg,
+        y: p.g,
+        label: p.name,
+        color: p.color,
+        hi: myPlayers(p.id),
+        id: p.id,
+        act: 'player',
+        tip: `${p.name}: ${p.xg.toFixed(1)} xG, ${p.g} goals`,
+      }));
+      const d = A.players.map((p) => ({ p, d: p.g - p.xg })).sort((a, b) => b.d - a.d);
+      const row = (x, i) =>
+        `<div class="row small tap" style="padding:5px 0;gap:8px" data-act="player" data-id="${x.p.id}"><span class="dim" style="width:18px">${i + 1}</span>${C.crest(S().clubs[x.p.club], 16)}<span class="grow ellip">${esc(x.p.name)}</span><span class="dim">${x.p.xg.toFixed(1)} xG · ${x.p.g} goals</span><b style="color:var(--${x.d >= 0 ? 'good' : 'bad'});width:44px;text-align:right">${x.d >= 0 ? '+' : ''}${x.d.toFixed(1)}</b></div>`;
+      lists = `<div class="small b dim" style="margin:10px 0 2px">Top ten: most goals above the chances</div>${d.slice(0, 10).map(row).join('')}<div class="small b dim" style="margin:10px 0 2px">Most goals below the chances</div>${d.slice(-5).reverse().map(row).join('')}`;
+    }
+    if (pts.length < 3)
+      return `${pickComp}${pickChart}<div class="card"><div class="small dim">Too few players yet (it needs 300 minutes and 1 expected goal): check back after more matches.</div></div>`;
+    return `${pickComp}${pickChart}<div class="card"><div class="h3">${esc(ch.label)}</div><div class="tiny dim">${esc(A.comp)} · ${pts.length} ${ch.scope === 'club' ? 'clubs' : 'players'} · ${esc(ch.help)} Your ${ch.scope === 'club' ? 'club is' : 'players are'} ringed; tap a dot to open it.</div>${scatter(pts, ch)}${lists}</div>`;
+  }
+  UI.acts.chartsComp = (d) => {
+    UI._chartsComp = d.v;
+    UI.render();
+  };
+  UI.acts.chartsKind = (d) => {
+    UI._chart = d.v;
     UI.render();
   };
   function statsView() {

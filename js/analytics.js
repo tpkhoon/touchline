@@ -242,12 +242,10 @@
   // Worked out from the league's results (every match keeps its xG, shots and possession), so it works for any club in a league played in full.
   const MIN_PLAYED = 4;
   const ordinal = (n) => n + (['th', 'st', 'nd', 'rd'][((n % 100) >> 3) ^ 1 && n % 10 < 4 ? n % 10 : 0] || 'th');
-  An.teamProfile = function (id) {
-    const S = FM.S,
-      c = S.clubs[id],
-      comp = c && S.comps[c.comp];
-    if (!comp || comp.type !== 'league' || !comp.fixtures)
-      return { none: 'This club plays in no league with match details.' };
+  // Every club of a league, per match this season: possession, expected goals for and against, shots, goals, tackles and interceptions
+  // (from the league's results, so only matches with details count; a club needs MIN_PLAYED of them)
+  An.clubRows = function (comp) {
+    const S = FM.S;
     const by = {};
     const rounds = comp.fixtures;
     rounds.forEach((rd, ri) => {
@@ -269,8 +267,6 @@
         });
       }
     });
-    const mine = by[id];
-    if (!mine || mine.n < MIN_PLAYED) return { thin: true, n: mine ? mine.n : 0, need: MIN_PLAYED };
     // tackles and interceptions per match, from the clubs' players (how much a side goes in for the ball)
     const da = {};
     for (const p of Object.values(S.players))
@@ -293,6 +289,17 @@
         fin: (r.g - r.xf) / r.n,
         diff: (r.xf - r.xa) / r.n,
       }));
+    return { by, rows };
+  };
+  An.teamProfile = function (id) {
+    const S = FM.S,
+      c = S.clubs[id],
+      comp = c && S.comps[c.comp];
+    if (!comp || comp.type !== 'league' || !comp.fixtures)
+      return { none: 'This club plays in no league with match details.' };
+    const { by, rows } = An.clubRows(comp);
+    const mine = by[id];
+    if (!mine || mine.n < MIN_PLAYED) return { thin: true, n: mine ? mine.n : 0, need: MIN_PLAYED };
     const me = rows.find((r) => r.cid === id),
       N = rows.length;
     // [key, label, higher is better, decimals, unit]
@@ -389,5 +396,38 @@
       run: mine.run,
       mix,
     };
+  };
+  // ---------- League charts: every club and every scorer of a league, for the scatter plots ----------
+  An.charts = function (compId) {
+    const S = FM.S,
+      comp = S.comps[compId];
+    if (!comp || comp.type !== 'league' || !comp.fixtures) return { none: 'No match details for this competition.' };
+    const { rows } = An.clubRows(comp);
+    if (rows.length < 4) return { thin: true, n: rows.length };
+    const colOf = (c) => (c.colors[0].toUpperCase() === '#FFFFFF' ? c.colors[1] : c.colors[0]);
+    const clubs = rows.map((r) => {
+      const c = S.clubs[r.cid];
+      return { ...r, id: r.cid, name: c.name, short: c.short, color: colOf(c) };
+    });
+    const players = Object.values(S.players)
+      .filter(
+        (p) =>
+          p.clubId &&
+          S.clubs[p.clubId] &&
+          S.clubs[p.clubId].comp === compId &&
+          p.season &&
+          p.season.mins >= 300 &&
+          (p.season.xg || 0) >= 1,
+      )
+      .map((p) => ({
+        id: p.id,
+        name: W.short(p),
+        club: p.clubId,
+        color: colOf(S.clubs[p.clubId]),
+        g: p.season.goals,
+        xg: p.season.xg,
+        mins: p.season.mins,
+      }));
+    return { comp: comp.name, clubs, players };
   };
 })();
