@@ -1676,6 +1676,37 @@ table.t tr.zone-down td:first-child {
   color: #fff;
   font-size: 16px;
 }
+.title details.edsec {
+  border: 1px solid #243042;
+  border-radius: 14px;
+  padding: 0 12px 12px;
+  margin: 10px 0;
+}
+.title details.edsec > summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #e6edf6;
+}
+.title details.edsec > summary::-webkit-details-marker {
+  display: none;
+}
+.title details.edsec > summary::after {
+  content: '›';
+  margin-left: auto;
+  color: #9fb0c5;
+  transition: transform 0.15s;
+}
+.title details.edsec[open] > summary::after {
+  transform: rotate(90deg);
+}
+.title input[type='number'],
+.title input[type='range'] {
+  min-height: 48px;
+}
 .title .ng-label {
   color: #9fb0c5;
   margin: 14px 0 6px;

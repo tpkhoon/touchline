@@ -222,6 +222,23 @@ if ('test' in args) {
       );
       check(gen.every(test), `new players for a club with ${JSON.stringify(policy)} do not fit it`);
     }
+    // the squads kept in the definition: a fresh world built from it has the same players at a club
+    {
+      baseWorld();
+      const club = Object.values(FM.S.clubs).find((c) => c.comp && c.sim === 'full');
+      const names = (id) => W.squad(id).map((x) => `${x.fn} ${x.ln} ${x.pos} ${x.ca}`);
+      const before = names(club.id);
+      const d5 = WD.fromState(FM.S, { name: 'Squads', players: true, replace: true });
+      check(d5.players.length > 15000 && d5.meta.players === 'replace', 'the squads were not kept in the definition');
+      baseWorld();
+      WD.apply(d5, FM.S);
+      // (every player kept comes back as he was; the academy makes its young players afresh)
+      const after = new Set(names(club.id));
+      check(
+        before.every((x) => after.has(x)),
+        'a world built from kept squads has lost or changed players at a club',
+      );
+    }
     {
       baseWorld();
       const d4 = WD.fromState(FM.S, { name: 'Rule test', players: false });

@@ -616,6 +616,7 @@
         )
         .join('')}</div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">${(ED.def.players || []).length} player${(ED.def.players || []).length === 1 ? '' : 's'} made so far. Open a club, then Players.</div>
+      ${squadsCard()}
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">⬇️ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">🆓 Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
       <div class="ng-label">Find</div><div class="ng-find"><input type="search" id="ed-hq" placeholder="Find a club, league or nation" value="${esc(ED.hq || '')}" autocomplete="off"></div>
@@ -1487,6 +1488,45 @@
       <select id="ed-polnat"><option value="">Anyone</option>${opts}</select>
       <input type="text" id="ed-pollabel" maxlength="30" placeholder="What to call them, e.g. Andorran" value="${esc(typed)}" style="margin-top:6px">`;
   };
+  // ---------- The clubs' own squads ----------
+  // The game makes every squad when the world is built, after editing ends, so the editor only ever saw the players you add. Building
+  // the world here (the same way a new career does) and keeping its players in the definition makes every squad one you can open
+  // and change, and a fixed world: the same players every time it is used.
+  const squadsCard = () => {
+    const fixed = ED.def.meta.players === 'replace' && (ED.def.players || []).length > 2000;
+    return fixed
+      ? `<div class="card" style="margin:12px 0 0;padding:10px 12px"><div class="small b">🧬 The squads are in this world</div><div class="tiny dim" style="line-height:1.5">${(ED.def.players || []).length.toLocaleString('en')} players: open a club, then Players, to change any of them. The world gives the same players every time.</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edClearSquads">Go back to squads made fresh each time</button></div></div>`
+      : `<div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edBuildSquads"><div class="row"><div class="grow"><div class="small b">🧬 Build the squads to edit them</div><div class="tiny dim">Makes every club's squad now (about half a minute), so each player can be changed and the world keeps them</div></div><span class="dim">›</span></div></div>`;
+  };
+  UI.acts.edBuildSquads = () => {
+    UI.toast('Building the world… this takes a little while', 60000);
+    setTimeout(() => {
+      const keep = FM.S;
+      try {
+        WD.load(clone(ED.def), { ...FM.W.REAL_RULES, ...UI._dbRules(ED.def) });
+        const made = WD.fromState(FM.S, { name: ED.def.meta.name, players: true, replace: true });
+        ED.def.players = made.players;
+        ED.def.meta.players = 'replace';
+        ED.err = [];
+      } catch (e) {
+        ED.err = [String(e.message || e).split('\n')[0]];
+      } finally {
+        FM.S = keep;
+        WD.useStatic(null);
+      }
+      UI.worldEditor();
+      UI.toast(
+        ED.err.length ? 'The squads could not be built' : 'The squads are in the world: open a club, then Players',
+        4000,
+      );
+    }, 60);
+  };
+  UI.acts.edClearSquads = () => {
+    ED.def.players = [];
+    ED.def.meta.players = 'overlay';
+    UI.worldEditor();
+  };
+
   // ---------- Bulk tools ----------
   // Every club of a league at once: its reputation up or down, a word replaced in the names; and one club copied, or swapped with
   // a club of another league of its country
@@ -1791,6 +1831,7 @@
       .join('');
     return `<div class="h1" style="margin-top:2vh">${crestDot(c)} ${esc(c.name)}</div><div class="tag">${added ? 'A club you added.' : "One of the game's clubs: your changes replace what it has."}</div>
       ${errBox()}
+      <details class="edsec" open><summary>Identity</summary>
       <div class="ng-label">Name</div><input type="text" id="ed-name" maxlength="40" value="${esc(c.name)}">
       <div id="ed-warn">${clubWarn(c)}</div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name (up to 5)</div><input type="text" id="ed-short" maxlength="5" value="${esc(c.short || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Nickname</div><input type="text" id="ed-nick" maxlength="24" value="${esc(c.nick || '')}"></div></div>
@@ -1801,12 +1842,19 @@
       <div class="ng-label">Identity</div><select id="ed-identity">${idOpts}</select>
       <div class="ng-label">Reputation <b id="ed-repv" style="color:#e6edf6">${c.rep}</b> <span class="tiny dim">(${stars(c.rep)} — decides the squad and the money)</span></div>
       <input type="range" id="ed-rep" min="20" max="99" step="1" value="${c.rep}" style="width:100%">
+      </details>
+      <details class="edsec"><summary>Ground</summary>
       <div class="ng-label">Ground</div><input type="text" id="ed-stadium" maxlength="40" value="${esc(c.stadium.name)}">
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Capacity</div><input type="number" id="ed-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${c.stadium.cap}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Founded</div><input type="number" id="ed-founded" min="1800" max="2030" inputmode="numeric" value="${c.founded || ''}"></div></div>
+      </details>
+      <details class="edsec"><summary>League and signing rule</summary>
       ${sameNat.length > 1 ? `<div class="ng-label">League</div><select id="ed-league">${lgOpts}</select>` : ''}
       ${policyFields(c)}
+      </details>
+      <details class="edsec"><summary>Manager and rival</summary>
       ${managerFields(c)}
       ${derbyFields(c)}
+      </details>
       <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="clubx" data-cid="${esc(c.id)}"><div class="row" style="gap:10px"><div style="flex:none">${UI.C.crest(c, 28)}</div><div class="grow"><div class="small b">Crest, money, facilities and supporters</div><div class="tiny dim">${[c.crest ? 'own crest' : '', c.finance ? 'own money' : '', c.facilities ? 'own facilities' : '', c.attr ? 'own supporters' : ''].filter(Boolean).join(' · ') || 'As the game works them out'}</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edStaff" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Coaches and scouts</div><div class="tiny dim">${(ED.def.staff || []).filter((s) => s.club === c.id).length} come with this job</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Players</div><div class="tiny dim">${playersOf(c.id).length} made for this club</div></div><span class="dim">›</span></div></div>
