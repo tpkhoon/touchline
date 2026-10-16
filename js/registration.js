@@ -328,6 +328,12 @@
       return p.service && p.clubId === c.id // (conscripts are called up by FM.Asia; nobody can sign for the army's club)
         ? { ok: true }
         : { ok: false, why: `${c.name} is the army's club: its squad is players doing their military service.` };
+    if (pol && pol.region) {
+      const ok = [p.nat, p.nat2].some((n) => n && D.NATIONS[n] && D.NATIONS[n].region === pol.region);
+      return ok
+        ? { ok: true }
+        : { ok: false, why: `${c.name} only signs ${pol.label} players: it fields players from ${pol.label}.` };
+    }
     if (pol && pol.nat)
       return p.nat === pol.nat || p.nat2 === pol.nat
         ? { ok: true }

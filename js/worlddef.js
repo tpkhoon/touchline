@@ -1247,15 +1247,29 @@
   WD.FACILITIES = ['training', 'academy', 'medical', 'analytics', 'stadium', 'fanzone', 'museum'];
   // A club that signs only players of one nation has a squad of them: whoever is of another nation is made one (name and all)
   WD.fitSquadToPolicy = function (c) {
-    const nat = c.policy.nat;
+    const pol = c.policy;
     for (const p of W.squad(c.id)) {
-      if (p.nat === nat || p.nat2 === nat) continue;
-      const nm = W.rollName(nat, null, p.born);
-      p.nat = nat;
-      p.nat2 = null;
-      delete p.heritage;
-      p.fn = nm.fn;
-      p.ln = nm.ln;
+      if (pol.nat) {
+        if (p.nat === pol.nat || p.nat2 === pol.nat) continue;
+        const nm = W.rollName(pol.nat, null, p.born);
+        Object.assign(p, { nat: pol.nat, nat2: null, fn: nm.fn, ln: nm.ln });
+        delete p.heritage;
+      } else if (pol.region) {
+        const inRegion = (n) => n && D.NATIONS[n] && D.NATIONS[n].region === pol.region;
+        if (inRegion(p.nat) || inRegion(p.nat2)) continue;
+        const nat = W.regionNation(pol.region);
+        if (!nat) continue;
+        const nm = W.rollName(nat, null, p.born);
+        Object.assign(p, { nat, nat2: null, fn: nm.fn, ln: nm.ln });
+        delete p.heritage;
+      } else if (pol.heritage && p.heritage !== pol.heritage) {
+        // (a family of that heritage settled in his country: a name from its culture, and its nation as a second one)
+        const nm = W.rollName(p.nat, pol.heritage, p.born);
+        p.heritage = pol.heritage;
+        p.nat2 = W.dualNat(p.nat, pol.heritage, D.lastPoolKey);
+        p.fn = nm.fn;
+        p.ln = nm.ln;
+      }
     }
   };
   WD.validateClub = function (c, ctx = {}) {
@@ -1294,7 +1308,16 @@
     if (c.policy) {
       if (c.policy.nat && !D.NATIONS[c.policy.nat])
         e.push(`${at}: the signing rule names an unknown nation "${c.policy.nat}"`);
-      if (!c.policy.nat && !c.policy.heritage) e.push(`${at}: a signing rule needs a nation or a heritage`);
+      if (c.policy.region && !D.REGIONS[c.policy.region])
+        e.push(`${at}: the signing rule names an unknown part of the world "${c.policy.region}"`);
+      if (
+        c.policy.heritage &&
+        !(D.HERITAGE_LABEL && D.HERITAGE_LABEL[c.policy.heritage]) &&
+        !D.NAME_POOLS[c.policy.heritage]
+      )
+        e.push(`${at}: the signing rule names an unknown heritage "${c.policy.heritage}"`);
+      if (!c.policy.nat && !c.policy.region && !c.policy.heritage && !c.policy.military)
+        e.push(`${at}: a signing rule needs a nation, a part of the world or a heritage`);
       if (c.policy.label && String(c.policy.label).length > 30)
         e.push(`${at}: the signing rule's name is up to 30 characters`);
     }
@@ -1826,9 +1849,17 @@
       if (d.facilities) Object.assign(c.facilities, d.facilities);
       if (d.policy !== undefined) {
         c.policy = d.policy
-          ? { ...d.policy, label: d.policy.label || (D.NATIONS[d.policy.nat] || {}).name || 'local' }
+          ? {
+              ...d.policy,
+              label:
+                d.policy.label ||
+                (D.NATIONS[d.policy.nat] || {}).name ||
+                D.REGIONS[d.policy.region] ||
+                (D.HERITAGE_LABEL || {})[d.policy.heritage] ||
+                'local',
+            }
           : null;
-        if (c.policy && c.policy.nat) WD.fitSquadToPolicy(c);
+        if (c.policy && (c.policy.nat || c.policy.region || c.policy.heritage)) WD.fitSquadToPolicy(c);
       }
       if (d.stadium) {
         c.stadium.name = d.stadium.name || c.stadium.name;

@@ -198,6 +198,36 @@ if ('test' in args) {
     check(FM.Reg.policy(c2, W.squad(c2.id)[0]).ok, 'the club may not sign a player of its own nation');
     const back = WD.fromState(FM.S, { name: 'Round trip', players: false }).clubs.find((c) => c.id === spanish.id);
     check(back.policy && back.policy.nat === 'FRA', 'the signing rule did not survive a round trip');
+    // by part of the world, and by family heritage
+    for (const [policy, test] of [
+      [{ region: 'AFR' }, (x) => [x.nat, x.nat2].some((n) => n && FM.D.NATIONS[n] && FM.D.NATIONS[n].region === 'AFR')],
+      [{ heritage: 'latin' }, (x) => x.heritage === 'latin'],
+    ]) {
+      baseWorld();
+      const d3 = WD.fromState(FM.S, { name: 'Rule test', players: false });
+      d3.clubs.find((c) => c.id === spanish.id).policy = policy;
+      check(WD.validate(d3, FM.S).errors.length === 0, `a signing rule ${JSON.stringify(policy)} did not validate`);
+      WD.apply(d3, FM.S);
+      const c3 = FM.S.clubs[spanish.id];
+      check(
+        W.squad(c3.id).length > 15 && W.squad(c3.id).every(test),
+        `the squad does not fit the rule ${JSON.stringify(policy)}`,
+      );
+      check(c3.policy && c3.policy.label, `the rule ${JSON.stringify(policy)} has no name`);
+      const outsider = Object.values(FM.S.players).find((x) => !test(x) && x.clubId !== c3.id);
+      check(!FM.Reg.policy(c3, outsider).ok, `the rule ${JSON.stringify(policy)} lets an outsider in`);
+      check(FM.Reg.policy(c3, W.squad(c3.id)[0]).ok, `the rule ${JSON.stringify(policy)} refuses its own player`);
+      const gen = Array.from({ length: 30 }, () =>
+        W.genPlayer({ nat: 'ESP', pos: 'CM', age: 22, ca: 50, pa: 55, clubId: c3.id }),
+      );
+      check(gen.every(test), `new players for a club with ${JSON.stringify(policy)} do not fit it`);
+    }
+    {
+      baseWorld();
+      const d4 = WD.fromState(FM.S, { name: 'Rule test', players: false });
+      d4.clubs.find((c) => c.id === spanish.id).policy = { region: 'MOON' };
+      check(WD.validate(d4, FM.S).errors.length > 0, 'a signing rule with an unknown part of the world was accepted');
+    }
   }
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'World definition: all checks passed.');
   process.exit(fails.length ? 1 : 0);

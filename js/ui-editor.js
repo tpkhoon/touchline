@@ -273,7 +273,21 @@
     // (a rule of the game's own is left alone: the fields are not on the screen)
     if ($('#ed-polnat')) {
       const pn = v('polnat');
-      patch.policy = pn ? { nat: pn, label: (v('pollabel') || '').trim() || D.NATIONS[pn].name } : null;
+      const [kind, key] = pn ? pn.split(':') : [];
+      const name =
+        kind === 'nat'
+          ? D.NATIONS[key].name
+          : kind === 'region'
+            ? D.REGIONS[key]
+            : (D.HERITAGE_LABEL || {})[key] || key;
+      const label = (v('pollabel') || '').trim() || name;
+      patch.policy = !pn
+        ? null
+        : kind === 'nat'
+          ? { nat: key, label }
+          : kind === 'region'
+            ? { region: key, label }
+            : { heritage: key, label };
     }
     const r = WD.editor(ED.def, null).setClub(ED.cid, patch);
     if (!r.ok) {
@@ -410,7 +424,8 @@
       for (const [k, label] of CLUB_FIELDS) {
         const a = pathGet(s, k),
           b = pathGet(c, k);
-        if (JSON.stringify(a ?? null) !== JSON.stringify(b ?? null))
+        const same = (v) => (k === 'colors' ? JSON.stringify(v ?? null).toLowerCase() : JSON.stringify(v ?? null));
+        if (same(a) !== same(b))
           out.push({ text: `${s.name}: ${label} ${showVal(k, a)} → ${showVal(k, b)}`, cid: c.id, k });
       }
     }
@@ -1439,16 +1454,38 @@
 
   // The manager of a club (an entry in the definition's managers; a club with none keeps the one the world gives it)
   // Who a club may sign: anyone, or only players of one nation (the built-in rules of Eibar, Andorra and the army club stay as they are)
+  const polName = (sel) => {
+    const [kind, key] = String(sel).split(':');
+    return kind === 'nat'
+      ? (D.NATIONS[key] || {}).name
+      : kind === 'region'
+        ? D.REGIONS[key]
+        : kind === 'her'
+          ? (D.HERITAGE_LABEL || {})[key] || key
+          : '';
+  };
   const policyFields = (c) => {
     const p = c.policy;
-    if (p && (p.heritage || p.military))
+    if (p && p.military)
       return `<div class="ng-label">Signing rule</div><div class="tiny dim" style="line-height:1.5">Only ${esc(p.label || '')} players: a rule the game gives this club.</div>`;
-    const opts = natEntries()
-      .map(([k, n]) => `<option value="${k}" ${p && p.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`)
-      .join('');
+    const cur = p ? (p.nat ? 'nat:' + p.nat : p.region ? 'region:' + p.region : 'her:' + p.heritage) : '';
+    // (a name typed by hand stays in the box; the name the game would give anyway is not copied there, or it would stick to the next choice)
+    const typed = p && p.label && p.label !== polName(cur) ? p.label : '';
+    const o = (v, t) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${t}</option>`;
+    const opts = `<optgroup label="Nation">${natEntries()
+      .map(([k, n]) => o('nat:' + k, `${n.flag} ${esc(n.name)}`))
+      .join('')}</optgroup><optgroup label="Part of the world">${Object.entries(D.REGIONS)
+      .map(([k, n]) => o('region:' + k, esc(n)))
+      .join(
+        '',
+      )}</optgroup><optgroup label="Family heritage (players of that background, whatever their nation)">${Object.entries(
+      D.HERITAGE_LABEL || {},
+    )
+      .map(([k, n]) => o('her:' + k, esc(n)))
+      .join('')}</optgroup>`;
     return `<div class="ng-label">Signing rule <span class="tiny dim">· who the club may sign</span></div>
       <select id="ed-polnat"><option value="">Anyone</option>${opts}</select>
-      <input type="text" id="ed-pollabel" maxlength="30" placeholder="What to call them, e.g. Andorran" value="${esc((p && p.label) || '')}" style="margin-top:6px">`;
+      <input type="text" id="ed-pollabel" maxlength="30" placeholder="What to call them, e.g. Andorran" value="${esc(typed)}" style="margin-top:6px">`;
   };
   // ---------- Bulk tools ----------
   // Every club of a league at once: its reputation up or down, a word replaced in the names; and one club copied, or swapped with

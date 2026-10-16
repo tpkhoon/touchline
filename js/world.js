@@ -645,12 +645,17 @@
       p.trainedAt = (pool.find((c) => (r -= c.rep) < 0) || pool[0]).id;
     } else p.trainedAt = null;
   };
+  // A nation of a part of the world (D.REGIONS), at random: the home of a club that signs only players from there
+  W.regionNation = (region) => {
+    const list = D.nationCodes().filter((n) => D.NATIONS[n].region === region);
+    return list.length ? U.pick(list) : null;
+  };
   W.genPlayer = function ({ nat, pos, age, ca, pa, clubId = null, youthClub = null }) {
     const N = D.NATIONS[nat];
     // a club with a heritage policy (Basque-only, Catalan-only) fields players of that heritage and its own nation
     const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
-    if (pol) nat = pol.nat || FM.S.clubs[clubId].nat;
-    const heritage = pol && pol.heritage ? pol.heritage : pol && pol.nat ? null : W.pickHeritage(nat),
+    if (pol) nat = pol.nat || (pol.region && W.regionNation(pol.region)) || FM.S.clubs[clubId].nat;
+    const heritage = pol && pol.heritage ? pol.heritage : pol && (pol.nat || pol.region) ? null : W.pickHeritage(nat),
       nm = W.rollName(nat, heritage, FM.S.year - age);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(
