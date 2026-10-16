@@ -446,7 +446,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-180 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+185 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority: the real database and the accuracy of the ratings it is made with** (the ten Ratings rows at the top of the table). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -636,3 +636,8 @@ Design principle from here: don't make the game deeper by adding more screens �
 | Process | Watch real players: five people playing their first twenty minutes while the developer watches in silence, noting where they hesitate, what they skip and when they put the phone down, repeated for each release | 1.0 |
 | Platform | Simple privacy-respecting analytics: only where players stop in the first session, which screens are never opened and how many come back after a day and after a week; no personal data, the data named in plain words in Settings and the privacy policy, and a switch to turn it off | Beta |
 | Community | A feedback loop: every report from the feedback button read and some answered in public, and a mark in What's new on the features that came from a player's report ("You asked, we built") | 1.0 |
+| Legacy | Famous named matches: the generated past and the played game both record matches worth remembering and give them names ("The Miracle of Exhurst Field", a 4–3 comeback in 1994; a cup final decided in the last minute), kept on the club page and in the museum; the story feed, press and commentary refer to them ("the first time they have won here since the Miracle of '94") | Alpha 2 |
+| Legacy | Eras: a club's past divided into named periods ("the Golden Years under Harlan Voss, 1978–1986", "the lean years"), made from its titles, managers and divisions, shown on the club page and used by legends, press and the club card | Alpha 2 |
+| Records | World records with names: highest attendance, biggest win, longest unbeaten run, most goals in a season, for each club, league and cup, made in the generated past and kept up to date as the game is played, with a story when one is broken | Alpha 2 |
+| World | A football culture for each nation: a short profile (playing style: pressing in Germany, possession in Spain, physical in England; ownership norms: fan ownership in Germany, wealthy owners in the Gulf; fan culture: ultras in Italy, terraces in England; the biggest rivalry and the oldest club) that shapes AI tactics, board behaviour, fan reactions and press tone, so leagues feel different and not just differently named | Alpha 2 |
+| Competitions | Fictional cup names with a history: national cups named after fictional founders or old sponsors (the Harlan Cup, the Marlow Bank Trophy), with a founding year and a story, so they sound real and keep the world's names free of real brands | Alpha 2 |
