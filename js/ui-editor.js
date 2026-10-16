@@ -49,6 +49,8 @@
     ED = {
       base: null,
       def: cur && cur.ok && cur.def ? clone(cur.def) : WD.fromStatic({ name: 'My world' }),
+      start: null, // the world as it was when the editor opened: what the Changes screen compares with
+      hq: '',
       view: 'home',
       lid: null,
       cid: null,
@@ -57,6 +59,7 @@
     };
     // (a definition made from the built-in data, with nothing changed, is still the built-in world)
     if (!ED.def.meta.name || ED.def.meta.name === 'Built-in data') ED.def.meta.name = 'My world';
+    ED.start = clone(ED.def);
     UI.worldEditor();
   };
   UI.acts.edClose = () => {
@@ -82,6 +85,7 @@
   };
   UI.acts.edExport = async () => {
     try {
+      ED.def.meta.gameVersion = FM.VERSION; // (what the pack was made with: an import warns when the game differs)
       const bytes = new TextEncoder().encode(WD.stringify(ED.def));
       const name = `touchline-${String(ED.def.meta.name || 'world')
         .toLowerCase()
@@ -336,6 +340,132 @@
           .join('<br>')}</div>`
       : '';
 
+  // ---------- Find, changes and checks as you type ----------
+  // A search over the whole world from the home screen: clubs (name, short name, city, nickname), leagues and nations
+  const homeFind = (q) => {
+    q = q.trim().toLowerCase();
+    if (!q) return '';
+    const clubs = ED.def.clubs
+      .filter((c) => [c.name, c.short, c.city, c.nick].some((x) => (x || '').toLowerCase().includes(q)))
+      .sort((a, b) => b.rep - a.rep);
+    const leagues = ED.def.leagues.filter(
+      (l) => l.name.toLowerCase().includes(q) || (natOf(l).name || '').toLowerCase().includes(q),
+    );
+    const lg = (l) =>
+      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${natOf(l).flag} ${esc(l.name)}</div><div class="tiny dim">Tier ${l.tier} · ${clubsOf(l.id).length} clubs</div></div><span class="dim">›</span></div></div>`;
+    const club = (c) =>
+      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="club" data-cid="${esc(c.id)}" data-lid="${esc(c.league)}"><div class="row" style="gap:10px">${crestDot(c)}<div class="grow"><div class="small b">${esc(c.name)}</div><div class="tiny dim">${esc((leagueOf(c.league) || {}).name || '')} · ${stars(c.rep)}</div></div><span class="dim">›</span></div></div>`;
+    if (!clubs.length && !leagues.length) return '<div class="empty">Nothing matches.</div>';
+    return `${leagues.slice(0, 8).map(lg).join('')}${clubs.slice(0, 12).map(club).join('')}${clubs.length > 12 ? `<div class="tiny dim" style="margin:4px 0">${clubs.length - 12} more: type more of the name.</div>` : ''}`;
+  };
+  // What changed since the editor opened, club by club and field by field, each with the value it had
+  const CLUB_FIELDS = [
+    ['name', 'Name'],
+    ['short', 'Short name'],
+    ['nick', 'Nickname'],
+    ['city', 'City'],
+    ['colors', 'Colours'],
+    ['identity', 'Identity'],
+    ['rep', 'Reputation'],
+    ['league', 'League'],
+    ['founded', 'Founded'],
+    ['stadium.name', 'Ground'],
+    ['stadium.cap', 'Capacity'],
+  ];
+  const pathGet = (o, p) => p.split('.').reduce((x, k) => (x == null ? x : x[k]), o);
+  const showVal = (k, v) =>
+    v == null || v === ''
+      ? 'none'
+      : k === 'colors'
+        ? v.join(' / ')
+        : k === 'stadium.cap'
+          ? Number(v).toLocaleString('en')
+          : k === 'league'
+            ? (leagueOf(v) || {}).name || v
+            : String(v);
+  const changesList = () => {
+    const out = [];
+    const start = (ED.start && ED.start.clubs) || [];
+    for (const c of ED.def.clubs) {
+      const s = start.find((x) => x.id === c.id);
+      if (!s) {
+        out.push({ text: `${c.name}: a club you added`, cid: c.id });
+        continue;
+      }
+      for (const [k, label] of CLUB_FIELDS) {
+        const a = pathGet(s, k),
+          b = pathGet(c, k);
+        if (JSON.stringify(a) !== JSON.stringify(b))
+          out.push({ text: `${s.name}: ${label} ${showVal(k, a)} → ${showVal(k, b)}`, cid: c.id, k });
+      }
+    }
+    for (const s of start)
+      if (!ED.def.clubs.some((c) => c.id === s.id)) out.push({ text: `${s.name}: taken out of the world` });
+    const made = (ED.def.players || []).length,
+      was = ((ED.start && ED.start.players) || []).length;
+    if (made !== was) out.push({ text: `Players made: ${was} → ${made}` });
+    return out;
+  };
+  const changeSummary = () => {
+    const n = changesList().length;
+    return n ? `${n} change${n === 1 ? '' : 's'} since you opened the editor` : 'nothing changed yet';
+  };
+  UI.acts.edUndo = (d) => {
+    const s = ED.start.clubs.find((x) => x.id === d.cid),
+      c = ED.def.clubs.find((x) => x.id === d.cid);
+    if (!s || !c) return;
+    const k = d.k;
+    const patch = k.startsWith('stadium.')
+      ? { stadium: { ...c.stadium, [k.slice(8)]: pathGet(s, k) } }
+      : k === 'league'
+        ? { league: s.league, nat: s.nat }
+        : { [k]: clone(s[k]) };
+    const r = WD.editor(ED.def, null).setClub(d.cid, patch);
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  const changesView = () => {
+    const list = changesList();
+    return `<div class="h1" style="margin-top:2vh">Changes made</div><div class="tag">Everything you changed since you opened the editor, with the value it had. Undo puts a single change back.</div>
+      ${errBox()}
+      ${
+        list.length
+          ? list
+              .map(
+                (x) =>
+                  `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:10px"><div class="grow small">${esc(x.text)}</div>${x.k ? `<button class="btn sm" data-act="edUndo" data-cid="${esc(x.cid)}" data-k="${esc(x.k)}">Undo</button>` : ''}</div></div>`,
+              )
+              .join('')
+          : '<div class="empty">Nothing changed yet.</div>'
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  // Problems with a club, found as you type: a name or short name another club of the league has, a nickname that names a colour
+  // the kit does not have, home and away colours too alike to tell apart
+  const rgb = (h) => [1, 3, 5].map((i) => parseInt(String(h).slice(i, i + 2), 16) || 0);
+  const clubWarn = (c) => {
+    const v = (id, d) => ($('#ed-' + id) || {}).value ?? d;
+    const name = String(v('name', c.name)).trim(),
+      short = String(v('short', c.short || ''))
+        .trim()
+        .toUpperCase(),
+      nick = String(v('nick', c.nick || '')).trim(),
+      cols = [v('c1', c.colors[0]), v('c2', c.colors[1])],
+      lg = v('league', c.league) || c.league;
+    const others = ED.def.clubs.filter((x) => x.id !== c.id && x.league === lg);
+    const w = [];
+    if (name && others.some((x) => x.name.toLowerCase() === name.toLowerCase()))
+      w.push('Another club of this league has the same name.');
+    if (short && others.some((x) => (x.short || '').toUpperCase() === short))
+      w.push(`Another club of this league is already "${short}".`);
+    if (nick && FM.W.nickClash(nick, cols)) w.push(`The nickname "${nick}" names a colour the kit does not have.`);
+    const [a, b] = [rgb(cols[0]), rgb(cols[1])];
+    if (Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 60) w.push('The two colours are too alike to tell apart.');
+    return w.length
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      : '';
+  };
+
   const homeView = () => {
     const s = status(),
       m = ED.def.meta;
@@ -345,6 +475,8 @@
       <div class="ng-label">Name of this world</div><input type="text" id="ed-wname" maxlength="40" value="${esc(m.name || '')}">
       <div class="ng-label">Author</div><input type="text" id="ed-wauthor" maxlength="40" value="${esc(m.author || '')}">
       <div class="ng-label">Description</div><input type="text" id="ed-wdesc" maxlength="120" value="${esc(m.description || '')}">
+      <div class="ng-names"><div style="flex:1"><div class="ng-label">Version</div><input type="text" id="ed-wver" maxlength="12" placeholder="1.0" value="${esc(m.version || '')}"></div><div style="flex:2"><div class="ng-label">Licence</div><input type="text" id="ed-wlic" maxlength="60" placeholder="e.g. CC BY-SA 4.0" value="${esc(m.license || '')}"></div></div>
+      <div class="ng-label">Credits and sources <span class="tiny dim">· who made it, where real data came from; who is responsible for what it says</span></div><input type="text" id="ed-wcred" maxlength="200" value="${esc(m.credits || '')}">
       <div class="small" style="margin-top:14px;color:${bad ? '#f87171' : '#c8ff3d'}">${bad ? `⚠️ ${bad} problem${bad > 1 ? 's' : ''} to fix` : '✅ Ready to use'} <span style="color:#9fb0c5">· ${s.changed} club${s.changed === 1 ? '' : 's'} changed${s.added ? `, ${s.added} added` : ''}${s.leaguesAdded ? ` · ${s.leaguesAdded} league${s.leaguesAdded === 1 ? '' : 's'} added` : ''}${s.leaguesChanged ? ` · ${s.leaguesChanged} league${s.leaguesChanged === 1 ? '' : 's'} changed` : ''}${(ED.def.removeClubs || []).length ? ` · ${ED.def.removeClubs.length} taken out` : ''}</span></div>
       ${
         bad
@@ -436,6 +568,7 @@
           '📜 History',
           `${ED.def.history.seasons.length} past season${ED.def.history.seasons.length === 1 ? '' : 's'}`,
         ],
+        ['changes', '📝 Changes made', changeSummary()],
       ]
         .map(
           ([v, t, s]) =>
@@ -455,6 +588,8 @@
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">${(ED.def.players || []).length} player${(ED.def.players || []).length === 1 ? '' : 's'} made so far. Open a club, then Players.</div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">⬇️ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">🆓 Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
+      <div class="ng-label">Find</div><div class="ng-find"><input type="search" id="ed-hq" placeholder="Find a club, league or nation" value="${esc(ED.hq || '')}" autocomplete="off"></div>
+      <div id="ed-hres">${homeFind(ED.hq || '')}</div>
       <div class="ng-label">Leagues — tap one to edit its clubs</div>
       ${nations
         .map((nat) => {
@@ -1481,6 +1616,7 @@
     return `<div class="h1" style="margin-top:2vh">${crestDot(c)} ${esc(c.name)}</div><div class="tag">${added ? 'A club you added.' : "One of the game's clubs: your changes replace what it has."}</div>
       ${errBox()}
       <div class="ng-label">Name</div><input type="text" id="ed-name" maxlength="40" value="${esc(c.name)}">
+      <div id="ed-warn">${clubWarn(c)}</div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name (up to 5)</div><input type="text" id="ed-short" maxlength="5" value="${esc(c.short || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Nickname</div><input type="text" id="ed-nick" maxlength="24" value="${esc(c.nick || '')}"></div></div>
       <div class="ng-label">City</div><input type="text" id="ed-city" maxlength="32" value="${esc(c.city || '')}">
       <div class="ng-label">Colours</div>
@@ -3399,6 +3535,7 @@
       intl: intlView,
       seasonleague: seasonLeagueView,
       newleague: newLeagueView,
+      changes: changesView,
     };
     const body = (views[ED.view] || homeView)();
     app.innerHTML = `<div class="title">${body}</div>`;
@@ -3411,6 +3548,18 @@
     bind('ed-wname', (v) => (ED.def.meta.name = v));
     bind('ed-wauthor', (v) => (ED.def.meta.author = v));
     bind('ed-wdesc', (v) => (ED.def.meta.description = v));
+    bind('ed-wver', (v) => (ED.def.meta.version = v));
+    bind('ed-wlic', (v) => (ED.def.meta.license = v));
+    bind('ed-wcred', (v) => (ED.def.meta.credits = v));
+    bind('ed-hq', (v) => {
+      ED.hq = v;
+      $('#ed-hres').innerHTML = homeFind(v);
+    });
+    if (ED.view === 'club') {
+      const cur = ED.def.clubs.find((x) => x.id === ED.cid);
+      for (const id of ['name', 'short', 'nick', 'c1', 'c2', 'league'])
+        bind('ed-' + id, () => cur && ($('#ed-warn').innerHTML = clubWarn(cur)));
+    }
     bind('ed-q', (v) => {
       ED.q = v;
       const q = v.trim().toLowerCase();

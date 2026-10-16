@@ -162,6 +162,29 @@
     accepts: '.json,application/json',
     help: 'a .json file exported by the game tools (node tools/worlddef.mjs --export)',
     detect: (files) => files.length === 1 && /^\s*\{/.test(files[0].text) && files[0].text.includes(WD.FORMAT),
-    parse: (files) => ({ def: WD.parse(files[0].text), notes: [] }),
+    parse: (files) => {
+      const def = WD.parse(files[0].text),
+        m = def.meta || {},
+        notes = [];
+      // a pack made with another version of the game: older ones may lack what newer rules need, newer ones may use what this one does not know
+      if (m.gameVersion && m.gameVersion !== FM.VERSION) {
+        const num = (v) =>
+          String(v)
+            .split('.')
+            .map((x) => +x || 0);
+        const [a, b] = [num(m.gameVersion), num(FM.VERSION)];
+        const newer = a.some(
+          (x, i) => x !== b[i] && (x > b[i] ? true : false) && a.slice(0, i).every((y, j) => y === b[j]),
+        );
+        notes.push(
+          newer
+            ? `Made with a newer version of the game (${m.gameVersion}; this is ${FM.VERSION}): some of it may not load as intended`
+            : `Made with an older version of the game (${m.gameVersion}; this is ${FM.VERSION}): check it plays as you expect`,
+        );
+      }
+      if (m.license) notes.push(`Licence: ${m.license}${m.credits ? ' · ' + m.credits : ''}`);
+      else if (m.credits) notes.push(`Credits: ${m.credits}`);
+      return { def, notes };
+    },
   });
 })();
