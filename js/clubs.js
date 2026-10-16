@@ -1452,17 +1452,17 @@
   ];
   FM.D.CLUBS_VN1 = [
     ['Binh Mai FC', 'VTL', 'Binh Mai', '#E30613', '#FFFFFF', 'youth', 52, 'Tuyen Cuong Arena', 22500],
-    ['Thep Binh Mai', 'HNI', 'Binh Mai', '#FFD100', '#1F3A93', 'oil', 50, 'Binh Mai Provincial Stadium', 22500],
+    ['Thép Binh Mai', 'HNI', 'Binh Mai', '#FFD100', '#1F3A93', 'oil', 50, 'Binh Mai Provincial Stadium', 22500],
     ['Bac Uong FC', 'CAH', 'Binh Mai', '#E30613', '#FFD100', 'oil', 50, 'Long Sa Stadium', 22500],
     ['Vinh Phat Athletic', 'NDF', 'Vinh Phat', '#FFFFFF', '#003DA5', 'historic', 49, 'Hai Dai Stadium', 30000],
     ['Thai Mai Athletic', 'SLN', 'Thai Mai', '#FFD100', '#000000', 'historic', 48, 'Yen Khe Arena', 12000],
     ['Thai Lam FC', 'HGL', 'Thai Lam', '#0A8F3C', '#FFFFFF', 'youth', 47, 'Hai Truong Arena', 12000],
     ['Ha Thuy FC', 'BBD', 'Ha Thuy', '#0066CC', '#FFFFFF', 'selling', 46, 'Thai Hien Arena', 18250],
     ['Song Vinh Truong', 'HPH', 'Vinh Truong', '#E30613', '#FFFFFF', 'historic', 45, 'Bac Hien Sports Park', 28000],
-    ['Thep Tuyen Lam', 'THH', 'Tuyen Lam', '#E30613', '#FFD100', 'fan', 44, 'Tuyen Lam Provincial Stadium', 14000],
+    ['Thép Tuyen Lam', 'THH', 'Tuyen Lam', '#E30613', '#FFD100', 'fan', 44, 'Tuyen Lam Provincial Stadium', 14000],
     ['Lam Khe City', 'HTH', 'Lam Khe', '#FFD100', '#E30613', 'fan', 43, 'Vinh Dai Arena', 28000],
     ['Long Loc City', 'HCM', 'Long Loc', '#E30613', '#FFD100', 'fan', 43, 'Thai Thinh Arena', 25000],
-    ['Thep Hai Dai', 'DAN', 'Hai Dai', '#F26522', '#FFFFFF', 'fan', 42, 'Hai Dai Provincial Stadium', 20000],
+    ['Thép Hai Dai', 'DAN', 'Hai Dai', '#F26522', '#FFFFFF', 'fan', 42, 'Hai Dai Provincial Stadium', 20000],
     ['Bac Loc United', 'BDH', 'Bac Loc', '#FFD100', '#E30613', 'fan', 41, 'Bac Loc Provincial Stadium', 20000],
     ['Song Hai Truong', 'KHH', 'Hai Truong', '#1E90FF', '#FFFFFF', 'fan', 40, 'Son Hien Arena', 20000],
   ];

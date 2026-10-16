@@ -38,7 +38,7 @@
       slots = D.FORMATIONS[t.formation] || [];
     const { xi } = W.pickXI(opp.id, t);
     const name = (p) =>
-      `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p === key ? ' <span title="Danger man">★</span>' : ''}`;
+      `${C.pname(p, (p.no ? p.no + ' ' : '') + FM.W.shirt(p))}${p === key ? ' <span title="Danger man">★</span>' : ''}`;
     // The lines are the formation's own (3-4-2-1 is three, four, two and one, wing-backs among the four), not the
     // positions' groups: slots from the back of the pitch forward, cut by the numbers in its name
     const nums = String(t.formation).split('-').map(Number);
@@ -73,7 +73,7 @@
       : [row('DEF', line('DEF')), row('MID', line('MID')), row('ATT', line('ATT'))];
     return `<div class="card"><div class="row"><div class="h3 grow">Predicted XI</div><span class="tiny dim">${esc(t.formation)}</span></div>
       ${row('GK', line('GK'))}${lines.join('')}
-      ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
+      ${out.length ? `<div class="tiny dim" style="margin-top:8px">Missing: ${out.map((p) => esc(FM.W.shirt(p)) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>`;
   };
   const DANGER_POS = { ST: 1, W: 0.96, AM: 0.96, WM: 0.9, CM: 0.82, WB: 0.74, FB: 0.7, DM: 0.68, CB: 0.6, GK: 0.2 };
   MV.preview = function () {
@@ -135,10 +135,10 @@
           .filter(Boolean)
           .map(
             (p) =>
-              `${C.pname(p, (p.no ? p.no + ' ' : '') + p.ln)}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
+              `${C.pname(p, (p.no ? p.no + ' ' : '') + FM.W.shirt(p))}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
           )
           .join(' · ')}</div>
-        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, p.ln) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
+        ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, FM.W.shirt(p)) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
       ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
       ${MV.oppCard(fx)}
@@ -831,7 +831,7 @@
         [cx, cy] = px(d.x, d.y);
       x.font = '700 11px Inter, sans-serif';
       x.textAlign = 'center';
-      const t = carrier.ln;
+      const t = FM.W.shirt(carrier);
       const tw = x.measureText(t).width + 10;
       x.fillStyle = 'rgba(0,0,0,.6)';
       x.fillRect(cx - tw / 2, cy - r - 20, tw, 15);
@@ -954,7 +954,7 @@
       <div class="row"><div class="grow h3">Inverted full-backs</div><button class="btn sm ${T.invFB ? 'pri' : ''}" data-act="mInv">${T.invFB ? 'On' : 'Off'}</button></div>
       <div class="small muted" style="margin-top:12px">Energy: ${MV.m
         .onPitch(sd)
-        .map(({ p }) => `${esc(p.ln)} ${Math.round(sd.st[p.id])}%`)
+        .map(({ p }) => `${esc(FM.W.shirt(p))} ${Math.round(sd.st[p.id])}%`)
         .join(' · ')}</div>
       <button class="btn pri block" style="margin-top:14px" data-act="mResume">Resume</button>`;
     if (document.querySelector('.sheet-wrap')) UI.refreshSheet(html);

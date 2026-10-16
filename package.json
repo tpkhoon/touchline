@@ -47,6 +47,7 @@
     "movement": "node --max-old-space-size=4096 tools/metrica-movement.mjs",
     "bench": "node tools/bench.mjs",
     "histcheck": "node tools/histcheck.mjs",
+    "namecheck": "node tools/namecheck.mjs",
     "carries": "node --max-old-space-size=6144 tools/wyscout-carries.mjs",
     "carries:tracking": "node --max-old-space-size=4096 tools/tracking-carries.mjs",
     "events:pff": "node --max-old-space-size=4096 tools/pff-events.mjs",

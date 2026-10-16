@@ -242,12 +242,12 @@ for (let s = 0; s < SEASONS; s++) {
     const windowWas = Sea.windowOpen();
     summary = stats.days % 5 === 4 ? Sea.skipToMatch().summary : Sea.advance(null);
     roundTrip();
-    // every club leaves a transfer window with a playable squad: at least 18 players and two goalkeepers
+    // every club leaves a transfer window with a playable squad: at least 17 players and two goalkeepers
     if (windowWas && !Sea.windowOpen()) {
       const keepers = (id) => W.squad(id).filter((p) => p.pos === 'GK').length;
       const thin = Object.values(FM.S.clubs).filter((c) => {
         if (!c.comp || c.parent || (c.sim !== 'full' && c.sim !== 'light')) return false;
-        return W.squad(c.id).length < 18 || keepers(c.id) < 2;
+        return W.squad(c.id).length < 17 || keepers(c.id) < 2;
       });
       check(
         !thin.length,

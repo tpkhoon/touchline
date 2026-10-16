@@ -8,8 +8,13 @@
   // ---------------- Player model ----------------
   W.age = (p) => FM.S.year - p.born;
   // (a one-word name, like a Brazilian footballer's, has no first name: his single name is in ln)
-  W.name = (p) => (p.fn ? `${p.fn} ${p.ln}` : p.ln);
-  W.short = (p) => (p.fn ? `${p.fn[0]}. ${p.ln}` : p.ln);
+  // Names are stored given name first (fn) and family name (ln); a nation that writes the family name first shows it so
+  // (Kim Min-jae, Wu Lei, Nguyễn Quang Hải), a Vietnamese player is known by his given names, and his shirt carries the last
+  const famFirst = (p) => !!p.fn && !p.heritage && !!FM.D.FAMILY_FIRST && FM.D.FAMILY_FIRST.includes(p.nat);
+  W.name = (p) => (famFirst(p) ? `${p.ln} ${p.fn}` : p.fn ? `${p.fn} ${p.ln}` : p.ln);
+  W.short = (p) =>
+    famFirst(p) ? (p.nat === 'VIE' ? p.fn : `${p.ln} ${p.fn[0]}.`) : p.fn ? `${p.fn[0]}. ${p.ln}` : p.ln;
+  W.shirt = (p) => (famFirst(p) && p.nat === 'VIE' ? p.fn.split(' ').pop() : p.ln);
 
   W.calcCA = function (p, pos = p.pos) {
     // a natural wing-back is judged on wing-back weights; anyone else in a wing-back slot as a full-back (the slot
@@ -531,11 +536,41 @@
   };
   // A name for a player of this nation and heritage: a first name from his heritage's pool, a surname from it (most of
   // the time) or from the nation's (families that have settled)
-  W.rollName = function (nat, heritage) {
-    const N = D.NATIONS[nat];
+  // A surname of the nation: where a few names cover much of the country (D.SURNAME_WEIGHTS) they come up as often as they do
+  // in life, the rest of the list sharing what is left
+  W.pickSurname = function (nat) {
+    const N = D.NATIONS[nat],
+      w = D.SURNAME_WEIGHTS && D.SURNAME_WEIGHTS[nat];
+    if (!w) return U.pick(N.ln);
+    const names = Object.keys(w),
+      total = names.reduce((s, k) => s + w[k], 0);
+    let r = Math.random() * 100;
+    if (r < total) {
+      for (const k of names) if ((r -= w[k]) < 0) return k;
+    }
+    return U.pick(N.ln.filter((x) => !(x in w)));
+  };
+  // A first name: the nation's list, with the names of his generation favoured where the nation has them (born after 1998
+  // or before 1992)
+  W.pickGiven = function (nat, born) {
+    const N = D.NATIONS[nat],
+      e = D.GIVEN_ERA && D.GIVEN_ERA[nat];
+    if (e && born != null && Math.random() < 0.6) {
+      if (born >= 1998) return U.pick(e.young);
+      if (born <= 1992) return U.pick(e.old);
+    }
+    return U.pick(N.fn);
+  };
+  W.rollName = function (nat, heritage, born) {
     const pool = heritage && D.heritagePool ? D.heritagePool(heritage, Math.random) : null;
-    if (pool) return { fn: U.pick(pool.fn), ln: Math.random() < 0.7 ? U.pick(pool.ln) : U.pick(N.ln) };
-    return { fn: U.pick(N.fn), ln: U.pick(N.ln) };
+    if (pool) return { fn: U.pick(pool.fn), ln: Math.random() < 0.7 ? U.pick(pool.ln) : W.pickSurname(nat) };
+    const com = D.COMMUNITIES && D.COMMUNITIES[nat];
+    if (com) {
+      let r = Math.random() * com.reduce((s, c) => s + c[0], 0);
+      const c = (com.find((x) => (r -= x[0]) < 0) || com[0])[1];
+      return { fn: U.pick(c.fn), ln: U.pick(c.ln) };
+    }
+    return { fn: W.pickGiven(nat, born), ln: W.pickSurname(nat) };
   };
   // A second nationality he is eligible for through his family (most players of a heritage have one): the nation his
   // name's culture belongs to, never his own. null when there is none.
@@ -616,7 +651,7 @@
     const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
     if (pol) nat = FM.S.clubs[clubId].nat;
     const heritage = pol && pol.heritage ? pol.heritage : W.pickHeritage(nat),
-      nm = W.rollName(nat, heritage);
+      nm = W.rollName(nat, heritage, FM.S.year - age);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(
       (k) => (hid[k] = Math.round(U.clamp(U.gauss(11, 4), 1, 20))),
@@ -661,13 +696,24 @@
     // Unique names (and never a famous real player). Retry combinations, then fall back to a second surname.
     let tries = 0;
     while ((REAL_NAMES.has(`${p.fn} ${p.ln}`) || W.nameTaken(`${p.fn} ${p.ln}`)) && tries++ < 60) {
-      const again = W.rollName(nat, heritage);
+      const again = W.rollName(nat, heritage, FM.S.year - age);
       p.fn = again.fn;
       p.ln = again.ln;
     }
     while (REAL_NAMES.has(`${p.fn} ${p.ln}`) || W.nameTaken(`${p.fn} ${p.ln}`)) {
       const second = U.pick(N.ln.filter((x) => x !== p.ln));
       p.ln = D.TWO_SURNAMES.includes(nat) ? `${p.ln.split(' ')[0]} ${second}` : `${p.ln.split('-')[0]}-${second}`;
+    }
+    // no more than two of one surname in a squad, unless it is a very common one in the nation (Kim, Nguyễn)
+    if (clubId && p.fn && !heritage) {
+      const common = (D.SURNAME_WEIGHTS && D.SURNAME_WEIGHTS[nat]) || {};
+      for (let k = 0; k < 8 && !(p.ln in common) && W.squad(clubId).filter((q) => q.ln === p.ln).length >= 2; k++) {
+        const again = W.rollName(nat, heritage, FM.S.year - age);
+        if (!REAL_NAMES.has(`${again.fn} ${again.ln}`) && !W.nameTaken(`${again.fn} ${again.ln}`)) {
+          p.fn = again.fn;
+          p.ln = again.ln;
+        }
+      }
     }
     W.claimName(`${p.fn} ${p.ln}`);
     if (heritage) {

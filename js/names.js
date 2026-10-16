@@ -573,6 +573,200 @@
   // The nation's own culture widens its first-name and surname pools (no duplicates); nations added later (js/nations.js)
   // call it again
   const dedupe = (a) => [...new Set(a)];
+  // Real-life shares of the commonest surnames (percent of people), for the nations where a few names cover a large part of
+  // the country: the rest of the list shares what is left. A flat spread would make Kim, Lee and Park as rare as Gu.
+  D.SURNAME_WEIGHTS = {
+    KOR: {
+      Kim: 21.5,
+      Lee: 14.7,
+      Park: 8.5,
+      Choi: 4.7,
+      Jung: 4.4,
+      Kang: 2.4,
+      Cho: 2.1,
+      Yoon: 2.1,
+      Jang: 2.1,
+      Lim: 1.8,
+      Han: 1.6,
+      Oh: 1.5,
+      Shin: 1.3,
+      Seo: 1.3,
+      Kwon: 1.2,
+    },
+    VIE: {
+      Nguyễn: 38,
+      Trần: 11,
+      Lê: 9.5,
+      Phạm: 7,
+      Hoàng: 4.8,
+      Huỳnh: 4.8,
+      Phan: 4.5,
+      Vũ: 3.9,
+      Võ: 3.9,
+      Đặng: 2.1,
+      Bùi: 2,
+      Đỗ: 1.4,
+      Hồ: 1.3,
+      Ngô: 1.3,
+      Dương: 1,
+      Lý: 0.5,
+    },
+    CHN: {
+      Wang: 7.4,
+      Li: 7.2,
+      Zhang: 6.8,
+      Liu: 5.4,
+      Chen: 4.5,
+      Yang: 3.1,
+      Huang: 2.4,
+      Zhao: 2.1,
+      Wu: 2,
+      Zhou: 1.9,
+      Xu: 1.5,
+      Sun: 1.4,
+      Ma: 1.3,
+      Zhu: 1.3,
+      Hu: 1.1,
+      Guo: 1.1,
+      He: 1,
+      Lin: 1,
+      Gao: 1,
+      Luo: 0.9,
+    },
+  };
+  // Nations whose names are written family name first (Kim Min-jae, Wu Lei, Nguyễn Quang Hải)
+  D.FAMILY_FIRST = ['KOR', 'CHN', 'VIE'];
+  // Vietnamese words with their accents (the lists are written without)
+  const VI =
+    `Hai:Hải Van:Văn Hau:Hậu Cong:Công Phuong:Phương Tien:Tiến Duc:Đức Chinh:Chính Hoang:Hoàng Vuong:Vương Tuan:Tuấn
+    Hung:Hùng Dung:Dũng Son:Sơn Hieu:Hiếu Khanh:Khánh Binh:Bình Dat:Đạt Phuc:Phúc Thang:Thắng Tri:Trí Viet:Việt Bao:Bảo Kien:Kiên
+    Loc:Lộc Nghia:Nghĩa Quoc:Quốc Tai:Tài Thinh:Thịnh Hoa:Hòa Huynh:Huỳnh Lam:Lâm Phat:Phát Quan:Quân Tung:Tùng Hoai:Hoài Nhan:Nhân
+    Thien:Thiện Nguyen:Nguyễn Tran:Trần Le:Lê Pham:Phạm Vu:Vũ Vo:Võ Dang:Đặng Bui:Bùi Do:Đỗ Ho:Hồ Ngo:Ngô Duong:Dương Ly:Lý
+    Dinh:Đinh Doan:Đoàn Trinh:Trịnh Truong:Trương Luong:Lương Ta:Tạ Dao:Đào Ha:Hà Lu:Lữ Tong:Tống Chau:Châu Quach:Quách Thai:Thái
+    Kieu:Kiều Phung:Phùng Han:Hàn To:Tô Tang:Tăng Lac:Lạc Diep:Diệp Trieu:Triệu Banh:Bành`
+      .trim()
+      .split(/\s+/)
+      .map((x) => x.split(':'));
+  const VI_MAP = Object.fromEntries(VI);
+  // The first and last names of the other nations in a community (Singapore, Malaysia): a player is of one community and both
+  // his names come from it, so a Malay first name never sits with a Chinese surname
+  const SG_CHINESE =
+    'Tan Lim Lee Ng Goh Teo Chua Koh Ong Wong Chong Yeo Ho Sim Chan Lau Foo Quek Sng Ang Tay Chew Liew Yap Loh'.split(
+      ' ',
+    );
+  const SG_INDIAN = 'Pillai Nair Krishnan Singh Kumar Menon Sharma Rajan Naidu Subramaniam Govindasamy Murugan'.split(
+    ' ',
+  );
+  const SG_INDIAN_FN =
+    'Prakash Arun Vikram Ravi Suresh Kiran Dinesh Rahul Raj Nikhil Karthik Ashwin Sanjay Deepak'.split(' ');
+  const SG_EURASIAN_FN = 'Ryan Kieran Daniel Joshua Marcus Aaron Brandon Darren Gabriel Nathan Ethan Isaac'.split(' ');
+  // The Gulf: its own first names and tribal surnames (Al-Otaibi, Al-Qahtani; not the Iraqi tribes of the Mashriq list)
+  const GULF_FN =
+    'Abdullah Mohammed Fahad Salem Salman Nasser Saud Faisal Khalid Turki Sultan Abdulaziz Yousef Ali Hamad Majed Mansour Meshal Naif Rashed Saleh Ahmed Omar Hassan Ibrahim Abdulrahman Bandar Mishaal Talal Waleed Ziyad Rayan Hazza'.split(
+      ' ',
+    );
+  const GULF_LN = {
+    KSA: 'Al-Otaibi Al-Qahtani Al-Dosari Al-Ghamdi Al-Harbi Al-Shehri Al-Zahrani Al-Mutairi Al-Anazi Al-Subaie Al-Shammari Al-Juhani Al-Salem Al-Rashid Al-Bishi Al-Malki Al-Shahrani Al-Hamdan Al-Faraj Al-Abed Al-Dawsari Al-Hawsawi Al-Ruwaili Al-Khaibari Al-Muwallad Al-Burayk Al-Yami'.split(
+      ' ',
+    ),
+    UAE: 'Al-Mazrouei Al-Nuaimi Al-Shamsi Al-Ketbi Al-Mansoori Al-Kaabi Al-Dhaheri Al-Marri Al-Hammadi Al-Suwaidi Al-Zaabi Al-Ali Al-Blooshi Al-Hosani Al-Ahbabi Al-Muhairi Al-Falasi Al-Qubaisi Al-Rumaithi'.split(
+      ' ',
+    ),
+    QAT: 'Al-Marri Al-Kuwari Al-Thani Al-Sulaiti Al-Naimi Al-Hajri Al-Mohannadi Al-Kubaisi Al-Ansari Al-Muhannadi Al-Dosari Al-Mannai Al-Shammari Al-Obaidly Al-Haidos'.split(
+      ' ',
+    ),
+  };
+  // First names by the decade a player was born (popular names change): the ones given around 2000–2010 and the ones given
+  // around 1980–1990, so a youngster and a veteran of the same nation do not share a list
+  D.GIVEN_ERA = {
+    ENG: {
+      young:
+        'Harry Oliver Leo Jack Charlie Archie Alfie Noah Freddie Jude Reece Mason Callum Tyler Jayden Ethan Mason Kai Louis Theo Rhys Jacob Finley Bukayo Phil'.split(
+          ' ',
+        ),
+      old: 'Daniel Matthew Lee Michael Chris Gary Adam Craig Stuart Jamie Wayne Ashley Kieran Scott Danny Darren Sean Marc Jason Paul Steven Ben Joe Gareth'.split(
+        ' ',
+      ),
+    },
+    ESP: {
+      young:
+        'Pablo Hugo Mateo Martín Lucas Álvaro Pau Unai Izan Marc Nico Dani Yeremi Pedri Gavi Ansu Ferran Bryan Iker Aitor Eric'.split(
+          ' ',
+        ),
+      old: 'David Sergio Raúl Carlos Jorge Javier Alberto Rubén Fernando Iván Pedro Cristian Miguel Roberto Jesús Víctor Andrés Manuel Antonio'.split(
+        ' ',
+      ),
+    },
+    FRA: {
+      young:
+        'Lucas Hugo Enzo Nathan Théo Mathis Kylian Eduardo Aurélien Ethan Tom Noah Maxence Rayan Ismaël Warren Matteo Evan'.split(
+          ' ',
+        ),
+      old: 'Nicolas Julien Kevin Sébastien Mathieu Florian Jérémy Cédric Anthony Maxime Antoine Romain Benoît Yohan Damien Rémy Samuel'.split(
+        ' ',
+      ),
+    },
+    GER: {
+      young:
+        'Noah Leon Finn Paul Jonas Luca Felix Elias Ben Jamal Florian Kai Tim Nico Maximilian Niklas Lennart Emre Aleksandar'.split(
+          ' ',
+        ),
+      old: 'Thomas Michael Stefan Andreas Christian Sebastian Daniel Markus Matthias Tobias Dennis Patrick Martin Marco Philipp Benedikt Sven'.split(
+        ' ',
+      ),
+    },
+    ITA: {
+      young:
+        'Leonardo Francesco Lorenzo Matteo Tommaso Riccardo Gabriele Alessandro Federico Edoardo Samuele Nicolò Giacomo Simone Mattia'.split(
+          ' ',
+        ),
+      old: 'Marco Luca Andrea Davide Daniele Fabio Massimo Giuseppe Antonio Stefano Roberto Alessio Emanuele Claudio Paolo Simone'.split(
+        ' ',
+      ),
+    },
+  };
+  D.tuneNames = function () {
+    const N = D.NATIONS;
+    // Vietnamese names keep their accents
+    if (N.VIE) {
+      for (const k of ['fn', 'ln']) N.VIE[k] = dedupe(N.VIE[k].map((x) => VI_MAP[x] || x));
+      const vp = D.NAME_POOLS.vietnamese;
+      if (vp) for (const k of ['fn', 'ln']) vp[k] = dedupe(vp[k].map((x) => VI_MAP[x] || x));
+    }
+    // The Gulf nations: their own names, written Al-X
+    for (const nat of ['KSA', 'UAE', 'QAT']) {
+      if (!N[nat]) continue;
+      N[nat].fn = GULF_FN.slice();
+      N[nat].ln = GULF_LN[nat].slice();
+    }
+    // Communities: Singapore and Malaysia
+    const malay = D.NAME_POOLS.malay,
+      chinese = D.NAME_POOLS.chinese;
+    if (malay && chinese) {
+      const community = (fn, ln) => ({ fn, ln });
+      const notMalayFn = ['Dion', 'Brendan', 'Stuart', 'Matthew', 'Junior', "La'Vere"],
+        notMalayLn = ['Lim', 'Tan', 'Wong', 'Chong', 'Raj', 'Kumar', 'Singh'];
+      const malayC = community(
+        malay.fn.filter((x) => !notMalayFn.includes(x)),
+        malay.ln.filter((x) => !notMalayLn.includes(x)),
+      );
+      const chineseC = (ln) => community(chinese.fn, ln);
+      D.COMMUNITIES = {
+        SGP: [
+          [45, malayC],
+          [40, chineseC(SG_CHINESE.slice(0, 22))],
+          [12, community(SG_INDIAN_FN, SG_INDIAN)],
+          [3, community(SG_EURASIAN_FN, ['Pereira', 'De Souza', 'Rozario', 'Oliveiro', 'Shepherdson'])],
+        ],
+        MYS: [
+          [64, malayC],
+          [20, chineseC(SG_CHINESE)],
+          [10, community(SG_INDIAN_FN, SG_INDIAN)],
+          [6, malayC],
+        ],
+      };
+    }
+  };
   D.widenNames = function () {
     for (const [nat, N] of Object.entries(D.NATIONS)) {
       const own = D.NAME_POOLS[D.NATIVE_POOL[nat]],
@@ -581,6 +775,7 @@
       N.fn = dedupe(N.fn.concat(own.fn, ...extra.map((e) => e.fn.slice(0, 40))));
       N.ln = dedupe(N.ln.concat(own.ln, ...extra.map((e) => e.ln.slice(0, 60))));
     }
+    D.tuneNames();
   };
   D.widenNames();
   // Pools of a heritage (a region may draw on several cultures); the last pool's key is kept (D.lastPoolKey) so a
