@@ -2,6 +2,9 @@
 // shares, the signing rules, the escaping, the real-stats converter. The deploy runs these before it publishes (npm run test:unit);
 // the long simulation tests (npm run test:quick, test:suite, test:long) stay for before a release.
 //   node tools/unit.mjs
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadSim } from './harness.mjs';
@@ -182,7 +185,47 @@ try {
   fails.push('tools/realstats.mjs --test failed: ' + String(e.stdout || e.message).slice(0, 200));
 }
 
+// the private inbox: what the game posts is kept and grouped by version and area; nonsense is refused
+{
+  const { startInbox, readInbox, groupInbox } = await import('./inbox.mjs');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'touchline-inbox-'));
+  const server = await startInbox({ port: 0, dir, perHour: 4 });
+  const url = `http://127.0.0.1:${server.address().port}/`;
+  const post = (body) =>
+    fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const tag = { version: '0.5.0', build: 147, platform: 'web', saveFormat: 7, area: 'Match day', at: 1 };
+  eq((await post({ kind: 'feedback', note: 'More tactics', ...tag })).status, 200, 'the inbox takes feedback');
+  eq(
+    (await post({ kind: 'problem', note: 'It froze', ...tag, file: Buffer.from('a save').toString('base64') })).status,
+    200,
+    'the inbox takes a problem report',
+  );
+  eq((await post({ kind: 'spam', note: 'x' })).status, 400, 'the inbox refuses an unknown kind');
+  const rows = readInbox(dir);
+  eq(rows.length, 2, 'both items are kept');
+  ok(
+    rows.some((r) => r.kind === 'problem' && r.hasFile),
+    'a problem report keeps its file',
+  );
+  eq(
+    groupInbox(rows).map((g) => [g.version, g.area, g.problems, g.feedback]),
+    [['0.5.0', 'Match day', 1, 1]],
+    'items are grouped by version and area',
+  );
+  await post({ kind: 'feedback', note: 'a', ...tag });
+  await post({ kind: 'feedback', note: 'b', ...tag });
+  eq(
+    (await post({ kind: 'feedback', note: 'c', ...tag })).status,
+    429,
+    'the inbox limits what one address can send in an hour',
+  );
+  server.closeAllConnections();
+  await new Promise((r) => server.close(r));
+  fs.rmSync(dir, { recursive: true, force: true });
+}
+
 console.log(
   fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
 );
-process.exit(fails.length ? 1 : 0);
+// (the exit code is set, not forced: ending the process with a socket still closing crashes Node on Windows)
+process.exitCode = fails.length ? 1 : 0;

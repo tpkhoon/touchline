@@ -1,0 +1,12 @@
+{
+  "known": [
+    "club * | span “…” is clipped away by div.small.dim “…”",
+    "club * | span “…” is past the edge of the screen",
+    "club * | unreadable: span “…” (contrast N.N:N, colour rgb(N, N, N) on N,N,N)",
+    "tab intl | span.pill.acc “…” is clipped away by div.b.ellip “…”",
+    "tab squad | span “…” is clipped away by div.small.dim “…”",
+    "tab squad | span “…” is past the edge of the screen",
+    "tab squad › squad=list | span “…” is clipped away by div.small.dim “…”",
+    "tab squad › squad=list | span “…” is past the edge of the screen"
+  ]
+}

@@ -239,6 +239,9 @@
         <button data-t="sweep">Sweep</button>
         <button data-t="world">World</button>
         <button data-t="saves">Saves</button>
+        <button data-t="reports">Reports</button>
+        <button data-t="screens">Screens</button>
+        <button data-t="debug">Debug</button>
         <button data-t="names">Names</button>
         <button data-t="conv">Converter</button>
         <button data-t="imp">Importer</button>
@@ -252,7 +255,7 @@
     <main>
       <!-- RUN -->
       <section id="run" class="on">
-        <div class="grid" id="jobs"></div>
+        <div id="jobs"></div>
         <div class="card" style="margin-top: 14px" id="livecard" hidden>
           <div class="row">
             <h3 id="livetitle" style="margin: 0"></h3>
@@ -419,10 +422,13 @@
         </p>
         <div class="row">
           <button class="b" data-gate="quick">Quick gate</button
-          ><span class="tiny dim">docs, lint, format, converter, world definition, importer, 1-season suite</span>
+          ><span class="tiny dim"
+            >docs, lint, format, unit tests, converter, world definition, importer, 1-season suite</span
+          >
           <button class="b" data-gate="full" style="margin-left: 16px">Full gate</button
           ><span class="tiny dim"
-            >adds regression test, 3-season suite, calibration, wonderkids, transfers (about 30–40 minutes)</span
+            >adds regression test, 3-season suite, calibration, wonderkids, transfers, win chance, the save library, the
+            screen crawler and the screenshot comparison (about 40–50 minutes)</span
           >
         </div>
         <div class="two" style="margin-top: 14px">
@@ -684,12 +690,199 @@
           </div>
         </div>
         <div id="pf_view" style="margin-top: 12px"></div>
+        <h2>Speed in a browser, at phone speed</h2>
+        <p class="dim tiny" style="margin: 0 0 6px">
+          The seeded career played in Chromium with its CPU slowed down (4× is about a mid-range phone, 6× a budget
+          one): the full-time screen, a day with a match, skipping to the next match, changing tab, saving and the
+          memory held.
+        </p>
+        <div class="card">
+          <div class="row">
+            <label class="p"
+              >CPU slow-down <input id="pf_bcpu" type="number" value="4" min="1" max="20" style="width: 60px" />×</label
+            >
+            <button class="b" id="pf_brun">Run at phone speed</button>
+            <span class="tiny dim" id="pf_bmsg"></span>
+          </div>
+          <div id="pf_bperf" style="margin-top: 10px"></div>
+        </div>
         <h2>Speed across runs</h2>
         <p class="dim tiny" style="margin: 0 0 6px">
           From every suite run: a league day, the slowest 1% of days, a pre-season day, a season and the save size, so a
           slowdown shows up as a trend.
         </p>
         <div class="card" id="pf_perf"></div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="reports">
+        <p class="dim">
+          What players send. The game's Report a problem sends a save with the player's note, the version and the part
+          of the game it was about; Send feedback sends a note with the same tag. Drop a report file here (or open one
+          from the inbox) to read the note and diagnostics, run the world checks, and play the next days on a copy to
+          see whether the problem comes back. Once it is fixed, keep the report as a test case: the save library then
+          opens it with every release.
+        </p>
+        <div class="card">
+          <h3>Inspect a report</h3>
+          <div class="row" style="margin-top: 6px">
+            <input type="file" id="rfile" accept=".touchline,.json" />
+            <label class="p">Days to play <input id="rdays" type="number" value="7" min="1" max="30" /></label>
+            <button class="b" id="rgo">Inspect</button>
+            <span class="tiny dim" id="rmsg"></span>
+          </div>
+        </div>
+        <div id="rres" style="margin-top: 14px"></div>
+        <div class="two" style="margin-top: 14px">
+          <div class="card">
+            <h3>Inbox</h3>
+            <div class="tiny dim" id="inbox_state" style="margin-bottom: 8px"></div>
+            <div id="inbox_groups"></div>
+            <div id="inbox_list" style="margin-top: 8px"></div>
+          </div>
+          <div class="card">
+            <h3>Kept as test cases</h3>
+            <div class="tiny dim" style="margin-bottom: 8px">
+              tests/saves has one save from each release, tests/reports the reports that were turned into a fix.
+            </div>
+            <div id="lib_list"></div>
+            <div class="row" style="margin-top: 10px">
+              <button class="b ghost" id="lib_run">Run the save library</button
+              ><span class="tiny dim" id="lib_msg"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREENS -->
+      <section id="screens">
+        <p class="dim">
+          The game's screens in a real browser (Chrome or Edge, driven by Playwright). The crawler opens everything and
+          looks for broken text, errors, text that does not fit and text that cannot be read; the comparison shoots 26
+          key screens and marks the ones that look different from the reference pictures; the store screenshots are made
+          the same way at the app stores' sizes.
+        </p>
+        <div class="card">
+          <div class="row">
+            <button class="b" data-sj="crawl">Crawl the screens</button>
+            <button class="b ghost" data-sj="crawlstress">Crawl with longer words</button>
+            <button class="b" data-sj="visual">Compare with the references</button>
+            <button class="b ghost" data-sj="storeshots">Make the store screenshots</button>
+            <span class="tiny dim" id="sc_msg"></span>
+          </div>
+          <div class="tiny dim" id="sc_env" style="margin-top: 6px"></div>
+        </div>
+        <h2>Comparison with the references</h2>
+        <div id="sc_visual"></div>
+        <h2>Crawler</h2>
+        <div id="sc_crawl"></div>
+        <h2>Store screenshots</h2>
+        <div id="sc_store"></div>
+      </section>
+
+      <!-- DEBUG -->
+      <section id="debug">
+        <p class="dim">
+          For finding a fault: the commit that changed a measure, the first day a seeded world goes wrong, the code the
+          tests never reach, tests that do not give the same answer twice, and the translation report.
+        </p>
+        <div class="card">
+          <h3>Find the change that caused it</h3>
+          <div class="tiny dim" style="margin-bottom: 8px">
+            Tests the commits between a good one and a bad one by halving, in a separate checkout (your files are not
+            touched), and names the first commit where the job failed or the measure moved.
+          </div>
+          <div class="row">
+            <label class="p"
+              >Job
+              <select id="bi_job"></select
+            ></label>
+            <label class="p"
+              >Measure
+              <input
+                id="bi_measure"
+                list="bi_measures"
+                placeholder="(or leave empty: the job failing)"
+                style="width: 280px"
+              />
+              <datalist id="bi_measures"></datalist>
+            </label>
+            <label class="p"
+              >Moved by <input id="bi_delta" type="number" value="15" min="1" max="100" />% of its range</label
+            >
+          </div>
+          <div class="row" style="margin-top: 8px">
+            <label class="p"
+              >Last good
+              <select id="bi_good" style="max-width: 360px"></select
+            ></label>
+            <button class="b ghost" id="bi_base" title="the commit the pinned baseline of this job was run on">
+              Baseline's commit
+            </button>
+            <label class="p"
+              >First bad
+              <select id="bi_bad" style="max-width: 360px"></select
+            ></label>
+            <button class="b" id="bi_go">Find it</button>
+            <span class="tiny dim" id="bi_msg"></span>
+          </div>
+          <pre class="out" id="bi_out" hidden></pre>
+        </div>
+        <div class="card" style="margin-top: 14px">
+          <h3>Find the first bad day</h3>
+          <div class="tiny dim" style="margin-bottom: 8px">
+            Makes the world from a seed and plays it day by day, running the world checks after each, and stops on the
+            first day one fails. The world stays on that day, so the World tab shows the state at that point.
+          </div>
+          <div class="row">
+            <label class="p">Seed <input id="fb_seed" type="number" value="7" min="1" max="9999" /></label>
+            <label class="p">Up to <input id="fb_days" type="number" value="400" min="1" max="2000" /> days</label>
+            <label class="p"
+              >Check
+              <select id="fb_check">
+                <option value="any">any of them</option>
+              </select></label
+            >
+            <button class="b" id="fb_go">Replay</button>
+            <span class="tiny dim" id="fb_msg"></span>
+          </div>
+          <div id="fb_res" style="margin-top: 10px"></div>
+        </div>
+        <div class="two" style="margin-top: 14px">
+          <div class="card">
+            <h3>Code coverage</h3>
+            <div class="tiny dim" style="margin-bottom: 8px">
+              Which lines the unit tests, a season of the regression test and the screen crawler run.
+            </div>
+            <div class="row">
+              <button class="b" id="cv_run">Measure (about 10 minutes)</button
+              ><button class="b ghost" id="cv_run0">Simulation only</button><span class="tiny dim" id="cv_msg"></span>
+            </div>
+            <div id="cv_res" style="margin-top: 10px"></div>
+          </div>
+          <div class="card">
+            <h3>Tests that do not give the same answer twice</h3>
+            <div class="tiny dim" style="margin-bottom: 8px">
+              Runs on the very same code and settings: one passed and another failed (flaky), or a seeded measure came
+              out differently (not deterministic).
+            </div>
+            <div id="fl_res"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 14px">
+          <h3>Translations</h3>
+          <div class="tiny dim" style="margin-bottom: 8px">
+            Screen texts not yet in data/lang/en.json, missing and out-of-date translations per language, and texts that
+            run long. The crawler can put a language's words in the screens:
+            <code>node tools/crawl.mjs --lang de</code>.
+          </div>
+          <div class="row">
+            <button class="b" id="i1_run">Check</button
+            ><button class="b ghost" id="i1_untr">Show the texts not moved</button
+            ><span class="tiny dim" id="i1_msg"></span>
+          </div>
+          <div id="i1_res" style="margin-top: 10px"></div>
+        </div>
       </section>
 
       <!-- GAME -->
@@ -742,19 +935,32 @@
       async function loadJobs() {
         const r = await api('jobs');
         JOBS = r.jobs;
-        $('#jobs').innerHTML = Object.entries(JOBS)
-          .map(
-            ([id, j]) =>
-              `<div class="card"><h3>${esc(j.label)}</h3><div class="tiny dim" style="margin-bottom:8px">${esc(j.note)}</div><div class="row">${Object.entries(
-                j.params,
-              )
-                .map(
-                  ([k, p]) =>
-                    `<label class="p">${k}<input type="number" data-job="${id}" data-k="${k}" value="${p.default}" min="${p.min}" max="${p.max}" /></label>`,
-                )
-                .join('')}<span style="flex:1"></span><button class="b" data-run="${id}">Run</button></div></div>`,
+        const card = ([id, j]) =>
+          `<div class="card"><h3>${esc(j.label)}</h3><div class="tiny dim" style="margin-bottom:8px">${esc(j.note)}</div>${j.unavailable ? `<div class="tiny down" style="margin-bottom:6px">${esc(j.unavailable)}</div>` : ''}<div class="row">${Object.entries(
+            j.params,
           )
-          .join('');
+            .map(
+              ([k, p]) =>
+                `<label class="p">${k}<input type="number" data-job="${id}" data-k="${k}" value="${p.default}" min="${p.min}" max="${p.max}" /></label>`,
+            )
+            .join(
+              '',
+            )}<span style="flex:1"></span><button class="b" data-run="${id}" ${j.unavailable ? 'disabled' : ''}>Run</button></div></div>`;
+        $('#jobs').innerHTML =
+          r.groups
+            .map(([g, name, note]) => {
+              const mine = Object.entries(JOBS).filter(([, j]) => j.group === g);
+              return mine.length
+                ? `<h2 style="margin-top:18px">${esc(name)} <span class="tiny dim" style="font-weight:400">${esc(note)}</span></h2><div class="grid">${mine.map(card).join('')}</div>`
+                : '';
+            })
+            .join('') +
+          `<h2 style="margin-top:18px">On the command line <span class="tiny dim" style="font-weight:400">tools that need files or choices a button cannot give</span></h2><div class="card" style="padding:4px 8px"><table><tbody>${r.cli
+            .map(
+              ([n, c, d]) =>
+                `<tr><td><b>${esc(n)}</b></td><td><code>${esc(c)}</code></td><td class="dim">${esc(d)}</td></tr>`,
+            )
+            .join('')}</tbody></table></div>`;
         if (r.running.length && !live) watch(r.running[0].id, r.running[0].label);
       }
       $('#jobs').onclick = async (e) => {
@@ -1069,7 +1275,7 @@
           h += `<h3 style="margin-top:14px" class="${r.verdict === 'pass' ? 'ok' : 'no'}">${r.verdict === 'pass' ? 'Gate passed' : r.verdict === 'stopped' ? 'Stopped' : 'Gate failed: ' + r.bad + ' job' + (r.bad === 1 ? '' : 's')}</h3><table><thead><tr><th>Job</th><th>Result</th><th>Against the baseline</th></tr></thead><tbody>${r.items
             .map(
               (it) =>
-                `<tr><td>${esc(it.label)}</td><td class="${['ok', 'no baseline'].includes(it.verdict) ? 'ok' : it.verdict === 'skipped' ? 'dim' : 'no'}">${esc(it.verdict)}${it.summary ? ' · ' + esc(it.summary) : ''}</td><td>${(it.regressions || []).map((x) => `<div class="no">✗ ${esc(x.name)}: ${esc(x.text)}</div>`).join('')}${(it.improved || []).map((x) => `<div class="ok">✓ ${esc(x.name)}: ${esc(x.text)}</div>`).join('')}${(it.moved || []).map((x) => `<div class="dim">· ${esc(x.name)} moved ${esc(x.text)}</div>`).join('')}${it.note ? `<div class="tiny dim">${esc(it.note)}</div>` : ''}${it.baselineId ? '' : '<span class="dim tiny">no baseline pinned</span>'}</td></tr>`,
+                `<tr><td>${esc(it.label)}</td><td class="${['ok', 'no baseline'].includes(it.verdict) ? 'ok' : it.verdict === 'skipped' ? 'dim' : 'no'}">${esc(it.verdict)}${it.summary ? ' · ' + esc(it.summary) : ''}${it.flaky ? ' <span class="down tiny" title="this job has given different answers on the same code: see Debug">flaky</span>' : ''}</td><td>${(it.regressions || []).map((x) => `<div class="no">✗ ${esc(x.name)}: ${esc(x.text)}</div>`).join('')}${(it.improved || []).map((x) => `<div class="ok">✓ ${esc(x.name)}: ${esc(x.text)}</div>`).join('')}${(it.moved || []).map((x) => `<div class="dim">· ${esc(x.name)} moved ${esc(x.text)}</div>`).join('')}${it.note ? `<div class="tiny dim">${esc(it.note)}</div>` : ''}${it.baselineId ? '' : '<span class="dim tiny">no baseline pinned</span>'}</td></tr>`,
             )
             .join(
               '',
@@ -2758,6 +2964,502 @@
         if (l.length && !$('#pf_view').innerHTML) showProfile(l[0].file);
         drawPerf();
       });
+      // ---------- Tools added for after launch: reports, screens, debugging ----------
+      // (this block uses the helpers above: $, esc, api, wapi, b64, spark, fmtTime, fmtDur)
+      const nl2 = (t) => esc(t).replace(/\n/g, '<br>');
+      // start a job and wait for it: onTick(rec) while running, resolves to the finished record
+      async function runJob(job, params = {}, extra = {}) {
+        const rec = await api('run', { job, params, ...extra });
+        if (rec.error) throw new Error(rec.error);
+        for (;;) {
+          await new Promise((r) => setTimeout(r, 2000));
+          const cur = await api('job/' + rec.id);
+          if (!cur.running) return cur;
+        }
+      }
+      const sysmsg = (el, t, cls = 'dim') => {
+        el.textContent = t;
+        el.className = 'tiny ' + cls;
+      };
+
+      // ----- Reports -----
+      let RFILE = null; // { b64, name } of the report being looked at
+      const kindIcon = (k) => (k === 'problem' ? '🐞' : '💬');
+      async function showReport(b64text, name, days) {
+        const out = $('#rres');
+        out.innerHTML =
+          '<div class="card dim">Opening the report, running the checks and playing ' +
+          days +
+          ' days on a copy… (a minute or two)</div>';
+        sysmsg($('#rmsg'), 'working…');
+        try {
+          const o = await wapi('inspectReport', { b64: b64text, days });
+          RFILE = { b64: b64text, name };
+          const r = o.report;
+          const tag = r
+            ? `${esc(r.kind || 'report')} · version ${esc(r.version || '?')} · build ${esc(r.build ?? '?')} · ${esc(r.platform || '?')} · ${esc(r.area || 'no area')}${r.at ? ' · ' + fmtTime(r.at) : ''}`
+            : 'no report section: this is a plain save';
+          const failing = (o.checks || []).filter((c) => !c.ok);
+          const rp = o.repro || {};
+          const verdict = rp.error
+            ? `<span class="no">✗ A fault on day ${rp.days + 1} of the replay (${rp.error.year}, day ${rp.error.day}): ${esc(rp.error.message)}</span><pre class="out">${esc(rp.error.stack)}</pre>`
+            : rp.newFailures && rp.newFailures.length
+              ? `<span class="no">✗ ${rp.newFailures.length} world check${rp.newFailures.length === 1 ? '' : 's'} fail${rp.newFailures.length === 1 ? 's' : ''} that passed at the start</span>`
+              : `<span class="ok">✓ ${rp.days} days played on a copy with no fault and no new failed check</span>`;
+          out.innerHTML = `
+            <div class="card">
+              <div class="row"><h3 style="margin:0">${esc(name)}</h3><span class="tiny dim">${tag}</span><span style="flex:1"></span>
+                <button class="b ghost" id="rworld">Explore this world</button>
+                <button class="b" id="rkeep" title="Do this once the bug is fixed">Keep as a test case</button></div>
+              <div style="margin-top:10px"><div class="tiny dim">The player's note</div>
+                <div style="white-space:pre-wrap;background:#0b121b;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:4px">${r && r.note ? esc(r.note) : '<span class="dim">(no note)</span>'}</div></div>
+              ${r && r.diag ? `<details style="margin-top:8px"><summary>Diagnostics the game sent</summary><pre class="out">${esc(r.diag)}</pre></details>` : ''}
+            </div>
+            <div class="two" style="margin-top:14px">
+              <div class="card"><h3>The save</h3>
+                <div class="small">format ${o.version} → ${o.current}${o.upgradedFrom < o.current ? ` (upgraded from ${o.upgradedFrom})` : ' (current)'} · ${(o.bytes / 1048576).toFixed(1)} MB</div>
+                ${o.overview ? `<div class="tiny dim" style="margin-top:4px">${o.overview.year} · day ${o.overview.day}/${o.overview.days} · ${esc(o.overview.label || o.overview.today)} · ${o.overview.user ? 'managing ' + esc(o.overview.user.name) : 'out of work'} · ${o.overview.players.toLocaleString()} players</div>` : ''}
+                <h3 style="margin-top:12px">World checks <span class="${failing.length ? 'no' : 'ok'}">${(o.checks || []).length - failing.length} of ${(o.checks || []).length} pass</span></h3>
+                <table><tbody>${(o.checks || []).map((c) => `<tr><td style="width:24px">${c.ok ? '✅' : '❌'}</td><td>${esc(c.label)}${c.ok ? '' : `<div class="tiny dim">${(c.detail || []).map(esc).join('<br>')}</div>`}</td></tr>`).join('')}</tbody></table>
+                ${(o.scan || []).length ? `<h3 style="margin-top:12px">Things that should not be</h3><table><tbody>${o.scan.map((c) => `<tr><td>${esc(c.check)}</td><td class="no">${c.n}</td><td class="tiny dim">${c.examples.slice(0, 3).map(esc).join('<br>')}</td></tr>`).join('')}</tbody></table>` : ''}
+              </div>
+              <div class="card"><h3>Playing on to reproduce it</h3>
+                <div style="margin-top:4px">${verdict}</div>
+                ${(rp.newFailures || []).map((f) => `<div class="tiny" style="margin-top:6px"><b class="no">${esc(f.label)}</b> (from ${f.year}, day ${f.day})<br><span class="dim">${(f.detail || []).map(esc).join('<br>')}</span></div>`).join('')}
+                ${rp.played && rp.played.length ? `<div class="tiny dim" style="margin-top:10px">${rp.played.map((d) => `day ${d.day}: ${d.ms} ms`).join(' · ')}</div>` : ''}
+                <div class="tiny dim" style="margin-top:10px">This plays the player's own matches as quick results, on the main simulation (not the browser's worker). A fault here is the bug; a clean run does not clear it: look at the note and the World tab.</div>
+              </div>
+            </div>`;
+          $('#rworld').onclick = () => {
+            document.querySelector('[data-t="world"]').click();
+          };
+          $('#rkeep').onclick = async () => {
+            if (
+              !confirm(
+                'Keep this report as a test case? Do it once the bug is fixed: the save library will then open it with every release.',
+              )
+            )
+              return;
+            const k = await api('report/keep', { b64: RFILE.b64, name: RFILE.name });
+            if (k.error) return alert(k.error);
+            sysmsg($('#rmsg'), 'kept as ' + k.file, 'ok');
+            loadInbox();
+          };
+          sysmsg($('#rmsg'), 'done', 'ok');
+        } catch (e) {
+          out.innerHTML = `<div class="card no">${esc(e.message || e)}</div>`;
+          sysmsg($('#rmsg'), 'failed', 'no');
+        }
+      }
+      $('#rgo').onclick = async () => {
+        const f = $('#rfile').files[0];
+        if (!f) return;
+        showReport(await b64(f), f.name, +$('#rdays').value || 7);
+      };
+      let INBOX_FILTER = null;
+      async function loadInbox() {
+        const r = await api('inbox');
+        sysmsg(
+          $('#inbox_state'),
+          r.listening
+            ? 'Listening on http://127.0.0.1:5191/ (put an https address in front of it and set UI.INBOX_URL in js/ui-screens.js)'
+            : 'Not listening. Run `node tools/inbox.mjs` on a server, or listen from here for a local test:',
+        );
+        if (!r.listening)
+          $('#inbox_state').innerHTML +=
+            ' <button class="b ghost" id="inbox_serve">Listen here (127.0.0.1:5191)</button>';
+        const sv = $('#inbox_serve');
+        if (sv)
+          sv.onclick = async () => {
+            await api('inbox/serve', {});
+            loadInbox();
+          };
+        $('#inbox_groups').innerHTML = r.groups.length
+          ? `<table><thead><tr><th>Version</th><th>Area</th><th>🐞</th><th>💬</th></tr></thead><tbody>${r.groups
+              .map(
+                (g) =>
+                  `<tr class="click" data-v="${esc(g.version)}" data-a="${esc(g.area)}"><td>${esc(g.version)}</td><td>${esc(g.area)}</td><td>${g.problems || ''}</td><td>${g.feedback || ''}</td></tr>`,
+              )
+              .join(
+                '',
+              )}</tbody></table>${INBOX_FILTER ? `<div class="tiny" style="margin-top:4px"><a href="#" id="inbox_all">show all</a> · showing ${esc(INBOX_FILTER.v)} / ${esc(INBOX_FILTER.a)}</div>` : ''}`
+          : '<div class="dim tiny">Nothing has arrived yet.</div>';
+        $('#inbox_groups').onclick = (e) => {
+          if (e.target.id === 'inbox_all') {
+            e.preventDefault();
+            INBOX_FILTER = null;
+            return loadInbox();
+          }
+          const tr = e.target.closest('tr[data-v]');
+          if (tr) {
+            INBOX_FILTER = { v: tr.dataset.v, a: tr.dataset.a };
+            loadInbox();
+          }
+        };
+        const rows = r.rows.filter(
+          (x) =>
+            !INBOX_FILTER || (String(x.version || '?') === INBOX_FILTER.v && String(x.area || '—') === INBOX_FILTER.a),
+        );
+        $('#inbox_list').innerHTML = rows
+          .slice(0, 60)
+          .map(
+            (
+              x,
+            ) => `<div style="padding:6px 0;border-top:1px solid var(--line)"><div class="row tiny"><span>${kindIcon(x.kind)}</span><b>${esc(x.version || '?')}</b><span class="dim">${esc(x.area || '')}</span><span class="dim">${fmtTime(x.received)}</span><span style="flex:1"></span>
+              <select data-st="${esc(x.id)}">${['open', 'fixed', 'wontfix'].map((s) => `<option ${(x.status || 'open') === s ? 'selected' : ''}>${s}</option>`).join('')}</select>
+              ${x.hasFile ? `<button class="b ghost" data-open="${esc(x.id)}">Inspect</button>` : ''}</div>
+              <div class="small" style="white-space:pre-wrap;margin-top:2px">${esc((x.note || '').slice(0, 300))}${x.contact ? `<div class="tiny dim">reply to: ${esc(x.contact)}</div>` : ''}</div></div>`,
+          )
+          .join('');
+        $('#inbox_list').onclick = async (e) => {
+          const id = e.target.dataset && e.target.dataset.open;
+          if (!id) return;
+          const f = await api('inbox/file?id=' + encodeURIComponent(id));
+          if (f.error) return alert(f.error);
+          showReport(f.b64, id + '.touchline', +$('#rdays').value || 7);
+          $('#rres').scrollIntoView({ behavior: 'smooth' });
+        };
+        $('#inbox_list').onchange = async (e) => {
+          const id = e.target.dataset && e.target.dataset.st;
+          if (id) await api('inbox/status', { id, status: e.target.value });
+        };
+        const lib = r.library;
+        $('#lib_list').innerHTML = lib.length
+          ? `<table><tbody>${lib.map((f) => `<tr><td>${f.kind === 'reports' ? '🐞' : '📦'} ${esc(f.name)}</td><td class="dim">${(f.bytes / 1048576).toFixed(1)} MB</td></tr>`).join('')}</tbody></table>`
+          : '<div class="dim tiny">Empty. Add this version’s save with <code>node tools/savelib.mjs --snapshot</code>.</div>';
+      }
+      $('#lib_run').onclick = async () => {
+        sysmsg($('#lib_msg'), 'running…');
+        const rec = await runJob('savelib');
+        sysmsg($('#lib_msg'), `${rec.code === 0 ? '✓' : '✗'} ${rec.summary || ''}`, rec.code === 0 ? 'ok' : 'no');
+      };
+      document.querySelector('[data-t="reports"]').addEventListener('click', loadInbox);
+
+      // ----- Screens -----
+      const problemList = (arr) => arr.map((p) => `<div class="tiny no">• ${esc(p)}</div>`).join('');
+      async function loadScreens() {
+        const r = await api('screens');
+        sysmsg(
+          $('#sc_env'),
+          r.browser
+            ? 'A browser was found.'
+            : 'No browser or playwright-core found: run npm install, and have Chrome or Edge installed (or set TOUCHLINE_BROWSER).',
+          r.browser ? 'dim' : 'no',
+        );
+        // the comparison
+        const v = r.visual;
+        if (!v)
+          $('#sc_visual').innerHTML =
+            '<div class="card dim">Not run yet. “Compare with the references” shoots every key screen; the first time, run <code>node tools/visual.mjs --update</code> to make the references.</div>';
+        else {
+          const diff = v.results.filter((x) => x.status === 'different' || x.status === 'size');
+          const fresh = v.results.filter((x) => x.status === 'new');
+          const img = (k, f) =>
+            `<div><div class="tiny dim">${k}</div><img loading="lazy" src="/api/visual/img?kind=${k === 'before' ? 'ref' : k === 'after' ? 'now' : 'diff'}&name=${encodeURIComponent(f)}&t=${v.at}" style="width:100%;border:1px solid var(--line);border-radius:8px"></div>`;
+          $('#sc_visual').innerHTML =
+            `<div class="card"><div class="row"><b>${fmtTime(v.at)}</b><span class="tiny dim">${esc(v.device)} · ${v.results.length} screens</span><span style="flex:1"></span>
+            <span class="${diff.length ? 'no' : 'ok'}">${diff.length ? diff.length + ' look different' : 'all look the same'}</span>${fresh.length ? `<span class="down">${fresh.length} without a reference</span>` : ''}
+            ${diff.length || fresh.length ? '<button class="b" data-accept="*">Accept all as the references</button>' : ''}</div></div>
+            ${diff
+              .concat(fresh)
+              .map(
+                (
+                  x,
+                ) => `<div class="card" style="margin-top:10px"><div class="row"><b>${esc(x.name)}</b><span class="tiny ${x.status === 'new' ? 'down' : 'no'}">${x.status === 'different' ? x.pct + '% of the screen differs' : x.status === 'size' ? 'another size ' + esc(x.note) : 'no reference yet'}</span><span style="flex:1"></span><button class="b ghost" data-accept="${esc(x.file)}">Accept this one</button></div>
+              <div class="tri" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px;max-width:760px">${x.status === 'different' ? img('before', x.file) + img('after', x.file) + img('difference', x.file) : img('after', x.file)}</div></div>`,
+              )
+              .join('')}`;
+          $('#sc_visual').onclick = async (e) => {
+            const a = e.target.dataset && e.target.dataset.accept;
+            if (!a) return;
+            const names = a === '*' ? diff.concat(fresh).map((x) => x.file) : [a];
+            await api('visual/accept', { names });
+            loadScreens();
+          };
+        }
+        // the crawler
+        const c = r.crawl,
+          s = r.stress;
+        const crawlCard = (rep, title) => {
+          if (!rep) return `<div class="card dim">${title}: not run yet.</div>`;
+          const bad = rep.results.filter((x) => x.problems.length);
+          return `<div class="card"><div class="row"><b>${title}</b><span class="tiny dim">${fmtTime(rep.at)} · ${esc(rep.device)} · ${rep.results.length} screens</span><span style="flex:1"></span><span class="${bad.length ? 'no' : 'ok'}">${bad.length ? bad.length + ' with problems' : 'all clean'}</span></div>
+            ${bad.map((x) => `<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--line)"><b>${esc(x.name)}</b> ${x.shot ? `<a href="/api/crawl/img?name=${encodeURIComponent(x.shot)}${rep.stress ? '&stress=1' : ''}" target="_blank" class="tiny">screenshot</a>` : ''}${problemList(x.problems.slice(0, 8))}</div>`).join('')}</div>`;
+        };
+        $('#sc_crawl').innerHTML =
+          crawlCard(c, 'Crawl') + '<div style="height:10px"></div>' + crawlCard(s, 'Crawl with every word 40% longer');
+        // the store screenshots
+        const by = {};
+        for (const f of r.store) (by[f.device] = by[f.device] || []).push(f);
+        $('#sc_store').innerHTML = Object.keys(by).length
+          ? Object.entries(by)
+              .map(
+                ([d, fs]) =>
+                  `<div class="card" style="margin-bottom:10px"><b>${esc(d)}</b> <span class="tiny dim">store/screenshots/${esc(d)}/</span><div class="shots" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px">${fs.map((f) => `<a href="/api/store/img?device=${encodeURIComponent(d)}&name=${encodeURIComponent(f.name)}" target="_blank"><img loading="lazy" style="width:100%;border:1px solid var(--line);border-radius:8px" src="/api/store/img?device=${encodeURIComponent(d)}&name=${encodeURIComponent(f.name)}" title="${esc(f.name)}"></a>`).join('')}</div></div>`,
+              )
+              .join('')
+          : '<div class="card dim">None made yet.</div>';
+      }
+      document.querySelectorAll('[data-sj]').forEach((b) => {
+        b.onclick = async () => {
+          document.querySelectorAll('[data-sj]').forEach((x) => (x.disabled = true));
+          sysmsg(
+            $('#sc_msg'),
+            'running ' + b.textContent + '… (a few minutes; the first time it also makes the seeded career)',
+          );
+          try {
+            const rec = await runJob(b.dataset.sj);
+            sysmsg(
+              $('#sc_msg'),
+              `${rec.code === 0 ? '✓' : '✗'} ${rec.label}: ${rec.summary || ''}`,
+              rec.code === 0 ? 'ok' : 'no',
+            );
+          } catch (e) {
+            sysmsg($('#sc_msg'), e.message, 'no');
+          }
+          document.querySelectorAll('[data-sj]').forEach((x) => (x.disabled = false));
+          loadScreens();
+          loadHistory();
+        };
+      });
+      document.querySelector('[data-t="screens"]').addEventListener('click', loadScreens);
+
+      // ----- Debug -----
+      let COMMITS = [];
+      async function initDebug() {
+        if (!COMMITS.length) COMMITS = await api('git/log');
+        const j = await api('jobs');
+        const opts = Object.entries(j.jobs)
+          .filter(([, x]) => !x.unavailable)
+          .map(([k, x]) => `<option value="${k}">${esc(x.label)}</option>`)
+          .join('');
+        if (!$('#bi_job').innerHTML) $('#bi_job').innerHTML = opts;
+        const commitOpts = COMMITS.map(
+          (c) => `<option value="${c.sha}">${esc(c.short)} ${esc(c.date)} ${esc(c.subject.slice(0, 60))}</option>`,
+        ).join('');
+        if (!$('#bi_good').innerHTML) {
+          $('#bi_good').innerHTML = commitOpts;
+          $('#bi_bad').innerHTML = commitOpts;
+          $('#bi_good').selectedIndex = Math.min(COMMITS.length - 1, 5);
+        }
+        if (!$('#fb_check').dataset.loaded) {
+          const ch = await api('checks');
+          $('#fb_check').innerHTML += ch.map((c) => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+          $('#fb_check').dataset.loaded = 1;
+        }
+        measuresFor();
+        loadFlaky();
+        loadCoverage();
+        loadI18n();
+      }
+      async function measuresFor() {
+        const job = $('#bi_job').value;
+        const h = (await api('history')).filter((r) => r.job === job && r.metrics && r.metrics.length)[0];
+        $('#bi_measures').innerHTML = h
+          ? h.metrics.map((m) => `<option value="${esc(m.name)}"></option>`).join('')
+          : '';
+      }
+      $('#bi_job').onchange = measuresFor;
+      $('#bi_base').onclick = async () => {
+        const job = $('#bi_job').value;
+        const base = (await api('baselines'))[job];
+        if (!base) return sysmsg($('#bi_msg'), 'No baseline is pinned for that job.', 'no');
+        const rec = (await api('history')).find((r) => r.id === base.id);
+        const c =
+          rec &&
+          rec.head &&
+          COMMITS.find((x) => x.short.startsWith(rec.head.slice(0, 7)) || x.sha.startsWith(rec.head));
+        if (!c) return sysmsg($('#bi_msg'), 'The baseline run’s commit is not in the recent list.', 'no');
+        $('#bi_good').value = c.sha;
+        sysmsg($('#bi_msg'), 'Last good set to ' + c.short, 'ok');
+      };
+      $('#bi_go').onclick = async () => {
+        const out = $('#bi_out');
+        out.hidden = false;
+        out.textContent = 'starting…\n';
+        const rec = await api('bisect', {
+          job: $('#bi_job').value,
+          good: $('#bi_good').value,
+          bad: $('#bi_bad').value,
+          measure: $('#bi_measure').value.trim(),
+          delta: +$('#bi_delta').value || 15,
+        });
+        if (rec.error) {
+          out.textContent = rec.error;
+          return;
+        }
+        sysmsg($('#bi_msg'), `#${rec.id} running…`);
+        out.textContent = '';
+        const es = new EventSource('/api/stream/' + rec.id);
+        es.onmessage = (m) => {
+          out.textContent += JSON.parse(m.data);
+          out.scrollTop = out.scrollHeight;
+        };
+        es.addEventListener('done', async () => {
+          es.close();
+          const done = await api('job/' + rec.id);
+          sysmsg(
+            $('#bi_msg'),
+            `${done.summary || (done.code === 0 ? 'done' : 'failed')}`,
+            done.code === 0 ? 'ok' : 'no',
+          );
+          loadHistory();
+        });
+      };
+      $('#fb_go').onclick = async () => {
+        const msg = $('#fb_msg');
+        $('#fb_go').disabled = true;
+        $('#fb_res').innerHTML = '';
+        try {
+          sysmsg(msg, 'making the world from the seed (about half a minute)…');
+          await wapi('newWorld', { seed: +$('#fb_seed').value || 7 });
+          const t = setInterval(async () => {
+            const p = await api('world/progress').catch(() => ({}));
+            if (p.of) sysmsg(msg, `day ${p.played} of up to ${p.of}…`);
+          }, 2000);
+          let r;
+          try {
+            sysmsg(msg, 'playing day by day, checking after each…');
+            r = await wapi('firstBad', { check: $('#fb_check').value, maxDays: +$('#fb_days').value || 400 });
+          } finally {
+            clearInterval(t);
+          }
+          if (!r.found) {
+            $('#fb_res').innerHTML =
+              `<div class="ok">✓ ${r.played} days played with no new failure${r.already && r.already.length ? ` (already failing at the start: ${r.already.map(esc).join(', ')})` : ''}.</div>`;
+            sysmsg(msg, 'clean', 'ok');
+          } else {
+            $('#fb_res').innerHTML =
+              `<div class="no"><b>First bad day: day ${r.played} of the replay</b> (season ${r.overview.year}, calendar day ${r.overview.day}: ${esc(r.label)})</div>${r.failing.map((f) => `<div style="margin-top:6px"><b>${esc(f.label)}</b><div class="tiny dim">${(f.detail || []).map(esc).join('<br>')}</div></div>`).join('')}<div class="row" style="margin-top:10px"><button class="b" id="fb_world">Look at the world on that day</button><span class="tiny dim">it is open on the World tab, one day after the check last passed</span></div>`;
+            $('#fb_world').onclick = () => document.querySelector('[data-t="world"]').click();
+            sysmsg(msg, 'found', 'no');
+          }
+        } catch (e) {
+          sysmsg(msg, e.message || String(e), 'no');
+        }
+        $('#fb_go').disabled = false;
+      };
+      async function loadCoverage() {
+        const r = await api('coverage');
+        if (!r.files) return ($('#cv_res').innerHTML = '<div class="dim tiny">Not measured yet.</div>');
+        const rows = r.files.filter((f) => f.code > 40 && (!f.ui || r.browser)).sort((a, b) => a.pct - b.pct);
+        const touched = r.files.filter((f) => f.pct === 0 && f.code > 20);
+        $('#cv_res').innerHTML =
+          `<div class="small"><b>${r.sim}%</b> of the simulation${r.browser ? ` · <b>${r.ui}%</b> of the interface` : ''} <span class="tiny dim">${fmtTime(r.at)}</span></div>
+          ${touched.length ? `<div class="tiny no" style="margin-top:6px">No test touches: ${touched.map((f) => esc(f.file)).join(', ')}</div>` : ''}
+          <table style="margin-top:8px"><tbody>${rows
+            .slice(0, 40)
+            .map(
+              (f) =>
+                `<tr><td>${esc(f.file)}</td><td style="width:40%"><div style="background:${f.pct < 30 ? 'var(--bad)' : f.pct < 60 ? 'var(--warn)' : 'var(--good)'};height:8px;border-radius:4px;width:${f.pct}%"></div></td><td class="dim">${f.pct}%</td><td class="tiny dim">${f.code}</td></tr>`,
+            )
+            .join('')}</tbody></table>
+          <details style="margin-top:6px"><summary>Largest functions nothing calls</summary>${r.files
+            .flatMap((f) => f.uncoveredFuncs.map((u) => ({ ...u, file: f.file })))
+            .sort((a, b) => b.lines - a.lines)
+            .slice(0, 15)
+            .map(
+              (u) =>
+                `<div class="tiny">${esc(u.file)}:${u.line} <b>${esc(u.name)}</b> <span class="dim">${u.lines} lines</span></div>`,
+            )
+            .join('')}</details>`;
+      }
+      const runCov = (browser) => async () => {
+        sysmsg($('#cv_msg'), 'measuring…');
+        const rec = await runJob('coverage', { seasons: 1, browser });
+        sysmsg($('#cv_msg'), `${rec.code === 0 ? '✓' : '✗'} ${rec.summary || ''}`, rec.code === 0 ? 'ok' : 'no');
+        loadCoverage();
+      };
+      $('#cv_run').onclick = runCov(1);
+      $('#cv_run0').onclick = runCov(0);
+      async function loadFlaky() {
+        const r = await api('flaky');
+        $('#fl_res').innerHTML = r.length
+          ? r
+              .map(
+                (
+                  f,
+                ) => `<div style="padding:6px 0;border-top:1px solid var(--line)"><b>${esc(f.label)}</b> <span class="tiny dim">${esc(
+                  Object.entries(f.params || {})
+                    .map(([k, v]) => k + ' ' + v)
+                    .join(', '),
+                )} · commit ${esc(f.head || '?')}</span>
+              <div class="tiny">${f.passFail ? '<span class="no">passed and failed on the same code:</span> ' + f.runs.map((x) => `#${x.id} ${x.code === 0 ? '✓' : '✗'}`).join(' ') : ''}</div>
+              ${f.differing.map((d) => `<div class="tiny down">${esc(d.name)}: ${d.values.map(esc).join(' / ')}</div>`).join('')}${f.differingCount > f.differing.length ? `<div class="tiny dim">and ${f.differingCount - f.differing.length} more measures</div>` : ''}</div>`,
+              )
+              .join('')
+          : '<div class="ok tiny">✓ No job has given two answers on the same code and settings.</div><div class="tiny dim">Run a job twice on unchanged code (or use Seeds) to build the record.</div>';
+      }
+      async function loadI18n() {
+        const r = await api('i18n');
+        if (!r.at) return;
+        $('#i1_res').innerHTML =
+          `<div class="small">${r.notMoved} of about ${r.texts} screen texts are not in the translation file yet <span class="tiny dim">${fmtTime(r.at)}</span></div>
+          <table style="margin-top:6px"><tbody>${Object.entries(r.byFile || {})
+            .sort((a, b) => b[1] - a[1])
+            .map(([f, n]) => `<tr><td>${esc(f)}</td><td>${n}</td></tr>`)
+            .join('')}</tbody></table>
+          ${(r.languages || []).length ? `<h3 style="margin-top:10px">Languages</h3><table><thead><tr><th>Language</th><th>Missing</th><th>Out of date</th><th>Long</th><th>Length vs English</th></tr></thead><tbody>${r.languages.map((l) => `<tr><td>${esc(l.name)}</td><td class="${l.missing ? 'no' : ''}">${l.missing}</td><td class="${l.outdated ? 'no' : ''}">${l.outdated}</td><td>${l.long}</td><td>${l.mean ? l.mean + '×' : '—'}</td></tr>`).join('')}</tbody></table>` : '<div class="tiny dim" style="margin-top:6px">No language files yet (data/lang/en.json and one file per language).</div>'}`;
+      }
+      $('#i1_run').onclick = async () => {
+        sysmsg($('#i1_msg'), 'checking…');
+        const rec = await runJob('i18n');
+        sysmsg($('#i1_msg'), rec.code === 0 ? 'done' : 'problems found', rec.code === 0 ? 'ok' : 'no');
+        loadI18n();
+      };
+      $('#i1_untr').onclick = async () => {
+        const list = await api('i18n/untranslated');
+        $('#i1_res').innerHTML =
+          `<div class="tiny dim">${list.length} texts, first 300:</div><div style="max-height:360px;overflow:auto;margin-top:6px">${list
+            .slice(0, 300)
+            .map(
+              (x) =>
+                `<div class="tiny"><span class="dim">${esc(x.file)}:${x.line}</span> ${esc(x.text.slice(0, 100))}</div>`,
+            )
+            .join('')}</div>`;
+      };
+      document.querySelector('[data-t="debug"]').addEventListener('click', initDebug);
+
+      // ----- Speed in a browser (on the Profile tab) -----
+      async function drawBrowserPerf() {
+        const rows = await api('bperf');
+        const el = $('#pf_bperf');
+        if (!rows.length)
+          return (el.innerHTML =
+            '<span class="dim">No runs yet. “Run at phone speed” plays the seeded career in Chromium with its CPU slowed down.</span>');
+        const med = (a) => a.slice().sort((x, y) => x - y)[a.length >> 1];
+        const series = [
+          ['Full-time screen (ms)', 'fullMs'],
+          ['Day with a match (ms)', 'dayMs'],
+          ['Skip to next match (ms)', 'skipMs'],
+          ['Changing tab, typical (ms)', 'tabMs'],
+          ['Saving (ms)', 'saveMs'],
+          ['Peak memory (MB)', 'memMB'],
+        ];
+        el.innerHTML = `<table><thead><tr><th>Measure</th><th>Across runs</th><th>Latest</th><th>Median</th><th></th></tr></thead><tbody>${series
+          .map(([l, k]) => {
+            const vs = rows.map((r) => r[k]);
+            const last = vs[vs.length - 1],
+              m = med(vs);
+            const slow = vs.length >= 3 && last > m * 1.2;
+            return `<tr><td>${l}</td><td>${spark({ pts: rows.map((r) => ({ id: r.id, v: r[k], ok: true })), range: null })}</td><td class="${slow ? 'down' : ''}">${fmtN(last)}</td><td class="dim">${fmtN(m)}</td><td class="down">${slow ? 'slower than usual' : ''}</td></tr>`;
+          })
+          .join(
+            '',
+          )}</tbody></table><div class="tiny dim" style="margin-top:6px">${rows.length} runs · latest at ${rows[rows.length - 1].cpu}× slower CPU (runs at different slow-downs are not comparable)</div>`;
+      }
+      $('#pf_brun').onclick = async () => {
+        sysmsg($('#pf_bmsg'), 'running (a few minutes)…');
+        try {
+          const rec = await runJob('browserbench', { cpu: +$('#pf_bcpu').value || 4, matches: 3 });
+          sysmsg($('#pf_bmsg'), `${rec.code === 0 ? '✓' : '✗'} ${rec.summary || ''}`, rec.code === 0 ? 'ok' : 'no');
+        } catch (e) {
+          sysmsg($('#pf_bmsg'), e.message, 'no');
+        }
+        drawBrowserPerf();
+        loadHistory();
+      };
+      document.querySelector('[data-t="profile"]').addEventListener('click', drawBrowserPerf);
       loadJobs();
       loadHistory();
     </script>

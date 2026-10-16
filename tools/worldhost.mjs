@@ -6,12 +6,18 @@
 //   advance / timeline              play days (with optional "run until" conditions) and what was recorded each day
 //   matchLab                        one fixture simulated many times, with optional tactic changes
 //   inspectSave                     what is in a save file (sizes, version, upgrades) without opening it as the world
+//   inspectReport                   a player's problem report: its note and diagnostics, the world checks, and the next days
+//                                   played on a copy to see whether the problem comes back
+//   firstBad                        play on until a world check fails, and stop there with the world as it is that day
 //
 // Everything is read from the game's own objects (FM.S, FM.W ...); nothing here changes how the game plays.
 import zlib from 'node:zlib';
 import { loadSim } from './harness.mjs';
+import { attach } from './worldchecks.mjs';
 
 let FM = null,
+  CTX = null,
+  CHECKS = null,
   W = null,
   Sea = null,
   D = null,
@@ -26,7 +32,8 @@ const progress = (p) => process.send && process.send({ progress: p });
 // ---------- A world ----------
 function boot(s) {
   seed = s;
-  ({ FM } = loadSim(s));
+  ({ FM, ctx: CTX } = loadSim(s));
+  CHECKS = attach(CTX);
   W = FM.W;
   Sea = FM.Season;
   D = FM.D;
@@ -691,6 +698,100 @@ function inspectSave({ b64 }) {
   return info;
 }
 
+// ---------- Problem reports ----------
+// A report is the player's save with a "report" section (their note, the version details, the part of the game it was about).
+// It is opened as a world, checked, and the next days are played on a copy to see whether the problem shows again; the world
+// is put back as it was afterwards, so it can still be explored.
+function reproduce(days) {
+  const snap = JSON.stringify(FM.S);
+  const before = new Set(CHECKS.failing().map((r) => r.id));
+  const played = [],
+    out = { days: 0, error: null, newFailures: [], played };
+  try {
+    for (let i = 0; i < days; i++) {
+      const y = FM.S.year,
+        d = FM.S.day,
+        t0 = performance.now();
+      try {
+        playOneDay();
+      } catch (e) {
+        out.error = {
+          year: y,
+          day: d,
+          message: String(e && e.message ? e.message : e),
+          stack: String((e && e.stack) || '')
+            .split('\n')
+            .slice(0, 12)
+            .join('\n'),
+        };
+        break;
+      }
+      out.days++;
+      played.push({ year: y, day: d, ms: Math.round(performance.now() - t0) });
+      for (const f of CHECKS.failing())
+        if (!before.has(f.id) && !out.newFailures.some((x) => x.id === f.id))
+          out.newFailures.push({ id: f.id, label: f.label, detail: f.detail, year: y, day: d });
+    }
+  } finally {
+    FM.S = FM.Save.relink(JSON.parse(snap));
+    W.rosterVer++;
+  }
+  return out;
+}
+function inspectReport({ b64, days = 5, seed: s = 7 }) {
+  boot(+s);
+  const text = toBytes(b64);
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    throw new Error('That file is not a Touchline save or report.');
+  }
+  const report = parsed.report || null;
+  delete parsed.report;
+  const info = { report, version: parsed.version, current: FM.SAVE_VERSION, bytes: text.length };
+  if (parsed.version > FM.SAVE_VERSION) return { ...info, error: 'Made by a newer version of the game' };
+  if (parsed.version < (FM.Save.OLDEST || 4)) return { ...info, error: 'Too old to upgrade' };
+  const { state, from } = FM.Save.unpack(parsed);
+  FM.S = FM.Save.relink(state);
+  W.rosterVer++;
+  info.upgradedFrom = from;
+  info.overview = overview();
+  info.checks = CHECKS.run().map((r) => ({ id: r.id, label: r.label, ok: r.ok, detail: r.detail }));
+  info.scan = scan().checks.filter((c) => c.n);
+  info.repro = reproduce(Math.min(30, Math.max(1, +days || 5)));
+  return info;
+}
+function firstBad({ check = 'any', maxDays = 400, every = 1 }) {
+  need();
+  const r = CHECKS.firstBad(
+    () => {
+      playOneDay();
+    },
+    {
+      check,
+      maxDays: Math.min(2000, Math.max(1, +maxDays || 400)),
+      every: Math.max(1, +every || 1),
+      onDay: (n) => n % 10 === 0 && progress({ played: n, of: maxDays }),
+    },
+  );
+  return {
+    ...r,
+    overview: overview(),
+    label: (() => {
+      try {
+        return Sea.dayLabel();
+      } catch (e) {
+        return '';
+      }
+    })(),
+  };
+}
+const checkList = () => {
+  if (!CHECKS) boot(7);
+  return { ids: FM.S ? CHECKS.ids() : [] };
+};
+
 // ---------- Messages ----------
 const CMDS = {
   newWorld,
@@ -708,6 +809,9 @@ const CMDS = {
   advance,
   matchLab,
   inspectSave,
+  inspectReport,
+  firstBad,
+  checkList,
 };
 process.on('message', (msg) => {
   const { id, cmd, args } = msg;

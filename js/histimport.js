@@ -186,7 +186,8 @@
     }
     for (const [y, list] of moves) {
       list.sort((a, b) => b.fee - a.fee);
-      if (list.length > 20) rep.skipped.push(`season ${y}: ${list.length} transfers, the biggest twenty kept`);
+      if (list.length > 20)
+        rep.skipped.push(`season ${y}: ${FM.U.plural(list.length, 'transfer')}, the biggest twenty kept`);
       season(y).transfers = list.slice(0, 20);
       rep.transfers = (rep.transfers || 0) + Math.min(20, list.length);
     }

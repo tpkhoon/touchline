@@ -16,6 +16,18 @@ export default [
     languageOptions: { sourceType: 'module', globals: { ...globals.node } },
   },
   {
+    // These drive the game in a browser: the functions they send to the page use the page's globals
+    files: [
+      'tools/crawl.mjs',
+      'tools/visual.mjs',
+      'tools/storeshots.mjs',
+      'tools/browser.mjs',
+      'tools/browser-bench.mjs',
+      'tools/screencheck.mjs',
+    ],
+    languageOptions: { globals: { ...globals.browser, FM: 'readonly' } },
+  },
+  {
     // Seeded runs must only draw from the simulation's generator (ctx.Math.random from tools/harness.mjs)
     files: ['tools/**/*.mjs'],
     rules: {

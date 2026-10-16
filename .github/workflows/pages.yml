@@ -30,6 +30,7 @@ jobs:
       - run: npm run lint # a lint error (e.g. an undefined name) stops the deploy
       - run: npm run format:check # so does unformatted code (fix with npm run format)
       - run: npm run test:unit # the fast checks of the pure functions (a few seconds); the long simulation tests run before a release
+      - run: npm run test:saves # every saved release (tests/saves) and kept problem report still opens, passes the world checks and plays on
       - run: npm run check:escape # no new place that puts a name into markup without escaping it
       - run: npm run build
       - run: npm run test:smoke # the built site hangs together: every file it names is there, and the built simulation plays three days and saves

@@ -599,10 +599,13 @@
     const ds = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
     return new Response(ds).text();
   };
-  Sv.exportFile = async function (slot) {
-    const raw = await Sv.read(slot),
-      m = Sv.metaOf(slot);
+  // report: what a problem report adds to the file (the player's note, the version details, the part of the game it was about) as a
+  // "report" section after the save; opening the file as a backup ignores it, and the developer dashboard's report inspector reads it
+  Sv.exportFile = async function (slot, report) {
+    let raw = await Sv.read(slot);
+    const m = Sv.metaOf(slot);
     if (!raw) throw new Error('Nothing saved in that slot yet.');
+    if (report) raw = raw.replace(/\}\s*$/, ',"report":' + JSON.stringify(report) + '}');
     const bytes = await Sv.gzip(raw);
     const slug = (m && m.club ? m.club.name : 'career')
       .toLowerCase()
@@ -624,6 +627,7 @@
     } catch (e) {
       throw new Error('That file is not a Touchline save.');
     }
+    delete parsed.report; // (a problem report is a backup with a note after it)
     const res = Sv.unpack(parsed);
     FM.U.cleanDeep(res.state); // (a backup somebody else made: its names and notes are cleaned once, as it comes in)
     return res;

@@ -78,6 +78,12 @@ select {
   font: inherit;
   color: inherit;
 }
+/* (a menu with no background of its own is drawn white by the browser: pale text on it cannot be read; found by the screen crawler) */
+select,
+select option {
+  background-color: var(--card2);
+  color: var(--ink);
+}
 #app {
   zoom: var(--tz, 1); /* text size setting (Club → Settings) */
   max-width: 480px;

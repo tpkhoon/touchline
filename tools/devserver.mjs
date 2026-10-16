@@ -12,6 +12,11 @@
 //   Names       the name generator (tools/namegen.mjs): players, towns, clubs, grounds, nicknames, leagues and sponsors by
 //               nation and seed, with the world generator's checks shown on each name
 //   Game        the game itself in a frame, with the developer panel switched on (js/devtools.js is only added here)
+//   Reports     players' problem reports and feedback (from the private inbox or a dropped file): the diagnostics and the note,
+//               the world checks, the next days played on a copy to try to reproduce it; a fixed report is kept as a test case
+//   Screens     the screen crawler, the screenshot comparison with the reference pictures, and the store screenshots
+//   Debug       find the commit that changed a measure, the first bad day of a seeded world, code coverage, tests that do not
+//               give the same answer twice, the translation report
 //
 // It listens on 127.0.0.1 only and runs a fixed list of jobs: it never runs a command it was sent.
 import http from 'node:http';
@@ -20,6 +25,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, spawnSync, fork } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
+import { JOBS, GROUPS, CLI_TOOLS } from './jobs.mjs';
+import { readInbox, groupInbox, startInbox, INBOX } from './inbox.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = +(process.env.PORT || process.argv[2] || 5190);
@@ -28,80 +36,8 @@ const HISTORY = path.join(STORE, 'history.json');
 fs.mkdirSync(STORE, { recursive: true });
 
 // ---------- The jobs it may run ----------
-// params: name → { label, default, min, max }; they become numeric `--name value` arguments.
+// The list is in tools/jobs.mjs (shared with the bisect tool); nothing is run that is not on it.
 const NODE = process.execPath;
-const JOBS = {
-  test: {
-    label: 'Regression test',
-    note: 'sim-test: seeded seasons, invariants, saves',
-    cmd: [NODE, 'tools/sim-test.mjs'],
-    params: { seasons: { default: 2, min: 1, max: 6 }, seed: { default: 7, min: 1, max: 9999 } },
-  },
-  suite: {
-    label: 'Wider suite',
-    note: 'speed, tables, squads, finances, stability',
-    cmd: [NODE, 'tools/suite.mjs'],
-    params: { seasons: { default: 3, min: 1, max: 30 }, seed: { default: 11, min: 1, max: 9999 } },
-  },
-  long: {
-    label: 'Long run',
-    note: '20 seasons without the speed limits',
-    cmd: [NODE, 'tools/suite.mjs', '--skip-speed'],
-    params: { seasons: { default: 20, min: 4, max: 40 }, seed: { default: 11, min: 1, max: 9999 } },
-  },
-  calibrate: {
-    label: 'Calibration',
-    note: 'the game against real football',
-    cmd: [NODE, 'tools/calibrate.mjs'],
-    params: { seasons: { default: 3, min: 1, max: 12 }, seed: { default: 7, min: 1, max: 9999 } },
-  },
-  wonderkids: {
-    label: 'Wonderkids',
-    note: 'how the best prospects turn out',
-    cmd: [NODE, 'tools/wonderkids.mjs'],
-    params: { seasons: { default: 10, min: 3, max: 20 }, seed: { default: 5, min: 1, max: 9999 } },
-  },
-  transfers: {
-    label: 'Transfer realism',
-    note: 'the market against real transfers',
-    cmd: [NODE, 'tools/transfer-realism.mjs'],
-    params: { seasons: { default: 3, min: 2, max: 8 }, seed: { default: 5, min: 1, max: 9999 } },
-  },
-  profile: {
-    label: 'CPU profile',
-    note: 'a sampling profile of a run: where the time goes, by file and function',
-    cmd: [NODE, '--cpu-prof', '--cpu-prof-dir=.devtools/prof', 'tools/suite.mjs', '--skip-speed'],
-    params: { seasons: { default: 1, min: 1, max: 3 }, seed: { default: 11, min: 1, max: 9999 } },
-  },
-  regens: { label: 'Regens', note: 'academy intakes aged year by year', cmd: [NODE, 'tools/regens.mjs'], params: {} },
-  realstats: {
-    label: 'Converter self-test',
-    note: 'real-stats converter checks',
-    cmd: [NODE, 'tools/realstats.mjs', '--test'],
-    params: {},
-  },
-  worlddef: {
-    label: 'World definition test',
-    note: 'export, validate, edit, load, play',
-    cmd: [NODE, 'tools/worlddef.mjs', '--test'],
-    params: {},
-  },
-  import: {
-    label: 'Importer test',
-    note: 'tables, players, clubs into a world',
-    cmd: [NODE, 'tools/import-history.mjs', '--test'],
-    params: {},
-  },
-  docs: { label: 'Docs check', note: 'docs agree with the data', cmd: [NODE, 'tools/check-docs.mjs'], params: {} },
-  lint: { label: 'Lint', note: 'eslint', cmd: [NODE, 'node_modules/eslint/bin/eslint.js', '.'], params: {} },
-  format: {
-    label: 'Format check',
-    note: 'prettier',
-    cmd: [NODE, 'node_modules/prettier/bin/prettier.cjs', '--check', '.'],
-    params: {},
-  },
-  build: { label: 'Build', note: 'dist/ as the store and Pages build', cmd: [NODE, 'tools/build.mjs'], params: {} },
-};
 
 // ---------- History ----------
 let history = [];
@@ -129,16 +65,41 @@ const parseOutput = (text) => {
     /league day (\d+) ms avg, (\d+) ms p99 \u00b7 pre-season day (\d+) ms \u00b7 season (\d+) s \u00b7 save ([\d.]+) MB/,
   );
   const perf = sp ? { dayMs: +sp[1], dayP99: +sp[2], preMs: +sp[3], seasonSecs: +sp[4], saveMB: +sp[5] } : undefined;
-  const t = text.slice(-4000);
+  const t = text.slice(-6000);
   const ratio = t.match(/(\d+)\/(\d+) in range/);
-  const summary = ratio
-    ? `${ratio[1]}/${ratio[2]} in range`
-    : /All checks passed|all checks passed/.test(t)
-      ? 'All checks passed'
-      : /\bFAIL\b|Failures:/.test(t)
-        ? 'Failed'
-        : '';
-  return perf ? { metrics, summary, perf } : { metrics, summary };
+  const one = (re, f) => {
+    const m = t.match(re);
+    return m ? f(m) : null;
+  };
+  const summary =
+    (ratio ? `${ratio[1]}/${ratio[2]} in range` : null) ||
+    one(/FIRST BAD COMMIT: (\w+)/, (m) => `first bad commit ${m[1]}`) ||
+    one(/FIRST BAD DAY: day (\d+)/, (m) => `first bad day ${m[1]}`) ||
+    one(/Crawled (\d+) screens[^\n]*?: (all clean|\d+ with problems)/, (m) => `${m[1]} screens, ${m[2]}`) ||
+    one(
+      /(\d+) screens at [^\n]*?: (\d+) the same, (\d+) different, (\d+) without/,
+      (m) => `${m[2]} same, ${m[3]} different, ${m[4]} new`,
+    ) ||
+    one(/(\d+)\/(\d+) saves open and play on/, (m) => `${m[1]}/${m[2]} saves play on`) ||
+    one(/Line coverage: simulation ([\d.]+)%/, (m) => `${m[1]}% of the simulation covered`) ||
+    one(/(\d+) screenshots in/, (m) => `${m[1]} screenshots`) ||
+    (/All checks passed|all checks passed/.test(t) ? 'All checks passed' : null) ||
+    (/\bFAIL\b|Failures:/.test(t) ? 'Failed' : '');
+  const out = perf ? { metrics, summary, perf } : { metrics, summary };
+  const bp = text.match(
+    /Browser speed: cpu (\d+) \u00b7 fulltime (\d+) ms \u00b7 day (\d+) ms \u00b7 skip (\d+) ms \u00b7 tab (\d+) ms \u00b7 save (\d+) ms \u00b7 memory (\d+) MB/,
+  );
+  if (bp)
+    out.bperf = {
+      cpu: +bp[1],
+      fullMs: +bp[2],
+      dayMs: +bp[3],
+      skipMs: +bp[4],
+      tabMs: +bp[5],
+      saveMs: +bp[6],
+      memMB: +bp[7],
+    };
+  return out;
 };
 
 // ---------- Running ----------
@@ -170,6 +131,10 @@ function startRun(jobId, params = {}, opts = {}) {
   if (opts.group) rec.group = opts.group;
   const env = { ...process.env, FORCE_COLOR: '0' };
   if (opts.tune) env.TOUCHLINE_TUNE = JSON.stringify(opts.tune);
+  if (opts.args) {
+    args.push(...opts.args);
+    rec.args = opts.args.join(' ');
+  }
   const proc = spawn(job.cmd[0], [...job.cmd.slice(1), ...args], { cwd: ROOT, env });
   const r = { rec, proc, out: '', listeners: new Set() };
   running.set(rec.id, r);
@@ -189,6 +154,7 @@ function startRun(jobId, params = {}, opts = {}) {
       rec.tail = r.out.slice(-6000);
       try {
         rec.head = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).stdout.trim();
+        rec.tree = treeFingerprint();
         if (jobId === 'build' && code === 0) rec.size = recordBuildSize(r.out);
         if (jobId === 'profile') {
           const f = fs
@@ -211,6 +177,19 @@ function startRun(jobId, params = {}, opts = {}) {
   return { rec, done };
 }
 const start = (jobId, params, opts) => startRun(jobId, params, opts).rec;
+
+// The code a run was made on: the commit plus any uncommitted change (a hash of the diff), so two runs on the same code can be told
+// from two runs on code that changed in between
+function treeFingerprint() {
+  try {
+    const diff = spawnSync('git', ['diff', 'HEAD'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 28 }).stdout || '';
+    const untracked =
+      spawnSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: ROOT, encoding: 'utf8' }).stdout || '';
+    return crypto.createHash('sha1').update(diff).update(untracked).digest('hex').slice(0, 8);
+  } catch (e) {
+    return '';
+  }
+}
 
 // Run a tool once and wait for it (the converter and importer)
 const runOnce = (args, timeout = 300000) =>
@@ -350,6 +329,7 @@ function finalize(g) {
       const base = baselineOf(it.job);
       const cmp = compareRuns(rec, base);
       const verdict = rec.code !== 0 ? 'failed' : cmp.regressions.length ? 'regressed' : base ? 'ok' : 'no baseline';
+      const flaky = flakyJobs()[it.job] || 0;
       return {
         job: it.job,
         label: rec.label,
@@ -357,6 +337,7 @@ function finalize(g) {
         summary: rec.summary,
         verdict,
         baselineId: base && base.id,
+        flaky,
         ...cmp,
       };
     });
@@ -423,7 +404,16 @@ for (const g of groups)
 const GATES = {
   quick: {
     label: 'Quick gate',
-    jobs: [['docs'], ['lint'], ['format'], ['realstats'], ['worlddef'], ['import'], ['suite', { seasons: 1 }]],
+    jobs: [
+      ['docs'],
+      ['lint'],
+      ['format'],
+      ['unit'],
+      ['realstats'],
+      ['worlddef'],
+      ['import'],
+      ['suite', { seasons: 1 }],
+    ],
     par: 3,
   },
   full: {
@@ -432,6 +422,7 @@ const GATES = {
       ['docs'],
       ['lint'],
       ['format'],
+      ['unit'],
       ['realstats'],
       ['worlddef'],
       ['import'],
@@ -440,6 +431,10 @@ const GATES = {
       ['calibrate', { seasons: 3 }],
       ['wonderkids', { seasons: 10 }],
       ['transfers', { seasons: 3 }],
+      ['winchance'],
+      ['savelib'],
+      ['crawl'],
+      ['visual'],
     ],
     par: MAXPAR,
   },
@@ -534,6 +529,9 @@ const HOST_CMDS = new Set([
   'advance',
   'matchLab',
   'inspectSave',
+  'inspectReport',
+  'firstBad',
+  'checkList',
   'loadDef',
   'timeline',
   'ping',
@@ -909,6 +907,139 @@ const perfSeries = () =>
     .slice(-60)
     .map((r) => ({ id: r.id, t: r.started, seasons: r.params.seasons, ...r.perf }));
 
+// ---------- Tests that do not give the same answer twice ----------
+// Runs of one job on the very same code (the commit and any uncommitted change) and the same settings should agree. When one passed
+// and another failed, the job is flaky; when a seeded measure came out differently, it is not deterministic. Both make a gate less
+// trustworthy than it looks, so they are listed, and a flaky job is marked on the gate.
+const NOISY = new Set(['browserbench', 'profile', 'bisect', 'build', 'storeshots', 'coverage', 'firstbad', 'bench']);
+const TIMING = /\bms\b|\(ms|seconds|\bs\)|memory|speed/i;
+function flakyReport() {
+  const by = new Map();
+  for (const r of history) {
+    if (r.tune || !r.tree || NOISY.has(r.job)) continue;
+    const key = `${r.job}|${JSON.stringify(r.params)}|${r.head}|${r.tree}`;
+    if (!by.has(key)) by.set(key, []);
+    by.get(key).push(r);
+  }
+  const out = [];
+  for (const rs of by.values()) {
+    if (rs.length < 2) continue;
+    const passFail = new Set(rs.map((r) => r.code === 0)).size > 1;
+    const differing = [];
+    const names = new Set(rs.flatMap((r) => (r.metrics || []).map((m) => m.name)));
+    for (const n of names) {
+      if (TIMING.test(n)) continue;
+      const vals = rs
+        .map((r) => (r.metrics || []).find((m) => m.name === n))
+        .filter(Boolean)
+        .map((m) => m.value);
+      if (vals.length > 1 && new Set(vals).size > 1)
+        differing.push({ name: n, values: [...new Set(vals)].slice(0, 5) });
+    }
+    if (passFail || differing.length)
+      out.push({
+        job: rs[0].job,
+        label: rs[0].label,
+        params: rs[0].params,
+        head: rs[0].head,
+        passFail,
+        runs: rs.map((r) => ({ id: r.id, code: r.code, summary: r.summary })),
+        differing: differing.slice(0, 8),
+        differingCount: differing.length,
+      });
+  }
+  return out.reverse();
+}
+let flakyCache = { at: 0, jobs: {} };
+function flakyJobs() {
+  if (Date.now() - flakyCache.at > 5000) {
+    const jobs = {};
+    for (const f of flakyReport()) jobs[f.job] = (jobs[f.job] || 0) + 1;
+    flakyCache = { at: Date.now(), jobs };
+  }
+  return flakyCache.jobs;
+}
+
+// ---------- Is there a browser for the jobs that need one ----------
+let browserOk = null;
+function hasBrowser() {
+  if (browserOk === null) {
+    const home = process.env.LOCALAPPDATA || '';
+    const paths = [
+      process.env.TOUCHLINE_BROWSER,
+      'C:/Program Files/Google/Chrome/Application/chrome.exe',
+      'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+      home && home + '/Google/Chrome/Application/chrome.exe',
+      'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+      'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+      '/usr/bin/google-chrome',
+      '/usr/bin/chromium',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/microsoft-edge',
+    ].filter(Boolean);
+    browserOk = fs.existsSync(path.join(ROOT, 'node_modules/playwright-core')) && paths.some((f) => fs.existsSync(f));
+  }
+  return browserOk;
+}
+
+// ---------- Kept saves and reports, the inbox ----------
+const TESTS = path.join(ROOT, 'tests');
+const listLibrary = () =>
+  ['saves', 'reports'].flatMap((kind) => {
+    const dir = path.join(TESTS, kind);
+    return fs.existsSync(dir)
+      ? fs
+          .readdirSync(dir)
+          .filter((f) => f.endsWith('.touchline'))
+          .map((f) => ({
+            kind,
+            name: f,
+            bytes: fs.statSync(path.join(dir, f)).size,
+            at: fs.statSync(path.join(dir, f)).mtimeMs,
+          }))
+      : [];
+  });
+let inboxServer = null;
+const inboxItemFile = (id) => (/^[\w-]+$/.test(id) ? path.join(INBOX, id) : null);
+const readJson = (f) => {
+  try {
+    return JSON.parse(fs.readFileSync(f, 'utf8'));
+  } catch (e) {
+    return null;
+  }
+};
+
+// ---------- Screens: what the browser jobs left ----------
+const PNG_NAME = /^[\w.-]+\.png$/;
+const crawlReport = (stress) => readJson(path.join(STORE, stress ? 'crawl-stress' : 'crawl', 'report.json'));
+const visualReport = () => readJson(path.join(STORE, 'visual', 'report.json'));
+const storeShots = () => {
+  const dir = path.join(ROOT, 'store', 'screenshots');
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).flatMap((d) => {
+    const sub = path.join(dir, d);
+    return fs.statSync(sub).isDirectory()
+      ? fs
+          .readdirSync(sub)
+          .filter((f) => PNG_NAME.test(f))
+          .map((f) => ({ device: d, name: f }))
+      : [];
+  });
+};
+const sendPng = (res, file) =>
+  file && fs.existsSync(file)
+    ? send(res, 200, fs.readFileSync(file), 'image/png')
+    : send(res, 404, { error: 'No such picture' });
+
+// ---------- Speed in a browser, across runs ----------
+const bperfSeries = () =>
+  history
+    .filter((r) => r.job === 'browserbench' && r.bperf && !r.tune)
+    .slice(-60)
+    .map((r) => ({ id: r.id, t: r.started, ...r.bperf }));
+
 // ---------- HTTP ----------
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -962,13 +1093,28 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] || 'application/octet-stream');
     }
     // API
-    if (p === '/api/jobs')
+    if (p === '/api/jobs') {
+      const browser = hasBrowser();
       return send(res, 200, {
         jobs: Object.fromEntries(
-          Object.entries(JOBS).map(([k, j]) => [k, { label: j.label, note: j.note, params: j.params }]),
+          Object.entries(JOBS)
+            .filter(([, j]) => !j.hidden)
+            .map(([k, j]) => [
+              k,
+              {
+                label: j.label,
+                note: j.note,
+                params: j.params,
+                group: j.group,
+                unavailable: j.needs === 'browser' && !browser ? 'needs Chrome or Edge, and `npm install`' : '',
+              },
+            ]),
         ),
+        groups: GROUPS,
+        cli: CLI_TOOLS,
         running: [...running.values()].map((r) => r.rec),
       });
+    }
     if (p === '/api/history')
       return send(
         res,
@@ -1011,6 +1157,9 @@ const server = http.createServer(async (req, res) => {
     }
     if (p === '/api/run' && req.method === 'POST') {
       const b = await json(req);
+      if (!JOBS[b.job] || JOBS[b.job].hidden) return send(res, 400, { error: 'Unknown job' });
+      if (JOBS[b.job].needs === 'browser' && !hasBrowser())
+        return send(res, 400, { error: 'This job needs Chrome or Edge on this computer, and `npm install` run once.' });
       return send(res, 200, start(b.job, b.params));
     }
     if (p === '/api/stop' && req.method === 'POST') {
@@ -1139,10 +1288,13 @@ const server = http.createServer(async (req, res) => {
       const b = await json(req);
       const gate = GATES[b.preset];
       if (!gate) return send(res, 400, { error: 'Unknown gate' });
+      const browser = hasBrowser();
       const g = newGroup(
         'gate',
         gate.label,
-        gate.jobs.map(([job, params]) => ({ job, params: params || {} })),
+        gate.jobs
+          .filter(([job]) => !JOBS[job].needs || browser)
+          .map(([job, params]) => ({ job, params: params || {} })),
       );
       runGroup(g, gate.par);
       return send(res, 200, { id: g.id });
@@ -1249,6 +1401,7 @@ const server = http.createServer(async (req, res) => {
         ['docs'],
         ['lint'],
         ['format'],
+        ['unit'],
         ['realstats'],
         ['worlddef'],
         ['import'],
@@ -1299,6 +1452,164 @@ const server = http.createServer(async (req, res) => {
       return res.end(fs.readFileSync(path.join(PROF_DIR, f)));
     }
     if (p === '/api/perf') return send(res, 200, perfSeries());
+    // ----- Reports: the inbox, the inspector, kept reports -----
+    if (p === '/api/inbox') {
+      const rows = readInbox();
+      return send(res, 200, {
+        rows: rows.slice(0, 300),
+        groups: groupInbox(rows),
+        listening: !!inboxServer,
+        library: listLibrary(),
+      });
+    }
+    if (p === '/api/inbox/file') {
+      const f = inboxItemFile(url.searchParams.get('id') || '');
+      const file = f && f + '.touchline';
+      if (!file || !fs.existsSync(file)) return send(res, 404, { error: 'No file with that report' });
+      return send(res, 200, { b64: fs.readFileSync(file).toString('base64') });
+    }
+    if (p === '/api/inbox/status' && req.method === 'POST') {
+      const b = await json(req);
+      const f = inboxItemFile(String(b.id || ''));
+      const item = f && readJson(f + '.json');
+      if (!item) return send(res, 404, { error: 'No such item' });
+      item.status = ['open', 'fixed', 'wontfix'].includes(b.status) ? b.status : 'open';
+      fs.writeFileSync(f + '.json', JSON.stringify(item, null, 1));
+      return send(res, 200, { ok: true });
+    }
+    if (p === '/api/inbox/serve' && req.method === 'POST') {
+      if (!inboxServer) inboxServer = await startInbox({ port: 5191, host: '127.0.0.1' });
+      return send(res, 200, { ok: true, url: 'http://127.0.0.1:5191/' });
+    }
+    if (p === '/api/report/keep' && req.method === 'POST') {
+      const b = await json(req);
+      const buf = Buffer.from(String(b.b64 || ''), 'base64');
+      if (buf.length < 100) return send(res, 400, { error: 'Nothing to keep' });
+      const dir = path.join(TESTS, 'reports');
+      fs.mkdirSync(dir, { recursive: true });
+      let base =
+        String(b.name || 'report')
+          .replace(/\.touchline$/, '')
+          .replace(/[^\w.-]+/g, '-')
+          .slice(0, 60) || 'report';
+      let file = path.join(dir, base + '.touchline');
+      for (let i = 2; fs.existsSync(file); i++) file = path.join(dir, `${base}-${i}.touchline`);
+      fs.writeFileSync(file, buf);
+      return send(res, 200, { ok: true, file: path.relative(ROOT, file) });
+    }
+    if (p === '/api/library') return send(res, 200, listLibrary());
+
+    // ----- Screens -----
+    if (p === '/api/screens')
+      return send(res, 200, {
+        browser: hasBrowser(),
+        crawl: crawlReport(false),
+        stress: crawlReport(true),
+        visual: visualReport(),
+        store: storeShots(),
+      });
+    if (p === '/api/crawl/img') {
+      const name = url.searchParams.get('name') || '';
+      const dir = url.searchParams.get('stress') ? 'crawl-stress' : 'crawl';
+      return sendPng(res, PNG_NAME.test(name) ? path.join(STORE, dir, name) : null);
+    }
+    if (p === '/api/visual/img') {
+      const name = url.searchParams.get('name') || '',
+        kind = url.searchParams.get('kind');
+      const rep = visualReport();
+      if (!PNG_NAME.test(name) || !rep) return sendPng(res, null);
+      const file =
+        kind === 'ref'
+          ? path.join(ROOT, 'tests', 'visual', rep.device, name)
+          : kind === 'diff'
+            ? path.join(STORE, 'visual', 'diff', name)
+            : path.join(STORE, 'visual', 'now', name);
+      return sendPng(res, file);
+    }
+    if (p === '/api/visual/accept' && req.method === 'POST') {
+      const b = await json(req);
+      const rep = visualReport();
+      if (!rep) return send(res, 400, { error: 'No comparison to take from' });
+      const ok = new Set(rep.results.map((r) => r.file));
+      let n = 0;
+      for (const f of b.names || []) {
+        if (!PNG_NAME.test(f) || !ok.has(f)) continue;
+        const from = path.join(STORE, 'visual', 'now', f);
+        if (!fs.existsSync(from)) continue;
+        fs.mkdirSync(path.join(ROOT, 'tests', 'visual', rep.device), { recursive: true });
+        fs.copyFileSync(from, path.join(ROOT, 'tests', 'visual', rep.device, f));
+        const r = rep.results.find((x) => x.file === f);
+        if (r) r.status = 'same';
+        n++;
+      }
+      fs.writeFileSync(path.join(STORE, 'visual', 'report.json'), JSON.stringify(rep, null, 1));
+      return send(res, 200, { ok: true, accepted: n });
+    }
+    if (p === '/api/store/img') {
+      const d = url.searchParams.get('device') || '',
+        name = url.searchParams.get('name') || '';
+      return sendPng(
+        res,
+        /^[\w.-]+$/.test(d) && PNG_NAME.test(name) ? path.join(ROOT, 'store', 'screenshots', d, name) : null,
+      );
+    }
+
+    // ----- Debug: find the change, coverage, flaky tests, translations -----
+    if (p === '/api/git/log') {
+      const r = sh('git', ['log', '--first-parent', '-n', '80', '--format=%H|%h|%ad|%an|%s', '--date=short']);
+      return send(
+        res,
+        200,
+        r.out
+          .split('\n')
+          .filter(Boolean)
+          .map((l) => {
+            const [sha, short, date, author, ...subj] = l.split('|');
+            return { sha, short, date, author, subject: subj.join('|') };
+          }),
+      );
+    }
+    if (p === '/api/bisect' && req.method === 'POST') {
+      const b = await json(req);
+      const job = JOBS[b.job];
+      if (!job || job.hidden) return send(res, 400, { error: 'Unknown job' });
+      const rev = (v) => /^[0-9a-f]{7,40}$/i.test(String(v)) || /^HEAD(~\d{1,3})?$/.test(String(v));
+      if (!rev(b.good) || !rev(b.bad || 'HEAD')) return send(res, 400, { error: 'Pick two commits from the list' });
+      const argv = ['--job', b.job, '--good', String(b.good), '--bad', String(b.bad || 'HEAD')];
+      if (b.measure) {
+        if (!/^[\w ()%.,'/+·–—:-]{1,100}$/.test(String(b.measure)))
+          return send(res, 400, { error: 'That measure name has odd characters' });
+        argv.push('--measure', String(b.measure));
+        argv.push('--delta', String(Math.min(100, Math.max(1, +b.delta || 15))));
+      }
+      for (const [k, v] of Object.entries(b.set || {}))
+        if (job.params[k] && Number.isFinite(+v)) argv.push('--set', `${k}=${Math.round(+v)}`);
+      if (job.needs === 'browser' && !hasBrowser()) return send(res, 400, { error: 'That job needs a browser' });
+      return send(res, 200, start('bisect', {}, { args: argv }));
+    }
+    if (p === '/api/checks') {
+      // the world checks by name: read from the two files that define them (no world has to be made to list them)
+      const slug = (t) =>
+        t
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+      const labels = [];
+      for (const f of ['js/devtools.js', 'tools/worldchecks.mjs'])
+        for (const m of fs.readFileSync(path.join(ROOT, f), 'utf8').matchAll(/\bchk\(\s*'([^']+)'/g)) labels.push(m[1]);
+      return send(
+        res,
+        200,
+        labels.map((label) => ({ id: slug(label), label })),
+      );
+    }
+    if (p === '/api/coverage') return send(res, 200, readJson(path.join(STORE, 'coverage', 'report.json')) || {});
+    if (p === '/api/flaky') return send(res, 200, flakyReport());
+    if (p === '/api/i18n') return send(res, 200, readJson(path.join(STORE, 'i18n', 'report.json')) || {});
+    if (p === '/api/i18n/untranslated')
+      return send(res, 200, readJson(path.join(STORE, 'i18n', 'untranslated.json')) || []);
+    if (p === '/api/bperf') return send(res, 200, bperfSeries());
+
     send(res, 404, { error: 'Not found' });
   } catch (e) {
     send(res, 500, { error: String(e.message || e) });

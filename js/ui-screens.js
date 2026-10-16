@@ -3526,26 +3526,98 @@
       `${navigator.userAgent.slice(0, 120)}`,
     ].join('\n');
   };
-  const helpSheet = async (title, intro, ph, act, btn) => {
+  // The parts of the game a report can be about: they go on each report as its area, so the developer can group what comes in
+  UI.REPORT_AREAS = [
+    'Match day',
+    'Squad and tactics',
+    'Transfers and contracts',
+    'Finances',
+    'Youth and training',
+    'Fixtures and competitions',
+    'Screens and text',
+    'Saving and loading',
+    'Speed',
+    'Something else',
+  ];
+  // Where a report or a piece of feedback is posted when the game has a private inbox: the address of tools/inbox.mjs (or anything
+  // that takes the same POST). Empty: feedback opens the project page, and a report is shared as a file.
+  UI.INBOX_URL = '';
+  // The tag on everything sent: the version, the build, the platform and the area the player picked
+  UI.reportTag = () => {
+    const build = ((document.querySelector('script[src*="core.js"]') || {}).src || '').match(/v=(\d+)/);
+    return {
+      version: FM.VERSION,
+      build: build ? +build[1] : null,
+      platform: window.Capacitor && window.Capacitor.getPlatform ? window.Capacitor.getPlatform() : 'web',
+      saveFormat: FM.SAVE_VERSION,
+      area: (document.getElementById('help-area') || {}).value || '',
+      at: Date.now(),
+    };
+  };
+  const helpSheet = async (title, intro, ph, buttons, opts = {}) => {
     const diag = await UI.diagnostics();
     UI.sheet(
-      `<div class="small dim" style="line-height:1.5">${intro}</div><textarea id="help-text" rows="5" placeholder="${ph}" style="width:100%;margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--ink);font:inherit"></textarea><div class="tiny dim" style="margin-top:8px;white-space:pre-line">${esc(diag)}</div><button class="btn pri block" style="margin-top:12px" data-act="${act}">${btn}</button>`,
+      `<div class="small dim" style="line-height:1.5">${intro}</div>
+      <div class="tiny dim" style="margin-top:10px">What was it about?</div>
+      <select id="help-area" style="width:100%;margin-top:4px;padding:10px;border-radius:12px;border:1px solid var(--line2)">${UI.REPORT_AREAS.map((a) => `<option>${esc(a)}</option>`).join('')}</select>
+      <textarea id="help-text" rows="5" placeholder="${ph}" style="width:100%;margin-top:10px;padding:10px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--ink);font:inherit"></textarea>
+      ${opts.contact ? `<input id="help-contact" type="email" autocomplete="email" placeholder="Your email, only if you would like a reply" style="width:100%;margin-top:8px;padding:10px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--ink);font:inherit">` : ''}
+      <div class="tiny dim" style="margin-top:8px;white-space:pre-line">${esc(diag)}</div>
+      ${buttons.map(([act, label, pri]) => `<button class="btn ${pri ? 'pri' : ''} block" style="margin-top:12px" data-act="${act}">${label}</button>`).join('')}`,
       { title },
     );
+  };
+  // Posts to the inbox; throws when there is none or it does not answer
+  UI.postInbox = async (payload) => {
+    if (!UI.INBOX_URL) throw new Error('No inbox');
+    const r = await fetch(UI.INBOX_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error(`The inbox answered ${r.status}`);
+  };
+  const b64 = (bytes) => {
+    let s = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(s);
   };
   UI.acts.reportProblem = () =>
     helpSheet(
       'Report a problem',
-      'Describe what went wrong. The report is your save as a backup file, with the version details below; it goes wherever you share it (email, messages, a file).',
+      UI.INBOX_URL
+        ? 'Describe what went wrong. The report is sent privately to the developer with your save and the version details below; nothing is made public. You can also keep it as a file to send yourself.'
+        : 'Describe what went wrong. The report is your save as a backup file, with the version details below; it goes wherever you share it (email, messages, a file).',
       'What happened, and what were you doing?',
-      'sendReport',
-      '⬆️ Share the report',
+      UI.INBOX_URL
+        ? [
+            ['sendReport', '⬆️ Send the report', true],
+            ['shareReport', '📎 Keep it as a file instead'],
+          ]
+        : [['shareReport', '⬆️ Share the report', true]],
     );
-  UI.acts.sendReport = async () => {
+  // The report is the save with a "report" section: the note, the tag and the details, so the file says what it is about
+  UI.makeReport = async (kind) => {
     const note = (document.getElementById('help-text') || {}).value || '';
+    if (FM.S && FM.S.user) await FM.Save.write(UI.slot, S());
+    const report = { kind, note, ...UI.reportTag(), diag: await UI.diagnostics() };
+    const f = await FM.Save.exportFile(UI.slot, report);
+    return { report, f, note };
+  };
+  UI.acts.sendReport = async () => {
     try {
-      if (FM.S && FM.S.user) await FM.Save.write(UI.slot, S());
-      const f = await FM.Save.exportFile(UI.slot);
+      const { report, f } = await UI.makeReport('problem');
+      await UI.postInbox({ ...report, name: f.name, file: b64(f.bytes) });
+      UI.closeSheet();
+      UI.toast('Report sent. Thank you', 3500);
+    } catch (e) {
+      console.warn(e);
+      UI.toast('⚠️ Could not send it: use “Keep it as a file instead”', 4500);
+    }
+  };
+  UI.acts.shareReport = async () => {
+    try {
+      const { f, note } = await UI.makeReport('problem');
       const r = await FM.Native.shareFile({
         bytes: f.bytes,
         name: f.name.replace(/^touchline-/, 'touchline-problem-'),
@@ -3566,14 +3638,34 @@
   UI.acts.sendFeedback = () =>
     helpSheet(
       'Send feedback',
-      'An idea, something confusing, something you loved? It opens a new note on the project page with the version details attached; no save is sent.',
+      UI.INBOX_URL
+        ? 'An idea, something confusing, something you loved? It is sent privately to the developer with the version details attached; no save is sent and no account is needed.'
+        : 'An idea, something confusing, something you loved? It opens a new note on the project page with the version details attached; no save is sent.',
       'What would make the game better?',
-      'sendFeedbackGo',
-      '💬 Open the feedback page',
+      [['sendFeedbackGo', UI.INBOX_URL ? '💬 Send the feedback' : '💬 Open the feedback page', true]],
+      { contact: !!UI.INBOX_URL },
     );
   UI.acts.sendFeedbackGo = async () => {
     const note = (document.getElementById('help-text') || {}).value || '';
-    const url = `${UI.FEEDBACK_URL}?title=${encodeURIComponent('Feedback: ' + (note.split('\n')[0].slice(0, 60) || 'my thoughts'))}&body=${encodeURIComponent(`${note}\n\n---\n${await UI.diagnostics()}`)}`;
+    const tag = UI.reportTag();
+    if (UI.INBOX_URL) {
+      try {
+        await UI.postInbox({
+          kind: 'feedback',
+          note,
+          ...tag,
+          contact: ((document.getElementById('help-contact') || {}).value || '').slice(0, 120),
+          diag: await UI.diagnostics(),
+        });
+        UI.closeSheet();
+        return UI.toast('Thank you: your feedback was sent', 3500);
+      } catch (e) {
+        console.warn(e);
+        UI.toast('⚠️ Could not send it just now. Try again later', 4000);
+        return;
+      }
+    }
+    const url = `${UI.FEEDBACK_URL}?title=${encodeURIComponent('Feedback: ' + (note.split('\n')[0].slice(0, 60) || 'my thoughts'))}&body=${encodeURIComponent(`${note}\n\nArea: ${tag.area} · version ${tag.version}\n\n---\n${await UI.diagnostics()}`)}`;
     window.open(url, '_blank', 'noopener');
     UI.closeSheet();
   };

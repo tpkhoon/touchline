@@ -59,7 +59,19 @@
     "realplayers:fetch": "node --max-old-space-size=2048 tools/realplayers-fetch.mjs",
     "realplayers:build": "node --max-old-space-size=4096 tools/realplayers-build.mjs",
     "setpieces": "node --max-old-space-size=6144 tools/wyscout-setpieces.mjs",
-    "clips": "node tools/lastrow-clips.mjs"
+    "clips": "node tools/lastrow-clips.mjs",
+    "test:crawl": "node tools/crawl.mjs",
+    "test:visual": "node tools/visual.mjs",
+    "visual:update": "node tools/visual.mjs --update",
+    "bench:browser": "node tools/browser-bench.mjs",
+    "test:winchance": "node tools/winchance.mjs",
+    "test:saves": "node tools/savelib.mjs",
+    "saves:snapshot": "node tools/savelib.mjs --snapshot",
+    "shots:store": "node tools/storeshots.mjs",
+    "firstbad": "node tools/firstbad.mjs",
+    "coverage": "node tools/coverage.mjs",
+    "i18n": "node tools/i18n.mjs",
+    "inbox": "node tools/inbox.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",
@@ -67,6 +79,8 @@
     "esbuild": "^0.28.2",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
+    "playwright-core": "^1.64.1",
+    "pngjs": "^7.0.0",
     "prettier": "^3.9.9"
   },
   "dependencies": {
