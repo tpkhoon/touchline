@@ -456,7 +456,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-195 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+196 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority: the real database and the accuracy of the ratings it is made with** (the three Ratings rows at the top of the table; eight more are done and listed above). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -661,3 +661,4 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Editor | Try the world before you play it: a "Simulate 5 seasons" button that shows the champions, promotions and relegations of the world being edited, to catch a club made far too strong or a league one club always wins | Alpha 2 |
 | Editor | Phone comfort in the editor: long forms folded into sections (Identity, Ground, Finances, Manager), colour presets for kits beside the free colour picker, and larger tap targets on the small number fields | Alpha 2 |
 | Editor | A wide layout for the editor on a computer and a community library: two columns and the spreadsheet-style editor when the screen is wide (building a whole database on a phone is hard work), and later a library to browse and download packs, like a workshop, with each pack's version, author and licence shown | Alpha 2 |
+| Editor | Club signing rules in the editor: give any club a policy of its own, such as "this club may only sign players of nation X" or "of region or heritage Y" (the Andorran club in a Spanish league that can only sign Andorran players), set on the club's screen and saved with the world; today only Eibar (Basque players) and Andorra (Catalan players) have one, fixed in the code (`D.CLUB_POLICY`). The policy applies to transfers, loans, free agents, pre-contracts, trials and scouting, for you and the AI, as the two existing ones do, and the editor's checks flag a club whose policy leaves it too few players to fill a squad | Alpha 2 |
