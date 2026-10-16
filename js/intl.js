@@ -181,7 +181,7 @@
               .slice(0, 23)
               .map((x) => x.id),
           );
-        if (!top[p.nat].has(p.id)) p.alleg = code;
+        if (!top[p.nat].has(p.id)) ((p.alleg = code), I.natVer++);
       }
     }
   };
@@ -256,12 +256,23 @@
   I.uncapped = (p) => !(p.intl && p.intl.caps > 0);
   I.repFromCoef = (c) => U.clamp(Math.round(60 + ((c - 50) * 10) / 12), 30, 97);
   // (a player a world definition called up for his country comes ahead of better players until p.ntUntil)
+  // (players grouped by nation once, not found by scanning all of them for every nation; the sorted lists are kept until
+  // the roster, the year, the day or a change of allegiance (I.natVer) says they may be out of date)
+  I.natVer = 0;
+  let poolIdx = { S: null, key: '', by: null, top: {} };
   I.pool = (code) => {
-    const yr = S().year;
-    return Object.values(S().players)
-      .filter((p) => I.nationOf(p) === code && !p.retired && W.age(p) >= 17)
+    const s = S(),
+      yr = s.year,
+      key = `${W.rosterVer},${yr},${s.day},${I.natVer}`;
+    if (poolIdx.S !== s || poolIdx.key !== key) {
+      const by = {};
+      for (const id in s.players) (by[I.nationOf(s.players[id])] ||= []).push(s.players[id]);
+      poolIdx = { S: s, key, by, top: {} };
+    }
+    return (poolIdx.top[code] ||= (poolIdx.by[code] || [])
+      .filter((p) => !p.retired && W.age(p) >= 17)
       .sort((a, b) => (b.ntUntil >= yr) - (a.ntUntil >= yr) || b.ca - a.ca)
-      .slice(0, 30);
+      .slice(0, 30)).slice();
   };
   I.rating = (code) => {
     const xi = I.pool(code).slice(0, 11);
@@ -857,7 +868,7 @@
         p.intl = p.intl || { caps: 0, goals: 0, first: s.year };
         const first = p.intl.caps === 0;
         if (tourn && sd.rating && sd.rating[pid] != null) FM.Records.noteComp('T_' + fx.tid, p, sd.rating[pid]);
-        if (first) p.alleg = sd.club.code;
+        if (first) ((p.alleg = sd.club.code), I.natVer++);
         p.intl.caps++;
         (p.intl.by = p.intl.by || {})[s.year] = (p.intl.by[s.year] || 0) + 1;
         // a goalkeeper's record is clean sheets, not goals: kept for a full game (an hour or more) without conceding
@@ -1119,6 +1130,7 @@
   const switchTo = function (p, code, why) {
     const was = I.nationOf(p);
     p.alleg = code;
+    I.natVer++;
     const s = S(),
       nt = s.nteams && s.nteams['n_' + code];
     if (!nt) return;

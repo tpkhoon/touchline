@@ -239,8 +239,24 @@ for (let s = 0; s < SEASONS; s++) {
     marketMoves();
     // The worker transport: the world crosses to the worker and back as JSON
     roundTrip();
+    const windowWas = Sea.windowOpen();
     summary = stats.days % 5 === 4 ? Sea.skipToMatch().summary : Sea.advance(null);
     roundTrip();
+    // every club leaves a transfer window with a playable squad: at least 18 players and two goalkeepers
+    if (windowWas && !Sea.windowOpen()) {
+      const keepers = (id) => W.squad(id).filter((p) => p.pos === 'GK').length;
+      const thin = Object.values(FM.S.clubs).filter((c) => {
+        if (!c.comp || c.parent || (c.sim !== 'full' && c.sim !== 'light')) return false;
+        return W.squad(c.id).length < 18 || keepers(c.id) < 2;
+      });
+      check(
+        !thin.length,
+        `season ${s + 1}: ${thin.length} clubs left the window thin: ${thin
+          .slice(0, 5)
+          .map((c) => `${c.name} (${W.squad(c.id).length}, ${keepers(c.id)} GK)`)
+          .join(', ')}`,
+      );
+    }
     stats.days++;
     if (++daysThisSeason > 400) {
       fails.push(`season ${s + 1} never ended`);

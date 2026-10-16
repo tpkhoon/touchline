@@ -1430,8 +1430,8 @@
         if (!FM.S.staffPool) W.refreshStaffPool();
         W.goUnemployed('start');
       } else W.takeCharge(NG.club, ngProfile());
-      W.seedLegends();
       W.seedHistory();
+      W.seedLegends();
       FM.Stories.welcome();
       UI.slot = NG.slot;
       UI.save();

@@ -2241,7 +2241,7 @@
         id,
         name,
         short,
-        nick: info[1] || '', // its nickname, where it has a well-known one
+        nick: W.nickClash(info[1], [c1, c2]) ? '' : info[1] || '', // its nickname, where it has a well-known one that fits its colours
         founded: info[2] || null, // the year it was founded, where the world has one
         crest: info[3] || null, // a design of its own: [shape, pattern, emblem] (a world definition's)
         city,
@@ -2585,65 +2585,229 @@
     });
   };
 
-  // Fictional historic legends so every club has a past before your save writes its future
   // Every club's own history before the save: five legends, from the years the club existed, with names of its own
-  // country (or heritage), two of them forwards so the club has a scorer to beat
+  // country (or heritage), two of them forwards so the club has a scorer to beat. Their stories come from the club's past
+  // (W.seedHistory, run first): the captain of a title side only where the club won a title, with that year; the record
+  // scorer with his real total; the man who scored the goal that kept the club up in a year it did stay up.
   W.seedLegends = function () {
-    const notes = [
-      'Captained the club to its last title',
-      'Club record goalscorer',
-      'Cult hero: scored in five straight derbies',
-      'One-club man, 17 seasons',
-      'The greatest free signing in club history',
-      'Academy graduate turned legend',
-      'Scored the goal that saved the club from relegation',
-    ];
-    const now = FM.S.year;
-    Object.values(FM.S.clubs)
+    const S = FM.S,
+      now = S.year;
+    // what the archive says about each club: the years of its league titles and cups, and the years it went down
+    const won = {},
+      cupWon = {},
+      down = {};
+    for (const e of S.archive || []) {
+      for (const k in e.comps || {}) (won[e.comps[k].champion] = won[e.comps[k].champion] || []).push(e.year);
+      for (const k in e.cups || {}) (cupWon[e.cups[k].winner] = cupWon[e.cups[k].winner] || []).push(e.year);
+      for (const id of e.relegated || []) (down[id] = down[id] || []).push(e.year);
+    }
+    const near = (c) => {
+      const rivals = Object.values(S.clubs).filter((x) => x.comp === c.comp && x.id !== c.id && x.sim !== 'nation');
+      return rivals.length ? U.pick(rivals).short || U.pick(rivals).name : 'the old rivals';
+    };
+    // [needs, text]: a story with details from the club's real past
+    const stories = {
+      title: [
+        (c, y) => `Captained the ${y} title winners`,
+        (c, y) => `Lifted the league trophy in ${y} after a final-day win`,
+        (c, y) => `The heartbeat of the ${y} championship side`,
+        (c, y) => `Unbeaten at home through the ${y} title season`,
+      ],
+      cup: [
+        (c, y) => `Scored in the ${y} cup final`,
+        (c, y) => `Kept goal through the ${y} cup run`,
+        (c, y) => `Won the cup in ${y} with a late winner in extra time`,
+      ],
+      stay: [
+        (c, y) => `Scored the goal against ${near(c)} that kept the club up in ${y}`,
+        (c, y) => `Led the escape from relegation in ${y}`,
+        (c, y) => `Held the defence together when the club stayed up in ${y}`,
+      ],
+      plain: [
+        (c, y, g) => `Cult hero: scored in five straight derbies`,
+        (c, y, g) => `One-club man, ${g} seasons`,
+        (c, y, g) => `Signed on a free in ${y} and stayed ${g} seasons`,
+        (c, y, g) => `Academy graduate who made his debut in ${y}`,
+        (c, y, g) => `Sold to a bigger club in ${y}, then came home`,
+        (c, y, g) => `Never missed a game in ${y}`,
+        (c, y, g) => `Hat-trick in the ${y} derby, still talked about`,
+        (c, y, g) => `Played through ${g} seasons of rebuilding`,
+        (c, y, g) => `The best the supporters saw in the ${y}s`,
+      ],
+    };
+    Object.values(S.clubs)
       .filter((c) => c.comp && c.sim !== 'nation')
       .forEach((c) => {
         const first = Math.max(c.founded || 1950, 1950),
           pool = c.policy && D.NAME_POOLS[c.policy.heritage];
         const poss = ['ST', 'W', 'ST', 'AM', 'CM', 'CB', 'GK', 'CM', 'FB'];
-        c.legends = [0, 1, 2, 3, 4]
-          .map((i) => {
-            const nat = U.chance(0.88) ? c.nat : U.pick(D.nationCodes());
-            const yrs = U.randi(7, 16),
-              from = U.randi(first, Math.max(first, Math.min(2012, now - yrs - 1))),
-              pos = i < 2 ? U.pick(['ST', 'ST', 'W', 'AM']) : U.pick(poss);
-            const apps = yrs * U.randi(28, 40);
-            const nm = pool
-              ? [U.pick(pool.fn), U.pick(pool.ln)]
-              : [U.pick(D.NATIONS[nat].fn), U.pick(D.NATIONS[nat].ln)];
-            return {
-              name: `${nm[0]} ${nm[1]}`,
-              nat: pool ? c.nat : nat,
-              pos,
-              era: `${from}–${from + yrs}`,
-              apps,
-              goals: Math.round(apps * ({ ST: 0.5, W: 0.24, AM: 0.26, CM: 0.1, FB: 0.04, CB: 0.05 }[pos] || 0.005)),
-              note: notes[(U.hash(c.id) + i) % notes.length],
-            };
-          })
-          .sort((a, b) => b.apps - a.apps);
+        const titles = (won[c.id] || []).filter((y) => y >= first),
+          cups = (cupWon[c.id] || []).filter((y) => y >= first),
+          downs = new Set(down[c.id] || []);
+        c.legends = [0, 1, 2, 3, 4].map((i) => {
+          const nat = U.chance(0.88) ? c.nat : U.pick(D.nationCodes());
+          const yrs = U.randi(7, 16);
+          let from = U.randi(first, Math.max(first, Math.min(2012, now - yrs - 1)));
+          const pos = i < 2 ? U.pick(['ST', 'ST', 'W', 'AM']) : U.pick(poss);
+          const apps = yrs * U.randi(28, 40);
+          const nm = pool ? [U.pick(pool.fn), U.pick(pool.ln)] : [U.pick(D.NATIONS[nat].fn), U.pick(D.NATIONS[nat].ln)];
+          const goals = Math.round(apps * ({ ST: 0.5, W: 0.24, AM: 0.26, CM: 0.1, FB: 0.04, CB: 0.05 }[pos] || 0.005));
+          // the story, from what really happened here; a first pick of the club's past, else a plain one
+          let note;
+          const kind = i === 0 ? 'title' : i === 1 ? 'record' : i === 2 ? 'cup' : i === 3 ? 'stay' : 'plain';
+          if (kind === 'title' && titles.length) {
+            const y = U.pick(titles);
+            from = Math.max(first, Math.min(from, y - 2));
+            note = U.pick(stories.title)(c, y);
+          } else if (kind === 'record') note = `Club record goalscorer with ${Math.max(goals, 90)} goals`;
+          else if (kind === 'cup' && cups.length) note = U.pick(stories.cup)(c, U.pick(cups));
+          else if (kind === 'stay') {
+            const ys = [];
+            for (let y = from + 1; y < from + yrs && y < now; y++) if (!downs.has(y)) ys.push(y);
+            note = ys.length ? U.pick(stories.stay)(c, U.pick(ys)) : U.pick(stories.plain)(c, from + 2, yrs);
+          } else note = U.pick(stories.plain)(c, from + U.randi(1, Math.max(1, yrs - 1)), yrs);
+          return {
+            name: `${nm[0]} ${nm[1]}`,
+            nat: pool ? c.nat : nat,
+            pos,
+            era: `${from}–${from + yrs}`,
+            apps,
+            goals: kind === 'record' ? Math.max(goals, 90) : goals,
+            note,
+            ...(kind === 'record' ? { record: true } : {}),
+          };
+        });
+        // the record scorer really has the most goals of the five
+        const rec = c.legends.find((l) => l.record);
+        const most = Math.max(...c.legends.map((l) => l.goals));
+        if (rec && rec.goals < most) {
+          rec.goals = most + U.randi(3, 20);
+          rec.note = `Club record goalscorer with ${rec.goals} goals`;
+        }
+        c.legends.sort((a, b) => b.apps - a.apps);
       });
   };
 
+  // A nickname that names a colour must be one of the club's colours (a real club's "Canaries" do not fit a red and blue
+  // kit): the names of a colour the kit has none of are dropped
+  const NICK_COLOURS = {
+    Canaries: ['yellow'],
+    Robins: ['red'],
+    Bluebirds: ['blue'],
+    Magpies: ['black', 'white'],
+    Whites: ['white'],
+    Reds: ['red'],
+    Blues: ['blue'],
+    Greens: ['green'],
+    Blacks: ['black'],
+    Yellows: ['yellow'],
+    Hornets: ['yellow'],
+    Oranje: ['orange'],
+  };
+  const colourName = (hex) => {
+    const n = parseInt(String(hex).slice(1), 16),
+      r = (n >> 16) & 255,
+      g = (n >> 8) & 255,
+      b = n & 255,
+      mx = Math.max(r, g, b),
+      mn = Math.min(r, g, b);
+    if (mn > 200) return 'white';
+    if (mx < 70) return 'black';
+    if (mx - mn < 30) return 'grey';
+    const d = mx - mn,
+      h = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4,
+      deg = h * 60;
+    return deg < 15 || deg >= 345
+      ? 'red'
+      : deg < 40
+        ? 'orange'
+        : deg < 70
+          ? 'yellow'
+          : deg < 170
+            ? 'green'
+            : deg < 260
+              ? 'blue'
+              : 'purple';
+  };
+  W.nickClash = (nick, colors) => {
+    const need = NICK_COLOURS[nick];
+    if (!need) return false;
+    const have = colors.map(colourName);
+    return !need.some((x) => have.includes(x));
+  };
+
+  // How a club's standing changed over the years, shaped by who it is: a fallen giant was high decades ago and has declined,
+  // an oil-backed club was low until a recent jump, the old names always stood fairly high; every club also rises and falls
+  // a little (a slow wave of its own, from its id). The path ends at today's reputation, so the past leads to the present.
+  const smooth = (x) => {
+    const t = U.clamp(x, 0, 1);
+    return t * t * (3 - 2 * t);
+  };
+  W.repPath = function (c, ago) {
+    const h = U.hash(c.id);
+    const shape =
+      { fallen: 24 * smooth((ago - 4) / 14), oil: -26 * smooth(ago / 20), historic: 6, giant: 4, youth: -2 }[
+        c.identity
+      ] || 0;
+    const wave = 4.5 * Math.sin(ago / 3.1 + (h % 97)) + 3 * Math.sin(ago / 1.7 + (h % 53)) * smooth(ago / 3);
+    return c.rep + shape + wave;
+  };
+
   // Thirty seasons of league champions, runners-up and domestic cup winners before the save begins, so the archive, the club pages
-  // and the honours cards have a past. A club wins in proportion to its standing (and the weight of its history), a champion tends
-  // to win again (a dynasty), and a club cannot win before it was founded; the champions it produces are the clubs the world's own
-  // ceilings say could have been champions.
+  // and the honours cards have a past. Each club has a reputation path (W.repPath) ending at today's; every season the clubs of a
+  // country are ranked by where their path stood then, the best filling the top division, the next the second and so on, with the
+  // present league structure as the ending (the last few seasons keep today's divisions), so clubs go up and down, a fallen giant
+  // has titles from the years it stood high, and a club cannot win before it was founded. A champion tends to win again (a dynasty).
   W.seedHistory = function (years = 30) {
     const S = FM.S;
     // (a world with past seasons of its own has no generated ones, unless its definition asks for the years before to be made up)
     if (S.archive.length && !(S.histFill && S.archive.every((e) => e.imported))) return 0;
     const have = new Set(S.archive.map((e) => e.year));
     const clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim !== 'nation' && !c.parent);
-    const weight = (c, y) => {
-      if (c.founded && c.founded > y) return 0;
-      const hist =
-        { giant: 1.8, historic: 1.5, oil: 0.9, fallen: 1.4, fan: 0.8, youth: 0.9, selling: 0.9 }[c.identity] || 1;
-      return Math.exp((c.rep - 55) / 7) * hist;
+    const leagues = W.leagues();
+    // each country's ladder: its divisions from the top, as long as there is one division on a level
+    const ladders = {};
+    for (const comp of leagues) {
+      if (typeof comp.tier !== 'number') continue;
+      const lad = (ladders[comp.nat] = ladders[comp.nat] || {});
+      (lad[comp.tier] = lad[comp.tier] || []).push(comp);
+    }
+    const ladder = {};
+    for (const nat in ladders) {
+      const rungs = [];
+      for (let t = 1; ladders[nat][t] && ladders[nat][t].length === 1; t++) rungs.push(ladders[nat][t][0]);
+      if (rungs.length > 1) ladder[nat] = rungs;
+    }
+    const tierOf = (c) => {
+      const lad = ladder[c.nat];
+      return lad ? lad.findIndex((x) => x.id === c.comp) : -1;
+    };
+    // who stood in which division in a season (year `ago` seasons back): a map from division id to its clubs
+    const season = (year) => {
+      const ago = S.year - year,
+        by = {};
+      for (const comp of leagues) by[comp.id] = [];
+      const loose = [];
+      for (const c of clubs) {
+        if (tierOf(c) < 0 || (c.founded && c.founded > year)) loose.push(c);
+      }
+      const free = new Set(loose.map((c) => c.id));
+      for (const c of loose) if (!c.founded || c.founded <= year) by[c.comp].push(c); // (outside a ladder: where it is today)
+      for (const nat in ladder) {
+        const lad = ladder[nat],
+          score = (c) => W.repPath(c, ago) - tierOf(c) * 200 * Math.max(0, 1 - ago / 8);
+        const here = clubs
+          .filter((c) => c.nat === nat && !free.has(c.id))
+          .sort((a, b) => score(b) - score(a) || (a.id < b.id ? -1 : 1));
+        // each division keeps today's size (a club not yet founded leaves a place for the next one)
+        let at = 0;
+        for (const comp of lad) {
+          const size = clubs.filter((c) => c.comp === comp.id).length;
+          by[comp.id] = here.slice(at, at + size);
+          at += size;
+        }
+      }
+      return by;
     };
     const prev = {};
     const cups = Object.values(S.comps).filter((x) => x.type === 'cup' && x.nat);
@@ -2651,22 +2815,34 @@
     for (let i = years; i >= 1; i--) {
       if (have.has(S.year - i)) continue;
       const year = S.year - i,
-        entry = {
-          year,
-          label: `${year}/${String(year + 1).slice(2)}`,
-          comps: {},
-          cups: {},
-          promoted: [],
-          relegated: [],
-          upsets: [],
-          transfers: [],
-          user: null,
-          seeded: true,
-        };
-      for (const comp of W.leagues()) {
-        const pool = clubs.filter((c) => c.comp === comp.id);
+        ago = i,
+        divs = season(year),
+        next = season(year + 1);
+      const entry = {
+        year,
+        label: `${year}/${String(year + 1).slice(2)}`,
+        comps: {},
+        cups: {},
+        promoted: [],
+        relegated: [],
+        upsets: [],
+        transfers: [],
+        user: null,
+        seeded: true,
+      };
+      // the clubs that changed division at the end of the season
+      for (const nat in ladder) {
+        const lad = ladder[nat];
+        lad.forEach((comp, ti) => {
+          const was = new Set(divs[comp.id].map((c) => c.id));
+          if (ti > 0) for (const c of next[lad[ti - 1].id]) if (was.has(c.id)) entry.promoted.push(c.id);
+          if (ti < lad.length - 1) for (const c of next[lad[ti + 1].id]) if (was.has(c.id)) entry.relegated.push(c.id);
+        });
+      }
+      for (const comp of leagues) {
+        const pool = divs[comp.id];
         if (pool.length < 2) continue;
-        const w = (c) => weight(c, year) * (prev[comp.id] === c.id ? 2.4 : 1);
+        const w = (c) => Math.exp((W.repPath(c, ago) - 55) / 8) * (prev[comp.id] === c.id ? 2.4 : 1);
         const champ = U.wpick(pool, w) || pool[0];
         const second = U.wpick(
           pool.filter((c) => c.id !== champ.id),
@@ -2684,10 +2860,10 @@
         };
       }
       for (const cup of cups) {
-        const pool = clubs.filter((c) => c.nat === cup.nat);
+        const pool = clubs.filter((c) => c.nat === cup.nat && !(c.founded && c.founded > year));
         if (pool.length < 2) continue;
         // a cup is kinder to the small: the weight is flattened
-        const w = (c) => Math.sqrt(weight(c, year)) + 0.2;
+        const w = (c) => Math.sqrt(Math.exp((W.repPath(c, ago) - 55) / 8)) + 0.2;
         const win = U.wpick(pool, w);
         entry.cups[cup.id] = { name: cup.name, winner: win.id };
         win.titles = win.titles || {};
