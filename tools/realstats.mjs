@@ -105,6 +105,54 @@ if ('test' in args) {
     R.convert({ ...cm, progressivePasses: 260 }).ca > R.convert({ ...cm, progressivePasses: 80 }).ca,
     'progressive passes do not count',
   );
+  // several seasons: the latest counts most
+  const good = { goals: 22, xg: 20, shots: 100 },
+    poor = { goals: 6, xg: 7, shots: 60 };
+  const base = { pos: 'ST', age: 26, league: 'D1', minutes: 2700 };
+  const rising = R.convert({
+    ...base,
+    seasons: [
+      { minutes: 2700, ...good },
+      { minutes: 2700, ...poor },
+      { minutes: 2700, ...poor },
+    ],
+  });
+  const fading = R.convert({
+    ...base,
+    seasons: [
+      { minutes: 2700, ...poor },
+      { minutes: 2700, ...poor },
+      { minutes: 2700, ...good },
+    ],
+  });
+  check(rising.ca > fading.ca, 'the latest season does not count most');
+  // pace is not guessed from dribbles; it comes from position and age (and a top speed when there is one)
+  const wing = { pos: 'W', age: 24, minutes: 2700, league: 'D1', goals: 8, xg: 7 };
+  const dr = [R.convert({ ...wing, dribbles: 140 }).attrs, R.convert({ ...wing, dribbles: 20 }).attrs];
+  check(
+    Math.abs(dr[0].pace - dr[1].pace) < Math.abs(dr[0].dribbling - dr[1].dribbling) / 3,
+    'pace still follows dribbles',
+  );
+  check(
+    R.convert({ ...wing, topSpeed: 35.5 }).attrs.pace > R.convert({ ...wing, topSpeed: 31 }).attrs.pace,
+    'a measured top speed is ignored',
+  );
+  check(R.convert({ ...wing, age: 34 }).attrs.pace < R.convert(wing).attrs.pace, 'pace does not fall with age');
+  // what cannot be measured is flagged
+  const lc = R.convert(wing);
+  check(
+    lc.lowConfidence.includes('composure') && lc.lowConfidence.includes('pace'),
+    'weak proxies are not flagged low confidence',
+  );
+  check(lc.attrConfidence.finishing > lc.attrConfidence.composure, 'finishing is not trusted more than composure');
+  // potential: a range, with a bonus for a young regular in a strong league
+  const kid = { pos: 'CM', age: 19, league: 'D1', passPct: 86, passes: 1500 };
+  const regular = R.convert({ ...kid, minutes: 2600 }),
+    bench = R.convert({ ...kid, minutes: 400 });
+  check(regular.paRange[0] <= regular.pa && regular.pa <= regular.paRange[1], 'potential is outside its own range');
+  check(regular.paRange[0] >= regular.ca, 'the range starts below his ability');
+  check(regular.pa - regular.ca > bench.pa - bench.ca, 'a young regular has no more room than a bench player');
+  check(R.convert({ ...kid, minutes: 2600, pa: 80 }).paRange.join() === '80,80', 'a given potential is not exact');
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'Real-stats converter: all checks passed.');
   process.exit(fails.length ? 1 : 0);
 }

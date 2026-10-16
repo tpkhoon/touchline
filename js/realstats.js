@@ -3,7 +3,8 @@
 // random numbers, no save needed), so the world editor, club data packs and the historical importer all build on it.
 //
 //   FM.RealStats.convert({ pos: 'ST', age: 24, minutes: 2700, league: 'D1', goals: 18, xg: 15.2, ... })
-//     → { pos, ca, pa, attrs, confidence, notes }
+//     → { pos, ca, pa, paRange, attrs, confidence, attrConfidence, lowConfidence, notes }
+//   several seasons: pass seasons: [latest, the one before, ...], each with its own counts, weighted 3 : 2 : 1
 //
 // How it works: every count is turned into a per-90 rate and compared with what is typical for his position group
 // (z-scores against the typical player of his position group: eight groups, GK, CB, FB, DM, CM, AM, W and ST, measured per
@@ -185,7 +186,7 @@
     strength: { aer: 0.7, clr: 0.3 },
     workRate: { prs: 0.6, tkl: 0.4 },
     composure: { over: 0.6, pct: 0.4 }, // over = goals above what his chances were worth
-    pace: { drb: 0.5, top: 0.5 }, // top = a measured top speed, when there is one
+    pace: { top: 1 }, // top = a measured top speed; without one pace comes from his position and age, not from his dribbles
     stamina: { mins: 0.6, prs: 0.4 }, // mins = how much he plays
     reflexes: { svp: 0.7, sav: 0.3 },
     handling: { svp: 0.5, cgp: -0.3, clr: 0.2 },
@@ -211,7 +212,31 @@
   const num = (v) => (v == null || v === '' || Number.isNaN(+v) ? null : +v);
 
   // The numbers as per-90 rates under the short metric names
+  // Several seasons count in the order given (the latest first) with weights 3 : 2 : 1, each by the minutes he played in it:
+  // one season is noisy, goals most of all
+  const SEASON_W = [3, 2, 1, 1];
   RS.rates = function (inp) {
+    if (Array.isArray(inp.seasons) && inp.seasons.length) {
+      const parts = inp.seasons.map((s, i) => ({
+        r: RS.rates({ ...s, per90: s.per90 ?? inp.per90, possession: s.possession ?? inp.possession }),
+        w: SEASON_W[i] ?? 1,
+      }));
+      const out = {};
+      const keys = new Set(parts.flatMap((p) => Object.keys(p.r)));
+      keys.delete('mins');
+      for (const k of keys) {
+        let s = 0,
+          sw = 0;
+        for (const p of parts)
+          if (p.r[k] != null) {
+            s += p.r[k] * p.w * p.r.mins;
+            sw += p.w * p.r.mins;
+          }
+        if (sw) out[k] = s / sw;
+      }
+      out.mins = parts.reduce((n, p) => n + p.r.mins, 0);
+      return out;
+    }
     const mins = Math.max(90, num(inp.minutes) ?? (num(inp.matches) ? inp.matches * 80 : 1800));
     const pick = (...names) => {
       for (const n of names) if (num(inp[n]) != null) return num(inp[n]);
@@ -325,7 +350,9 @@
     }
     // age: legs go first, then stamina; the young have not filled out
     if (pos !== 'GK') {
-      if (age >= 31) a.pace -= (age - 30) * 0.45;
+      if (age >= 28 && age <= 30) a.pace -= (age - 27) * 0.2;
+      if (age >= 31) a.pace -= 0.6 + (age - 30) * 0.45;
+      if (age <= 20) a.pace -= (21 - age) * 0.15; // (the young have not reached their top speed)
       if (age >= 33) a.stamina -= (age - 32) * 0.3;
       if (age <= 20) a.strength -= (21 - age) * 0.4;
       if (age >= 28) a.composure += Math.min(2, (age - 27) * 0.3);
@@ -340,12 +367,33 @@
     }
     for (const k of D.ATTRS) a[k] = Math.round(U.clamp(a[k], 1, 20) * 10) / 10;
 
+    // how far each attribute can be trusted: measured from numbers that bear on it, scaled by the evidence; the ones with only
+    // weak proxies (composure, vision, work rate) or none (pace without a top speed, stamina) are flagged for scouts and the editor
+    const WEAK = { composure: 0.45, vision: 0.5, workRate: 0.6, stamina: 0.5, positioning: 0.6, technique: 0.7 };
+    const attrConfidence = {};
+    for (const k of D.ATTRS) {
+      const src = ATTR_FROM[k];
+      let has = 0,
+        tot = 0;
+      if (src) for (const m in src) ((tot += src[m]), zz[m] != null && m !== 'mins' && (has += src[m]));
+      let c = tot ? (has / tot) * conf : 0.15;
+      if (WEAK[k]) c *= WEAK[k];
+      attrConfidence[k] = +c.toFixed(2);
+    }
+    const lowConfidence = D.ATTRS.filter(
+      (k) => attrConfidence[k] < 0.3 && !(pos !== 'GK' && (k === 'reflexes' || k === 'handling')),
+    );
+    if (lowConfidence.length) notes.push(`Low confidence: ${lowConfidence.join(', ')}.`);
+    const ctx = { mins: r.mins, strength };
     return {
       pos,
       ca: W.calcCA({ attrs: a }, pos),
-      pa: RS.potential(ca, age, inp.pa),
+      pa: RS.potential(ca, age, inp.pa, ctx),
+      paRange: RS.potentialRange(ca, age, inp.pa, ctx),
       attrs: a,
       confidence: +conf.toFixed(2),
+      attrConfidence,
+      lowConfidence,
       notes,
     };
   };
@@ -353,12 +401,24 @@
   // Potential: what a player of this age and level can still become (a given value wins). Deterministic: the typical gap
   // the game's own generator uses, not a roll of the dice.
   const GAP = { 17: 12, 18: 11, 19: 9, 20: 8, 21: 6, 22: 5, 23: 4, 24: 3, 25: 2, 26: 1 };
-  RS.potential = function (ca, age, given) {
+  // ctx { mins, strength }: a young player getting regular minutes in a strong league is the strongest real-world sign of a
+  // future top player, so his room to grow is larger
+  RS.potential = function (ca, age, given, ctx) {
     if (num(given) != null) return Math.round(U.clamp(given, ca, 96));
-    const gap = age >= 27 ? 0 : (GAP[Math.max(17, age)] ?? 13);
+    let gap = age >= 27 ? 0 : (GAP[Math.max(17, age)] ?? 13);
+    if (ctx && age <= 22 && ctx.mins >= 1800) gap += ctx.strength >= 70 ? 2 : ctx.strength >= 55 ? 1 : 0;
     // the very good have less room above them
     const room = ca >= 85 ? 0.5 : ca >= 75 ? 0.75 : 1;
     return Math.round(U.clamp(ca + gap * room, ca, 96));
+  };
+
+  // Potential as a range, not a number: wide for the young (anything can happen), narrow for the settled; [low, high] around
+  // the likeliest value, never below his ability
+  RS.potentialRange = function (ca, age, given, ctx) {
+    const pa = RS.potential(ca, age, given, ctx);
+    if (num(given) != null) return [pa, pa];
+    const hw = age <= 19 ? 7 : age <= 21 ? 6 : age <= 23 ? 4 : age <= 25 ? 3 : 1.5;
+    return [Math.max(ca, Math.round(pa - hw)), Math.min(96, Math.round(pa + hw / 2))];
   };
 
   // ---------- Many rows at once (CSV text or an array of objects) ----------
