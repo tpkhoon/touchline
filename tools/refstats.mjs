@@ -3,7 +3,13 @@
 // expected goals and assists, shots, completed passes and pass completion, key passes, progressive passes, tackles,
 // interceptions, clearances, dribbles, aerial duels, pressures, saves, save % and goals conceded.
 //
-//   node --max-old-space-size=4096 tools/refstats.mjs --data <folder with events/> [--min 300] [--write] [--players <file.json>]
+//   node --max-old-space-size=6144 tools/refstats.mjs --data <folder with events/> [--min 300] [--write] [--players <file.json>]
+//        [--wyscout <folder with events_*.json>]
+//
+// --wyscout widens the outfield groups with the Wyscout public dataset (tools/refstats-wyscout.mjs: 1,826 league matches, minutes and
+// positions worked out from the events) for the four counts the providers define alike, goals, assists, shots and pass completion;
+// each is the average of the two sources by minutes, the spread pooled. The other counts stay StatsBomb's: tackles, interceptions,
+// key and progressive passes and the like are counted differently (completed passes of a centre-back: 51 a game in one, 38 in the other).
 //
 // --players also writes each player's own totals (per name, all groups together, the defensive counts already scaled for
 // possession) to a file kept outside the repository: tools/realplayers-build.mjs reads it to rate the players of the real world
@@ -254,6 +260,10 @@ for (const g of ['GK', 'CB', 'FB', 'DM', 'CM', 'AM', 'W', 'ST']) {
     G[m] = [r2(mean), r2(Math.max(sd, 0.01))];
   }
   out.groups[g] = G;
+}
+if (args.wyscout && args.wyscout !== true) {
+  const { wyscoutGroups, mergeWyscout } = await import('./refstats-wyscout.mjs');
+  mergeWyscout(out, wyscoutGroups(String(args.wyscout)), r2);
 }
 console.log(JSON.stringify(out, null, 1));
 if (args.players) {
