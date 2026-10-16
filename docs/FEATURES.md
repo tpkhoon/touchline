@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-428 features are playable in the web prototype today. Build = the build that added it.
+429 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -458,6 +458,7 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | World editor from the title screen: a World editor button beside New Career, with Back returning to the title; the editor still works on the database staged for the new-career flow | Editor improvements |
 | Editor | World editor, the clubs' own squads: Build the squads to edit them, on the editor home, makes the world as a new career does (about half a minute) and keeps its 20,448 players in the definition (a fixed world that replaces squads), so each club's Players screen lists the whole squad with every player editable (name, attributes, contract, potential) and the world gives the same players every time; the academy still makes its young players afresh. A button goes back to squads made fresh. The file is large (about 20,000 players) | Editor improvements |
 | Editor | World editor, phone comfort: a club's form folded into four sections (Identity, Ground, League and signing rule, Manager and rival) with a header 48 px tall, and number fields and sliders at least 48 px tall; the colour presets were added earlier | Editor improvements |
+| Editor | World editor, tabs, wider undo and rude names: the home screen in five tabs (World, Clubs, Players, Competitions, History) instead of one long page; Changes lists and undoes a league's name or short name, a world rule, the players made or changed (as a whole), a club taken out (it is put back) and a club added (it is removed), as well as a club's fields; a club name or short name with a rude word in it is flagged as you type (the name generator's word list, now in js/names.js too) | Editor improvements |
 
 ## Yet to be added
 
@@ -657,9 +658,9 @@ Design principle from here: don't make the game deeper by adding more screens �
 | Clubs | Accents on Vietnamese place names (Bình Mai, Tuyên Lâm: club words such as "Thép" already have them) and a Vietnamese subset of the bundled fonts, so accented letters do not fall back to another font on a phone | Alpha 2 |
 | Tooling | A name profile for each nation: one data file per nation holding surnames with weights, given names by generation, name order, known-as and shirt-name rules, communities with their shares (Singapore, Malaysia and others) and whether accents are used, built on what `tools/namelib.mjs` and `js/names.js` have; with the name test extended to flag near-copies of famous players and to check each nation's surname spread against its weights | Alpha 2 |
 | Editor | Edit a running save: an in-game editor for a save in progress, for fixing a typo or a wrong rating, with such saves marked "edited" so the players who care can see it (the editor itself is now on the title screen) | Alpha 2 |
-| Editor | Get around the editor: tabs for World, Clubs, Players, Competitions and History instead of one long page with 64 leagues, and a search on the long pickers (the 90-nation list on each club's screen); the search over clubs, leagues and nations that the home screen has now reaching players and competitions | Alpha 2 |
-| Editor | Undo for everything, not only clubs: the Changes screen also listing league, cup, player, manager and rule changes, each with its own Undo, and a way to keep the list with the pack so a shared pack shows what it changed from the base world | Alpha 2 |
+| Editor | Get around the editor, the rest: a search on the long pickers (the 90-nation list on the player screen) and the home search reaching players and competitions (the five tabs are done) | Alpha 2 |
+| Editor | Undo for everything, the rest: cups, managers, staff and single players listed in Changes with their own Undo (clubs, leagues, world rules, the players as a whole and clubs put back or taken out are done), and a way to keep the list with the pack so a shared pack shows what it changed from the base world | Alpha 2 |
 | Editor | Bulk tools, the rest: give a whole nation newly generated names in one tap (reputation, find and replace, copy and swap are done) | Alpha 2 |
-| Editor | More checks as you type: a short name that is rude (the name generator already screens its own), and the problems list of the home screen shown beside the field it comes from; the club checks of the club screen reaching leagues, cups and players | Alpha 2 |
+| Editor | More checks as you type, the rest: the problems list of the home screen shown beside the field it comes from, and the club checks reaching leagues, cups and players (a rude name or short name is flagged on a club now) | Alpha 2 |
 | Editor | Try the world before you play it: a "Simulate 5 seasons" button that shows the champions, promotions and relegations of the world being edited, to catch a club made far too strong or a league one club always wins | Alpha 2 |
 | Editor | A wide layout for the editor on a computer and a community library: two columns and the spreadsheet-style editor when the screen is wide (building a whole database on a phone is hard work), and later a library to browse and download packs, like a workshop, with each pack's version, author and licence shown | Alpha 2 |

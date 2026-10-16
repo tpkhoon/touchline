@@ -51,6 +51,7 @@
       def: cur && cur.ok && cur.def ? clone(cur.def) : WD.fromStatic({ name: 'My world' }),
       start: null, // the world as it was when the editor opened: what the Changes screen compares with
       hq: '',
+      tab: 'world',
       view: 'home',
       lid: null,
       cid: null,
@@ -418,7 +419,7 @@
     for (const c of ED.def.clubs) {
       const s = start.find((x) => x.id === c.id);
       if (!s) {
-        out.push({ text: `${c.name}: a club you added`, cid: c.id });
+        out.push({ text: `${c.name}: a club you added`, kind: 'added', cid: c.id });
         continue;
       }
       for (const [k, label] of CLUB_FIELDS) {
@@ -430,15 +431,66 @@
       }
     }
     for (const s of start)
-      if (!ED.def.clubs.some((c) => c.id === s.id)) out.push({ text: `${s.name}: taken out of the world` });
+      if (!ED.def.clubs.some((c) => c.id === s.id))
+        out.push({ text: `${s.name}: taken out of the world`, kind: 'putback', cid: s.id });
+    for (const l of ED.def.leagues) {
+      const s = ((ED.start && ED.start.leagues) || []).find((x) => x.id === l.id);
+      if (!s) continue;
+      for (const [k, label] of [
+        ['name', 'Name'],
+        ['short', 'Short name'],
+      ])
+        if (s[k] !== l[k])
+          out.push({
+            text: `${s.name}: league ${label.toLowerCase()} ${s[k]} → ${l[k]}`,
+            kind: 'league',
+            lid: l.id,
+            k,
+          });
+    }
+    for (const k of Object.keys(ED.def.rules || {}))
+      if (JSON.stringify(ED.def.rules[k]) !== JSON.stringify(((ED.start && ED.start.rules) || {})[k]))
+        out.push({
+          text: `World rule ${k}: ${JSON.stringify(((ED.start && ED.start.rules) || {})[k])} → ${JSON.stringify(ED.def.rules[k])}`,
+          kind: 'rule',
+          k,
+        });
     const made = (ED.def.players || []).length,
       was = ((ED.start && ED.start.players) || []).length;
-    if (made !== was) out.push({ text: `Players made: ${was} → ${made}` });
+    if (
+      made !== was ||
+      JSON.stringify((ED.def.players || []).slice(0, 50)) !==
+        JSON.stringify(((ED.start && ED.start.players) || []).slice(0, 50))
+    )
+      out.push({ text: `Players made or changed: ${was} → ${made}`, kind: 'players' });
     return out;
   };
   const changeSummary = () => {
     const n = changesList().length;
     return n ? `${n} change${n === 1 ? '' : 's'} since you opened the editor` : 'nothing changed yet';
+  };
+  // Undo of the changes that are not a club's field: a league's name, a world rule, the players, a club put back or taken out again
+  UI.acts.edUndoMore = (d) => {
+    const st = ED.start;
+    if (d.kind === 'league') {
+      const l = leagueOf(d.lid),
+        s = st.leagues.find((x) => x.id === d.lid);
+      if (l && s) l[d.k] = s[d.k];
+    } else if (d.kind === 'rule') {
+      if (st.rules[d.k] === undefined) delete ED.def.rules[d.k];
+      else ED.def.rules[d.k] = clone(st.rules[d.k]);
+    } else if (d.kind === 'players') {
+      ED.def.players = clone(st.players || []);
+      ED.def.meta.players = st.meta.players;
+    } else if (d.kind === 'putback') {
+      const s = st.clubs.find((x) => x.id === d.cid);
+      if (s && !ED.def.clubs.some((c) => c.id === d.cid)) ED.def.clubs.push(clone(s));
+      ED.def.removeClubs = (ED.def.removeClubs || []).filter((id) => id !== d.cid);
+    } else if (d.kind === 'added') {
+      dropClub(d.cid);
+    }
+    ED.err = [];
+    UI.worldEditor();
   };
   UI.acts.edUndo = (d) => {
     const s = ED.start.clubs.find((x) => x.id === d.cid),
@@ -463,7 +515,7 @@
           ? list
               .map(
                 (x) =>
-                  `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:10px"><div class="grow small">${esc(x.text)}</div>${x.k ? `<button class="btn sm" data-act="edUndo" data-cid="${esc(x.cid)}" data-k="${esc(x.k)}">Undo</button>` : ''}</div></div>`,
+                  `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:10px"><div class="grow small">${esc(x.text)}</div>${x.kind ? `<button class="btn sm" data-act="edUndoMore" data-kind="${x.kind}" data-cid="${esc(x.cid || '')}" data-lid="${esc(x.lid || '')}" data-k="${esc(x.k || '')}">Undo</button>` : x.k ? `<button class="btn sm" data-act="edUndo" data-cid="${esc(x.cid)}" data-k="${esc(x.k)}">Undo</button>` : ''}</div></div>`,
               )
               .join('')
           : '<div class="empty">Nothing changed yet.</div>'
@@ -488,6 +540,7 @@
       w.push('Another club of this league has the same name.');
     if (short && others.some((x) => (x.short || '').toUpperCase() === short))
       w.push(`Another club of this league is already "${short}".`);
+    if (D.isRude(name) || D.isRude(short)) w.push('That name is one the game will not use: it contains a rude word.');
     if (nick && FM.W.nickClash(nick, cols)) w.push(`The nickname "${nick}" names a colour the kit does not have.`);
     const [a, b] = [rgb(cols[0]), rgb(cols[1])];
     if (Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 60) w.push('The two colours are too alike to tell apart.');
@@ -496,12 +549,36 @@
       : '';
   };
 
+  // The home screen in five tabs, so a world of 64 leagues is not one long page
+  const TABS = [
+    ['world', 'World'],
+    ['clubs', 'Clubs'],
+    ['players', 'Players'],
+    ['comp', 'Competitions'],
+    ['history', 'History'],
+  ];
+  const hide = (k) => (ED.tab === k ? '' : 'display:none;');
+  const BEYOND_TAB = {
+    cups: 'comp',
+    calendar: 'comp',
+    staffhub: 'comp',
+    intl: 'comp',
+    library: 'history',
+    history: 'history',
+    changes: 'world',
+  };
+  UI.acts.edTab = (d) => {
+    ED.tab = d.v;
+    UI.worldEditor();
+  };
   const homeView = () => {
     const s = status(),
       m = ED.def.meta;
     const nations = [...new Set(ED.def.leagues.map((l) => l.nat))];
     const bad = s.chk.errors.length;
     return `<div class="h1" style="margin-top:3vh">World editor</div><div class="tag">Change the clubs and leagues your world starts from. Nothing changes in the game until you use the world.</div>
+      <div class="seg" style="margin:10px 0 0;overflow-x:auto">${TABS.map(([k, t]) => `<button class="${ED.tab === k ? 'on' : ''}" data-act="edTab" data-v="${k}">${t}</button>`).join('')}</div>
+      <div style="${hide('world')}">
       <div class="ng-label">Name of this world</div><input type="text" id="ed-wname" maxlength="40" value="${esc(m.name || '')}">
       <div class="ng-label">Author</div><input type="text" id="ed-wauthor" maxlength="40" value="${esc(m.author || '')}">
       <div class="ng-label">Description</div><input type="text" id="ed-wdesc" maxlength="120" value="${esc(m.description || '')}">
@@ -582,7 +659,7 @@
         ['on', 'On'],
         ['off', 'Off: closed leagues'],
       ])}
-      <div class="ng-label">Beyond the clubs</div>
+      </div>
       ${[
         ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names, formats and rules`],
         ['calendar', '📅 Season calendar', calendarSummary()],
@@ -602,9 +679,10 @@
       ]
         .map(
           ([v, t, s]) =>
-            `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="${v === 'library' ? 'edLibrary' : 'edView'}" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
+            `<div class="card tap" style="margin:6px 0;padding:10px 12px;${hide(BEYOND_TAB[v])}" data-act="${v === 'library' ? 'edLibrary' : 'edView'}" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
         )
         .join('')}
+      <div style="${hide('players')}">
       <div class="ng-label">Players you make</div>
       <div class="seg" style="margin:0">${[
         ['overlay', 'Add to the squads'],
@@ -619,6 +697,8 @@
       ${squadsCard()}
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">⬇️ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">🆓 Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
+      </div>
+      <div style="${hide('clubs')}">
       <div class="ng-label">Find</div><div class="ng-find"><input type="search" id="ed-hq" placeholder="Find a club, league or nation" value="${esc(ED.hq || '')}" autocomplete="off"></div>
       <div id="ed-hres">${homeFind(ED.hq || '')}</div>
       <div class="ng-label">Leagues — tap one to edit its clubs</div>
@@ -635,6 +715,7 @@
         })
         .join('')}
       <div class="actions" style="margin-top:16px"><button class="btn sm" data-act="edNewLeague">＋ Add a league</button><button class="btn sm" data-act="edReset">Start again from the built-in world</button></div>
+      </div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edExport">⬆️ Save as file</button><button class="btn sm pri grow" data-act="edUse">Use this world</button></div>`;
   };
 

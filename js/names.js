@@ -570,6 +570,24 @@
     ],
   };
   D.mkPool = P;
+  // Words no club name or short name may contain (matched with accents, spaces and punctuation removed, so a word split across two
+  // parts is caught); the short ones only count as a whole word, so real names such as Dickens or Cocker stay. The same lists as
+  // tools/namelib.mjs, which screens the generated names.
+  const RUDE_PART =
+    'cabron puta puto mierda coño joder pendej culo polla verga chinga marica maricon zorra gilipoll hijoput cojon capullo merde putain salope connard encule foutre bordel batard nique scheiss scheisse fotze wichser arsch hure schwuchtel hurensohn votze cazzo merda vaffa troia stronz puttana vaffanculo minchia fuck shit cunt twat wank bollock bastard piss slut whore nigg porra caralho buceta viado piroca kurwa pierdol chuj jebac pizda sikmek orospu amcik yarrak kokot hovno'.split(
+      ' ',
+    );
+  const RUDE_WORD = new Set('dick dicks cock cocks fag fags tit tits ass arse anus sex pene bite con cul'.split(' '));
+  const plain = (s) =>
+    String(s)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  D.isRude = (text) => {
+    const t = plain(text);
+    if (RUDE_PART.some((w) => t.replace(/[^a-z]/g, '').includes(w))) return true;
+    return t.split(/[^a-z]+/).some((w) => RUDE_WORD.has(w));
+  };
   // The nation's own culture widens its first-name and surname pools (no duplicates); nations added later (js/nations.js)
   // call it again
   const dedupe = (a) => [...new Set(a)];
