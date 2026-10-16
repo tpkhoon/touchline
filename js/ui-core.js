@@ -746,21 +746,30 @@
       <div class="logo">TOUCH<br>LINE<span>.</span></div>
       <div class="tag">${esc(D.HOOK)}</div>
       <div class="actions">
-        ${cont ? `<button class="btn pri block" data-act="continue" data-n="${cont.n}">▶ Continue — ${esc(cont.m.club.name)} · ${cont.m.year}</button>` : ''}
-        <button class="btn ${cont ? '' : 'pri'} block" data-act="newCareer">＋ New Career</button>
-        ${slots
-          .filter((s) => s.m && s !== cont)
-          .map(
-            (s) =>
-              `<button class="btn block" data-act="continue" data-n="${s.n}">Slot ${s.n}: ${esc(s.m.club.name)} · ${s.m.year}</button>`,
-          )
-          .join('')}
+        ${cont ? `<button class="btn pri block" data-act="continue" data-n="${cont.n}">▶ Continue: ${esc(cont.m.club.name)} · ${cont.m.year}</button>` : ''}
+        ${cont ? '<button class="btn block" data-act="loadPick">📂 Load a save</button>' : ''}
+        <button class="btn ${cont ? '' : 'pri'} block" data-act="newCareer">＋ New career</button>
         <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="edOpenTitle">🛠️ World editor</button>
-        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="importSave">⬇️ Import a backup</button>
+        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="importSave">⬇️ Import a save</button>
         <div class="tiny center" style="color:#5d6d82;margin-top:8px">Prototype build · One-time purchase · No energy · No packs · No pay-to-win</div>
       </div></div>`;
   };
+  // Load a save: the slots that have one, to pick from
+  UI.acts.loadPick = () =>
+    UI.sheet(
+      `<div class="tiny dim" style="margin-bottom:8px">Choose a save to open.</div><div class="list">${FM.Save.SLOTS.map(
+        (n) => ({ n, m: UI.slotMeta(n) }),
+      )
+        .filter((s) => s.m)
+        .map(
+          (s) =>
+            `<div class="prow tap" data-act="continue" data-n="${s.n}"><b style="width:52px">Slot ${s.n}</b><div class="grow small">${esc(s.m.club.name)} · ${s.m.year}${s.m.name ? ` · ${esc(s.m.name)}` : ''}</div></div>`,
+        )
+        .join('')}</div>`,
+      { title: 'Load a save' },
+    );
   UI.acts.continue = async (d) => {
+    UI.closeAllSheets();
     if (!(await UI.load(+d.n))) return;
     UI.applyTheme();
     UI.mount();
