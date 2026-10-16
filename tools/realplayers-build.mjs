@@ -29,7 +29,7 @@ const args = {};
 }
 if (!args.cache || args.cache === true) {
   console.log(
-    'usage: node --max-old-space-size=4096 tools/realplayers-build.mjs --cache <folder> [--out data/packs/real-world.json] [--seed 7]',
+    'usage: node --max-old-space-size=4096 tools/realplayers-build.mjs --cache <folder> [--out data/packs/real-world.json] [--seed 7] [--stats <players.json from tools/refstats.mjs --players>]',
   );
   process.exit(1);
 }
@@ -252,6 +252,28 @@ const natOf = (code, club) => {
   unknownNat[c || '?'] = (unknownNat[c || '?'] || 0) + 1;
   return club.nat || 'ENG';
 };
+// ---------- real match statistics, where there are some ----------
+// The players the StatsBomb open data covers (tools/refstats.mjs --players) are rated from their numbers by the real-stats converter
+// as well: the converter's ability replaces part of the fame estimate, by how much evidence there is (minutes), and never by more
+// than 6 points. Fame says who is a star; the numbers move the players they have seen up or down within the club.
+const RS = FM.RealStats;
+const norm = (s) =>
+  String(s)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z ]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+const STATS =
+  args.stats && args.stats !== true ? JSON.parse(fs.readFileSync(path.resolve(String(args.stats)), 'utf8')) : null;
+const statTokens = STATS ? STATS.map((p) => ({ p, t: new Set(norm(p.name)) })) : [];
+const statsFor = (name) => {
+  const t = norm(name);
+  if (t.length < 2) return null; // (a one-name player is too easily another man)
+  const hits = statTokens.filter((s) => t.every((x) => s.t.has(x)));
+  return hits.length === 1 ? hits[0].p : null; // (two men fit: leave him on fame alone)
+};
 // ---------- the players ----------
 const hash = (s) => [...String(s)].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
 const fame = (w, age) => {
@@ -261,71 +283,125 @@ const fame = (w, age) => {
 };
 const growth = (age) =>
   age <= 19 ? 14 : age <= 20 ? 11 : age <= 21 ? 8 : age <= 22 ? 6 : age <= 23 ? 4 : age <= 25 ? 2 : 0;
-const seen = new Set();
-const players = [];
-const report = { clubs: 0, players: 0, noDob: 0, noWd: 0 };
-for (const [code, sq] of Object.entries(squads)) {
-  const club = S.clubs[`c_${code}`];
-  if (!club) continue;
-  const gen = W.squad(club.id)
-    .filter((p) => !p.team && !p.youth && !p.loan)
-    .map((p) => p.ca)
-    .sort((a, b) => b - a);
-  if (gen.length < 11) continue;
-  const rows = [];
-  for (const p of sq.players) {
-    const q = p.title && qidOf[p.title];
-    const key = q || `${code}:${p.name}`;
-    if (seen.has(key)) continue; // (a player on two lists stays with the first club)
-    seen.add(key);
-    const w = q && wd[q];
-    let born = w && w.dob ? +w.dob.slice(0, 4) : null;
-    if (born && S.year - born > 44) born = S.year - 44; // (the game's oldest player is 44)
-    const age = born ? S.year - born : 21 + (hash(key) % 4);
-    if (!born) report.noDob++;
-    if (!w) report.noWd++;
-    rows.push({ p, q, w, born: born || S.year - age, age, f: fame(w, age) });
+let seen, players, report;
+let fit = { a: 0, b: 1 };
+const deltas = [],
+  moved = [];
+// (two passes with statistics: the first finds how far the converter's scale sits from the fame estimate's, so that only the
+// differences between players, not the scale, move a rating)
+for (let pass = 0; pass < (STATS ? 2 : 1); pass++) {
+  if (pass) {
+    // the line the converter's ability follows against the fame estimate (it is pulled toward the average where there are few minutes):
+    // a player is moved only by how far he sits above or below that line
+    const n = deltas.length,
+      mx = deltas.reduce((s, d) => s + d[0], 0) / n,
+      my = deltas.reduce((s, d) => s + d[1], 0) / n;
+    const sxx = deltas.reduce((s, d) => s + (d[0] - mx) ** 2, 0),
+      sxy = deltas.reduce((s, d) => s + (d[0] - mx) * (d[1] - my), 0);
+    const b = sxx ? sxy / sxx : 1;
+    fit = { a: my - b * mx, b };
   }
-  rows.sort((a, b) => b.f - a.f || a.age - b.age);
-  const squad = rows.slice(0, 34);
-  squad.forEach((r) => (r.pos = posOf(r.p.pos, r.w && r.w.pos, r.p.no)));
-  balance(squad);
-  squad.forEach((r, i) => {
-    const ca = i < gen.length ? gen[i] : Math.max(38, gen[gen.length - 1] - 2 * (i - gen.length + 1));
-    const age = r.age;
-    const pos = r.pos;
-    const nat = natOf(r.p.nat, club);
-    const gp = W.genPlayer({
-      nat,
-      pos,
-      age: Math.max(16, Math.min(40, age)),
-      ca,
-      pa: Math.min(96, ca + growth(age)),
-      clubId: null,
+  seen = new Set();
+  players = [];
+  report = { clubs: 0, players: 0, noDob: 0, noWd: 0, rated: 0 };
+  for (const [code, sq] of Object.entries(squads)) {
+    const club = S.clubs[`c_${code}`];
+    if (!club) continue;
+    const gen = W.squad(club.id)
+      .filter((p) => !p.team && !p.youth && !p.loan)
+      .map((p) => p.ca)
+      .sort((a, b) => b - a);
+    if (gen.length < 11) continue;
+    const rows = [];
+    for (const p of sq.players) {
+      const q = p.title && qidOf[p.title];
+      const key = q || `${code}:${p.name}`;
+      if (seen.has(key)) continue; // (a player on two lists stays with the first club)
+      seen.add(key);
+      const w = q && wd[q];
+      let born = w && w.dob ? +w.dob.slice(0, 4) : null;
+      if (born && S.year - born > 44) born = S.year - 44; // (the game's oldest player is 44)
+      const age = born ? S.year - born : 21 + (hash(key) % 4);
+      if (!born) report.noDob++;
+      if (!w) report.noWd++;
+      rows.push({ p, q, w, born: born || S.year - age, age, f: fame(w, age) });
+    }
+    rows.sort((a, b) => b.f - a.f || a.age - b.age);
+    const squad = rows.slice(0, 34);
+    squad.forEach((r) => (r.pos = posOf(r.p.pos, r.w && r.w.pos, r.p.no)));
+    balance(squad);
+    squad.forEach((r, i) => {
+      let ca = i < gen.length ? gen[i] : Math.max(38, gen[gen.length - 1] - 2 * (i - gen.length + 1));
+      const age = r.age;
+      const pos = r.pos;
+      const nat = natOf(r.p.nat, club);
+      const m = STATS && statsFor(r.p.name);
+      if (m && m.minutes >= 180) {
+        const conv = RS.convert({
+          pos,
+          age,
+          league: club.comp,
+          minutes: m.minutes,
+          goals: m.gls,
+          assists: m.ast,
+          xg: m.xg,
+          xa: m.xa,
+          shots: m.sh,
+          passes: m.pas,
+          passPct: m.att ? (m.pas * 100) / m.att : undefined,
+          keyPasses: m.kp,
+          progressivePasses: m.prg,
+          tackles: m.tkl,
+          interceptions: m.int,
+          clearances: m.clr,
+          dribbles: m.drb,
+          aerials: m.aer,
+          pressures: m.prs,
+          saves: pos === 'GK' ? m.sav : undefined,
+          goalsConceded: pos === 'GK' ? m.ga : undefined,
+          savePct: pos === 'GK' && m.sav + m.ga ? (m.sav * 100) / (m.sav + m.ga) : undefined,
+        });
+        if (!pass) deltas.push([ca, conv.ca]);
+        else {
+          const w = conv.confidence * 0.6;
+          const before = ca;
+          ca = Math.round(Math.max(ca - 6, Math.min(ca + 6, ca + (conv.ca - (fit.a + fit.b * ca)) * w)));
+          moved.push([r.p.name, pos, before, ca, m.minutes]);
+          report.rated++;
+        }
+      }
+      const gp = W.genPlayer({
+        nat,
+        pos,
+        age: Math.max(16, Math.min(40, age)),
+        ca,
+        pa: Math.min(96, ca + growth(age)),
+        clubId: null,
+      });
+      const attrs = Object.fromEntries(
+        D.ATTRS.map((k) => [k, Math.max(1, Math.min(20, Math.round(gp.attrs[k] * 10) / 10))]),
+      );
+      const real_ca = W.calcCA({ attrs }, pos);
+      const parts = r.p.name.split(' ');
+      const h = hash(r.q || r.p.name);
+      players.push({
+        id: r.q ? `rp_${r.q}` : `rp_${code}_${i}`,
+        fn: parts.length > 1 ? parts[0] : '',
+        ln: parts.length > 1 ? parts.slice(1).join(' ') : parts[0],
+        nat,
+        born: r.born,
+        pos,
+        foot: ['Right', 'Right', 'Right', 'Left', 'Left', 'Both'][h % 6],
+        attrs,
+        pa: Math.max(real_ca, Math.min(96, ca + growth(age))),
+        club: club.id,
+        contract: S.year + 1 + (h % 4),
+        _caps: r.w ? r.w.caps : 0,
+      });
+      report.players++;
     });
-    const attrs = Object.fromEntries(
-      D.ATTRS.map((k) => [k, Math.max(1, Math.min(20, Math.round(gp.attrs[k] * 10) / 10))]),
-    );
-    const real_ca = W.calcCA({ attrs }, pos);
-    const parts = r.p.name.split(' ');
-    const h = hash(r.q || r.p.name);
-    players.push({
-      id: r.q ? `rp_${r.q}` : `rp_${code}_${i}`,
-      fn: parts.length > 1 ? parts[0] : '',
-      ln: parts.length > 1 ? parts.slice(1).join(' ') : parts[0],
-      nat,
-      born: r.born,
-      pos,
-      foot: ['Right', 'Right', 'Right', 'Left', 'Left', 'Both'][h % 6],
-      attrs,
-      pa: Math.max(real_ca, Math.min(96, ca + growth(age))),
-      club: club.id,
-      contract: S.year + 1 + (h % 4),
-      _caps: r.w ? r.w.caps : 0,
-    });
-    report.players++;
-  });
-  report.clubs++;
+    report.clubs++;
+  }
 }
 // the national squads: each nation's best-capped players of the pack are called up (at most 23)
 const byNat = {};
@@ -343,6 +419,17 @@ def.meta.author = 'built by tools/realplayers-build.mjs';
 def.meta.description =
   'Real clubs everywhere; real first-team squads for the top two divisions of England, Spain, Germany, Italy and France. Squads from the English Wikipedia (CC BY-SA 4.0), birth dates and fame counts from Wikidata (CC0). Ratings are estimates: the best-known players of a club get the best ratings the game made for it. Shared under CC BY-SA 4.0.';
 const v = WD.validate(def, S);
+if (STATS) moved.sort((a, b) => b[3] - b[2] - (a[3] - a[2]));
+if (STATS) {
+  const show = (l) => l.map((x) => `${x[0]} ${x[1]} ${x[2]}→${x[3]} (${x[4]} min)`).join('; ');
+  console.log('up:', show(moved.slice(0, 6)));
+  console.log('down:', show(moved.slice(-6)));
+  console.log('changed:', moved.filter((x) => x[2] !== x[3]).length, 'of', moved.length);
+}
+if (STATS)
+  console.log(
+    `rated with match statistics: ${report.rated} players (the converter's ability follows ${fit.a.toFixed(1)} + ${fit.b.toFixed(2)} x the fame estimate)`,
+  );
 console.log(
   `players: ${report.players} in ${report.clubs} clubs (${report.noWd} without a Wikidata item, ${report.noDob} without a birth date)`,
 );

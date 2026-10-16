@@ -18,6 +18,11 @@ The game still ships with its fictional world; this is the optional real one.
   their Wikipedia article, caps for their country, awards, a little less for a veteran) and the club's generated squad, which already fits the
   club's level and its league, lends its ratings in that order: the best-known player gets the club's best rating. So the strength of each club
   and league is the game's, and which player is the star is the real world's. Edit a rating in the world editor or a CSV when you know better.
+  For the 425 players the StatsBomb open data (github.com/hudl/open-data) has seen in its 299 men's matches (World Cup 2022, Euro 2020 and 2024 and
+  the league seasons it covers), the real-stats converter (`js/realstats.js`) also reads their numbers: it moves a rating up or down by up to 6
+  points, by how many minutes there are to go on, and only by how far the numbers sit above or below what the fame estimate predicts (so the
+  scale stays the game's). Mbappé, Xhaka and Donnarumma went up, Juan Bernat and Álvaro Morata down. Only the resulting ratings are in the pack;
+  StatsBomb is the source of the match data (derived figures only). Built with `npm run realplayers:build -- --stats <file from npm run refstats>`.
 - **Positions:** Wikipedia gives goalkeeper, defender, midfielder or forward. A specific label from Wikidata (centre-back, left-back, winger)
   is used where there is one; otherwise the shirt number (2 and 3 full-back, 6 holding midfielder, 10 playmaker, 7 and 11 winger); and each
   squad is topped up with the full-backs, wingers and holding midfielders a formation needs.

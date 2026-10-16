@@ -1655,7 +1655,10 @@ table.t tr.zone-down td:first-child {
   border-color: #c8ff3d;
   box-shadow: 0 0 0 2px rgba(200, 255, 61, 0.25);
 }
-.title input[type='text'] {
+.title input[type='text'],
+.title input[type='number'],
+.title input[type='search'],
+.title textarea {
   width: 100%;
   padding: 14px;
   border-radius: 14px;
