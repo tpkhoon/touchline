@@ -754,6 +754,7 @@
               `<button class="btn block" data-act="continue" data-n="${s.n}">Slot ${s.n}: ${esc(s.m.club.name)} · ${s.m.year}</button>`,
           )
           .join('')}
+        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="edOpenTitle">🛠️ World editor</button>
         <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="importSave">⬇️ Import a backup</button>
         <div class="tiny center" style="color:#5d6d82;margin-top:8px">Prototype build · One-time purchase · No energy · No packs · No pay-to-win</div>
       </div></div>`;

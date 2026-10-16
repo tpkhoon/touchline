@@ -131,6 +131,7 @@
         kit: c.kit ? { ...c.kit } : null,
         finance: { balance: Math.round(c.balance), budget: Math.round(c.budget) },
         facilities: { ...c.facilities },
+        policy: c.policy && !c.policy.military ? { ...c.policy } : undefined, // who the club may sign (null: anyone)
         stadium: { name: c.stadium.name, cap: c.stadium.cap0 || c.stadium.cap },
       });
       if (c.rival && c.id < c.rival) def.rivals.push([c.id, c.rival, c.derby || 'Derby']);
@@ -1244,6 +1245,19 @@
   // The crest designs the game draws (shapes, patterns, emblems: see C.crest in js/ui-core.js) and a club's facilities
   WD.CREST = { shapes: 4, patterns: 11, emblems: 15 };
   WD.FACILITIES = ['training', 'academy', 'medical', 'analytics', 'stadium', 'fanzone', 'museum'];
+  // A club that signs only players of one nation has a squad of them: whoever is of another nation is made one (name and all)
+  WD.fitSquadToPolicy = function (c) {
+    const nat = c.policy.nat;
+    for (const p of W.squad(c.id)) {
+      if (p.nat === nat || p.nat2 === nat) continue;
+      const nm = W.rollName(nat, null, p.born);
+      p.nat = nat;
+      p.nat2 = null;
+      delete p.heritage;
+      p.fn = nm.fn;
+      p.ln = nm.ln;
+    }
+  };
   WD.validateClub = function (c, ctx = {}) {
     const e = [],
       w = [];
@@ -1276,6 +1290,13 @@
         e.push(`${at}: the cash in the bank is between -100 million and 5 billion`);
       if (f.budget != null && !(f.budget >= 0 && f.budget <= 2e9))
         e.push(`${at}: the transfer budget is between 0 and 2 billion`);
+    }
+    if (c.policy) {
+      if (c.policy.nat && !D.NATIONS[c.policy.nat])
+        e.push(`${at}: the signing rule names an unknown nation "${c.policy.nat}"`);
+      if (!c.policy.nat && !c.policy.heritage) e.push(`${at}: a signing rule needs a nation or a heritage`);
+      if (c.policy.label && String(c.policy.label).length > 30)
+        e.push(`${at}: the signing rule's name is up to 30 characters`);
     }
     if (c.facilities)
       for (const [k, v] of Object.entries(c.facilities))
@@ -1803,6 +1824,12 @@
         if (d.finance.budget != null) c.budget = d.finance.budget;
       }
       if (d.facilities) Object.assign(c.facilities, d.facilities);
+      if (d.policy !== undefined) {
+        c.policy = d.policy
+          ? { ...d.policy, label: d.policy.label || (D.NATIONS[d.policy.nat] || {}).name || 'local' }
+          : null;
+        if (c.policy && c.policy.nat) WD.fitSquadToPolicy(c);
+      }
       if (d.stadium) {
         c.stadium.name = d.stadium.name || c.stadium.name;
         if (d.stadium.cap) c.stadium.cap = c.stadium.cap0 = d.stadium.cap;

@@ -649,8 +649,8 @@
     const N = D.NATIONS[nat];
     // a club with a heritage policy (Basque-only, Catalan-only) fields players of that heritage and its own nation
     const pol = clubId && FM.S.clubs && FM.S.clubs[clubId] && FM.S.clubs[clubId].policy;
-    if (pol) nat = FM.S.clubs[clubId].nat;
-    const heritage = pol && pol.heritage ? pol.heritage : W.pickHeritage(nat),
+    if (pol) nat = pol.nat || FM.S.clubs[clubId].nat;
+    const heritage = pol && pol.heritage ? pol.heritage : pol && pol.nat ? null : W.pickHeritage(nat),
       nm = W.rollName(nat, heritage, FM.S.year - age);
     const hid = {};
     ['cons', 'inj', 'prof', 'amb', 'loy', 'temp', 'big', 'lead'].forEach(

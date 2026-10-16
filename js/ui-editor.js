@@ -62,11 +62,18 @@
     ED.start = clone(ED.def);
     UI.worldEditor();
   };
+  // From the title screen: the same editor, and Back returns there
+  UI.acts.edOpenTitle = () => {
+    UI.acts.edOpen();
+    if (ED) ED.fromTitle = true;
+  };
   UI.acts.edClose = () => {
+    const toTitle = ED && ED.fromTitle;
     ED = null;
     const cur = UI._ng().db;
     if (cur && cur.ok) DB.stage(cur);
-    UI.newCareer();
+    if (toTitle) UI.title();
+    else UI.newCareer();
   };
   // Hand the edited world back: the new-career screen now builds the world from it
   UI.acts.edUse = () => {
@@ -263,6 +270,11 @@
       founded: Math.round(+v('founded')) || null,
       stadium: { name: (v('stadium') || '').trim(), cap: Math.round(+v('cap')) },
     };
+    // (a rule of the game's own is left alone: the fields are not on the screen)
+    if ($('#ed-polnat')) {
+      const pn = v('polnat');
+      patch.policy = pn ? { nat: pn, label: (v('pollabel') || '').trim() || D.NATIONS[pn].name } : null;
+    }
     const r = WD.editor(ED.def, null).setClub(ED.cid, patch);
     if (!r.ok) {
       ED.err = r.errors;
@@ -371,6 +383,7 @@
     ['founded', 'Founded'],
     ['stadium.name', 'Ground'],
     ['stadium.cap', 'Capacity'],
+    ['policy', 'Signing rule'],
   ];
   const pathGet = (o, p) => p.split('.').reduce((x, k) => (x == null ? x : x[k]), o);
   const showVal = (k, v) =>
@@ -382,7 +395,9 @@
           ? Number(v).toLocaleString('en')
           : k === 'league'
             ? (leagueOf(v) || {}).name || v
-            : String(v);
+            : k === 'policy'
+              ? `only ${v.label}`
+              : String(v);
   const changesList = () => {
     const out = [];
     const start = (ED.start && ED.start.clubs) || [];
@@ -395,7 +410,7 @@
       for (const [k, label] of CLUB_FIELDS) {
         const a = pathGet(s, k),
           b = pathGet(c, k);
-        if (JSON.stringify(a) !== JSON.stringify(b))
+        if (JSON.stringify(a ?? null) !== JSON.stringify(b ?? null))
           out.push({ text: `${s.name}: ${label} ${showVal(k, a)} → ${showVal(k, b)}`, cid: c.id, k });
       }
     }
@@ -1407,6 +1422,7 @@
       <div class="ng-label">League name</div><div class="ng-names" style="margin-top:0"><input type="text" id="ed-lname" maxlength="48" value="${esc(l.name)}"><input type="text" id="ed-lshort" maxlength="6" style="max-width:90px" value="${esc(l.short || l.id)}"></div>
       ${leagueRules(l)}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveLeague">Save the league</button></div>
+      ${bulkTools()}
       ${removedHere(l.id)}
       ${errBox()}
       <div class="ng-find"><input type="search" id="ed-q" placeholder="Search clubs" value="${esc(ED.q)}" autocomplete="off"></div>
@@ -1422,6 +1438,102 @@
       .join('') || '<div class="empty">No club matches.</div>';
 
   // The manager of a club (an entry in the definition's managers; a club with none keeps the one the world gives it)
+  // Who a club may sign: anyone, or only players of one nation (the built-in rules of Eibar, Andorra and the army club stay as they are)
+  const policyFields = (c) => {
+    const p = c.policy;
+    if (p && (p.heritage || p.military))
+      return `<div class="ng-label">Signing rule</div><div class="tiny dim" style="line-height:1.5">Only ${esc(p.label || '')} players: a rule the game gives this club.</div>`;
+    const opts = natEntries()
+      .map(([k, n]) => `<option value="${k}" ${p && p.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`)
+      .join('');
+    return `<div class="ng-label">Signing rule <span class="tiny dim">· who the club may sign</span></div>
+      <select id="ed-polnat"><option value="">Anyone</option>${opts}</select>
+      <input type="text" id="ed-pollabel" maxlength="30" placeholder="What to call them, e.g. Andorran" value="${esc((p && p.label) || '')}" style="margin-top:6px">`;
+  };
+  // ---------- Bulk tools ----------
+  // Every club of a league at once: its reputation up or down, a word replaced in the names; and one club copied, or swapped with
+  // a club of another league of its country
+  const bulkTools = () =>
+    `<div class="ng-label">Bulk tools <span class="tiny dim">· every club of this league at once</span></div>
+      <div class="row" style="gap:6px;flex-wrap:wrap"><span class="small dim grow">Reputation of every club</span>${[-5, -2, 2, 5].map((n) => `<button class="btn sm" data-act="edBulkRep" data-n="${n}">${n > 0 ? '+' : '−'}${Math.abs(n)}</button>`).join('')}</div>
+      <div class="ng-names" style="margin-top:10px"><input type="text" id="ed-find" maxlength="30" placeholder="Find in names"><input type="text" id="ed-repl" maxlength="30" placeholder="Replace with"></div>
+      <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edFindRepl">Replace in names, towns and grounds</button></div>`;
+  UI.acts.edBulkRep = (d) => {
+    const n = +d.n,
+      errs = [];
+    for (const c of clubsOf(ED.lid)) {
+      const r = WD.editor(ED.def, null).setClub(c.id, { rep: Math.max(20, Math.min(99, c.rep + n)) });
+      if (!r.ok) errs.push(...r.errors);
+    }
+    ED.err = errs;
+    UI.worldEditor();
+    if (!errs.length) UI.toast(`Every club's reputation ${n > 0 ? 'up' : 'down'} ${Math.abs(n)}`, 2500);
+  };
+  UI.acts.edFindRepl = () => {
+    const find = ($('#ed-find') || {}).value || '',
+      to = ($('#ed-repl') || {}).value || '';
+    if (!find) return UI.toast('Type what to find first', 2500);
+    let n = 0;
+    const errs = [];
+    for (const c of clubsOf(ED.lid)) {
+      const patch = {};
+      for (const k of ['name', 'nick', 'city']) if (c[k] && c[k].includes(find)) patch[k] = c[k].split(find).join(to);
+      if (c.stadium.name.includes(find)) patch.stadium = { name: c.stadium.name.split(find).join(to) };
+      if (!Object.keys(patch).length) continue;
+      const r = WD.editor(ED.def, null).setClub(c.id, patch);
+      if (r.ok) n++;
+      else errs.push(...r.errors);
+    }
+    ED.err = errs;
+    UI.worldEditor();
+    UI.toast(`${n} club${n === 1 ? '' : 's'} changed`, 2500);
+  };
+  const clubTools = (c, sameNat) => {
+    const others = ED.def.clubs
+      .filter((x) => x.league !== c.league && sameNat.some((l) => l.id === x.league))
+      .sort((a, b) => tierOfLeague(a.league) - tierOfLeague(b.league) || a.name.localeCompare(b.name));
+    return `<div class="ng-label">Copy or swap</div>
+      <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edCopyClub">Copy this club</button></div>
+      ${
+        others.length
+          ? `<div class="row" style="gap:8px;margin-top:8px"><select id="ed-swap" class="grow"><option value="">Swap leagues with…</option>${others.map((x) => `<option value="${esc(x.id)}">${esc(x.name)} (${esc((leagueOf(x.league) || {}).name || '')})</option>`).join('')}</select><button class="btn sm" data-act="edSwapClub">Swap</button></div>`
+          : ''
+      }`;
+  };
+  UI.acts.edCopyClub = () => {
+    const c0 = ED.def.clubs.find((x) => x.id === ED.cid);
+    if (!c0) return;
+    const name = `${c0.name} II`;
+    const taken = new Set(ED.def.clubs.filter((x) => x.league === c0.league).map((x) => x.short));
+    const c = clone(c0);
+    c.id = 'c_' + newCode(name);
+    c.name = name;
+    c.short = U.abbrev(name, taken);
+    c.nick = '';
+    ED.def.clubs.push(c);
+    ED.cid = c.id;
+    ED.err = [];
+    UI.worldEditor();
+    UI.toast('A copy of the club (its players and manager are not copied)', 3000);
+  };
+  UI.acts.edSwapClub = () => {
+    const other = ED.def.clubs.find((x) => x.id === ($('#ed-swap') || {}).value),
+      mine = ED.def.clubs.find((x) => x.id === ED.cid);
+    if (!other || !mine) return UI.toast('Choose a club to swap with', 2500);
+    const E = WD.editor(ED.def, null);
+    const was = { l: mine.league, n: mine.nat };
+    const a = E.setClub(mine.id, { league: other.league, nat: other.nat });
+    const b = a.ok ? E.setClub(other.id, { league: was.l, nat: was.n }) : a;
+    if (!b.ok) {
+      if (a.ok) E.setClub(mine.id, { league: was.l, nat: was.n });
+      ED.err = b.errors;
+    } else {
+      ED.lid = other.league;
+      ED.err = [];
+      UI.toast(`${mine.name} and ${other.name} swapped leagues`, 3000);
+    }
+    UI.worldEditor();
+  };
   const managerOf = (cid) => (ED.def.managers || []).find((m) => m.club === cid);
   const managerFields = (c) => {
     const m = managerOf(c.id) || {};
@@ -1602,6 +1714,33 @@
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edClearClubX">Back to the game's figures</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="club" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClubX">Save</button></div>`;
   };
+  // Kit colour pairs to start from (home, trim): the colours clubs most often play in
+  const KIT_PRESETS = [
+    ['#d71920', '#ffffff'],
+    ['#1d4fa3', '#ffffff'],
+    ['#ffffff', '#1d2a5b'],
+    ['#111111', '#ffffff'],
+    ['#ffd100', '#111111'],
+    ['#0a8f3c', '#ffffff'],
+    ['#7a1f3d', '#7fc6e8'],
+    ['#f26522', '#111111'],
+    ['#6cabdd', '#ffffff'],
+    ['#6d2077', '#ffffff'],
+    ['#d71920', '#111111'],
+    ['#1d4fa3', '#d71920'],
+  ];
+  UI.acts.edPreset = (d) => {
+    for (const [id, v] of [
+      ['ed-c1', d.a],
+      ['ed-c2', d.b],
+    ]) {
+      const el = $('#' + id);
+      if (el) {
+        el.value = v;
+        el.dispatchEvent(new Event('input'));
+      }
+    }
+  };
   const clubView = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     if (!c) return leagueView();
@@ -1619,7 +1758,8 @@
       <div id="ed-warn">${clubWarn(c)}</div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name (up to 5)</div><input type="text" id="ed-short" maxlength="5" value="${esc(c.short || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Nickname</div><input type="text" id="ed-nick" maxlength="24" value="${esc(c.nick || '')}"></div></div>
       <div class="ng-label">City</div><input type="text" id="ed-city" maxlength="32" value="${esc(c.city || '')}">
-      <div class="ng-label">Colours</div>
+      <div class="ng-label">Colours <span class="tiny dim">· a preset, or pick your own</span></div>
+      <div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px">${KIT_PRESETS.map(([a, b]) => `<button type="button" class="btn sm" style="padding:0;width:34px;height:34px;border-radius:50%;border:1px solid #243042;background:linear-gradient(135deg,${a} 50%,${b} 50%)" data-act="edPreset" data-a="${a}" data-b="${b}" aria-label="Colours ${a} and ${b}"></button>`).join('')}</div>
       <div class="row" style="gap:10px"><input type="color" id="ed-c1" value="${esc(c.colors[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="ed-c2" value="${esc(c.colors[1])}" style="width:64px;height:44px;padding:2px"><span class="tiny dim">home kit, and the second colour</span></div>
       <div class="ng-label">Identity</div><select id="ed-identity">${idOpts}</select>
       <div class="ng-label">Reputation <b id="ed-repv" style="color:#e6edf6">${c.rep}</b> <span class="tiny dim">(${stars(c.rep)} — decides the squad and the money)</span></div>
@@ -1627,11 +1767,13 @@
       <div class="ng-label">Ground</div><input type="text" id="ed-stadium" maxlength="40" value="${esc(c.stadium.name)}">
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Capacity</div><input type="number" id="ed-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${c.stadium.cap}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Founded</div><input type="number" id="ed-founded" min="1800" max="2030" inputmode="numeric" value="${c.founded || ''}"></div></div>
       ${sameNat.length > 1 ? `<div class="ng-label">League</div><select id="ed-league">${lgOpts}</select>` : ''}
+      ${policyFields(c)}
       ${managerFields(c)}
       ${derbyFields(c)}
       <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="clubx" data-cid="${esc(c.id)}"><div class="row" style="gap:10px"><div style="flex:none">${UI.C.crest(c, 28)}</div><div class="grow"><div class="small b">Crest, money, facilities and supporters</div><div class="tiny dim">${[c.crest ? 'own crest' : '', c.finance ? 'own money' : '', c.facilities ? 'own facilities' : '', c.attr ? 'own supporters' : ''].filter(Boolean).join(' · ') || 'As the game works them out'}</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edStaff" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Coaches and scouts</div><div class="tiny dim">${(ED.def.staff || []).filter((s) => s.club === c.id).length} come with this job</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${esc(c.id)}"><div class="row"><div class="grow"><div class="small b">Players</div><div class="tiny dim">${playersOf(c.id).length} made for this club</div></div><span class="dim">›</span></div></div>
+      ${clubTools(c, sameNat)}
       ${!added ? '<div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edRevertClub">Put the game\'s version back</button></div>' : ''}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelClub">${added ? 'Delete this club' : 'Take this club out of the world'}</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClub">Save club</button></div>`;

@@ -170,6 +170,35 @@ if ('test' in args) {
   FM.Season.advance(null);
   FM.Season.advance(null);
   check(FM.S.day >= 2, 'the loaded world would not play');
+  // a signing rule of its own: a club that may only sign players of one nation
+  {
+    baseWorld();
+    const S2 = FM.S;
+    const spanish = Object.values(S2.clubs).find((c) => c.comp && c.nat === 'ESP' && !c.policy && c.sim === 'full');
+    const d2 = WD.fromState(S2, { name: 'Rule test', players: false });
+    const entry = () => d2.clubs.find((c) => c.id === spanish.id);
+    entry().policy = { nat: 'FRA', label: 'French' };
+    check(WD.validate(d2, S2).errors.length === 0, 'a signing rule by nation did not validate');
+    entry().policy = { nat: 'XXX' };
+    check(WD.validate(d2, S2).errors.length > 0, 'a signing rule with an unknown nation was accepted');
+    entry().policy = { nat: 'FRA', label: 'French' };
+    baseWorld();
+    WD.apply(d2, FM.S);
+    const c2 = FM.S.clubs[spanish.id];
+    check(
+      c2.policy && c2.policy.nat === 'FRA' && c2.policy.label === 'French',
+      'the signing rule did not reach the club',
+    );
+    check(
+      W.squad(c2.id).every((x) => x.nat === 'FRA'),
+      "the squad was not made of players of the rule's nation",
+    );
+    const other = Object.values(FM.S.players).find((x) => x.nat === 'ESP' && x.clubId !== c2.id);
+    check(!FM.Reg.policy(c2, other).ok, 'the club may sign a player of another nation');
+    check(FM.Reg.policy(c2, W.squad(c2.id)[0]).ok, 'the club may not sign a player of its own nation');
+    const back = WD.fromState(FM.S, { name: 'Round trip', players: false }).clubs.find((c) => c.id === spanish.id);
+    check(back.policy && back.policy.nat === 'FRA', 'the signing rule did not survive a round trip');
+  }
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'World definition: all checks passed.');
   process.exit(fails.length ? 1 : 0);
 }

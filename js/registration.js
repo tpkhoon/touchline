@@ -328,6 +328,10 @@
       return p.service && p.clubId === c.id // (conscripts are called up by FM.Asia; nobody can sign for the army's club)
         ? { ok: true }
         : { ok: false, why: `${c.name} is the army's club: its squad is players doing their military service.` };
+    if (pol && pol.nat)
+      return p.nat === pol.nat || p.nat2 === pol.nat
+        ? { ok: true }
+        : { ok: false, why: `${c.name} only signs ${pol.label} players: it fields players of ${pol.label}.` };
     if (!pol || p.heritage === pol.heritage) return { ok: true };
     return { ok: false, why: `${c.name} only signs ${pol.label} players: it fields players of ${pol.label} heritage.` };
   };
