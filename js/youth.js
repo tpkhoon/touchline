@@ -155,7 +155,7 @@
             r.p++;
             r.gf += gf;
             r.ga += ga;
-            if (gf > ga) (r.w++, (r.pts += 3));
+            if (gf > ga) (r.w++, (r.pts += FM.S.rules.win));
             else if (gf === ga) (r.d++, r.pts++);
             else r.l++;
           }

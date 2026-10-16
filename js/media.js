@@ -344,7 +344,7 @@
       style,
       cids,
       year: S.year,
-      bio: `Former ${D.POS_NAME[p.pos] ? D.POS_NAME[p.pos].toLowerCase() : 'player'}${topClub ? `, ${cids[top]} games for ${topClub.name}` : `, ${entry.apps} games`}${entry.caps ? `, ${entry.caps} caps` : ''}`,
+      bio: `Former ${D.POS_NAME[p.pos] ? D.POS_NAME[p.pos].toLowerCase() : 'player'}${topClub ? `, ${U.plural(cids[top], 'game')} for ${topClub.name}` : `, ${U.plural(entry.apps, 'game')}`}${entry.caps ? `, ${U.plural(entry.caps, 'cap')}` : ''}`,
     });
     while (st.pundits.length > M.PANEL_MAX) {
       const i = st.pundits.findIndex((q) => !q.cids);

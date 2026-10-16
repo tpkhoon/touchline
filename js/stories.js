@@ -1070,7 +1070,7 @@
         body: called
           .map(
             (p) =>
-              `${D.NATIONS[p.nat].flag} ${W.name(p)} — ${p.intl.caps} caps, ${p.pos === 'GK' ? `${p.intl.cs || 0} clean sheets` : `${p.intl.goals} goals`}`,
+              `${D.NATIONS[p.nat].flag} ${W.name(p)} — ${U.plural(p.intl.caps, 'cap')}, ${p.pos === 'GK' ? `${U.plural(p.intl.cs || 0, 'clean sheet')}` : U.plural(p.intl.goals, 'goal')}`,
           )
           .join('\n'),
         clubId: uc.id,
@@ -1104,7 +1104,7 @@
       FM.News.add({
         type: 'club',
         title: `${mine.length} of our players are ${res.id === 'WC' ? 'world' : 'continental'} champions`,
-        body: mine.map((p) => `${W.name(p)} — ${p.intl.caps} caps`).join('\n'),
+        body: mine.map((p) => `${W.name(p)} — ${U.plural(p.intl.caps, 'cap')}`).join('\n'),
         clubId: W.userClub().id,
       });
   };

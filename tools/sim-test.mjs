@@ -86,6 +86,22 @@ vm.runInContext(fs.readFileSync(new URL('../js/clubguide.js', import.meta.url), 
 }
 check(FM.S.version === FM.SAVE_VERSION, `new world has version ${FM.S.version}, expected ${FM.SAVE_VERSION}`);
 
+// a spell that began inside the stored seasons is exactly the sum of its rows (the career panel agrees with the rows)
+{
+  let bad = 0,
+    seen = 0;
+  const first = FM.S.year - 3;
+  for (const id in FM.S.players) {
+    const p = FM.S.players[id],
+      sp = p.history && p.career && p.career.spells && p.career.spells[p.career.spells.length - 1];
+    if (!sp || sp.to != null || sp.from < first || sp.from < FM.S.year - Math.min(3, W.age(p) - 17)) continue;
+    seen++;
+    const sum = p.history.filter((r) => r.c === sp.c && r.y >= sp.from).reduce((n, r) => n + r.apps, 0);
+    if (sum !== sp.apps) bad++;
+  }
+  check(!bad, `${bad} of ${seen} spells that began inside the stored seasons disagree with their rows`);
+}
+
 // the invitational of the season just ended (the season roll plans the next one)
 let lastInvite = null;
 const newIntl = FM.Intl.newSeason;

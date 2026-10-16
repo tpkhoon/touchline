@@ -925,11 +925,13 @@
     if (mine) {
       // a spell that began inside the rows (he came from another club) is exactly its rows; one that began before them
       // (a long-serving player) also has the seasons the rows do not go back to
-      if (mine.apps > sp.apps || here < seasons) {
+      // (a spell that starts at the first stored season is covered by the rows too, not "before" them)
+      const exact = here < seasons || sp.from >= S.year - seasons;
+      if (mine.apps > sp.apps || exact) {
         p.career.apps += mine.apps - sp.apps;
         sp.apps = mine.apps;
       }
-      sp.goals = here < seasons ? mine.goals : Math.max(sp.goals || 0, mine.goals);
+      sp.goals = exact ? mine.goals : Math.max(sp.goals || 0, mine.goals);
     }
     if (prev && spellAt[prev.id] && spellAt[prev.id].apps > 0) {
       const e = spellAt[prev.id];
