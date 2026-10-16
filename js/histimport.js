@@ -9,6 +9,11 @@
 //                                                                       or short name
 //   players.csv  name, nat, born (or age), pos, club, league, minutes, goals, assists, xg, ... (see js/realstats.js)
 //   clubs.csv    club, name, short, nick, city, colour1, colour2, rep, stadium, capacity     changes to clubs already there
+//   cups.csv     season, cup, winner, runnerup                                     a domestic cup's final (cup is its id or
+//                                                                       name; winner and runnerup are clubs)
+//   transfers.csv season, player, from, to, fee, nat                               a season's big transfers (fee in millions
+//                                                                       when it is 2000 or less, else in full; up to
+//                                                                       twenty a season: the biggest are kept)
 //
 // It is also an adapter of the database import (js/dbimport.js): pick the CSV files together on the new-career screen.
 // The command-line tool (tools/import-history.mjs) is the same code.
@@ -72,7 +77,7 @@
   };
 
   // The importer: texts in, { def, report } out. S is the world it matches clubs and leagues against (none: the game's own data).
-  H.import = function ({ tables, players, clubs, name = 'Imported world' }, S = null) {
+  H.import = function ({ tables, players, clubs, cups, transfers, name = 'Imported world' }, S = null) {
     // S: a world to match against; none (the app, before a career starts): the game's own data
     const def = S ? WD.fromState(S, { name, players: false }) : WD.fromStatic({ name });
     const year = S ? S.year : D.SEASON_START;
@@ -129,6 +134,62 @@
         table: s.rows,
       };
     }
+    // cups → each season's domestic cup finals; transfers → each season's biggest moves (a season may have only these)
+    const season = (y) => {
+      if (!byYear.has(y)) byYear.set(y, { year: y, label: `${y}/${String(y + 1).slice(2)}`, comps: {} });
+      return byYear.get(y);
+    };
+    const cupOf = (x) => {
+      const n = norm(x);
+      const hit = D.DOMESTIC_CUPS.find((c) => norm(c[0]) === n || norm(c[2]) === n || norm(c[3]) === n);
+      return hit
+        ? hit[0]
+        : (def.competitions || []).find((c) => c.isNew && (norm(c.id) === n || norm(c.name) === n))?.id;
+    };
+    for (const row of (cups || []).map(R.clean)) {
+      const id = cupOf(row.cup),
+        w = club(row.winner),
+        ru = row.runnerup ? club(row.runnerup) : null;
+      if (!id) {
+        rep.skipped.push(`cup row ${row.season} ${row.cup}: not a domestic cup the game has`);
+        continue;
+      }
+      if (!w || (row.runnerup && !ru)) {
+        rep.unmatched.add(!w ? row.winner : row.runnerup);
+        continue;
+      }
+      const s = season(+row.season);
+      (s.cups = s.cups || {})[id] = { winner: w.id, ...(ru ? { runnerUp: ru.id } : {}) };
+      rep.cups = (rep.cups || 0) + 1;
+    }
+    const moves = new Map();
+    for (const row of (transfers || []).map(R.clean)) {
+      const to = club(row.to),
+        from = row.from ? club(row.from) : null;
+      const who = row.player || row.name;
+      if (!who || !to || (row.from && !from)) {
+        if (who && !to) rep.unmatched.add(row.to);
+        else if (row.from && !from) rep.unmatched.add(row.from);
+        else rep.skipped.push(`transfer row ${row.season}: needs the player and the club he joined`);
+        continue;
+      }
+      const fee = +row.fee || 0;
+      const x = {
+        name: who,
+        from: from ? from.id : null,
+        to: to.id,
+        fee: fee <= 2000 ? Math.round(fee * 1e6) : Math.round(fee),
+      };
+      if (row.nat && D.NATIONS[String(row.nat).toUpperCase()]) x.nat = String(row.nat).toUpperCase();
+      if (!moves.has(+row.season)) moves.set(+row.season, []);
+      moves.get(+row.season).push(x);
+    }
+    for (const [y, list] of moves) {
+      list.sort((a, b) => b.fee - a.fee);
+      if (list.length > 20) rep.skipped.push(`season ${y}: ${list.length} transfers, the biggest twenty kept`);
+      season(y).transfers = list.slice(0, 20);
+      rep.transfers = (rep.transfers || 0) + Math.min(20, list.length);
+    }
     for (const s of [...byYear.values()].sort((a, b) => a.year - b.year)) {
       const r = E.addSeason(s);
       if (r.ok) rep.seasons++;
@@ -179,6 +240,8 @@
   H.kind = function (text) {
     const h = heads(text),
       has = (...k) => k.every((x) => h.includes(x));
+    if (has('season', 'cup', 'winner')) return 'cups';
+    if (has('season', 'to', 'fee') && (h.includes('player') || h.includes('name'))) return 'transfers';
     if (has('season', 'league', 'club')) return 'tables';
     if (has('name', 'pos', 'club')) return 'players';
     if (has('club') && !h.includes('season')) return 'clubs';
@@ -188,11 +251,11 @@
     id: 'history-csv',
     name: 'Historical CSV tables',
     accepts: '.csv,text/csv',
-    help: 'tables.csv (season, league, pos, club, p, w, d, l, gf, ga, pts), and optionally players.csv and clubs.csv, picked together',
+    help: 'tables.csv (season, league, pos, club, p, w, d, l, gf, ga, pts), and optionally players.csv, clubs.csv, cups.csv (season, cup, winner, runnerup) and transfers.csv (season, player, from, to, fee), picked together',
     detect: (files) =>
       files.length > 0 &&
       files.every((f) => H.kind(f.text)) &&
-      files.some((f) => H.kind(f.text) === 'tables' || H.kind(f.text) === 'clubs' || H.kind(f.text) === 'players'),
+      files.some((f) => ['tables', 'clubs', 'players', 'cups', 'transfers'].includes(H.kind(f.text))),
     parse(files) {
       const of = (k) => {
         const f = files.find((x) => H.kind(x.text) === k);
@@ -202,11 +265,13 @@
         tables: of('tables'),
         players: of('players'),
         clubs: of('clubs'),
+        cups: of('cups'),
+        transfers: of('transfers'),
         name: 'Imported tables',
       });
       if (report.errors.length) throw new Error(report.errors.slice(0, 6).join('; '));
       const notes = [
-        `${report.seasons} past season(s) from ${report.rows} table rows, ${FM.U.plural(report.players, 'player')}, ${report.clubEdits} club edits`,
+        `${report.seasons} past season(s) from ${report.rows} table rows, ${FM.U.plural(report.players, 'player')}, ${report.clubEdits} club edits${report.cups ? `, ${FM.U.plural(report.cups, 'cup final')}` : ''}${report.transfers ? `, ${FM.U.plural(report.transfers, 'transfer')}` : ''}`,
       ];
       if (report.unmatched.length) notes.push(`Clubs not found, left out: ${report.unmatched.slice(0, 12).join(', ')}`);
       return { def, notes };
