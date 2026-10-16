@@ -211,7 +211,7 @@
       allA = log.flatMap((r) => r.gm).filter(([us]) => !us).length;
     if (allA >= 6 && late / allA >= 0.3)
       out.push(
-        `${late} of the ${allA} goals we've let in came in the last quarter of an hour. Fitness or concentration — fresher legs off the bench would help.`,
+        `${late} of the ${U.plural(allA, 'goal')} we've let in came in the last quarter of an hour. Fitness or concentration — fresher legs off the bench would help.`,
       );
     if (rank && lg)
       out.push(
@@ -302,7 +302,7 @@
       notes = insights(log, lg, rank).slice(0, an >= 15 ? 6 : an >= 11 ? 4 : an >= 7 ? 3 : 2);
     return `${tabs}
       <div class="card"><div class="row" style="text-align:center">${[
-        [`${w}-${dr}-${n - w - dr}`, `${n} matches`],
+        [`${w}-${dr}-${n - w - dr}`, `${U.plural(n, 'match', 'matches')}`],
         [`${gf}–${ga}`, 'goals'],
         [`${f2(xf)}–${f2(xa)}`, 'xG'],
         [`${(gf - xf >= 0 ? '+' : '') + (gf - xf).toFixed(1)}`, 'goals vs xG'],
@@ -330,10 +330,10 @@
       .filter((x) => (x.state === 'kept' || x.state === 'broken') && s.players[x.pid] && x.year >= s.year - 1)
       .slice(0, 20);
     const progress = (x, p) => {
-      if (x.type === 'minutes') return `${p.season.apps - x.base} of ${x.target - x.base} appearances`;
+      if (x.type === 'minutes') return `${p.season.apps - x.base} of ${U.plural(x.target - x.base, 'appearance')}`;
       if (x.type === 'debut') return p.career.apps ? 'Debut made' : 'No debut yet';
       if (x.type === 'contract') return p.contract > x.contract ? 'Renewed' : 'Not renewed yet';
-      if (x.type === 'status') return `${p.season.apps} appearances so far`;
+      if (x.type === 'status') return `${U.plural(p.season.apps, 'appearance')} so far`;
       return '';
     };
     const left = (x) => {

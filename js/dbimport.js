@@ -55,6 +55,11 @@
       );
     const out = a.parse(files);
     if (!out || !out.def) throw new Error(`${a.name}: the file made no world`);
+    const cleaned = FM.U.cleanDeep(out.def); // (a database is somebody else's text: no tag or quote gets into the game)
+    if (cleaned)
+      (out.notes = out.notes || []).push(
+        `${cleaned} piece${cleaned === 1 ? '' : 's'} of text had characters taken out (< > " and control characters)`,
+      );
     return { adapter: a.id, adapterName: a.name, def: out.def, notes: out.notes || [] };
   };
 
@@ -148,9 +153,11 @@
       def.meta.description = pack.meta.description || '';
       const rep = WD.applyPack(def, pack);
       if (rep.errors.length) throw new Error(rep.errors.slice(0, 4).join('; '));
-      const notes = [`The pack renames or redraws ${rep.clubs} clubs, ${rep.leagues} leagues and ${rep.cups} cups`];
+      const notes = [
+        `The pack renames or redraws ${FM.U.plural(rep.clubs, 'club')}, ${FM.U.plural(rep.leagues, 'league')} and ${FM.U.plural(rep.cups, 'cup')}`,
+      ];
       if (rep.unmatched.length)
-        notes.push(`${rep.unmatched.length} clubs in the pack are not in this world and were left out`);
+        notes.push(`${FM.U.plural(rep.unmatched.length, 'club')} in the pack are not in this world and were left out`);
       return { def, notes };
     },
   });

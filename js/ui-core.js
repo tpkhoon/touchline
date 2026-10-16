@@ -444,6 +444,7 @@
   // Storage, versioning and migrations live in save.js (FM.Save)
   UI.slot = 1;
   UI.save = function () {
+    UI._saves = (UI._saves || 0) + 1;
     if (UI.simBusy) return false; // the world is being simulated elsewhere; it saves when it comes back
     try {
       const pre = FM.SimRunner && FM.SimRunner.takePacked(FM.S);
@@ -836,13 +837,13 @@
         return `<button class="${on ? 'on' : ''}" ${locked.has(l.id) && k !== 'full' ? 'disabled style="opacity:.35"' : ''} data-act="ngSim" data-id="${l.id}" data-v="${k}">${label}</button>`;
       }).join('')}</div>`;
     const nations = [...new Set(D.LEAGUES.map((l) => l.nat))];
-    return `<details id="ng-sim" ${NG.simOpen ? 'open' : ''} style="margin-top:16px"><summary class="small" style="color:#c9d4e3;cursor:pointer">Choose how much of the world is simulated <span class="dim" style="color:#6f7f96">· ${counts.full} clubs in full, ${counts.light} light, ${counts.minimal} minimal</span></summary>
+    return `<details id="ng-sim" ${NG.simOpen ? 'open' : ''} style="margin-top:16px"><summary class="small" style="color:#c9d4e3;cursor:pointer">Choose how much of the world is simulated <span class="dim" style="color:#6f7f96">· ${U.plural(counts.full, 'club')} in full, ${counts.light} light, ${counts.minimal} minimal</span></summary>
       <div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${TIERS.map(([, label, , d]) => `<b style="color:#c9d4e3">${label}</b>: ${d}.`).join(' ')} Your league and the ones just above and below it are always full. More full leagues means a richer world but slower days and bigger saves; simulation load ${pct}% of the default.</div>
       <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm" data-act="ngSimPreset" data-v="default">Default</button><button class="btn sm" data-act="ngSimPreset" data-v="fast">Faster</button><button class="btn sm" data-act="ngSimPreset" data-v="deep">Deeper</button></div>
       ${nations
         .map((nat) => {
           const ls = D.LEAGUES.filter((l) => l.nat === nat);
-          return `<div class="small b" style="margin:12px 0 4px;color:#c8ff3d">${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}</div>${ls.map((l) => `<div class="row" style="padding:5px 0;align-items:center"><div class="grow small" style="color:#c9d4e3">${esc(l.name)} <span style="color:#6f7f96">· ${D[l.clubs].length} clubs${locked.has(l.id) ? ' · always full' : ''}</span></div>${seg(l)}</div>`).join('')}`;
+          return `<div class="small b" style="margin:12px 0 4px;color:#c8ff3d">${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}</div>${ls.map((l) => `<div class="row" style="padding:5px 0;align-items:center"><div class="grow small" style="color:#c9d4e3">${esc(l.name)} <span style="color:#6f7f96">· ${U.plural(D[l.clubs].length, 'club')}${locked.has(l.id) ? ' · always full' : ''}</span></div>${seg(l)}</div>`).join('')}`;
         })
         .join('')}</details>`;
   };
@@ -903,20 +904,25 @@
     const out = [];
     if (r.conferences)
       out.push(
-        `${n} clubs in two conferences (${Object.keys(r.conferences).join(' and ')}): ${r.rounds} matches, most of them against the conference.`,
+        `${U.plural(n, 'club')} in two conferences (${Object.keys(r.conferences).join(' and ')}): ${U.plural(r.rounds, 'match', 'matches')}, most of them against the conference.`,
       );
     else if (r.zones)
       out.push(
-        `${n} clubs in two zones of ${n / 2}, twice a year (${r.torneos.join(' and ')}): each plays its zone once and one match against the other zone.`,
+        `${U.plural(n, 'club')} in two zones of ${n / 2}, twice a year (${r.torneos.join(' and ')}): each plays its zone once and one match against the other zone.`,
       );
     else if (r.torneos)
-      out.push(`${n} clubs, two tournaments a year (${r.torneos.join(' and ')}): each plays every other club once.`);
+      out.push(
+        `${U.plural(n, 'club')}, two tournaments a year (${r.torneos.join(' and ')}): each plays every other club once.`,
+      );
     else if (r.split) {
       const sp = r.split;
       out.push(
-        `${n} clubs play ${sp.after} matches, then the table splits into groups of ${sp.groups.join(', ')} (${sp.names.join(', ')}) that play on${sp.halve ? ' with the points halved' : ' with the points carried over'}.`,
+        `${U.plural(n, 'club')} play ${U.plural(sp.after, 'match', 'matches')}, then the table splits into groups of ${sp.groups.join(', ')} (${sp.names.join(', ')}) that play on${sp.halve ? ' with the points halved' : ' with the points carried over'}.`,
       );
-    } else out.push(`${n} clubs, each playing every other home and away: ${(n - 1) * 2} matches.`);
+    } else
+      out.push(
+        `${U.plural(n, 'club')}, each playing every other home and away: ${U.plural((n - 1) * 2, 'match', 'matches')}.`,
+      );
     const t = r.playoffs && r.playoffs.type;
     if (r.mls)
       out.push(
@@ -963,7 +969,9 @@
     for (const cc of D.CONTINENTALS) {
       const k = cc.feeders && cc.feeders[l.id];
       if (k)
-        europe.push(k === 1 ? `The next place goes to the ${cc.name}.` : `The next ${k} places go to the ${cc.name}.`);
+        europe.push(
+          k === 1 ? `The next place goes to the ${cc.name}.` : `The next ${U.plural(k, 'place')} go to the ${cc.name}.`,
+        );
     }
     const cups = D.DOMESTIC_CUPS.filter((c) => c[1] === l.nat).map((c) => c[2]);
     const block = (title, lines) =>
@@ -1071,7 +1079,7 @@
               (!q || plain(r[0]).includes(q) || plain(r[2] || '').includes(q)),
           );
           return rows.length
-            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 4px;letter-spacing:1px">${D.NATIONS[nat].flag} ${names[cid].toUpperCase()} · ${D.NATIONS[nat].name.toUpperCase()}</div><div class="tiny" style="color:#6f7f96;margin-bottom:8px;line-height:1.45">${esc(G.leagueCard(l))}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
+            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 4px;letter-spacing:1px">${D.NATIONS[nat].flag} ${esc(names[cid].toUpperCase())} · ${esc(D.NATIONS[nat].name.toUpperCase())}</div><div class="tiny" style="color:#6f7f96;margin-bottom:8px;line-height:1.45">${esc(G.leagueCard(l))}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
             : '';
         }).join('');
         return html || '<div class="empty">No club matches that search.</div>';
@@ -1113,7 +1121,7 @@
             ['underdog', 'Underdog climb'],
           ])}
           <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
-          <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${D.facts().clubs} clubs</button></div>
+          <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${U.plural(D.facts().clubs, 'club')}</button></div>
           <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
           ${UI.dbCard()}
           ${foot('')}`;
@@ -1188,7 +1196,7 @@
         })()}
         ${UI.dbCard()}
         ${UI.simSetup()}
-        <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${D.facts().clubs} clubs in ${D.facts().leagues} leagues across ${D.facts().nations} nations, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
+        <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${U.plural(D.facts().clubs, 'club')} in ${U.plural(D.facts().leagues, 'league')} across ${U.plural(D.facts().nations, 'nation')}, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
         ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
         <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button></div>`;
     }
@@ -1282,7 +1290,7 @@
       : r.ok
         ? `<div class="small b" style="margin-top:6px;color:#c8ff3d">✅ ${esc(r.summary.name)}${r.summary.author ? ` <span style="color:#9fb0c5;font-weight:400">by ${esc(r.summary.author)}</span>` : ''}</div>
           ${r.summary.description ? `<div class="tiny" style="color:#c9d4e3;margin-top:4px">${esc(r.summary.description)}</div>` : ''}
-          <div class="tiny" style="color:#9fb0c5;margin-top:6px">${r.summary.clubs} clubs${r.summary.newClubs ? ` (${r.summary.newClubs} new)` : ''} · ${r.summary.leagues} leagues${r.summary.newLeagues ? ` (${r.summary.newLeagues} new)` : ''} · ${r.summary.playerRows} players · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:6px">${U.plural(r.summary.clubs, 'club')}${r.summary.newClubs ? ` (${r.summary.newClubs} new)` : ''} · ${U.plural(r.summary.leagues, 'league')}${r.summary.newLeagues ? ` (${r.summary.newLeagues} new)` : ''} · ${U.plural(r.summary.playerRows, 'player')} · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
           ${
             r.warnings.length
               ? `<details style="margin-top:6px"><summary class="tiny" style="color:#fbbf24;cursor:pointer">${r.warnings.length} warning${r.warnings.length > 1 ? 's' : ''}</summary>${r.warnings

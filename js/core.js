@@ -2,6 +2,11 @@
 (function () {
   const FM = (window.FM = window.FM || {});
 
+  // what text from another person's file may not contain: the characters that open a tag or leave a quoted attribute, and control characters
+  // eslint-disable-next-line no-control-regex -- the control characters are the point
+  const BAD_TEXT = new RegExp('[<>"\u0000-\u001f\u007f\u2028\u2029]');
+  const BAD_TEXT_ALL = new RegExp(BAD_TEXT.source, 'g');
+
   const U = (FM.U = {
     rand: (a = 0, b = 1) => a + Math.random() * (b - a),
     randi: (a, b) => Math.floor(a + Math.random() * (b - a + 1)),
@@ -181,6 +186,37 @@
         /[&<>"']/g,
         (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
       ),
+    // Markup that escapes what goes into it, so safety is the default: U.html`<b>${name}</b>` escapes name (a pack's club name
+    // cannot run code). Markup that is already safe is passed through: U.raw(text), or another U.html result; lists are joined.
+    raw: (s) => ({ __html: String(s), toString: () => String(s) }),
+    // Text from a file somebody else made (a pack, a backup) is cleaned where it comes in: no < > " or control characters, which
+    // is what it takes to open a tag or to leave a quoted attribute. The screens escape too (esc, U.html); this is the second lock.
+    clean: (s) => String(s).replace(BAD_TEXT_ALL, ''),
+    // Every string in a loaded structure cleaned in place; returns how many were changed. (Walks with a stack: a save is deep.)
+    cleanDeep(root) {
+      let changed = 0;
+      const stack = [root];
+      while (stack.length) {
+        const o = stack.pop();
+        if (!o || typeof o !== 'object') continue;
+        for (const k of Object.keys(o)) {
+          const v = o[k];
+          if (typeof v === 'string') {
+            if (BAD_TEXT.test(v)) {
+              o[k] = U.clean(v);
+              changed++;
+            }
+          } else if (v && typeof v === 'object') stack.push(v);
+        }
+      }
+      return changed;
+    },
+    htmlVal(v) {
+      return v && v.__html !== undefined ? v.__html : Array.isArray(v) ? v.map((x) => U.htmlVal(x)).join('') : U.esc(v);
+    },
+    html(strings, ...vals) {
+      return U.raw(strings.reduce((out, s, i) => out + s + (i < vals.length ? U.htmlVal(vals[i]) : ''), ''));
+    },
     ordinal(n) {
       const s = ['th', 'st', 'nd', 'rd'],
         v = n % 100;
@@ -230,7 +266,20 @@
       );
     },
     // Grammar helpers
-    plural: (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`,
+    // 1 point, 2 points; a plural that is not word + s is the third argument: plural(2, 'match', 'matches')
+    plural: (n, w, pl) => `${n} ${+n === 1 ? w : (pl ?? w + 's')}`,
+    // "a" or "an" with the word: an attacking midfielder, an ST (said "ess-tee"), a CB, an hour, a university
+    a: (w) => {
+      const s = String(w).trim();
+      const first = s.replace(/^[^A-Za-z]+/, '');
+      if (!first) return `a ${s}`;
+      const acronym = /^[A-Z]{2,4}(?![A-Za-z])/.test(first);
+      const an = acronym
+        ? 'AEFHILMNORSX'.includes(first[0])
+        : /^(hour|honest|honou?r|heir)/i.test(first) ||
+          (/^[aeiou]/i.test(first) && !/^(uni|use|usu|eu|one|once|ubi)/i.test(first));
+      return `${an ? 'an' : 'a'} ${s}`;
+    },
   });
 
   // ---------- A club's abbreviation ----------

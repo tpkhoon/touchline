@@ -323,7 +323,7 @@
     }[p.style];
     const text = pick(said, seed + 'text'),
       games = clubId && p.cids && p.cids[clubId];
-    return { who: p.name, text: games ? `I played ${games} games for them, so I know. ${text}` : text };
+    return { who: p.name, text: games ? `I played ${U.plural(games, 'game')} for them, so I know. ${text}` : text };
   };
   // A great who has just retired joins the panel (a former player, so the panel is not only invented names): his
   // manner follows his personality, and he speaks with weight about the clubs he played for. At most six; the

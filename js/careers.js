@@ -198,7 +198,7 @@
     const e = Sea.careerAge(p);
     if (e >= 26 && e <= 31)
       for (const k of ['positioning', 'composure', 'vision'])
-        p.attrs[k] = Math.min(20, p.attrs[k] + 0.12 * frac * Math.random() * 2);
+        p.attrs[k] = Math.round(Math.min(20, p.attrs[k] + 0.12 * frac * Math.random() * 2) * 10000) / 10000;
   };
   // A player's game changes with his body, so his natural position can change: a winger who loses his pace becomes
   // a wide midfielder, a full-back moves inside, a striker drops into the playmaker's role. It happens when another
@@ -231,7 +231,7 @@
     if (W.ownPlayer(p))
       FM.News.add({
         type: 'club',
-        title: `${W.name(p)} is now a ${D.POS_NAME[best].toLowerCase()}`,
+        title: `${W.name(p)} is now ${U.a(D.POS_NAME[best].toLowerCase())}`,
         body: `His game has changed: he suits the ${D.POS_NAME[best].toLowerCase()} role better now, and can still cover at ${D.POS_NAME[was].toLowerCase()}.`,
         clubId: W.userClub().id,
       });
@@ -266,7 +266,8 @@
       else d = (dCA / 5) * (AGEING[k] || 0.8) * (w[k] ? 1 : 0.5) * U.rand(0.5, 1.5);
       if ((k === 'reflexes' || k === 'handling') && p.pos !== 'GK') continue;
       if (p.pos === 'GK' && D.GK_OUTFIELD[k] && d > 0) continue; // keepers don't grow outfield skills
-      p.attrs[k] = U.clamp(p.attrs[k] + d, 1, 20);
+      // (four decimals: a day's growth is a few thousandths, so two would lose it, and sixteen make the state huge)
+      p.attrs[k] = Math.round(U.clamp(p.attrs[k] + d, 1, 20) * 10000) / 10000;
     }
     W.refresh(p);
     if (p.ca > p.pa) p.pa = p.ca;
@@ -385,7 +386,7 @@
       FM.News.add({
         type: 'club',
         title: `Testimonial for ${W.name(p)}: a full house says thank you`,
-        body: `Ten seasons and ${sp.apps} appearances for ${c.name}. The stadium sold out to honour him, raising ${U.money(gate)}.`,
+        body: `Ten seasons and ${U.plural(sp.apps, 'appearance')} for ${c.name}. The stadium sold out to honour him, raising ${U.money(gate)}.`,
         pid: p.id,
         clubId: c.id,
       });

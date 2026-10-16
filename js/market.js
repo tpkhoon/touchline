@@ -103,8 +103,8 @@
     if (s.user.shortlist.length) bits.push(`${U.plural(s.user.shortlist.length, 'player')} on your shortlist.`);
     FM.News.add({
       type: 'club',
-      title: `Transfer deadline in ${left} days`,
-      body: `${left} days left in the window, today included. ${bits.join(' ')}`,
+      title: `Transfer deadline in ${U.plural(left, 'day')}`,
+      body: `${U.plural(left, 'day')} left in the window, today included. ${bits.join(' ')}`,
       clubId: c.id,
     });
   };
@@ -340,7 +340,7 @@
       M.desk({
         kind: 'loan',
         title: `${W.name(p)} isn't playing at ${host.name}`,
-        body: `${apps} appearance${apps === 1 ? '' : 's'} in their last ${games} games${p.loan.promised ? `, even after ${host.name} promised him more minutes` : ''}. ${W.age(p) <= 21 ? 'He was sent there to develop.' : 'He needs games.'}`,
+        body: `${apps} appearance${apps === 1 ? '' : 's'} in their last ${U.plural(games, 'game')}${p.loan.promised ? `, even after ${host.name} promised him more minutes` : ''}. ${W.age(p) <= 21 ? 'He was sent there to develop.' : 'He needs games.'}`,
         pid: p.id,
         rec: p.loan.promised ? 0 : 1,
         def: p.loan.promised ? 1 : 2, // (no "tell them to play him" choice once they have promised)
@@ -401,7 +401,20 @@
     if (p.contract <= S().year && !T().isKey(p)) f *= 0.75;
     if (c.balance < 0) f *= c.balance < -2e7 ? 0.8 : 0.9;
     if (!W.isUser(c.id)) {
-      const same = W.squad(c.id).filter((q) => q.pos === p.pos && !q.loan).length;
+      // (how many a club has in a position is asked for every player when prices are worked out: counted once a day, not each time)
+      const s = S(),
+        stamp = `${s.year}.${s.day}.${W.rosterVer}`;
+      if (M._sameS !== s || M._sameStamp !== stamp) {
+        M._sameS = s;
+        M._sameStamp = stamp;
+        M._same = new Map();
+      }
+      const key = c.id + '|' + p.pos;
+      let same = M._same.get(key);
+      if (same === undefined) {
+        same = W.squad(c.id).filter((q) => q.pos === p.pos && !q.loan).length;
+        M._same.set(key, same);
+      }
       if (same > (W.squadWant(c)[p.pos] || 2) + 1) f *= 0.9;
     }
     return f;
@@ -503,7 +516,7 @@
         ? `${U.money(fee)} in all: ${U.money(M.cashNow(fee, deal))} now + ${deal.inst - 1} × ${U.money(M.instPart(fee, deal))} yearly`
         : `${U.money(fee)} up front`,
     );
-    if (deal.addOn) bits.push(`${U.money(deal.addOn)} after ${deal.addApps || 25} appearances`);
+    if (deal.addOn) bits.push(`${U.money(deal.addOn)} after ${U.plural(deal.addApps || 25, 'appearance')}`);
     if (deal.sellOn) bits.push(`${Math.round(deal.sellOn * 100)}% sell-on`);
     return bits.join(' · ');
   };
@@ -578,7 +591,7 @@
           FM.News.add({
             type: 'club',
             title: `Add-on triggered: ${U.money(pay.amt)}`,
-            body: `${W.name(p)} has made ${pay.apps} appearances for ${s.clubs[pay.from].name}, so ${U.money(pay.amt)} goes to ${s.clubs[pay.to].name}.`,
+            body: `${W.name(p)} has made ${U.plural(pay.apps, 'appearance')} for ${s.clubs[pay.from].name}, so ${U.money(pay.amt)} goes to ${s.clubs[pay.to].name}.`,
             pid: p.id,
             clubId: W.isUser(pay.from) ? pay.from : pay.to,
           });

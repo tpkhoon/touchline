@@ -181,7 +181,7 @@
     const x = G.index().leagues[l.id];
     if (!x) return '';
     const r = l.rules || {},
-      parts = [`${x.n} clubs`];
+      parts = [`${U.plural(x.n, 'club')}`];
     const cont = r.qualify && D.CONTINENTALS.find((c) => c.id === r.qualify.to);
     if (cont) parts.push(`${r.qualify.n} ${cont.name} places`);
     if (r.promote) parts.push(`${r.promote.auto} promoted`);

@@ -13,15 +13,19 @@
 
   // ---------- Promises ----------
   Pe.PROMISE = {
-    minutes: { label: 'More minutes', days: 10, desc: (x) => `${x.target - x.base} appearances within ${x.days} days` },
-    contract: { label: 'A new contract', days: 9, desc: (x) => `New contract within ${x.days} days` },
+    minutes: {
+      label: 'More minutes',
+      days: 10,
+      desc: (x) => `${U.plural(x.target - x.base, 'appearance')} within ${U.plural(x.days, 'day')}`,
+    },
+    contract: { label: 'A new contract', days: 9, desc: (x) => `New contract within ${U.plural(x.days, 'day')}` },
     noSell: { label: 'Not to be sold', days: 99, desc: () => 'Not sold or loaned out this window' },
     letGo: {
       label: 'Can leave for the right offer',
       days: 99,
       desc: () => 'Accept a fair bid (≥ 90% of value) this season',
     },
-    debut: { label: 'A first-team debut', days: 10, desc: (x) => `Debut within ${x.days} days` },
+    debut: { label: 'A first-team debut', days: 10, desc: (x) => `Debut within ${U.plural(x.days, 'day')}` },
     status: {
       label: 'Squad status',
       days: 999,
@@ -315,7 +319,7 @@
     if (conf < 35 && !firstSeason) {
       const row = s.comps[c.comp].table[c.id];
       u().board.ultimatum = { from: row.p, pts: row.pts, games: 5, need: W.rule(c.comp, 'win') * 2 + 1, done: false };
-      body += `\n\nULTIMATUM: take at least ${u().board.ultimatum.need} points from the next 5 league games — or you're gone.`;
+      body += `\n\nULTIMATUM: take at least ${U.plural(u().board.ultimatum.need, 'point')} from the next 5 league games — or you're gone.`;
     } else
       body +=
         conf >= 70
@@ -391,13 +395,16 @@
     const spec = D.BADGE_COURSE[b],
       games = u().stats.games + (u().ntStats ? u().ntStats.games : 0);
     if (games < Pe.courseReq(b))
-      return { ok: false, msg: `The ${b} course needs ${Pe.courseReq(b)} games of experience (you have ${games}).` };
+      return {
+        ok: false,
+        msg: `The ${b} course needs ${U.plural(Pe.courseReq(b), 'game')} of experience (you have ${games}).`,
+      };
     if (c.balance < spec.cost) return { ok: false, msg: "The club can't cover the course fee." };
     c.balance -= spec.cost;
     u().course = { badge: b, until: S().day + spec.days, year: S().year, days: spec.days };
     return {
       ok: true,
-      msg: `Enrolled on the ${b} licence. ${spec.days} days of study (${U.money(spec.cost)}, paid by the club).`,
+      msg: `Enrolled on the ${b} licence. ${U.plural(spec.days, 'day')} of study (${U.money(spec.cost)}, paid by the club).`,
     };
   };
   Pe.courseTick = function () {
@@ -605,7 +612,7 @@
       FM.News.add({
         type: 'club',
         title: `${rs.fn} ${rs.ln} was right about ${W.name(p)}`,
-        body: `${ready ? 'He was ready' : 'He needed more time'}: ${W.short(p)} is ${W.stars(p.ca, p.pos)}★ now (${W.stars(d.ca0, p.pos)}★ then)${apps ? `, with ${apps} appearances at ${(p.season.rsum / apps).toFixed(1)}` : ''}. ${ROLE[right]} ${rs.ln} had it; ${ROLE[wrong].toLowerCase()} ${ws.ln} didn't.${d.choice ? ` You backed ${d.choice === (ready ? 'up' : 'hold') ? 'the right call' : 'the other side'}.` : ''}`,
+        body: `${ready ? 'He was ready' : 'He needed more time'}: ${W.short(p)} is ${W.stars(p.ca, p.pos)}★ now (${W.stars(d.ca0, p.pos)}★ then)${apps ? `, with ${U.plural(apps, 'appearance')} at ${(p.season.rsum / apps).toFixed(1)}` : ''}. ${ROLE[right]} ${rs.ln} had it; ${ROLE[wrong].toLowerCase()} ${ws.ln} didn't.${d.choice ? ` You backed ${d.choice === (ready ? 'up' : 'hold') ? 'the right call' : 'the other side'}.` : ''}`,
         pid: p.id,
         clubId: c.id,
       });

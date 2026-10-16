@@ -149,7 +149,7 @@
       FM.News.add({
         type: 'club',
         title: `${W.name(p)} is back in training`,
-        body: `After ${out} weeks out with ${article(inj.type)}. Match fitness ${p.fitness}% — he needs games${p.injRisk ? ', and the physios want his minutes managed for a while' : ''}.`,
+        body: `After ${U.plural(out, 'week')} out with ${article(inj.type)}. Match fitness ${p.fitness}% — he needs games${p.injRisk ? ', and the physios want his minutes managed for a while' : ''}.`,
         pid: p.id,
         clubId: p.clubId,
       });
@@ -163,10 +163,10 @@
     w <= 1
       ? 'about a week'
       : w <= 3
-        ? `${w - 1}–${w} weeks`
+        ? `${w - 1}–${U.plural(w, 'week')}`
         : w < 10
-          ? `${w - 1}–${w + 1} weeks`
-          : `around ${Math.round(w / 4.3)} months`;
+          ? `${w - 1}–${U.plural(w + 1, 'week')}`
+          : `around ${U.plural(Math.round(w / 4.3), 'month')}`;
   Inj.range = range;
 
   // News: your players (with medical decisions where there is one), and long-term injuries to stars elsewhere

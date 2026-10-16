@@ -1,0 +1,188 @@
+// Fast unit tests for the pure functions (a few seconds, no world is built): text helpers, name rules, the name generator's
+// shares, the signing rules, the escaping, the real-stats converter. The deploy runs these before it publishes (npm run test:unit);
+// the long simulation tests (npm run test:quick, test:suite, test:long) stay for before a release.
+//   node tools/unit.mjs
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { loadSim } from './harness.mjs';
+
+const { FM } = loadSim(5);
+const U = FM.U,
+  D = FM.D,
+  W = FM.W;
+const fails = [];
+let n = 0;
+const eq = (got, want, what) => {
+  n++;
+  if (JSON.stringify(got) !== JSON.stringify(want))
+    fails.push(`${what}: got ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`);
+};
+const ok = (cond, what) => {
+  n++;
+  if (!cond) fails.push(what);
+};
+
+// ---- text: plurals and a / an ----
+eq(U.plural(1, 'point'), '1 point', 'plural of one');
+eq(U.plural(0, 'point'), '0 points', 'plural of none');
+eq(U.plural(2, 'cap'), '2 caps', 'plural of two');
+eq(U.plural(1, 'match', 'matches'), '1 match', 'an irregular plural of one');
+eq(U.plural(3, 'match', 'matches'), '3 matches', 'an irregular plural');
+eq(U.plural('1', 'goal'), '1 goal', 'plural of a count written as text');
+eq(U.a('attacking midfielder'), 'an attacking midfielder', 'an before a vowel');
+eq(U.a('giant'), 'a giant', 'a before a consonant');
+eq(U.a('ST'), 'an ST', 'an before an acronym said with a vowel (ess-tee)');
+eq(U.a('CB'), 'a CB', 'a before an acronym said with a consonant (see-bee)');
+eq(U.a('AM'), 'an AM', 'an before AM');
+eq(U.a('hour'), 'an hour', 'an before a silent h');
+eq(U.a('university'), 'a university', 'a before a yoo sound');
+eq(U.a('European'), 'a European', 'a before a yoo sound (Eu)');
+
+// ---- escaping ----
+eq(U.esc('<b>"x" & \'y\'</b>'), '&lt;b&gt;&quot;x&quot; &amp; &#39;y&#39;&lt;/b&gt;', 'esc');
+eq(String(U.html`<b>${'<script>'}</b>`), '<b>&lt;script&gt;</b>', 'html escapes what goes in');
+eq(String(U.html`<i>${U.raw('<u>ok</u>')}</i>`), '<i><u>ok</u></i>', 'raw passes through');
+eq(String(U.html`<p>${U.html`<b>${'&'}</b>`}</p>`), '<p><b>&amp;</b></p>', 'html nests without escaping twice');
+eq(
+  String(U.html`<ul>${['a<', 'b'].map((x) => U.html`<li>${x}</li>`)}</ul>`),
+  '<ul><li>a&lt;</li><li>b</li></ul>',
+  'html joins lists',
+);
+eq(String(U.html`${null}${undefined}${0}`), '0', 'html treats nothing as empty and zero as zero');
+
+// ---- text from other people's files ----
+eq(
+  U.clean('<img src=x onerror=alert(1)>"Bob"'),
+  'img src=x onerror=alert(1)Bob',
+  'clean takes out < > " and control characters',
+);
+eq(U.clean("O'Neill & Sons"), "O'Neill & Sons", 'clean leaves apostrophes and ampersands');
+{
+  const bad = {
+    clubs: [{ name: '<b>Evil</b>', nick: 'He said "hi"', ok: 'Fine', n: 3 }],
+    deep: { a: [{ b: ['<x>'] }] },
+  };
+  const changed = U.cleanDeep(bad);
+  eq(
+    [changed, bad.clubs[0].name, bad.clubs[0].nick, bad.deep.a[0].b[0], bad.clubs[0].ok],
+    [3, 'bEvil/b', 'He said hi', 'x', 'Fine'],
+    'cleanDeep cleans nested text',
+  );
+}
+{
+  // a malicious database file is cleaned as it is read, whatever its format
+  const def = JSON.parse(JSON.stringify(FM.WorldDef.blank('<script>alert(1)</script>')));
+  def.meta.author = 'a"onmouseover="x';
+  const read = FM.DbImport.read([{ name: 'x.json', text: JSON.stringify(def) }]);
+  ok(!/[<>"]/.test(read.def.meta.name + read.def.meta.author), 'a database name or author keeps a < > or "');
+  ok(
+    read.notes.some((x) => /taken out/.test(x)),
+    'the reader says it took characters out',
+  );
+}
+
+// ---- names ----
+ok(D.isRude('Fuck City') && D.isRude('SEX') && D.isRude('Mierda FC'), 'rude names are caught');
+ok(!D.isRude('Dickens United') && !D.isRude('Cocker Town') && !D.isRude('Baywick United'), 'real names are not rude');
+ok(W.nickClash('Canaries', ['#6cabdd', '#1c2c5b']), 'a Canaries nickname on a blue kit clashes');
+ok(!W.nickClash('Canaries', ['#ffd100', '#111111']), 'a Canaries nickname on a yellow kit fits');
+ok(!W.nickClash('Hammers', ['#6cabdd', '#1c2c5b']), 'a nickname that names no colour never clashes');
+const roll = (nat, k = 3000) => Array.from({ length: k }, () => W.pickSurname(nat));
+const share = (list, set) => list.filter((x) => set.includes(x)).length / list.length;
+ok(share(roll('KOR'), ['Kim', 'Lee', 'Park']) > 0.38, 'Korean surnames follow their real shares');
+ok(share(roll('VIE'), ['Nguyễn']) > 0.3, 'Nguyễn is the commonest Vietnamese surname');
+ok(
+  roll('VIE').every((x) => !/^(Nguyen|Tran|Pham)$/.test(x)),
+  'Vietnamese surnames keep their accents',
+);
+for (const nat of Object.keys(D.SURNAME_WEIGHTS)) {
+  const total = Object.values(D.SURNAME_WEIGHTS[nat]).reduce((a, b) => a + b, 0);
+  ok(total > 0 && total < 100, `${nat}: the listed surname shares add up to ${total}`);
+}
+const dup = (nat) => {
+  const N = D.NATIONS[nat];
+  return N.fn.length === new Set(N.fn).size && N.ln.length === new Set(N.ln).size;
+};
+ok(['ENG', 'ESP', 'KOR', 'VIE', 'SGP'].every(dup), 'a nation lists a name twice');
+// communities: no Malay first name with a Chinese surname
+const malayFn = new Set(D.NAME_POOLS.malay.fn);
+const chinese = new Set(['Tan', 'Lim', 'Lee', 'Ng', 'Goh', 'Teo', 'Chua', 'Koh', 'Ong', 'Wong']);
+ok(
+  Array.from({ length: 1500 }, () => W.rollName('SGP', null, 2000)).every(
+    (x) => !(malayFn.has(x.fn) && chinese.has(x.ln)),
+  ),
+  'Singapore mixes communities in a name',
+);
+ok(
+  Array.from({ length: 300 }, () => W.rollName('KSA', null, 2000)).every((x) => /^Al-/.test(x.ln)),
+  'a Saudi surname without Al-',
+);
+
+// ---- signing rules ----
+const club = (policy) => ({ name: 'Test FC', policy });
+const man = (o) => ({ nat: 'AUT', nat2: null, heritage: null, ...o });
+const R = FM.Reg;
+ok(R.policy(club(null), man({})).ok, 'a club without a rule signs anyone');
+ok(R.policy(club({ nat: 'AUT', label: 'Austrian' }), man({})).ok, 'a nation rule takes its own nation');
+ok(!R.policy(club({ nat: 'AUT', label: 'Austrian' }), man({ nat: 'GER' })).ok, 'a nation rule refuses another nation');
+ok(
+  R.policy(club({ nat: 'AUT', label: 'Austrian' }), man({ nat: 'GER', nat2: 'AUT' })).ok,
+  'a nation rule takes a second nationality',
+);
+ok(
+  R.policy(club({ region: 'AFR', label: 'African' }), man({ nat: 'NGA' })).ok,
+  'a region rule takes a player of that region',
+);
+ok(
+  !R.policy(club({ region: 'AFR', label: 'African' }), man({ nat: 'ENG' })).ok,
+  'a region rule refuses another region',
+);
+ok(
+  R.policy(club({ heritage: 'basque', label: 'Basque' }), man({ nat: 'ESP', heritage: 'basque' })).ok,
+  'a heritage rule takes that heritage',
+);
+ok(!R.policy(club({ heritage: 'basque', label: 'Basque' }), man({ nat: 'ESP' })).ok, 'a heritage rule refuses another');
+
+// ---- the real-stats converter and the reference table ----
+const rs = FM.RealStats;
+const g = D.REFSTATS && D.REFSTATS.groups;
+ok(
+  g && ['GK', 'CB', 'FB', 'DM', 'CM', 'AM', 'W', 'ST'].every((k) => g[k]),
+  'the reference table lacks a position group',
+);
+ok(g && g.ST.gls[0] > g.CB.gls[0] * 4, 'strikers score far more than centre-backs in the table');
+ok(g && g.CB.clr[0] > g.FB.clr[0], 'centre-backs clear more than full-backs in the table');
+eq(rs.position('LWB'), 'WB', 'a position alias');
+const st = { pos: 'ST', age: 25, minutes: 2700, league: 'D1', goals: 15, xg: 14, shots: 90, passes: 500, passPct: 76 };
+eq(JSON.stringify(rs.convert(st)), JSON.stringify(rs.convert(st)), 'the converter is deterministic');
+ok(rs.convert({ ...st, goals: 25, xg: 22 }).ca > rs.convert(st).ca, 'more goals, a better striker');
+ok(
+  rs.convert({ ...st, age: 19, minutes: 2500 }).paRange[1] > rs.convert({ ...st, age: 30 }).paRange[1] - 1,
+  'a young regular has room to grow',
+);
+// no place writes a count before a plural word without the singular check ("1 caps")
+try {
+  execFileSync(process.execPath, [fileURLToPath(new URL('./plural-sweep.mjs', import.meta.url)), '--check'], {
+    stdio: 'pipe',
+  });
+  n++;
+} catch (e) {
+  fails.push(
+    'a count is written before a plural word without U.plural: node tools/plural-sweep.mjs --write fixes it. ' +
+      String(e.stdout || '').slice(0, 200),
+  );
+}
+// the converter's own command-line test (the same suite the dashboard runs)
+try {
+  execFileSync(process.execPath, [fileURLToPath(new URL('./realstats.mjs', import.meta.url)), '--test'], {
+    stdio: 'pipe',
+  });
+  n++;
+} catch (e) {
+  fails.push('tools/realstats.mjs --test failed: ' + String(e.stdout || e.message).slice(0, 200));
+}
+
+console.log(
+  fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
+);
+process.exit(fails.length ? 1 : 0);

@@ -491,7 +491,7 @@
         }`,
     );
     const titles = rows.filter((x) => x.won.length).length;
-    return `<div class="card"><div class="h3">Season by season</div><div class="tiny dim" style="margin-top:2px">${rows.length} season${rows.length === 1 ? '' : 's'} on record${titles ? ` · ${titles} with a trophy` : ''}</div><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">League</th><th>Pos</th><th style="white-space:nowrap">W-D-L</th><th style="white-space:nowrap">GF–GA</th><th>Pts</th></tr>${lines.join('')}</table>${!all && rows.length > 8 ? `<button class="btn sm block" style="margin-top:8px" data-act="clubHistory" data-id="${id}">All ${rows.length} seasons</button>` : ''}</div>`;
+    return `<div class="card"><div class="h3">Season by season</div><div class="tiny dim" style="margin-top:2px">${rows.length} season${rows.length === 1 ? '' : 's'} on record${titles ? ` · ${titles} with a trophy` : ''}</div><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">League</th><th>Pos</th><th style="white-space:nowrap">W-D-L</th><th style="white-space:nowrap">GF–GA</th><th>Pts</th></tr>${lines.join('')}</table>${!all && rows.length > 8 ? `<button class="btn sm block" style="margin-top:8px" data-act="clubHistory" data-id="${id}">All ${U.plural(rows.length, 'season')}</button>` : ''}</div>`;
   };
   // The club's all-time leaders, from the squad, those who have retired and the club's legends: the top five scorers and
   // appearance makers, with the years they played and (for the current squad) how far from the next one up
@@ -586,7 +586,7 @@
             )
             .join(
               '',
-            )}<polyline points="${line(1)}" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="4 3"/><polyline points="${line(0)}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linejoin="round"/></svg><div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${col}">■ xG for</span><span class="dim">- - xG against</span><span class="dim">(three-match average, last ${run.length} matches)</span></div>`
+            )}<polyline points="${line(1)}" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="4 3"/><polyline points="${line(0)}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linejoin="round"/></svg><div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${col}">■ xG for</span><span class="dim">- - xG against</span><span class="dim">(three-match average, last ${U.plural(run.length, 'match', 'matches')})</span></div>`
         : '';
     const forms = A.forms.length
       ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Formations used</div>${A.forms.map((f) => `<div class="row small" style="padding:3px 0;gap:8px"><b style="width:60px">${esc(f.f)}</b><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(f.share * 100)}%;background:${col}"></i></span><span class="dim" style="width:64px;text-align:right">${f.n} · ${Math.round(f.share * 100)}%</span></div>`).join('')}`
@@ -603,7 +603,7 @@
     const mix = A.mix
       ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Where your chances come from</div>${A.mix.map((x) => `<div class="row small" style="padding:3px 0;gap:8px"><span style="width:84px">${TYPE[x.ty] || x.ty}</span><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(x.share * 100)}%;background:${col}"></i></span><span class="dim" style="width:92px;text-align:right">${Math.round(x.share * 100)}% · ${x.n} (${x.g}⚽)</span></div>`).join('')}`
       : '';
-    return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${A.n} matches in ${esc(A.comp)}, per match, ranked among ${A.of} clubs. The radar's rim is the best in the league.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${radar}<div style="margin-top:6px">${rowsHtml}</div>${trend}${forms}${mix}</div>`;
+    return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${U.plural(A.n, 'match', 'matches')} in ${esc(A.comp)}, per match, ranked among ${U.plural(A.of, 'club')}. The radar's rim is the best in the league.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${radar}<div style="margin-top:6px">${rowsHtml}</div>${trend}${forms}${mix}</div>`;
   };
   UI.clubSheet = function (id) {
     const s = S(),
@@ -720,7 +720,7 @@
       ['MID', 'Midfielders'],
       ['ATT', 'Attackers'],
     ];
-    const squadHtml = `<div class="sec"><div class="h3">Squad</div><span class="dim small">${sq.length} players</span></div>
+    const squadHtml = `<div class="sec"><div class="h3">Squad</div><span class="dim small">${U.plural(sq.length, 'player')}</span></div>
       ${groups
         .map(([g, l]) => {
           const ps = sq.filter((p) => D.POS_GROUP[p.pos] === g);
@@ -947,7 +947,7 @@
         ].filter(Boolean);
         return n.length ? `<div class="tiny dim" style="margin-top:8px">${n.map(esc).join(' ')}</div>` : '';
       })()}
-      ${ult ? `<div class="warnline" style="margin-top:10px">⚠️ Ultimatum: ${ult.need} points from 5 league games. So far ${row.pts - ult.pts} from ${row.p - ult.from}.</div>` : ''}
+      ${ult ? `<div class="warnline" style="margin-top:10px">⚠️ Ultimatum: ${U.plural(ult.need, 'point')} from 5 league games. So far ${row.pts - ult.pts} from ${row.p - ult.from}.</div>` : ''}
       ${b.agenda ? `<div class="warnline" style="margin-top:10px">📌 The board's demand: ${esc(b.agenda.text)}. They will check at the next meeting.</div>` : ''}
       <div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap">${B.MEETINGS.map((m) => `<span class="pill ${held.includes(m.k) ? 'good' : next && next.k === m.k ? 'acc' : ''}" title="${esc(m.label)}">${held.includes(m.k) ? '✓ ' : ''}${esc(m.label.replace(/ board (meeting|review)/, '').replace('Pre-season', 'Pre-season'))}</span>`).join('')}</div>
       <div class="small muted" style="margin-top:8px">${open ? '🔔 A board meeting is waiting for you in the feed.' : next ? `Next: ${esc(next.label)}${days ? `, in about ${days} day${days === 1 ? '' : 's'}` : ', today'}.` : 'No more meetings this season.'}</div>
@@ -967,7 +967,7 @@
             return `<div class="small" style="margin-top:10px"><div class="row"><span class="tiny dim">${St.AXES[k][0]}</span><span class="grow"></span><span class="tiny dim">${St.AXES[k][1]}</span></div><div style="position:relative;height:6px;border-radius:3px;background:var(--line);margin-top:4px"><i style="position:absolute;top:-3px;left:calc(${(v + 1) * 50}% - 6px);width:12px;height:12px;border-radius:50%;background:var(--acc)"></i></div>${w ? `<div class="tiny b" style="margin-top:6px">${esc(w)}</div>` : ''}</div>`;
           })
           .join('')
-      : `<div class="small dim" style="margin-top:6px">Your style appears after ${St.MIN_GAMES} matches (${st.n} so far): it comes from who you play, how you set up and what you spend, not from a choice.</div>`;
+      : `<div class="small dim" style="margin-top:6px">Your style appears after ${U.plural(St.MIN_GAMES, 'match', 'matches')} (${st.n} so far): it comes from who you play, how you set up and what you spend, not from a choice.</div>`;
     const nat = Object.entries(u.repNat || {})
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
@@ -986,7 +986,7 @@
       course = u.course;
     const spec = nb && D.BADGE_COURSE[nb];
     const lic = `<div class="card"><div class="row"><span style="font-size:24px">🎓</span><div class="grow"><div class="h3">Coaching licence: ${esc(u.badges)}</div><div class="tiny dim">${D.BADGES.map((b) => (b === u.badges ? `<b>${b}</b>` : b)).join(' → ')}</div></div></div>
-      ${course ? `<div class="small" style="margin-top:8px">📚 Studying for the ${esc(course.badge)} — ${Math.max(0, course.until - s.day)} day(s) to go.</div>` : nb ? `<div class="small muted" style="margin-top:8px">Next: ${esc(nb)} — ${U.money(spec.cost)}, ${spec.days} days, needs ${Pe.courseReq(nb)} games in charge. Higher licences unlock bigger national team jobs and speed up tactical familiarity (+12% per level).</div><button class="btn sm pri" style="margin-top:8px" data-act="course">Enrol</button>` : '<div class="small muted" style="margin-top:8px">You hold the highest licence.</div>'}</div>`;
+      ${course ? `<div class="small" style="margin-top:8px">📚 Studying for the ${esc(course.badge)} — ${Math.max(0, course.until - s.day)} day(s) to go.</div>` : nb ? `<div class="small muted" style="margin-top:8px">Next: ${esc(nb)} — ${U.money(spec.cost)}, ${U.plural(spec.days, 'day')}, needs ${U.plural(Pe.courseReq(nb), 'game')} in charge. Higher licences unlock bigger national team jobs and speed up tactical familiarity (+12% per level).</div><button class="btn sm pri" style="margin-top:8px" data-act="course">Enrol</button>` : '<div class="small muted" style="margin-top:8px">You hold the highest licence.</div>'}</div>`;
     const t = u.nation && s.nteams[u.nation];
     const nt = t
       ? `<div class="card row tap" data-act="goNation"><span style="font-size:30px">${C.flag(t.code)}</span><div class="grow"><div class="h3">${esc(t.name)} manager</div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(t) + 1} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''} · tap to manage</div></div><span class="dim">›</span></div>`
@@ -1053,7 +1053,7 @@
       const rank = FM.Intl.ranked().indexOf(t) + 1;
       const next = s.calendar.slice(s.day).findIndex((d) => d.type === 'intl' || d.type === 'tourn');
       top += `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:44px">${C.flag(t.code)}</div><div class="grow"><div class="tag">Your national team</div><div class="h2" style="margin-top:4px">${esc(t.name)}</div><div class="small" style="opacity:.9">World #${rank} · Coefficient ${t.coef.toFixed(1)} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''}</div></div></div>
-        <div class="small" style="margin-top:8px;opacity:.9">${next >= 0 ? `Next international match in ${next} day${next === 1 ? '' : 's'}.` : 'No more internationals this season.'} ${t.picks ? `${t.picks.length} players hand-picked.` : 'Squad auto-picked (best available).'}</div>
+        <div class="small" style="margin-top:8px;opacity:.9">${next >= 0 ? `Next international match in ${next} day${next === 1 ? '' : 's'}.` : 'No more internationals this season.'} ${t.picks ? `${U.plural(t.picks.length, 'player')} hand-picked.` : 'Squad auto-picked (best available).'}</div>
         <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="ntSquad">👕 Squad & tactics</button><button class="btn sm grow danger" data-act="ntResign">Resign</button></div></div>${ntOverview(t)}`;
     } else {
       top += `<div class="card"><div class="row"><div class="h3 grow">National team vacancies</div><span class="tiny dim">refreshed each season</span></div>${
@@ -1225,7 +1225,7 @@
           : ''
       }${body}`;
     if (document.querySelector('.sheet-wrap .nt-sheet')) UI.refreshSheet(`<div class="nt-sheet">${html}</div>`);
-    else UI.sheet(`<div class="nt-sheet">${html}</div>`, { title: `${t.name} squad` });
+    else UI.sheet(`<div class="nt-sheet">${html}</div>`, { title: `${esc(t.name)} squad` });
   };
   UI.acts.ntRole = (d, el) => {
     const t = T(S().user.nation),

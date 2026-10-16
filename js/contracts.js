@@ -138,7 +138,7 @@
           hard: true,
           value,
           need,
-          msg: `${W.name(p)} expects to be at least a ${D.STATUS[STATUS_ORDER[wanted + 1]].label.toLowerCase()} — he won't sign as a ${D.STATUS[t.status].label.toLowerCase()}.`,
+          msg: `${W.name(p)} expects to be at least ${U.a(D.STATUS[STATUS_ORDER[wanted + 1]].label.toLowerCase())} — he won't sign as ${U.a(D.STATUS[t.status].label.toLowerCase())}.`,
         };
       need *= 1 + 0.08 * (offered - wanted) * (p.hid.amb >= 14 ? 1.5 : 1);
     }

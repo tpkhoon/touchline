@@ -56,7 +56,10 @@
         ((aim = { t: places, text: `Qualify for the ${ctx.ccName} (top ${places})` }),
           (min =
             europe > places
-              ? { t: europe, text: `a ${second.region === 'Europe' ? 'European' : second.name} place (top ${europe})` }
+              ? {
+                  t: europe,
+                  text: `${U.a(second.region === 'Europe' ? 'European' : second.name)} place (top ${europe})`,
+                }
               : { t: places + 2, text: `top ${places + 2}` }));
       else if (second && europe && exp <= europe + 1)
         ((aim = {
@@ -382,7 +385,9 @@
       const f = form5(club);
       if (f.length) {
         const pts = f.reduce((t, r) => t + (r === 1 ? 3 : r === 0.5 ? 1 : 0), 0);
-        lines.push(`Recent form: ${U.pts(pts)} from the last ${f.length === 1 ? 'game' : `${f.length} games`}.`);
+        lines.push(
+          `Recent form: ${U.pts(pts)} from the last ${f.length === 1 ? 'game' : `${U.plural(f.length, 'game')}`}.`,
+        );
       }
     }
     lines.push(
@@ -657,7 +662,7 @@
         if (md >= 0.45 && i >= 0) {
           const idx = s.calendar[i].idx;
           plan[idx] = { type: 'camp', key: club.facilities.training <= 2 ? 'fitness' : 'tactical', paid: true };
-          return say(`✅ The board pay for a ${plan[idx].key} camp on pre-season day ${idx + 1}.`);
+          return say(`✅ The board pay for ${U.a(plan[idx].key)} camp on pre-season day ${idx + 1}.`);
         }
         return say('❌ "Pre-season is already planned and paid for."');
       }

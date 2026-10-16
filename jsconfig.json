@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "checkJs": false,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": ["js/**/*.js", "tools/**/*.mjs", "types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "android", "ios"]
+}

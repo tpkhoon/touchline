@@ -151,7 +151,7 @@
         FM.News.add({
           type: 'club',
           title: `${W.name(p)} has learned a new position`,
-          body: `${W.name(p)} is now comfortable as a ${pos}. His individual training is back to normal.`,
+          body: `${W.name(p)} is now comfortable as ${FM.U.a(pos)}. His individual training is back to normal.`,
           clubId: W.userClub().id,
         });
         continue;

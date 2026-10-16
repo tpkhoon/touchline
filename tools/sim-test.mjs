@@ -191,6 +191,7 @@ function marketMoves() {
 let tSeason = Date.now();
 const userClubs = new Set(); // (the clubs you have run: nobody covers their keepers for you)
 for (let s = 0; s < SEASONS; s++) {
+  let settleBy = null;
   let summary = null,
     daysThisSeason = 0;
   const year = FM.S.year;
@@ -242,8 +243,11 @@ for (let s = 0; s < SEASONS; s++) {
     const windowWas = Sea.windowOpen();
     summary = stats.days % 5 === 4 ? Sea.skipToMatch().summary : Sea.advance(null);
     roundTrip();
-    // every club leaves a transfer window with a playable squad: at least 17 players and two goalkeepers
-    if (windowWas && !Sea.windowOpen()) {
+    // free agents fill the gaps a window leaves over the following days: two weeks after it closes every club has a playable squad,
+    // at least 17 players and two goalkeepers
+    if (windowWas && !Sea.windowOpen()) settleBy = FM.S.day + 14;
+    if (settleBy !== null && FM.S.day >= settleBy) {
+      settleBy = null;
       const keepers = (id) => W.squad(id).filter((p) => p.pos === 'GK').length;
       const thin = Object.values(FM.S.clubs).filter((c) => {
         if (!c.comp || c.parent || (c.sim !== 'full' && c.sim !== 'light')) return false;
@@ -251,7 +255,7 @@ for (let s = 0; s < SEASONS; s++) {
       });
       check(
         !thin.length,
-        `season ${s + 1}: ${thin.length} clubs left the window thin: ${thin
+        `season ${s + 1}: ${thin.length} clubs still thin two weeks after the window closed: ${thin
           .slice(0, 5)
           .map((c) => `${c.name} (${W.squad(c.id).length}, ${keepers(c.id)} GK)`)
           .join(', ')}`,

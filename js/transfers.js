@@ -211,7 +211,7 @@
         FM.News.add({
           type: 'club',
           title: `${W.name(p)} returns from loan`,
-          body: `Back from ${S.clubs[was].name} after ${W.spell(p) && p.career.spells.slice(-2)[0].apps} appearances.`,
+          body: `Back from ${S.clubs[was].name} after ${U.plural(W.spell(p) && p.career.spells.slice(-2)[0].apps, 'appearance')}.`,
           pid: p.id,
           clubId: parent,
         });
@@ -292,7 +292,7 @@
         FM.News.add({
           type: 'club',
           title: `Fans furious as club icon ${W.name(p)} is sold`,
-          body: `${W.spell(p).apps} appearances for ${from.name}, and now he's gone to ${S.clubs[toId].name}. The supporters won't forget this one.`,
+          body: `${U.plural(W.spell(p).apps, 'appearance')} for ${from.name}, and now he's gone to ${S.clubs[toId].name}. The supporters won't forget this one.`,
           pid: p.id,
           clubId: from.id,
         });
@@ -807,6 +807,11 @@
   T.LOANS_PER_DAY = 40;
   T.aiLoans = function (full, share = 1) {
     const levels = new Map(); // club|group → starter level (a loan changes only the borrowing club's)
+    const sizes = new Map(); // club → squad size (a loan changes only the two clubs it joins)
+    const sizeOf = (c) => {
+      if (!sizes.has(c.id)) sizes.set(c.id, W.squad(c.id).length);
+      return sizes.get(c.id);
+    };
     const levelOf = (c, g) => {
       const key = c.id + '|' + g;
       if (!levels.has(key)) levels.set(key, starterLevel(W.squad(c.id), g));
@@ -841,7 +846,7 @@
             FM.Youth.owner(c.id) !== parent.id && // its own B team is a move within the club, not a loan
             c.rep < parent.rep - 3 &&
             k.ca <= W.levelFor(c.rep) + 12 &&
-            W.squad(c.id).length < W.squadTarget(c) + 3 &&
+            sizeOf(c) < W.squadTarget(c) + 3 &&
             k.ca >= levelOf(c, g) + 1,
         )
         .sort((a, b) => b.rep - a.rep);
@@ -851,6 +856,8 @@
         T.loan(k, d.id, W.age(k) <= 22 ? U.pick([0.5, 0.75, 1]) : U.pick([0.75, 1]), 0);
         levels.delete(d.id + '|' + g);
         levels.delete(parent.id + '|' + g);
+        sizes.delete(d.id);
+        sizes.delete(parent.id);
       }
     }
   };

@@ -324,7 +324,7 @@
       e.push(`${at}: the new clubs draft 11 to 30 players each`);
     else if (rest >= 3 && x.clubs && x.size * x.clubs.length > rest * x.maxLoss)
       e.push(
-        `${at}: ${x.clubs.length} club(s) drafting ${x.size} each need more than the ${rest * x.maxLoss} players the others can lose`,
+        `${at}: ${x.clubs.length} club(s) drafting ${x.size} each need more than the ${U.plural(rest * x.maxLoss, 'player')} the others can lose`,
       );
     return e;
   };
@@ -397,7 +397,9 @@
         FM.News.add({
           type: 'world',
           title: `Expansion draft: ${S.clubs[id].name}`,
-          body: `${S.clubs[id].name} took ${log[id].length} players from the league's clubs, the best ${log[id]
+          body: `${S.clubs[id].name} took ${U.plural(log[id].length, 'player')} from the league's clubs, the best ${log[
+            id
+          ]
             .slice(0, 3)
             .map((x) => `${x.name} (${S.clubs[x.from].short})`)
             .join(', ')}.`,
@@ -1119,7 +1121,12 @@
         e.push(`${at}: a split makes two to four groups of at least two clubs`);
       else {
         if (n && g.reduce((a, b) => a + b, 0) !== n)
-          e.push(`${at}: the groups add up to ${g.reduce((a, b) => a + b, 0)} clubs but the league has ${n}`);
+          e.push(
+            `${at}: the groups add up to ${U.plural(
+              g.reduce((a, b) => a + b, 0),
+              'club',
+            )} but the league has ${n}`,
+          );
         if (
           !Array.isArray(s.rounds) ||
           s.rounds.length !== g.length ||
@@ -1230,7 +1237,7 @@
         e.push(`${at}: the play-off final is one match or two legs`);
       const n = def.clubs.filter((c) => c.league === l.id).length;
       if (p.playoff && n && n < p.auto + 4)
-        e.push(`${at}: a league needs ${p.auto + 4} clubs for ${p.auto} places and a play-off`);
+        e.push(`${at}: a league needs ${U.plural(p.auto + 4, 'club')} for ${U.plural(p.auto, 'place')} and a play-off`);
     }
     if (r.relegate && r.relegate.playoff) {
       const lower = def.leagues.find((x) => x.rules && x.rules.promote && x.rules.promote.to === l.id);
@@ -1430,7 +1437,7 @@
         D[l.clubs].length -
         gone +
         def.clubs.filter((c) => c.league === l.id && !staticClubIds.has(c.id) && !removed.has(c.id)).length;
-      if (left < 8) errors.push(`league ${l.id}: ${left} clubs would be left; a league needs at least 8`);
+      if (left < 8) errors.push(`league ${l.id}: ${U.plural(left, 'club')} would be left; a league needs at least 8`);
     }
     for (const c of def.clubs)
       if (c.parent && removed.has(c.parent)) errors.push(`club ${c.id}: its parent ${c.parent} is removed`);
@@ -1462,7 +1469,7 @@
       const per = {};
       for (const p of def.players) if (p.callup) per[p.nat] = (per[p.nat] || 0) + 1;
       for (const [nat, n] of Object.entries(per))
-        if (n > 26) errors.push(`national team ${nat}: ${n} players called up, a squad is at most 26`);
+        if (n > 26) errors.push(`national team ${nat}: ${U.plural(n, 'player')} called up, a squad is at most 26`);
     }
     if (def.meta.players === 'replace') {
       if (!def.players.length) errors.push('meta.players is "replace" but the definition has no players');
@@ -1734,6 +1741,7 @@
   };
   // A pack onto a definition (in place): what it names or draws replaces what the definition has; what it does not know is left.
   WD.applyPack = function (def, pack) {
+    U.cleanDeep(pack);
     const rep = { clubs: 0, leagues: 0, cups: 0, nations: 0, unmatched: [], errors: [] };
     const E = WD.editor(def, null);
     for (const k of pack.clubs || []) {
@@ -1791,6 +1799,7 @@
 
   // ---------- A definition onto a world ----------
   WD.apply = function (def, S = FM.S) {
+    U.cleanDeep(def); // (whatever the world definition is made of, text with a tag or a quote in it does not reach the game)
     const v = WD.validate(def, S);
     if (v.errors.length) throw new Error('The world definition has errors:\n' + v.errors.slice(0, 12).join('\n'));
     const rep = {

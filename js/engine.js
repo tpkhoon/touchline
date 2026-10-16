@@ -1802,7 +1802,7 @@
         },
         counter: {
           goal: [`Lightning counter! ${an} to ${n}, and it's in!`, `They break at speed — ${n} finishes the move!`],
-          saved: [`Rapid break, ${n} shoots — ${gn} saves!`],
+          saved: [`Rapid break, ${n} shoots — ${U.plural(gn, 'save')}!`],
           wide: [`${n} fluffs the counter-attack chance.`],
           blocked: [`The counter is snuffed out by a last-ditch block.`],
         },
@@ -1848,7 +1848,7 @@
             `${an}'s corner is met by ${n}${where ? ' ' + where : ''} — it's in!`,
             `${an} swings in the corner and ${n} powers it home${where ? ' ' + where : ''}!`,
           ],
-          saved: [`${an}'s corner, ${n} gets there${where ? ' ' + where : ''} — ${gn} saves!`],
+          saved: [`${an}'s corner, ${n} gets there${where ? ' ' + where : ''} — ${U.plural(gn, 'save')}!`],
           wide: [`${an}'s corner finds ${n}${where ? ' ' + where : ''}, just wide.`],
           blocked: [`${an}'s corner is cleared${ev.zone === 'near' ? ' at the near post' : ''}.`],
         };
@@ -1999,7 +1999,7 @@
         return mk('protect', {
           icon: '🛡️',
           title: 'Protect the lead?',
-          body: `We lead ${sd.goals}–${op.goals}. ${90 - min} minutes left.`,
+          body: `We lead ${sd.goals}–${op.goals}. ${U.plural(90 - min, 'minute')} left.`,
           quote: quote(asst, "Your call, boss. They'll come at us now."),
           options: [
             {

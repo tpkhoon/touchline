@@ -382,7 +382,7 @@
       (l) => l.name.toLowerCase().includes(q) || (natOf(l).name || '').toLowerCase().includes(q),
     );
     const lg = (l) =>
-      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${natOf(l).flag} ${esc(l.name)}</div><div class="tiny dim">Tier ${l.tier} · ${clubsOf(l.id).length} clubs</div></div><span class="dim">›</span></div></div>`;
+      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${natOf(l).flag} ${esc(l.name)}</div><div class="tiny dim">Tier ${l.tier} · ${U.plural(clubsOf(l.id).length, 'club')}</div></div><span class="dim">›</span></div></div>`;
     const club = (c) =>
       `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="club" data-cid="${esc(c.id)}" data-lid="${esc(c.league)}"><div class="row" style="gap:10px">${crestDot(c)}<div class="grow"><div class="small b">${esc(c.name)}</div><div class="tiny dim">${esc((leagueOf(c.league) || {}).name || '')} · ${stars(c.rep)}</div></div><span class="dim">›</span></div></div>`;
     const players = (ED.def.players || []).filter((p) => `${p.fn} ${p.ln}`.toLowerCase().includes(q)).slice(0, 10);
@@ -729,7 +729,7 @@
         [
           'staffhub',
           '🧑‍🏫 Staff, managers and agents',
-          `${(ED.def.staff || []).length} coaches and scouts · ${(ED.def.managers || []).length} managers`,
+          `${(ED.def.staff || []).length} coaches and scouts · ${U.plural((ED.def.managers || []).length, 'manager')}`,
         ],
         ['intl', '🌍 International football', `tournaments, national teams and their history`],
         [
@@ -771,7 +771,7 @@
             .filter((l) => l.nat === nat)
             .map(
               (l) =>
-                `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">Tier ${l.tier} · ${clubsOf(l.id).length} clubs</div></div><span class="dim">›</span></div></div>`,
+                `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">Tier ${l.tier} · ${U.plural(clubsOf(l.id).length, 'club')}</div></div><span class="dim">›</span></div></div>`,
             )
             .join('')}`;
         })
@@ -840,7 +840,7 @@
       ? ''
       : !sp
         ? `<div class="ng-label">Split</div><div class="tiny dim" style="line-height:1.5">After the regular season the table can divide into groups (a championship group and a relegation group, say) that play each other again.</div><div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edSplitOn">Split this league</button></div>`
-        : `<div class="ng-label">Split <span class="tiny dim">· ${n} clubs</span></div>
+        : `<div class="ng-label">Split <span class="tiny dim">· ${U.plural(n, 'club')}</span></div>
       <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Regular season rounds</div><input type="number" id="ed-spa" min="${Math.max(1, n - 1)}" max="${3 * Math.max(1, n - 1)}" inputmode="numeric" value="${sp.after}"></div><div style="flex:1"><div class="tiny dim">Points at the split</div><select id="ed-sph"><option value="no" ${sp.halve ? '' : 'selected'}>Carry over</option><option value="yes" ${sp.halve ? 'selected' : ''}>Halved</option></select></div></div>
       ${sp.groups
         .map(
@@ -1577,7 +1577,7 @@
     const rows = clubsOf(l.id)
       .filter((c) => !q || c.name.toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q))
       .sort((a, b) => b.rep - a.rep);
-    return `<div class="h1" style="margin-top:2vh">${n.flag} ${esc(l.name)}</div><div class="tag">Tier ${l.tier} · ${clubsOf(l.id).length} clubs. Tap a club to change it.</div>
+    return `<div class="h1" style="margin-top:2vh">${n.flag} ${esc(l.name)}</div><div class="tag">Tier ${l.tier} · ${U.plural(clubsOf(l.id).length, 'club')}. Tap a club to change it.</div>
       <div class="ng-label">League name</div><div class="ng-names" style="margin-top:0"><input type="text" id="ed-lname" maxlength="48" value="${esc(l.name)}"><input type="text" id="ed-lshort" maxlength="6" style="max-width:90px" value="${esc(l.short || l.id)}"></div>
       ${leagueRules(l)}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveLeague">Save the league</button></div>
@@ -2126,7 +2126,7 @@
       }
       ED.err = [];
       UI.toast(
-        `Pack applied: ${rep.clubs} clubs, ${rep.leagues} leagues, ${rep.cups} cups${rep.unmatched.length ? `; ${rep.unmatched.length} clubs not in this world` : ''}`,
+        `Pack applied: ${U.plural(rep.clubs, 'club')}, ${U.plural(rep.leagues, 'league')}, ${U.plural(rep.cups, 'cup')}${rep.unmatched.length ? `; ${U.plural(rep.unmatched.length, 'club')} not in this world` : ''}`,
         4500,
       );
     } catch (e) {
@@ -2142,7 +2142,7 @@
         (ED.lib || [])
           .map(
             (x) =>
-              `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(x.name)}</div><div class="tiny dim">${x.clubs} clubs · ${x.players} players made · kept ${esc(x.saved)}${x.author ? ' · ' + esc(x.author) : ''}</div></div><button class="btn sm" data-act="edLibOpen" data-id="${esc(x.id)}">Open</button><button class="btn sm" data-act="edLibDel" data-id="${esc(x.id)}" aria-label="Delete">✕</button></div></div>`,
+              `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(x.name)}</div><div class="tiny dim">${U.plural(x.clubs, 'club')} · ${U.plural(x.players, 'player')} made · kept ${esc(x.saved)}${x.author ? ' · ' + esc(x.author) : ''}</div></div><button class="btn sm" data-act="edLibOpen" data-id="${esc(x.id)}">Open</button><button class="btn sm" data-act="edLibDel" data-id="${esc(x.id)}" aria-label="Delete">✕</button></div></div>`,
           )
           .join('') || '<div class="empty">Nothing kept yet.</div>'
       }
@@ -2210,7 +2210,7 @@
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Columns: name, pos (ST, W, AM, CM, DM, FB, CB, GK or the usual abbreviations), nat, born or age, club (its name, short name or id), foot, contract, and the numbers you have: minutes, goals, assists, xg, xa, shots, passes, passPct, keyPasses, tackles, interceptions, clearances, dribbles, aerials, pressures, saves, savePct, goalsConceded, rating. Counts are season totals.</div>
       ${
         rp
-          ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${rp.added} of ${rp.rows} players added</div>${
+          ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${rp.added} of ${U.plural(rp.rows, 'player')} added</div>${
               rp.unmatched.length
                 ? `<div class="tiny" style="color:#fbbf24;margin-top:6px;line-height:1.5">Clubs not found, rows left out: ${esc(rp.unmatched.slice(0, 10).join(', '))}</div>`
                 : ''
@@ -2542,7 +2542,7 @@
       ${errBox()}
       ${
         nats.length
-          ? `<div class="ng-label">Nation</div><select id="ed-ncnat">${nats.map(([k, n, c]) => `<option value="${k}">${n.flag} ${esc(n.name)} · ${c} clubs</option>`).join('')}</select>
+          ? `<div class="ng-label">Nation</div><select id="ed-ncnat">${nats.map(([k, n, c]) => `<option value="${k}">${n.flag} ${esc(n.name)} · ${U.plural(c, 'club')}</option>`).join('')}</select>
       <div class="ng-label">Name</div><input type="text" id="ed-ncname" maxlength="48" placeholder="e.g. National Cup">
       <div class="ng-label">Short name</div><input type="text" id="ed-ncshort" maxlength="6" placeholder="e.g. NC">`
           : '<div class="empty">Every nation with eight or more clubs in simulated leagues has a cup already.</div>'
@@ -2879,7 +2879,7 @@
     const blocked = r.zones || r.conferences || r.torneos;
     const sel = (id) =>
       `<select id="${id}" style="flex:1;min-width:0">${cl.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>`;
-    return `<div class="h1" style="margin-top:2vh">Fixed fixtures</div><div class="tag">${esc(l.name)} · ${cl.length} clubs · ${limit} matchdays</div>
+    return `<div class="h1" style="margin-top:2vh">Fixed fixtures</div><div class="tag">${esc(l.name)} · ${U.plural(cl.length, 'club')} · ${limit} matchdays</div>
       ${errBox()}
       ${
         blocked
@@ -2962,7 +2962,7 @@
     if (tier === 1) {
       const sending = ED.def.leagues.filter((l) => l.rules && l.rules.qualify && l.rules.qualify.to === c.id);
       const total = sending.reduce((t, l) => t + l.rules.qualify.n, 0);
-      return `<div class="ng-label">Where its clubs come from <span class="tiny dim">· ${total} places</span></div>
+      return `<div class="ng-label">Where its clubs come from <span class="tiny dim">· ${U.plural(total, 'place')}</span></div>
         <div class="tiny dim" style="line-height:1.5">A tier 1 cup takes the places that leagues send to it. Open a league and choose it under "Places in the continental cup".</div>
         ${sending.map((l) => `<div class="small" style="padding:4px 0">${natOf(l).flag} ${esc(l.name)} · <b>${l.rules.qualify.n}</b></div>`).join('') || '<div class="tiny" style="color:#f87171">No league sends clubs to it yet.</div>'}`;
     }
@@ -2971,7 +2971,7 @@
     const leagues = ED.def.leagues.filter(
       (l) => (regionOfLeague(l) === region && (l.sim || 'full') !== 'minimal') || feeders[l.id],
     );
-    return `<div class="ng-label">Where its clubs come from <span class="tiny dim">· ${total} places, after the cups above have their clubs</span></div>
+    return `<div class="ng-label">Where its clubs come from <span class="tiny dim">· ${U.plural(total, 'place')}, after the cups above have their clubs</span></div>
       ${leagues
         .map(
           (l) =>
@@ -3273,7 +3273,7 @@
           list
             .map((tn) => {
               const v = cur.tourns[tn.id] || { name: tn.name, slots: tn.pools.map(([, n]) => n) };
-              return `<div class="tiny dim" style="margin:12px 0 4px">${kinds[kind]} · ${tn.size} nations</div><input type="text" id="ed-iname-${tn.id}" maxlength="48" value="${esc(v.name)}">${
+              return `<div class="tiny dim" style="margin:12px 0 4px">${kinds[kind]} · ${U.plural(tn.size, 'nation')}</div><input type="text" id="ed-iname-${tn.id}" maxlength="48" value="${esc(v.name)}">${
                 tn.pools.length > 1
                   ? `<div class="tiny dim" style="margin:6px 0 4px">Places by part of the world (they add up to ${tn.size})</div><div class="ng-names" style="margin-top:0;flex-wrap:wrap">${tn.pools
                       .map(

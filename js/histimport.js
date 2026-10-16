@@ -206,7 +206,7 @@
       });
       if (report.errors.length) throw new Error(report.errors.slice(0, 6).join('; '));
       const notes = [
-        `${report.seasons} past season(s) from ${report.rows} table rows, ${report.players} players, ${report.clubEdits} club edits`,
+        `${report.seasons} past season(s) from ${report.rows} table rows, ${FM.U.plural(report.players, 'player')}, ${report.clubEdits} club edits`,
       ];
       if (report.unmatched.length) notes.push(`Clubs not found, left out: ${report.unmatched.slice(0, 12).join(', ')}`);
       return { def, notes };

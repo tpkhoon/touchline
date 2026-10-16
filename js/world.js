@@ -314,6 +314,8 @@
       const diff = (target - W.calcCA(tmp, pos)) / 5;
       for (const k in w) a[k] = U.clamp(a[k] + diff, 1, 20);
     }
+    // (two decimals: sixteen of them made the players 30 MB of a 33 MB state, and copying that is what costs time and memory)
+    for (const k in a) a[k] = Math.round(a[k] * 100) / 100;
     return a;
   }
 
@@ -2676,13 +2678,13 @@
       ],
       plain: [
         (c, y, g) => `Cult hero: scored in five straight derbies`,
-        (c, y, g) => `One-club man, ${g} seasons`,
-        (c, y, g) => `Signed on a free in ${y} and stayed ${g} seasons`,
+        (c, y, g) => `One-club man, ${U.plural(g, 'season')}`,
+        (c, y, g) => `Signed on a free in ${y} and stayed ${U.plural(g, 'season')}`,
         (c, y, g) => `Academy graduate who made his debut in ${y}`,
         (c, y, g) => `Sold to a bigger club in ${y}, then came home`,
         (c, y, g) => `Never missed a game in ${y}`,
         (c, y, g) => `Hat-trick in the ${y} derby, still talked about`,
-        (c, y, g) => `Played through ${g} seasons of rebuilding`,
+        (c, y, g) => `Played through ${U.plural(g, 'season')} of rebuilding`,
         (c, y, g) => `The best the supporters saw in the ${y}s`,
       ],
     };
@@ -2710,7 +2712,7 @@
             const y = U.pick(titles);
             from = Math.max(first, Math.min(from, y - 2));
             note = U.pick(stories.title)(c, y);
-          } else if (kind === 'record') note = `Club record goalscorer with ${Math.max(goals, 90)} goals`;
+          } else if (kind === 'record') note = `Club record goalscorer with ${U.plural(Math.max(goals, 90), 'goal')}`;
           else if (kind === 'cup' && cups.length) note = U.pick(stories.cup)(c, U.pick(cups));
           else if (kind === 'stay') {
             const ys = [];
@@ -2733,7 +2735,7 @@
         const most = Math.max(...c.legends.map((l) => l.goals));
         if (rec && rec.goals < most) {
           rec.goals = most + U.randi(3, 20);
-          rec.note = `Club record goalscorer with ${rec.goals} goals`;
+          rec.note = `Club record goalscorer with ${U.plural(rec.goals, 'goal')}`;
         }
         c.legends.sort((a, b) => b.apps - a.apps);
       });

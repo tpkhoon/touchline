@@ -56,6 +56,19 @@
   R.broken = false;
   // The save string the worker packed for the state it returned (used once by the next save)
   R.packed = null;
+  // The save is packed in the worker after the day's result is sent. R.afterPack(fn) runs fn (a save) when it has arrived, or at once when
+  // no worker run is waiting for one; a save made in between (the state may have changed) makes the late one useless, and it is dropped.
+  let waiting = null;
+  R.afterPack = (fn) => {
+    if (!waiting) return fn();
+    waiting.fn = fn;
+    clearTimeout(waiting.t);
+    waiting.t = setTimeout(() => {
+      const w = waiting;
+      waiting = null;
+      if (w && w.fn) w.fn(); // (it never came: save the slow way)
+    }, 4000);
+  };
   R.takePacked = (S) => {
     const p = R.packed;
     R.packed = null;
@@ -117,8 +130,17 @@
             if (m.type === 'progress') prog(m.n, m.label);
             else if (m.type === 'done') {
               FM.S = FM.Save.relink(JSON.parse(m.json));
-              R.packed = { S: FM.S, str: m.packed };
+              R.packed = null;
+              waiting = { S: FM.S, saves: (FM.UI && FM.UI._saves) || 0, fn: null, t: null };
               res(m.out);
+            } else if (m.type === 'packed') {
+              const w = waiting;
+              if (!w || w.S !== FM.S) return;
+              clearTimeout(w.t);
+              waiting = null;
+              // (kept only if nothing was saved since the day came back: a save made since is fresher than this one)
+              if (((FM.UI && FM.UI._saves) || 0) === w.saves) R.packed = { S: FM.S, str: m.packed };
+              if (w.fn) w.fn();
             } else if (m.type === 'error') rej(Object.assign(new Error(m.message), { sim: true })); // the season code threw
           };
           w.onerror = (e) => rej(new Error(e.message || 'worker error'));

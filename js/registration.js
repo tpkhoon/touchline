@@ -424,7 +424,7 @@
     if (r.squad && senior(p) && !R.homegrown(p, c.nat) && st.nonHG >= r.squad - r.hg)
       return {
         ok: false,
-        why: `No room on the squad list: ${st.nonHG} of ${r.squad - r.hg} places for non-homegrown over-21s are taken.`,
+        why: `No room on the squad list: ${st.nonHG} of ${U.plural(r.squad - r.hg, 'place')} for non-homegrown over-21s are taken.`,
       };
     if (r.nonEU && R.nonEU(p, c) && st.nonEU >= r.nonEU)
       return { ok: false, why: `All ${r.nonEU} non-EU places are taken.` };

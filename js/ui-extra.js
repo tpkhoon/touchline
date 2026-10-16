@@ -1309,7 +1309,7 @@
               .slice(0, 8)
               .map(
                 (f) =>
-                  `<div class="row small" style="padding:5px 0"><span>${C.flag(f.from)} → ${C.flag(f.to)}</span><span class="grow dim">${D.NATIONS[f.from].name} to ${D.NATIONS[f.to].name}</span><b>${f.n}</b><span class="dim" style="width:64px;text-align:right">${U.money(f.fee)}</span></div>`,
+                  `<div class="row small" style="padding:5px 0"><span>${C.flag(f.from)} → ${C.flag(f.to)}</span><span class="grow dim">${esc(D.NATIONS[f.from].name)} to ${esc(D.NATIONS[f.to].name)}</span><b>${f.n}</b><span class="dim" style="width:64px;text-align:right">${U.money(f.fee)}</span></div>`,
               )
               .join('')}</div>`
           : ''
@@ -1426,7 +1426,7 @@
           r = 3.5 + s.xg * 16;
         const goal = s.outcome === 'goal',
           on = s.outcome === 'saved';
-        return `<circle cx="${X(s.x, s.side)}" cy="${Y(s.y, s.side)}" r="${r}" fill="${goal ? col : 'none'}" fill-opacity="${goal ? 0.95 : 0}" stroke="${goal ? '#fff' : col}" stroke-width="${goal ? 1.6 : on ? 2 : 1.2}" stroke-opacity="${goal || on ? 1 : 0.5}"><title>${s.m}' ${W.short(P(s.pid))} · ${s.type} · xG ${s.xg.toFixed(2)} · ${s.outcome}</title></circle>`;
+        return `<circle cx="${X(s.x, s.side)}" cy="${Y(s.y, s.side)}" r="${r}" fill="${goal ? col : 'none'}" fill-opacity="${goal ? 0.95 : 0}" stroke="${goal ? '#fff' : col}" stroke-width="${goal ? 1.6 : on ? 2 : 1.2}" stroke-opacity="${goal || on ? 1 : 0.5}"><title>${s.m}' ${esc(W.short(P(s.pid)))} · ${s.type} · xG ${s.xg.toFixed(2)} · ${s.outcome}</title></circle>`;
       })
       .join('');
     return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;margin-top:8px;background:#1f7a3f;border-radius:10px">${lines}${dots}</svg>`;

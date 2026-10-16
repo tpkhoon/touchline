@@ -153,7 +153,7 @@
       now = W.stars((v.ca[0] + v.ca[1]) / 2, p.pos),
       age = W.age(p);
     const sure = conf >= 85 ? "I'm sure of it" : `I'm about ${conf}% sure`;
-    let line = `He's a ${halves(now)} player now`;
+    let line = `He's ${U.a(halves(now))} player now`;
     if (age <= 26 && v.pa) {
       const lo = W.stars(v.pa[0], p.pos),
         hi = W.stars(v.pa[1], p.pos),

@@ -431,7 +431,7 @@
         type: 'story',
         kicker: 'CLUB RECORD',
         title: `${s1.name} is ${poss(c.name)} all-time top scorer`,
-        sub: `${s1.goals} goals for the club — past ${poss(s2.name)} ${s2.goals}.`,
+        sub: `${U.plural(s1.goals, 'goal')} for the club — past ${poss(s2.name)} ${s2.goals}.`,
         big: String(s1.goals),
         clubId,
         pid: s1.id,

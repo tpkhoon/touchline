@@ -14,7 +14,7 @@
   // "Window open · 3 days left" / "Deadline day"
   UI.windowLabel = () => {
     const n = M.daysLeft();
-    return n === 1 ? '⏰ Deadline day' : n ? `Window open · ${n} days left` : 'Window closed';
+    return n === 1 ? '⏰ Deadline day' : n ? `Window open · ${U.plural(n, 'day')} left` : 'Window closed';
   };
 
   // ======================= The Transfers tab =======================
@@ -441,7 +441,7 @@
         other = s.clubs[out ? x.to : x.from];
       const when =
         x.why === 'addon'
-          ? `after ${x.apps} appearances`
+          ? `after ${U.plural(x.apps, 'appearance')}`
           : `${Math.floor(x.due / 1000)}/${String((Math.floor(x.due / 1000) + 1) % 100).padStart(2, '0')}`;
       return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '➡️' : '⬅️'} ${C.pname(p)} <span class="tiny dim">${x.why === 'addon' ? 'add-on' : 'instalment'} · ${other ? esc(other.short) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
     };
@@ -553,7 +553,7 @@
       over
         .map(
           (g) =>
-            `<div class="card flat small" style="margin-top:10px"><div class="b">${esc(g.label)}: ${g.n} for ${g.cap} places</div><div class="tiny dim" style="margin-bottom:6px">${dl != null ? `Leave ${g.n - g.cap} out by the deadline (${dl} day${dl === 1 ? '' : 's'}), or sell or loan someone out. Unticked, the weakest are left out.` : 'Too many: the weakest sit out until the next window closes.'}</div>${g.players
+            `<div class="card flat small" style="margin-top:10px"><div class="b">${esc(g.label)}: ${g.n} for ${U.plural(g.cap, 'place')}</div><div class="tiny dim" style="margin-bottom:6px">${dl != null ? `Leave ${g.n - g.cap} out by the deadline (${dl} day${dl === 1 ? '' : 's'}), or sell or loan someone out. Unticked, the weakest are left out.` : 'Too many: the weakest sit out until the next window closes.'}</div>${g.players
               .map(
                 (p) =>
                   `<div class="row small" style="padding:4px 0">${C.pos(p)}<span class="grow">${C.pname(p, W.name(p))} <span class="dim">${C.starText(p.ca, p.pos)}</span></span>${dl != null ? `<button class="chip ${p.leaveOut ? 'on' : ''}" data-act="regLeaveOut" data-id="${p.id}">${p.leaveOut ? 'Leaving out' : 'Leave out'}</button>` : ''}</div>`,

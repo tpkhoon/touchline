@@ -490,7 +490,7 @@
       FM.News.add({
         type: 'world',
         title: `${champ.name} win the ${c.name}`,
-        body: `${champ.name} finish top of their League A group (${winners[0].pts} points from ${winners[0].p} games). Group winners in the other leagues go up; the last in each group go down.`,
+        body: `${champ.name} finish top of their League A group (${U.plural(winners[0].pts, 'point')} from ${U.plural(winners[0].p, 'game')}). Group winners in the other leagues go up; the last in each group go down.`,
         big: !!mine,
       });
     }
@@ -1006,7 +1006,7 @@
     return {
       ok: badgeOk && repOk,
       why: !badgeOk
-        ? `Requires a ${I.badgeNeeded(t)} licence`
+        ? `Requires ${U.a(I.badgeNeeded(t))} licence`
         : !repOk
           ? `Your reputation (${U.repText(u.rep)}) is too low — they want ${U.repText(need)} or better`
           : '',
@@ -1181,7 +1181,7 @@
         FM.News.add({
           type: 'club',
           title: `${W.name(p)} granted ${D.NATIONS[host].name} citizenship`,
-          body: `After ${p.res[host]} years in ${D.NATIONS[host].name}, ${W.short(p)} becomes eligible to play for them${I.nationOf(p) === p.nat ? ` (he may still choose ${D.NATIONS[p.nat] ? D.NATIONS[p.nat].name : p.nat}, as he has not been capped)` : ''}.`,
+          body: `After ${U.plural(p.res[host], 'year')} in ${D.NATIONS[host].name}, ${W.short(p)} becomes eligible to play for them${I.nationOf(p) === p.nat ? ` (he may still choose ${D.NATIONS[p.nat] ? D.NATIONS[p.nat].name : p.nat}, as he has not been capped)` : ''}.`,
           pid: p.id,
           clubId: p.clubId,
         });

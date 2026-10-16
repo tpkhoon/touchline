@@ -1160,6 +1160,7 @@
     Sea.freeAgents();
     if (employed) Sea.ensureUserSquad(11);
     Sea.ensureKeepers();
+    Sea.ensureAiSquads();
     Sea.finances();
     if (employed) {
       Sea.userMorale();
@@ -1323,6 +1324,52 @@
     }
   };
 
+  // No AI club stays under 17 players (a window can close with a club that lost players late and found no deal): free agents of the
+  // position it is shortest in come first, and a young player is brought through when none fits, as with the keepers above.
+  Sea.AI_MIN_SQUAD = 17;
+  Sea.ensureAiSquads = function () {
+    const S = FM.S;
+    let free = null;
+    for (const c of Object.values(S.clubs)) {
+      if (!c.comp || c.parent || (c.sim !== 'full' && c.sim !== 'light') || W.isUserSide(c.id) || W.army(c)) continue;
+      let sq = W.squad(c.id);
+      if (sq.length >= Sea.AI_MIN_SQUAD) continue;
+      const level = W.levelFor(c.rep),
+        tier = D.SQUAD_TIER[c.sim];
+      for (let guard = 0; sq.length < Sea.AI_MIN_SQUAD && guard < 12; guard++) {
+        // the position the club is furthest below its squad plan in
+        const have = {};
+        for (const p of sq) have[p.pos] = (have[p.pos] || 0) + 1;
+        const pos = Object.keys(tier).sort((a, b) => tier[b] - (have[b] || 0) - (tier[a] - (have[a] || 0)))[0];
+        if (!free) free = Object.values(S.players).filter((p) => !p.clubId && !p.retired);
+        const fa = free
+          .filter(
+            (p) => !p.clubId && D.POS_GROUP[p.pos] === D.POS_GROUP[pos] && p.ca >= level - 25 && FM.Reg.policy(c, p).ok,
+          )
+          .sort((a, b) => b.ca - a.ca)[0];
+        if (fa) {
+          W.startSpell(fa, c.id);
+          fa.wage = W.wageFor(fa);
+          fa.contract = S.year + 1;
+          FM.Contracts.aiDeal(fa, c);
+        } else {
+          const p = W.genPlayer({
+            nat: W.natFor ? W.natFor(c) : c.nat,
+            pos,
+            age: U.randi(19, 24),
+            ca: Math.round(level - 10),
+            pa: W.potentialFor(level - 10, 21),
+            clubId: c.id,
+          });
+          S.players[p.id] = p;
+          W.rosterVer++; // (made straight into the club: the squad index is out of date until it is rebuilt)
+          p.contract = S.year + 2;
+        }
+        sq = W.squad(c.id);
+      }
+    }
+  };
+
   // The user's club never runs out of players: under `min` (18 for a new season, 14 at any time), the sporting
   // director signs free agents on one-year deals, or promotes youngsters when none fit, and says so in the feed
   Sea.ensureUserSquad = function (min, warn) {
@@ -1334,8 +1381,8 @@
     if (warn && sq.length >= min && sq.length < warn)
       FM.News.add({
         type: 'club',
-        title: `Thin squad: ${sq.length} players`,
-        body: `You start the season with ${sq.length} players under contract. Injuries and suspensions will bite: add depth in the transfer window or the free agents.`,
+        title: `Thin squad: ${U.plural(sq.length, 'player')}`,
+        body: `You start the season with ${U.plural(sq.length, 'player')} under contract. Injuries and suspensions will bite: add depth in the transfer window or the free agents.`,
         clubId: c.id,
       });
     if (sq.length >= min) return;
@@ -1372,7 +1419,7 @@
     FM.News.add({
       type: 'club',
       title: `Too few players to field a team: ${signed.length} call-up${signed.length === 1 ? '' : 's'}`,
-      body: `With only ${sq.length - signed.length} players under contract, the club has added ${signed.map((p) => `${W.name(p)} (${p.pos}${p.youth === c.id ? ', academy' : ''})`).join(', ')} on one-year deals. Renew contracts before they expire to keep control of your squad.`,
+      body: `With only ${U.plural(sq.length - signed.length, 'player')} under contract, the club has added ${signed.map((p) => `${W.name(p)} (${p.pos}${p.youth === c.id ? ', academy' : ''})`).join(', ')} on one-year deals. Renew contracts before they expire to keep control of your squad.`,
       clubId: c.id,
       pids: signed.map((p) => p.id),
     });
@@ -1698,7 +1745,7 @@
         FM.News.add({
           type: 'world',
           title: `${sh.name} win the Supporters' Shield`,
-          body: `The best record in ${comp.name}: ${t[0].pts} points.${champId !== sh.id ? ` ${champ.name} went on to win the ${comp.short === 'US1' ? 'MLS Cup' : 'league final'}.` : ' They went on to win the final too.'}`,
+          body: `The best record in ${comp.name}: ${U.plural(t[0].pts, 'point')}.${champId !== sh.id ? ` ${champ.name} went on to win the ${comp.short === 'US1' ? 'MLS Cup' : 'league final'}.` : ' They went on to win the final too.'}`,
           clubId: sh.id,
         });
       }

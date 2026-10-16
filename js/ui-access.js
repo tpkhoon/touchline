@@ -184,7 +184,7 @@
     const cont = (id) => (D.CONTINENTALS || []).find((x) => x.id === id);
     const rows = [];
     rows.push(
-      `<b>${esc(L.name)}</b> is tier ${L.tier} of ${esc(nat ? nat.name : '')}'s football: ${L.clubs.length} clubs, each played twice${r.splits || r.torneos ? ' (with its own format: see the league table)' : ''}.`,
+      `<b>${esc(L.name)}</b> is tier ${L.tier} of ${esc(nat ? nat.name : '')}'s football: ${FM.U.plural(L.clubs.length, 'club')}, each played twice${r.splits || r.torneos ? ' (with its own format: see the league table)' : ''}.`,
     );
     const pr = [];
     if (r.promote)

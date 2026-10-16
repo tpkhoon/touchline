@@ -28,7 +28,9 @@ self.onmessage = function (e) {
       out = { summary: Sea.advance(null), n: 1 };
     }
     // Send back the new world, plus the save file already packed, so the main thread doesn't have to
-    self.postMessage({ type: 'done', id: d.id, json: JSON.stringify(FM.S), packed: FM.Save.pack(FM.S), out });
+    // The day's result goes back at once; the save file is packed after, so the screen does not wait for it (about a second)
+    self.postMessage({ type: 'done', id: d.id, json: JSON.stringify(FM.S), out });
+    self.postMessage({ type: 'packed', id: d.id, packed: FM.Save.pack(FM.S) });
   } catch (err) {
     self.postMessage({ type: 'error', id: d.id, message: String((err && err.stack) || err) });
   }

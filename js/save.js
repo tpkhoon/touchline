@@ -624,6 +624,8 @@
     } catch (e) {
       throw new Error('That file is not a Touchline save.');
     }
-    return Sv.unpack(parsed);
+    const res = Sv.unpack(parsed);
+    FM.U.cleanDeep(res.state); // (a backup somebody else made: its names and notes are cleaned once, as it comes in)
+    return res;
   };
 })();

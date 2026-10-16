@@ -31,7 +31,7 @@
     const row = FM.Season.schedule(me.id).find((r) => !r.tbd && r.f.id === fx.id);
     if (!row || row.rest == null || row.rest > 3) return '';
     const tired = FM.W.pickXI(me.id, FM.S.user.tactic).xi.filter((p) => p && p.fitness < 80).length;
-    return `<div class="warnline">⏱ ${row.rest} day${row.rest === 1 ? '' : 's'} since your last match${row.load >= 3 ? ` — ${row.load} games in 14 days` : ''}.${tired ? ` ${tired} of the XI below 80% fitness: think about rotating.` : ''}</div>`;
+    return `<div class="warnline">⏱ ${row.rest} day${row.rest === 1 ? '' : 's'} since your last match${row.load >= 3 ? ` — ${U.plural(row.load, 'game')} in 14 days` : ''}.${tired ? ` ${tired} of the XI below 80% fitness: think about rotating.` : ''}</div>`;
   };
   MV.predictedXI = function (opp, key) {
     const t = opp.tactic,

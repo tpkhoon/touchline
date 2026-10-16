@@ -245,7 +245,7 @@
         type === 'cross' || type === 'cutback' ? 1 + Math.min(0.06, Md.flankOf(od).gap * 0.006) : 1,
       fit: (r) =>
         r.fb.gap >= 8
-          ? [1, `Their ${r.fb.side} flank is weaker by ${r.fb.gap} points`]
+          ? [1, `Their ${r.fb.side} flank is weaker by ${U.plural(r.fb.gap, 'point')}`]
           : r.fb.gap < 4
             ? [-1, 'Their flanks are evenly matched']
             : [0, ''],
@@ -492,7 +492,7 @@
         '🎯',
         1 + (me.goals - me.xg) * 0.5,
         'Clinical',
-        `${me.goals} goals from ${f2(me.xg)} expected: you took what you made.`,
+        `${U.plural(me.goals, 'goal')} from ${f2(me.xg)} expected: you took what you made.`,
       );
     else if (me.goals - me.xg <= -1.2)
       add(
@@ -510,7 +510,7 @@
         '🎯',
         1 + (op.goals - op.xg) * 0.5,
         'They took everything',
-        `${op.goals} goals from ${f2(op.xg)} expected: hard to defend against.`,
+        `${U.plural(op.goals, 'goal')} from ${f2(op.xg)} expected: hard to defend against.`,
       );
     else if (op.goals - op.xg <= -1.2)
       add(
@@ -690,7 +690,7 @@
     const dead = (side) =>
       m.events.filter((e) => e.k === 'goal' && e.side === side && (e.sp || e.type === 'penalty')).length;
     if (dead(us) >= 2)
-      add('setpiece', 'good', '🚩', 1, 'Dead balls', `${dead(us)} goals from set pieces and penalties.`);
+      add('setpiece', 'good', '🚩', 1, 'Dead balls', `${U.plural(dead(us), 'goal')} from set pieces and penalties.`);
     if (dead(1 - us) >= 2)
       add('setpiece', 'bad', '🚩', 1, 'Set pieces', `They scored ${dead(1 - us)} from dead balls.`);
 
@@ -722,7 +722,7 @@
       wins = f.filter((r) => r === 'W').length;
     if (f.length >= 4 && wins >= 4) {
       out.d -= 2.5;
-      out.notes.push(`${opp.name} are flying: ${wins} wins in their last ${f.length}`);
+      out.notes.push(`${opp.name} are flying: ${U.plural(wins, 'win')} in their last ${f.length}`);
     } else if (f.length >= 4 && wins >= 3 && !f.includes('L')) {
       out.d -= 1.2;
       out.notes.push(`${opp.name} are unbeaten and in form`);

@@ -50,7 +50,7 @@
         FM.News.add({
           type: 'world',
           title: `${W.short(p)} completes his military service`,
-          body: `${W.name(p)} is back after ${A.SERVICE_YEARS} seasons away. He needs time to find his rhythm.`,
+          body: `${W.name(p)} is back after ${U.plural(A.SERVICE_YEARS, 'season')} away. He needs time to find his rhythm.`,
           pid: p.id,
           clubId: p.clubId || undefined,
         });
@@ -107,7 +107,7 @@
         FM.News.add({
           type: 'world',
           title: `${W.short(p)} begins his military service`,
-          body: `${W.name(p)} leaves for ${A.SERVICE_YEARS} seasons of national service${
+          body: `${W.name(p)} leaves for ${U.plural(A.SERVICE_YEARS, 'season')} of national service${
             p.loan && p.loan.military ? `, on loan to ${camp.name}, the army's club` : ''
           }. He cannot play for ${S.clubs[parent].name} until ${p.service.until}, and his contract has been extended to cover it.`,
           pid: p.id,

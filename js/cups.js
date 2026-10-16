@@ -237,7 +237,7 @@
       pay(id, uc.prize * 0.13, uc, 'participation');
       FM.News.add({
         type: W.isUser(id) ? 'club' : 'world',
-        title: `${S().clubs[id].name} take a ${uc.name} place`,
+        title: `${S().clubs[id].name} take ${U.a(uc.name)} place`,
         body: `${id === c.winner ? 'Winners' : 'Runners-up'} of the ${c.name}, ${S().clubs[id].name} join the ${uc.name} group stage in place of ${S().clubs[out[i]].name}.`,
         clubId: id,
       });

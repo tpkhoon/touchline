@@ -389,7 +389,7 @@
         St.share({
           kicker: 'MILESTONE',
           title: `${W.name(p)} reaches ${p.career.apps} career games`,
-          sub: `${W.age(p)} years old and still going.`,
+          sub: `${U.plural(W.age(p), 'year')} old and still going.`,
           big: String(p.career.apps),
           clubId: club.id,
           pid,
@@ -397,8 +397,8 @@
       if (sp && [50, 100, 150, 200, 250, 300].includes(sp.apps))
         St.share({
           kicker: 'CLUB LEGEND',
-          title: `${sp.apps} games for ${club.name}`,
-          sub: `${W.name(p)} — ${sp.goals} goals for the club so far.`,
+          title: `${U.plural(sp.apps, 'game')} for ${club.name}`,
+          sub: `${W.name(p)} — ${U.plural(sp.goals, 'goal')} for the club so far.`,
           big: String(sp.apps),
           clubId: club.id,
           pid,
@@ -665,7 +665,7 @@
       title: i === 1 ? `One to watch: ${W.name(p)} of ${x.name}` : `Wonderkid: ${W.name(p)}, ${W.age(p)}, ${x.name}`,
       body:
         i === 1
-          ? `The best player in the ${comp.name} right now, the pundits say: a ${p.pos} for ${x.name}. Expect your assistant to put him on the scouting list.`
+          ? `The best player in the ${comp.name} right now, the pundits say: ${U.a(p.pos)} for ${x.name}. Expect your assistant to put him on the scouting list.`
           : `A ${W.age(p)}-year-old ${p.pos} at ${x.name} that every scout in the league is writing about. Worth knowing the name before your rivals buy him.`,
       clubId: x.id,
       pid: p.id,
@@ -1066,7 +1066,7 @@
     if (called.length)
       FM.News.add({
         type: 'club',
-        title: `${called.length} ${uc.short} players on international duty`,
+        title: `${called.length} ${U.plural(uc.short, 'player')} on international duty`,
         body: called
           .map(
             (p) =>
@@ -1158,8 +1158,8 @@
     if (involvesUser || p.career.apps >= 500)
       St.share({
         kicker: 'RETIREMENT',
-        title: `${lead[0].toUpperCase() + lead.slice(1)} ${W.name(p)} retires after ${p.career.apps} games`,
-        sub: `${p.career.goals} goals. ${sp.apps} appearances for ${c ? c.name : 'his clubs'}.`,
+        title: `${lead[0].toUpperCase() + lead.slice(1)} ${W.name(p)} retires after ${U.plural(p.career.apps, 'game')}`,
+        sub: `${U.plural(p.career.goals, 'goal')}. ${U.plural(sp.apps, 'appearance')} for ${c ? c.name : 'his clubs'}.`,
         big: String(p.career.apps),
         clubId: sp.c,
         pid: null,
@@ -1168,7 +1168,7 @@
       FM.News.add({
         type: 'brief',
         title: `${W.name(p)} hangs up his boots`,
-        body: `${p.career.apps} career games, ${p.career.goals} goals.`,
+        body: `${p.career.apps} career games, ${U.plural(p.career.goals, 'goal')}.`,
         clubId: sp.c,
       });
   };
