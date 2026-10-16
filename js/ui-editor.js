@@ -472,6 +472,9 @@
     const byId = (list, key) => new Map((list || []).map((x) => [key(x), x]));
     for (const [coll, key, label, nameOf] of [
       ['competitions', (x) => x.id, 'competition', (x) => x.name || x.id],
+      ['staff', (x) => x.id, 'coach or scout', (x) => `${x.fn || ''} ${x.ln || ''}`.trim() || x.id],
+      ['nations', (x) => x.code, 'national team', (x) => x.name || x.code],
+      ['history.seasons', (x) => x.year, 'past season', (x) => `Season ${x.label || x.year}`],
       [
         'managers',
         (x) => x.club,
@@ -479,8 +482,8 @@
         (x) => `${(ED.def.clubs.find((c) => c.id === x.club) || {}).name || x.club}: manager ${x.fn} ${x.ln}`,
       ],
     ]) {
-      const was = byId(ED.start[coll], key),
-        now = byId(ED.def[coll], key);
+      const was = byId(pathGet(ED.start, coll), key),
+        now = byId(pathGet(ED.def, coll), key);
       for (const [id, x] of now) {
         const s = was.get(id);
         if (!s) out.push({ text: `${nameOf(x)}: ${label} added`, kind: 'item', coll, id });
@@ -490,6 +493,8 @@
       for (const [id, s] of was)
         if (!now.has(id)) out.push({ text: `${nameOf(s)}: ${label} removed`, kind: 'item', coll, id });
     }
+    if (JSON.stringify(ED.def.calendar || null) !== JSON.stringify(ED.start.calendar || null))
+      out.push({ text: 'The season calendar changed', kind: 'calendar' });
     // players: one by one while there are few, else as a whole
     const sig = (p) =>
       [
@@ -535,12 +540,18 @@
       if (st.rules[d.k] === undefined) delete ED.def.rules[d.k];
       else ED.def.rules[d.k] = clone(st.rules[d.k]);
     } else if (d.kind === 'item') {
-      const arr = (ED.def[d.coll] = ED.def[d.coll] || []);
-      const key = d.coll === 'managers' ? 'club' : 'id';
-      const i = arr.findIndex((x) => x[key] === d.id),
-        s = (st[d.coll] || []).find((x) => x[key] === d.id);
+      const key = { managers: 'club', nations: 'code', 'history.seasons': 'year' }[d.coll] || 'id';
+      const parts = d.coll.split('.'),
+        last = parts.pop();
+      const holder = parts.reduce((o, k) => o[k], ED.def);
+      const arr = (holder[last] = holder[last] || []);
+      const i = arr.findIndex((x) => String(x[key]) === String(d.id)),
+        s = (pathGet(st, d.coll) || []).find((x) => String(x[key]) === String(d.id));
       if (i >= 0) arr.splice(i, 1);
       if (s) arr.push(clone(s));
+    } else if (d.kind === 'calendar') {
+      if (st.calendar === undefined) delete ED.def.calendar;
+      else ED.def.calendar = clone(st.calendar);
     } else if (d.kind === 'players') {
       ED.def.players = clone(st.players || []);
       ED.def.meta.players = st.meta.players;
@@ -587,6 +598,38 @@
   // Problems with a club, found as you type: a name or short name another club of the league has, a nickname that names a colour
   // the kit does not have, home and away colours too alike to tell apart
   const rgb = (h) => [1, 3, 5].map((i) => parseInt(String(h).slice(i, i + 2), 16) || 0);
+  // The same for a league (a name another league of the country has, a rude word) and a player (a rude name, a potential below his
+  // ability, an age the game does not have)
+  const leagueWarn = (l) => {
+    const name = String((($('#ed-lname') || {}).value ?? l.name) || '').trim();
+    const w = [];
+    if (
+      name &&
+      ED.def.leagues.some((x) => x.id !== l.id && x.nat === l.nat && x.name.toLowerCase() === name.toLowerCase())
+    )
+      w.push('Another league of this country has the same name.');
+    if (D.isRude(name)) w.push('That name is one the game will not use: it contains a rude word.');
+    if (clubsOf(l.id).length < 8) w.push(`A league needs at least eight clubs; this one has ${clubsOf(l.id).length}.`);
+    return w.length
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      : '';
+  };
+  const playerWarn = (p) => {
+    const v = (id, d) => ($('#ed-' + id) || {}).value ?? d;
+    const fn = String(v('fn', p.fn || '')).trim(),
+      ln = String(v('ln', p.ln || '')).trim();
+    const w = [];
+    if (D.isRude(fn) || D.isRude(ln)) w.push('That name is one the game will not use: it contains a rude word.');
+    const attrs = D.ATTRS.map((k) => +v('a-' + k, p.attrs[k]));
+    const pos = v('pos', p.pos);
+    const ca = abilityOf(Object.fromEntries(D.ATTRS.map((k, i) => [k, attrs[i]])), pos);
+    if (+v('pa', p.pa) < ca) w.push(`His potential is below his ability (${ca}): the game raises it to match.`);
+    const age = yearOf() - (+v('born', p.born) || p.born);
+    if (age < 15 || age > 44) w.push(`An age of ${age} is outside what the game plays (15 to 44).`);
+    return w.length
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      : '';
+  };
   const clubWarn = (c) => {
     const v = (id, d) => ($('#ed-' + id) || {}).value ?? d;
     const name = String(v('name', c.name)).trim(),
@@ -633,6 +676,21 @@
     ED.tab = d.v;
     UI.worldEditor();
   };
+  // A problem the checks found, as a row that opens the club or league it is about
+  const problemRow = (e) => {
+    const cm = /\b(c_[A-Za-z0-9_]+)/.exec(e),
+      c = cm && ED.def.clubs.find((x) => x.id === cm[1]);
+    const lm = !c && /\bleague "?([A-Za-z0-9_]+)/.exec(e),
+      l = lm && leagueOf(lm[1]);
+    const go = c
+      ? `data-act="edView" data-v="club" data-cid="${esc(c.id)}" data-lid="${esc(c.league)}"`
+      : l
+        ? `data-act="edView" data-v="league" data-lid="${esc(l.id)}"`
+        : '';
+    return go
+      ? `<div class="tap" ${go} style="padding:3px 0">• ${esc(e)} <span class="dim">›</span></div>`
+      : `<div style="padding:3px 0">• ${esc(e)}</div>`;
+  };
   const homeView = () => {
     const s = status(),
       m = ED.def.meta;
@@ -651,8 +709,8 @@
         bad
           ? `<div class="tiny" style="color:#9fb0c5;margin-top:6px;line-height:1.5">${s.chk.errors
               .slice(0, 5)
-              .map((e) => `• ${esc(e)}`)
-              .join('<br>')}</div>`
+              .map(problemRow)
+              .join('')}</div>`
           : ''
       }
       ${errBox()}
@@ -1578,6 +1636,7 @@
       .filter((c) => !q || c.name.toLowerCase().includes(q) || (c.city || '').toLowerCase().includes(q))
       .sort((a, b) => b.rep - a.rep);
     return `<div class="h1" style="margin-top:2vh">${n.flag} ${esc(l.name)}</div><div class="tag">Tier ${l.tier} · ${U.plural(clubsOf(l.id).length, 'club')}. Tap a club to change it.</div>
+      <div id="ed-lwarn">${leagueWarn(l)}</div>
       <div class="ng-label">League name</div><div class="ng-names" style="margin-top:0"><input type="text" id="ed-lname" maxlength="48" value="${esc(l.name)}"><input type="text" id="ed-lshort" maxlength="6" style="max-width:90px" value="${esc(l.short || l.id)}"></div>
       ${leagueRules(l)}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveLeague">Save the league</button></div>
@@ -3862,6 +3921,7 @@
       `<div class="row" style="gap:10px;align-items:center"><span class="small" style="width:96px;flex:none">${esc(D.ATTR_LABEL[k])}</span><input type="range" id="ed-a-${k}" min="1" max="20" step="1" value="${p.attrs[k]}" style="flex:1"><b id="ed-av-${k}" style="width:22px;text-align:right">${p.attrs[k]}</b></div>`;
     return `<div class="h1" style="margin-top:2vh">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim() || 'New player')}</div><div class="tag">A player of your own. The game builds the rest of him (wage, personality, second positions) when the world starts.</div>
       ${errBox()}
+      <div id="ed-pwarn">${playerWarn(p)}</div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">First name</div><input type="text" id="ed-fn" maxlength="24" value="${esc(p.fn || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Last name</div><input type="text" id="ed-ln" maxlength="28" value="${esc(p.ln || '')}"></div></div>
       <div class="ng-label">Nationality</div><select id="ed-nat">${nations.map(([k, n]) => `<option value="${k}" ${p.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Position</div><select id="ed-pos">${D.POS.map((k) => `<option value="${k}" ${p.pos === k ? 'selected' : ''}>${esc(D.POS_NAME[k])}</option>`).join('')}</select></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Foot</div><select id="ed-foot">${['Right', 'Left', 'Both'].map((k) => `<option ${p.foot === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div></div>
@@ -3948,6 +4008,10 @@
       ED.hq = v;
       $('#ed-hres').innerHTML = homeFind(v);
     });
+    if (ED.view === 'league') {
+      const cur = leagueOf(ED.lid);
+      bind('ed-lname', () => cur && ($('#ed-lwarn').innerHTML = leagueWarn(cur)));
+    }
     if (ED.view === 'club') {
       const cur = ED.def.clubs.find((x) => x.id === ED.cid);
       for (const id of ['name', 'short', 'nick', 'c1', 'c2', 'league'])
@@ -3991,6 +4055,9 @@
           $('#ed-av-' + k).textContent = v;
           showAbility();
         });
+      const pcur = ED.def.players.find((x) => x.id === ED.pid);
+      for (const id of ['fn', 'ln', 'pos', 'pa', 'born', ...D.ATTRS.map((k) => 'a-' + k)])
+        bind('ed-' + id, () => pcur && $('#ed-pwarn') && ($('#ed-pwarn').innerHTML = playerWarn(pcur)));
       bind('ed-pos', () => showAbility());
       bind('ed-ca', (v) => ($('#ed-cas').textContent = v));
       bind('ed-pa', (v) => ($('#ed-pav').textContent = v));
