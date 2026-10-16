@@ -2193,6 +2193,67 @@
     }
     UI.worldEditor();
   };
+  // A library of packs: data/packs/index.json lists them (the game's own site when the packs are there, else the repository's), each with
+  // its version, author, licence and credits; a pack is added to the library by adding it to that folder. Nothing is fetched until you ask.
+  const PACK_INDEXES = [
+    'data/packs/index.json',
+    'https://raw.githubusercontent.com/tpkhoon/touchline/main/data/packs/index.json',
+  ];
+  const packsList = () => {
+    if (!ED.packs)
+      return `<div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPacksLook">🔎 Look for packs</button></div>`;
+    if (ED.packs.error) return `<div class="tiny" style="color:#f87171;line-height:1.5">${esc(ED.packs.error)}</div>`;
+    return (
+      ED.packs.list
+        .map(
+          (x, i) =>
+            `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="small b">${esc(x.name)} <span class="dim">${esc(x.version || '')}</span></div><div class="tiny dim" style="line-height:1.5">${esc(x.description || '')}</div><div class="tiny" style="margin-top:4px;line-height:1.5">By ${esc(x.author || 'unknown')} · licence ${esc(x.license || 'not stated')}${x.bytes ? ` · ${(x.bytes / 1048576).toFixed(1)} MB` : ''}</div><div class="tiny dim" style="line-height:1.5">${esc(x.credits || '')}</div><div class="actions" style="margin-top:6px"><button class="btn sm pri" data-act="edPackGet" data-i="${i}">Open in the editor</button></div></div>`,
+        )
+        .join('') || '<div class="empty">No packs are listed.</div>'
+    );
+  };
+  UI.acts.edPacksLook = async () => {
+    UI.toast('Looking…', 1500);
+    let list = null,
+      base = '';
+    for (const url of PACK_INDEXES) {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) continue;
+        list = await r.json();
+        base = url.replace(/index.json$/, '');
+        break;
+      } catch (e) {
+        /* try the next address */
+      }
+    }
+    ED.packs =
+      list && Array.isArray(list)
+        ? { list, base }
+        : { error: 'No list of packs could be reached. Check the connection, or open a pack from a file.' };
+    UI.worldEditor();
+  };
+  UI.acts.edPackGet = async (d) => {
+    const x = ED.packs && ED.packs.list[+d.i];
+    if (!x) return;
+    UI.toast(`Downloading ${x.name}…`, 4000);
+    try {
+      const r = await fetch(ED.packs.base + x.file);
+      if (!r.ok) throw new Error(`the file could not be reached (${r.status})`);
+      const res = FM.DbImport.import([{ name: x.file, text: await r.text() }]);
+      WD.useStatic(null);
+      if (!res.ok) throw new Error(res.errors[0]);
+      ED.def = res.def;
+      ED.start = clone(ED.def);
+      ED.view = 'home';
+      ED.tab = 'world';
+      ED.err = [];
+      UI.toast(`${x.name} ${x.version || ''} opened. Licence: ${x.license || 'not stated'}`, 4500);
+    } catch (e) {
+      ED.err = ['Could not open the pack: ' + (e.message || e)];
+    }
+    UI.worldEditor();
+  };
   const libraryView =
     () => `<div class="h1" style="margin-top:2vh">Library, files and packs</div><div class="tag">Keep worlds on this device, open one from a file, or share just the names and looks.</div>
       ${errBox()}
@@ -2209,6 +2270,8 @@
       <div class="ng-label">Files</div>
       <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edOpenFile">📂 Open a world from a file…</button><button class="btn sm" data-act="edExport">⬆️ Save this world as a file</button></div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">A world file holds everything you made. Send it to a friend, who opens it here or on the new-career screen.</div>
+      <div class="ng-label">Packs to download <span class="tiny dim">· worlds other people made, listed in the game's packs folder</span></div>
+      ${packsList()}
       <div class="ng-label">Club data packs</div>
       <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPackApply">Apply a pack…</button><button class="btn sm" data-act="edPackSave">Make a pack of this world</button></div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">A pack holds only the names, short names, nicknames, cities, colours, crests, kits and grounds of the clubs, the names of the leagues and cups, and the national teams' names and colours. It fits any world: clubs are matched by id, and nothing about ratings, players or rules changes. A pack of real club names can be made once and shared.</div>
@@ -2624,6 +2687,23 @@
     UI.worldEditor();
   };
   // The names are saved as you type them (an empty name keeps the last one)
+  // A cup's name checked as it is typed: a rude word, a name or short name another cup has
+  const cupWarn = (c) => {
+    const name = String((($('#ed-cupname') || {}).value ?? c.name) || '').trim(),
+      short = String((($('#ed-cupshort') || {}).value ?? c.short) || '')
+        .trim()
+        .toUpperCase();
+    const others = cupList().filter((x) => x.id !== c.id && !x.removed);
+    const w = [];
+    if (name && others.some((x) => x.name.toLowerCase() === name.toLowerCase()))
+      w.push('Another cup has the same name.');
+    if (short && others.some((x) => (x.short || '').toUpperCase() === short))
+      w.push(`Another cup is already "${short}".`);
+    if (D.isRude(name) || D.isRude(short)) w.push('That name is one the game will not use: it contains a rude word.');
+    return w.length
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      : '';
+  };
   const saveCupNames = () => {
     const name = (($('#ed-cupname') || {}).value || '').trim(),
       short = (($('#ed-cupshort') || {}).value || '').trim();
@@ -2800,6 +2880,7 @@
       : '';
     return `<div class="h1" style="margin-top:2vh">${esc(o.name)}</div><div class="tag">${esc(c.group)}${kind === 'cont' ? ` · tier ${contTier(c.id)} · ${esc(contRegion(c.id) || '')}` : ''}</div>
       ${errBox()}
+      <div id="ed-cupwarn">${cupWarn(c)}</div>
       <div class="ng-names"><input type="text" id="ed-cupname" maxlength="48" value="${esc(o.name)}"><input type="text" id="ed-cupshort" maxlength="6" style="max-width:84px" value="${esc(o.short || c.short)}"></div>
       ${body}
       ${kind === 'cont' ? contFeeders(c, f) : ''}
@@ -4046,9 +4127,13 @@
     bind('ed-sjudge', (v) => ($('#ed-sjudgev').textContent = v));
     for (const r of Object.keys(D.REGIONS)) bind('ed-sreg-' + r, (v) => ($('#ed-sregv-' + r).textContent = v + '%'));
     bind('ed-ncoef', (v) => ($('#ed-ncoefv').textContent = v));
+    const showCupWarn = () => {
+      const c = cupList().find((x) => x.id === ED.cup);
+      if (c && $('#ed-cupwarn')) $('#ed-cupwarn').innerHTML = cupWarn(c);
+    };
     bind('ed-cupprize', () => saveCupPrize());
-    bind('ed-cupname', () => saveCupNames());
-    bind('ed-cupshort', () => saveCupNames());
+    bind('ed-cupname', () => (saveCupNames(), showCupWarn()));
+    bind('ed-cupshort', () => (saveCupNames(), showCupWarn()));
     if (ED.view === 'player') {
       for (const k of D.ATTRS)
         bind('ed-a-' + k, (v) => {

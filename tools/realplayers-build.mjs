@@ -415,7 +415,11 @@ for (const list of Object.values(byNat))
 for (const p of players) delete p._caps;
 def.players = players;
 def.meta.name = 'Real world (top five leagues)';
-def.meta.author = 'built by tools/realplayers-build.mjs';
+def.meta.author = 'Touchline project (tools/realplayers-build.mjs)';
+def.meta.version = '1.0';
+def.meta.license = 'CC BY-SA 4.0';
+def.meta.credits =
+  'Squads from the English Wikipedia (CC BY-SA 4.0) with birth dates and fame counts from Wikidata (CC0); 425 ratings moved by StatsBomb open data (derived figures only). Ratings are estimates.';
 def.meta.description =
   'Real clubs everywhere; real first-team squads for the top two divisions of England, Spain, Germany, Italy and France. Squads from the English Wikipedia (CC BY-SA 4.0), birth dates and fame counts from Wikidata (CC0). Ratings are estimates: the best-known players of a club get the best ratings the game made for it. Shared under CC BY-SA 4.0.';
 const v = WD.validate(def, S);

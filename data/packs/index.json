@@ -1,0 +1,12 @@
+[
+ {
+  "file": "real-world.json",
+  "name": "Real world (top five leagues)",
+  "author": "Touchline project (tools/realplayers-build.mjs)",
+  "version": "1.0",
+  "license": "CC BY-SA 4.0",
+  "credits": "Squads from the English Wikipedia (CC BY-SA 4.0) with birth dates and fame counts from Wikidata (CC0); 425 ratings moved by StatsBomb open data (derived figures only). Ratings are estimates.",
+  "description": "Real clubs everywhere; real first-team squads for the top two divisions of England, Spain, Germany, Italy and France. Squads from the English Wikipedia (CC BY-SA 4.0), birth dates and fame counts from Wikidata (CC0). Ratings are estimates: the best-known players of a club get the best ratings the game made for it. Shared under CC BY-SA 4.0.",
+  "bytes": 3994797
+ }
+]
