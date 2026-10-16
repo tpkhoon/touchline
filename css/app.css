@@ -1676,6 +1676,21 @@ table.t tr.zone-down td:first-child {
   color: #fff;
   font-size: 16px;
 }
+/* the editor on a computer: wider, with the long lists in two columns */
+@media (min-width: 900px) {
+  .title.ed-wide {
+    max-width: 1040px;
+  }
+  .title.ed-wide #ed-list,
+  .title.ed-wide #ed-hres {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 12px;
+  }
+  .title.ed-wide .seg {
+    max-width: 640px;
+  }
+}
 .title details.edsec {
   border: 1px solid #243042;
   border-radius: 14px;

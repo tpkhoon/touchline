@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-430 features are playable in the web prototype today. Build = the build that added it.
+431 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -460,10 +460,11 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | World editor, phone comfort: a club's form folded into four sections (Identity, Ground, League and signing rule, Manager and rival) with a header 48 px tall, and number fields and sliders at least 48 px tall; the colour presets were added earlier | Editor improvements |
 | Editor | World editor, tabs, wider undo and rude names: the home screen in five tabs (World, Clubs, Players, Competitions, History) instead of one long page; Changes lists and undoes a league's name or short name, a world rule, the players made or changed (as a whole), a club taken out (it is put back) and a club added (it is removed), as well as a club's fields; a club name or short name with a rude word in it is flagged as you type (the name generator's word list, now in js/names.js too) | Editor improvements |
 | Editor | Edit the world you are playing: an Edit button at the foot of every player and club sheet and a Settings card (Edit the world) that finds a player or a club by name. A player's first name, surname, foot, potential, contract end and every attribute (his ability and value follow at once); a club's name, short name, nickname, city, colours, ground, capacity and reputation. A change takes effect at once in the running career and is saved with it; nothing marks the save as edited. A rude name is refused | Editor improvements |
+| Editor | World editor, search, undo and a wide layout: the home search also finds players you made and cups; a long list to pick from (the 92 nations of a player's screen) has a box to type in; Changes also lists and undoes a competition, a manager and each player one by one (a whole-list undo past 40 players); the list of changes is saved inside an exported pack (meta.changes) so a shared pack shows what it changed from its base; on a screen 900 px wide or more the editor is wider with the long lists in two columns | Editor improvements |
 
 ## Yet to be added
 
-191 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+190 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority: the real database and the accuracy of the ratings it is made with** (the three Ratings rows at the top of the table; eight more are done and listed above). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -658,9 +659,8 @@ Design principle from here: don't make the game deeper by adding more screens �
 | Clubs | Reserve team names as each country writes them: "B" for Spain, "II" for Germany, "U21" for England, and the other nations' own forms, for the B teams and youth sides of every club | Alpha 2 |
 | Clubs | Accents on Vietnamese place names (Bình Mai, Tuyên Lâm: club words such as "Thép" already have them) and a Vietnamese subset of the bundled fonts, so accented letters do not fall back to another font on a phone | Alpha 2 |
 | Tooling | A name profile for each nation: one data file per nation holding surnames with weights, given names by generation, name order, known-as and shirt-name rules, communities with their shares (Singapore, Malaysia and others) and whether accents are used, built on what `tools/namelib.mjs` and `js/names.js` have; with the name test extended to flag near-copies of famous players and to check each nation's surname spread against its weights | Alpha 2 |
-| Editor | Get around the editor, the rest: a search on the long pickers (the 90-nation list on the player screen) and the home search reaching players and competitions (the five tabs are done) | Alpha 2 |
-| Editor | Undo for everything, the rest: cups, managers, staff and single players listed in Changes with their own Undo (clubs, leagues, world rules, the players as a whole and clubs put back or taken out are done), and a way to keep the list with the pack so a shared pack shows what it changed from the base world | Alpha 2 |
+| Editor | Undo for staff, national teams, the calendar and past seasons: the Changes screen listing them with their own Undo (clubs, leagues, rules, competitions, managers and players are done) | Alpha 2 |
 | Editor | Bulk tools, the rest: give a whole nation newly generated names in one tap (reputation, find and replace, copy and swap are done) | Alpha 2 |
 | Editor | More checks as you type, the rest: the problems list of the home screen shown beside the field it comes from, and the club checks reaching leagues, cups and players (a rude name or short name is flagged on a club now) | Alpha 2 |
 | Editor | Try the world before you play it: a "Simulate 5 seasons" button that shows the champions, promotions and relegations of the world being edited, to catch a club made far too strong or a league one club always wins | Alpha 2 |
-| Editor | A wide layout for the editor on a computer and a community library: two columns and the spreadsheet-style editor when the screen is wide (building a whole database on a phone is hard work), and later a library to browse and download packs, like a workshop, with each pack's version, author and licence shown | Alpha 2 |
+| Editor | A community library of packs: browse and download packs, like a workshop, with each pack's version, author, licence and credits shown (the wide layout is done; the spreadsheet-style editor is the CSV editor row) | Alpha 2 |

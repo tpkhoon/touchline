@@ -93,6 +93,9 @@
   };
   UI.acts.edExport = async () => {
     try {
+      ED.def.meta.changes = changesList()
+        .map((x) => x.text)
+        .slice(0, 300); // (what this pack changed from the world it started as)
       ED.def.meta.gameVersion = FM.VERSION; // (what the pack was made with: an import warns when the game differs)
       const bytes = new TextEncoder().encode(WD.stringify(ED.def));
       const name = `touchline-${String(ED.def.meta.name || 'world')
@@ -382,8 +385,18 @@
       `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${natOf(l).flag} ${esc(l.name)}</div><div class="tiny dim">Tier ${l.tier} · ${clubsOf(l.id).length} clubs</div></div><span class="dim">›</span></div></div>`;
     const club = (c) =>
       `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="club" data-cid="${esc(c.id)}" data-lid="${esc(c.league)}"><div class="row" style="gap:10px">${crestDot(c)}<div class="grow"><div class="small b">${esc(c.name)}</div><div class="tiny dim">${esc((leagueOf(c.league) || {}).name || '')} · ${stars(c.rep)}</div></div><span class="dim">›</span></div></div>`;
-    if (!clubs.length && !leagues.length) return '<div class="empty">Nothing matches.</div>';
-    return `${leagues.slice(0, 8).map(lg).join('')}${clubs.slice(0, 12).map(club).join('')}${clubs.length > 12 ? `<div class="tiny dim" style="margin:4px 0">${clubs.length - 12} more: type more of the name.</div>` : ''}`;
+    const players = (ED.def.players || []).filter((p) => `${p.fn} ${p.ln}`.toLowerCase().includes(q)).slice(0, 10);
+    const comps = [
+      ...D.DOMESTIC_CUPS.map(([, , name]) => name),
+      ...(ED.def.competitions || []).map((c) => c.name),
+    ].filter((n, i, a) => n && n.toLowerCase().includes(q) && a.indexOf(n) === i);
+    const player = (p) =>
+      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edFindPlayer" data-pid="${esc(p.id)}" data-cid="${esc(p.club || FREE)}"><div class="row"><div class="grow"><div class="small b">${esc(p.fn)} ${esc(p.ln)}</div><div class="tiny dim">${esc(p.pos)} · ${esc((ED.def.clubs.find((c) => c.id === p.club) || {}).name || 'free agent')}</div></div><span class="dim">›</span></div></div>`;
+    const cup = (n) =>
+      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="cups"><div class="row"><div class="grow"><div class="small b">🏆 ${esc(n)}</div><div class="tiny dim">Cup</div></div><span class="dim">›</span></div></div>`;
+    if (!clubs.length && !leagues.length && !players.length && !comps.length)
+      return '<div class="empty">Nothing matches.</div>';
+    return `${leagues.slice(0, 8).map(lg).join('')}${comps.slice(0, 6).map(cup).join('')}${players.map(player).join('')}${clubs.slice(0, 12).map(club).join('')}${clubs.length > 12 ? `<div class="tiny dim" style="margin:4px 0">${clubs.length - 12} more: type more of the name.</div>` : ''}`;
   };
   // What changed since the editor opened, club by club and field by field, each with the value it had
   const CLUB_FIELDS = [
@@ -455,14 +468,56 @@
           kind: 'rule',
           k,
         });
-    const made = (ED.def.players || []).length,
-      was = ((ED.start && ED.start.players) || []).length;
-    if (
-      made !== was ||
-      JSON.stringify((ED.def.players || []).slice(0, 50)) !==
-        JSON.stringify(((ED.start && ED.start.players) || []).slice(0, 50))
-    )
-      out.push({ text: `Players made or changed: ${was} → ${made}`, kind: 'players' });
+    // cups and competitions, and managers: by id, each put back as it was
+    const byId = (list, key) => new Map((list || []).map((x) => [key(x), x]));
+    for (const [coll, key, label, nameOf] of [
+      ['competitions', (x) => x.id, 'competition', (x) => x.name || x.id],
+      [
+        'managers',
+        (x) => x.club,
+        'manager',
+        (x) => `${(ED.def.clubs.find((c) => c.id === x.club) || {}).name || x.club}: manager ${x.fn} ${x.ln}`,
+      ],
+    ]) {
+      const was = byId(ED.start[coll], key),
+        now = byId(ED.def[coll], key);
+      for (const [id, x] of now) {
+        const s = was.get(id);
+        if (!s) out.push({ text: `${nameOf(x)}: ${label} added`, kind: 'item', coll, id });
+        else if (JSON.stringify(s) !== JSON.stringify(x))
+          out.push({ text: `${nameOf(x)}: ${label} changed`, kind: 'item', coll, id });
+      }
+      for (const [id, s] of was)
+        if (!now.has(id)) out.push({ text: `${nameOf(s)}: ${label} removed`, kind: 'item', coll, id });
+    }
+    // players: one by one while there are few, else as a whole
+    const sig = (p) =>
+      [
+        p.fn,
+        p.ln,
+        p.nat,
+        p.born,
+        p.pos,
+        p.foot,
+        p.club,
+        p.contract,
+        p.pa,
+        p.callup ? 1 : 0,
+        ...Object.values(p.attrs || {}),
+      ].join('|');
+    const wasP = byId(ED.start.players, (p) => p.id),
+      nowP = byId(ED.def.players, (p) => p.id);
+    const pch = [];
+    for (const [id, p] of nowP) {
+      const s = wasP.get(id);
+      if (!s) pch.push({ text: `${p.fn} ${p.ln}: a player you made`, kind: 'item', coll: 'players', id });
+      else if (s !== p && sig(s) !== sig(p))
+        pch.push({ text: `${p.fn} ${p.ln}: player changed`, kind: 'item', coll: 'players', id });
+    }
+    for (const [id, s] of wasP)
+      if (!nowP.has(id)) pch.push({ text: `${s.fn} ${s.ln}: player removed`, kind: 'item', coll: 'players', id });
+    if (pch.length <= 40) out.push(...pch);
+    else out.push({ text: `Players made or changed: ${pch.length} of them`, kind: 'players' });
     return out;
   };
   const changeSummary = () => {
@@ -479,6 +534,13 @@
     } else if (d.kind === 'rule') {
       if (st.rules[d.k] === undefined) delete ED.def.rules[d.k];
       else ED.def.rules[d.k] = clone(st.rules[d.k]);
+    } else if (d.kind === 'item') {
+      const arr = (ED.def[d.coll] = ED.def[d.coll] || []);
+      const key = d.coll === 'managers' ? 'club' : 'id';
+      const i = arr.findIndex((x) => x[key] === d.id),
+        s = (st[d.coll] || []).find((x) => x[key] === d.id);
+      if (i >= 0) arr.splice(i, 1);
+      if (s) arr.push(clone(s));
     } else if (d.kind === 'players') {
       ED.def.players = clone(st.players || []);
       ED.def.meta.players = st.meta.players;
@@ -515,7 +577,7 @@
           ? list
               .map(
                 (x) =>
-                  `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:10px"><div class="grow small">${esc(x.text)}</div>${x.kind ? `<button class="btn sm" data-act="edUndoMore" data-kind="${x.kind}" data-cid="${esc(x.cid || '')}" data-lid="${esc(x.lid || '')}" data-k="${esc(x.k || '')}">Undo</button>` : x.k ? `<button class="btn sm" data-act="edUndo" data-cid="${esc(x.cid)}" data-k="${esc(x.k)}">Undo</button>` : ''}</div></div>`,
+                  `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:10px"><div class="grow small">${esc(x.text)}</div>${x.kind ? `<button class="btn sm" data-act="edUndoMore" data-kind="${x.kind}" data-coll="${esc(x.coll || '')}" data-id="${esc(x.id || '')}" data-cid="${esc(x.cid || '')}" data-lid="${esc(x.lid || '')}" data-k="${esc(x.k || '')}">Undo</button>` : x.k ? `<button class="btn sm" data-act="edUndo" data-cid="${esc(x.cid)}" data-k="${esc(x.k)}">Undo</button>` : ''}</div></div>`,
               )
               .join('')
           : '<div class="empty">Nothing changed yet.</div>'
@@ -2230,6 +2292,10 @@
     if (r.ok) ((ED.view = 'player'), (ED.pid = r.id));
     UI.worldEditor();
   };
+  UI.acts.edFindPlayer = (d) => {
+    ED.cid = d.cid;
+    UI.acts.edPlayer(d);
+  };
   UI.acts.edPlayer = (d) => {
     ED.view = 'player';
     ED.pid = d.pid;
@@ -3846,7 +3912,26 @@
       changes: changesView,
     };
     const body = (views[ED.view] || homeView)();
-    app.innerHTML = `<div class="title">${body}</div>`;
+    app.innerHTML = `<div class="title ed-wide">${body}</div>`;
+    // a long list to pick from (the 90 nations) gets a box to type in
+    document.querySelectorAll('.title select').forEach((sel) => {
+      if (sel.options.length < 40 || sel.dataset.found) return;
+      sel.dataset.found = '1';
+      const all = [...sel.options].map((o) => [o.value, o.textContent, o.selected]);
+      const box = document.createElement('input');
+      box.type = 'search';
+      box.placeholder = 'Type to find…';
+      box.style.marginBottom = '6px';
+      box.addEventListener('input', () => {
+        const t = box.value.trim().toLowerCase(),
+          keep = sel.value;
+        const show = all.filter(([v, n]) => !t || n.toLowerCase().includes(t) || v === keep);
+        sel.innerHTML = show
+          .map(([v, n]) => `<option value="${esc(v)}" ${v === keep ? 'selected' : ''}>${esc(n)}</option>`)
+          .join('');
+      });
+      sel.parentNode.insertBefore(box, sel);
+    });
     window.scrollTo(0, 0);
     // fields that update the definition as you type
     const bind = (id, fn) => {
