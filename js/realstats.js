@@ -6,8 +6,10 @@
 //     → { pos, ca, pa, attrs, confidence, notes }
 //
 // How it works: every count is turned into a per-90 rate and compared with what is typical for his position group
-// (z-scores against the reference table below: rough averages and spreads from public top-five-league data, good enough
-// to rank players, not to quote). A position-weighted blend of those is his quality; the league's strength sets the
+// (z-scores against the typical player of his position group: eight groups, GK, CB, FB, DM, CM, AM, W and ST, measured per
+// 90 minutes from real matches by tools/refstats.mjs into js/refstats.js; the older estimates below fill what that table
+// does not have). Defensive counts are scaled by how much of the ball the opponent had, and passing is judged against his
+// role's completion and by progressive passes. A position-weighted blend of those is his quality; the league's strength sets the
 // baseline it is measured from, so a good player in a weak league comes out lower than the same numbers in a strong one.
 // Few minutes pull everything back toward the baseline (little evidence). Attributes are the baseline level, moved up or
 // down by the metrics that bear on each, then rescaled so the game's own ability formula gives back his ability.
@@ -151,10 +153,24 @@
     },
   };
   // What each position group's quality is made of: the metrics that matter, with weights
+  // (the expected numbers count for more than goals and assists: they carry less luck, and less of the team's strength)
   const QUALITY = {
-    ATT: { gls: 3, xg: 2, ast: 1.5, xa: 1.5, kp: 1, drb: 1, sh: 0.5, pct: 0.5 },
-    MID: { pas: 1, pct: 1.5, kp: 1.5, xa: 1.5, ast: 1, tkl: 1.5, int: 1, gls: 0.8, drb: 0.7, prs: 0.5 },
-    DEF: { tkl: 2, int: 2, clr: 1.5, aer: 1.5, pct: 1.5, pas: 0.7, prs: 0.5, kp: 0.3 },
+    ATT: { xg: 3, gls: 1.5, xa: 2, ast: 0.8, kp: 1, drb: 1, sh: 0.5, pct: 0.5, prg: 0.4 },
+    MID: {
+      pas: 1,
+      pct: 1.2,
+      prg: 1.2,
+      kp: 1.5,
+      xa: 1.8,
+      ast: 0.7,
+      tkl: 1.5,
+      int: 1,
+      xg: 0.8,
+      gls: 0.4,
+      drb: 0.7,
+      prs: 0.5,
+    },
+    DEF: { tkl: 2, int: 2, clr: 1.5, aer: 1.5, pct: 1.2, prg: 1, pas: 0.7, prs: 0.5, kp: 0.3 },
     GK: { svp: 3, cgp: -2, sav: 0.7, pct: 1, pas: 0.5 },
   };
   // Which metrics move which attribute (weights); a metric's z-score becomes a nudge to the attribute
@@ -162,7 +178,7 @@
     finishing: { gls: 0.5, xg: 0.3, sh: 0.2 },
     dribbling: { drb: 0.8, ast: 0.2 },
     technique: { kp: 0.35, drb: 0.35, ast: 0.3 },
-    passing: { pct: 0.5, pas: 0.3, kp: 0.2 },
+    passing: { pct: 0.4, prg: 0.3, pas: 0.2, kp: 0.1 },
     vision: { kp: 0.35, xa: 0.35, ast: 0.3 },
     tackling: { tkl: 0.7, int: 0.3 },
     positioning: { int: 0.4, clr: 0.2, xg: 0.4 },
@@ -176,6 +192,20 @@
   };
   const NUDGE = 1.7; // attribute points for one spread above typical
   const MAXNUDGE = 4;
+
+  // The position groups the reference table is made for (js/refstats.js): wing-backs with full-backs, wide midfielders with wingers
+  const FINE = { GK: 'GK', CB: 'CB', FB: 'FB', WB: 'FB', DM: 'DM', CM: 'CM', WM: 'W', AM: 'AM', W: 'W', ST: 'ST' };
+  RS.refGroup = (pos) => FINE[pos] || null;
+  // The reference of a position: the measured table for his group where there is one, else the older estimate of the broad
+  // group (a metric the table has no figure for keeps the estimate)
+  RS.reference = function (pos) {
+    const base = REF[D.POS_GROUP[pos]],
+      t = D.REFSTATS && D.REFSTATS.groups && D.REFSTATS.groups[FINE[pos]];
+    if (!t) return base;
+    const ref = Object.assign({}, base);
+    for (const k in t) if (Array.isArray(t[k]) && !(pos !== 'GK' && ['sav', 'svp', 'cgp'].includes(k))) ref[k] = t[k];
+    return ref;
+  };
 
   // ---------- The conversion ----------
   const num = (v) => (v == null || v === '' || Number.isNaN(+v) ? null : +v);
@@ -198,6 +228,7 @@
       tkl: pick('tackles', 'tkl'),
       int: pick('interceptions', 'int'),
       clr: pick('clearances', 'clr'),
+      prg: pick('progressivePasses', 'progressive', 'prg'),
       drb: pick('dribbles', 'dribblesWon', 'drb'),
       aer: pick('aerials', 'aerialsWon', 'aer'),
       prs: pick('pressures', 'prs'),
@@ -205,6 +236,13 @@
     };
     const r = {};
     for (const k in raw) if (raw[k] != null) r[k] = inp.per90 ? raw[k] : (raw[k] * 90) / mins;
+    // defending is scaled by how much of the ball his side had (poss: his team's share of the possession, 0–100 or 0–1): a
+    // side that rarely has it has more defending to do, so the same count means less; 50% changes nothing
+    const poss = pick('possession', 'poss');
+    if (poss != null) {
+      const own = U.clamp(poss > 1 ? poss / 100 : poss, 0.2, 0.8);
+      for (const k of ['tkl', 'int', 'clr', 'prs']) if (r[k] != null) r[k] *= 0.5 / (1 - own);
+    }
     // percentages are not totals
     const pct = pick('passPct', 'passAccuracy', 'pct');
     if (pct != null) r.pct = pct <= 1 ? pct * 100 : pct;
@@ -225,7 +263,7 @@
     if (!pos) throw new Error(`Unknown position "${inp.pos || inp.position}"`);
     const age = num(inp.age) ?? (num(inp.born) && num(inp.year) ? inp.year - inp.born : 25);
     const group = D.POS_GROUP[pos];
-    const ref = REF[group];
+    const ref = RS.reference(pos);
     const strength = RS.leagueStrength(inp.league ?? 50);
     const base = RS.baseline(strength);
     const r = RS.rates(inp);

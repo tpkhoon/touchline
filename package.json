@@ -50,6 +50,7 @@
     "namecheck": "node tools/namecheck.mjs",
     "carries": "node --max-old-space-size=6144 tools/wyscout-carries.mjs",
     "carries:tracking": "node --max-old-space-size=4096 tools/tracking-carries.mjs",
+    "refstats": "node --max-old-space-size=4096 tools/refstats.mjs --write",
     "events:pff": "node --max-old-space-size=4096 tools/pff-events.mjs",
     "layouts": "node --max-old-space-size=4096 tools/statsbomb-events.mjs",
     "realplayers:fetch": "node --max-old-space-size=2048 tools/realplayers-fetch.mjs",

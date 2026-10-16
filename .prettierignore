@@ -21,6 +21,7 @@ js/passes.js
 data/pass-table.json
 js/movement.js
 js/carries.js
+js/refstats.js
 js/layouts.js
 data/movement-table.json
 data/carry-table.json

@@ -19,6 +19,7 @@
     'setpieces',
     'clubs',
     'world',
+    'refstats',
     'realstats',
     'worlddef',
     'dbimport',

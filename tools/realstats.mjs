@@ -64,6 +64,47 @@ if ('test' in args) {
   const csv = R.parseCSV('name,pos,minutes\n"Doe, John",ST,2000\nSmith,CM,900\n');
   check(csv.length === 2 && csv[0].name === 'Doe, John', 'CSV with a quoted comma was misread');
   check(JSON.stringify(R.convert(st)) === JSON.stringify(R.convert(st)), 'conversion is not deterministic');
+  // the position groups: a full-back's usual numbers are not judged against centre-backs'
+  const fbStats = {
+    age: 25,
+    minutes: 2700,
+    league: 'D1',
+    tackles: 62,
+    interceptions: 36,
+    clearances: 50,
+    passes: 1200,
+    passPct: 82,
+  };
+  check(
+    R.convert({ ...fbStats, pos: 'FB' }).ca > R.convert({ ...fbStats, pos: 'CB' }).ca,
+    'a full-back is judged like a centre-back',
+  );
+  // defending is read against the ball the side had
+  const df = {
+    pos: 'CB',
+    age: 26,
+    minutes: 2700,
+    league: 'D1',
+    tackles: 45,
+    interceptions: 40,
+    clearances: 120,
+    aerials: 60,
+    passPct: 90,
+  };
+  check(
+    R.convert({ ...df, possession: 35 }).ca < R.convert({ ...df, possession: 65 }).ca,
+    'possession does not change a defender',
+  );
+  // expected goals count for more than goals
+  const lucky = { pos: 'ST', age: 25, minutes: 2700, league: 'D1', goals: 16, xg: 8, shots: 80 };
+  const unlucky = { ...lucky, goals: 8, xg: 16 };
+  check(R.convert(unlucky).ca > R.convert(lucky).ca, 'goals count for more than expected goals');
+  // progressive passes help a midfielder
+  const cm = { pos: 'CM', age: 25, minutes: 2700, league: 'D1', passPct: 86, passes: 1400, keyPasses: 30 };
+  check(
+    R.convert({ ...cm, progressivePasses: 260 }).ca > R.convert({ ...cm, progressivePasses: 80 }).ca,
+    'progressive passes do not count',
+  );
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'Real-stats converter: all checks passed.');
   process.exit(fails.length ? 1 : 0);
 }

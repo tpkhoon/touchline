@@ -22,6 +22,7 @@ const FILES = [
   './js/setpieces.js',
   './js/movement.js',
   './js/carries.js',
+  './js/refstats.js',
   './js/layouts.js',
   './js/clubs.js',
   './js/clubguide.js',
