@@ -19,7 +19,7 @@
       styles,
       (k) =>
         ({
-          Shark: p.value > 8e6 ? 4 : 1.2,
+          Shark: p.value > 3e6 ? 4 : 1.2,
           Pragmatic: 3,
           Family: age <= 21 ? 1.5 : 1,
           Showman: p.traits.includes('Media Friendly') ? 3 : 1,
@@ -76,7 +76,7 @@
   Co.baseDemand = function (p, club, mode) {
     let w = FM.Transfers.wageDemand(p, club);
     if (mode === 'renew') {
-      w = Math.max(p.wage * 1.04, W.wageFor(p) * (0.8 + club.rep / 250));
+      w = Math.max(p.wage * 1.04, W.wageFor(p, club) * (0.8 + club.rep / 250));
       if (W.hasTrait(p, 'Mercenary')) w *= 1.25;
       if (W.hasTrait(p, 'Loyal')) w *= 0.92;
       if (p.morale >= 75) w *= 0.96;

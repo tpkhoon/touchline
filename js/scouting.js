@@ -520,7 +520,7 @@
     const club = W.userClub();
     if (club && club.facilities.analytics >= 3 && p.season.apps >= 4 && k >= 30) {
       const avg = p.season.rsum / p.season.apps;
-      if (avg >= 7.0 && p.value < 4e6)
+      if (avg >= 7.0 && p.value < 1.5e6)
         v.moneyball = `Analytics flag: averaging ${avg.toFixed(2)} — output of a player worth far more than ${U.money(p.value)}.`;
     }
     v.fee = k >= 20 ? U.roundMoney(FM.Transfers.askPrice(p) * (1 + (rep ? rep.err * 0.1 * unc : 0))) : null;

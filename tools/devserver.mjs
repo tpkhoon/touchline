@@ -431,6 +431,7 @@ const GATES = {
       ['calibrate', { seasons: 3 }],
       ['wonderkids', { seasons: 10 }],
       ['transfers', { seasons: 3 }],
+      ['economy', { seasons: 3 }],
       ['winchance'],
       ['savelib'],
       ['crawl'],
@@ -1414,6 +1415,7 @@ const server = http.createServer(async (req, res) => {
           ['calibrate', { seasons: 3 }],
           ['wonderkids', { seasons: 10 }],
           ['transfers', { seasons: 3 }],
+          ['economy', { seasons: 3 }],
         );
       const g = newGroup(
         'release',

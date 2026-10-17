@@ -43,6 +43,7 @@
     selling: { sell: 0.15 },
   };
   F.MARKET_K = 0.01; // how much a club's market size moves its commercial income (per point of the 10)
+  F.SELL_K = 0.8; // what a club puts back into its budget of each sale is this share of the country's and the identity's (the money is spent again and again within a season)
   F.ID_SCALE = 0.5; // how far identity moves revenue sources from the country's mix (0 none, 1 as set above)
   F.mix = (c) => {
     const m = { ...F.MIX._, ...(F.MIX[c.nat] || {}) },
@@ -51,7 +52,7 @@
       tv: m.tv,
       com: m.com * (1 + ((i.com || 1) - 1) * F.ID_SCALE),
       gate: m.gate * (1 + ((i.gate || 1) - 1) * F.ID_SCALE),
-      sell: m.sell + (i.sell || 0) * F.ID_SCALE,
+      sell: (m.sell + (i.sell || 0) * F.ID_SCALE) * F.SELL_K,
     };
   };
   F.SHARE = { tv: 0.33, com: 0.25, gate: 0.42 };
@@ -76,6 +77,60 @@
   F.revenue = (c) => {
     const a = F.annual(c);
     return a.tv + a.com + a.gate;
+  };
+
+  // ---------- What a club can pay ----------
+  // The share of revenue a league's clubs spend on wages (a typical top-flight ratio), moved by who owns the club: an oil-backed
+  // owner pays over the odds, a fan-owned club keeps to its gate. The same ability earns a wage in proportion to the club's wage
+  // budget (revenue × this ratio) against what a club of its reputation would have in a middling league (half its revenue
+  // potential), so wages follow what the league and the club can pay. W.wageFor reads it.
+  F.WAGE_RATIO = {
+    _: 0.5,
+    ENG: 0.58,
+    ESP: 0.56,
+    ITA: 0.56,
+    GER: 0.5,
+    FRA: 0.55,
+    KSA: 0.78,
+    USA: 0.5,
+    JPN: 0.45,
+    KOR: 0.45,
+    NED: 0.48,
+    POR: 0.5,
+  };
+  F.IDWAGE = { oil: 1.3, giant: 1.05, fan: 0.9, selling: 0.9 };
+  F.PAY_POWER = 0.75; // how much of the difference in wage budgets reaches a wage (the rest is the club's own reputation, which wageDemand adds)
+  let payCache = { S: null, y: null, m: new Map() };
+  F.payFactor = function (c) {
+    const s = S();
+    if (payCache.S !== s || payCache.y !== s.year) payCache = { S: s, y: s.year, m: new Map() };
+    let v = payCache.m.get(c.id);
+    if (v === undefined) {
+      const ratio = (F.WAGE_RATIO[c.nat] || F.WAGE_RATIO._) * (F.IDWAGE[c.identity] || 1);
+      v = U.clamp(Math.pow((F.revenue(c) * ratio) / (FM.Season.revenuePotential(c) * 0.5), F.PAY_POWER), 0.45, 2.2);
+      payCache.m.set(c.id, v);
+    }
+    return v;
+  };
+
+  // ---------- The transfer budget, from the club's accounts ----------
+  // Planned the way a club plans a season: expected revenue, less the wage bill and running costs (facilities, staff, academy,
+  // travel), is the surplus; the transfer budget is the share of it the board will spend (an ambitious one spends more), plus a
+  // part of any cash well above a season's needs, plus the owner's money where there is some, less a repayment on debt. (Sales
+  // during the season add to it as they happen: FM.Transfers.) A club in debt or over its wage limit has little to spend.
+  F.RUNNING = 0.14;
+  F.budgetFor = function (c) {
+    const rev = F.revenue(c),
+      idt = FM.D.IDENTITY[c.identity] || { budget: 1 };
+    const surplus = rev * (1 - F.RUNNING) - F.wageBill(c);
+    const ambition = U.clamp(0.32 * idt.budget, 0.25, 0.8);
+    const spare = Math.max(0, c.balance - 0.5 * rev) * 0.05;
+    const owner = c.identity === 'oil' ? rev * 0.12 : 0;
+    const debt = c.balance < 0 ? -c.balance * 0.25 : 0;
+    return Math.max(
+      Math.round(rev * 0.02),
+      Math.round((Math.max(0, surplus) * ambition + spare + owner - debt) / 1e5) * 1e5,
+    );
   };
 
   // ---------- Prize money ----------

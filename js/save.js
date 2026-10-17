@@ -14,6 +14,19 @@
   // MIG[v] upgrades an unpacked state from version v to v + 1. Never edit a shipped migration:
   // add the next one and bump FM.SAVE_VERSION in core.js.
   const MIG = {
+    // v7 → v8 (economy): player values are on a new scale (a top squad is worth one to two years of its club's revenue, not four
+    // or five), so every value is worked out again; transfer budgets follow each club's accounts instead of its bank balance
+    7(s) {
+      const W = FM.W;
+      if (!W || !s.players) return;
+      for (const p of Object.values(s.players)) if (p.attrs) p.value = W.value(p);
+      try {
+        for (const c of Object.values(s.clubs || {}))
+          if (c.sim === 'full' || c.sim === 'light') c.budget = Math.max(5e5, FM.Finance.budgetFor(c));
+      } catch (e) {
+        /* (the budgets stay as they were: the next season's are worked out from the accounts) */
+      }
+    },
     // v4 → v5 (mobile readiness): fill everything later v4 builds added lazily, mark old feed items read
     4(s) {
       s.settings = Object.assign({ theme: 'dark', speed: 1 }, s.settings);

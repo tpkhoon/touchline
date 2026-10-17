@@ -46,7 +46,10 @@
   T.dirFactor = () => FM.Staff.impact('director').buy;
   T.userAsk = (p) => U.roundMoney(T.askPrice(p) * T.dirFactor());
   T.wageDemand = function (p, toClub) {
-    let w = Math.max(p.wage * 1.15, W.wageFor(p) * (0.8 + toClub.rep / 250));
+    // (he asks for a rise on what he earns, but not more than the club pays for his ability by much: a star coming down a division
+    // does not drag the wage bill of the club that signs him past its income)
+    const fair = W.wageFor(p, toClub) * (0.8 + toClub.rep / 250);
+    let w = Math.max(Math.min(p.wage * 1.15, fair * 1.1), fair);
     if (W.hasTrait(p, 'Mercenary')) w *= 1.3;
     if (!p.clubId) w *= 1.1; // free agents want a bit more
     if (W.isUser(toClub.id)) w *= T.dirFactor();
@@ -318,7 +321,9 @@
     W.spell(p).fee = fee; // remembered on the career timeline (0 = free transfer)
     FM.Records.onTransfer(p, from && from.id, toId, fee);
     p.wage = wage || T.wageDemand(p, to);
-    p.contract = S.year + U.randi(3, 5);
+    // (older players get shorter deals: a long one at a wage that fits a 29-year-old is a wage that outlives his ability)
+    const age = W.age(p);
+    p.contract = S.year + (age >= 33 ? U.randi(1, 2) : age >= 30 ? U.randi(2, 3) : U.randi(3, 5));
     p.morale = Math.min(100, p.morale + 10);
     p.listed = false;
     p.wantsOut = false;

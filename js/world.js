@@ -57,19 +57,35 @@
   W.interestFactor = (p) => 1 + Math.min(0.3, W.interest(p) * 0.06);
   // Recent form (last matches' ratings): ±10–15%
   W.formFactor = (p) => (p.form && p.form.length >= 4 ? 1 + U.clamp((U.avg(p.form) - 6.7) * 0.15, -0.1, 0.15) : 1);
-  W.baseValue = function (p) {
+  // ---------- What a player is worth, and what he is paid ----------
+  // Ability sets the price on an exponential curve (the best are worth disproportionately more); everything else is a smooth factor,
+  // so a value never jumps on a birthday or the day a contract year turns over:
+  //   age        flat to 27, then a gradual decline (an S-curve: 29 ≈ 0.95, 31 ≈ 0.76, 33 ≈ 0.52, 35 ≈ 0.34)
+  //   potential  a youth premium that fades from 18 to 25 and grows with the gap between potential and ability
+  //   contract   rises with the time left, levelling off at three or four years, with the steep part in the last year
+  //   position   attackers sell for more, keepers for less
+  // The whole scale is W.VALUE_SCALE: the world is fictional, so what matters is that values are in proportion to what clubs earn
+  // (a top squad is worth one to two years of its revenue, a record fee a fraction of the richest club's income): wages are set
+  // on the ability scale and do not move with it.
+  W.VALUE_SCALE = 0.35;
+  W.POS_VALUE = { ST: 1.2, W: 1.15, AM: 1.15, WM: 1.05, CM: 1, DM: 0.97, WB: 0.95, FB: 0.92, CB: 0.95, GK: 0.75 };
+  W.ageCurve = (age) => (age <= 27 ? 1 : 1 / (1 + Math.pow((age - 27) / 6.2, 2.6)));
+  W.youthPremium = (age, gap) => 1 + U.clamp((25 - age) / 7, 0, 1) * (0.3 + Math.max(0, gap) / 25);
+  // The time left on his deal in seasons: a deal that ends this summer has what is left of this season
+  W.contractLeft = function (p) {
+    const S = FM.S,
+      len = (S.calendar && S.calendar.length) || 0;
+    return p.contract - S.year + (len ? 1 - S.day / len : 0.5);
+  };
+  W.contractFactor = (p) => (p.contract < FM.S.year ? 0.35 : 1 - 0.65 * Math.exp(-1.1 * W.contractLeft(p)));
+  // On the ability scale, before the contract and the market: what wages follow
+  W.abilityValue = function (p) {
     const age = W.age(p);
-    let v = 1000 * Math.pow(1.13, p.ca);
-    if (age <= 21) v *= 1.2 + Math.max(0, p.pa - p.ca) / 30;
-    else if (age <= 24) v *= 1.1 + Math.max(0, p.pa - p.ca) / 60;
-    else if (age >= 31) v *= 0.4;
-    else if (age >= 29) v *= 0.7;
-    const yrs = Math.max(0, p.contract - FM.S.year);
-    if (yrs <= 0) v *= 0.35;
-    else if (yrs === 1) v *= 0.7;
+    let v = 1000 * Math.pow(1.13, p.ca) * W.ageCurve(age) * W.youthPremium(age, p.pa - p.ca);
     if (p.hid.cons >= 15) v *= 1.05;
     return v;
   };
+  W.baseValue = (p) => W.abilityValue(p) * W.contractFactor(p) * (W.POS_VALUE[p.pos] || 1) * W.VALUE_SCALE;
   // Star ratings are measured against the league you manage in (see W.stars below). A Championship regular is four or five stars
   // in League Two and two or three in the Premier League. (The old absolute scale is W.starsAbs.) Out of work: the league
   // you last managed in, or the top flight.
@@ -736,7 +752,7 @@
       p.career.apps * ({ ST: 0.35, W: 0.2, WM: 0.13, AM: 0.18, CM: 0.07, DM: 0.03 }[pos] || 0.02) * U.rand(0.5, 1.4),
     );
     W.refresh(p);
-    p.wage = W.wageFor(p);
+    p.wage = W.wageFor(p, clubId && FM.S.clubs && FM.S.clubs[clubId]);
     FM.Season.assignArc(p, age); // hidden career arc: most players have none
     if (clubId) W.startSpell(p, clubId);
     return p;
@@ -802,7 +818,17 @@
     if (last.apps > 0) rows.push(W.seasonRow(y, p.clubId, last));
     return rows;
   };
-  W.wageFor = (p) => Math.max(750, Math.round((W.baseValue(p) * 0.0035) / 50) * 50); // wages follow ability and age, not market swings
+  // A wage follows ability, age and position (half the market's position premium), not market swings or the contract, and what the
+  // club can pay: its revenue and the league's way of paying (FM.Finance.payFactor). The same player earns more at an oil-backed
+  // Saudi club than at a Korean one. A floor keeps part-time leagues paying very little.
+  W.WAGE_K = 0.0032;
+  W.wageFor = function (p, club) {
+    if (club === undefined) club = p.clubId && FM.S.clubs[p.clubId];
+    const pay = club && FM.Finance ? FM.Finance.payFactor(club) : 1;
+    // (a veteran's wage falls away faster than his market value: his club is not paying for resale)
+    const v = W.abilityValue(p) * Math.sqrt(W.ageCurve(W.age(p)) * (W.POS_VALUE[p.pos] || 1));
+    return Math.max(Math.round(750 * Math.min(1, pay)), Math.round((v * W.WAGE_K * pay) / 50) * 50);
+  };
   W.startSpell = function (p, clubId) {
     // a move in the middle of a season: remember the numbers so far, for a history row with the old club
     if (p.clubId && p.clubId !== clubId && p.season && p.season.apps > 0)
@@ -2284,10 +2310,10 @@
       const cap = row[8] || Math.round((8000 + (rep - 40) * 900) / 500) * 500;
       const id = 'c_' + code,
         parent = row[9] ? 'c_' + row[9] : null; // a B team's parent club
-      const lvl = W.levelFor(rep),
-        idt = D.IDENTITY[identity];
+      const idt = D.IDENTITY[identity];
+      // (a first season's budget, from what the club earns: the ambition of its identity and its revenue; later ones follow its accounts)
       const budget =
-        Math.round((1000 * Math.pow(1.13, lvl + 2) * 1.2 * idt.budget) / 1e5) *
+        Math.round((FM.Season.revenuePotential({ rep }) * 0.15 * idt.budget) / 1e5) *
         1e5 *
         (sim === 'full' ? 1 : sim === 'light' ? 0.6 : 0.3);
       const club = {
@@ -2307,7 +2333,7 @@
         stadium: { name: stadium, cap, cap0: cap },
         comp: compId,
         sim,
-        balance: budget * 1.5 + 4e6,
+        balance: budget * 2.5 + 4e6,
         budget,
         fanMood: 60,
         boardConf: 65,

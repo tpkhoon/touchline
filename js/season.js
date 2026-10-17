@@ -1155,7 +1155,14 @@
       delete p.suspNew;
     });
     FM.Injury.daily(); // rehab countdowns, returns, training knocks and illness
-    if (S.day % 8 === 0) FM.Finance.weekly(); // interest on debt, the board on the wage bill
+    if (S.day % 8 === 0) {
+      FM.Finance.weekly(); // interest on debt, the board on the wage bill
+      // (a value follows the time left on a contract, which runs down all season: worked out again every few weeks)
+      for (const id in S.players) {
+        const p = S.players[id];
+        if (!p.retired) p.value = W.value(p);
+      }
+    }
     Sea.minimalSimWeek();
     Sea.freeAgents();
     if (employed) Sea.ensureUserSquad(11);
@@ -2036,10 +2043,14 @@
         } else if (Sea.aiRenews(p, c)) {
           p.contract = S.year + (W.age(p) >= 31 ? 1 : U.randi(1, 3));
           // veterans renew nearer their market wage (up to a quarter less); younger players never take a cut
+          // and a player paid far above what this club pays for his ability comes down by up to a sixth a year, so wages do not only ratchet up
+          const fair = W.wageFor(p, c);
           p.wage =
             W.age(p) >= 32
-              ? Math.round(Math.max(W.wageFor(p), p.wage * 0.75) / 50) * 50
-              : Math.max(p.wage, W.wageFor(p));
+              ? Math.round(Math.max(fair, p.wage * 0.75) / 50) * 50
+              : p.wage > fair * 1.1
+                ? Math.round(Math.max(fair, p.wage * 0.85) / 50) * 50
+                : Math.max(p.wage, fair);
           FM.Transfers.settle(p);
         } else {
           W.spell(p).to = S.year - 1;
@@ -2056,7 +2067,8 @@
       const worth = (p) => p.ca + (W.age(p) <= 20 ? (p.pa - p.ca) * 0.5 : 0) - Math.max(0, W.age(p) - 29) * 2; // clubs plan for decline
       sq.sort((a, b) => worth(a) - worth(b));
       // release the least useful, but never a club's last two goalkeepers
-      while (sq.length > W.squadTarget(c) + 3) {
+      // (a squad that is allowed to grow a little every summer grows without end, and its wage bill with it)
+      while (sq.length > W.squadTarget(c) + 1) {
         const i = sq.findIndex(
           (p) => p.pos !== 'GK' || sq.filter((q) => q.pos === 'GK').length > (c.sim === 'full' ? 3 : 2),
         );
@@ -2066,6 +2078,13 @@
         p.clubId = null;
         p.team = undefined; // a free agent is in no youth side
       }
+      // A club whose wage bill has outgrown its income asks its best-paid players above his going rate to take a cut (a tenth,
+      // at most down to that rate): clubs below the top do not carry a wage bill that only ever rises
+      if ((c.sim === 'full' || c.sim === 'light') && FM.Finance.wageRatio(c) > 0.75)
+        for (const p of sq) {
+          const fair = W.wageFor(p, c);
+          if (p.wage > fair * 1.1) p.wage = Math.round(Math.max(fair, p.wage * 0.9) / 50) * 50;
+        }
     });
     // Unattached veterans: a decent one released at 31–33 looks for a club lower down rather than retiring on
     // the spot (he retires from there later); the chance rises with age, and faster for weaker players
@@ -2160,7 +2179,7 @@
           }
         }
         // the biggest clubs put more of their wealth into the squad (stars only move when someone can pay)
-        c.budget = Math.max(5e5, Math.round((c.balance * (c.rep >= 82 ? 0.5 : 0.35)) / 1e5) * 1e5);
+        c.budget = Math.max(5e5, FM.Finance.budgetFor(c));
         c.fin = null;
         if (c.balance < FM.Finance.adminThreshold(c) && !c.admin) {
           c.admin = true;
@@ -2178,7 +2197,7 @@
     });
     const uc = W.userClub();
     if (uc) {
-      uc.budget = Math.max(5e5, Math.round((uc.balance * 0.4) / 1e5) * 1e5);
+      uc.budget = Math.max(5e5, FM.Finance.budgetFor(uc));
       uc.warned = false;
     }
     FM.Stories.worldEvents(entry);
@@ -2193,6 +2212,7 @@
     FM.People.newSeason();
     S.calendar = W.buildCalendar();
     S.day = 0;
+    for (const id in S.players) if (!S.players[id].retired) S.players[id].value = W.value(S.players[id]); // (the new season's day, for the time left on a contract)
     S.seasonLog = { upsets: [], transfers: [], net: {}, spend: {} };
     S.user.preseason = {};
     S.user.previewSeen = false;

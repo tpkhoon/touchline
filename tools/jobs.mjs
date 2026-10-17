@@ -138,6 +138,13 @@ export const JOBS = {
     cmd: [NODE, 'tools/transfer-realism.mjs'],
     params: { seasons: { default: 3, min: 2, max: 8 }, seed: { default: 5, min: 1, max: 9999 } },
   },
+  economy: {
+    group: 'calibration',
+    label: 'Economy',
+    note: 'values, wages and transfer budgets in proportion to revenue, and stable over the seasons',
+    cmd: [NODE, 'tools/economy.mjs'],
+    params: { seasons: { default: 3, min: 1, max: 20 }, seed: { default: 7, min: 1, max: 9999 } },
+  },
   histcheck: {
     group: 'calibration',
     label: 'Generated past',
