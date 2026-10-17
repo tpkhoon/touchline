@@ -142,6 +142,12 @@
   G.hook = function (code) {
     const e = G.entry(code);
     if (!e) return '';
+    // an army's or a police force's club is a different story from the identity it plays under
+    const kind = FM.Lore && FM.Lore.identityRow(e.row).kind;
+    if (kind === 'military' || kind === 'police')
+      return code === 'GIM'
+        ? 'Soldiers on national service fill the squad: young, always changing, and unable to sign anyone else.'
+        : D.CLUB_KINDS[kind].blurb;
     const set = HOOKS[e.row[5]] || HOOKS.historic;
     return set[e.pct < 0.25 ? 0 : e.pct < 0.65 ? 1 : 2];
   };
@@ -163,7 +169,7 @@
     const idt = FM.Lore ? FM.Lore.identityRow(e.row) : D.IDENTITY[e.row[5]],
       out = [`${idt.icon} ${idt.label}`];
     const pol = D.CLUB_POLICY && D.CLUB_POLICY[code];
-    if (pol) out.push(`Only ${pol.label} players`);
+    if (pol) out.push(pol.military ? 'Conscripts only' : `Only ${pol.label} players`);
     if (G.rival(code)) out.push('Derby club');
     if (e.bigGround) out.push('Big ground');
     if (e.l.tier >= 4 || e.row[6] < 28) out.push('Part-time squad');

@@ -958,7 +958,7 @@
         const code = r[1],
           e = G.entry(code),
           d = G.diff(code),
-          I = D.IDENTITY[r[5]],
+          I = FM.Lore.identityRow(r),
           rv = G.rival(code),
           inf = G.info(code);
         if (!e) return '';
