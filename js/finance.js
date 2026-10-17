@@ -123,7 +123,8 @@
     const rev = F.revenue(c),
       idt = FM.D.IDENTITY[c.identity] || { budget: 1 };
     const surplus = rev * (1 - F.RUNNING) - F.wageBill(c);
-    const ambition = U.clamp(0.32 * idt.budget, 0.25, 0.8);
+    // (the richest identities spend a bigger share, but not so much bigger that the same few clubs buy every star)
+    const ambition = U.clamp(0.2 + 0.12 * idt.budget, 0.25, 0.5);
     const spare = Math.max(0, c.balance - 0.5 * rev) * 0.05;
     const owner = c.identity === 'oil' ? rev * 0.12 : 0;
     const debt = c.balance < 0 ? -c.balance * 0.25 : 0;

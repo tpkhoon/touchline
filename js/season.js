@@ -2068,7 +2068,7 @@
       sq.sort((a, b) => worth(a) - worth(b));
       // release the least useful, but never a club's last two goalkeepers
       // (a squad that is allowed to grow a little every summer grows without end, and its wage bill with it)
-      while (sq.length > W.squadTarget(c) + 1) {
+      while (sq.length > W.squadTarget(c) + 2) {
         const i = sq.findIndex(
           (p) => p.pos !== 'GK' || sq.filter((q) => q.pos === 'GK').length > (c.sim === 'full' ? 3 : 2),
         );
@@ -2078,13 +2078,16 @@
         p.clubId = null;
         p.team = undefined; // a free agent is in no youth side
       }
-      // A club whose wage bill has outgrown its income asks its best-paid players above his going rate to take a cut (a tenth,
-      // at most down to that rate): clubs below the top do not carry a wage bill that only ever rises
-      if ((c.sim === 'full' || c.sim === 'light') && FM.Finance.wageRatio(c) > 0.75)
+      // Wages are renegotiated as the years go by: a player paid above what this club pays for his ability (his ability has fallen,
+      // or the club has) comes a quarter of the way down to it each summer, half the way at a club whose wage bill has outgrown its
+      // income. Without it a wage bill only ever rises, and clubs below the top drift into trouble
+      if (c.sim === 'full' || c.sim === 'light') {
+        const k = FM.Finance.wageRatio(c) > 0.75 ? 0.5 : 0.25;
         for (const p of sq) {
           const fair = W.wageFor(p, c);
-          if (p.wage > fair * 1.1) p.wage = Math.round(Math.max(fair, p.wage * 0.9) / 50) * 50;
+          if (p.wage > fair * 1.1) p.wage = Math.round((p.wage - (p.wage - fair) * k) / 50) * 50;
         }
+      }
     });
     // Unattached veterans: a decent one released at 31–33 looks for a club lower down rather than retiring on
     // the spot (he retires from there later); the chance rises with age, and faster for weaker players

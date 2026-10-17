@@ -176,7 +176,7 @@ console.log(
   `Wages / revenue by tier, start → end: ${[1, 2, 3, 4].map((t) => `tier ${t} ${Math.round(100 * tierMed(s0, t))}% → ${Math.round(100 * tierMed(sN, t))}%`).join(' · ')}`,
 );
 // what a tier's wage bill is made of, to trace a drift: revenue, squad size, wage per player (medians)
-for (const t of [2, 3]) {
+for (const t of [2, 3, 4]) {
   const f = (snap, k, g = (r) => r[k]) => med(snap.rows.filter((r) => r.tier === t && r.sim !== 'minimal').map(g));
   console.log(
     `Tier ${t}, start → end: reputation ${f(s0, 'rep').toFixed(0)} → ${f(sN, 'rep').toFixed(0)} · revenue ${M(f(s0, 'rev'))} → ${M(f(sN, 'rev'))} · squad ${f(s0, 'squad')} → ${f(sN, 'squad')} · wage per player ${(f(s0, 'wages') / f(s0, 'squad') / 43 / 1000).toFixed(1)}k → ${(f(sN, 'wages') / f(sN, 'squad') / 43 / 1000).toFixed(1)}k a week`,

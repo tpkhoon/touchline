@@ -820,14 +820,14 @@
   };
   // A wage follows ability, age and position (half the market's position premium), not market swings or the contract, and what the
   // club can pay: its revenue and the league's way of paying (FM.Finance.payFactor). The same player earns more at an oil-backed
-  // Saudi club than at a Korean one. A floor keeps part-time leagues paying very little.
+  // Saudi club than at a Korean one. A floor (450 a week, less where a club earns little) keeps part-time leagues paying very little.
   W.WAGE_K = 0.0032;
   W.wageFor = function (p, club) {
     if (club === undefined) club = p.clubId && FM.S.clubs[p.clubId];
     const pay = club && FM.Finance ? FM.Finance.payFactor(club) : 1;
     // (a veteran's wage falls away faster than his market value: his club is not paying for resale)
     const v = W.abilityValue(p) * Math.sqrt(W.ageCurve(W.age(p)) * (W.POS_VALUE[p.pos] || 1));
-    return Math.max(Math.round(750 * Math.min(1, pay)), Math.round((v * W.WAGE_K * pay) / 50) * 50);
+    return Math.max(Math.round(450 * Math.min(1, pay)), Math.round((v * W.WAGE_K * pay) / 50) * 50);
   };
   W.startSpell = function (p, clubId) {
     // a move in the middle of a season: remember the numbers so far, for a history row with the old club
