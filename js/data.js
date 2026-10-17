@@ -17,6 +17,87 @@
     GIM: { military: true, label: 'military-service' },
   };
 
+  // ---------- Club kinds ----------
+  // Some clubs belong to an institution, and the game says so (on the club card and the club picker) with a reason: the
+  // army's and the police's clubs, company teams, works sides, university clubs and the reserve sides of bigger clubs.
+  // Kinds are by club code (the real club each fictional one sits on); a name that says "Works" or "Universidad" and a
+  // club with a parent are recognised too. Identity (what the fans and the board want) is separate and stays as it was.
+  FM.D.CLUB_KINDS = {
+    military: {
+      label: 'Military club',
+      icon: '🪖',
+      blurb: 'Owned and run by the armed forces: the army pays the bills, and the squad is drawn from its own ranks.',
+      fans: 'Soldiers, their families and a few curious neighbours; the players come and go with the intake.',
+    },
+    police: {
+      label: 'Police club',
+      icon: '🚓',
+      blurb: 'Run by a police force: steady state money, a modest budget and few famous names.',
+      fans: 'A loyal, modest following from the force and its families.',
+    },
+    company: {
+      label: 'Company club',
+      icon: '🏭',
+      blurb:
+        'Founded or bankrolled by a company: the money is stable, and so is a corporate say in how the club is run.',
+      fans: 'Supporters from the works and the town, who expect stability above all.',
+    },
+    works: {
+      label: 'Works club',
+      icon: '⚒️',
+      blurb: 'Founded as a factory, shipyard or railway works side: community roots and a loyal local following.',
+      fans: 'The workers and their grandchildren, who expect honest effort.',
+    },
+    university: {
+      label: 'University club',
+      icon: '🎓',
+      blurb: 'Run by a university: students in the stands and a good youth system, though the best players leave.',
+      fans: 'Students and staff, who want clever football and a place for graduates.',
+    },
+    reserve: {
+      label: 'Reserve side',
+      icon: '🅱️',
+      blurb:
+        'The second team of a bigger club: a pathway for its academy players, never promoted level with its parent.',
+      fans: 'Scouts and parents, who want to see the next first-teamer.',
+    },
+  };
+  FM.D.CLUB_KIND = Object.fromEntries(
+    [
+      ['military', 'GIM FAR VTL'],
+      ['police', 'PDR BHY CAH'],
+      [
+        'company',
+        'B04 WOB PSV TSG RBL RBS MBO ZAG PAK JBH ULS POH JEJ KSW NAG KAS YFM URA GAM CER SFH VIS BGP MTU PRT BBD HGL BDI SSU',
+      ],
+      ['university', 'PUM TGR'],
+    ].flatMap(([k, codes]) => codes.split(' ').map((c) => [c, k])),
+  );
+  FM.D.clubKind = (code, name, parent) =>
+    parent
+      ? 'reserve'
+      : FM.D.CLUB_KIND[code] ||
+        (/\b(Universidad|University|Universitario)\b/i.test(name)
+          ? 'university'
+          : /\b(Works|Ironworks|Railway|Foundry|Shipbuilders|Electric|Motors)\b/.test(name)
+            ? 'works'
+            : null);
+
+  // ---------- Regions of the world (for "where" on the new-career screen and the world map) ----------
+  FM.D.GEO_REGIONS = [
+    ['bi', 'British Isles', ['ENG', 'SCO', 'WAL', 'IRL']],
+    ['we', 'Western Europe', ['ESP', 'POR', 'FRA', 'ITA', 'GER', 'NED', 'BEL', 'SUI', 'AUT']],
+    ['ne', 'Northern Europe', ['DEN', 'NOR']],
+    ['ee', 'Eastern Europe and the Balkans', ['POL', 'CZE', 'HUN', 'SRB', 'GRE', 'TUR']],
+    ['sa', 'South America', ['ARG', 'BRA']],
+    ['na', 'North America', ['USA', 'MEX']],
+    ['ea', 'East Asia', ['JPN', 'KOR']],
+    ['se', 'South-East Asia', ['THA', 'IDN', 'MYS', 'VIE', 'SGP', 'PHI']],
+    ['me', 'Middle East', ['KSA']],
+    ['af', 'Africa', ['NGA', 'RSA', 'MAR']],
+    ['oc', 'Oceania', ['AUS']],
+  ];
+
   // ---------- Naturalisation ----------
   // A player who has lived in a country for `years` seasons after turning 18 can be granted its citizenship, and with it
   // the right to play for its national team (if he has never been capped). `fast` shortens the wait for citizens of

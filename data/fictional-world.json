@@ -7678,7 +7678,7 @@
    "league": "MX1",
    "nat": "MEX",
    "row": [
-    "Club Deportivo Jilahua",
+    "Club Universidad Jilahua",
     "PUM",
     "Jilitzin",
     "#0B2240",
@@ -8001,7 +8001,7 @@
    "league": "KR1",
    "nat": "KOR",
    "row": [
-    "Bujeong Copper Phoenix",
+    "Bujeong Armed Forces",
     "GIM",
     "Bujeong",
     "#E30613",
@@ -8011,7 +8011,7 @@
     "Bujeong Stadium"
    ],
    "short": "BUJ",
-   "nick": "Reds",
+   "nick": "Phoenix",
    "founded": 1973
   },
   "JEJ": {
@@ -8732,7 +8732,7 @@
    "league": "MA1",
    "nat": "MAR",
    "row": [
-    "US Nadar",
+    "Nadar Armed Forces",
     "FAR",
     "Nadar",
     "#E30613",
@@ -13550,7 +13550,7 @@
    "league": "MY1",
    "nat": "MYS",
    "row": [
-    "Simpang Pelita Athletic",
+    "Simpang Pelita Police FC",
     "PDR",
     "Simpang Pelita",
     "#1F3A93",
@@ -13586,7 +13586,7 @@
    "league": "VN1",
    "nat": "VIE",
    "row": [
-    "Binh Mai FC",
+    "Binh Mai Army Signals",
     "VTL",
     "Binh Mai",
     "#E30613",
@@ -13622,7 +13622,7 @@
    "league": "VN1",
    "nat": "VIE",
    "row": [
-    "Bac Uong FC",
+    "Bac Uong Public Security FC",
     "CAH",
     "Binh Mai",
     "#E30613",
@@ -14018,7 +14018,7 @@
    "league": "ID1",
    "nat": "IDN",
    "row": [
-    "Persi Langsari",
+    "Langsari Police FC",
     "BHY",
     "Langsari",
     "#FFD100",

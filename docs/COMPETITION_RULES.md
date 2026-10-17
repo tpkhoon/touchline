@@ -10,6 +10,11 @@ How each competition in the game follows its real-life rules, and where it simpl
 - **Knockouts:** a tie level after 90 minutes goes to extra time and then penalties. The first leg of a two-legged
   tie has no extra time; the second leg is decided on aggregate, then extra time and penalties.
 - **Substitutions:** five per team, nine on the bench.
+- **Travel (`FM.Geo`, `js/lore.js`):** an away side's players start a match with up to 8 points less stamina after a long
+  journey (nothing under 300 km, about 6,500 km for the most), the home side's edge grows with the distance (up to 0.2 of
+  the home factor, on top of 0.15 for a visit from another country), and the visitors pay for the trip (a coach, or a
+  charter flight at about 22 per km, shown as Away travel in your finances). Distances are measured between the real
+  towns the clubs sit on. Two clubs in one country within 15 km of each other count as a heated rivalry.
 
 ## League tiebreakers (clubs level on points)
 

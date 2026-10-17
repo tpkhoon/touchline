@@ -159,7 +159,11 @@
   R.store = store;
   const clubRec = (id) => {
     const r = store();
-    return (r.clubs[id] = r.clubs[id] || {});
+    if (!r.clubs[id]) {
+      r.clubs[id] = {};
+      if (FM.Lore) FM.Lore.initRecord(id, r.clubs[id]); // a club's records start from its history
+    }
+    return r.clubs[id];
   };
   const club = (id) => S().clubs[id];
   const isFull = (id) => !!(club(id) && club(id).sim === 'full');
@@ -208,6 +212,7 @@
           });
       }
     });
+    if (FM.Lore) FM.Lore.onMatch(fx, res); // a derby's record grows
     // Head-to-head for the user's club, across seasons and competitions
     const u = s.user && s.user.clubId;
     if (u && (fx.h === u || fx.a === u)) {
@@ -250,7 +255,7 @@
     const h = S().records && S().records.heat[pairKey(a, b)];
     return h ? h.v : 0;
   };
-  R.heated = (a, b) => R.heat(a, b) >= R.EMERGING;
+  R.heated = (a, b) => R.heat(a, b) >= R.EMERGING || (!!FM.Geo && FM.Geo.local(a, b));
   R.addHeat = function (a, b, n, why) {
     const k = pairKey(a, b),
       h = (store().heat[k] = store().heat[k] || { v: 0, st: 0 });
@@ -562,6 +567,7 @@
   };
   // Bookkeeping when a club changes manager (called from FM.Stories.newManager)
   R.managerChange = function (c, oldM, newM, fromClub) {
+    if (oldM && oldM.legendOf && FM.Lore) FM.Lore.managerLeft(oldM);
     if (oldM) {
       mgrLeave(oldM, c.id, 'left');
       oldM.unemployed = true;
@@ -592,7 +598,9 @@
     const car = m.career || [],
       cur = car.at(-1),
       prev = car.filter((x) => x[0] !== clubId && S().clubs[x[0]]).at(-1);
+    const lg = m.legendOf && S().clubs[m.legendOf.club];
     return [
+      lg ? `${lg.id === clubId ? 'club legend' : `a ${lg.name} legend`}` : '',
       cur && cur[0] === clubId && cur[1] ? `since ${cur[1]}` : '',
       prev ? `previously ${S().clubs[prev[0]].name}` : '',
     ]

@@ -1372,15 +1372,20 @@
         const homes = Math.max(6, (comp.fixtures ? comp.fixtures.length / 2 : 11) + 2);
         gate = (a.gate / homes) * (fill / 0.85) * (c.stadium.cap / (c.stadium.cap0 || c.stadium.cap)) * t.price;
         if (hf.res) hf.res.att = att;
+        if (FM.Lore) FM.Lore.noteAttendance(c, att, opp);
         fin.att += att;
         fin.homes++;
         fin.last = att;
         if (t.mood) c.fanMood = U.clamp((c.fanMood ?? 60) + t.mood, 0, 100);
       }
+      // an away trip costs the visitors a coach or a charter flight (FM.Geo.cost)
+      const af = FM.Geo && todays.find((f) => f.a === c.id && !f.neutral);
+      const trip = af ? FM.Geo.cost(FM.Geo.km(FM.clubOf(af.h), c), c) : 0;
+      if (trip && W.isUser(c.id)) Sea.spend('travel', trip);
       fin.tv += tv;
       fin.com += com;
       fin.gate += gate;
-      let inc = tv + com + gate;
+      let inc = tv + com + gate - trip;
       const staffW = W.isUser(c.id) ? U.sum(W.userStaff(), (st) => st.wage) * wk : 0;
       const wages = (wageBill[c.id] || 0) * wk + staffW;
       if (W.isUser(c.id)) {

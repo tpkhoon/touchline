@@ -173,6 +173,8 @@
       s.policyV1 = 1;
       for (const [id, c] of Object.entries(s.clubs)) if (!c.policy) c.policy = FM.D.CLUB_POLICY[id.slice(2)] || null;
     }
+    // the world's lore (kinds of club, coordinates, the people legends became): older saves get it once
+    if (FM.Lore && !s.lore && s.clubs) FM.Lore.ensure(s);
     // real-life club abbreviations and nicknames (the id keeps the club's code)
     if (!s.clubAbbr && s.clubs && FM.D.CLUB_INFO) {
       s.clubAbbr = 1;

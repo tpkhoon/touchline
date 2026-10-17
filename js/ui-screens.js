@@ -1787,7 +1787,14 @@
     if (S().comps[t] && S().comps[t].type === 'league' && t !== mine) opts.push([t, lname(S().comps[t])]);
     opts.push(['world', '🗺️ All leagues']);
     if (W.cups().length || W.continentals().length) opts.push(['cups', 'Cups']);
-    opts.push(['fixtures', 'Fixtures'], ['totw', 'Team of the week'], ['awards', 'Awards'], ['stats', 'Stats']);
+    opts.push(
+      ['fixtures', 'Fixtures'],
+      ['totw', 'Team of the week'],
+      ['awards', 'Awards'],
+      ['stats', 'Stats'],
+      ['history', '🏛️ History'],
+      ['map', '🌍 Map'],
+    );
     return (
       chips('league', opts) +
       (t === 'fixtures'
@@ -1802,7 +1809,11 @@
                 ? cupsView()
                 : t === 'world'
                   ? worldView()
-                  : tableView(t))
+                  : t === 'history'
+                    ? UI.historyView()
+                    : t === 'map'
+                      ? UI.mapView()
+                      : tableView(t))
     );
   };
   // International football has its own tab: national teams, rankings, tournaments and your national job
@@ -2544,7 +2555,7 @@
   // Club records: match records and transfer records since the save began, all-time lists including history
   UI.clubRecordsCard = function (c) {
     const s = S(),
-      r = (s.records && s.records.clubs[c.id]) || {},
+      r = (s.records && s.records.clubs[c.id]) || FM.Lore.recordsOf(c),
       at = FM.Records.allTime(c.id);
     const since = (s.records && s.records.since) || s.year;
     const oppName = (id) => (CL(id) ? CL(id).name : '?');
@@ -2587,7 +2598,7 @@
       [o1, o2, o3] = deal(r.sale, 'out');
     const [t1, t2, t3] = person(top, `${top ? top.goals : 0} goals`),
       [m1, m2, m3] = person(most, `${most ? most.apps : 0} games`);
-    return `<div class="card"><div class="row"><div class="h3 grow">Club records</div><span class="tiny dim">matches & transfers since ${since}</span></div>
+    return `<div class="card"><div class="row"><div class="h3 grow">Club records</div><span class="tiny dim">history to ${since - 1}, then this save</span></div>
       ${row('Biggest win', w1, w2)}${row('Heaviest defeat', l1, l2)}${row('Record signing', s1, s2, s3)}${row('Record sale', o1, o2, o3)}${row('Top scorer', t1, t2, t3)}${row('Most appearances', m1, m2, m3)}</div>`;
   };
   // The ground's story: opened, capacity changes over the save
@@ -2608,7 +2619,7 @@
   };
   function overviewView() {
     const c = club(),
-      I = D.IDENTITY[c.identity];
+      I = FM.Lore.identityOf(c);
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
@@ -2628,6 +2639,7 @@
         .join('')}</div>
       ${UI.honoursCard(c, 'No trophies in this save — yet.')}
       ${UI.clubRecordsCard(c)}
+      ${UI.loreBlock(c)}
       ${UI.stadiumCard(c)}
       <div class="card"><div class="h3">Backroom staff</div>${staff.map((st) => `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>${C.flag(st.nat)}</span><div class="grow"><b>${esc(st.fn + ' ' + st.ln)}</b><div class="dim tiny">${esc(st.role)}</div></div><span class="pill">${esc(st.personality)}</span></div>`).join('')}</div>`;
   }
@@ -2688,6 +2700,7 @@
       ['goal', 'Goal bonuses'],
       ['signing', 'Signing-on fees'],
       ['agent', 'Agent fees'],
+      ['travel', 'Away travel'],
       ['interest', 'Interest on debt'],
     ];
     const total = U.sum(rows, ([k]) => sp[k] || 0),

@@ -522,7 +522,7 @@
     if (!c) return;
     const comp = c.comp && s.comps[c.comp],
       row = comp && comp.table[id];
-    const I = D.IDENTITY[c.identity],
+    const I = FM.Lore.identityOf(c),
       mgr = c.manager && s.staff[c.manager];
     const tac = W.isUser(id) ? s.user.tactic : c.tactic;
     const sq = W.squad(id).sort((a, b) => b.ca - a.ca);
@@ -656,7 +656,8 @@
       ${allTimeCard}
       ${UI.clubSeasonsCard(id)}
       ${UI.clubLegendsCard(id)}
-      ${UI.honoursCard(c)}`;
+      ${UI.honoursCard(c)}
+      ${UI.loreBlock(c)}`;
     UI.sheet(html, { full: true, title: esc(c.name) });
   };
   UI.acts.clubGoMine = () => {

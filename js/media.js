@@ -453,7 +453,7 @@
         id,
         kind,
         line(kind, id, x, seed),
-        `${M.OUTLETS[id].kind} · ${M.view(id).toLowerCase()} (${mood > 0 ? '+' : ''}${Math.round(mood)})`,
+        `${M.OUTLETS[id].kind} · ${M.view(id).toLowerCase()} (${mood > 0 ? '+' : ''}${Math.round(mood)})${m.derby && FM.Lore ? `\n${FM.Lore.derbyAngles(club.id, opp.id).join(' ')}` : ''}`,
         { mediaKind: kind },
       );
       st.last[id] = { kind, day: S.day, year: S.year };

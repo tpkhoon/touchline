@@ -606,7 +606,7 @@
       FM.News.add({
         type: 'club',
         title: `Derby week: the ${c.derby}`,
-        body: `${opp.name} are ${U.ordinal(W.position(opp.id))} in the table, you are ${U.ordinal(W.position(c.id))}, and neither will care. ${a && b ? `The clubs were founded in ${a} and ${b}, and the towns have been arguing ever since. ` : ''}Win it and the fans forgive a lot; lose it and they remember for years.\n\n${asst.fn} ${asst.ln}: "They raise their game against us every time. Don't let the crowd decide it."`,
+        body: `${opp.name} are ${U.ordinal(W.position(opp.id))} in the table, you are ${U.ordinal(W.position(c.id))}, and neither will care. ${FM.Lore && FM.Lore.derbyAngles(c.id, opp.id).length ? FM.Lore.derbyAngles(c.id, opp.id).join(' ') + ' ' : a && b ? `The clubs were founded in ${a} and ${b}, and the towns have been arguing ever since. ` : ''}Win it and the fans forgive a lot; lose it and they remember for years.\n\n${asst.fn} ${asst.ln}: "They raise their game against us every time. Don't let the crowd decide it."`,
         clubId: c.id,
       });
       return;

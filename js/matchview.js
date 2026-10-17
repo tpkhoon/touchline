@@ -89,7 +89,7 @@
       .map((p, i) => p && { p, t: slots[i].t, fit: W.fitAt(p, slots[i].t, slots[i], myTactic.roles[i]) })
       .filter((x) => x && x.fit < 0.8);
     UI.sheet(
-      `${derby ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚔️ ${esc(me.derby)} — the fans will never forget this one, win or lose.</div>` : heat >= FM.Records.EMERGING ? `<div class="warnline">🔥 ${heat >= FM.Records.RIVALRY ? `${esc(opp.name)} are rivals now` : `A rivalry is building with ${esc(opp.name)}`} — expect a big crowd and a few crunching tackles.</div>` : ''}
+      `${derby ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚔️ ${esc(me.derby)} — the fans will never forget this one, win or lose.${FM.Lore ? ` <span class="tiny dim" style="display:block;margin-top:4px">${esc(FM.Lore.derbyAngles(me.id, opp.id).join(' '))}</span>` : ''}</div>` : heat >= FM.Records.EMERGING ? `<div class="warnline">🔥 ${heat >= FM.Records.RIVALRY ? `${esc(opp.name)} are rivals now` : `A rivalry is building with ${esc(opp.name)}`} — expect a big crowd and a few crunching tackles.</div>` : ''}
       <div class="row" style="justify-content:space-around;text-align:center;margin:6px 0 12px"><div>${C.crest(CL(fx.h), 56)}<div class="small b">${esc(CL(fx.h).name)}</div></div><div class="h2">VS</div><div>${C.crest(CL(fx.a), 56)}<div class="small b">${esc(CL(fx.a).name)}</div></div></div>
       <div class="card"><div class="h3">Opposition</div>
         <div class="row small" style="margin-top:8px"><span class="grow dim">Manager</span><b>${mgr ? esc(mgr.fn + ' ' + mgr.ln) : '—'}</b></div>
@@ -276,6 +276,7 @@
     return `<div class="card"><div class="h3">Conditions</div>
       <div class="row small" style="margin-top:8px"><span class="grow dim">Weather</span><b>${wx[1]} ${wx[0]}</b></div>${note ? `<div class="tiny dim" style="text-align:right">${note}</div>` : ''}
       <div class="row small" style="margin-top:6px"><span class="grow dim">Crowd</span><b style="text-align:right;max-width:70%">${crowd}</b></div>
+      ${UI.tripText(fx) ? `<div class="row small" style="margin-top:6px"><span class="grow dim">Journey</span><b style="text-align:right;max-width:70%">${UI.tripText(fx)}</b></div>` : ''}
       ${nt ? '' : `<div class="row small" style="margin-top:6px"><span class="grow dim">Confidence</span><b>${esc(me.short)} ${form(me)} · ${esc(opp.short)} ${form(opp)}</b></div>`}</div>`;
   };
   // ---------------- Live ----------------
@@ -318,7 +319,7 @@
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
     ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(C.shortName(H.club))}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(C.shortName(A.club))}</span></div></div>
-      <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
+      <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.derby && FM.Lore && FM.Lore.derbyLine(m.sides[0].club, m.sides[1].club) ? `<div class="m-clock" style="margin-top:-6px;opacity:.8">${esc(FM.Lore.derbyLine(m.sides[0].club, m.sides[1].club))}</div>` : ''}${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
       <div class="m-mom"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>

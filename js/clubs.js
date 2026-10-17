@@ -885,7 +885,7 @@
     ],
     ['Jilitzin FC', 'CAZ', 'Jilitzin', '#0033A0', '#FFFFFF', 'historic', 66, 'Estadio Huihua'],
     ['Lobos Yaulco', 'TOL', 'Yaulco', '#E30613', '#FFFFFF', 'fan', 64, 'Estadio Chalachitlán'],
-    ['Club Deportivo Jilahua', 'PUM', 'Jilitzin', '#0B2240', '#C5A45A', 'youth', 63, 'Estadio Papanalco'],
+    ['Club Universidad Jilahua', 'PUM', 'Jilitzin', '#0B2240', '#C5A45A', 'youth', 63, 'Estadio Papanalco'],
     ['Club Deportivo Xalán', 'PAC', 'Xalán', '#FFFFFF', '#0033A0', 'selling', 63, 'Estadio Chalapa'],
     [
       'Club Deportivo Ocotipan',
@@ -937,7 +937,7 @@
     ['Seoyang Silk Dragons', 'DJN', 'Seoyang', '#6A1B9A', '#00843D', 'oil', 55, 'Seoyang Civic Stadium'],
     ['Chohwa Tigers', 'GWA', 'Chohwa', '#FFD100', '#E30613', 'youth', 54, 'Chohwa Stadium'],
     ['Choseong Heavy Eagles', 'GAN', 'Choseong', '#FF7F00', '#003DA5', 'fan', 53, 'Seowon Arena'],
-    ['Bujeong Copper Phoenix', 'GIM', 'Bujeong', '#E30613', '#003DA5', 'fan', 53, 'Bujeong Stadium'],
+    ['Bujeong Armed Forces', 'GIM', 'Bujeong', '#E30613', '#003DA5', 'fan', 53, 'Bujeong Stadium'],
     ['Haejin Heavy Eagles', 'JEJ', 'Haejin', '#FF6600', '#000000', 'fan', 52, 'Chungju Arena'],
     ['Gyeongseong FC', 'DGU', 'Gyeongseong', '#87CEEB', '#1C2B4F', 'youth', 52, 'Wolcheon Arena'],
     ['Wolhwa United', 'SUW', 'Wolhwa', '#E30613', '#003DA5', 'fan', 52, 'Chunjeong Arena'],
@@ -982,7 +982,7 @@
   FM.D.CLUBS_MA1 = [
     ['Union Sportive Oujali', 'WAC', 'Oujali', '#E30613', '#FFFFFF', 'giant', 59, 'Stade Sidoun'],
     ['Najah Oujali', 'RCA', 'Oujali', '#00843D', '#FFFFFF', 'giant', 59, 'Stade Ifrek'],
-    ['US Nadar', 'FAR', 'Nadar', '#E30613', '#000000', 'historic', 57, 'Stade Municipal de Nadar'],
+    ['Nadar Armed Forces', 'FAR', 'Nadar', '#E30613', '#000000', 'historic', 57, 'Stade Municipal de Nadar'],
     ['Sporting Safira', 'RSB', 'Safira', '#FF7F00', '#000000', 'oil', 56, 'Stade Nadek'],
     ['Najah Nadar', 'FUS', 'Nadar', '#003DA5', '#FFFFFF', 'youth', 54, 'Complexe Sportif Nadar'],
     ['Union Sidoun', 'MAS', 'Sidoun', '#FFD100', '#000000', 'historic', 52, 'Stade Tanouan'],
@@ -1415,7 +1415,7 @@
     ],
     ['Pulau Lenggeng United', 'KEL', 'Pulau Lenggeng', '#E30613', '#FFFFFF', 'fan', 43, 'Pulau Jelai Stadium', 22000],
     [
-      'Simpang Pelita Athletic',
+      'Simpang Pelita Police FC',
       'PDR',
       'Simpang Pelita',
       '#1F3A93',
@@ -1428,9 +1428,9 @@
     ['Pulau Indah United', 'KCH', 'Pulau Indah', '#E30613', '#FFFFFF', 'fan', 40, 'Kota Nilam Sports Park', 40000],
   ];
   FM.D.CLUBS_VN1 = [
-    ['Binh Mai FC', 'VTL', 'Binh Mai', '#E30613', '#FFFFFF', 'youth', 52, 'Tuyen Cuong Arena', 22500],
+    ['Binh Mai Army Signals', 'VTL', 'Binh Mai', '#E30613', '#FFFFFF', 'youth', 52, 'Tuyen Cuong Arena', 22500],
     ['Thep Binh Mai', 'HNI', 'Binh Mai', '#FFD100', '#1F3A93', 'oil', 50, 'Binh Mai Provincial Stadium', 22500],
-    ['Bac Uong FC', 'CAH', 'Binh Mai', '#E30613', '#FFD100', 'oil', 50, 'Long Sa Stadium', 22500],
+    ['Bac Uong Public Security FC', 'CAH', 'Binh Mai', '#E30613', '#FFD100', 'oil', 50, 'Long Sa Stadium', 22500],
     ['Vinh Phat Athletic', 'NDF', 'Vinh Phat', '#FFFFFF', '#003DA5', 'historic', 49, 'Hai Dai Stadium', 30000],
     ['Thai Mai Athletic', 'SLN', 'Thai Mai', '#FFD100', '#000000', 'historic', 48, 'Yen Khe Arena', 12000],
     ['Thai Lam FC', 'HGL', 'Thai Lam', '#0A8F3C', '#FFFFFF', 'youth', 47, 'Hai Truong Arena', 12000],
@@ -1474,7 +1474,7 @@
     ],
     ['Bhakti Jembmulan', 'MAD', 'Jembmulan', '#E30613', '#FFFFFF', 'selling', 46, 'Semangan Sports Park', 15000],
     ['Bhakti Tasisari', 'PKE', 'Tasisari', '#5B2C83', '#FFFFFF', 'fan', 45, 'Tasisari Sports Park', 20000],
-    ['Persi Langsari', 'BHY', 'Langsari', '#FFD100', '#0033A0', 'selling', 44, 'Puralembang Arena', 5000],
+    ['Langsari Police FC', 'BHY', 'Langsari', '#FFD100', '#0033A0', 'selling', 44, 'Puralembang Arena', 5000],
     ['Persi Kedigiri', 'SOL', 'Kedigiri', '#E30613', '#000000', 'historic', 44, 'Jemblembang Stadium', 20000],
     ['PS Tangpura', 'PST', 'Tangpura', '#E30613', '#FFFFFF', 'fan', 42, 'Purakalan Sports Park', 30000],
     ['Tangpura Putra', 'DEW', 'Tangpura', '#1F3A93', '#E30613', 'oil', 47, 'Tangmulan Stadium', 30000],
@@ -1959,7 +1959,7 @@ SEO|CSH|Shipwrights|1938
 DJN|SNG|Silkmen|1963
 GWA|CWA|Hawks|1988
 GAN|CNG|Sharks|1989
-GIM|BUJ|Reds|1973
+GIM|BUJ|Phoenix|1973
 JEJ|HAE|Oranges|1944
 DGU|GYE|Cranes|1991
 SUW|WOL|Dolphins|1984

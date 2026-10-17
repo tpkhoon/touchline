@@ -36,6 +36,7 @@ Sea.init();
 const cid = Object.values(FM.S.clubs).find((c) => c.comp === 'D1' && c.rep < 75).id;
 W.takeCharge(cid, 'Test Manager');
 W.seedLegends();
+FM.Lore.seed();
 FM.Stories.welcome();
 // the club guide (UI-only, so loaded here by hand): every club has a difficulty, all four labels are used, each league
 // has a card, and the strongest club of a league is never rated harder than its weakest
@@ -62,6 +63,138 @@ vm.runInContext(fs.readFileSync(new URL('../js/clubguide.js', import.meta.url), 
     recs.length === 3 && recs.every((x) => x.reason),
     'club guide: suggestions did not return three clubs with reasons',
   );
+}
+// lore: honours before the records (fallen giants have a past), legends without a repeated note, the world's geography, the
+// story of every derby, the kinds of club, competition histories, the people legends became
+{
+  const L = FM.Lore,
+    G = FM.Geo,
+    D = FM.D;
+  const C = L.canon();
+  const fallen = Object.values(C.clubs).filter((c) => c.identity === 'fallen');
+  check(
+    fallen.length > 40 && fallen.every((c) => c.t.length >= 1),
+    'lore: a fallen giant has no title before the records',
+  );
+  check(
+    fallen.filter((c) => c.t.length >= 2).length >= fallen.length * 0.8,
+    'lore: most fallen giants should have two titles or more',
+  );
+  const byNatYear = {};
+  let badYear = 0;
+  for (const c of Object.values(C.clubs)) {
+    for (const y of c.t) {
+      const k = c.nat + y;
+      byNatYear[k] = (byNatYear[k] || 0) + 1;
+      if (y >= C.y1 || y < (c.founded || 0)) badYear++;
+    }
+  }
+  check(
+    Object.values(byNatYear).every((n) => n === 1) && !badYear,
+    `lore: a title year is shared, too late or before the club existed (${badYear})`,
+  );
+  check(
+    Object.values(C.clubs).every((c) => c.tf >= c.t.length),
+    'lore: a club has more titles than seasons in the top flight',
+  );
+  // legends: five a club, no note twice in a club, no note anywhere near as common as the old 340
+  const notes = {};
+  let dup = 0;
+  for (const c of Object.values(FM.S.clubs)) {
+    if (!c.legends) continue;
+    check(c.legends.length === 5, `lore: ${c.id} has ${c.legends.length} legends`);
+    if (new Set(c.legends.map((l) => l.note)).size < 5) dup++;
+    c.legends.forEach((l) => (notes[l.note] = (notes[l.note] || 0) + 1));
+  }
+  const most = Math.max(...Object.values(notes));
+  check(!dup, `lore: ${dup} clubs repeat a legend's note`);
+  check(most <= 100, `lore: one legend note appears ${most} times`);
+  // geography
+  const all = Object.values(FM.S.clubs).filter((c) => c.comp && !c.parent && c.sim !== 'nation');
+  check(
+    all.every((c) => G.of(c)),
+    'geo: a club has no coordinates',
+  );
+  const km = G.km('c_MCI', 'c_LIV');
+  check(km > 20 && km < 80 && km === G.km('c_LIV', 'c_MCI'), `geo: Manchester to Liverpool is ${km} km`);
+  check(
+    G.km('c_LAG', 'c_SEA') > 1000 && G.fatigue(2000) > G.fatigue(500) && G.fatigue(100) === 0 && G.fatigue(1e5) <= 8,
+    'geo: tiredness does not follow distance',
+  );
+  check(G.cost(0) === 0 && G.cost(4000, all[0]) > G.cost(500, all[0]), 'geo: a long trip does not cost more');
+  // a far-off visit: the visitors start with less stamina
+  {
+    const far = all.filter((c) => c.nat === 'USA');
+    const [h, a] = [far.find((c) => c.id === 'c_LAG'), far.find((c) => c.id === 'c_SEA')];
+    const m = new FM.Match({ h: h.id, a: a.id, comp: h.comp });
+    const mean = (sd) => U_avg(Object.values(sd.st));
+    const U_avg = (xs) => xs.reduce((s, x) => s + x, 0) / Math.max(1, xs.length);
+    check(
+      m.tripKm > 1000 && mean(m.sides[1]) < mean(m.sides[0]) - 1,
+      `geo: a ${m.tripKm} km trip left the visitors fresh (${mean(m.sides[1])} v ${mean(m.sides[0])})`,
+    );
+  }
+  // derbies
+  let noStory = 0;
+  for (const c of all) {
+    if (!c.rival || !FM.S.clubs[c.rival]) continue;
+    const r = L.rivalry(c, c.rival);
+    if (!r || !r.text || r.n < 8 || r.wa + r.wb + r.d !== r.n) noStory++;
+  }
+  check(!noStory, `lore: ${noStory} derbies have no story or a record that does not add up`);
+  check(all.filter((c) => c.rival).length >= 330, 'lore: too few clubs have a derby');
+  {
+    const c = all.find((x) => x.rival && L.rivalry(x, x.rival));
+    const before = L.rivalry(c, c.rival).n;
+    L.onMatch({ h: c.id, a: c.rival, comp: c.comp }, { hg: 2, ag: 1 });
+    const after = L.rivalry(c, c.rival);
+    check(after.n === before + 1 && L.record(c, c.rival).w >= 1, 'lore: a derby result did not reach the record');
+  }
+  // kinds of club
+  check(
+    FM.S.clubs.c_GIM.kind === 'military' && /Armed Forces/.test(FM.S.clubs.c_GIM.name),
+    'lore: the army club is not recognisable',
+  );
+  check(L.identityOf(FM.S.clubs.c_GIM).label === 'Military club', 'lore: the army club still wears an identity label');
+  check(
+    Object.values(FM.S.clubs)
+      .filter((c) => c.parent)
+      .every((c) => c.kind === 'reserve'),
+    'lore: a B team is not marked as a reserve side',
+  );
+  check(
+    L.kindNote(FM.S.clubs.c_GIM).text.includes('national service'),
+    'lore: the army club does not explain national service',
+  );
+  // competitions
+  for (const id of Object.keys(FM.S.comps).filter((k) => FM.S.comps[k].type !== 'friendly')) {
+    const h = L.compHistory(id);
+    check(h && h.founded > 1860 && h.trophy && h.notes.length, `lore: ${id} has no history`);
+  }
+  check(L.compHistory(C.oldest).founded <= 1890, 'lore: the oldest cup is not old');
+  // people: legends who became managers, and the pundits
+  const mgrs = Object.values(FM.S.staff).filter((m) => m.legendOf);
+  check(mgrs.length >= 15 && mgrs.length < 120, `lore: ${mgrs.length} legend-managers`);
+  check(
+    mgrs.some(
+      (m) =>
+        FM.S.clubs[m.legendOf.club].rival &&
+        Object.values(FM.S.clubs).some((c) => c.manager === m.id && c.id === FM.S.clubs[m.legendOf.club].rival),
+    ),
+    'lore: no legend manages the rival of his old club',
+  );
+  check(
+    FM.S.media.pundits.some((p) => p.legend),
+    'lore: no legend on the Touchline Tonight panel',
+  );
+  // an older save gets the state back
+  {
+    const keep = FM.S.lore;
+    delete FM.S.lore;
+    L.ensure(FM.S);
+    check(FM.S.lore && FM.S.lore.rivals, 'lore: an older save did not get its lore state');
+    FM.S.lore = keep;
+  }
 }
 // shouts: a call changes the side for a few minutes and puts it back; the next needs a pause
 {
@@ -327,7 +460,7 @@ for (let s = 0; s < SEASONS; s++) {
       `season 1: the world introductions stopped at ${FM.S.intro && FM.S.intro.n} of 3`,
     );
   // clubs with a signing policy field only players of their heritage (a loanee from elsewhere would break it)
-  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy)) {
+  for (const c of Object.values(FM.S.clubs).filter((x) => x.policy && x.policy.heritage)) {
     const odd = W.squad(c.id).filter((p) => p.heritage !== c.policy.heritage);
     check(odd.length === 0, `season ${s + 1}: ${c.short} (${c.policy.label}-only) has ${odd.length} other players`);
   }

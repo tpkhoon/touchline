@@ -173,6 +173,8 @@
       this.big = this.derby || this.heated || Math.max(hc.rep, ac.rep) >= 80;
       // A big occasion for the stars: a derby, a knockout tie, or two top sides meeting
       this.bigGame = this.derby || this.heated || this.knockout || Math.min(hc.rep, ac.rep) >= 75;
+      // The journey: the visitors' legs after a long trip (their starting stamina), and a bigger edge for the hosts
+      this.tripKm = this.neutral || !FM.Geo ? null : FM.Geo.km(hc, ac);
       this.homeF = this.neutral ? 0 : Match.homeFactor(hc, ac, this.derby || this.heated);
       this.sides = [this.mkSide(hc, 0), this.mkSide(ac, 1)];
       // What you said before the game (a pre-match press conference): it lifts your side, or theirs
@@ -243,7 +245,7 @@
       };
       xi.forEach((p) => {
         if (p) {
-          sd.st[p.id] = p.fitness;
+          sd.st[p.id] = Math.max(0, p.fitness - (idx === 1 && this.tripKm != null ? FM.Geo.fatigue(this.tripKm) : 0));
           sd.rating[p.id] = 6.3;
           sd.on[p.id] = 0;
           sd.ps[p.id] = { pass: 0, kp: 0, sh: 0, sot: 0, tk: 0, ic: 0, tch: 0, sv: 0, ga: 0, xga: 0 };
@@ -1422,7 +1424,8 @@
       (0.3 * (mood - 60)) / 40 +
       U.clamp(0.12 * Math.log2(cap / 25000), -0.2, 0.2) +
       (derby ? 0.15 : 0) +
-      (a && a.nat !== h.nat ? 0.15 : 0);
+      (a && a.nat !== h.nat ? 0.15 : 0) +
+      (a && FM.Geo ? FM.Geo.bonus(FM.Geo.km(h, a)) : 0);
     return U.clamp(f, 0.5, 1.6);
   };
   // Aggregate / away-goal options for a fixture that is the second leg of a tie

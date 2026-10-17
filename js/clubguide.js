@@ -160,7 +160,7 @@
   G.tags = function (code) {
     const e = G.entry(code);
     if (!e) return [];
-    const idt = D.IDENTITY[e.row[5]],
+    const idt = FM.Lore ? FM.Lore.identityRow(e.row) : D.IDENTITY[e.row[5]],
       out = [`${idt.icon} ${idt.label}`];
     const pol = D.CLUB_POLICY && D.CLUB_POLICY[code];
     if (pol) out.push(`Only ${pol.label} players`);
@@ -279,7 +279,7 @@
   };
 
   // ---------- suggestions ----------
-  // want: { diff: 'relaxed' | 'balanced' | 'fight', project: 'trophies' | 'rebuild' | 'youth' | 'underdog', where: 'any' | league id | 'nat:XXX' }
+  // want: { diff: 'relaxed' | 'balanced' | 'fight', project: 'trophies' | 'rebuild' | 'youth' | 'underdog', where: 'any' | league id | 'nat:XXX' | 'region:xx' }
   const TARGET = { relaxed: 0.0, balanced: 0.32, fight: 0.8 };
   const PROJECT = {
     trophies: (e) => (['oil', 'giant', 'historic'].includes(e.row[5]) ? 1.2 : 0) + (e.pct < 0.3 ? 1 : 0),
@@ -311,7 +311,10 @@
     const pool = Object.values(G.index().byCode).filter((e) => {
       if (skip.includes(e.row[1])) return false;
       if (want.where && want.where !== 'any') {
-        if (want.where.startsWith('nat:') ? e.l.nat !== want.where.slice(4) : e.l.id !== want.where) return false;
+        if (want.where.startsWith('region:')) {
+          if (!FM.Geo.regionNats(want.where.slice(7)).includes(e.l.nat)) return false;
+        } else if (want.where.startsWith('nat:') ? e.l.nat !== want.where.slice(4) : e.l.id !== want.where)
+          return false;
       }
       return true;
     });

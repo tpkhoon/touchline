@@ -974,6 +974,8 @@
             .join('')}</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:8px"><b style="color:${d.color}">${d.label}</b>: ${esc(d.why)}.</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">The board will likely ask: ${esc(G.objective(code))}.</div>
+          ${FM.Lore.pastLine(code) ? `<div class="tiny" style="color:#9fb0c5;margin-top:4px">🏆 ${esc(FM.Lore.pastLine(code))}</div>` : ''}
+          ${FM.Lore.identityRow(r).kind ? `<div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(D.CLUB_POLICY[code] && D.CLUB_POLICY[code].military ? 'Players serve here during national service.' : D.CLUB_KINDS[FM.Lore.identityRow(r).kind].blurb)}</div>` : ''}
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(r[7] || `${r[2]} Stadium`)}, ${G.capOf(r).toLocaleString()} seats · ${money(I)}${inf.founded ? ` · founded ${inf.founded}` : ''}${inf.nick ? ` · "${esc(inf.nick)}"` : ''}</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(I.fans)}</div>
           ${rv ? `<div class="row tiny" style="gap:8px;align-items:center;color:#c9d4e3;margin-top:8px">${C.crest(rvFake, 22)}<span>The ${esc(rv.derby)} against ${esc(rv.name)}</span></div>` : ''}
@@ -983,7 +985,7 @@
       const row = (r, div, note, where) => {
         const [name, short, , c1, c2, idt] = r;
         const fake = { id: 'c_' + short, short, colors: [c1, c2] };
-        const I = D.IDENTITY[idt],
+        const I = FM.Lore.identityRow(r),
           d = G.diff(short),
           on = NG.club === fake.id;
         return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
@@ -1048,7 +1050,7 @@
             ['youth', 'Develop youth'],
             ['underdog', 'Underdog climb'],
           ])}
-          <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
+          <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option><optgroup label="🌍 A region of the world">${D.GEO_REGIONS.map(([id, name]) => `<option value="region:${id}" ${NG.want.where === 'region:' + id ? 'selected' : ''}>${esc(name)}</option>`).join('')}</optgroup>${leagueOpts}</select>
           <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${D.facts().clubs} clubs</button></div>
           <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
           ${UI.dbCard()}
@@ -1353,9 +1355,10 @@
         if (!FM.S.staffPool) W.refreshStaffPool();
         W.goUnemployed('start');
       } else W.takeCharge(NG.club, ngProfile());
-      W.seedLegends();
       W.seedHistory();
+      FM.Lore.seed();
       FM.Stories.welcome();
+      FM.Lore.welcome();
       UI.slot = NG.slot;
       UI.save();
       UI.tab = 'home';

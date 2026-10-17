@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-337 features are playable in the web prototype today. Build = the build that added it.
+359 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -366,6 +366,15 @@ Every feature from the game design document, with what is playable in the protot
 | Clubs | Club names that follow how clubs were founded, region by region (works and church names in England, Hansa and Eintracht in Germany, university, cooperative and animal names in Mexico, place + foreign-word names in Japan, city + company + nickname in Korea, French structure with local words in West Africa and Morocco ...); names that mix cultures, read like fantasy or lean on one suffix are rejected, and a club's nickname can follow its name (Colliery: the Miners) | Playtest round 10 |
 | International | Five more nations with national teams: Belarus, Bolivia, India, Qatar and the United Arab Emirates (90 in all), with their own name cultures, styles and colours, spread through the leagues like the other nations | Playtest round 10 |
 | International | Every nation always has a national team: a thin one is topped up to 18 with unattached players (free agents that any club can sign, who still play for their country), and an international without a club is kept in the game instead of being cleared out with the other free agents | Playtest round 10 |
+| History | Honours before the records for every club (league titles, cup wins, seasons in the top flight, best decade, named eras), generated from the static club data from each country's first championship to the year the save's seasons begin; every Fallen Giant has a title or two, and the club picker shows it | Worldbuilding |
+| Legends | Club legends with notes drawn from the club's own past (a title year, a cup final, its rival, its ground), about 35 templates with variants, never repeated in a club and balanced across a country | Worldbuilding |
+| World | A map: every club on the real town's coordinates, a map by region on the League tab, the season's journeys (longest away trips, distance, bill, nearest clubs), away travel that tires the visitors, helps the hosts and costs a coach or a charter flight, and local derbies between neighbours | Worldbuilding |
+| Clubs | Derbies with a story: an origin, a head-to-head record from before the save that the save's matches add to, in the club page, the derby preview, the match header and the press | Worldbuilding |
+| Clubs | Club details: motto, anthem, mascot, ground nickname, record crowd, biggest win and heaviest defeat, most famous match | Worldbuilding |
+| Competitions | A history for every league and cup (League → History): founding year, trophy and founder, format changes, first winners, most titles, giant-killings, the oldest cup | Worldbuilding |
+| Clubs | Club kinds: military, police, company, works, university and reserve sides carry their kind and an explanation instead of an identity label | Worldbuilding |
+| People | Legends in the present: managers (some in charge of the rival), pundits on Touchline Tonight, club ambassadors and chairmen | Worldbuilding |
+| Career | A Where? question for the new-career screen by region of the world (British Isles, Western Europe, South America ...) | Worldbuilding |
 
 ## Yet to be added
 

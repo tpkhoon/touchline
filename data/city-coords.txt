@@ -1,0 +1,685 @@
+# Real city coordinates (latitude, longitude; facts, free to use) for the real towns that the fictional clubs sit on.
+# Format: NAT:City lat,lon   — read by tools/geo.mjs, which writes js/geo.js (club code -> coordinates)
+ARG:Avellaneda -34.66,-58.37
+ARG:Banfield -34.74,-58.40
+ARG:Buenos Aires -34.60,-58.38
+ARG:Córdoba -31.42,-64.18
+ARG:Florencio Varela -34.82,-58.28
+ARG:Junín -34.59,-60.95
+ARG:La Plata -34.92,-57.95
+ARG:Lanús -34.70,-58.39
+ARG:Mendoza -32.89,-68.84
+ARG:Rosario -32.95,-60.64
+ARG:San Miguel de Tucumán -26.82,-65.22
+ARG:Santa Fe -31.63,-60.70
+ARG:Santiago del Estero -27.79,-64.26
+ARG:Vicente López -34.53,-58.48
+ARG:Victoria -34.45,-58.55
+AUS:Adelaide -34.93,138.60
+AUS:Auckland -36.85,174.76
+AUS:Brisbane -27.47,153.03
+AUS:Campbelltown -34.07,150.81
+AUS:Gosford -33.43,151.34
+AUS:Melbourne -37.81,144.96
+AUS:Newcastle -32.93,151.78
+AUS:Perth -31.95,115.86
+AUS:Sydney -33.87,151.21
+AUS:Wellington -41.29,174.78
+AUT:Altach 47.35,9.65
+AUT:Graz 47.07,15.44
+AUT:Hartberg 47.28,15.97
+AUT:Linz 48.31,14.29
+AUT:Ried im Innkreis 48.21,13.49
+AUT:Salzburg 47.80,13.04
+AUT:Vienna 48.21,16.37
+AUT:Wattens 47.29,11.84
+AUT:Wolfsberg 46.84,14.84
+BEL:Antwerp 51.22,4.40
+BEL:Bruges 51.21,3.22
+BEL:Brussels 50.85,4.35
+BEL:Charleroi 50.41,4.44
+BEL:Denderleeuw 50.89,4.07
+BEL:Genk 50.97,5.50
+BEL:Ghent 51.05,3.72
+BEL:La Louvière 50.48,4.19
+BEL:Leuven 50.88,4.70
+BEL:Liège 50.63,5.57
+BEL:Mechelen 51.03,4.48
+BEL:Sint-Truiden 50.82,5.19
+BEL:Waregem 50.89,3.43
+BEL:Westerlo 51.09,4.92
+BRA:Belo Horizonte -19.92,-43.94
+BRA:Bragança Paulista -22.95,-46.54
+BRA:Caxias do Sul -29.17,-51.18
+BRA:Fortaleza -3.73,-38.53
+BRA:Mirassol -20.82,-49.52
+BRA:Porto Alegre -30.03,-51.23
+BRA:Recife -8.05,-34.88
+BRA:Rio de Janeiro -22.91,-43.17
+BRA:Salvador -12.97,-38.51
+BRA:Santos -23.96,-46.33
+BRA:São Paulo -23.55,-46.63
+CZE:Hradec Králové 50.21,15.83
+CZE:Jablonec nad Nisou 50.72,15.17
+CZE:Karviná 49.85,18.54
+CZE:Liberec 50.77,15.06
+CZE:Mladá Boleslav 50.41,14.90
+CZE:Olomouc 49.59,17.25
+CZE:Ostrava 49.82,18.26
+CZE:Pardubice 50.04,15.78
+CZE:Plzeň 49.75,13.38
+CZE:Prague 50.08,14.44
+CZE:Teplice 50.64,13.82
+CZE:Uherské Hradiště 49.07,17.46
+CZE:Zlín 49.23,17.67
+DEN:Aarhus 56.16,10.20
+DEN:Brøndby 55.65,12.42
+DEN:Copenhagen 55.68,12.57
+DEN:Farum 55.81,12.36
+DEN:Fredericia 55.57,9.75
+DEN:Haderslev 55.25,9.49
+DEN:Herning 56.14,8.98
+DEN:Odense 55.40,10.39
+DEN:Randers 56.46,10.04
+DEN:Silkeborg 56.17,9.55
+DEN:Vejle 55.71,9.54
+DEN:Viborg 56.45,9.40
+ENG:Accrington 53.75,-2.37
+ENG:Barnsley 53.55,-1.48
+ENG:Barrow-in-Furness 54.11,-3.23
+ENG:Birkenhead 53.39,-3.01
+ENG:Birmingham 52.48,-1.90
+ENG:Blackburn 53.75,-2.48
+ENG:Blackpool 53.82,-3.05
+ENG:Bolton 53.58,-2.43
+ENG:Bournemouth 50.72,-1.88
+ENG:Bradford 53.79,-1.75
+ENG:Brighton 50.82,-0.14
+ENG:Bristol 51.45,-2.59
+ENG:Burnley 53.79,-2.24
+ENG:Burton upon Trent 52.80,-1.64
+ENG:Cambridge 52.21,0.12
+ENG:Cardiff 51.48,-3.18
+ENG:Cheltenham 51.90,-2.08
+ENG:Chesterfield 53.24,-1.43
+ENG:Cleethorpes 53.56,-0.03
+ENG:Colchester 51.89,0.90
+ENG:Coventry 52.41,-1.51
+ENG:Crawley 51.11,-0.19
+ENG:Crewe 53.10,-2.44
+ENG:Derby 52.92,-1.48
+ENG:Doncaster 53.52,-1.13
+ENG:Exeter 50.72,-3.53
+ENG:Fleetwood 53.93,-3.01
+ENG:Gillingham 51.39,0.55
+ENG:Harrogate 53.99,-1.54
+ENG:High Wycombe 51.63,-0.75
+ENG:Huddersfield 53.65,-1.78
+ENG:Hull 53.74,-0.33
+ENG:Ipswich 52.06,1.16
+ENG:Leeds 53.80,-1.55
+ENG:Leicester 52.64,-1.13
+ENG:Lincoln 53.23,-0.54
+ENG:Liverpool 53.41,-2.99
+ENG:London 51.51,-0.13
+ENG:Luton 51.88,-0.42
+ENG:Manchester 53.48,-2.24
+ENG:Mansfield 53.14,-1.20
+ENG:Middlesbrough 54.57,-1.23
+ENG:Milton Keynes 52.04,-0.76
+ENG:Newcastle 54.98,-1.62
+ENG:Newport 51.58,-3.00
+ENG:Northampton 52.24,-0.90
+ENG:Norwich 52.63,1.30
+ENG:Nottingham 52.95,-1.15
+ENG:Oldham 53.54,-2.11
+ENG:Oxford 51.75,-1.26
+ENG:Peterborough 52.57,-0.24
+ENG:Plymouth 50.38,-4.14
+ENG:Portsmouth 50.82,-1.09
+ENG:Preston 53.76,-2.70
+ENG:Reading 51.45,-0.97
+ENG:Rotherham 53.43,-1.36
+ENG:Salford 53.49,-2.29
+ENG:Sheffield 53.38,-1.47
+ENG:Shrewsbury 52.71,-2.75
+ENG:Southampton 50.90,-1.40
+ENG:Stevenage 51.90,-0.20
+ENG:Stockport 53.41,-2.16
+ENG:Stoke-on-Trent 53.00,-2.18
+ENG:Sunderland 54.91,-1.38
+ENG:Swansea 51.62,-3.94
+ENG:Swindon 51.56,-1.78
+ENG:Walsall 52.59,-1.98
+ENG:Watford 51.66,-0.40
+ENG:West Bromwich 52.52,-1.99
+ENG:Wigan 53.54,-2.63
+ENG:Wolverhampton 52.59,-2.13
+ENG:Wrexham 53.05,-2.99
+ESP:A Coruña 43.37,-8.40
+ESP:Albacete 38.99,-1.86
+ESP:Alcorcón 40.35,-3.82
+ESP:Algeciras 36.13,-5.45
+ESP:Alicante 38.35,-0.48
+ESP:Almería 36.84,-2.46
+ESP:Andorra la Vella 42.51,1.52
+ESP:Barcelona 41.39,2.17
+ESP:Bilbao 43.26,-2.93
+ESP:Burgos 42.34,-3.70
+ESP:Cartagena 37.60,-0.99
+ESP:Castellón de la Plana 39.99,-0.04
+ESP:Ceuta 35.89,-5.32
+ESP:Cádiz 36.53,-6.29
+ESP:Córdoba 37.89,-4.78
+ESP:Eibar 43.18,-2.47
+ESP:Elche 38.27,-0.70
+ESP:Getafe 40.31,-3.73
+ESP:Gijón 43.53,-5.66
+ESP:Girona 41.98,2.82
+ESP:Granada 37.18,-3.60
+ESP:Huesca 42.14,-0.41
+ESP:Ibiza 38.91,1.43
+ESP:Las Palmas 28.12,-15.43
+ESP:Leganés 40.33,-3.76
+ESP:León 42.60,-5.57
+ESP:Lugo 43.01,-7.56
+ESP:Madrid 40.42,-3.70
+ESP:Miranda de Ebro 42.69,-2.95
+ESP:Murcia 37.99,-1.13
+ESP:Málaga 36.72,-4.42
+ESP:Oviedo 43.36,-5.85
+ESP:Palma 39.57,2.65
+ESP:Pamplona 42.82,-1.64
+ESP:Ponferrada 42.55,-6.60
+ESP:Salamanca 40.97,-5.66
+ESP:San Sebastián 43.32,-1.98
+ESP:Santa Cruz de Tenerife 28.46,-16.25
+ESP:Santander 43.46,-3.81
+ESP:Seville 37.39,-5.98
+ESP:Tarragona 41.12,1.25
+ESP:Valencia 39.47,-0.38
+ESP:Valladolid 41.65,-4.72
+ESP:Vigo 42.24,-8.72
+ESP:Villarreal 39.94,-0.10
+ESP:Vitoria-Gasteiz 42.85,-2.67
+ESP:Zamora 41.50,-5.75
+ESP:Zaragoza 41.65,-0.88
+FRA:Amiens 49.89,2.30
+FRA:Angers 47.47,-0.55
+FRA:Annecy 45.90,6.13
+FRA:Auxerre 47.80,3.57
+FRA:Bastia 42.70,9.45
+FRA:Boulogne-sur-Mer 50.73,1.61
+FRA:Brest 48.39,-4.49
+FRA:Clermont-Ferrand 45.78,3.09
+FRA:Dunkirk 51.03,2.38
+FRA:Grenoble 45.19,5.72
+FRA:Guingamp 48.56,-3.15
+FRA:Laval 48.07,-0.77
+FRA:Le Havre 49.49,0.11
+FRA:Le Mans 48.01,0.20
+FRA:Lens 50.43,2.83
+FRA:Lille 50.63,3.06
+FRA:Lorient 47.75,-3.37
+FRA:Lyon 45.76,4.84
+FRA:Marseille 43.30,5.37
+FRA:Metz 49.12,6.18
+FRA:Monaco 43.74,7.42
+FRA:Montpellier 43.61,3.88
+FRA:Nancy 48.69,6.18
+FRA:Nantes 47.22,-1.55
+FRA:Nice 43.70,7.27
+FRA:Paris 48.86,2.35
+FRA:Pau 43.30,-0.37
+FRA:Reims 49.26,4.03
+FRA:Rennes 48.11,-1.68
+FRA:Rodez 44.35,2.57
+FRA:Saint-Ouen 48.91,2.33
+FRA:Saint-Étienne 45.44,4.39
+FRA:Strasbourg 48.57,7.75
+FRA:Toulouse 43.60,1.44
+FRA:Troyes 48.30,4.08
+GER:Aachen 50.78,6.08
+GER:Aue 50.59,12.70
+GER:Augsburg 48.37,10.90
+GER:Berlin 52.52,13.40
+GER:Bielefeld 52.02,8.53
+GER:Bochum 51.48,7.22
+GER:Braunschweig 52.27,10.52
+GER:Bremen 53.08,8.80
+GER:Cologne 50.94,6.96
+GER:Cottbus 51.76,14.33
+GER:Darmstadt 49.87,8.65
+GER:Dortmund 51.51,7.47
+GER:Dresden 51.05,13.74
+GER:Duisburg 51.43,6.77
+GER:Düsseldorf 51.23,6.78
+GER:Essen 51.46,7.01
+GER:Frankfurt 50.11,8.68
+GER:Freiburg 47.99,7.85
+GER:Fürth 49.48,10.99
+GER:Gelsenkirchen 51.51,7.10
+GER:Hamburg 53.55,9.99
+GER:Hannover 52.37,9.74
+GER:Heidenheim 48.68,10.15
+GER:Ingolstadt 48.76,11.42
+GER:Kaiserslautern 49.44,7.77
+GER:Karlsruhe 49.01,8.40
+GER:Kiel 54.32,10.14
+GER:Leipzig 51.34,12.37
+GER:Leverkusen 51.03,6.98
+GER:Magdeburg 52.13,11.63
+GER:Mainz 50.00,8.27
+GER:Mannheim 49.49,8.47
+GER:Munich 48.14,11.58
+GER:Mönchengladbach 51.19,6.44
+GER:Münster 51.96,7.63
+GER:Nuremberg 49.45,11.08
+GER:Osnabrück 52.28,8.05
+GER:Paderborn 51.72,8.75
+GER:Regensburg 49.01,12.10
+GER:Rostock 54.09,12.14
+GER:Saarbrücken 49.24,6.99
+GER:Schweinfurt 50.05,10.23
+GER:Sinsheim 49.25,8.88
+GER:Spiesen-Elversberg 49.31,7.12
+GER:Stuttgart 48.78,9.18
+GER:Ulm 48.40,9.99
+GER:Verl 51.88,8.51
+GER:Wiesbaden 50.08,8.24
+GER:Wolfsburg 52.42,10.79
+GRE:Agrinio 38.62,21.41
+GRE:Athens 37.98,23.73
+GRE:Heraklion 35.34,25.13
+GRE:Kifisia 38.07,23.81
+GRE:Larissa 39.64,22.42
+GRE:Livadeia 38.44,22.88
+GRE:Peristeri 38.02,23.69
+GRE:Piraeus 37.94,23.65
+GRE:Serres 41.09,23.55
+GRE:Thessaloniki 40.64,22.94
+GRE:Tripoli 37.51,22.37
+GRE:Volos 39.36,22.94
+HUN:Budapest 47.50,19.04
+HUN:Debrecen 47.53,21.63
+HUN:Felcsút 47.45,18.57
+HUN:Győr 47.69,17.63
+HUN:Kecskemét 46.91,19.69
+HUN:Kisvárda 48.22,22.08
+HUN:Miskolc 48.10,20.78
+HUN:Nyíregyháza 47.95,21.72
+HUN:Paks 46.62,18.86
+HUN:Zalaegerszeg 46.84,16.84
+IDN:Bandung -6.91,107.61
+IDN:Banjarmasin -3.32,114.59
+IDN:Bogor -6.60,106.80
+IDN:Gianyar -8.54,115.33
+IDN:Jakarta -6.21,106.85
+IDN:Kediri -7.82,112.01
+IDN:Makassar -5.15,119.43
+IDN:Malang -7.98,112.63
+IDN:Pamekasan -7.16,113.48
+IDN:Samarinda -0.50,117.15
+IDN:Semarang -6.97,110.42
+IDN:Sleman -7.72,110.35
+IDN:Surabaya -7.25,112.75
+IDN:Surakarta -7.57,110.82
+IDN:Tangerang -6.18,106.63
+IRL:Derry 54.99,-7.31
+IRL:Drogheda 53.72,-6.35
+IRL:Dublin 53.35,-6.26
+IRL:Dundalk 54.00,-6.40
+IRL:Galway 53.27,-9.05
+IRL:Sligo 54.27,-8.47
+IRL:Waterford 52.26,-7.11
+ITA:Avellino 40.91,14.79
+ITA:Bari 41.12,16.87
+ITA:Bergamo 45.70,9.67
+ITA:Bologna 44.49,11.34
+ITA:Bolzano 46.50,11.35
+ITA:Cagliari 39.22,9.12
+ITA:Carrara 44.08,10.10
+ITA:Castellammare di Stabia 40.70,14.49
+ITA:Catanzaro 38.91,16.59
+ITA:Cesena 44.14,12.24
+ITA:Chiavari 44.32,9.32
+ITA:Como 45.81,9.09
+ITA:Cremona 45.13,10.02
+ITA:Empoli 43.72,10.95
+ITA:Florence 43.77,11.25
+ITA:Frosinone 41.64,13.34
+ITA:Genoa 44.41,8.93
+ITA:La Spezia 44.10,9.82
+ITA:Lecce 40.35,18.17
+ITA:Mantua 45.16,10.79
+ITA:Milan 45.46,9.19
+ITA:Modena 44.65,10.93
+ITA:Monza 45.58,9.27
+ITA:Naples 40.85,14.27
+ITA:Padua 45.41,11.88
+ITA:Palermo 38.12,13.36
+ITA:Parma 44.80,10.33
+ITA:Pescara 42.46,14.21
+ITA:Pisa 43.72,10.40
+ITA:Reggio Emilia 44.70,10.63
+ITA:Rome 41.90,12.50
+ITA:Sassuolo 44.55,10.78
+ITA:Turin 45.07,7.69
+ITA:Udine 46.06,13.24
+ITA:Venice 45.44,12.32
+ITA:Verona 45.44,10.99
+JPN:Fukuoka 33.59,130.40
+JPN:Hiratsuka 35.33,139.35
+JPN:Hiroshima 34.39,132.46
+JPN:Kashima 35.97,140.64
+JPN:Kashiwa 35.87,139.97
+JPN:Kawasaki 35.53,139.70
+JPN:Kobe 34.69,135.20
+JPN:Kyoto 35.01,135.77
+JPN:Machida 35.55,139.45
+JPN:Nagoya 35.18,136.91
+JPN:Niigata 37.92,139.04
+JPN:Okayama 34.66,133.92
+JPN:Osaka 34.69,135.50
+JPN:Saitama 35.86,139.65
+JPN:Shizuoka 34.98,138.38
+JPN:Tokyo 35.68,139.69
+JPN:Yokohama 35.44,139.64
+KOR:Anyang 37.39,126.95
+KOR:Chuncheon 37.88,127.73
+KOR:Daegu 35.87,128.60
+KOR:Daejeon 36.35,127.38
+KOR:Gimcheon 36.14,128.11
+KOR:Gwangju 35.16,126.85
+KOR:Jeju 33.50,126.53
+KOR:Jeonju 35.82,127.15
+KOR:Pohang 36.02,129.34
+KOR:Seoul 37.57,126.98
+KOR:Suwon 37.26,127.03
+KOR:Ulsan 35.54,129.31
+KSA:Abha 18.22,42.51
+KSA:Al Bukayriyah 26.14,43.66
+KSA:Al Majmaah 25.90,45.35
+KSA:Al-Bahah 20.01,41.47
+KSA:Al-Hasa 25.38,49.59
+KSA:Ar Rass 25.87,43.50
+KSA:Az Zulfi 26.30,44.80
+KSA:Buraidah 26.33,43.97
+KSA:Dammam 26.43,50.10
+KSA:Diriyah 24.73,46.57
+KSA:Dumat Al-Jandal 29.81,39.87
+KSA:Hafar Al-Batin 28.43,45.97
+KSA:Hail 27.52,41.70
+KSA:Harmah 25.88,45.32
+KSA:Jeddah 21.54,39.17
+KSA:Khamis Mushait 18.31,42.73
+KSA:Khobar 26.28,50.21
+KSA:Mecca 21.39,39.86
+KSA:Medina 24.47,39.61
+KSA:Najran 17.49,44.13
+KSA:Qaisumah 28.31,46.13
+KSA:Riyadh 24.71,46.68
+KSA:Saihat 26.48,50.04
+KSA:Sakaka 29.97,40.21
+KSA:Tabuk 28.38,36.57
+KSA:Unaizah 26.09,43.99
+MAR:Agadir 30.43,-9.60
+MAR:Berkane 34.92,-2.32
+MAR:Casablanca 33.57,-7.59
+MAR:El Jadida 33.23,-8.50
+MAR:Fès 34.03,-5.00
+MAR:Meknès 33.89,-5.55
+MAR:Mohammédia 33.69,-7.38
+MAR:Rabat 34.02,-6.84
+MAR:Safi 32.30,-9.24
+MAR:Soualem 33.38,-7.53
+MAR:Tangier 35.77,-5.80
+MAR:Tétouan 35.58,-5.37
+MAR:Zemamra 32.62,-8.70
+MEX:Aguascalientes 21.88,-102.29
+MEX:Ciudad Juárez 31.69,-106.42
+MEX:Guadalajara 20.67,-103.35
+MEX:León 21.12,-101.68
+MEX:Mazatlán 23.25,-106.41
+MEX:Mexico City 19.43,-99.13
+MEX:Monterrey 25.69,-100.32
+MEX:Pachuca 20.12,-98.73
+MEX:Puebla 19.04,-98.21
+MEX:Querétaro 20.59,-100.39
+MEX:San Luis Potosí 22.15,-100.98
+MEX:San Nicolás de los Garza 25.75,-100.29
+MEX:Tijuana 32.51,-117.04
+MEX:Toluca 19.29,-99.65
+MEX:Torreón 25.54,-103.41
+MYS:Alor Setar 6.12,100.37
+MYS:George Town 5.41,100.34
+MYS:Ipoh 4.60,101.08
+MYS:Johor Bahru 1.49,103.74
+MYS:Kota Bharu 6.13,102.24
+MYS:Kota Kinabalu 5.98,116.07
+MYS:Kuala Lumpur 3.14,101.69
+MYS:Kuala Terengganu 5.33,103.14
+MYS:Kuantan 3.81,103.33
+MYS:Kuching 1.55,110.34
+MYS:Melaka 2.19,102.25
+MYS:Seremban 2.73,101.94
+MYS:Shah Alam 3.07,101.52
+NED:Alkmaar 52.63,4.75
+NED:Almelo 52.36,6.66
+NED:Amsterdam 52.37,4.90
+NED:Breda 51.59,4.78
+NED:Deventer 52.25,6.16
+NED:Eindhoven 51.44,5.48
+NED:Enschede 52.22,6.90
+NED:Groningen 53.22,6.57
+NED:Heerenveen 52.96,5.92
+NED:Nijmegen 51.84,5.85
+NED:Rotterdam 51.92,4.48
+NED:Sittard 51.00,5.87
+NED:Utrecht 52.09,5.12
+NED:Velsen 52.46,4.62
+NED:Volendam 52.50,5.07
+NED:Zwolle 52.52,6.09
+NGA:Aba 5.12,7.37
+NGA:Akure 7.25,5.19
+NGA:Benin City 6.34,5.63
+NGA:Enugu 6.44,7.50
+NGA:Ibadan 7.38,3.95
+NGA:Ikenne 6.87,3.70
+NGA:Ikorodu 6.62,3.51
+NGA:Ilorin 8.50,4.55
+NGA:Jos 9.92,8.89
+NGA:Kano 12.00,8.52
+NGA:Katsina 12.99,7.60
+NGA:Lafia 8.49,8.52
+NGA:Maiduguri 11.85,13.16
+NGA:Makurdi 7.73,8.52
+NGA:Minna 9.61,6.55
+NGA:Owerri 5.48,7.03
+NGA:Port Harcourt 4.82,7.03
+NGA:Umuahia 5.53,7.49
+NGA:Uyo 5.04,7.93
+NGA:Yenagoa 4.92,6.26
+NOR:Bergen 60.39,5.32
+NOR:Bodø 67.28,14.40
+NOR:Bryne 58.73,5.65
+NOR:Drammen 59.74,10.20
+NOR:Fredrikstad 59.22,10.93
+NOR:Hamar 60.79,11.07
+NOR:Haugesund 59.41,5.27
+NOR:Kristiansund 63.11,7.73
+NOR:Molde 62.74,7.16
+NOR:Oslo 59.91,10.75
+NOR:Sandefjord 59.13,10.22
+NOR:Sarpsborg 59.28,11.11
+NOR:Stavanger 58.97,5.73
+NOR:Tromsø 69.65,18.96
+NOR:Trondheim 63.43,10.40
+PHI:Biñan 14.34,121.08
+PHI:Cebu City 10.32,123.89
+PHI:Davao City 7.07,125.61
+PHI:Iloilo City 10.72,122.56
+PHI:Manila 14.60,120.98
+POL:Białystok 53.13,23.16
+POL:Częstochowa 50.81,19.12
+POL:Gdańsk 54.35,18.65
+POL:Gdynia 54.52,18.53
+POL:Gliwice 50.29,18.67
+POL:Katowice 50.26,19.02
+POL:Kielce 50.87,20.63
+POL:Kraków 50.06,19.94
+POL:Lubin 51.40,16.20
+POL:Lublin 51.25,22.57
+POL:Nieciecza 50.09,20.71
+POL:Poznań 52.41,16.93
+POL:Płock 52.55,19.71
+POL:Radom 51.40,21.15
+POL:Szczecin 53.43,14.55
+POL:Warsaw 52.23,21.01
+POL:Zabrze 50.32,18.79
+POL:Łódź 51.76,19.46
+POR:Alverca do Ribatejo 38.89,-9.04
+POR:Amadora 38.75,-9.24
+POR:Arouca 40.93,-8.25
+POR:Barcelos 41.54,-8.62
+POR:Braga 41.55,-8.43
+POR:Estoril 38.70,-9.40
+POR:Funchal 32.65,-16.91
+POR:Guimarães 41.44,-8.30
+POR:Lisbon 38.72,-9.14
+POR:Moreira de Cónegos 41.38,-8.35
+POR:Ponta Delgada 37.74,-25.67
+POR:Porto 41.15,-8.61
+POR:Tondela 40.52,-8.08
+POR:Vila Nova de Famalicão 41.41,-8.52
+POR:Vila das Aves 41.36,-8.41
+POR:Vila do Conde 41.35,-8.74
+RSA:Cape Town -33.92,18.42
+RSA:Durban -29.86,31.02
+RSA:Gqeberha -33.96,25.60
+RSA:Johannesburg -26.20,28.05
+RSA:Limpopo -23.90,29.45
+RSA:Mbombela -25.47,30.98
+RSA:Polokwane -23.90,29.45
+RSA:Pretoria -25.75,28.19
+RSA:Richards Bay -28.78,32.04
+RSA:Soweto -26.27,27.86
+RSA:Stellenbosch -33.93,18.86
+SCO:Aberdeen 57.15,-2.09
+SCO:Dundee 56.46,-2.97
+SCO:Edinburgh 55.95,-3.19
+SCO:Falkirk 56.00,-3.78
+SCO:Glasgow 55.86,-4.25
+SCO:Kilmarnock 55.61,-4.50
+SCO:Livingston 55.88,-3.52
+SCO:Motherwell 55.79,-3.99
+SCO:Paisley 55.84,-4.43
+SGP:Geylang 1.32,103.89
+SGP:Hougang 1.37,103.89
+SGP:Singapore 1.35,103.82
+SGP:Tampines 1.35,103.94
+SGP:Tanjong Pagar 1.28,103.84
+SGP:Toa Payoh 1.33,103.85
+SGP:Woodlands 1.44,103.79
+SRB:Bačka Topola 45.81,19.63
+SRB:Belgrade 44.79,20.45
+SRB:Kragujevac 44.01,20.91
+SRB:Kruševac 43.58,21.33
+SRB:Lučani 43.86,20.12
+SRB:Niš 43.32,21.90
+SRB:Novi Pazar 43.14,20.52
+SRB:Novi Sad 45.26,19.83
+SRB:Odžaci 45.51,19.27
+SRB:Pančevo 44.87,20.64
+SRB:Subotica 46.10,19.67
+SRB:Ub 44.46,20.07
+SUI:Basel 47.56,7.59
+SUI:Bern 46.95,7.45
+SUI:Geneva 46.20,6.14
+SUI:Lausanne 46.52,6.63
+SUI:Lucerne 47.05,8.31
+SUI:Lugano 46.01,8.96
+SUI:Sion 46.23,7.36
+SUI:St. Gallen 47.42,9.37
+SUI:Thun 46.76,7.63
+SUI:Winterthur 47.50,8.72
+SUI:Zurich 47.37,8.54
+THA:Ayutthaya 14.35,100.57
+THA:Bangkok 13.76,100.50
+THA:Buriram 14.99,103.10
+THA:Chiang Rai 19.91,99.83
+THA:Chonburi 13.36,100.98
+THA:Kanchanaburi 14.02,99.53
+THA:Lamphun 18.58,99.01
+THA:Nakhon Ratchasima 14.97,102.10
+THA:Nonthaburi 13.86,100.52
+THA:Pathum Thani 14.02,100.53
+THA:Prachuap Khiri Khan 11.81,99.80
+THA:Ratchaburi 13.53,99.81
+THA:Rayong 12.68,101.28
+THA:Sukhothai 17.01,99.82
+THA:Uthai Thani 15.38,100.02
+TUR:Alanya 36.54,32.00
+TUR:Ankara 39.93,32.86
+TUR:Antalya 36.90,30.70
+TUR:Gaziantep 37.07,37.38
+TUR:Istanbul 41.01,28.98
+TUR:Kayseri 38.73,35.48
+TUR:Konya 37.87,32.48
+TUR:Rize 41.02,40.52
+TUR:Samsun 41.29,36.33
+TUR:Trabzon 41.00,39.72
+TUR:İzmir 38.42,27.14
+TUR:İzmit 40.77,29.94
+USA:Atlanta 33.75,-84.39
+USA:Austin 30.27,-97.74
+USA:Charlotte 35.23,-80.84
+USA:Chicago 41.88,-87.63
+USA:Cincinnati 39.10,-84.51
+USA:Columbus 39.96,-83.00
+USA:Dallas 32.78,-96.80
+USA:Denver 39.74,-104.99
+USA:Foxborough 42.07,-71.25
+USA:Houston 29.76,-95.37
+USA:Kansas City 39.10,-94.58
+USA:Los Angeles 34.05,-118.24
+USA:Miami 25.76,-80.19
+USA:Montreal 45.50,-73.57
+USA:Nashville 36.16,-86.78
+USA:New York 40.71,-74.01
+USA:Orlando 28.54,-81.38
+USA:Philadelphia 39.95,-75.17
+USA:Portland 45.52,-122.68
+USA:Saint Paul 44.95,-93.09
+USA:Salt Lake City 40.76,-111.89
+USA:San Diego 32.72,-117.16
+USA:San Jose 37.34,-121.89
+USA:Seattle 47.61,-122.33
+USA:St. Louis 38.63,-90.20
+USA:Toronto 43.65,-79.38
+USA:Vancouver 49.28,-123.12
+USA:Washington 38.91,-77.04
+VIE:Da Nang 16.05,108.20
+VIE:Ha Tinh 18.34,105.91
+VIE:Hai Phong 20.86,106.68
+VIE:Hanoi 21.03,105.85
+VIE:Ho Chi Minh City 10.82,106.63
+VIE:Nam Dinh 20.42,106.17
+VIE:Nha Trang 12.24,109.19
+VIE:Pleiku 13.98,108.00
+VIE:Quy Nhon 13.78,109.22
+VIE:Thanh Hoa 19.81,105.78
+VIE:Thu Dau Mot 10.99,106.65
+VIE:Vinh 18.68,105.69
+WAL:Bala 52.91,-3.60
+WAL:Barry 51.40,-3.27
+WAL:Bridgend 51.51,-3.58
+WAL:Caernarfon 53.14,-4.27
+WAL:Cardiff 51.48,-3.18
+WAL:Colwyn Bay 53.30,-3.73
+WAL:Connah's Quay 53.22,-3.05
+WAL:Flint 53.25,-3.13
+WAL:Haverfordwest 51.80,-4.97
+WAL:Llanelli 51.68,-4.16
+WAL:Newtown 52.51,-3.31
+WAL:Oswestry 52.86,-3.05

@@ -381,6 +381,22 @@ export function generate(real, seed = 1) {
     c.row = Object.assign(c.row.slice(), { 0: r.name, 2: r.city, 7: r.stadium });
     Object.assign(c, { short: r.short, nick: r.nick, founded: r.founded });
   }
+  // Clubs run by an institution say so in their names (D.CLUB_KIND in js/data.js): the army's and the police forces' clubs
+  const INSTITUTIONAL = {
+    GIM: { name: 'Bujeong Armed Forces', nick: 'Phoenix' },
+    FAR: { name: 'Nadar Armed Forces' },
+    VTL: { name: 'Binh Mai Army Signals' },
+    PDR: { name: 'Simpang Pelita Police FC' },
+    BHY: { name: 'Langsari Police FC' },
+    CAH: { name: 'Bac Uong Public Security FC' },
+    PUM: { name: 'Club Universidad Jilahua' },
+  };
+  for (const [code, r] of Object.entries(INSTITUTIONAL)) {
+    const c = out.clubs[code];
+    if (!c) continue;
+    c.row = Object.assign(c.row.slice(), { 0: r.name });
+    if (r.nick) c.nick = r.nick;
+  }
   const leagueNames = new Set(),
     sponsorsUsed = new Set();
   // leagues and cups keep their ids, formats and rules; only the name changes

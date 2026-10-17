@@ -50,7 +50,7 @@ const TIERS = [
       'Advice and analytics': ['advice.js', 'analytics.js'],
     },
   ],
-  ['3 · Historical layer', { 'Records and archive': ['records.js'] }],
+  ['3 · Historical layer', { 'Records and archive': ['records.js'], 'Lore and geography': ['lore.js', 'geo.js'] }],
   ['4 · Sandbox', { 'Databases and editor': ['worlddef.js', 'dbimport.js', 'histimport.js', 'realstats.js'] }],
   [
     'Interface and platform',

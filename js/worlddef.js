@@ -339,6 +339,7 @@
     WD._key = key;
     if (key) WD._undo = applyPatch(patch);
     if (FM.Guide && FM.Guide.reset) FM.Guide.reset();
+    if (FM.Lore && FM.Lore.reset) FM.Lore.reset(); // the world's history is built from the club data
   };
 
   // ---------- Validation ----------
