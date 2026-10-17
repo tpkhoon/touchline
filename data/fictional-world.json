@@ -8001,17 +8001,17 @@
    "league": "KR1",
    "nat": "KOR",
    "row": [
-    "Bujeong Copper Phoenix",
+    "Bujeong Garrison",
     "GIM",
     "Bujeong",
-    "#E30613",
-    "#003DA5",
-    "fan",
+    "#4B5320",
+    "#C3B091",
+    "military",
     53,
-    "Bujeong Stadium"
+    "Bujeong Barracks Stadium"
    ],
    "short": "BUJ",
-   "nick": "Reds",
+   "nick": "The Garrison",
    "founded": 1973
   },
   "JEJ": {

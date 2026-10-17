@@ -614,8 +614,9 @@
       this.fatigue(tl, out);
       if (tl.m >= 58)
         this.sides.forEach((sd) => {
+          // the computer's sides and your side in an instant result; watching live, the assistant asks you (FM.Prompts, 'tired')
           if (!sd.user || !this.live) this.aiSubs(sd, tl);
-        }); // assistant handles subs in instant results
+        });
       this.events.push(...out.events);
       return out;
     }
@@ -2068,19 +2069,28 @@
           ],
         });
       }
-      if (min >= 58 && since('tired', 14)) {
+      // A tired player: the assistant names the replacement he would use, and a tap makes the change. A manager who watches
+      // and does nothing would otherwise play on with tired legs (the assistant only makes changes in an instant result).
+      if (min >= 55 && since('tired', 8)) {
         const t = m
           .onPitch(sd)
-          .filter(({ p, i }) => sd.slots[i].t !== 'GK' && sd.st[p.id] < 58)
+          .filter(({ p, i }) => sd.slots[i].t !== 'GK' && sd.st[p.id] < 62)
           .sort((a, b) => sd.st[a.p.id] - sd.st[b.p.id])[0];
         if (t && sd.subsLeft) {
+          const slot = sd.slots[t.i].t,
+            pIn = sd.bench
+              .filter((p) => !Object.hasOwn(sd.on, p.id) && (slot === 'GK') === (p.pos === 'GK'))
+              .sort((a, b) => W.effAt(b, slot) - W.effAt(a, slot))[0];
           return mk('tired', {
             icon: '🔋',
             title: `${W.short(t.p)} is running on empty`,
             body: `Energy at ${Math.round(sd.st[t.p.id])}%. He's losing his duels.`,
-            quote: quote(asst, 'Fresh legs would help.'),
+            quote: quote(asst, pIn ? `${W.short(t.p)} is spent. Bring on ${W.short(pIn)}?` : 'Fresh legs would help.'),
             options: [
-              { label: 'Bring him off', sub: t.i, apply: () => 'Choose a replacement.' },
+              ...(pIn
+                ? [{ label: `Bring on ${W.short(pIn)}`, subOut: t.i, subIn: pIn.id, apply: () => 'Change made.' }]
+                : []),
+              { label: pIn ? 'Choose someone else' : 'Bring him off', sub: t.i, apply: () => 'Choose a replacement.' },
               { label: 'Leave him on', apply: () => 'He stays on.' },
             ],
           });

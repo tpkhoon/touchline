@@ -1492,6 +1492,16 @@
       sell: 0.85,
       obj: 'profit',
     },
+    // The army's club (CLUB_POLICY.GIM): a squad of conscripts on loan from their own clubs for their national service, paid no wages
+    // by it, who go back when it ends; it lives on the army's money and keeps no one
+    military: {
+      label: 'Military Service Club',
+      icon: '🎖️',
+      fans: 'A conscript side: its players are on national service and go back to their own clubs. Nobody expects a title.',
+      budget: 0.3,
+      sell: 0,
+      obj: 'tophalf',
+    },
     fallen: {
       label: 'Fallen Giant',
       icon: '🏚️',

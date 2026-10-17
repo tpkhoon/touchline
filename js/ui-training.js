@@ -28,13 +28,13 @@
     const focus = Object.entries(Tr.FOCUS)
       .map(
         ([k, x]) =>
-          `<button class="chip ${t.focus === k ? 'on' : ''}" data-act="trFocus" data-v="${k}">${x.icon} ${x.label}</button>`,
+          `<button class="chip ${t.focus === k ? 'on' : ''}" data-act="trFocus" data-v="${k}">${x.icon} ${esc(x.label)}</button>`,
       )
       .join(' ');
     const intensity = `<div class="seg" style="margin-top:6px">${Object.entries(Tr.INTENSITY)
       .map(
         ([k, x]) =>
-          `<button class="${t.intensity === k ? 'on' : ''}" data-act="trIntensity" data-v="${k}">${x.label}</button>`,
+          `<button class="${t.intensity === k ? 'on' : ''}" data-act="trIntensity" data-v="${k}">${esc(x.label)}</button>`,
       )
       .join('')}</div>`;
     const eff = [

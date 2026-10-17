@@ -960,7 +960,7 @@
     ['Seoyang Silk Dragons', 'DJN', 'Seoyang', '#6A1B9A', '#00843D', 'oil', 55, 'Seoyang Civic Stadium'],
     ['Chohwa Tigers', 'GWA', 'Chohwa', '#FFD100', '#E30613', 'youth', 54, 'Chohwa Stadium'],
     ['Choseong Heavy Eagles', 'GAN', 'Choseong', '#FF7F00', '#003DA5', 'fan', 53, 'Seowon Arena'],
-    ['Bujeong Copper Phoenix', 'GIM', 'Bujeong', '#E30613', '#003DA5', 'fan', 53, 'Bujeong Stadium'],
+    ['Bujeong Garrison', 'GIM', 'Bujeong', '#4B5320', '#C3B091', 'military', 53, 'Bujeong Barracks Stadium'],
     ['Haejin Heavy Eagles', 'JEJ', 'Haejin', '#FF6600', '#000000', 'fan', 52, 'Chungju Arena'],
     ['Gyeongseong FC', 'DGU', 'Gyeongseong', '#87CEEB', '#1C2B4F', 'youth', 52, 'Wolcheon Arena'],
     ['Wolhwa United', 'SUW', 'Wolhwa', '#E30613', '#003DA5', 'fan', 52, 'Chunjeong Arena'],
@@ -2362,7 +2362,7 @@ SEO|CHS|Shipwrights|1938
 DJN|SEO|Silkmen|1963
 GWA|CHT|Hawks|1988
 GAN|CHH|Sharks|1989
-GIM|BUJ|Reds|1973
+GIM|BUJ|The Garrison|1973
 JEJ|HAE|Oranges|1944
 DGU|GYE|Cranes|1991
 SUW|WOL|Dolphins|1984

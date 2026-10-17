@@ -1,14 +1,4 @@
 {
-  "total": 45,
-  "files": {
-    "matchview.js": 1,
-    "ui-alpha.js": 5,
-    "ui-core.js": 6,
-    "ui-editor.js": 6,
-    "ui-extra.js": 7,
-    "ui-market.js": 2,
-    "ui-screens.js": 14,
-    "ui-training.js": 2,
-    "ui-youth.js": 2
-  }
+  "total": 0,
+  "files": {}
 }

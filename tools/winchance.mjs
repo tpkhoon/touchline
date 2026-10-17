@@ -4,8 +4,9 @@
 // Three ways of playing are checked, because the manager plays them all:
 //   quick     two clubs played by the computer (the way every other match in the world is played)
 //   instant   your match played from the preview with "Play instantly" (your assistant takes the decisions)
-//   watched   your match watched live, with the manager making no changes (so no substitutions)
-//   node tools/winchance.mjs [--matches 1200] [--seed 7] [--modes quick,instant,watched]
+//   watched   your match watched live, the manager accepting the assistant's offers (a tired player off, a named player on)
+//   idle      watched live and ignoring every offer (no substitutions at all: what the assistant's prompts are there to prevent)
+//   node tools/winchance.mjs [--matches 1200] [--seed 7] [--modes quick,instant,watched,idle]
 // Prints each way's table, and a line per measure for the dashboard: how far the shown chance is from the results overall, and
 // the win rate at each shown chance. Exit 1 when a measure is out of range.
 import { parseArgs, loadSim } from './harness.mjs';
@@ -13,9 +14,9 @@ import { parseArgs, loadSim } from './harness.mjs';
 const args = parseArgs();
 const N = +(args.matches || 1200),
   seed = +(args.seed || 7);
-const MODES = String(args.modes || 'quick,instant,watched')
+const MODES = String(args.modes || 'quick,instant,watched,idle')
   .split(',')
-  .filter((m) => ['quick', 'instant', 'watched'].includes(m));
+  .filter((m) => ['quick', 'instant', 'watched', 'idle'].includes(m));
 const { FM } = loadSim(seed);
 const { W, U } = FM;
 const Sea = FM.Season;
@@ -78,11 +79,24 @@ function sample(mode) {
       ...fx,
       knockout: false,
       neutral: false,
-      live: mode === 'watched',
+      live: mode === 'watched' || mode === 'idle',
       track: true,
       ...FM.Match.tieOpts(fx),
     });
-    while (!m.finished) m.step();
+    const us = m.sides.find((sd) => sd.user);
+    while (!m.finished) {
+      m.step();
+      // watching live, the prompts come up once a minute and the manager takes the first offer (as a tap on it would)
+      const pr = mode === 'watched' && !m.finished && us ? FM.Prompts.check(m) : null;
+      // (only the changes of players: the tactical offers are left alone, so this is the cost of not subbing and nothing else)
+      const o = pr && ['tired', 'injury'].includes(pr.id) && pr.options && pr.options[0];
+      if (o) {
+        if (o.subIn) m.makeSub(us, o.subOut, o.subIn, null);
+        else if (o.sub != null) {
+          if (o.sub >= 0) m.makeSub(us, o.sub, null, null);
+        } else if (o.apply) o.apply(m);
+      }
+    }
   }
   const r = m.result();
   const won = meIsHome ? r.hg > r.ag : r.ag > r.hg;

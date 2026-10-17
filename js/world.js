@@ -1137,7 +1137,16 @@
     POR: 0.2,
     RUS: 0.6,
   };
-  const SUPPORT_BY_IDENTITY = { giant: 2, fan: 1.5, historic: 1, fallen: 1.5, oil: -1, selling: -0.5, youth: 0 };
+  const SUPPORT_BY_IDENTITY = {
+    giant: 2,
+    fan: 1.5,
+    historic: 1,
+    fallen: 1.5,
+    oil: -1,
+    selling: -0.5,
+    youth: 0,
+    military: 0.5,
+  };
   W.clubAttr = function (c) {
     if (c.attr) return c.attr;
     const h = U.hash(c.id),

@@ -380,7 +380,7 @@
   UI.sheet = function (html, opts = {}) {
     const wrap = document.createElement('div');
     wrap.className = 'sheet-wrap';
-    wrap.innerHTML = `<div class="sheet ${opts.full ? 'full' : ''}">${opts.full ? '' : '<div class="grab"></div>'}<div class="sh-head"><div class="grow h2 ellip">${opts.title || ''}</div><button class="icon-btn" data-act="closeSheet">✕</button></div><div class="sh-body">${html}</div></div>`;
+    wrap.innerHTML = `<div class="sheet ${opts.full ? 'full' : ''}">${opts.full ? '' : '<div class="grab"></div>'}<div class="sh-head"><div class="grow h2 ellip">${esc(opts.title || '')}</div><button class="icon-btn" data-act="closeSheet">✕</button></div><div class="sh-body">${html}</div></div>`;
     wrap.addEventListener('click', (e) => {
       if (e.target === wrap) UI.closeSheet();
     });
@@ -1003,7 +1003,7 @@
         .filter(([, n]) => !n.optional || NG.regionNations)
         .sort((a, b) => a[1].name.localeCompare(b[1].name));
       body = `<div class="h1" style="margin-top:4vh">Who are you?</div><div class="tag">Every legend starts somewhere.</div>
-        <div class="row" style="gap:14px;margin-top:18px;align-items:center">${C.avatar({ avatar: NG.avatar }, 64)}<div class="grow"><div class="b" id="ng-preview" style="font-size:18px">${esc(`${NG.fn} ${NG.ln}`.trim() || 'Your name')}</div><div class="small" style="color:#9fb0c5">${C.flag(NG.nat)} ${esc(D.NATIONS[NG.nat].name)}</div></div></div>
+        <div class="row" style="gap:14px;margin-top:18px;align-items:center">${C.avatar({ avatar: NG.avatar }, 64)}<div class="grow"><div class="b" id="ng-preview" style="font-size:18px">${esc(`${esc(NG.fn)} ${esc(NG.ln)}`.trim() || 'Your name')}</div><div class="small" style="color:#9fb0c5">${C.flag(NG.nat)} ${esc(D.NATIONS[NG.nat].name)}</div></div></div>
         <div class="ng-names"><input type="text" id="ng-fn" placeholder="First name" maxlength="16" value="${esc(NG.fn)}" autocomplete="given-name"><input type="text" id="ng-ln" placeholder="Last name" maxlength="20" value="${esc(NG.ln)}" autocomplete="family-name"></div><div class="ng-err" id="ng-err" role="alert" hidden></div>
         <div class="ng-label">Country <span style="color:#6f7f96">· your own national team will know your name</span></div>
         <select id="ng-nat">${nations.map(([k, n]) => `<option value="${k}" ${NG.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
@@ -1053,7 +1053,7 @@
                 `<span class="tiny" style="padding:2px 8px;border-radius:99px;background:#1a2433;color:#c9d4e3">${esc(t)}</span>`,
             )
             .join('')}</div>
-          <div class="tiny" style="color:#9fb0c5;margin-top:8px"><b style="color:${d.color}">${d.label}</b>: ${esc(d.why)}.</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:8px"><b style="color:${d.color}">${esc(d.label)}</b>: ${esc(d.why)}.</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">The board will likely ask: ${esc(G.objective(code))}.</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(r[7] || `${r[2]} Stadium`)}, ${G.capOf(r).toLocaleString()} seats · ${money(I)}${inf.founded ? ` · founded ${inf.founded}` : ''}${inf.nick ? ` · "${esc(inf.nick)}"` : ''}</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(I.fans)}</div>
@@ -1067,7 +1067,7 @@
         const I = D.IDENTITY[idt],
           d = G.diff(short),
           on = NG.club === fake.id;
-        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${I.label} · <span style="color:${d.color}">● ${d.label}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
+        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${esc(I.label)} · <span style="color:${d.color}">● ${esc(d.label)}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
       };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
       // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each

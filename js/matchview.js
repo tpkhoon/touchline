@@ -254,7 +254,7 @@
       <div class="seg" style="margin-top:8px">${Object.entries(Md.WARMUPS)
         .map(
           ([k, w]) =>
-            `<button class="${k === (MV.warm || 'standard') ? 'on' : ''}" data-act="warmPick" data-v="${k}">${w.label}</button>`,
+            `<button class="${k === (MV.warm || 'standard') ? 'on' : ''}" data-act="warmPick" data-v="${k}">${esc(w.label)}</button>`,
         )
         .join('')}</div>
       <div class="small muted" id="warmDesc" style="margin-top:8px">${esc(Md.WARMUPS[MV.warm || 'standard'].desc)}.</div></div>`;
@@ -877,7 +877,7 @@
     const st = MV.st,
       p = st.prompt,
       o = p.options[+d.i];
-    const msg = o.apply(MV.m);
+    const msg = o.subIn ? (MV.doSub(o.subOut, o.subIn) ? null : o.apply(MV.m)) : o.apply(MV.m);
     document.querySelectorAll('#matchOv .prompt').forEach((e) => e.remove());
     st.prompt = null;
     if (msg) MV.ticker('📋 ' + msg);
@@ -1014,16 +1014,21 @@
     const sd = MV.m.sides[MV.us];
     if (MV._subOut == null) return UI.toast('Pick who comes off first');
     if (!sd.subsLeft) return UI.toast('No substitutions left');
-    const i = MV._subOut,
-      ev = MV.m.makeSub(sd, i, d.id, null);
+    MV.doSub(MV._subOut, d.id);
+    MV._subOut = null;
+    UI.refreshSheet(MV._subRender());
+  };
+  // The change itself: slot i comes off, the bench player pid comes on (the dot stays where it was)
+  MV.doSub = function (i, pid) {
+    const sd = MV.m.sides[MV.us],
+      ev = MV.m.makeSub(sd, i, pid, null);
     if (ev) {
       MV.ticker(ev.text, ev.side);
       const g = MV.toGlobal(MV.us, sd.slots[i].x, 0.02);
       MV.st.dots[MV.us][i] = { x: g.x, y: g.y };
       if (MV.st.ball.side === MV.us && MV.st.ball.slot === i) MV.st.ball.slot = MV.m.kickoffSlot(sd);
     }
-    MV._subOut = null;
-    UI.refreshSheet(MV._subRender());
+    return ev;
   };
 
   // ---------------- Post-match ----------------

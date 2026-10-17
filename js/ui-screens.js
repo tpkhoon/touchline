@@ -496,8 +496,8 @@
         comp = s.comps[c.comp],
         obj = FM.Season.objectives(c)[0],
         days = Math.max(1, o.until - now);
-      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${D.IDENTITY[c.identity].label}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
-        <div class="small muted" style="margin-top:8px;line-height:1.5">${o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.'}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
+      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${esc(D.IDENTITY[c.identity].label)}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
+        <div class="small muted" style="margin-top:8px;line-height:1.5">${esc(o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.')}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
         <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">Offer open for about ${days} day${days === 1 ? '' : 's'}</span><button class="btn sm" data-act="clubView" data-id="${c.id}">Look closer</button><button class="btn sm pri" data-act="takeJob" data-id="${c.id}">Accept</button></div></div>`;
     };
     return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
@@ -1402,7 +1402,7 @@
       <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].name)}${own || v.k >= 40 ? ` · ${C.posOveralls(p)}` : ''}${own && p.pa0 !== undefined && Math.abs(p.pa - p.pa0) >= 4 ? ` · <span title="His potential has ${p.pa > p.pa0 ? 'risen' : 'fallen'} since we first assessed him" style="color:${p.pa > p.pa0 ? '#9be37a' : '#ff9d9d'}">potential ${p.pa > p.pa0 ? '▲' : '▼'}</span>` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${me} ${ml}</b></div>` : ''}</div></div>
       <div class="sp"></div>
       ${ownActions}
-      ${FM.Season.isIcon(p) ? `<div style="margin-bottom:6px"><span class="trait" title="${esc(`${U.plural(p.career.spells.at(-1).apps, 'appearance')} for ${CL(p.clubId).name}`)}">⭐ Club icon</span></div>` : ''}
+      ${FM.Season.isIcon(p) ? `<div style="margin-bottom:6px"><span class="trait" title="${esc(`${U.plural(p.career.spells.at(-1).apps, 'appearance')} for ${esc(CL(p.clubId).name)}`)}">⭐ Club icon</span></div>` : ''}
       ${v.traits.length || own ? `<div style="margin-bottom:8px">${(own ? p.traits : v.traits).map((t) => `<span class="trait" title="${esc(D.TRAITS[t].desc)}">${D.TRAITS[t].icon} ${t}</span>`).join('')}${own ? `<span class="trait">🧠 ${esc(p.personality)}</span>` : ''}</div>` : ''}
       ${own && p.traits.length ? `<div class="small dim" style="margin:-2px 2px 12px">${p.traits.map((t) => D.TRAITS[t].desc).join(' ')}</div>` : ''}
       ${report}
@@ -2407,7 +2407,7 @@
               .join('')}</div>`
           : ''
       }
-      ${sel ? `${lines(sel.xi)}${mgr ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>🎙️</span><span class="grow" style="margin-left:8px">Manager of the week: <b>${esc(((m) => (m ? `${m} (${mgr.name})` : mgr.name))(W.isUser(mgr.id) ? s.user.name : s.staff[mgr.manager] ? `${s.staff[mgr.manager].fn} ${s.staff[mgr.manager].ln}` : ''))}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:8px">The first team of the week is picked after the first league matchday.</div>'}</div>
+      ${sel ? `${lines(sel.xi)}${mgr ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>🎙️</span><span class="grow" style="margin-left:8px">Manager of the week: <b>${esc(((m) => (m ? `${m} (${esc(mgr.name)})` : mgr.name))(W.isUser(mgr.id) ? s.user.name : s.staff[mgr.manager] ? `${esc(s.staff[mgr.manager].fn)} ${esc(s.staff[mgr.manager].ln)}` : ''))}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:8px">The first team of the week is picked after the first league matchday.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Team of the season so far</div></div>${toty ? `<div class="tiny dim">By average rating, for players with a fair share of the games.</div>${lines(toty)}` : '<div class="small dim" style="margin-top:8px">Not enough games played yet.</div>'}</div>`;
   }
   // ---- Awards: the world's best XI, a league's awards, and what a cup or tournament gave out ----
@@ -2634,7 +2634,7 @@
     const pickChart = `<div class="chips" style="flex-wrap:wrap">${Object.entries(CHARTS)
       .map(
         ([k, c]) =>
-          `<button class="chip ${k === UI._chart ? 'on' : ''}" data-act="chartsKind" data-v="${k}">${c.label}</button>`,
+          `<button class="chip ${k === UI._chart ? 'on' : ''}" data-act="chartsKind" data-v="${k}">${esc(c.label)}</button>`,
       )
       .join('')}</div>`;
     const A = FM.Analytics.charts(cur);
@@ -3152,7 +3152,7 @@
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
-    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span></div></div></div></div>
+    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span></div></div></div></div>
       <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${I.icon}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
         ${c.policy ? `<div class="phrase"><span>🏛️</span><span>A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club</span></div>` : ''}
         ${c.rival ? `<div class="phrase"><span>⚔️</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
@@ -3163,7 +3163,7 @@
       <div class="card"><div class="h3">Board objectives</div>${FM.Season.objectives(c)
         .map(
           (o) =>
-            `<div class="row small" style="margin-top:8px;align-items:flex-start"><span>${o.ok ? '✅' : o.minOk ? '🟡' : '⏳'}</span><span class="grow">${esc(o.text)}${o.minText ? `<div class="tiny dim">At the very least: ${esc(o.minText)}</div>` : ''}</span><span class="pill ${o.weight === 'critical' ? 'bad' : o.weight === 'bonus' ? '' : 'warn'}" style="font-size:10px">${FM.Board.WEIGHT[o.weight || 'important'].label}</span><span class="dim" style="margin-left:6px">${esc(o.status)}</span></div>`,
+            `<div class="row small" style="margin-top:8px;align-items:flex-start"><span>${o.ok ? '✅' : o.minOk ? '🟡' : '⏳'}</span><span class="grow">${esc(o.text)}${o.minText ? `<div class="tiny dim">At the very least: ${esc(o.minText)}</div>` : ''}</span><span class="pill ${o.weight === 'critical' ? 'bad' : o.weight === 'bonus' ? '' : 'warn'}" style="font-size:10px">${esc(FM.Board.WEIGHT[o.weight || 'important'].label)}</span><span class="dim" style="margin-left:6px">${esc(o.status)}</span></div>`,
         )
         .join('')}</div>
       ${UI.honoursCard(c, 'No trophies in this save — yet.')}
@@ -3175,12 +3175,12 @@
     const c = club(),
       F = FM.Season.FAC;
     return (
-      `${c.building ? `<div class="warnline">🏗️ Building: ${F[c.building.k].name} — ${c.building.weeks} week(s) left</div>` : ''}<div class="card flat list" style="padding:0 14px">` +
+      `${c.building ? `<div class="warnline">🏗️ Building: ${esc(F[c.building.k].name)} — ${c.building.weeks} week(s) left</div>` : ''}<div class="card flat list" style="padding:0 14px">` +
       Object.entries(F)
         .map(([k, f]) => {
           const lvl = c.facilities[k],
             cost = FM.Season.facCost(k, lvl);
-          return `<div class="fac"><div class="ico">${f.icon}</div><div class="grow"><div class="b">${f.name}</div><div class="tiny dim">${f.effect}${k === 'training' ? ` · takes a player to about ${FM.Season.devCap(c)}` : ''}</div><div class="lvl">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</div></div>${lvl >= 5 ? '<span class="pill good">MAX</span>' : `<button class="btn sm" data-act="upgrade" data-k="${k}" ${c.building || c.balance < cost ? 'disabled' : ''}>${U.money(cost)}<br><span class="tiny dim">${FM.Season.facWeeks(k, lvl)}w</span></button>`}</div>`;
+          return `<div class="fac"><div class="ico">${f.icon}</div><div class="grow"><div class="b">${esc(f.name)}</div><div class="tiny dim">${f.effect}${k === 'training' ? ` · takes a player to about ${FM.Season.devCap(c)}` : ''}</div><div class="lvl">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</div></div>${lvl >= 5 ? '<span class="pill good">MAX</span>' : `<button class="btn sm" data-act="upgrade" data-k="${k}" ${c.building || c.balance < cost ? 'disabled' : ''}>${U.money(cost)}<br><span class="tiny dim">${FM.Season.facWeeks(k, lvl)}w</span></button>`}</div>`;
         })
         .join('') +
       '</div>'
@@ -3301,7 +3301,7 @@
       .map(
         (
           e,
-        ) => `<div class="card"><div class="row"><div class="era grow">${e.label}</div>${e.user ? `<span class="pill ${e.user.trophies.length ? 'acc' : ''}">You: ${U.ordinal(e.user.pos)} with ${esc(CL(e.user.club).short)}</span>` : ''}</div>
+        ) => `<div class="card"><div class="row"><div class="era grow">${esc(e.label)}</div>${e.user ? `<span class="pill ${e.user.trophies.length ? 'acc' : ''}">You: ${U.ordinal(e.user.pos)} with ${esc(CL(e.user.club).short)}</span>` : ''}</div>
       ${Object.values(e.comps)
         .filter(W.homeLeague)
         .map(
@@ -3789,7 +3789,7 @@
     const e = sm.entry;
     const c = e.user ? CL(e.user.club) : NOCLUB; // out of work all season: no club to review
     UI.sheet(
-      `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="tag">Season review · ${e.label}</div><div class="h1" style="margin:10px 0">${!e.user ? 'A season out of the dugout' : sm.trophies.length ? '🏆 ' + esc(sm.trophies.join(' & ')) : `Finished ${U.ordinal(sm.userPos)}`}</div><div class="small" style="opacity:.9">${sm.promoted ? `⬆️ Promoted to the ${esc(S().comps[c.comp].name)}!` : sm.relegated ? '⬇️ Relegated. The rebuild starts now.' : esc(c.name)}</div></div>
+      `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="tag">Season review · ${esc(e.label)}</div><div class="h1" style="margin:10px 0">${!e.user ? 'A season out of the dugout' : sm.trophies.length ? '🏆 ' + esc(sm.trophies.join(' & ')) : `Finished ${U.ordinal(sm.userPos)}`}</div><div class="small" style="opacity:.9">${sm.promoted ? `⬆️ Promoted to the ${esc(S().comps[c.comp].name)}!` : sm.relegated ? '⬇️ Relegated. The rebuild starts now.' : esc(c.name)}</div></div>
       ${!e.user ? '<div class="small muted" style="margin:4px 2px 12px">The football world carried on without you. Your offers are on the Home tab.</div>' : ''}
       ${e.user ? `<div class="card"><div class="h3">Board verdict</div>${sm.objs.map((o) => `<div class="row small" style="margin-top:8px"><span>${o.ok || (o.promo && sm.promoted) ? '✅' : '❌'}</span><span class="grow">${esc(o.text)}</span></div>`).join('')}<div class="small muted" style="margin-top:10px">${sm.sacked ? 'The board have seen enough.' : 'Board confidence: ' + Math.round(c.boardConf) + '%'}</div></div>` : ''}
       ${Object.values(e.comps)

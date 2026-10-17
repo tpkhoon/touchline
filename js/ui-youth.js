@@ -26,7 +26,7 @@
     const out = [];
     for (const [team, def] of Object.entries(Y.TEAMS)) {
       const sq = Y.squadOf(c.id, team).sort((a, b) => b.pa - a.pa);
-      out.push(`<div class="sec"><div class="h3">${def.label}</div>${leagueLine(c, team)}</div>
+      out.push(`<div class="sec"><div class="h3">${esc(def.label)}</div>${leagueLine(c, team)}</div>
         <div class="card flat list" style="padding:4px 12px">${
           sq
             .map((p) =>
@@ -36,7 +36,7 @@
                 `<div class="row" style="gap:4px;margin-top:4px">${btn(p.id, 'first', '↑ First team')}${btn(p.id, team === 'u21' ? 'u18' : 'u21', team === 'u21' ? '↓ U18' : '↑ U21')}</div>`,
               ),
             )
-            .join('') || `<div class="empty">Nobody in the ${def.label} squad.</div>`
+            .join('') || `<div class="empty">Nobody in the ${esc(def.label)} squad.</div>`
         }</div>`);
     }
     // young first-team players who could get games in the youth sides

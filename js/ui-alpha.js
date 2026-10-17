@@ -197,7 +197,7 @@
             renew ? `+${y} (to ${Co.renewedUntil(p.contract, y)})` : `${y} yr${y > 1 ? 's' : ''}`,
           ]),
         )}
-        <div class="h3" style="margin-top:12px">Squad status <span class="tiny dim">(he expects: ${D.STATUS[ev.expSt || Co.expectedStatus(p, c)].label.toLowerCase()})</span></div>${chipRow(
+        <div class="h3" style="margin-top:12px">Squad status <span class="tiny dim">(he expects: ${esc(D.STATUS[ev.expSt || Co.expectedStatus(p, c)].label.toLowerCase())})</span></div>${chipRow(
           'ngSet',
           'status',
           t.status,
@@ -215,7 +215,7 @@
         <div class="row" style="margin-top:12px"><div class="grow"><div class="h3">Relegation wage cut</div><div class="tiny dim">Wage drops 25% if we go down</div></div><button class="btn sm ${t.relegCut ? 'pri' : ''}" data-act="ngToggle">${t.relegCut ? 'Included' : 'Off'}</button></div>
         <div class="card flat" style="margin-top:14px"><div class="row small"><span class="grow">Package vs his demands</span><b style="color:${ev.ok ? 'var(--good)' : pct >= 90 ? 'var(--warn)' : 'var(--bad)'}">${ev.hard ? 'Refuses the role' : ev.ok ? 'Acceptable' : pct + '%'}</b></div>${C.bar(pct, ev.ok ? 'var(--good)' : pct >= 90 ? 'var(--warn)' : 'var(--bad)')}
           <div class="small" style="margin-top:8px"><b>This deal:</b> ${U.money(cost.first)}/yr in wages, ${renew ? 'adding' : ''} ${Math.round(cost.share * 100)}% ${renew ? 'to' : 'of'} your wage bill, ${U.money(cost.total)} over the contract${!renew && o.mode !== 'pre' && o.fee ? ` plus the ${U.money(o.fee)} fee` : ''}</div>
-          <table class="t" style="margin-top:6px"><tr><th class="l">Season</th><th>Wages</th><th>Bonuses &amp; fees</th><th>Total</th></tr>${cost.rows.map((r) => `<tr><td class="l">${r.label}</td><td>${U.money(r.wages)}</td><td>${r.extras ? U.money(r.extras) : '—'}</td><td class="b">${U.money(r.total)}</td></tr>`).join('')}</table>
+          <table class="t" style="margin-top:6px"><tr><th class="l">Season</th><th>Wages</th><th>Bonuses &amp; fees</th><th>Total</th></tr>${cost.rows.map((r) => `<tr><td class="l">${esc(r.label)}</td><td>${U.money(r.wages)}</td><td>${r.extras ? U.money(r.extras) : '—'}</td><td class="b">${U.money(r.total)}</td></tr>`).join('')}</table>
           <div class="tiny dim" style="margin-top:6px">Bonuses are what he'd earn at his expected appearances and goals; the first season includes the agent's fee (${U.money(Co.agentFee(p, o.fee, t.wage, mode))}). Your wage bill would be ${Math.round(cost.ratio * 100)}% of revenue${cost.ratio >= FM.Finance.LIMIT.cut ? ` — over the ${Math.round(FM.Finance.LIMIT.cut * 100)}% where the board cut budgets` : ''}.${t.release ? ` A club paying ${U.money(t.release)} can take him.` : ''}</div></div>`;
     }
     const rivals = !renew && o.mode !== 'loan' ? FM.Market.rivals(p) : [];
@@ -729,14 +729,14 @@
             : '';
         })
         .join('')}`;
-    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${I.label}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
+    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
       ${W.isUser(id) ? `<button class="btn block" style="margin-bottom:10px" data-act="clubGoMine">This is your club → Club tab</button>` : `<div class="row" style="margin-bottom:10px"><span class="grow"></span>${UI.followBtn('club', id)}</div>`}
       <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg ? C.starText(avg) : '—'}</div><div class="l">XI rating</div></div></div>
       <div class="card"><div class="row small"><span class="grow muted">Manager</span><b>${W.isUser(id) ? `${s.user.nat ? C.flag(s.user.nat) + ' ' : ''}${esc(s.user.name)}` : mgr ? `${C.flag(mgr.nat)} ${esc(mgr.fn + ' ' + mgr.ln)}` : '—'}</b></div>
         ${!W.isUser(id) && mgr && FM.Records.managerLine(mgr, id) ? `<div class="tiny dim" style="text-align:right;margin-top:2px">${esc(FM.Records.managerLine(mgr, id))}</div>` : ''}
         <div class="row small" style="margin-top:6px"><span class="grow muted">System</span><b>${tac.formation} · ${tac.buildup} · ${tac.press}</b></div>
         ${c.founded ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Founded</span><b>${c.founded}</b></div>` : ''}
-        <div class="row small" style="margin-top:6px"><span class="grow muted">Stadium</span><b>${esc(c.stadium ? c.stadium.name : '—')}${c.stadium ? ` · ${c.stadium.cap.toLocaleString()}${c.sim === 'full' ? ` · opened ${FM.Records.stadium(c).opened}` : ''}` : ''}</b></div>
+        <div class="row small" style="margin-top:6px"><span class="grow muted">Stadium</span><b>${esc(c.stadium ? c.stadium.name : '—')}${c.stadium ? ` · ${c.stadium.cap.toLocaleString()}${c.sim === 'full' ? ` · opened ${esc(FM.Records.stadium(c).opened)}` : ''}` : ''}</b></div>
         ${UI.clubAttrRows(c)}
         ${c.policy ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Signing policy</span><b>Only ${esc(c.policy.label)} players</b></div>` : ''}
         ${c.rival ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Rival</span><b class="tap" data-act="clubView" data-id="${c.rival}">⚔️ ${esc(s.clubs[c.rival].name)}</b></div>` : ''}

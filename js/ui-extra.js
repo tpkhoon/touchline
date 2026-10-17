@@ -49,7 +49,7 @@
     const need = v.need;
     const needLine = need
       ? need.helps
-        ? `<div class="phrase"><span>🧱</span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${p.pos} (${need.depth} of ${need.want})` : ''}</span></div>`
+        ? `<div class="phrase"><span>🧱</span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${esc(p.pos)} (${need.depth} of ${need.want})` : ''}</span></div>`
         : `<div class="phrase"><span>🧱</span><span>Your <b>${p.pos}</b> spot is covered: he would not improve the eleven (${Math.round(need.delta)})</span></div>`
       : '';
     if (isFree || !pr || !p.clubId)
@@ -326,7 +326,7 @@
         .slice(0, UI._notesAll ? 99 : 2)
         .map(
           (n) =>
-            `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${n.act.label}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:40px;height:40px;font-size:14px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`,
+            `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${esc(n.act.label)}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:40px;height:40px;font-size:14px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`,
         )
         .join(
           '',
@@ -490,7 +490,7 @@
       ${Object.entries(D.CAMPS)
         .map(
           ([k, x]) =>
-            `<div class="card row tap" data-act="bookC" data-i="${i}" data-k="${k}"><span style="font-size:24px">${x.icon}</span><div class="grow"><div class="b">${x.name}</div><div class="small dim">${x.desc}</div></div><b style="color:${x.cost > 0 ? 'var(--bad)' : 'var(--good)'}">${x.cost > 0 ? '−' : '+'}${U.money(Math.abs(x.cost))}</b></div>`,
+            `<div class="card row tap" data-act="bookC" data-i="${i}" data-k="${k}"><span style="font-size:24px">${x.icon}</span><div class="grow"><div class="b">${esc(x.name)}</div><div class="small dim">${esc(x.desc)}</div></div><b style="color:${x.cost > 0 ? 'var(--bad)' : 'var(--good)'}">${x.cost > 0 ? '−' : '+'}${U.money(Math.abs(x.cost))}</b></div>`,
         )
         .join('')}
       <button class="btn block" data-act="bookClear" data-i="${i}">Rest day</button>`,
@@ -533,7 +533,7 @@
     const objs = FM.Season.objectives(c);
     UI.sheet(
       `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="tag">${FM.Season.seasonLabel()} preview · ${esc(pv.comp.name)}</div><div class="row" style="margin-top:10px"><div class="grow"><div class="small" style="opacity:.85">Predicted finish</div><div class="h1" style="font-size:54px">${U.ordinal(pv.pos)}</div></div>${C.crest(c, 60)}</div><div class="small" style="opacity:.92;margin-top:6px">“${esc(pv.verdict)}” — ${esc(pv.who)}</div><div class="tiny" style="opacity:.8;margin-top:4px">Your assistant's prediction. The board expects ${U.ordinal(FM.Season.expectedPos(c))}.</div></div>
-      <div class="card"><div class="h3">Board expects</div>${objs.map((o) => `<div class="small" style="margin-top:6px">• ${esc(o.text)}${o.minText ? ` <span class="dim">(at least ${esc(o.minText)})</span>` : ''} <span class="tiny dim">· ${FM.Board.WEIGHT[o.weight || 'important'].label.toLowerCase()}</span></div>`).join('')}</div>
+      <div class="card"><div class="h3">Board expects</div>${objs.map((o) => `<div class="small" style="margin-top:6px">• ${esc(o.text)}${o.minText ? ` <span class="dim">(at least ${esc(o.minText)})</span>` : ''} <span class="tiny dim">· ${esc(FM.Board.WEIGHT[o.weight || 'important'].label.toLowerCase())}</span></div>`).join('')}</div>
       <div class="card"><div class="h3">Title odds</div>${pv.odds.map((o) => `<div class="row small" style="padding:5px 0">${C.crest(CL(o.id), 18)}<span class="grow ${W.isUser(o.id) ? 'b' : ''}">${esc(CL(o.id).name)}</span><b>${o.odds}</b></div>`).join('')}</div>
       <div class="card"><div class="h3">Predicted table</div><table class="t" style="margin-top:6px">${pv.rows.map((r, i) => `<tr class="${W.isUser(r.id) ? 'me' : ''}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip">${esc(CL(r.id).name)}</span></div></td><td class="dim">${r.pts}</td></tr>`).join('')}</table><div class="tiny dim" style="margin-top:6px">Number = predicted points. Your assistant's read — a better assistant predicts more accurately.</div></div>
       <div class="card"><div class="h3" style="margin-bottom:8px">Pre-season best XI · ${pv.formation}</div><div class="tpitch">${dots}</div></div>
@@ -1334,7 +1334,7 @@
       <input type="text" placeholder="Search a player or club…" value="${esc(f.text)}" data-input="tfText" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0 4px">
       ${UI.posFilter(f.pos, 'tfPos', 'tfPosGroup')}
       <div class="row" style="gap:6px;margin:6px 0">
-        <select data-input="tfSel" data-k="nat" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${[['any', 'Any country'], ...nations.map((n) => [n, `${D.NATIONS[n].flag} ${D.NATIONS[n].name}`])].map(([v, l]) => `<option value="${v}" ${f.nat === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+        <select data-input="tfSel" data-k="nat" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${[['any', 'Any country'], ...nations.map((n) => [n, `${D.NATIONS[n].flag} ${esc(D.NATIONS[n].name)}`])].map(([v, l]) => `<option value="${v}" ${f.nat === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
         <select data-input="tfSel" data-k="fee" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${Object.entries(
           TF_FEE,
         )

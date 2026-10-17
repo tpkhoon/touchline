@@ -443,7 +443,7 @@
         x.why === 'addon'
           ? `after ${U.plural(x.apps, 'appearance')}`
           : `${Math.floor(x.due / 1000)}/${String((Math.floor(x.due / 1000) + 1) % 100).padStart(2, '0')}`;
-      return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '➡️' : '⬅️'} ${C.pname(p)} <span class="tiny dim">${x.why === 'addon' ? 'add-on' : 'instalment'} · ${other ? esc(other.short) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
+      return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '➡️' : '⬅️'} ${C.pname(p)} <span class="tiny dim">${esc(x.why === 'addon' ? 'add-on' : 'instalment')} · ${other ? esc(other.short) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
     };
     const clauses = Object.values(s.players).filter(
       (p) => !p.retired && p.sellOn && p.sellOn.some((x) => x.c === c.id),
@@ -527,7 +527,7 @@
       dl = FM.Reg.deadlineIn(),
       un = W.squad(c.id).filter((p) => p.unreg).length;
     const warn = over.length
-      ? `<div class="warnline tap" style="margin:-4px 0 8px" data-act="regInfo">⚠️ Over the registration limits (${over.map((g) => `${g.label} ${g.n}/${g.cap}`).join(', ')}). ${dl != null ? `Deadline in ${dl} day${dl === 1 ? '' : 's'}: sell, loan out or choose who to leave out ›` : 'Fixed at the next window ›'}</div>`
+      ? `<div class="warnline tap" style="margin:-4px 0 8px" data-act="regInfo">⚠️ Over the registration limits (${over.map((g) => `${esc(g.label)} ${g.n}/${g.cap}`).join(', ')}). ${dl != null ? `Deadline in ${dl} day${dl === 1 ? '' : 's'}: sell, loan out or choose who to leave out ›` : 'Fixed at the next window ›'}</div>`
       : '';
     return `${warn}<div class="tiny dim tap" style="margin:-4px 2px 8px" data-act="regInfo">📋 Registration: ${esc(sum)}${un ? ` · ${un} unregistered` : ''} ›</div>`;
   };
