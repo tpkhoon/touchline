@@ -2125,6 +2125,10 @@ table.t tr.zone-down td:first-child {
 .sheet-wrap {
   padding-top: env(safe-area-inset-top);
 }
+/* (a sheet opened from the title screen, Load a save or Import, would sit under it) */
+.title ~ .sheet-wrap {
+  z-index: 55;
+}
 .toast {
   bottom: calc(96px + env(safe-area-inset-bottom));
 }
