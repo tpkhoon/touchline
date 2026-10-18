@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { privateFile, missing } from './private.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = {};
@@ -100,7 +101,11 @@ export function parseSquad(wt) {
   }
   return out;
 }
-const real = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/real-world.json'), 'utf8'));
+if (!privateFile('real-world.json')) {
+  console.log(missing('real-world.json'));
+  process.exit(0);
+}
+const real = JSON.parse(fs.readFileSync(privateFile('real-world.json'), 'utf8'));
 let clubs = Object.entries(real.clubs).filter(([, c]) => LEAGUES.includes(c.league));
 if (args.clubs && args.clubs !== true) clubs = clubs.slice(0, +args.clubs);
 const squads = load('squads.json', {});

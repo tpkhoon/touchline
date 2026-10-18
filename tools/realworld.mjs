@@ -13,9 +13,13 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { ROOT, loadSim } from './harness.mjs';
 import { generate } from './worldgen.mjs';
+import { PRIVATE, privateFile, missing } from './private.mjs';
 
 const [cmd, fileArg] = process.argv.slice(2);
-const DB = path.resolve(ROOT, fileArg || 'data/real-world.json');
+// (the names database is in the private folder, unless a file is named)
+const DB = fileArg
+  ? path.resolve(ROOT, fileArg)
+  : privateFile('real-world.json') || path.join(PRIVATE, 'real-world.json');
 const CLUBS_JS = path.join(ROOT, 'js/clubs.js'),
   DATA_JS = path.join(ROOT, 'js/data.js'),
   REGIONAL_JS = path.join(ROOT, 'js/regional.js');
@@ -197,11 +201,15 @@ if (cmd === 'extract') {
 } else if (cmd === 'placeholders') {
   const seed = +(process.argv[4] || 1);
   // the structure comes from the real names file, so this works on a source that already holds placeholders
-  const base = fs.existsSync(path.join(ROOT, 'data/real-world.json'))
-    ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/real-world.json'), 'utf8'))
+  const base = privateFile('real-world.json')
+    ? JSON.parse(fs.readFileSync(privateFile('real-world.json'), 'utf8'))
     : readSource();
   apply(generate(base, seed));
 } else if (cmd === 'apply') {
+  if (!fs.existsSync(DB)) {
+    console.log(missing(path.basename(DB)));
+    process.exit(0);
+  }
   apply(JSON.parse(fs.readFileSync(DB, 'utf8')));
 } else {
   console.log('Usage: node tools/realworld.mjs extract|placeholders|apply [file]');

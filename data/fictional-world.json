@@ -20471,7 +20471,7 @@
  },
  "format": "touchline-names",
  "version": 1,
- "note": "A fictional world (seed 1): the real structure, rules and club codes with generated names. The real names are in data/real-world.json.",
+ "note": "A fictional world (seed 1): the league structure, rules and club codes with generated names.",
  "regions": {
   "ENG_LON": {
    "nat": "ENG",

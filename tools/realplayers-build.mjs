@@ -1,7 +1,7 @@
 // Builds a world pack of real clubs and real players, from the cache tools/realplayers-fetch.mjs filled, in the game's own world format
 // (FM.WorldDef): load it from "Import a database" on the new-career screen.
 //
-//   node --max-old-space-size=4096 tools/realplayers-build.mjs --cache <folder> [--out data/packs/real-world.json] [--seed 7]
+//   node --max-old-space-size=4096 tools/realplayers-build.mjs --cache <folder> [--out <file>] [--seed 7]
 //
 // What the pack holds
 //   clubs, leagues, cups and derbies: the real names from data/real-world.json for every club of the game (names, nicknames, towns,
@@ -18,6 +18,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT, loadSim } from './harness.mjs';
+import { privateFile, privatePath, missing } from './private.mjs';
 
 const args = {};
 {
@@ -34,12 +35,17 @@ if (!args.cache || args.cache === true) {
   process.exit(1);
 }
 const CACHE = path.resolve(String(args.cache));
-const OUT = path.resolve(ROOT, String(args.out && args.out !== true ? args.out : 'data/packs/real-world.json'));
+// (the pack is written to the private folder unless --out says otherwise)
+const OUT = path.resolve(ROOT, String(args.out && args.out !== true ? args.out : privatePath('packs/real-world.json')));
 const load = (f) => JSON.parse(fs.readFileSync(path.join(CACHE, f), 'utf8'));
 const squads = load('squads.json'),
   qidOf = load('titles-qid.json'),
   wd = load('wikidata.json');
-const real = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/real-world.json'), 'utf8'));
+if (!privateFile('real-world.json')) {
+  console.log(missing('real-world.json'));
+  process.exit(0);
+}
+const real = JSON.parse(fs.readFileSync(privateFile('real-world.json'), 'utf8'));
 const { FM } = loadSim(+(args.seed || 7));
 const W = FM.W,
   D = FM.D,

@@ -28,6 +28,7 @@ import {
   isFantasy,
 } from './namelib.mjs';
 import { loadSim } from './harness.mjs';
+import { privateFile } from './private.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const KINDS = ['players', 'towns', 'clubs', 'grounds', 'nicknames', 'leagues', 'sponsors'];
@@ -55,7 +56,10 @@ let real = null,
 function realChecks() {
   if (checks) return checks;
   try {
-    real = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/real-world.json'), 'utf8'));
+    // (the real names are in the private folder: without them the names are not checked against real clubs and towns)
+    const file = privateFile('real-world.json');
+    if (!file) return (checks = nameChecks([], []));
+    real = JSON.parse(fs.readFileSync(file, 'utf8'));
     checks = nameChecks(
       Object.values(real.clubs).flatMap((c) => [c.row[2], c.row[0].split(' ').find((w) => w.length >= 5) || '']),
       Object.values(real.clubs).map((c) => c.row[0]),

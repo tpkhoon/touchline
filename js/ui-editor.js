@@ -2193,12 +2193,10 @@
     }
     UI.worldEditor();
   };
-  // A library of packs: data/packs/index.json lists them (the game's own site when the packs are there, else the repository's), each with
-  // its version, author, licence and credits; a pack is added to the library by adding it to that folder. Nothing is fetched until you ask.
-  const PACK_INDEXES = [
-    'data/packs/index.json',
-    'https://raw.githubusercontent.com/tpkhoon/touchline/main/data/packs/index.json',
-  ];
+  // A library of packs: data/packs/index.json on the game's own site lists them, each with its version, author, licence and
+  // credits; a pack is added to the library by adding it to that folder. Nothing is fetched until you ask, and nothing from anywhere
+  // else (packs a player builds stay on their device: the editor opens them from a file).
+  const PACK_INDEXES = ['data/packs/index.json'];
   const packsList = () => {
     if (!ED.packs)
       return `<div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPacksLook">🔎 Look for packs</button></div>`;

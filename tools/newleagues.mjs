@@ -9,6 +9,7 @@ import path from 'node:path';
 import { parseArgs, loadSim, ROOT } from './harness.mjs';
 import { generate } from './worldgen.mjs';
 import { LEAGUES } from './newleagues-data.mjs';
+import { privateFile, missing } from './private.mjs';
 
 const args = parseArgs();
 const seed = +(args.seed || 16);
@@ -193,7 +194,9 @@ edit('js/data.js', (t) => {
 
 // ---------- the names databases ----------
 const db = (file, fn) => {
-  const f = path.join(ROOT, file);
+  // (data/real-world.json is in the private folder now; where it is not, only the fictional names are written)
+  const f = file === 'data/real-world.json' ? privateFile('real-world.json') : path.join(ROOT, file);
+  if (!f) return console.log('skipped ' + file + ': ' + missing('real-world.json'));
   const j = JSON.parse(fs.readFileSync(f, 'utf8'));
   fn(j);
   fs.writeFileSync(f, JSON.stringify(j, null, 1) + '\n');

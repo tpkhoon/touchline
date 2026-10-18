@@ -5,3 +5,7 @@ android/.gradle/
 ios/App/Pods/
 .devtools/
 store/screenshots/
+
+# the real-world names and pack live outside the repository (touchline-private/, see tools/private.mjs)
+data/real-world.json
+data/packs/real-world*

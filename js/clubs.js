@@ -1,9 +1,9 @@
-// Club data: every league's clubs (real names; identity and reputation are the game's own ratings), rivalries
+// Club data: every league's clubs (fictional names; identity and reputation are the game's own ratings), rivalries
 // and overseas clubs. League rules, nations and everything else static live in data.js.
 (function () {
   const FM = window.FM;
 
-  // ---------- Domestic clubs (real names; identity and reputation are the game's own ratings) ----------
+  // ---------- Domestic clubs (fictional names; identity and reputation are the game's own ratings) ----------
   // [name, short, city, primary, secondary, identity, rep, stadium, capacity]
   FM.D.CLUBS_D1 = [
     ['Baywick United', 'MCI', 'Baywick', '#6CABDD', '#1C2C5B', 'oil', 88, 'Farnmere Green', 53400],

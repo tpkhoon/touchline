@@ -449,4 +449,4 @@ The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROAD
 | Platform | Installable offline web app, save upgrades, compressed backups, background simulation, native-app projects (Android, iOS) | Device builds, cloud saves |
 | Editor | Every career plays by each competition's real rules | Full database and rules editor; database export/import and community sharing |
 
-**Decision:** the game ships with fictional leagues, clubs and competitions, keeping the real structure, sizes, formats and rules; real names become optional packs. The prototype now runs on the fictional set (generated names over the real structure; the real names are kept in data/real-world.json for optional packs) and fictional players.
+**Decision:** the game ships with fictional leagues, clubs and competitions, keeping the real structure, sizes, formats and rules; real names are left to packs people build themselves with the tools. The game runs on the fictional set (generated names over the league structure; the names it once had are kept in a private folder outside the repository) and fictional players.

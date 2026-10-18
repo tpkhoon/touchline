@@ -1,47 +1,36 @@
-# Real world pack
+# Packs
 
-`real-world.json` is a world pack in the game's own format (`touchline-world`): real clubs, leagues, cups and derbies everywhere, and the
-real first-team squads of the top two divisions of England, Spain, Germany, Italy and France (198 clubs, 5,338 players).
+The game ships no packs and no real club or player names: its world is fictional (club, league and competition names are trademarks).
+A **pack** is a world file in the game's own format (`touchline-world`: club names, short names, nicknames, towns, colours, grounds, leagues,
+cups, derbies and, optionally, players) that a player opens from **Import a database…** on the new-career screen or in the world editor.
+`index.json` in this folder lists the packs the game's site offers in the editor's library (Library, files and packs → Look for packs); it
+is empty. Nothing is fetched from anywhere else.
 
-## Use it
+## Build a pack of your own
 
-On the new-career screen choose **Import a database…** and pick `data/packs/real-world.json`. The club picker then shows the real clubs.
-The game still ships with its fictional world; this is the optional real one.
-
-## What is in it
-
-- **Names:** every club of the game's 1,066 gets its real name, abbreviation, nickname, town, colours and ground from
-  `data/real-world.json`, and the leagues, cups and derbies their real names. The clubs' ratings, finances and facilities stay as the game made them.
-- **Players:** for each of the 198 clubs the first-team squad as English Wikipedia lists it: name, nation, position and shirt number; the birth
-  date, positions, caps and fame counts come from Wikidata. A club's squad is up to 34 players.
-- **Ratings are estimates.** Open data has no ratings. The real players of a club are ordered by how well known they are (language editions of
-  their Wikipedia article, caps for their country, awards, a little less for a veteran) and the club's generated squad, which already fits the
-  club's level and its league, lends its ratings in that order: the best-known player gets the club's best rating. So the strength of each club
-  and league is the game's, and which player is the star is the real world's. Edit a rating in the world editor or a CSV when you know better.
-  For the 425 players the StatsBomb open data (github.com/hudl/open-data) has seen in its 299 men's matches (World Cup 2022, Euro 2020 and 2024 and
-  the league seasons it covers), the real-stats converter (`js/realstats.js`) also reads their numbers: it moves a rating up or down by up to 6
-  points, by how many minutes there are to go on, and only by how far the numbers sit above or below what the fame estimate predicts (so the
-  scale stays the game's). Mbappé, Xhaka and Donnarumma went up, Juan Bernat and Álvaro Morata down. Only the resulting ratings are in the pack;
-  StatsBomb is the source of the match data (derived figures only). Built with `npm run realplayers:build -- --stats <file from npm run refstats>`.
-- **Positions:** Wikipedia gives goalkeeper, defender, midfielder or forward. A specific label from Wikidata (centre-back, left-back, winger)
-  is used where there is one; otherwise the shirt number (2 and 3 full-back, 6 holding midfielder, 10 playmaker, 7 and 11 winger); and each
-  squad is topped up with the full-backs, wingers and holding midfielders a formation needs.
-- Players from nations the game does not have are given a neighbouring nation (about 170 of them); players with no Wikidata item (about 780,
-  mostly youngsters) get an estimated age.
-
-## Sources and licence
-
-The squads are from the English Wikipedia (CC BY-SA 4.0, https://creativecommons.org/licenses/by-sa/4.0/); birth dates, positions, caps and
-language-edition counts are from Wikidata (CC0). The pack is a derivative of Wikipedia's text, so **it is shared under CC BY-SA 4.0**, with
-attribution to the Wikipedia articles of the clubs (listed in `real-world-sources.txt`), and anything built from it must carry the
-same licence. The code that builds it is the game's own licence. Club and league names are trademarks of their owners; this is why the shipped
-game is fictional and the real names are a pack.
-
-## Rebuild it (squads change)
+Two tools build a pack of real clubs and squads from openly licensed sources. They need a names database, `real-world.json` (each club's
+nation, league, kit colours, identity, rank and derbies, keyed by club code), which you make or keep in a **private folder**: `touchline-private/`
+beside the repository, or wherever `TOUCHLINE_PRIVATE` points (`tools/private.mjs`). Where the folder is missing the tools say so and stop.
 
 ```bash
-npm run realplayers:fetch -- --cache <folder>     # reads the Wikipedia squads and the Wikidata facts into a cache (about an hour: it waits out the API's rate limit)
-npm run realplayers:build -- --cache <folder>     # makes data/packs/real-world.json from the cache with the game's own player generator
+npm run realplayers:fetch -- --cache <folder>     # reads squads (English Wikipedia, CC BY-SA 4.0) and facts (Wikidata, CC0) into a cache; about an hour, it waits out the API's rate limit
+npm run realplayers:build -- --cache <folder>     # makes touchline-private/packs/real-world.json from the cache with the game's own player generator
 ```
 
-`--leagues D1,D2,ES1,...` on the fetch chooses other leagues of `data/real-world.json`; the build uses every club the cache holds.
+`--leagues D1,D2,ES1,...` on the fetch chooses the leagues; the build uses every club the cache holds; `--out <file>` writes the pack elsewhere.
+
+## How ratings are made
+
+Open data has no ratings, so they are estimates. A club's players are ordered by how well known they are (language editions of their
+Wikipedia article, caps for their country, awards, a little less for a veteran) and the club's generated squad, which already fits the club's
+level and its league, lends its ratings in that order: the best-known player gets the club's best rating. The strength of each club and league
+is the game's. Edit a rating in the world editor or a CSV when you know better. For players a match dataset has seen, the real-stats converter
+(`js/realstats.js`; `npm run refstats`) can move a rating by up to 6 points by how far their numbers sit from what the fame estimate predicts.
+Positions come from specific Wikidata labels, then shirt numbers, and every squad is topped up with the full-backs, wingers and holding
+midfielders a formation needs.
+
+## Licence
+
+Squads from Wikipedia are CC BY-SA 4.0: a pack built from them carries that licence and attribution to the articles it used. Wikidata is CC0.
+Club and league names are trademarks of their owners, which is why the game itself does not ship them and why a pack you build is for your own
+use unless you have the rights to share it.

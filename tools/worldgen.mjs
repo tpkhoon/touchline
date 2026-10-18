@@ -31,6 +31,7 @@ import {
 } from './namelib.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+import { privateFile, missing } from './private.mjs';
 
 // ---------------------------------------------------------------- random numbers
 const hash = (s) => {
@@ -469,7 +470,7 @@ export function generate(real, seed = 1, avoid = []) {
   out.format = 'touchline-names';
   out.version = 1;
   out.seed = seed;
-  out.note = `A fictional world (seed ${seed}): the real structure, rules and club codes with generated names. The real names are in data/real-world.json.`;
+  out.note = `A fictional world (seed ${seed}): the league structure, rules and club codes with generated names.`;
   return out;
 }
 
@@ -477,7 +478,11 @@ export function generate(real, seed = 1, avoid = []) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const opt = (k, d) => (args.includes(`--${k}`) ? args[args.indexOf(`--${k}`) + 1] : d);
-  const real = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/real-world.json'), 'utf8'));
+  if (!privateFile('real-world.json')) {
+    console.log(missing('real-world.json'));
+    process.exit(0);
+  }
+  const real = JSON.parse(fs.readFileSync(privateFile('real-world.json'), 'utf8'));
   const outFile = path.resolve(ROOT, opt('out', 'data/fictional-world.json'));
   const world = generate(real, +opt('seed', 1));
   fs.writeFileSync(outFile, JSON.stringify(world, null, 1) + '\n');
