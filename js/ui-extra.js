@@ -70,6 +70,7 @@
     const loanT = p.clubId && !p.loan ? FM.Transfers.loanTerms(p) : null;
     return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">🔭 Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v.rec)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
       <div class="h2" style="margin:12px 0 4px">“${esc(v.verdict)}”</div>
+      ${v.expect ? `<div class="phrase"><span>🎽</span><span${v.expect[1] ? ` style="color:var(--${v.expect[1]})"` : ''}>${esc(v.expect[0])}</span></div>` : ''}
       ${UI.opinionsBlock(p, v)}
       ${v.strengths.map((t) => `<div class="phrase"><span>✅</span><span>${esc(t)}</span></div>`).join('')}
       ${v.weaknesses.map((t) => `<div class="phrase"><span>⚠️</span><span>${esc(t)}</span></div>`).join('')}

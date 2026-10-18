@@ -127,6 +127,36 @@
       }
     });
   };
+  // Renegotiating a promise: when things change (he is injured, or he simply needs longer) one tap gives a promise with a deadline
+  // new time and a fresh target, once. With a reason it costs a little trust; without one he sees you backtracking and it costs more.
+  Pe.RENEWABLE = ['minutes', 'debut', 'contract'];
+  Pe.renegotiateReason = (x) => {
+    const p = P(x.pid);
+    return p && p.inj && (p.inj.out || 0) >= 4 ? 'He is injured' : null;
+  };
+  Pe.canRenegotiate = (x) =>
+    x.state === 'open' && Pe.RENEWABLE.includes(x.type) && !x.renewed && !x.clause && !!P(x.pid);
+  Pe.renegotiate = function (id) {
+    const s = S(),
+      x = (u().promises || []).find((y) => y.id === id),
+      p = x && P(x.pid);
+    if (!x || !p || !Pe.canRenegotiate(x)) return { ok: false, msg: 'That promise cannot be changed.' };
+    const why = Pe.renegotiateReason(x);
+    x.due = Math.max(s.day, x.due) + x.days;
+    x.year = s.year;
+    if (x.type === 'minutes') x.target = Math.max(x.target, p.season.apps + 3);
+    else if (x.type === 'debut') x.target = p.season.apps + 1;
+    x.base = x.type === 'minutes' ? p.season.apps : x.base;
+    x.renewed = true;
+    u().trust = Math.max(0, (u().trust ?? 60) - (why ? 1 : 3));
+    if (!why) p.morale = Math.max(0, p.morale - (W.hasTrait(p, 'Loyal') ? 2 : 4));
+    return {
+      ok: true,
+      msg: why
+        ? `"Fair enough, I understand." ${Pe.PROMISE[x.type].desc(x)}.`
+        : `"You're moving the goalposts." He accepts the new deadline: ${Pe.PROMISE[x.type].desc(x).toLowerCase()}.`,
+    };
+  };
   Pe.onBidRejected = function (p, fee) {
     const x = Pe.openPromises(p.id).find((y) => y.type === 'letGo');
     if (!x || fee < p.value * 0.9) return false;

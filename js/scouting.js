@@ -33,6 +33,32 @@
     return Sc._lvl;
   };
 
+  // How much a league's numbers count for next to the league you manage in: 1 for yours or a stronger one, less for a weaker one
+  // (the league's average ability against yours, so the small leagues do not hand over every bargain)
+  Sc.leagueStrength = (comp) => {
+    const S = FM.S,
+      key = `${S.year}-${S.day}`;
+    if (Sc._str && Sc._str.key === key && Sc._str.S === S) {
+      if (comp in Sc._str.by) return Sc._str.by[comp];
+    } else Sc._str = { key, S, by: {} };
+    let n = 0,
+      sum = 0;
+    for (const id in S.players) {
+      const q = S.players[id],
+        c = q.clubId && S.clubs[q.clubId];
+      if (c && c.comp === comp && !q.retired && !q.team) ((sum += q.ca), n++);
+    }
+    return (Sc._str.by[comp] = n ? sum / n : null);
+  };
+  Sc.leagueFactor = (comp) => {
+    const S = FM.S,
+      mine = S.user && S.user.clubId && S.clubs[S.user.clubId];
+    if (!comp || !mine || !mine.comp || comp === mine.comp) return 1;
+    const a = Sc.leagueStrength(comp),
+      b = Sc.leagueStrength(mine.comp);
+    if (!a || !b || a >= b) return 1;
+    return U.clamp(1 - ((b - a) / b) * 1.6, 0.55, 1);
+  };
   // How a player's stats compare with the other players in his position: the league he plays in (or, if that is too
   // small to mean anything, his country, then the world). Returns { scope, n, best: [{k, pct}], worst: [{k, pct}] },
   // pct = the share of those players he is better than (0–100). What you can see is as exact as what you know of him.
@@ -56,6 +82,7 @@
       peerCache.by[ck] = { scope, n: list.length, arrs };
     }
     const g = peerCache.by[ck];
+    const f = Sc.leagueFactor(c ? c.comp : null);
     const pct = {};
     for (const k of D.ATTRS) {
       const v = Sc.noisy(p, k),
@@ -67,7 +94,7 @@
         else if (x <= v + 0.25) eq++;
         else break;
       }
-      pct[k] = Math.round(((less + eq / 2) / Math.max(1, a.length)) * 100);
+      pct[k] = Math.round(((less + eq / 2) / Math.max(1, a.length)) * 100 * f); // (numbers from a weaker league count for less)
     }
     // best and worst among the stats his position asks for
     const rows = Object.entries(D.RATE_W[p.pos])
@@ -77,6 +104,7 @@
     return {
       scope: g.scope,
       n: g.n,
+      factor: f,
       pct,
       best: rows.slice(0, 3).filter((r) => r.pct >= 55),
       worst: rows
@@ -407,6 +435,7 @@
     return { best, worst, lean: b >= 0.25 ? 'physical' : b <= -0.25 ? 'technical' : 'rounded' };
   };
 
+  const club0Id = () => FM.S.user.clubId;
   Sc.view = function (p) {
     const S = FM.S,
       u = S.user,
@@ -515,6 +544,25 @@
       else if (W.age(p) <= 23 && pa >= lvl + 6) v.verdict = 'One for the future — could become a star';
       else if (c >= lvl - 8) v.verdict = 'Useful squad depth';
       else v.verdict = 'Not at the required level';
+    }
+    // What he will expect here: set against the best of your players in his position, so a wasted negotiation is seen coming
+    if (v.ca && !own) {
+      const c = (v.ca[0] + v.ca[1]) / 2,
+        mine = W.squad(club0Id()).filter((q) => q.pos === p.pos && !q.team),
+        best = mine.sort((x, y) => y.ca - x.ca)[0],
+        bc = best ? best.ca : 0;
+      if (!best) v.expect = ['He would be your only player in that position and would start every week.', 'good'];
+      else if (c >= bc + 3)
+        v.expect = [
+          `He will expect to be a key player and start most weeks: he is better than ${W.name(best)}.`,
+          'good',
+        ];
+      else if (c >= bc - 3)
+        v.expect = [`He will expect a starting place and compete with ${W.name(best)} for it.`, 'warn'];
+      else if (c >= bc - 9) v.expect = ['He would accept a rotation role, with some games.', ''];
+      else if (W.age(p) <= 22)
+        v.expect = ['He would accept a development role, with games in the cups and the reserves.', ''];
+      else v.expect = [`He would be a back-up to ${W.name(best)} and may not like it.`, 'bad'];
     }
     // Moneyball: analytics department highlights undervalued output
     const club = W.userClub();

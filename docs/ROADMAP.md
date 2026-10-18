@@ -47,6 +47,7 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 - The world ranking on the International screen folds away behind its title and has a part-of-the-world filter.
 - Scouts and staff nationalities are realistic: the three scouts a new manager starts with are one from the club's own nation and two from its part of the world (a Uruguayan club gets South Americans, not an Argentine, a Japanese and an Englishman), staff on offer come mostly from the club's own part of the world and the regions it has ties with (Europe and Africa for a South American club), and a scout's second region is one of those ties.
 - The English county cups are gone (the 14 Senior Cups); the Brazilian state championships stay. Older saves drop them when loaded.
+- Three small additions: a promise with a deadline (more minutes, a debut, a new contract) can be renegotiated once with 🔁 on the promises screen or the player's card (new deadline and target; a little trust, less when he is injured); scouting reports discount the numbers of a player in a weaker league than yours (his percentiles shrink by how much weaker the league is, down to 55%, with a note); and a report says what the player will expect here (a key player, a starting place against your best, rotation, development, or back-up).
 - The map is gone: the By region start on the new-career screen and the Map tab of the league screen (distances, away trips and the longest-trip note stay).
 - The Load a save screen has a rename button (a name of your own, kept through every later save and shown on the title screen's Continue button) and a delete button (a second tap confirms) for each save.
 - The world editor can create a nation (National teams, Create a nation): a name, three-letter code, flag emoji, part of the world, the culture its players' names come from, how it plays, colours and how common its players are abroad. Leagues, clubs and players can then belong to it and, with sixteen players, it fields a national team.
@@ -663,14 +664,14 @@ Checked against the game: already in are AI clubs filling the positions they lac
 
 - [ ] Proportional reactions to broken promises: missing a target by one game earns a grumble, not a crisis, and an injury excuses it; the size of the reaction follows the size of the miss and the player's personality
 - [ ] Players remember what you told them: feed lines quote the talk or promise back ("You told me in January I'd get more games"), so a saved game reads as a conversation
-- [ ] Renegotiating a promise: when things change (a better player signed, a long injury), one tap offers a new deal on the promise at a small cost in trust
+- [x] Renegotiating a promise: when things change (a better player signed, a long injury), one tap offers a new deal on the promise at a small cost in trust
 - [ ] Complaints spread through friendships: unrest reaches the player's friends and the influential teammates only, never the whole squad (builds on the relationships row)
 - [ ] The captain steps in first: before a minor issue becomes a dressing-room row, a card says the captain has had a word with him and offers one quick decision; a good captain settles more of them
 - [ ] AI clubs avoid bloated wage bills: they stop signing, sell or loan out surplus wages and renew less generously when the bill passes what their revenue carries (long-run test: no club carries a wage bill it cannot pay for twenty seasons)
 - [ ] Development leans more on playing time and coaching quality, on top of the individual ageing clocks and career arcs already in: the same prospect grows differently at a club that plays him
 - [ ] Fit for how we play: a report says when a good player suits the squad or the system badly (position, role, style), beyond his star rating
-- [ ] Role expectations in a report: a scout warns that a target will expect to be a key player, so a wasted negotiation is avoided
-- [ ] Stats from weaker leagues count for less: a scouting report discounts numbers made in a weaker league by the league's strength, so the small leagues do not hand over every bargain
+- [x] Role expectations in a report: a scout warns that a target will expect to be a key player, so a wasted negotiation is avoided
+- [x] Stats from weaker leagues count for less: a scouting report discounts numbers made in a weaker league by the league's strength, so the small leagues do not hand over every bargain
 - [ ] Staff take positions in the feed ("your Head of Youth wants Mace promoted"), alongside the disagreements already there, and only when it matters
 - [ ] A board with a long-term plan: aims over three years (reduce the debt, build the academy, a stadium) that fit the club's identity (Selling Club, Oil-Backed, Fan-Owned) and are judged alongside the season's league target, so the club card and the board agree
 - [ ] The world remembers: press questions that refer back to earlier events (the final lost, the player sold, the promise broken)

@@ -344,9 +344,9 @@
     const row = (x, settled) => {
       const p = s.players[x.pid],
         def = Pe.PROMISE[x.type];
-      return `<div class="row small" style="padding:9px 0;border-top:1px solid var(--line);align-items:flex-start">${C.pos(p)}<div class="grow"><div class="b">${C.pname(p, W.name(p))}</div><div class="tiny dim">${esc(def.label)} · ${esc(def.desc(x))}</div>${settled ? '' : `<div class="tiny" style="margin-top:2px">${esc(progress(x, p))}</div>`}</div><span class="tiny ${settled ? (x.state === 'kept' ? 'pill good' : 'pill bad') : 'dim'}" style="white-space:nowrap">${settled ? (x.state === 'kept' ? 'Kept' : 'Broken') : esc(left(x))}</span></div>`;
+      return `<div class="row small" style="padding:9px 0;border-top:1px solid var(--line);align-items:flex-start">${C.pos(p)}<div class="grow"><div class="b">${C.pname(p, W.name(p))}</div><div class="tiny dim">${esc(def.label)} · ${esc(def.desc(x))}</div>${settled ? '' : `<div class="tiny" style="margin-top:2px">${esc(progress(x, p))}</div>`}</div><span class="tiny ${settled ? (x.state === 'kept' ? 'pill good' : 'pill bad') : 'dim'}" style="white-space:nowrap">${settled ? (x.state === 'kept' ? 'Kept' : 'Broken') : esc(left(x))}</span>${!settled && Pe.canRenegotiate(x) ? `<button class="btn sm" style="margin-left:6px" data-act="renegotiate" data-id="${x.id}" aria-label="New deadline">🔁</button>` : ''}</div>`;
     };
-    return `<div class="card"><div class="h3">Open promises</div><div class="tiny dim" style="margin:2px 0 4px">Kept, they lift morale and the squad's trust in your word; broken, they cost both.</div>${open.length ? open.map((x) => row(x, false)).join('') : '<div class="small dim" style="padding:8px 0">No promises open. You make them in player talks and meetings.</div>'}</div>
+    return `<div class="card"><div class="h3">Open promises</div><div class="tiny dim" style="margin:2px 0 4px">Kept, they lift morale and the squad's trust in your word; broken, they cost both. 🔁 gives one a new deadline, once, for a little trust.</div>${open.length ? open.map((x) => row(x, false)).join('') : '<div class="small dim" style="padding:8px 0">No promises open. You make them in player talks and meetings.</div>'}</div>
       ${done.length ? `<div class="card"><div class="h3">Settled</div>${done.map((x) => row(x, true)).join('')}</div>` : ''}`;
   };
 })();

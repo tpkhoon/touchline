@@ -42,7 +42,7 @@
       <div class="row small" style="margin-top:6px"><span class="grow muted">Wage</span><b>${U.money(p.wage)}/wk</b></div>
       ${clauses.length ? `<div style="margin-top:6px">${clauses.map((x) => `<span class="trait">${esc(x)}</span>`).join('')}</div>` : '<div class="tiny dim" style="margin-top:6px">No clauses.</div>'}
       <div class="row small" style="margin-top:8px"><span class="grow muted">Agent</span><b>${ag.icon} ${esc(ag.name)}</b></div><div class="tiny dim">${esc(ag.firm)} · ${esc(ag.style)} — ${esc(ag.desc)}</div>
-      ${open.length ? `<div class="h3" style="margin-top:10px">Promises</div>${open.map((x) => `<div class="row small" style="margin-top:4px"><span>🤝</span><span class="grow">${esc(Pe.PROMISE[x.type].label)}</span><span class="dim tiny">${esc(Pe.PROMISE[x.type].desc(x))}</span></div>`).join('')}` : ''}
+      ${open.length ? `<div class="h3" style="margin-top:10px">Promises</div>${open.map((x) => `<div class="row small" style="margin-top:4px"><span>🤝</span><span class="grow">${esc(Pe.PROMISE[x.type].label)}</span><span class="dim tiny">${esc(Pe.PROMISE[x.type].desc(x))}</span>${Pe.canRenegotiate(x) ? `<button class="btn sm" data-act="renegotiate" data-id="${x.id}" aria-label="New deadline">🔁</button>` : ''}</div>`).join('')}` : ''}
       ${p.wantsOut ? '<div class="warnline" style="margin-top:8px">He wants to leave the club.</div>' : ''}</div>`;
     return (
       base.replace(
@@ -84,6 +84,15 @@
       ${Pe.canTalk(p) ? opts.map((k) => `<button class="card row tap" style="width:100%;text-align:left" data-act="doTalk" data-id="${p.id}" data-k="${k}"><span style="font-size:22px">${Pe.TALKS[k].icon}</span><div class="grow"><div class="b small">${esc(Pe.TALKS[k].label)}</div>${Pe.PROMISE[k] ? `<div class="tiny dim">Promise: ${esc(Pe.PROMISE[k].desc({ ...{ target: p.season.apps + 4, base: p.season.apps, days: Pe.PROMISE[k].days, status: 'regular' } }))}</div>` : ''}</div></button>`).join('') : '<div class="empty">You spoke to him recently. Give it a few days.</div>'}`,
       { title: 'Talk to player' },
     );
+  };
+  // A new deadline on a promise (once; it costs a little trust)
+  UI.acts.renegotiate = (d) => {
+    const r = Pe.renegotiate(d.id);
+    UI.toast(r.msg, 4200);
+    if (!r.ok) return;
+    UI.closeAllSheets();
+    UI.save();
+    UI.render();
   };
   UI.acts.doTalk = (d) => {
     const r = Pe.talk(d.id, d.k);

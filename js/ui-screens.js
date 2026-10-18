@@ -1248,7 +1248,7 @@
       return `<div class="row small" style="padding:4px 0"><span>${good ? '✅' : '⚠️'}</span><span class="grow" style="margin-left:8px">${esc(label(x.k))}</span><b style="color:var(--${good ? 'good' : 'bad'})">${good ? 'top' : 'bottom'} ${t}%</b></div>`;
     };
     if (!r.best.length && !r.worst.length) return '';
-    return `<div class="card"><div class="h3">Against other ${esc((D.POS_NAME[p.pos] || p.pos).toLowerCase())}s ${esc(where)}</div><div class="tiny dim" style="margin-bottom:4px">His best and worst stats among ${U.plural(r.n, 'player')} in his position${!own && v.k < 70 ? ' (approximate)' : ''}</div>${r.best.map((x) => line(x, true)).join('')}${r.worst.map((x) => line(x, false)).join('')}</div>`;
+    return `<div class="card"><div class="h3">Against other ${esc((D.POS_NAME[p.pos] || p.pos).toLowerCase())}s ${esc(where)}</div><div class="tiny dim" style="margin-bottom:4px">His best and worst stats among ${U.plural(r.n, 'player')} in his position${!own && v.k < 70 ? ' (approximate)' : ''}</div>${r.factor < 0.97 ? `<div class="tiny" style="color:var(--warn);margin-bottom:4px">A weaker league than yours: these numbers are discounted by ${Math.round((1 - r.factor) * 100)}%.</div>` : ''}${r.best.map((x) => line(x, true)).join('')}${r.worst.map((x) => line(x, false)).join('')}</div>`;
   };
   // The Analyst view's player card: his numbers this season per 90 minutes as percentiles against the players of his position, what they
   // add up to in words, where his shots came from, and the players whose numbers are nearest his (all public: the season's statistics)
