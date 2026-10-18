@@ -1800,6 +1800,20 @@ table.t tr.zone-down td:first-child {
   background: #c8ff3d;
   color: #0b0f14;
 }
+/* World editor tabs: never squashed by the flex column; scroll sideways when they do not fit */
+.title .seg.ed-tabs {
+  flex: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.title .seg.ed-tabs::-webkit-scrollbar {
+  display: none;
+}
+.title .seg.ed-tabs button {
+  flex: 1 0 auto;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
 
 .empty {
   text-align: center;
@@ -2225,9 +2239,21 @@ main {
   align-items: stretch;
   gap: 6px;
   padding: 22px 0 4px;
-  /* fades into the page instead of a solid block over the background's glow, so nothing looks cut off behind it */
-  background: linear-gradient(to bottom, rgba(5, 7, 10, 0), rgba(5, 7, 10, 0.94) 55%);
   margin-top: 8px;
+  isolation: isolate;
+}
+/* a tint-free fade: blurs what scrolls under the bar and masks that blur out toward the top,
+   so the page's own glow shows through unchanged instead of a flat dark block over it */
+.title .ng-foot::before {
+  content: '';
+  position: absolute;
+  inset: 0 -20px -4px;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
+  mask-image: linear-gradient(to bottom, transparent, #000 55%);
 }
 .title .ng-foot .btn {
   width: auto;

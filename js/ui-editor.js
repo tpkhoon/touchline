@@ -697,7 +697,7 @@
     const nations = [...new Set(ED.def.leagues.map((l) => l.nat))];
     const bad = s.chk.errors.length;
     return `<div class="h1" style="margin-top:3vh">World editor</div><div class="tag">Change the clubs and leagues your world starts from. Nothing changes in the game until you use the world.</div>
-      <div class="seg" style="margin:10px 0 0;overflow-x:auto">${TABS.map(([k, t]) => `<button class="${ED.tab === k ? 'on' : ''}" data-act="edTab" data-v="${k}">${t}</button>`).join('')}</div>
+      <div class="seg ed-tabs" style="margin:10px 0 0">${TABS.map(([k, t]) => `<button class="${ED.tab === k ? 'on' : ''}" data-act="edTab" data-v="${k}">${t}</button>`).join('')}</div>
       <div style="${hide('world')}">
       <div class="ng-label">Name of this world</div><input type="text" id="ed-wname" maxlength="40" value="${esc(m.name || '')}">
       <div class="ng-label">Author</div><input type="text" id="ed-wauthor" maxlength="40" value="${esc(m.author || '')}">
