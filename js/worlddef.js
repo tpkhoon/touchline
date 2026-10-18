@@ -1430,7 +1430,10 @@
     if (c.attr) {
       for (const k of ['market', 'support', 'catchment'])
         if (c.attr[k] != null && !(c.attr[k] >= 1 && c.attr[k] <= 10)) e.push(`${at}: ${k} is from 1 to 10`);
-      if (c.attr.own != null && !['private', 'sovereign', 'fans', 'investors'].includes(c.attr.own))
+      if (
+        c.attr.own != null &&
+        !['private', 'sovereign', 'fans', 'investors', 'state', 'society', 'company'].includes(c.attr.own)
+      )
         e.push(`${at}: unknown owner "${c.attr.own}"`);
     }
     if (ctx.leagues && c.league && !ctx.leagues.has(c.league))

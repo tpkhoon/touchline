@@ -296,7 +296,7 @@
   );
   const BAD_CODES = new Set(
     `ASS ARS POO PEE SEX GAY FAG FAP CUM TIT WTF KKK NAZ NZI HIV DIE LIE DED BUM GAS PIG HAG SAD BAD DIM FAT WAR CUN CNT
-    COC COK DIK FUK FUC SHT PIS JAP KYS RAT BUB GUG`.split(/\s+/),
+    COC COK DIK FUK FUC SHT PIS JAP KYS RAT BUB GUG CAC PEN SOD TWT`.split(/\s+/),
   );
   U.abbrev = function (name, taken = new Set(), isRude = () => false) {
     const words = String(name || '')

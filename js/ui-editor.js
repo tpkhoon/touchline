@@ -1923,6 +1923,9 @@
     ['sovereign', 'A state or sovereign wealth fund'],
     ['fans', 'The supporters'],
     ['investors', 'An investment group'],
+    ['state', 'The state or a security service'],
+    ['society', 'A society or trade union'],
+    ['company', 'A company or its works'],
   ];
   const draftCrest = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);

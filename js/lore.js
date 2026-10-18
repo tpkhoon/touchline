@@ -605,6 +605,23 @@
     'Played as the teams walk out',
     'Taken from a folk song and sung since {y}',
     'Written for the club by a local choir in {y}',
+    'A hymn tune the terraces borrowed in {y}',
+    'Set to a sea shanty the dockers sang on the way to the match',
+    "The works band's march, played at the ground since {y}",
+    'A schoolboy’s poem set to music for the {y} cup run',
+    'Adapted from a regimental march after the club’s first trophy',
+    'Started on an away coach in {y} and never stopped',
+    'A lullaby the old goalkeeper hummed, now bellowed by twenty thousand',
+    'Commissioned by the chairman in {y}; the fans rewrote the second verse',
+    'A miners’ choir song, sung in the tunnel before kick-off',
+    'Played on a single trumpet at every home game since {y}',
+    'Borrowed from a rival’s old song, with the insults changed',
+    'Taken from a village dance tune and sung since {y}',
+    'A waltz written by the club’s first secretary',
+    'Started as a joke in {y} and is now sung with a straight face',
+    'A radio jingle from {y} the supporters made their own',
+    'Sung only after a win, so the choir has sung less than it would like',
+    'Written by the groundsman’s daughter in {y}',
   ];
   const GROUND_BIG = [
     'The Cauldron',
@@ -768,6 +785,24 @@
         to: c.founded + r.int(12, 22),
         note: 'from the first match',
       });
+    // a big club with no cluster of titles or cups still has a period it remembers: its long run among the better clubs
+    if (!eras.length && c.rep >= 62) {
+      const from = Math.max(1950, (c.founded || 1900) + r.int(15, 40)),
+        to = Math.min(from + r.int(8, 15), S().year - 2);
+      if (to - from >= 5)
+        eras.push({
+          name: r.pick([
+            'The Steady Years',
+            'The Consolidation',
+            'The Modern Era',
+            'The Long Stay',
+            'The Settled Years',
+          ]),
+          from,
+          to,
+          note: 'a long run among the better clubs',
+        });
+    }
     return eras.sort((a, b) => a.from - b.from).slice(0, 4);
   };
   L.clubDetails = function (c, facts) {
@@ -797,7 +832,14 @@
     // the record crowd: older clubs when grounds had room to stand, newer ones a little over the present capacity
     const standing = (c.founded || 1950) < 1960;
     const attY = standing ? yr(1920, 1989) : yr(1996, Math.max(1997, st.year - 2));
-    const att = { n: Math.round((cap * (standing ? r.int(105, 150) : r.int(100, 110))) / 100 / 100) * 100, year: attY };
+    // (a record from the 1990s on stays within the ground: only the old standing crowds were bigger than today's capacity)
+    const now = (c.stadium && c.stadium.cap) || cap;
+    const att = {
+      n: standing
+        ? Math.round((cap * r.int(105, 150)) / 100 / 100) * 100
+        : Math.round((Math.min(cap, now) * r.int(90, 100)) / 100 / 100) * 100,
+      year: attY,
+    };
     const ao = opponent(c, attY, r, true);
     att.vs = ao && ao.id;
     att.what = r.pick(CONTEXTS);
@@ -928,13 +970,45 @@
     return k;
   };
 
+  // The identity of a club as it is shown: a police, union, railway or works club that is "fan-owned" on paper is state-backed,
+  // society-owned or company-backed, so the label follows the kind of club (the board's and the money's rules stay the same).
+  // c: a club, or { name, policy } for a row not yet in a world
+  L.identity = function (key, c) {
+    const base = D.IDENTITY[key];
+    if (key !== 'fan' || !c) return base;
+    const k = KINDS.find((x) => x.test(c));
+    const alt = {
+      military: ['State-Backed', '🛡️', 'Paid for by the state: steady money, loyal older supporters and no romance.'],
+      police: [
+        'State-Backed',
+        '🛡️',
+        'Backed by the security services: steady money, older supporters and a safe, attacking mid-table side.',
+      ],
+      union: [
+        'Society-Owned',
+        '🧑‍🏭',
+        'Owned by a trade-union society: a big, older following that wants attacking football and a club that lives within its means.',
+      ],
+      railway: [
+        'Company-Backed',
+        '🚂',
+        'Backed by the railway and its workers: modest money, attacking football and a club that lives within its means.',
+      ],
+      works: [
+        'Company-Backed',
+        '🏭',
+        'Backed by the works: modest money, attacking football and a club that lives within its means.',
+      ],
+    }[k && k.key];
+    return alt ? { ...base, label: alt[0], icon: alt[1], fans: alt[2] } : base;
+  };
   // ================================================================ rivalries
   const pairKey = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
   L.pairKey = pairKey;
   const ORIGIN_SAME = [
     (a, b, y) => `Shared a ground until ${y}, and have not shared anything since`,
-    (a, b, y) => `Two clubs split from one in ${y}, over a quarrel about the committee`,
-    (a, b, y) => `One town, two clubs, one derby: the feud began with the second club in ${y}`,
+    (a, b, y) => `${b.name} was founded in ${y} by members who split from ${a.name} over a quarrel about the committee`,
+    (a, b, y) => `One town, two clubs, one derby: the feud began when ${b.name} was founded in ${y}`,
     (a, b, y) => `Born in ${y}, when ${b.name} was founded by players who walked out of ${a.name}`,
   ];
   const ORIGIN_OTHER = [
@@ -959,8 +1033,13 @@
     const sameCity = a.city && a.city === b.city;
     const roll = r();
     if (sameCity && roll < 0.7) {
-      since = Math.max(first, r.int(first, Math.max(first + 1, st.year - 40)));
-      origin = r.pick(ORIGIN_SAME)(a, b, since);
+      // (a split, or a second club founded by walk-outs, happens in the year the younger club was founded: the rivalry starts
+      // then; only "shared a ground" can come later)
+      const younger = (a.founded || 1900) >= (b.founded || 1900) ? a : b,
+        older = younger === a ? b : a;
+      const i = r.int(0, ORIGIN_SAME.length - 1);
+      since = i === 0 ? Math.max(first, r.int(first, Math.max(first + 1, st.year - 40))) : first;
+      origin = ORIGIN_SAME[i](older, younger, since);
     } else if (races.length && roll < 0.8) {
       const x = r.pick(races);
       since = x.y;

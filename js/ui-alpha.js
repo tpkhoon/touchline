@@ -620,7 +620,7 @@
     if (!c) return;
     const comp = c.comp && s.comps[c.comp],
       row = comp && comp.table[id];
-    const I = D.IDENTITY[c.identity],
+    const I = FM.Lore.identity(c.identity, c),
       mgr = c.manager && s.staff[c.manager];
     const tac = W.isUser(id) ? s.user.tactic : c.tactic;
     const sq = W.squad(id).sort((a, b) => b.ca - a.ca);
@@ -928,6 +928,9 @@
     const own = {
       sovereign: 'Sovereign wealth',
       fans: 'Fan-owned',
+      state: 'State-backed',
+      society: 'Society-owned',
+      company: 'Company-owned',
       investors: 'Investment group',
       private: 'Private owner',
     }[a.own];

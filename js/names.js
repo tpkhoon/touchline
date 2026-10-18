@@ -750,6 +750,35 @@
       for (const k of ['fn', 'ln']) N.VIE[k] = dedupe(N.VIE[k].map((x) => VI_MAP[x] || x));
       const vp = D.NAME_POOLS.vietnamese;
       if (vp) for (const k of ['fn', 'ln']) vp[k] = dedupe(vp[k].map((x) => VI_MAP[x] || x));
+      // A Vietnamese name is family name, middle name, given name (Trần Văn Hiếu), and the player is known by the given name: the
+      // first names here are middle + given (Văn Hiếu), mostly, and a middle name (Văn, Đức, Quốc ...) is never a given name alone
+      const MID = [
+        'Văn',
+        'Văn',
+        'Văn',
+        'Đức',
+        'Quốc',
+        'Minh',
+        'Thành',
+        'Xuân',
+        'Hữu',
+        'Công',
+        'Quang',
+        'Tuấn',
+        'Đình',
+        'Duy',
+        'Trọng',
+      ];
+      const midSet = new Set(MID);
+      const own = N.VIE.fn.filter((x) => !midSet.has(x) && !x.includes(' ') && !N.VIE.ln.includes(x));
+      if (own.length) {
+        const fn = [];
+        own.forEach((g, i) => {
+          for (const j of [0, 4, 9]) fn.push(`${MID[(i * 3 + j) % MID.length]} ${g}`);
+          if (i % 4 === 0) fn.push(g);
+        });
+        N.VIE.fn = dedupe(fn);
+      }
     }
     // The Gulf nations: their own names, written Al-X
     for (const nat of ['KSA', 'UAE', 'QAT']) {
@@ -784,6 +813,52 @@
         ],
       };
     }
+    // Communities elsewhere: a player's first name and surname come from the same community (a Samoan first name never goes with
+    // a South Asian surname, nor a Muslim one with a Jain one)
+    const words = (s) => s.trim().split(/\s+/);
+    const C = (fn, ln) => ({ fn: words(fn), ln: words(ln) });
+    const eng = D.NAME_POOLS.english,
+      pac = D.NAME_POOLS.pacific;
+    const hindu = C(
+      'Rahul Amit Vikram Sandeep Arjun Rohit Suresh Anil Sunil Manoj Deepak Ravi Karan Vijay Nikhil Aditya Ankit Pranav Siddharth Harsh Mayank Gaurav Varun Ashish Rajesh Ramesh Mohan Naveen Prashant Tushar Yash Kunal Akash Abhishek Saurabh Dhruv Ishan Kabir Neeraj Piyush',
+      'Kumar Yadav Patel Reddy Nair Iyer Menon Pillai Rao Naidu Joshi Mehta Desai Shah Chatterjee Banerjee Mukherjee Das Bose Sen Ghosh Roy Chowdhury Thakur Mishra Pandey Tiwari Chauhan Rathore Jain Sharma Verma Gupta Agarwal Kapoor Bhatt Kulkarni Patil Shetty',
+    );
+    const muslim = C(
+      'Mohammed Imran Salman Arif Faisal Irfan Nadeem Zaheer Aamir Farhan Hamza Asif Rizwan Shoaib Tariq Sameer Zubair Danish Adnan Junaid Mehdi Yusuf Ibrahim Rashid Wasim Naseem Saif Kamran Javed Sohail',
+      'Khan Ahmed Ali Hussain Sheikh Ansari Siddiqui Qureshi Pathan Mirza Malik Shaikh Rizvi Alam Hashmi Farooqui Syed Ghani Mansoori Chaudhry',
+    );
+    const sikh = C(
+      'Harpreet Gurpreet Manpreet Jaspreet Amandeep Sukhwinder Balwinder Navjot Gagan Simranjit Jasdeep Karanvir Lovepreet Parminder Ranjit Harjinder',
+      'Singh Gill Sidhu Dhillon Brar Grewal Sandhu Bajwa Randhawa Cheema Bhullar Virk Mann Bains',
+    );
+    const christian = C(
+      'Joseph Thomas Francis Anthony Joel Alwyn Savio Clifford Brandon Peter Mathew Joshua Dominic Kevin',
+      "Fernandes D'Souza Pereira Rodrigues Dias Mathew Thomas Joseph Pinto Lobo Gomes Colaco Mascarenhas Menezes",
+    );
+    const maori = C(
+      'Wiremu Hemi Rawiri Tane Manu Tama Matiu Hone Kereama Ihaia Mahuta Nikau Rangi Tamati',
+      'Ngata Tamihana Hohepa Ratana Pene Tipene Rangi Waaka Parata Whaanga Mahuta Hakaraia Keepa Kereama Paki',
+    );
+    const jordan = C(
+      'Ahmad Mohammad Omar Yazan Saleh Hamza Ali Mousa Odai Anas Bahaa Yousef Ibrahim Khaled Ammar Rajaei Ihsan Nizar Mahmoud Hussein Tareq Raed Fadi Samer Zaid Basel Moath Ayman Wael Karim Laith Hani',
+      'Al-Tamari Al-Naimat Al-Rawabdeh Haddad Khalil Al-Omari Al-Shboul Al-Hamad Masri Al-Ghanem Qaddoura Abu-Hashish Al-Khatib Saleh Nasser Al-Majali Al-Zoubi Al-Khalaileh Al-Hyari Al-Faqeeh Bani-Yaseen Al-Dmour Al-Shaqran Al-Maaytah Obeidat Tarawneh Al-Qudah Al-Hourani Mansour Al-Adwan',
+    );
+    D.COMMUNITIES = D.COMMUNITIES || {};
+    D.COMMUNITIES.IND = [
+      [74, hindu],
+      [13, muslim],
+      [4, sikh],
+      [9, christian],
+    ];
+    if (eng && pac)
+      D.COMMUNITIES.NZL = [
+        [63, { fn: eng.fn, ln: eng.ln }],
+        [15, maori],
+        [11, { fn: pac.fn, ln: pac.ln }],
+        [7, { fn: chinese ? chinese.fn : eng.fn, ln: SG_CHINESE.slice(0, 22) }],
+        [4, { fn: SG_INDIAN_FN, ln: SG_INDIAN }],
+      ];
+    D.COMMUNITIES.JOR = [[100, jordan]];
   };
   D.widenNames = function () {
     for (const [nat, N] of Object.entries(D.NATIONS)) {

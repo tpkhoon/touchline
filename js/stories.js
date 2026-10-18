@@ -619,7 +619,7 @@
     }
     if (it.met[opp.id] || Object.keys(it.met).length >= 8) return;
     it.met[opp.id] = 1;
-    const I = D.IDENTITY[opp.identity],
+    const I = FM.Lore.identity(opp.identity, opp),
       mgr = opp.manager && s.staff[opp.manager];
     FM.News.add({
       type: 'club',
@@ -1251,7 +1251,7 @@
       });
       return;
     }
-    const I = D.IDENTITY[c.identity];
+    const I = FM.Lore.identity(c.identity, c);
     FM.News.add({
       type: 'board',
       title: `Board meeting: expectations for ${FM.Season.seasonLabel()}`,

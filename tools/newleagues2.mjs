@@ -202,5 +202,5 @@ db('data/fictional-world.json', (j) => {
   for (const [k, v] of Object.entries(real.nations)) j.nations[k] = v;
 });
 console.log(
-  'written: now edit the promotion and relegation rules of the parent leagues, the continental places and the registration rules, then run the geocoder, the abbreviations and the formatter',
+  'written: now run tools/abbrevs.mjs --write (club abbreviations: unique, never rude), then edit the promotion and relegation rules of the parent leagues, the continental places and the registration rules, then run the geocoder, the abbreviations and the formatter',
 );

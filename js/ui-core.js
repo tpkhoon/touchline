@@ -1086,7 +1086,7 @@
         const code = r[1],
           e = G.entry(code),
           d = G.diff(code),
-          I = D.IDENTITY[r[5]],
+          I = FM.Lore.identity(r[5], { name: r[0] }),
           rv = G.rival(code),
           inf = G.info(code);
         if (!e) return '';
@@ -1111,7 +1111,7 @@
       const row = (r, div, note, where) => {
         const [name, short, , c1, c2, idt] = r;
         const fake = { id: 'c_' + short, short, colors: [c1, c2], crest: (D.CLUB_INFO[short] || [])[3] || null };
-        const I = D.IDENTITY[idt],
+        const I = FM.Lore.identity(idt, { name }),
           d = G.diff(short),
           on = NG.club === fake.id;
         return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${esc(I.label)} · <span style="color:${d.color}">● ${esc(d.label)}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;

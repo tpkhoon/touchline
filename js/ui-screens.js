@@ -496,7 +496,7 @@
         comp = s.comps[c.comp],
         obj = FM.Season.objectives(c)[0],
         days = Math.max(1, o.until - now);
-      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${D.IDENTITY[c.identity].icon} ${esc(D.IDENTITY[c.identity].label)}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
+      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${FM.Lore.identity(c.identity, c).icon} ${esc(FM.Lore.identity(c.identity, c).label)}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
         <div class="small muted" style="margin-top:8px;line-height:1.5">${esc(o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.')}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
         <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">Offer open for about ${days} day${days === 1 ? '' : 's'}</span><button class="btn sm" data-act="clubView" data-id="${c.id}">Look closer</button><button class="btn sm pri" data-act="takeJob" data-id="${c.id}">Accept</button></div></div>`;
     };
@@ -3174,7 +3174,7 @@
   };
   function overviewView() {
     const c = club(),
-      I = D.IDENTITY[c.identity];
+      I = FM.Lore.identity(c.identity, c);
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
