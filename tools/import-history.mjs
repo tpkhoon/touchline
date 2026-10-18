@@ -7,7 +7,7 @@
 //
 // tables.csv   season, league, pos, club, p, w, d, l, gf, ga, pts     one row per club per season (season = the year it
 //                                                                       started: 2023 for 2023/24); league is a league id
-//                                                                       (D1) or its name; club is a club id (c_MCI), name
+//                                                                       (D1) or its name; club is a club id (c_BAY), name
 //                                                                       or short name
 // players.csv  name, nat, born (or age), pos, club, league, minutes, goals, assists, xg, ... (see tools/realstats.mjs)
 //                                                                       each row becomes a player at that club, converted

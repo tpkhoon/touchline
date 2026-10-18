@@ -337,7 +337,7 @@
 
   // Save format version. Bump it with a migration in save.js whenever the saved state changes shape.
   FM.VERSION = '0.5.0'; // the game's version (package.json)
-  FM.SAVE_VERSION = 8;
+  FM.SAVE_VERSION = 9;
 
   FM.nextId = function (prefix) {
     FM.S.nextId = (FM.S.nextId || 1) + 1;

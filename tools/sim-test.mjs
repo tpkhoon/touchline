@@ -598,8 +598,8 @@ if (W.employed()) {
     wrongYouth.length === 0,
     `${wrongYouth.length} players in youth sides who shouldn't be (e.g. ${wrongYouth[0] && `${wrongYouth[0].id}: ${wrongYouth[0].team}, age ${W.age(wrongYouth[0])}, loan ${!!wrongYouth[0].loan}, club ${wrongYouth[0].clubId} (${FM.S.clubs[wrongYouth[0].clubId] && FM.S.clubs[wrongYouth[0].clubId].sim})`})`,
   );
-  const b = FM.Youth.bTeamOf('c_RMA');
-  check(b && FM.Youth.owner(b.id) === 'c_RMA', 'a B team does not belong to its parent club');
+  const b = FM.Youth.bTeamOf('c_OLM');
+  check(b && FM.Youth.owner(b.id) === 'c_OLM', 'a B team does not belong to its parent club');
 }
 
 // ---- invariants ----
@@ -850,24 +850,15 @@ check(
   'competitions changed through pack/unpack',
 );
 
-// ---- migrations: a synthetic v4 save (older shape) upgrades cleanly ----
-const v4 = cJSON.parse(packed);
-v4.version = 4;
-delete v4.settings.theme;
-delete v4.user.adviceDone;
-delete v4.user.promises;
-v4.news.forEach((n) => delete n.read);
-v4.user.tactic.capt = 'p_missing';
-v4.user.shortlist = ['p_missing'];
-const up = FM.Save.unpack(cJSON.stringify(v4));
-check(up.from === 4 && up.state.version === FM.SAVE_VERSION, `v4 save upgraded to v${up.state.version}`);
+// ---- repair: a save that points at players who are not there comes back clean ----
+// (saves older than format 9 are refused: the migrations below it are kept but cannot be reached)
+const cur = cJSON.parse(packed);
+cur.user.tactic.capt = 'p_missing';
+cur.user.shortlist = ['p_missing'];
+const up = FM.Save.unpack(cJSON.stringify(cur));
 check(
-  up.state.settings.theme === 'dark' && Array.isArray(up.state.user.promises) && up.state.user.adviceDone,
-  'v4 → v5 defaults not filled',
-);
-check(
-  up.state.news.every((n) => n.read === true),
-  'old feed items not marked read',
+  up.from === FM.SAVE_VERSION && up.state.version === FM.SAVE_VERSION,
+  `a current save came back as v${up.state.version}`,
 );
 check(
   up.state.user.tactic.capt === null && up.state.user.shortlist.length === 0,
@@ -887,6 +878,7 @@ const refuse = (v) => {
   }
 };
 check(refuse(3) === 'too-old', 'v3 save not refused as too old');
+check(refuse(FM.Save.OLDEST - 1) === 'too-old', 'the save before the oldest one is not refused');
 check(refuse(FM.SAVE_VERSION + 1) === 'too-new', 'future save not refused as too new');
 
 // ---- report ----

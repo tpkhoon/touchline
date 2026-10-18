@@ -4,7 +4,7 @@
 //   node tools/transfer-realism.mjs [--seasons 3] [--seed 5]
 //   (the first season is a burn-in: a new world's contracts all have a year or more to run, so nobody is out of
 //   contract yet; the rest are measured)
-//   node tools/transfer-realism.mjs --player "age=24,ca=82,pos=ST,club=c_BRE" [--runs 6]
+//   node tools/transfer-realism.mjs --player "age=24,ca=82,pos=ST,club=c_TET" [--runs 6]
 import { parseArgs, loadSim } from './harness.mjs';
 
 const args = parseArgs();

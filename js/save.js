@@ -7,8 +7,9 @@
   const Sv = (FM.Save = {});
   Sv.SLOTS = [1, 2, 3, 4, 5]; // (three until the extra slots arrived: the save keys are per slot, so nothing else changes)
   Sv.VERSION = FM.SAVE_VERSION;
-  // Saves older than this predate the 20-league world; they cannot be rebuilt into it
-  Sv.OLDEST = 4;
+  // Saves older than this cannot be opened: format 9 renamed every club's id (the ids had been the real clubs' abbreviations), and the
+  // old-to-new table is not kept in the game (it would keep the real abbreviations in it). The migrations below it are kept as they were.
+  Sv.OLDEST = 9;
 
   // ---------- Migrations ----------
   // MIG[v] upgrades an unpacked state from version v to v + 1. Never edit a shipped migration:
@@ -323,7 +324,7 @@
     if (from < Sv.OLDEST)
       throw Object.assign(
         new Error(
-          "This save is from an early prototype (before the 20-league world) and can't be upgraded. Start a new career — the old save is kept.",
+          "This save is from an earlier prototype (before save format 9, when every club's id changed) and can't be opened. Start a new career — the old save is kept.",
         ),
         { code: 'too-old' },
       );

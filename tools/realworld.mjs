@@ -3,7 +3,7 @@
 //   node tools/realworld.mjs extract [file]     write the names the source holds now to a database (default
 //                                               data/real-world.json)
 //   node tools/realworld.mjs placeholders [file] [seed]   swap every club, league, cup and derby name in the source for a
-//                                               generated fictional one (club codes, so saves and ids, stay the same)
+//                                               generated fictional one (club codes, so ids, stay the same)
 //   node tools/realworld.mjs apply [file]       put a database's names into the source (default data/real-world.json:
 //                                               this is how the real set comes back)
 // The files it edits: js/clubs.js (club rows, abbreviations, nicknames, derbies) and js/data.js (league, continental

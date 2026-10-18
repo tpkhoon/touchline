@@ -1,6 +1,6 @@
 // Asia: the things that make football there its own game. Korea's military service takes its players away for two seasons in
 // their mid-twenties unless a big tournament has exempted them. The best of them join the army's club (Bujeong Garrison,
-// D.CLUB_POLICY.GIM), a Korean top-flight club whose squad is nothing but conscripts on loan from their own clubs; they return a
+// D.CLUB_POLICY.BUJ), a Korean top-flight club whose squad is nothing but conscripts on loan from their own clubs; they return a
 // little rusty. (The AFC's foreign-player places are in registration.js, Japan's university route is the graduate draft in
 // draft.js, Gulf money is in transfers.js.)
 (function () {

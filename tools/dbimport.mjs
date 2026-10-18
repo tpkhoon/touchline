@@ -108,7 +108,7 @@ if ('test' in args) {
       league: 'XL1',
       stadium: { name: `Test Park ${i}`, cap: 6000 },
     });
-  sdef.clubs.find((c) => c.id === 'c_MCI').name = 'Renamed City';
+  sdef.clubs.find((c) => c.id === 'c_BAY').name = 'Renamed City';
   const sr = DB.import([{ name: 's.json', text: WD.stringify(sdef) }]);
   check(sr.ok, `a world with a new league did not import: ${sr.errors}`);
   DB.stage(sr);
@@ -135,7 +135,7 @@ if ('test' in args) {
     FM.S.clubs.c_TL1 && FM.S.clubs.c_TL1.name === 'Testville 1' && W.squad('c_TL1').length >= 18,
     'the new club has no squad',
   );
-  check(FM.S.clubs.c_MCI.name === 'Renamed City', 'the rename did not reach the world');
+  check(FM.S.clubs.c_BAY.name === 'Renamed City', 'the rename did not reach the world');
   check(FM.S.database.patch && FM.S.database.patch.leagues.length === 1, 'the world did not keep the patch');
   W.takeCharge('c_TL1', 'Test Manager');
   W.seedLegends();

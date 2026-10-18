@@ -10,11 +10,11 @@
   // only Basque players, Andorra only Catalan ones; neither can sign anyone else (transfer, loan, free agent or
   // pre-contract) and their academies and squads are made of them.
   FM.D.CLUB_POLICY = {
-    EIB: { heritage: 'basque', label: 'Basque' },
-    AND: { heritage: 'catalan', label: 'Catalan' },
+    ARK: { heritage: 'basque', label: 'Basque' },
+    CES: { heritage: 'catalan', label: 'Catalan' },
     // The army's club (Bujeong Garrison). Its squad is conscripts doing their national service, on loan from their own
     // clubs (js/asia.js); it signs nobody else.
-    GIM: { military: true, label: 'military-service' },
+    BUJ: { military: true, label: 'military-service' },
   };
 
   // ---------- Naturalisation ----------
@@ -1492,7 +1492,7 @@
       sell: 0.85,
       obj: 'profit',
     },
-    // The army's club (CLUB_POLICY.GIM): a squad of conscripts on loan from their own clubs for their national service, paid no wages
+    // The army's club (CLUB_POLICY.BUJ): a squad of conscripts on loan from their own clubs for their national service, paid no wages
     // by it, who go back when it ends; it lives on the army's money and keeps no one
     military: {
       label: 'Military Service Club',
@@ -2057,38 +2057,38 @@
         mls: { playoff: 7, draftRounds: 3 },
         conferences: {
           East: [
-            'MIA',
-            'CIN',
-            'CLB',
-            'PHI',
-            'NYC',
-            'ATL',
-            'NYR',
-            'NSH',
-            'ORL',
-            'CLT',
-            'CHI',
-            'DCU',
-            'NER',
-            'TRT',
-            'MTL',
+            'ASP',
+            'GOR',
+            'CHM',
+            'MIL',
+            'FOS',
+            'LAK',
+            'FRT',
+            'FOF',
+            'SPR',
+            'WHI',
+            'SUS',
+            'PNF',
+            'SUM',
+            'REN',
+            'GRU',
           ],
           West: [
-            'LAF',
-            'LAG',
-            'SEA',
-            'VAN',
-            'PTI',
-            'MIN',
-            'SDG',
-            'RSL',
-            'DAL',
-            'HOU',
-            'SKC',
-            'STL',
-            'RAP',
-            'AUS',
-            'SJE',
+            'SIL',
+            'SIA',
+            'SUN',
+            'EAG',
+            'BLU',
+            'HIC',
+            'CED',
+            'BEA',
+            'PIN',
+            'ASE',
+            'GOP',
+            'CAN',
+            'MAP',
+            'BLS',
+            'PRA',
           ],
         },
       },
