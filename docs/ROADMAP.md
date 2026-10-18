@@ -47,6 +47,8 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 - The world ranking on the International screen folds away behind its title and has a part-of-the-world filter.
 - Scouts and staff nationalities are realistic: the three scouts a new manager starts with are one from the club's own nation and two from its part of the world (a Uruguayan club gets South Americans, not an Argentine, a Japanese and an Englishman), staff on offer come mostly from the club's own part of the world and the regions it has ties with (Europe and Africa for a South American club), and a scout's second region is one of those ties.
 - The English county cups are gone (the 14 Senior Cups); the Brazilian state championships stay. Older saves drop them when loaded.
+- The map is gone: the By region start on the new-career screen and the Map tab of the league screen (distances, away trips and the longest-trip note stay).
+- The Load a save screen has a rename button (a name of your own, kept through every later save and shown on the title screen's Continue button) and a delete button (a second tap confirms) for each save.
 - The world editor can create a nation (National teams, Create a nation): a name, three-letter code, flag emoji, part of the world, the culture its players' names come from, how it plays, colours and how common its players are abroad. Leagues, clubs and players can then belong to it and, with sixteen players, it fields a national team.
 
 ### Playtest feedback, round 23

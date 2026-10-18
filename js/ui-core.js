@@ -751,7 +751,7 @@
       <div class="logo">TOUCH<br>LINE<span>.</span></div>
       <div class="tag">${esc(D.HOOK)}</div>
       <div class="actions">
-        ${cont ? `<button class="btn pri block" data-act="continue" data-n="${cont.n}">▶ Continue: ${esc(cont.m.club.name)} · ${cont.m.year}</button>` : ''}
+        ${cont ? `<button class="btn pri block" data-act="continue" data-n="${cont.n}">▶ Continue: ${esc(cont.m.label || cont.m.club.name)} · ${cont.m.year}</button>` : ''}
         ${cont ? '<button class="btn block" data-act="loadPick">📂 Load a save</button>' : ''}
         <button class="btn ${cont ? '' : 'pri'} block" data-act="newCareer">＋ New career</button>
         <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="edOpenTitle">🛠️ World editor</button>
@@ -759,20 +759,62 @@
         <div class="tiny center" style="color:#5d6d82;margin-top:8px">Prototype build · One-time purchase · No energy · No packs · No pay-to-win</div>
       </div></div>`;
   };
-  // Load a save: the slots that have one, to pick from
-  UI.acts.loadPick = () =>
+  // Load a save: the slots that have one, to pick from. Each can be renamed (a name of your own) or deleted (a second tap confirms)
+  UI._loadAsk = { del: null, ren: null };
+  UI.acts.loadPick = () => {
+    UI.closeAllSheets();
+    const ask = UI._loadAsk,
+      saves = FM.Save.SLOTS.map((n) => ({ n, m: UI.slotMeta(n) })).filter((s) => s.m);
+    if (!saves.length) return UI.title();
     UI.sheet(
-      `<div class="tiny dim" style="margin-bottom:8px">Choose a save to open.</div><div class="list">${FM.Save.SLOTS.map(
-        (n) => ({ n, m: UI.slotMeta(n) }),
-      )
-        .filter((s) => s.m)
-        .map(
-          (s) =>
-            `<div class="prow tap" data-act="continue" data-n="${s.n}"><b style="width:52px">Slot ${s.n}</b><div class="grow small">${esc(s.m.club.name)} · ${s.m.year}${s.m.name ? ` · ${esc(s.m.name)}` : ''}</div></div>`,
-        )
+      `<div class="tiny dim" style="margin-bottom:8px">Choose a save to open.</div><div class="list">${saves
+        .map((s) => {
+          if (ask.ren === s.n)
+            return `<div class="prow"><b style="width:52px">Slot ${s.n}</b><input type="text" id="load-ren" maxlength="40" class="grow" value="${esc(s.m.label || '')}" placeholder="${esc(s.m.club.name)} · ${s.m.year}" style="min-width:0"><button class="btn sm pri" data-act="loadRenameSave" data-n="${s.n}">Save</button><button class="btn sm" data-act="loadRenameCancel">✕</button></div>`;
+          const del = ask.del === s.n;
+          return `<div class="prow"><div class="row tap grow" style="gap:8px;min-width:0" data-act="continue" data-n="${s.n}"><b style="width:52px">Slot ${s.n}</b><div class="grow small ellip">${s.m.label ? `<b>${esc(s.m.label)}</b> · ` : ''}${esc(s.m.club.name)} · ${s.m.year}${s.m.name ? ` · ${esc(s.m.name)}` : ''}</div></div><button class="btn sm" data-act="loadRename" data-n="${s.n}" aria-label="Rename save ${s.n}">✏️</button><button class="btn sm ${del ? 'danger' : ''}" data-act="loadDelete" data-n="${s.n}" aria-label="Delete save ${s.n}">${del ? 'Delete?' : '🗑️'}</button></div>`;
+        })
         .join('')}</div>`,
       { title: 'Load a save' },
     );
+    const box = document.getElementById('load-ren');
+    if (box) {
+      box.focus();
+      box.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') UI.acts.loadRenameSave({ n: ask.ren });
+      });
+    }
+  };
+  UI.acts.loadRename = (d) => {
+    UI._loadAsk = { del: null, ren: +d.n };
+    UI.acts.loadPick();
+  };
+  UI.acts.loadRenameCancel = () => {
+    UI._loadAsk = { del: null, ren: null };
+    UI.acts.loadPick();
+  };
+  UI.acts.loadRenameSave = async (d) => {
+    const box = document.getElementById('load-ren');
+    await FM.Save.rename(+d.n, box ? box.value : '');
+    UI._loadAsk = { del: null, ren: null };
+    UI.acts.loadPick();
+  };
+  UI.acts.loadDelete = async (d) => {
+    const n = +d.n;
+    if (UI._loadAsk.del !== n) {
+      UI._loadAsk = { del: n, ren: null };
+      return UI.acts.loadPick();
+    }
+    await FM.Save.remove(n);
+    UI._loadAsk = { del: null, ren: null };
+    UI.toast(`Slot ${n} deleted`, 1500);
+    const left = FM.Save.SLOTS.some((k) => UI.slotMeta(k));
+    if (left) UI.acts.loadPick();
+    else {
+      UI.closeAllSheets();
+      UI.title();
+    }
+  };
   UI.acts.continue = async (d) => {
     UI.closeAllSheets();
     if (!(await UI.load(+d.n))) return;
@@ -1074,11 +1116,6 @@
           on = NG.club === fake.id;
         return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${esc(I.label)} · <span style="color:${d.color}">● ${esc(d.label)}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
       };
-      // a nation is in a map region (the British Isles are in Europe too)
-      const regionHas = (reg, nat) => {
-        const r = UI.mapRegionOf(nat);
-        return reg === 'world' || r === reg || (reg === 'europe' && r === 'isles');
-      };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
       // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each
       // league opens with a card that says what it is like. Redrawn on its own as you type so the keyboard stays up
@@ -1091,7 +1128,6 @@
           const { id: cid, clubs: key, nat } = l;
           if (NG.lg.startsWith('cont:') ? G.continentOf(nat) !== NG.lg.slice(5) : NG.lg !== 'all' && NG.lg !== cid)
             return '';
-          if (NG.reg && NG.reg !== 'all' && UI.mapRegionOf && !regionHas(NG.reg, nat)) return '';
           // B teams (row[9] names the parent) aren't yours to manage: their players belong to the parent club
           const rows = D[key].filter(
             (r) =>
@@ -1150,36 +1186,8 @@
           ])}
           <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
           <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${U.plural(D.facts().clubs, 'club')}</button></div>
-          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngView" data-v="map">🗺️ By region</button><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
+          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
           ${UI.dbCard()}
-          ${foot('')}`;
-      } else if (view === 'map') {
-        // Choose a region on the map: every club is a dot (its colour is how hard the job is); a tap picks it
-        const regions = UI.MAP_REGIONS || {};
-        const reg = NG.reg && regions[NG.reg] ? NG.reg : UI.mapRegionOf(NG.nat);
-        const pts = D.allClubRows()
-          .filter((r) => !r[9] && D.GEO && D.GEO[r[1]])
-          .map((r) => ({
-            id: 'c_' + r[1],
-            lat: D.GEO[r[1]][0],
-            lon: D.GEO[r[1]][1],
-            color: G.diff(r[1]).color,
-            r: NG.club === 'c_' + r[1] ? 2 : 1,
-            ring: NG.club === 'c_' + r[1] ? '#fff' : null,
-            act: 'ngClub',
-          }));
-        const code = NG.club && NG.club !== 'none' ? String(NG.club).replace(/^c_/, '') : null;
-        body = `<div class="h1" style="margin-top:2vh">Choose a region</div><div class="tag">Every club is a dot, coloured by how hard the job is. Tap one to read its story, or pick a region and browse.</div><div class="sp"></div>
-          <div class="chips" style="flex-wrap:wrap;margin-bottom:8px">${Object.entries(regions)
-            .map(
-              ([k, [name]]) =>
-                `<button class="chip ${reg === k ? 'on' : ''}" data-act="ngRegion" data-v="${k}">${name}</button>`,
-            )
-            .join('')}</div>
-          ${UI.mapSvg(pts, reg, { dots: reg === 'world' ? 150 : 100 })}
-          <div class="tiny" style="color:#6f7f96;margin:6px 2px 10px">${['Relaxed', 'Balanced', 'Tough', 'Brutal'].join(' · ')}: from calm dots to hard ones. Zoom with the regions above.</div>
-          ${code && rowOf(code) ? row(rowOf(code), `Tier ${(G.entry(code).l || {}).tier || ''}`, null, `${C.flag(G.entry(code).l.nat)} ${esc(D.NATIONS[G.entry(code).l.nat].name)} · ${esc(G.entry(code).l.name)}`) : ''}
-          <div class="actions" style="margin-top:10px"><button class="btn sm" data-act="ngBrowseRegion" data-v="${reg}">Browse this region's clubs</button><button class="btn sm" data-act="ngView" data-v="ask">Questions</button></div>
           ${foot('')}`;
       } else if (view === 'story') {
         body = `<div class="h1" style="margin-top:2vh">Story starts</div><div class="tag">A club with something at stake. Tap one to see its story.</div><div class="sp"></div>
@@ -1236,7 +1244,6 @@
                 .join('')}</select>`;
             })
             .join('')}${NG.lg !== 'all' ? '<button class="chip" data-act="ngLgAll">All leagues</button>' : ''}</div>
-          ${NG.reg && NG.reg !== 'all' && NG.reg !== 'world' ? `<div class="tiny" style="color:#9fb0c5;margin:0 2px 6px">Region: <b>${esc(UI.MAP_REGIONS[NG.reg][0])}</b> · <span class="tap" data-act="ngBrowseRegion" data-v="all" style="color:#c8ff3d">show every region</span></div>` : ''}
           <div class="seg" style="margin:0 0 4px">${[
             ['all', 'Any'],
             ['relaxed', 'Relaxed'],
@@ -1423,17 +1430,6 @@
   };
   UI.acts.ngDiff = (d) => {
     NG.df = d.v;
-    UI.newCareer();
-  };
-  // The map's region (and the region the list is cut to)
-  UI.acts.ngRegion = (d) => {
-    NG.reg = d.v;
-    UI.newCareer();
-  };
-  UI.acts.ngBrowseRegion = (d) => {
-    NG.reg = d.v;
-    NG.lg = 'all';
-    NG.view = 'browse';
     UI.newCareer();
   };
   UI.acts.ngView = (d) => {

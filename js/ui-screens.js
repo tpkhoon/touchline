@@ -2005,7 +2005,7 @@
       lname = (c) => (c.nat && c.nat !== 'ENG' ? C.flag(c.nat) + ' ' : '') + c.name.replace('The ', '');
     const opts = [[mine, lname(S().comps[mine])]];
     if (S().comps[t] && S().comps[t].type === 'league' && t !== mine) opts.push([t, lname(S().comps[t])]);
-    opts.push(['world', '🗺️ All leagues'], ['map', '📍 Map']);
+    opts.push(['world', '🗺️ All leagues']);
     if (W.cups().length || W.continentals().length) opts.push(['cups', 'Cups']);
     opts.push(
       ['fixtures', 'Fixtures'],
@@ -2030,9 +2030,7 @@
                   ? cupsView()
                   : t === 'world'
                     ? worldView()
-                    : t === 'map'
-                      ? UI.mapView()
-                      : tableView(t))
+                    : tableView(t))
     );
   };
   // International football has its own tab: national teams, rankings, tournaments and your national job

@@ -520,8 +520,11 @@
   Sv.pending = 0;
   // packed: an already-packed save string for S (the simulation worker prepares one)
   Sv.write = function (slot, S, packed) {
-    const json = packed || Sv.pack(S),
-      meta = JSON.stringify(Sv.meta(S));
+    const json = packed || Sv.pack(S);
+    const m0 = Sv.meta(S),
+      prev = Sv.metaOf(slot);
+    if (prev && prev.label) m0.label = prev.label; // (the name the player gave the save stays through every save)
+    const meta = JSON.stringify(m0);
     ls.set(META(slot), meta);
     ls.set('touchline.last', String(slot));
     Sv.pending++;
@@ -587,6 +590,22 @@
     } catch (e) {
       return null;
     }
+  };
+  // Give a save a name of your own (empty: none, the club and year show again); the save itself is untouched
+  Sv.rename = async function (slot, label) {
+    const m = Sv.metaOf(slot);
+    if (!m) return false;
+    const text = String(label || '')
+      .trim()
+      .slice(0, 40);
+    if (text) m.label = text;
+    else delete m.label;
+    const meta = JSON.stringify(m);
+    ls.set(META(slot), meta);
+    try {
+      await Sv.store().put(META(slot), meta);
+    } catch (e) {}
+    return true;
   };
   Sv.syncMeta = async function () {
     if (!Sv.native()) return;
