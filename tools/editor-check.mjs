@@ -28,11 +28,31 @@ const check = (ok, msg) => {
 const def = WD.fromStatic({ name: 'Editor test' });
 const E = WD.editor(def, null);
 // every nation of the game has a league now: the test creates one of its own (the nation creator), with a league below
-check(!E.addNation({ code: 'PER', name: 'Dup', flag: 'x', region: 'SAM', pool: 'latin' }).ok, 'a nation with the code of a built-in one was accepted');
-check(!E.addNation({ code: 'tst', name: 'Testland', flag: '', region: 'SAM', pool: 'latin' }).ok, 'a nation without a flag was accepted');
-check(!E.addNation({ code: 'TST', name: 'Testland', flag: 'x', region: 'MARS', pool: 'latin' }).ok, 'a nation on Mars was accepted');
-check(!E.addNation({ code: 'TST', name: 'Testland', flag: 'x', region: 'SAM', pool: 'klingon' }).ok, 'names of a culture the game lacks were accepted');
-r0 = E.addNation({ code: 'TST', name: 'Testland', flag: '🏁', region: 'SAM', pool: 'latin', style: 'flair', weight: 0.8 });
+check(
+  !E.addNation({ code: 'PER', name: 'Dup', flag: 'x', region: 'SAM', pool: 'latin' }).ok,
+  'a nation with the code of a built-in one was accepted',
+);
+check(
+  !E.addNation({ code: 'tst', name: 'Testland', flag: '', region: 'SAM', pool: 'latin' }).ok,
+  'a nation without a flag was accepted',
+);
+check(
+  !E.addNation({ code: 'TST', name: 'Testland', flag: 'x', region: 'MARS', pool: 'latin' }).ok,
+  'a nation on Mars was accepted',
+);
+check(
+  !E.addNation({ code: 'TST', name: 'Testland', flag: 'x', region: 'SAM', pool: 'klingon' }).ok,
+  'names of a culture the game lacks were accepted',
+);
+r0 = E.addNation({
+  code: 'TST',
+  name: 'Testland',
+  flag: '🏁',
+  region: 'SAM',
+  pool: 'latin',
+  style: 'flair',
+  weight: 0.8,
+});
 check(r0.ok, 'a valid nation was refused: ' + (r0.errors || []).join('; '));
 const d1 = def.clubs.filter((c) => c.league === 'D1');
 // edits through the validated calls
