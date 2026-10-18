@@ -2231,6 +2231,25 @@ main {
   width: 42%;
   padding: 10px 8px;
 }
+/* the browse screen's leagues, one dropdown a continent */
+.title .ng-conts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+.title .ng-conts select {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 8px;
+  font-size: 14px;
+}
+.title .ng-conts select.on {
+  border-color: #c8ff3d;
+}
+.title .ng-conts .chip {
+  grid-column: 1 / -1;
+}
 .title .ng-foot {
   position: sticky;
   bottom: 0;

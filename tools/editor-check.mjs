@@ -15,14 +15,11 @@ const { FM } = loadSim(+(args.seed || 7), {
     delete store[k];
   },
 });
-// every nation of the game has a league now: the test makes one that has none (a copy of Peru under another name)
-FM.D.NATIONS.TST = { ...FM.D.NATIONS.PER, name: 'Testland' };
-FM.D.NT_COLORS.TST = FM.D.NT_COLORS.PER;
-FM.D.NATIVE_POOL.TST = FM.D.NATIVE_POOL.PER;
 const W = FM.W,
   Sea = FM.Season,
   WD = FM.WorldDef,
   DB = FM.DbImport;
+let r0;
 const fails = [];
 const check = (ok, msg) => {
   if (!ok) fails.push(msg);
@@ -30,6 +27,13 @@ const check = (ok, msg) => {
 
 const def = WD.fromStatic({ name: 'Editor test' });
 const E = WD.editor(def, null);
+// every nation of the game has a league now: the test creates one of its own (the nation creator), with a league below
+check(!E.addNation({ code: 'PER', name: 'Dup', flag: 'x', region: 'SAM', pool: 'latin' }).ok, 'a nation with the code of a built-in one was accepted');
+check(!E.addNation({ code: 'tst', name: 'Testland', flag: '', region: 'SAM', pool: 'latin' }).ok, 'a nation without a flag was accepted');
+check(!E.addNation({ code: 'TST', name: 'Testland', flag: 'x', region: 'MARS', pool: 'latin' }).ok, 'a nation on Mars was accepted');
+check(!E.addNation({ code: 'TST', name: 'Testland', flag: 'x', region: 'SAM', pool: 'klingon' }).ok, 'names of a culture the game lacks were accepted');
+r0 = E.addNation({ code: 'TST', name: 'Testland', flag: '🏁', region: 'SAM', pool: 'latin', style: 'flair', weight: 0.8 });
+check(r0.ok, 'a valid nation was refused: ' + (r0.errors || []).join('; '));
 const d1 = def.clubs.filter((c) => c.league === 'D1');
 // edits through the validated calls
 let r = E.setClub(d1[0].id, {

@@ -1228,14 +1228,42 @@
     return s;
   };
   W.staffWage = (s) => Math.round((200 + Math.pow(s.judge || s.ability, 2.4) * 9) / 50) * 50;
-  // A scout knows their home region best, neighbouring regions a little
+  // Which parts of the world a region's staff come from after their own: where its football looks (a South American
+  // club's staff are South Americans, some Spaniards and Portuguese, a few from the rest), nearest first
+  W.REGION_TIES = {
+    ENG: ['EUR', 'AFR', 'NAM'],
+    EUR: ['ENG', 'AFR', 'SAM'],
+    SAM: ['EUR', 'NAM', 'AFR'],
+    NAM: ['SAM', 'ENG', 'EUR'],
+    ASIA: ['AFR', 'EUR', 'NAM'],
+    AFR: ['EUR', 'ENG', 'ASIA'],
+  };
+  // The nationality of a member of staff (or a scout) a club in `nat` would hire: mostly the club's own part of the world
+  // (a fifth the club's own nation), then the regions it has ties with, and now and then anyone
+  W.staffNation = function (nat) {
+    const home = (D.NATIONS[nat] || D.NATIONS.ENG).region,
+      all = D.nationCodes(),
+      inRegion = (r) => all.filter((n) => D.NATIONS[n].region === r);
+    const roll = Math.random();
+    if (roll < 0.2) return nat;
+    if (roll < 0.65) return U.pick(inRegion(home).concat([nat]));
+    const ties = W.REGION_TIES[home] || [];
+    if (roll < 0.9 && ties.length) {
+      const r = ties[Math.random() < 0.6 ? 0 : Math.random() < 0.6 ? 1 : ties.length - 1];
+      const list = inRegion(r);
+      if (list.length) return U.pick(list);
+    }
+    return U.pick(all);
+  };
+  // A scout knows their home region best, the regions their home has ties with a little, the rest hardly
   W.scoutProfile = function (nat, ability) {
     const home = D.NATIONS[nat].region;
+    const ties = W.REGION_TIES[home] || [];
     const regions = {};
-    for (const r in D.REGIONS)
-      regions[r] = U.clamp(U.rand(0.15, 0.5) + (r === home ? 0.45 : 0) + (r === 'ENG' ? 0.1 : 0), 0.1, 0.97);
-    const second = U.pick(Object.keys(D.REGIONS).filter((r) => r !== home));
-    regions[second] = Math.max(regions[second], U.rand(0.55, 0.8));
+    for (const r in D.REGIONS) regions[r] = U.clamp(U.rand(0.1, 0.35) + (r === home ? 0.6 : 0), 0.1, 0.97);
+    // (one near region is a second home: the first tie most often)
+    const second = Math.random() < 0.65 ? ties[0] : U.pick(ties);
+    if (second && D.REGIONS[second]) regions[second] = Math.max(regions[second], U.rand(0.5, 0.75));
     const judge = U.clamp(Math.round(ability + U.randi(-2, 2)), 6, 19);
     const best = Object.keys(regions).sort((a, b) => regions[b] - regions[a]);
     return {
@@ -1264,7 +1292,11 @@
     S.staffPool = [];
     roles.forEach((r) => {
       for (let i = 0; i < 2; i++) {
-        const nat = U.pick(D.nationCodes());
+        const nat = W.staffNation(
+          S.user && S.user.clubId && S.clubs[S.user.clubId]
+            ? S.clubs[S.user.clubId].nat
+            : (S.user && S.user.nat) || 'ENG',
+        );
         const st = W.genStaff(r, nat, { ability: Math.round(U.clamp(U.gauss(12, 3.5), 5, 20)) });
         if (r === 'Scout') (Object.assign(st, W.scoutProfile(nat, st.ability)), (st.wage = W.staffWage(st)));
         S.staffPool.push(st.id);
@@ -2371,26 +2403,17 @@
     const S = FM.S,
       prof = typeof who === 'string' ? { name: who } : who || {};
     const mgrName = prof.fn || prof.ln ? `${prof.fn || ''} ${prof.ln || ''}`.trim() : prof.name || 'New Manager';
-    const scouts = [
-      W.genStaff('Scout', 'ARG', {
-        ability: 15,
-        regions: { SAM: 0.95, EUR: 0.45, ENG: 0.55, NAM: 0.35, ASIA: 0.15, AFR: 0.3 },
-        judge: 15,
-        note: 'Excellent in Argentina & Brazil. Poor in Asia.',
-      }),
-      W.genStaff('Scout', 'JPN', {
-        ability: 13,
-        regions: { ASIA: 0.95, ENG: 0.4, EUR: 0.35, NAM: 0.4, SAM: 0.2, AFR: 0.2 },
-        judge: 13,
-        note: 'Knows every academy in Japan, Korea & Thailand.',
-      }),
-      W.genStaff('Scout', 'ENG', {
-        ability: 12,
-        regions: { ENG: 0.9, EUR: 0.7, AFR: 0.55, NAM: 0.3, SAM: 0.3, ASIA: 0.25 },
-        judge: 12,
-        note: 'Domestic expert with a good European network.',
-      }),
+    // The first three scouts come from where the club's football looks: one from its own nation, two from its part of the world
+    // (or a region it has ties with), each knowing their home region and a near one
+    const home = D.NATIONS[nat] ? nat : 'ENG',
+      region = D.NATIONS[home].region,
+      same = D.nationCodes().filter((n) => D.NATIONS[n].region === region && n !== home);
+    const startNat = [
+      home,
+      U.pick(same.length ? same : [home]),
+      Math.random() < 0.7 && same.length ? U.pick(same) : W.staffNation(home),
     ];
+    const scouts = [15, 13, 12].map((ability, i) => W.genStaff('Scout', startNat[i], { ability }));
     S.user = {
       name: mgrName,
       fn: prof.fn || mgrName.split(' ')[0],

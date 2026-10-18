@@ -1,8 +1,7 @@
-// Regional competitions: the English county cups and the Brazilian state championships. Small early-season
-// tournaments among the clubs of one area, played on their own days. A county cup is a knockout among the county's
-// clubs from every division (the big clubs send a reserve side, as they do); a state championship is a league phase
-// among the area's clubs and then a final between the top two. The clubs are listed by code (the part of an id after
-// c_). Where a state has too few clubs of its own in this world, neighbours play together.
+// Regional competitions: the Brazilian state championships. Small early-season tournaments among the clubs of one
+// area, played on their own days. A state championship is a league phase among the area's clubs and then a final
+// between the top two (an area can also be a knockout, 'ko', as the English county cups were: none is left). The clubs
+// are listed by code (the part of an id after c_). Where a state has too few clubs of its own in this world, neighbours play together.
 (function () {
   const FM = window.FM,
     U = FM.U,
@@ -13,27 +12,6 @@
 
   // [id, nation, format ('ko' knockout, 'rr' league phase and a final), name, short, club codes]
   D.AREAS = [
-    [
-      'ENG_LON',
-      'ENG',
-      'ko',
-      'Chelington Senior Cup',
-      'CHEC',
-      'CHE CHC QUA FIL BRA TAD TET TOU HAT EDE FAL DAA CSH WIT',
-    ],
-    ['ENG_MAN', 'ENG', 'ko', 'Baywick Senior Cup', 'BAYC', 'BAY BAA YEO SHR CAE'],
-    ['ENG_LAN', 'ENG', 'ko', 'Ryeworth Senior Cup', 'RYEC', 'RYE ROU YRN SHP BXS WED DRT LMR HAO'],
-    ['ENG_LIV', 'ENG', 'ko', 'Clifwold Senior Cup', 'CLIC', 'CLI CLC FOL'],
-    ['ENG_BIR', 'ENG', 'ko', 'Everwich Senior Cup', 'EVEC', 'EVE EVR YAR MER HOC LAU'],
-    ['ENG_STA', 'ENG', 'ko', 'South Bexwell Senior Cup', 'SOUC', 'BEX BES HOW YTH HYT'],
-    ['ENG_EMD', 'ENG', 'ko', 'Epington Senior Cup', 'EPIC', 'EPI CUR KIN ALD ABH WOK SCA EVA TAV'],
-    ['ENG_SHF', 'ENG', 'ko', 'North Litworth Senior Cup', 'NORC', 'LIT LIN WOR MAN DEN'],
-    ['ENG_YOR', 'ENG', 'ko', 'Selstow Senior Cup', 'SELC', 'SEL AME TUN PRU REA'],
-    ['ENG_NE', 'ENG', 'ko', 'Rodstead Senior Cup', 'RODC', 'ROD CAR HAS'],
-    ['ENG_SOU', 'ENG', 'ko', 'Calgate Senior Cup', 'CALC', 'TTH CAO RED CAL GLA'],
-    ['ENG_EAS', 'ENG', 'ko', 'Grenwold Senior Cup', 'GREC', 'GRT TUT BUR SUE MIA REY DAR HYD CLF'],
-    ['ENG_WES', 'ENG', 'ko', 'Reysey Senior Cup', 'REYC', 'REC RES TAR BED HUC CAI'],
-    ['ENG_TV', 'ENG', 'ko', 'Filcombe Senior Cup', 'FILC', 'FIU SUT DUW HAR'],
     ['BRA_RJ', 'BRA', 'rr', 'Campeonato Vila Maramirim', 'VILC', 'VIL VIM UNP NAC'],
     ['BRA_SP', 'BRA', 'rr', 'Campeonato Guarama', 'GUAC', 'GUA GUF GRE URU IPA CAT'],
     ['BRA_RS', 'BRA', 'rr', 'Campeonato Guina', 'GUIC', 'UNG GUI GRA'],
@@ -45,6 +23,10 @@
 
   // Saves and new worlds both get the competitions; their clubs and draws are made each season
   Rg.ensure = function (s) {
+    // (a competition the world no longer has, the English county cups of older saves, goes)
+    for (const id of Object.keys(s.comps))
+      if (s.comps[id].type === 'regional' && !D.AREAS.some((r) => compId(r) === id)) delete s.comps[id];
+    for (const d of s.calendar || []) if (d.regional && d.comps) d.comps = d.comps.filter((id) => s.comps[id]);
     for (const r of D.AREAS) {
       const id = compId(r);
       if (!s.comps[id])

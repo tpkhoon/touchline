@@ -311,13 +311,39 @@
     if (rv) bits.push(`the ${rv.derby} against ${rv.name}`);
     return `${bits.join(', ')}. ${WHY[project] || 'A good fit'}.`;
   };
+  // The continents the pickers group nations by (a nation's part of the world in the data, the British Isles with Europe,
+  // Australia and New Zealand apart from Asia)
+  G.CONTINENTS = [
+    ['europe', 'Europe'],
+    ['sam', 'South America'],
+    ['nam', 'North America'],
+    ['asia', 'Asia'],
+    ['africa', 'Africa'],
+    ['oceania', 'Oceania'],
+  ];
+  G.continentOf = (nat) => {
+    if (nat === 'AUS' || nat === 'NZL') return 'oceania';
+    const r = D.NATIONS[nat] && D.NATIONS[nat].region;
+    return { ENG: 'europe', EUR: 'europe', SAM: 'sam', NAM: 'nam', ASIA: 'asia', AFR: 'africa' }[r] || 'asia';
+  };
+  // [{ key, name, nations: [codes with a league, by name], leagues: [leagues] }] for the continents that have leagues
+  G.byContinent = () =>
+    G.CONTINENTS.map(([key, name]) => {
+      const nations = [...new Set(D.LEAGUES.map((l) => l.nat))]
+        .filter((n) => G.continentOf(n) === key)
+        .sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name));
+      return { key, name, nations };
+    }).filter((c) => c.nations.length);
   G.recommend = function (want, skip = []) {
     const t = TARGET[want.diff] ?? 0.32,
       proj = PROJECT[want.project] || PROJECT.underdog;
     const pool = Object.values(G.index().byCode).filter((e) => {
       if (skip.includes(e.row[1])) return false;
       if (want.where && want.where !== 'any') {
-        if (want.where.startsWith('nat:') ? e.l.nat !== want.where.slice(4) : e.l.id !== want.where) return false;
+        if (want.where.startsWith('cont:')) {
+          if (G.continentOf(e.l.nat) !== want.where.slice(5)) return false;
+        } else if (want.where.startsWith('nat:') ? e.l.nat !== want.where.slice(4) : e.l.id !== want.where)
+          return false;
       }
       return true;
     });

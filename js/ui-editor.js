@@ -23,6 +23,15 @@
   // The nations of the game (Catalonia and the Basque Country only when the world adds them)
   const natEntries = () =>
     Object.entries(D.NATIONS).filter(([, n]) => !n.optional || (ED && ED.def.rules.regionNations));
+  // The nations the world adds are in the static data while the editor is open (so its lists, flags and checks know them)
+  const syncNations = () => {
+    if (ED.natUndo) ED.natUndo();
+    ED.natUndo = WD.addNations(ED.def.newNations || []);
+  };
+  const dropNations = () => {
+    if (ED && ED.natUndo) ED.natUndo();
+    if (ED) ED.natUndo = null;
+  };
   const natOf = (l) => D.NATIONS[l.nat] || { flag: '', name: l.nat };
   const clubsOf = (lid) => ED.def.clubs.filter((c) => c.league === lid);
   const leagueOf = (id) => ED.def.leagues.find((l) => l.id === id);
@@ -70,6 +79,7 @@
   };
   UI.acts.edClose = () => {
     const toTitle = ED && ED.fromTitle;
+    dropNations();
     ED = null;
     const cur = UI._ng().db;
     if (cur && cur.ok) DB.stage(cur);
@@ -84,6 +94,7 @@
       return UI.worldEditor();
     }
     const res = { ...s.chk, def: ED.def, adapter: 'editor', adapterName: 'World editor', notes: [] };
+    dropNations(); // (the nations the world adds go into the data with the rest of its patch)
     DB.stage(res);
     UI._ng().db = res;
     UI._ng().dbErr = [];
@@ -3628,6 +3639,8 @@
     const by = {};
     for (const [code, n] of natEntries()) (by[n.region] = by[n.region] || []).push([code, n]);
     return `<div class="h1" style="margin-top:2vh">National teams</div><div class="tag">Name, colours and ranking points of each national team. Tap one. A nation with too few players to field a squad has no team in the world.</div>
+      <div class="card tap" style="margin:8px 0;padding:10px 12px;border-style:dashed" data-act="edNewNation"><div class="row"><div class="grow"><div class="small b">＋ Create a nation</div><div class="tiny dim">A nation of your own, with its flag, names and players</div></div><span class="dim">›</span></div></div>
+      ${(ED.def.newNations || []).length ? `<div class="ng-label">Nations of your own</div>${ED.def.newNations.map((n) => `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edEditNewNation" data-code="${esc(n.code)}"><div class="row"><div class="grow"><div class="small b">${esc(n.flag)} ${esc(n.name)}</div><div class="tiny dim">${esc(n.code)} · ${esc(WD.NATION_REGIONS[n.region] || n.region)} · ${esc(n.pool)} names</div></div><span class="dim">edit ›</span></div></div>`).join('')}` : ''}
       ${Object.entries(by)
         .map(
           ([region, list]) =>
@@ -3641,6 +3654,102 @@
         )
         .join('')}
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
+  };
+  // ---------- A nation of your own ----------
+  // A name, a flag, a part of the world, the culture its players' names come from, how it plays, colours, and how common its
+  // players are abroad. Leagues, clubs and players can then belong to it, and with 16 players it fields a national team.
+  const poolLabel = (k) => k.replace(/^./, (c) => c.toUpperCase());
+  const newNationView = () => {
+    const cur = (ED.def.newNations || []).find((n) => n.code === ED.ncode),
+      n = cur || {
+        code: '',
+        name: '',
+        flag: '🏳️',
+        region: 'EUR',
+        pool: 'english',
+        style: 'technical',
+        colors: ['#2255cc', '#ffffff'],
+        weight: 0.5,
+      };
+    const opts = (obj, sel) =>
+      Object.entries(obj)
+        .map(
+          ([k, v]) =>
+            `<option value="${esc(k)}" ${sel === k ? 'selected' : ''}>${esc(Array.isArray(v) ? v[0] : v)}</option>`,
+        )
+        .join('');
+    const pools = Object.keys(D.NAME_POOLS)
+      .sort()
+      .map((k) => `<option value="${esc(k)}" ${n.pool === k ? 'selected' : ''}>${esc(poolLabel(k))}</option>`)
+      .join('');
+    return `<div class="h1" style="margin-top:2vh">${cur ? `${esc(n.flag)} ${esc(n.name)}` : 'Create a nation'}</div><div class="tag">A nation of your own: its players, leagues and clubs. Add a league for it afterwards (Add a league, then pick it as the nation), and its players turn up in every league too.</div>
+      ${errBox()}
+      <div class="ng-names"><div style="flex:3"><div class="ng-label" style="margin-top:0">Name</div><input type="text" id="ed-nnname" maxlength="30" value="${esc(n.name)}" data-input="edNnAuto" autocomplete="off"></div><div style="flex:1;min-width:84px"><div class="ng-label" style="margin-top:0">Code</div><input type="text" id="ed-nncode" maxlength="3" value="${esc(n.code)}" ${cur ? 'readonly' : ''} style="text-transform:uppercase" placeholder="ABC"></div></div>
+      <div class="ng-names"><div style="flex:1"><div class="ng-label">Flag <span class="tiny dim">· any emoji</span></div><input type="text" id="ed-nnflag" maxlength="12" value="${esc(n.flag)}"></div><div style="flex:2"><div class="ng-label">Part of the world</div><select id="ed-nnregion">${opts(WD.NATION_REGIONS, n.region)}</select></div></div>
+      <div class="ng-label">Players' names come from <span class="tiny dim">· the culture of their first names and surnames</span></div>
+      <select id="ed-nnpool">${pools}</select>
+      <div class="ng-label">How they play</div>
+      <select id="ed-nnstyle">${opts(WD.NATION_STYLES, n.style)}</select>
+      <div class="ng-label">Colours</div>
+      <div class="row" style="gap:10px"><input type="color" id="ed-nnc1" value="${esc(n.colors[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="ed-nnc2" value="${esc(n.colors[1])}" style="width:64px;height:44px;padding:2px"></div>
+      <div class="ng-label">Players abroad <b id="ed-nnwv" style="color:#e6edf6">${n.weight}</b> <span class="tiny dim">(per cent of a league's players: 0.2 a small nation, 1 a big football country, 3 a giant)</span></div>
+      <input type="range" id="ed-nnweight" min="0.1" max="3" step="0.1" value="${n.weight}" style="width:100%">
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Players are made for the nation in every league by this share, and fill most of the squads of its own leagues. With sixteen of them it has a national team (name, colours and ranking points under National teams).</div>
+      ${cur ? '<div class="actions" style="margin-top:14px"><button class="btn sm danger" data-act="edDeleteNewNation">Remove this nation</button></div>' : ''}
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="nations" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveNewNation">${cur ? 'Save' : 'Create the nation'}</button></div>`;
+  };
+  UI.acts.edNewNation = () => {
+    ED.view = 'newnation';
+    ED.ncode = null;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edEditNewNation = (d) => {
+    ED.view = 'newnation';
+    ED.ncode = d.code;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  // (a code from the name, until you type one: the first three letters)
+  UI.acts.edNnAuto = (d, el) => {
+    const code = $('#ed-nncode');
+    if (!code || code.readOnly || code.dataset.typed) return;
+    code.value = el.value
+      .normalize('NFD')
+      .replace(/[^A-Za-z]/g, '')
+      .slice(0, 3)
+      .toUpperCase();
+  };
+  UI.acts.edSaveNewNation = () => {
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const r = WD.editor(ED.def, null).addNation({
+      code: v('nncode'),
+      name: v('nnname'),
+      flag: v('nnflag'),
+      region: v('nnregion'),
+      pool: v('nnpool'),
+      style: v('nnstyle'),
+      colors: [v('nnc1'), v('nnc2')],
+      weight: +v('nnweight'),
+    });
+    if (!r.ok) {
+      ED.err = r.errors;
+      return UI.worldEditor();
+    }
+    ED.view = 'nations';
+    ED.err = [];
+    UI.toast('Nation saved', 1500);
+    UI.worldEditor();
+  };
+  UI.acts.edDeleteNewNation = () => {
+    const r = WD.editor(ED.def, null).removeNation(ED.ncode);
+    if (!r.ok) {
+      ED.err = r.errors;
+      return UI.worldEditor();
+    }
+    ED.view = 'nations';
+    ED.err = [];
+    UI.worldEditor();
   };
   const nationView = () => {
     const N = D.NATIONS[ED.code];
@@ -4023,6 +4132,7 @@
 
   UI.worldEditor = function () {
     if (!ED) return UI.newCareer();
+    syncNations();
     const app = $('#app');
     const views = {
       league: leagueView,
@@ -4045,6 +4155,7 @@
       nations: nationsView,
       confeds: confedsView,
       nation: nationView,
+      newnation: newNationView,
       history: historyView,
       season: seasonView,
       seasoncup: seasonCupView,
@@ -4111,6 +4222,9 @@
       );
     });
     bind('ed-rep', (v) => ($('#ed-repv').textContent = v));
+    bind('ed-nnweight', (v) => ($('#ed-nnwv').textContent = v));
+    if (ED.view === 'newnation' && $('#ed-nncode'))
+      $('#ed-nncode').addEventListener('input', (e) => (e.target.dataset.typed = '1'));
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
     bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
     bind('ed-mrep', (v) => ($('#ed-mrepv').textContent = v));

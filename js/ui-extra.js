@@ -1903,10 +1903,13 @@
               .join('')
           : '<div class="empty">None of your players have been capped yet.</div>'
       }</div>
-      <div class="sec"><div class="h3">World ranking</div><span class="dim small">Coefficient</span></div>
-      <div class="card flat" style="padding:6px 10px"><table class="t">${ranked
+      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row"><div class="h3 grow">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient</span></div></summary>
+      <select data-input="intlRegion" style="margin:8px 0" aria-label="Part of the world"><option value="all">The whole world</option>${FM.Guide.CONTINENTS.map(([k, n]) => `<option value="${k}" ${UI._intlReg === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
+      <table class="t">${ranked
+        .map((t, i) => [t, i])
+        .filter(([t]) => !UI._intlReg || UI._intlReg === 'all' || FM.Guide.continentOf(t.code) === UI._intlReg)
         .map(
-          (t, i) =>
+          ([t, i]) =>
             `<tr class="tap" data-act="nation" data-id="${t.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px"><span>${C.flag(t.code)}</span><span class="ellip" style="max-width:120px">${esc(t.name)}</span>${
               Object.keys(t.titles).length
                 ? `<span class="tiny">${'🏆'.repeat(
@@ -1918,7 +1921,7 @@
                 : ''
             }</div></td><td class="b">${t.coef.toFixed(1)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
         )
-        .join('')}</table></div>
+        .join('')}</table></details>
       <div class="sec"><div class="h3">Recent results</div></div>
       <div class="card flat" style="padding:2px 12px">${
         s.intlLog
@@ -1928,6 +1931,11 @@
       }</div>
       <div class="sec"><div class="h3">Tournament history</div></div>
       <div class="card flat" style="padding:4px 12px">${history.length ? history.map((x) => `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span class="dim" style="width:48px">${x.year + 1}</span><div class="grow"><div class="b">${esc(x.name)}</div><div class="tiny dim">Final ${esc(x.final)} v ${esc(T(x.runnerUp).name)}${x.topScorer ? ` · top scorer ${esc(x.topScorer.name)} (${x.topScorer.goals})` : ''}</div></div><b>${C.flag(T(x.winner).code)} ${esc(T(x.winner).name)}</b></div>`).join('') : '<div class="empty">The first tournament is played at the end of this season.</div>'}</div>`;
+  };
+  // The world ranking's part-of-the-world filter
+  UI.acts.intlRegion = (d, el) => {
+    UI._intlReg = el.value;
+    UI.render();
   };
   UI.acts.nation = (d) => {
     const t = T(d.id),

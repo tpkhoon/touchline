@@ -1089,7 +1089,8 @@
         const q = plain(NG.q.trim());
         const html = D.LEAGUES.map((l, i) => {
           const { id: cid, clubs: key, nat } = l;
-          if (NG.lg !== 'all' && NG.lg !== cid) return '';
+          if (NG.lg.startsWith('cont:') ? G.continentOf(nat) !== NG.lg.slice(5) : NG.lg !== 'all' && NG.lg !== cid)
+            return '';
           if (NG.reg && NG.reg !== 'all' && UI.mapRegionOf && !regionHas(NG.reg, nat)) return '';
           // B teams (row[9] names the parent) aren't yours to manage: their players belong to the parent club
           const rows = D[key].filter(
@@ -1115,14 +1116,21 @@
         `<div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button>${extra}<button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
       const rowOf = (code) => D.allClubRows().find((r) => r[1] === code);
       if (view === 'ask') {
-        const leagueOpts = [...new Set(D.LEAGUES.map((l) => l.nat))]
+        // (arranged by continent: each has an "anywhere in" line, then its nations, each with its leagues)
+        const leagueOpts = G.byContinent()
           .map(
-            (nat) =>
-              `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}"><option value="nat:${nat}" ${NG.want.where === 'nat:' + nat ? 'selected' : ''}>Anywhere in ${esc(D.NATIONS[nat].name)}</option>${D.LEAGUES.filter(
-                (l) => l.nat === nat,
-              )
+            (c) =>
+              `<optgroup label="${esc(c.name.toUpperCase())}"><option value="cont:${c.key}" ${NG.want.where === 'cont:' + c.key ? 'selected' : ''}>Anywhere in ${esc(c.name)}</option>${c.nations
                 .map(
-                  (l) => `<option value="${l.id}" ${NG.want.where === l.id ? 'selected' : ''}>${esc(l.name)}</option>`,
+                  (nat) =>
+                    `<option value="nat:${nat}" ${NG.want.where === 'nat:' + nat ? 'selected' : ''}>${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}</option>${D.LEAGUES.filter(
+                      (l) => l.nat === nat,
+                    )
+                      .map(
+                        (l) =>
+                          `<option value="${l.id}" ${NG.want.where === l.id ? 'selected' : ''}>&nbsp;&nbsp;&nbsp;${esc(l.name)}</option>`,
+                      )
+                      .join('')}`,
                 )
                 .join('')}</optgroup>`,
           )
@@ -1208,18 +1216,26 @@
           ${foot('')}`;
       } else {
         body = `<div class="h1" style="margin-top:2vh">Browse all clubs</div><div class="tag">Every club has an identity and a difficulty. The board and fans will judge you by them.</div><div class="sp"></div>
-          <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"><select id="ng-lg"><option value="all">All leagues</option>${[
-            ...new Set(D.LEAGUES.map((l) => l.nat)),
-          ]
-            .map(
-              (nat) =>
-                `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}">${D.LEAGUES.filter(
-                  (l) => l.nat === nat,
+          <div class="ng-find"><input type="search" id="ng-q" placeholder="Search club or city" value="${esc(NG.q)}" autocomplete="off"></div>
+          <div class="ng-conts">${G.byContinent()
+            .map((c) => {
+              const inC = (id) => {
+                const l = D.LEAGUES.find((x) => x.id === id);
+                return l && G.continentOf(l.nat) === c.key;
+              };
+              const on = NG.lg === 'cont:' + c.key || inC(NG.lg);
+              return `<select class="ng-lg ${on ? 'on' : ''}" data-k="${c.key}" aria-label="${esc(c.name)}">${on ? '' : `<option value="" disabled hidden selected>${esc(c.name)}</option>`}<option value="cont:${c.key}" ${NG.lg === 'cont:' + c.key ? 'selected' : ''}>${esc(c.name)}: all</option>${c.nations
+                .map(
+                  (nat) =>
+                    `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}">${D.LEAGUES.filter(
+                      (l) => l.nat === nat,
+                    )
+                      .map((l) => `<option value="${l.id}" ${NG.lg === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
+                      .join('')}</optgroup>`,
                 )
-                  .map((l) => `<option value="${l.id}" ${NG.lg === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
-                  .join('')}</optgroup>`,
-            )
-            .join('')}</select></div>
+                .join('')}</select>`;
+            })
+            .join('')}${NG.lg !== 'all' ? '<button class="chip" data-act="ngLgAll">All leagues</button>' : ''}</div>
           ${NG.reg && NG.reg !== 'all' && NG.reg !== 'world' ? `<div class="tiny" style="color:#9fb0c5;margin:0 2px 6px">Region: <b>${esc(UI.MAP_REGIONS[NG.reg][0])}</b> · <span class="tap" data-act="ngBrowseRegion" data-v="all" style="color:#c8ff3d">show every region</span></div>` : ''}
           <div class="seg" style="margin:0 0 4px">${[
             ['all', 'Any'],
@@ -1263,17 +1279,18 @@
     const ngWhere = $('#ng-where');
     if (ngWhere) ngWhere.addEventListener('change', () => (NG.want.where = ngWhere.value));
     const ngQ = $('#ng-q'),
-      ngLg = $('#ng-lg');
+      ngLgs = document.querySelectorAll('.ng-lg');
     if (ngQ)
       ngQ.addEventListener('input', () => {
         NG.q = ngQ.value;
         $('#ng-list').innerHTML = UI._ngList();
       });
-    if (ngLg)
-      ngLg.addEventListener('change', () => {
-        NG.lg = ngLg.value;
-        $('#ng-list').innerHTML = UI._ngList();
-      });
+    ngLgs.forEach((sel) =>
+      sel.addEventListener('change', () => {
+        NG.lg = sel.value;
+        UI.newCareer(); // (the other continents' menus go back to their names)
+      }),
+    );
     const fn = $('#ng-fn'),
       ln = $('#ng-ln'),
       nat = $('#ng-nat');
@@ -1398,6 +1415,10 @@
   };
   UI.acts.ngWant = (d) => {
     NG.want[d.k] = d.v;
+    UI.newCareer();
+  };
+  UI.acts.ngLgAll = () => {
+    NG.lg = 'all';
     UI.newCareer();
   };
   UI.acts.ngDiff = (d) => {

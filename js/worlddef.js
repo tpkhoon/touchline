@@ -53,6 +53,7 @@
     agents: [], // the names of the agent firms (empty: the game's own)
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
     nations: [], // national teams: { code, name, short, colors, coef }
+    newNations: [], // nations the world adds: { code, name, flag, region, pool, style, colors, weight }
     confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
     history: { seasons: [] },
   });
@@ -621,6 +622,7 @@
       newCups: [],
       removeCups: [],
       newConts: [],
+      newNations: JSON.parse(JSON.stringify(def.newNations || [])),
       intl: null,
       agents: null,
       calendar: null,
@@ -790,10 +792,100 @@
       (p.newCups || []).length ||
       (p.newConts || []).length ||
       (p.removeCups || []).length ||
+      (p.newNations || []).length ||
       p.agents ||
       p.intl ||
       p.calendar
     );
+
+  // ---------- Nations a world adds ----------
+  // A nation of its own: a name, a flag (an emoji), a part of the world, the culture its players' names come from, how it plays,
+  // its colours, and how common its players are in leagues abroad (weight, in per cent of a league's players). Its players turn
+  // up in every league by that weight and fill the clubs of its own leagues; with 16 players it has a national team.
+  WD.NATION_REGIONS = { EUR: 'Europe', SAM: 'South America', NAM: 'North America', ASIA: 'Asia', AFR: 'Africa' };
+  WD.NATION_STYLES = {
+    flair: ['Flair and technique', { dribbling: 2, technique: 1.5, finishing: 1 }],
+    physical: ['Hard-working and physical', { workRate: 2, strength: 1.5, stamina: 1 }],
+    technical: ['Disciplined technicians', { technique: 1.5, passing: 1.5, workRate: 1 }],
+    quick: ['Quick and relentless', { pace: 1.5, stamina: 1.5, workRate: 1 }],
+    smart: ['Street-smart competitors', { dribbling: 1, vision: 1.5, composure: 1.5, tackling: 1 }],
+  };
+  // The nation as the static data keeps it (name pools are filled in by D.widenNames)
+  const nationEntry = (n) => {
+    const st = WD.NATION_STYLES[n.style] || WD.NATION_STYLES.technical;
+    return {
+      name: n.name,
+      flag: n.flag,
+      region: n.region,
+      style: st[0],
+      bias: { ...st[1] },
+      fn: [],
+      ln: [],
+      custom: true,
+    };
+  };
+  // Put the definition's nations into the static data (the ones not there yet); returns what takes them out again
+  const addNations = (list) => {
+    const added = [];
+    for (const n of list || []) {
+      if (!n || !n.code || D.NATIONS[n.code]) continue;
+      D.NATIONS[n.code] = nationEntry(n);
+      D.NATIVE_POOL[n.code] = n.pool;
+      D.NT_COLORS[n.code] = (n.colors || ['#FFFFFF', '#000000']).slice(0, 2);
+      D.POOL_NATS[n.pool] = [...(D.POOL_NATS[n.pool] || []), n.code];
+      const w = n.weight != null ? n.weight : 0.5;
+      for (const l of D.LEAGUES) {
+        const mix = D.NAT_MIX[l.id];
+        if (!mix) continue;
+        const nat = D.NATIONS[l.nat];
+        const same = nat && nat.region === n.region;
+        mix[n.code] = Math.round(w * (same ? 1.2 : 0.35) * 100) / 100;
+      }
+      added.push(n);
+    }
+    if (added.length) D.widenNames();
+    return function remove() {
+      for (const n of added) {
+        delete D.NATIONS[n.code];
+        delete D.NATIVE_POOL[n.code];
+        delete D.NT_COLORS[n.code];
+        D.POOL_NATS[n.pool] = (D.POOL_NATS[n.pool] || []).filter((c) => c !== n.code);
+        for (const k of Object.keys(D.NAT_MIX)) delete D.NAT_MIX[k][n.code];
+      }
+    };
+  };
+  WD.addNations = addNations;
+  WD.validateNewNations = function (def) {
+    const e = [],
+      seen = new Set(),
+      names = new Set();
+    for (const n of def.newNations || []) {
+      const at = `new nation ${n.code || '?'}`;
+      if (!/^[A-Z]{3}$/.test(n.code || '')) e.push(`${at}: the code is three capital letters`);
+      else if (D.NATIONS[n.code] && !D.NATIONS[n.code].custom)
+        e.push(`${at}: the game already has a nation with that code`);
+      if (seen.has(n.code)) e.push(`${at}: two nations with that code`);
+      seen.add(n.code);
+      const name = String(n.name || '').trim();
+      if (name.length < 2 || name.length > 30) e.push(`${at}: the name is 2 to 30 characters`);
+      if (names.has(name.toLowerCase())) e.push(`${at}: two nations are called ${name}`);
+      else if (Object.entries(D.NATIONS).some(([k, x]) => !x.custom && x.name.toLowerCase() === name.toLowerCase()))
+        e.push(`${at}: the game already has a nation called ${name}`);
+      names.add(name.toLowerCase());
+      const flag = String(n.flag || '').trim();
+      if (!flag || flag.length > 12) e.push(`${at}: the flag is an emoji (up to 12 characters)`);
+      if (!WD.NATION_REGIONS[n.region])
+        e.push(`${at}: the part of the world is one of ${Object.keys(WD.NATION_REGIONS).join(', ')}`);
+      if (!D.NAME_POOLS[n.pool]) e.push(`${at}: no names of the culture "${n.pool}"`);
+      if (n.style != null && !WD.NATION_STYLES[n.style])
+        e.push(`${at}: the way they play is one of ${Object.keys(WD.NATION_STYLES).join(', ')}`);
+      if (n.colors && !(Array.isArray(n.colors) && n.colors.length >= 2 && n.colors.every((x) => HEX.test(x))))
+        e.push(`${at}: colours must be two #rrggbb values`);
+      if (n.weight != null && !(n.weight >= 0.1 && n.weight <= 3))
+        e.push(`${at}: how common its players are is between 0.1 and 3`);
+    }
+    return e;
+  };
 
   // Put a patch into the static data; returns what undoes it
   function applyPatch(patch) {
@@ -830,6 +922,7 @@
       euroPrize: (D.EURO_CUPS || []).map((c) => c.prize),
       intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE }),
     };
+    const removeNations = addNations(patch.newNations); // (before the leagues: their mixes are copied from a twin)
     for (const l of patch.leagues) {
       let cur = D.LEAGUES.find((x) => x.id === l.id);
       if (!cur) {
@@ -919,6 +1012,7 @@
       }
     }
     return function undo() {
+      removeNations();
       D.LEAGUES.length = 0;
       for (const s of snap.leagues) {
         for (const k of Object.keys(s.o)) delete s.o[k];
@@ -2447,8 +2541,67 @@
         def.nations = (def.nations || []).filter((n) => n.code !== code);
         return result([]);
       },
+      // a nation of the world's own (see WD.NATION_REGIONS and WD.NATION_STYLES for the choices)
+      addNation(spec) {
+        const n = {
+          code: String(spec.code || '')
+            .trim()
+            .toUpperCase(),
+          name: String(spec.name || '').trim(),
+          flag: String(spec.flag || '').trim(),
+          region: spec.region,
+          pool: spec.pool,
+          style: spec.style || 'technical',
+          colors: (spec.colors || ['#2255cc', '#ffffff']).slice(0, 2),
+          weight: spec.weight != null ? +spec.weight : 0.5,
+        };
+        const list = def.newNations || (def.newNations = []);
+        const test = { ...def, newNations: [...list.filter((x) => x.code !== n.code), n] };
+        const errs = WD.validateNewNations(test);
+        if (errs.length) return result(errs);
+        const i = list.findIndex((x) => x.code === n.code);
+        if (i >= 0) list[i] = n;
+        else list.push(n);
+        return result([]);
+      },
+      // takes a nation out of the world: refused while a league, club, player, staff member or national team still belongs to it
+      removeNation(code) {
+        const uses = [];
+        if ((def.leagues || []).some((l) => l.nat === code)) uses.push('a league');
+        if ((def.clubs || []).some((c) => c.nat === code)) uses.push('a club');
+        if ((def.players || []).some((p) => p.nat === code)) uses.push('a player');
+        if ((def.staff || []).some((s) => s.nat === code)) uses.push('a coach or scout');
+        if ((def.managers || []).some((m) => m.nat === code)) uses.push('a manager');
+        if (
+          (def.confeds && def.confeds.members && def.confeds.members[code]) ||
+          (def.nations || []).some((n) => n.code === code)
+        )
+          uses.push('a confederation or national team entry');
+        if (uses.length) return result([`${code} still has ${uses.join(', ')}: move or remove those first`]);
+        def.newNations = (def.newNations || []).filter((n) => n.code !== code);
+        return result([]);
+      },
       validate: () => WD.validate(def, S),
     };
     return E;
   };
+
+  // A definition's own nations are in the static data while it is checked, so its leagues, clubs, players and national teams
+  // may be of a nation it adds
+  {
+    const base = WD.validate;
+    WD.validate = function (def, S = FM.S) {
+      const own = WD.validateNewNations(def);
+      const valid = (def.newNations || []).filter(
+        (n) => /^[A-Z]{3}$/.test(n.code || '') && D.NAME_POOLS[n.pool] && WD.NATION_REGIONS[n.region],
+      );
+      const remove = addNations(valid);
+      try {
+        const r = base(def, S);
+        return { ...r, errors: [...own, ...r.errors] };
+      } finally {
+        remove();
+      }
+    };
+  }
 })();

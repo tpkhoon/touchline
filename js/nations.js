@@ -98,6 +98,14 @@
   // Cultures of their own for nations that had borrowed a neighbour's pool (the Baltic states and Armenia, Slovakia, Slovenia,
   // Bulgaria, Azerbaijan, Kazakhstan, Pakistan, Bangladesh and the east and southern African nations)
   Object.assign(D.NAME_POOLS, {
+    swedish: P(
+      `Erik Lars Karl Anders Johan Per Nils Mikael Jan Hans Olof Gustav Oskar Axel Viktor Emil Filip Hugo Elias Liam William Alfred Isak Adam Leo Albin Melker Love Sixten Ludvig Måns Tobias Fredrik Henrik Marcus Joakim Jonas Mattias Daniel Rasmus Simon Pontus Sebastian Anton Linus Robin Kalle Stellan Rickard`,
+      `Andersson Johansson Karlsson Nilsson Eriksson Larsson Olsson Persson Svensson Gustafsson Pettersson Jonsson Jansson Hansson Bengtsson Jönsson Lindberg Jakobsson Magnusson Olofsson Lindström Lindqvist Lindgren Axelsson Berg Bergström Lundberg Lund Holm Sjöberg Forsberg Åberg Nyström Hedlund Ekström Dahlberg Strand Wallin Engström Sandberg Fredriksson Eklund Håkansson`,
+    ),
+    norwegian: P(
+      `Jørgen Sander Magnus Henrik Håkon Sindre Eirik Even Torbjørn Terje Kjetil Svein Ole Per Bjørn Knut Arne Tor Geir Trond Øyvind Stian Espen Tobias Mathias Markus Kristian Andreas Lars Odd Ulrik Halvor Fredrik Vegard Ivar Gunnar Leif Erlend Brage Eskil Jens Mikkel Thorvald`,
+      `Hansen Johansen Olsen Larsen Andersen Nilsen Pedersen Kristiansen Jensen Karlsen Johnsen Pettersen Eriksen Berg Haugen Hagen Johannessen Andreassen Jacobsen Dahl Jørgensen Halvorsen Henriksen Lund Sørensen Moen Gundersen Iversen Strand Solberg Svendsen Eide Knutsen Martinsen Paulsen Bakken Kristoffersen Mathisen Lie Amundsen Brenden Ness Tvedt Dalen Grimstad`,
+    ),
     estonian: P(
       `Andres Toomas Kristjan Mart Margus Siim Rasmus Karl Madis Priit Jaan Tõnu Rein Urmas Raivo Marko Henri Kevin Sander Taavi Joonas Mihkel Oliver Märt Indrek Aivar Ragnar Artur Hindrek Kaarel Ott Raimond Ahto Kaspar Erki Kalev Peeter Ülo Heiki`,
       `Tamm Saar Sepp Mägi Kask Kukk Rebane Ilves Pärn Koppel Oja Luik Kuusk Lepik Raud Kallas Põder Karu Vaher Laur Liiv Mets Org Pettai Kangur Rätsep Sild Soo Teder Toom Aavik Eenmaa Kivi Kõiv Lill Paas Piir Reimann Siim Ots`,
@@ -164,6 +172,8 @@
     ),
   });
 
+  D.NATIVE_POOL.NOR = 'norwegian'; // (Norway has a culture of its own; Denmark keeps the Nordic pool)
+
   // ---------- The nations ----------
   // [code, name, flag, region, style, bias, culture, weight (% of the mix of a league abroad), ties (league nations their
   // players go to), colours, extra culture]
@@ -188,7 +198,7 @@
       'EUR',
       'Organised and athletic',
       { strength: 1.5, stamina: 1, workRate: 1 },
-      'nordic',
+      'swedish',
       0.9,
       ['DEN', 'NOR', 'ENG', 'GER', 'NED', 'BEL'],
       ['#FECC02', '#006AA7'],
