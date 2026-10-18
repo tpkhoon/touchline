@@ -59,7 +59,6 @@
     "realplayers:fetch": "node --max-old-space-size=2048 tools/realplayers-fetch.mjs",
     "realplayers:build": "node --max-old-space-size=4096 tools/realplayers-build.mjs",
     "setpieces": "node --max-old-space-size=6144 tools/wyscout-setpieces.mjs",
-    "clips": "node tools/lastrow-clips.mjs",
     "test:crawl": "node tools/crawl.mjs",
     "test:visual": "node tools/visual.mjs",
     "visual:update": "node tools/visual.mjs --update",

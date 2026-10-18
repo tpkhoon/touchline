@@ -1,4 +1,4 @@
-// Adds the sixteen top flights of tools/newleagues-data.mjs to the game: fictional clubs from the name library, written into
+// Adds the sixteen top flights of newleagues-data.mjs (in the private folder) to the game: fictional clubs from the name library, written into
 // js/clubs.js (club rows, abbreviations, nicknames, derbies) and js/data.js (the leagues, their nationality mixes and their
 // places in the continental cups), and into the two names databases (data/real-world.json with the real structure,
 // data/fictional-world.json with the generated names).
@@ -8,8 +8,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs, loadSim, ROOT } from './harness.mjs';
 import { generate } from './worldgen.mjs';
-import { LEAGUES } from './newleagues-data.mjs';
+import { pathToFileURL } from 'node:url';
 import { privateFile, missing } from './private.mjs';
+
+// The structure of the sixteen leagues (each club by code with its real town, colours and standing) is in the private folder
+const dataFile = privateFile('newleagues-data.mjs');
+if (!dataFile) {
+  console.log(missing('newleagues-data.mjs'));
+  process.exit(0);
+}
+const { LEAGUES } = await import(pathToFileURL(dataFile).href);
 
 const args = parseArgs();
 const seed = +(args.seed || 16);

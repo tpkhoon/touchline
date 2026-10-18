@@ -1922,7 +1922,7 @@
       sim: 'full',
       clubs: 'CLUBS_DE1',
       repBand: [89, 58],
-      rules: { qualify: { to: 'CC', n: 3 }, relegate: { to: 'DE2', n: 2, playoff: true } }, // 16th plays the 3rd of the 2. Bundesliga
+      rules: { qualify: { to: 'CC', n: 3 }, relegate: { to: 'DE2', n: 2, playoff: true } }, // 16th plays the 3rd of the second division
     },
     {
       id: 'DE2',
@@ -2839,7 +2839,7 @@
     ES1: ['h2h', 'gd', 'gf'], // LaLiga: head-to-head first
     ES2: ['h2h', 'gd', 'gf'],
     ES3: ['h2h', 'gd', 'gf'],
-    IT1: ['h2h', 'gd', 'gf'], // Serie A and B: head-to-head first
+    IT1: ['h2h', 'gd', 'gf'], // the Italian top two divisions: head-to-head first
     IT2: ['h2h', 'gd', 'gf'],
     PT1: ['h2h', 'gd', 'gf'],
     TR1: ['h2h', 'gd', 'gf'],
@@ -2892,7 +2892,7 @@
   // single matches at the home of the club drawn first (the lower-division club, in the real draws), with extra
   // time and penalties. Away goals do not count anywhere: no competition has used them since 2021–22.
   FM.D.DOMESTIC_CUPS = [
-    ['CUPENG', 'ENG', 'English National Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at Wembley
+    ['CUPENG', 'ENG', 'English National Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at the national stadium
     ['CUPESP', 'ESP', 'Spanish Copa del Rey Fundador', 'ESPC', { neutral: [2] }], // single-leg semi-finals since 2019–20
     ['CUPGER', 'GER', 'German Bundespokal Neu', 'GERC', { neutral: [2] }], // final in Berlin
     ['CUPFRA', 'FRA', 'French Coupe Nationale', 'FRAC', { neutral: [2] }],

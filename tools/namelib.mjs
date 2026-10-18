@@ -1024,7 +1024,7 @@ const CLUB_MORE = {
     'Arminia {c}',
   ],
   fra: ['Olympique {c}', 'AS {c}', 'Racing {c}', 'Union {c}', 'Sporting {c}', 'FC {c}', 'Stade {c}', 'Étoile {c}'],
-  ita: ['Virtus {c}', 'Unione {c}', 'Audace {c}', 'Atletico {c}', 'Pro {c}', 'Juventus {c}', 'Sporting {c}'],
+  ita: ['Virtus {c}', 'Unione {c}', 'Audace {c}', 'Atletico {c}', 'Pro {c}', 'Iuventa {c}', 'Sporting {c}'],
   por: ['Sporting {c}', 'Académico {c}', 'União {c}', 'Os Belenenses de {c}', 'Naval {c}', 'Desportivo {c}'],
   nld: ['SV {c}', 'FC {c}', 'VV {c}', 'Sparta {c}', 'Go Ahead {c}', 'RKC {c}', 'ADO {c}'],
 };
@@ -2131,7 +2131,7 @@ const prefixLen = (a, b) => {
   while (i < a.length && i < b.length && a[i] === b[i]) i++;
   return i;
 };
-// realTowns / realClubs: the real names to keep clear of ("Chelington" is fine, "Chelsington" is too close to Chelsea)
+// realTowns / realClubs: the real names to keep clear of (a name one letter from a real town is too close)
 export function nameChecks(realTowns, realClubs) {
   const towns = [...new Set(realTowns.map(fold2))].filter((x) => x.length >= 5),
     clubs = [...new Set(realClubs.map(fold2))].filter((x) => x.length >= 6);

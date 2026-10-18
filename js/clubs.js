@@ -403,7 +403,7 @@
     ],
     ['FC Serano', 'MOD', 'Serano', '#FFD700', '#0033A0', 'fan', 51, 'Stadio Civico di Serano', 21151],
     ['US Paducci 1942', 'CTZ', 'Paducci', '#FFD700', '#E2001A', 'fan', 50, 'Stadio Casino', 14650],
-    ['Juventus Piino', 'CES', 'Piino', '#FFFFFF', '#000000', 'fan', 50, 'Arena Ravia', 23860],
+    ['Iuventa Piino', 'CES', 'Piino', '#FFFFFF', '#000000', 'fan', 50, 'Arena Ravia', 23860],
     ['Audace Trenara', 'JST', 'Trenara', '#FFD700', '#0033A0', 'fan', 48, 'Stadio Nuovo Roccello', 12800],
     ['US San Ponino', 'SUD2', 'Ponino', '#FFFFFF', '#E2001A', 'selling', 48, 'Stadio Comunale di Ponino', 5539],
     ['Valano Calcio', 'REG', 'Valano', '#8B0000', '#FFFFFF', 'fan', 49, 'Arena Ferago', 21525],

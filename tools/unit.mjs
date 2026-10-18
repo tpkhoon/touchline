@@ -185,6 +185,23 @@ try {
   fails.push('tools/realstats.mjs --test failed: ' + String(e.stdout || e.message).slice(0, 200));
 }
 
+// the generator refuses real players' names, which the game keeps only as hashes (the list itself is in the private folder, and is
+// checked when it is here)
+{
+  ok(
+    typeof W.isRealName === 'function' && !W.isRealName('Quentin Fictionaire'),
+    'a made-up name is taken for a real one',
+  );
+  const list = (await import('./private.mjs')).privateFile('real-player-names.txt');
+  if (list) {
+    const names = fs.readFileSync(list, 'utf8').split(/\r?\n/).filter(Boolean);
+    eq(
+      names.filter((n) => !W.isRealName(n)),
+      [],
+      'a real name is not refused by the generator',
+    );
+  }
+}
 // the private inbox: what the game posts is kept and grouped by version and area; nonsense is refused
 {
   const { startInbox, readInbox, groupInbox } = await import('./inbox.mjs');

@@ -2522,20 +2522,11 @@
           .toLowerCase()
           .replace(/\b(fc|afc|cf|sc|ac|as|ssc|sv|fk|bk|the)\b/g, '')
           .replace(/[^a-z0-9]/g, '');
-      // Short forms people use ("Man Utd", "Spurs") are widened to words before comparing
+      // Short forms people use ("Utd", "Cty") are widened to words before comparing
       const ABBR = {
-        man: 'manchester',
         utd: 'united',
         cty: 'city',
-        spurs: 'tottenham hotspur',
-        wolves: 'wolverhampton wanderers',
-        brum: 'birmingham',
-        inter: 'internazionale',
         atl: 'atletico',
-        gladbach: 'monchengladbach',
-        "m'gladbach": 'monchengladbach',
-        "nott'm": 'nottingham',
-        sheff: 'sheffield',
         wed: 'wednesday',
       };
       const words = (s) =>

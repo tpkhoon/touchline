@@ -52,7 +52,7 @@ nicknamed "The Miners", wearing black and amber, playing at "The Pithead Ground"
 ### Italy
 
 - Calcio clubs: Associazione Calcio (AC), Unione Sportiva (US), Società Sportiva (SS), Football Club, often with Latin
-  or noble-sounding words such as Virtus, Audace, Pro, Juventus.
+  or noble-sounding words such as Virtus, Audace, Pro, Iuventa.
 - Examples: US Castelvalle, Virtus Ravenzano, AC Monteluce.
 
 ### France, the Netherlands and Belgium
@@ -175,13 +175,13 @@ The J.League requires clubs to name a hometown and drop corporate sponsor names 
 
 ## Choosing a naming type
 
-Real clubs fall into a few categories, so pick one deliberately:
+Clubs fall into a few categories, so pick one deliberately:
 
-- **Plain place name:** Brighton, Wolverhampton. Short and common.
-- **Place + sports word:** Aston Villa, Derby County.
-- **Founded by a company or industry:** Arsenal (Royal Arsenal), West Ham (Thames Ironworks), PSV (Philips).
-- **Founded by a church or school:** Everton, Southampton St. Mary's.
-- **Merger names:** Birmingham-Frankfurt style compounds, or Sheffield & Hallamshire.
+- **Plain place name:** Brightmoor, Wolverstone. Short and common.
+- **Place + sports word:** Ashby Villa, Derwent County.
+- **Founded by a company or industry:** Calder Works (an ironworks team), Eastmere Electric (a lamp factory).
+- **Founded by a church or school:** Northby Church Institute, Harwick St. Mary's.
+- **Merger names:** Alderton-Brandt style compounds, or Hallby & Marsden.
 - **Nicknames baked into the name:** Rovers, Wanderers, Hotspur, Bohemians.
 
 ## Believable place names
@@ -196,7 +196,7 @@ Real clubs fall into a few categories, so pick one deliberately:
 
 A name feels real when the rest matches:
 
-- **Nickname:** The Foxes, The Magpies, Los Merengues, usually from the kit or mascot.
+- **Nickname:** The Foxes, The Magpies, Los Halcones, usually from the kit or mascot.
 - **Colours** that suit the origin (red for industry, blue for harbour towns, black and white for mining).
 - **Founding year,** which should line up with the naming style (Victorian "Athletic", 1920s "Sporting", 1960s corporate
   sponsors).

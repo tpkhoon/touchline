@@ -87,7 +87,7 @@
   };
   W.baseValue = (p) => W.abilityValue(p) * W.contractFactor(p) * (W.POS_VALUE[p.pos] || 1) * W.VALUE_SCALE;
   // Star ratings are measured against the league you manage in (see W.stars below). A Championship regular is four or five stars
-  // in League Two and two or three in the Premier League. (The old absolute scale is W.starsAbs.) Out of work: the league
+  // in League Two and two or three in the top flight. (The old absolute scale is W.starsAbs.) Out of work: the league
   // you last managed in, or the top flight.
   W.starsAbs = (ca) => U.clamp(Math.round(((ca - 30) / 55) * 10) / 2, 0.5, 5);
   W.refComp = function () {
@@ -400,149 +400,48 @@
     W.nameTaken(n);
     nameSet.add(n);
   };
-  const REAL_NAMES = new Set([
-    'Nuno Mendes',
-    'Enzo Fernández',
-    'Cristian Romero',
-    'Lisandro Martínez',
-    'Nahuel Molina',
-    'Harvey Barnes',
-    'Piotr Zieliński',
-    'Rúben Dias',
-    'Bernardo Silva',
-    'Kevin De Bruyne',
-    'Erling Haaland',
-    'Martin Ødegaard',
-    'Luka Modrić',
-    'Christian Pulisic',
-    'Achraf Hakimi',
-    'Sadio Mané',
-    'Mohammed Kudus',
-    'Thomas Müller',
-    'Joshua Kimmich',
-    'Florian Wirtz',
-    'Leroy Sané',
-    'Arda Güler',
-    'Hakan Çalhanoğlu',
-    'Dušan Tadić',
-    'Sergej Milinković-Savić',
-    'Filip Kostić',
-    'Nemanja Matić',
-    'Emil Forsberg',
-    'Gerard Moreno',
-    'Pau Torres',
-    'Fernando Torres',
-    'Raúl García',
-    'Diego López',
-    'Íñigo Martínez',
-    'Marcos Alonso',
-    'Carlos Soler',
-    'Mikel Merino',
-    'Jordi Alba',
-    'David Villa',
-    'David Silva',
-    'Unai Simón',
-    'Mikel Oyarzabal',
-    'Álvaro Morata',
-    'Dani Olmo',
-    'Borja Iglesias',
-    'Nacho Fernández',
-    'Jon Guridi',
-    'Aitor Paredes',
-    'Luis Suárez',
-    'Luis Díaz',
-    'Juan Cuadrado',
-    'Christian Eriksen',
-    'Bruno Fernandes',
-    'Rui Patrício',
-    'Joel Matip',
-    'Ryan Gravenberch',
-    'Tyler Adams',
-    'Josh Sargent',
-    'Harry Wilson',
-    'Tom Lockyer',
-    'Andrew Robertson',
-    'Scott McTominay',
-    'Kevin Mbabu',
-    'Ante Budimir',
-    'Marco Asensio',
-    'Kenji Watanabe',
-    'Leandro Paredes',
-    'Nicolás Otamendi',
-    'Lucas Ocampos',
-    'Rodrigo De Paul',
-    'Kasper Dolberg',
-    'Christian Nørgaard',
-    'Mats Hummels',
-    'Luca Waldschmidt',
-    'Leon Goretzka',
-    'Kai Havertz',
-    'Paul Pogba',
-    'Louis Saha',
-    'Noah Okafor',
-    'Theo Walcott',
-    'Jack Wilshere',
-    'Harry Maguire',
-    'Henry Onyekuru',
-    'Sergio Ramos',
-    'Kyle Walker',
-    'Emiliano Martínez',
-    'Lautaro Martínez',
-    'Nicolás González',
-    'Julián Álvarez',
-    'Lucas Silva',
-    'Thiago Silva',
-    'Gabriel Jesus',
-    'Rodrigo Moreno',
-    'Dani Carvajal',
-    'Marcos Llorente',
-    'Hugo Ekitike',
-    'Jordan Henderson',
-    'Harry Kane',
-    'Declan Rice',
-    'Mason Mount',
-    'Luke Shaw',
-    'Aaron Ramsdale',
-    'Kieran Trippier',
-    'Callum Wilson',
-    'Conor Gallagher',
-    'Wataru Endo',
-    'Takumi Minamino',
-    'Daichi Kamada',
-    'Min-jae Kim',
-    'Kylian Mbappé',
-    'Theo Hernández',
-    'Victor Osimhen',
-    'Samuel Chukwueze',
-    'Dušan Vlahović',
-    'Aleksandar Mitrović',
-    'Nikola Milenković',
-    'Chanathip Songkrasin',
-    'Theerathon Bunmathan',
-    'Javier Hernández',
-    'Hirving Lozano',
-    'Raúl Jiménez',
-    'Andrés Guardado',
-    'Guillermo Ochoa',
-    'Héctor Herrera',
-    'Edson Álvarez',
-    'Carlos Vela',
-    'Rafael Márquez',
-    'Jesús Corona',
-    'Diego Lainez',
-    'Orbelín Pineda',
-    'Uriel Antuna',
-    'Santiago Giménez',
-    'César Montes',
-    'Julián Quiñones',
-    'Alexis Vega',
-    'Luis Romo',
-    'Luis Chávez',
-    'Jorge Sánchez',
-    'Carlos Rodríguez',
-    'Héctor Moreno',
-    'Miguel Layún',
+  // Real players' names the generator must not make (a fictional player named like a real one). Kept as hashes of the lower-case name
+  // (a 53-bit hash), so the game carries no list of real people: it can only recognise a name it is asked about.
+  const nameHash = (str) => {
+    let h1 = 0xdeadbeef,
+      h2 = 0x41c6ce57;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+  };
+  const REAL_NAME_HASHES = new Set([
+    12995083506132, 125759145650391, 172937874131788, 507990807232878, 518123655815311, 561516678865220,
+    715262552013151, 842846149528531, 883060841645912, 1040899517486859, 1066710499824993, 1111602531349976,
+    1136600217078474, 1293019493377514, 1387011494685014, 1423086078792878, 1425164080542475, 1452740062562375,
+    1548010109326571, 1568701515360815, 1593730315137270, 1691620021426363, 1694771158840476, 1803349275192651,
+    1809782067839715, 1816289513503501, 1894208243636268, 1930451618186383, 1997565990042856, 2041806218998338,
+    2091503799073739, 2098517170944695, 2099792830982295, 2156790480283008, 2186495981435428, 2304060137341040,
+    2572092246920896, 2575572685267722, 2778695538021070, 2877597538164827, 2937944805792694, 2954536819956352,
+    3145990911804034, 3158176927526988, 3178265482952330, 3240246499473123, 3246058100844037, 3272588910151691,
+    3319820909364857, 3323335435054920, 3370614024009966, 3390225414746365, 3418993082943677, 3476626581373897,
+    3533535742876512, 3650217195505868, 3764545719746028, 3974591254219786, 4156787299859725, 4173697737328291,
+    4175480516219779, 4235515002071205, 4305527204228726, 4348215088324266, 4504698201475356, 4569928282543870,
+    4592312794829855, 4710962447229464, 4782533664273465, 4905959729211101, 4980189424891514, 4982379931306698,
+    5065356855678344, 5094097156953202, 5135526026627304, 5150660075140232, 5253046287444459, 5286044614165239,
+    5291619886115466, 5305135523340243, 5383187537099172, 5420924054643657, 5521690293726275, 5680363613709856,
+    5825375300496665, 5894430249350161, 5962466957713476, 6051447646964057, 6069296025863929, 6134698316408589,
+    6152708535047668, 6236504419905209, 6309918345934130, 6359386158401854, 6372110640570887, 6391495780751703,
+    6431850045613067, 6478855771174506, 6512698432143699, 6570808436572822, 6624228096469478, 6643638793338012,
+    6722693694609200, 6734170078978797, 6814415747762892, 6817652913209806, 6855184768384918, 6905457692437042,
+    6929992787139597, 6946790788469920, 6949099400621537, 6954971453560714, 6965619295414521, 6971876916628473,
+    7035930543747429, 7038758063624939, 7141439665339845, 7302728237437185, 7358761376540574, 7388845693024204,
+    7486806640379694, 7518405938607685, 7526029551626547, 7557376986815796, 7590452064017933, 7686765255131601,
+    7899916853712937, 7940415266482640, 7980514748749967, 7992335094513471, 8166233133808262, 8166579288140704,
+    8211292358238781, 8263539256833866, 8345456667840886, 8527717939344464, 8677321423663323, 8744440099601912,
+    8854908311134792, 8899650970721367, 8966179560791969,
   ]);
+  const isRealName = (n) => REAL_NAME_HASHES.has(nameHash(String(n).toLowerCase()));
+  W.isRealName = isRealName;
   // Family heritage: most players are of their nation's own culture (no heritage set); the rest descend from elsewhere,
   // in roughly the proportions of their country's professional players (D.DEMOGRAPHICS, js/names.js)
   W.pickHeritage = function (nat) {
@@ -710,7 +609,7 @@
     // a share of Brazilians and Portuguese go by one name
     if (!heritage && Math.random() < (MONO_RATE[nat] || 0)) {
       const one = W.mononym(nm.fn);
-      if (one && !REAL_NAMES.has(one) && !W.nameTaken(` ${one}`)) {
+      if (one && !isRealName(one) && !W.nameTaken(` ${one}`)) {
         p.fn = '';
         p.ln = one;
       }
@@ -718,12 +617,12 @@
     W.genAlt(p);
     // Unique names (and never a famous real player). Retry combinations, then fall back to a second surname.
     let tries = 0;
-    while ((REAL_NAMES.has(`${p.fn} ${p.ln}`) || W.nameTaken(`${p.fn} ${p.ln}`)) && tries++ < 60) {
+    while ((isRealName(`${p.fn} ${p.ln}`) || W.nameTaken(`${p.fn} ${p.ln}`)) && tries++ < 60) {
       const again = W.rollName(nat, heritage, FM.S.year - age);
       p.fn = again.fn;
       p.ln = again.ln;
     }
-    while (REAL_NAMES.has(`${p.fn} ${p.ln}`) || W.nameTaken(`${p.fn} ${p.ln}`)) {
+    while (isRealName(`${p.fn} ${p.ln}`) || W.nameTaken(`${p.fn} ${p.ln}`)) {
       const second = U.pick(N.ln.filter((x) => x !== p.ln));
       p.ln = D.TWO_SURNAMES.includes(nat) ? `${p.ln.split(' ')[0]} ${second}` : `${p.ln.split('-')[0]}-${second}`;
     }
@@ -732,7 +631,7 @@
       const common = (D.SURNAME_WEIGHTS && D.SURNAME_WEIGHTS[nat]) || {};
       for (let k = 0; k < 8 && !(p.ln in common) && W.squad(clubId).filter((q) => q.ln === p.ln).length >= 2; k++) {
         const again = W.rollName(nat, heritage, FM.S.year - age);
-        if (!REAL_NAMES.has(`${again.fn} ${again.ln}`) && !W.nameTaken(`${again.fn} ${again.ln}`)) {
+        if (!isRealName(`${again.fn} ${again.ln}`) && !W.nameTaken(`${again.fn} ${again.ln}`)) {
           p.fn = again.fn;
           p.ln = again.ln;
         }
@@ -2266,7 +2165,7 @@
       rules: {
         win: opts.win || 3,
         subs: opts.subs || 5,
-        foreignLimit: opts.foreignLimit ?? W.NO_LIMIT, // like the real Premier League: no cap unless chosen
+        foreignLimit: opts.foreignLimit ?? W.NO_LIMIT, // some real leagues have no cap: none unless chosen
         reg: opts.reg === undefined ? 'real' : opts.reg, // 'real': each league's own registration rules (FM.Reg)
         twoLegs: opts.twoLegs ?? true,
         awayGoals: !!opts.awayGoals,
@@ -2531,7 +2430,7 @@
     if (c) c.sim = W.isUser(c.id) ? 'full' : comp && comp.sim ? comp.sim : c.sim;
   };
   // Your league, the league above it and the league below it always play in the full engine (a light league becomes
-  // full the moment it matters to you: relegated from the Premier League, League One is suddenly next door). Every
+  // full the moment it matters to you: relegated from the top flight, the third tier is suddenly next door). Every
   // other league runs at its base tier from the data. Re-applied when you take a job, lose one, and after promotion
   // and relegation.
   // The rules every career plays by: each competition's real ones (no world-rules choice at a new game)
@@ -3138,7 +3037,7 @@
   };
 
   W.userClub = () => FM.S.clubs[FM.S.user.clubId];
-  // The army's club (Gimcheon Sangmu in real life): its squad is conscripts, so nothing tops it up
+  // The army's club (Bujeong Garrison): its squad is conscripts, so nothing tops it up
   W.army = (c) => !!(c && c.policy && c.policy.military);
   // Lower-league realism: a part-time club (the fourth tier and below, or a tiny club) trains in the evenings, has no scouting
   // network to speak of (two scouts at most) and pays what a community club can

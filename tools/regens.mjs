@@ -122,14 +122,14 @@ const examples = [
     ),
   ],
   [
-    'Early prime (Mbappé/Yamal)',
+    'Early prime (a teenage prodigy)',
     pick(
       all.filter((t) => t.arc === 'early' && t.at(19) != null),
       (t) => t.at(19),
     ),
   ],
   [
-    'Long prime (Messi/Ronaldo)',
+    'Long prime (a veteran star)',
     pick(
       all.filter((t) => t.arc === 'ageless' && t.lastAge >= 33),
       (t) => t.at(33) || 0,

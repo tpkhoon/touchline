@@ -135,7 +135,7 @@
         }));
       if (cal.stage === 'SF' || cal.stage === 'SF1') out.push(...P.sf);
       if (cal.stage === 'SF2') out.push(...P.sf2);
-      // the final: one match at a neutral ground (the EFL play-offs at Wembley), or two legs where the league's real
+      // the final: one match at a neutral ground (the English play-offs at the national stadium), or two legs where the league's real
       // play-offs have them (Spain's Segunda, Italy's Serie B), the better seed hosting the return
       const twoLegFinal =
         c.rules.promote.finalLegs === 2 &&

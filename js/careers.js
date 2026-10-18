@@ -68,8 +68,8 @@
   // Most careers follow the curve; a few don't. Hidden and fixed when the player is created (world or academy):
   //   stall   — a prospect who barely improves            plateau — levels off well short of his potential
   //   burnout — peaks early (22–25), then falls away fast  meteor  — one outstanding season (age 21–27), then fades
-  //   early   — at or near his prime by 18–19 (Mbappé, Yamal)
-  //   ageless — keeps his prime into his mid-thirties (Messi, Ronaldo): slow decline, retires late
+  //   early   — at or near his prime by 18–19 (a teenage prodigy)
+  //   ageless — keeps his prime into his mid-thirties (a veteran star): slow decline, retires late
   Sea.ARCS = { stall: 0.08, plateau: 0.12, burnout: 0.07, early: 0.1, meteor: 0.02, ageless: 0.04, agelessPlain: 0.01 };
   Sea.assignArc = function (p, age) {
     const A = Sea.ARCS,
