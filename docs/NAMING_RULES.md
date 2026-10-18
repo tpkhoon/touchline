@@ -235,6 +235,7 @@ A name feels real when the rest matches:
 | Nicknames follow the name | A Colliery club are the Miners, an Ironworks side the Ironmen (`nameNick`) |
 | Gulf and Arab clubs | A library of its own (Saudi Arabia, Qatar, the UAE, Iraq): Al + a concept (Al Fajr, Al Saqr, Al Wahat), with the town for the rest; the marker word Al is rejected in other nations |
 | Basque and Catalan clubs | The two Spanish second-division clubs with a signing policy are named in their own languages: a Basque club (Arrasti Kirol Elkartea, the Urdinak) and a Catalan one (CE Serrallac, Els Blaus), with a ground to match; their players, and their club legends, draw on the Basque and Catalan name pools (about 80 first names and 70 surnames each) |
+| A library of its own | A nation does not borrow a neighbour's words: Slovakia, Slovenia, Albania, Bulgaria, Moldova, Finland, Iceland, Azerbaijan, Kazakhstan, the three Baltic states, Georgia, Armenia, Kenya, Uganda, Ethiopia, Zambia, Zimbabwe, Jamaica, Trinidad, Pakistan, Bangladesh, Vietnam and the Gulf and Jordan each have their own town endings, club words, nicknames, colour names, divisions and cups (`tools/namelib-new.mjs`); `tools/renameclubs.mjs` applies a library to clubs already in the game, keeping their codes |
 | Believable places | Town names follow each language's building blocks and are checked against real towns and clubs, rude words, hard consonant runs and length |
 | Quirkier towns for smaller clubs | Small clubs sometimes get a prefix such as "North" or "Upper"; big clubs get short plain names |
 

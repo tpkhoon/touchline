@@ -110,6 +110,35 @@ const DEMONYM = {
   CHI: 'Chilean',
   PER: 'Peruvian',
   PAR: 'Paraguayan',
+  SVK: 'Slovak',
+  SVN: 'Slovenian',
+  ALB: 'Albanian',
+  KOS: 'Kosovan',
+  BUL: 'Bulgarian',
+  MDA: 'Moldovan',
+  FIN: 'Finnish',
+  ISL: 'Icelandic',
+  GEO: 'Georgian',
+  ARM: 'Armenian',
+  AZE: 'Azerbaijani',
+  KAZ: 'Kazakh',
+  EST: 'Estonian',
+  LVA: 'Latvian',
+  LTU: 'Lithuanian',
+  KEN: 'Kenyan',
+  UGA: 'Ugandan',
+  ETH: 'Ethiopian',
+  ZAM: 'Zambian',
+  ZIM: 'Zimbabwean',
+  JAM: 'Jamaican',
+  TRI: 'Trinidadian',
+  PAK: 'Pakistani',
+  BAN: 'Bangladeshi',
+  BHR: 'Bahraini',
+  KUW: 'Kuwaiti',
+  OMA: 'Omani',
+  JOR: 'Jordanian',
+  IRQ: 'Iraqi',
 };
 const CONTINENT_WORD = {
   Europe: 'European',
@@ -334,7 +363,7 @@ export function generate(real, seed = 1, avoid = []) {
       if (!clubBad(alt, L) && !tooCommon(alt, base, c.nat)) name = alt;
     }
     // the Soviet-era sports societies (Lokomotiv, Spartak, Dukla ...) only for clubs old enough to have been founded then
-    if (L.oldClub && ['historic', 'giant', 'fallen', 'fan'].includes(row[5]) && ra() < 0.3) {
+    if (L.oldClub?.length && ['historic', 'giant', 'fallen', 'fan'].includes(row[5]) && ra() < 0.3) {
       const alt = ra.pick(L.oldClub).replace('{c}', base);
       if (!clubBad(alt, L) && !tooCommon(alt, base, c.nat)) name = alt;
     }

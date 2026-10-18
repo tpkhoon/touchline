@@ -37,6 +37,11 @@ flowchart TB
 
 The web prototype runs on a phone browser with no build step, covering 1877 fictional clubs in 132 leagues (the real structure under invented names) across 117 nations in three simulation tiers, and 117 national teams. Newest build first.
 
+### Playtest feedback, round 24
+
+- Names of the newly added nations: thirty-one nations that had been named with a neighbour's library now have words of their own (tools/namelib-new.mjs): Slovakia, Slovenia, Albania and Kosovo, Bulgaria, Moldova, Finland, Iceland, Azerbaijan, Kazakhstan, Estonia, Latvia, Lithuania, Georgia, Armenia, Kenya, Uganda, Ethiopia, Zambia, Zimbabwe, Jamaica, Trinidad and Tobago, Pakistan, Bangladesh, Vietnam, and Bahrain, Kuwait, Oman, Jordan and Iraq. Towns follow each language's endings (-ice and -ovce in Slovakia, -la and -niemi in Finland, -vík and -fjörður in Iceland, -abad in Pakistan), clubs take the nation's own words (ŠK and TJ, UMF, JK, Kenema, Gymkhana), nicknames and colours are in the language (Orly, Sudet, Víkingar, Simba), and the divisions and cups are the nation's own (Prvá Liga, Mestaruussarja, Úrvalsdeild, Premyer Liqa). Club codes, colours, reputations and founding years are unchanged; tools/renameclubs.mjs remade the 334 clubs' names, towns, grounds, nicknames, abbreviations, derbies and the leagues' and cups' names.
+- Players of sixteen nations have name pools of their own instead of a neighbour's: Estonian, Latvian, Lithuanian, Slovak, Slovenian, Bulgarian, Armenian, Azerbaijani, Kazakh, Pakistani, Bangladeshi, Zambian, Zimbabwean, Kenyan, Ugandan and Ethiopian.
+
 ### Playtest feedback, round 23
 
 - Super cups: one match at a neutral ground early in each season, 122 of them. In every nation the league champions meet the cup winners (the league's runner-up when one club did both); on each continent the champions cup winner meets the winner of its Shield (the European, South American, African, Asian and North American Super Cups). They have their own day after the first league round, a card on the Cups screen, count as a trophy for the winner and are kept apart from the season's cups in the archive. A new world has none in its first season (there is no last season).

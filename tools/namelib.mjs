@@ -1561,7 +1561,7 @@ export const nameNick = (name) => {
 
 // Nations that share a language but not a landscape get building blocks of their own: Scottish, Welsh and Irish
 // towns, American and Australian ones, instead of one English list with different spellings
-const NATION_L = {
+export const NATION_L = {
   SCO: {
     ...LANG.eng,
     a: words(
@@ -2288,7 +2288,7 @@ export function stem(L, r) {
   let a = r.pick(L.a),
     b = r.pick(L.b);
   if (L.elide && isVowel(a.slice(-1)) && isVowel(b[0])) a = a.slice(0, -1);
-  if (a.slice(-1).toLowerCase() === b[0].toLowerCase() && !isVowel(b[0])) b = b.slice(1);
+  if (!L.gap && a.slice(-1).toLowerCase() === b[0].toLowerCase() && !isVowel(b[0])) b = b.slice(1);
   if (L.link && !isVowel(a.slice(-1)) && !isVowel(b[0])) a += L.link[Math.floor(r() * L.link.length)];
   // (gap: a language that writes its towns as two words, "Hai Lam", "Kuala Rimba")
   if (L.gap) return `${cap(a)}${L.gap}${cap(b)}`;
@@ -2559,3 +2559,7 @@ const SPONSORS_NAT = {
 };
 const sp = (l) => l.map((x) => x.replace(/_/g, ' '));
 export const sponsorsFor = (nat) => sp(SPONSORS_NAT[nat] || SPONSORS);
+
+// (the libraries of their own for the nations that had borrowed a neighbour's: tools/namelib-new.mjs)
+import { install } from './namelib-new.mjs';
+install(LANG, NATION_L, TIERS_BY);
