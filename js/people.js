@@ -69,7 +69,7 @@
       FM.News.add({
         type: 'dressing',
         title: `${W.name(p)}: "The manager kept his word"`,
-        body: `${Pe.PROMISE[x.type].label} — promise kept. ${why || ''} Morale up; the dressing room notices.`,
+        body: `${Pe.PROMISE[x.type].label} — promise kept. ${why || ''} Morale up; the dressing room notices.${Pe.quote(p, [x.type]) ? ` He had said: ${Pe.quote(p, [x.type])}` : ''}`,
         pid: p.id,
         clubId: c.id,
         quiet: true,
@@ -84,7 +84,7 @@
       FM.News.add({
         type: 'dressing',
         title: `${W.name(p)} feels betrayed`,
-        body: `You promised him ${Pe.PROMISE[x.type].label.toLowerCase()}. ${why || ''}${p.wantsOut ? ' He wants to leave.' : ''} Teammates have taken note — your word counts for less now.`,
+        body: `You promised him ${Pe.PROMISE[x.type].label.toLowerCase()}. ${why || ''}${Pe.quote(p, [x.type]) ? ` He remembers: ${Pe.quote(p, [x.type])}` : ''}${p.wantsOut ? ' He wants to leave.' : ''} Teammates have taken note — your word counts for less now.`,
         pid: p.id,
         clubId: c.id,
       });
@@ -196,6 +196,48 @@
       return true;
     });
   };
+  // What you told him: the last few things said to each player (a talk or a meeting's answer), so the feed can quote them back
+  const SAID = {
+    minutes: (w) => `You told me ${w} I'd get more games.`,
+    contract: (w) => `You told me ${w} you'd sort out my contract.`,
+    noSell: (w) => `You told me ${w} I wouldn't be sold.`,
+    letGo: (w) => `You told me ${w} I could leave for the right offer.`,
+    debut: (w) => `You told me ${w} I'd get my debut.`,
+    plans: (w) => `You told me ${w} I was part of your plans.`,
+    praise: (w) => `You said ${w} that I was playing well.`,
+    criticise: (w) => `You said ${w} that I wasn't good enough.`,
+  };
+  const MONTH = [
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+  ];
+  const whenOf = (x) => {
+    const y = S().year;
+    if (x.year === y) return `in ${MONTH[Math.max(0, Math.min(9, Math.floor((x.round || 0) / 4)))]}`;
+    return x.year === y - 1 ? 'last season' : `back in ${x.year}`;
+  };
+  Pe.remember = function (p, topic) {
+    const told = (u().told = u().told || {});
+    const list = (told[p.id] = told[p.id] || []);
+    list.push({ topic, year: S().year, round: p.clubId ? FM.Season.gamesPlayed(p.clubId) : 0 });
+    if (list.length > 4) list.shift();
+  };
+  // His memory of what you told him, as a quote: the latest of the topics (any, when none is named), from this season or last
+  Pe.quote = function (p, topics) {
+    const list = ((u().told || {})[p.id] || []).filter(
+      (x) => SAID[x.topic] && x.year >= S().year - 1 && (!topics || topics.includes(x.topic)),
+    );
+    const x = list[list.length - 1];
+    return x ? `"${SAID[x.topic](whenOf(x))}"` : '';
+  };
   // Does he believe you? Low trust, a history of broken promises, or a volatile personality makes promises land softly
   Pe.believes = (p) => (u().trust ?? 60) >= 35 || W.hasTrait(p, 'Loyal') || Math.random() < 0.35;
   Pe.talk = function (pid, topic) {
@@ -262,15 +304,36 @@
         : `"I've heard that before." He doesn't seem to believe you — but the promise stands: ${Pe.PROMISE[topic].desc(x).toLowerCase()}.`;
       if (topic === 'minutes' || topic === 'noSell') p.flagMinutes = false;
     }
+    Pe.remember(p, topic);
     p.morale = U.clamp(p.morale + d, 0, 100);
     return { ok: true, msg, d };
   };
   const Sea = () => FM.Season;
 
   // Player-initiated meetings arrive in the feed with choices
-  Pe.requestMeeting = function (p, why) {
+  Pe.requestMeeting = function (p, why, noCaptain) {
     const c = W.userClub();
     if (S().news.some((n) => n.type === 'meeting' && !n.resolved && n.pid === p.id)) return;
+    // The captain steps in first (not over a contract: that is yours): he has had a word, and you decide whether to leave it
+    // with him. A good leader settles more of them.
+    const capt = FM.Matchday.captainOf(c.id);
+    if (!noCaptain && why !== 'raise' && capt && capt !== p && capt.morale >= 40 && Math.random() < 0.6) {
+      const chance = U.clamp(0.1 + (capt.hid.lead - 6) * 0.045 + (W.hasTrait(capt, 'Leader') ? 0.1 : 0), 0.1, 0.85);
+      return FM.News.add({
+        type: 'meeting',
+        title: `${W.name(capt)} has had a word with ${W.name(p)}`,
+        body: `${W.short(capt)}, your captain (${FM.Matchday.leadWord(capt).toLowerCase()}), noticed ${W.short(p)} was ${why === 'minutes' ? 'unhappy with his playing time' : 'down'} and took him aside. ${chance >= 0.6 ? 'He thinks he has it in hand.' : chance >= 0.35 ? 'He is not sure it will be enough.' : 'He admits it may not be enough on its own.'}${Pe.quote(p) ? ` ${W.short(p)} remembers: ${Pe.quote(p)}` : ''}`,
+        pid: p.id,
+        clubId: c.id,
+        why,
+        capt: capt.id,
+        chance,
+        choices: [
+          { k: 'capLeave', label: 'Leave it to the captain' },
+          { k: 'capTalk', label: "I'll talk to him myself" },
+        ],
+      });
+    }
     const opts =
       why === 'minutes'
         ? [
@@ -294,10 +357,11 @@
         : why === 'raise'
           ? `He's been one of our best players and thinks his ${U.money(p.wage)}/wk contract doesn't reflect it.`
           : 'He has something on his mind.';
+    const q = Pe.quote(p, why === 'raise' ? ['contract', 'praise'] : ['minutes', 'plans', 'debut', 'praise']);
     FM.News.add({
       type: 'meeting',
       title: `${W.name(p)} asks for a meeting`,
-      body,
+      body: q ? `${body} ${q}` : body,
       pid: p.id,
       clubId: c.id,
       why,
@@ -311,6 +375,25 @@
     n.resolved = ch.label;
     if (!p || !W.isUser(p.clubId)) {
       n.reply = 'He has since left the club.';
+      return;
+    }
+    if (ch.k === 'capLeave' || ch.k === 'capTalk') {
+      const capt = P(n.capt),
+        cn = capt ? W.short(capt) : 'The captain';
+      if (ch.k === 'capTalk') {
+        n.reply = 'You take it from here.';
+        return Pe.requestMeeting(p, n.why, true);
+      }
+      if (Math.random() < (n.chance || 0.4)) {
+        p.morale = U.clamp(p.morale + 9, 0, 100);
+        if (n.why === 'minutes') p.flagMinutes = true; // (settled: not raised again at once)
+        n.reply = `${cn} has talked him round. He is in better spirits.`;
+        if (capt) capt.morale = U.clamp(capt.morale + 2, 0, 100);
+      } else {
+        p.morale = U.clamp(p.morale - 2, 0, 100);
+        n.reply = `${cn}'s word did not land. He still wants a proper conversation with you.`;
+        return Pe.requestMeeting(p, n.why, true);
+      }
       return;
     }
     if (Pe.TALKS[ch.k]) {
