@@ -341,9 +341,11 @@
         subsMade: [],
         ps: {},
       };
+      // a long away trip tires the visitors (FM.Lore.wear: nothing up to 350 km)
+      const wear = idx === 1 && !this.neutral && FM.Lore ? FM.Lore.wear(this.o.h, this.o.a) : 0;
       xi.forEach((p) => {
         if (p) {
-          sd.st[p.id] = p.fitness;
+          sd.st[p.id] = wear ? Math.max(30, p.fitness - wear) : p.fitness;
           sd.rating[p.id] = 6.3;
           sd.on[p.id] = 0;
           sd.ps[p.id] = { pass: 0, kp: 0, sh: 0, sot: 0, tk: 0, ic: 0, tch: 0, sv: 0, ga: 0, xga: 0 };

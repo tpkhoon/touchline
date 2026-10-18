@@ -106,6 +106,10 @@ const DEMONYM = {
   IRN: 'Iranian',
   QAT: 'Qatari',
   CHN: 'Chinese',
+  IND: 'Indian',
+  CHI: 'Chilean',
+  PER: 'Peruvian',
+  PAR: 'Paraguayan',
 };
 const CONTINENT_WORD = {
   Europe: 'European',
@@ -177,11 +181,29 @@ export function generate(real, seed = 1, avoid = []) {
   const clubsOf = {},
     skel = {};
   for (const c of Object.values(real.clubs)) if (!c.row[9]) clubsOf[c.nat] = (clubsOf[c.nat] || 0) + 1;
-  const tooCommon = (name, base, nat) =>
-    (skel[nat]?.[name.replace(base, '{c}')] || 0) >= Math.max(3, Math.ceil(0.22 * (clubsOf[nat] || 10)));
+  // (and the old quirks - Alexandra, Wednesday, Orient, Argyle, Harriers - are one-offs: a real country has one of each, so the
+  // whole world has at most this many)
+  const RARE_CAP = { Alexandra: 1, Wednesday: 1, Orient: 1, Argyle: 1, Harriers: 2 },
+    rareUsed = {};
+  // (a league added to a world counts the one-offs the world already has)
+  for (const n of avoid) {
+    const m = / (Alexandra|Wednesday|Orient|Argyle|Harriers)$/.exec(n);
+    if (m) rareUsed[m[1]] = (rareUsed[m[1]] || 0) + 1;
+  }
+  const rareOf = (name, base) => {
+    const m = name.replace(base, '{c}').match(/^\{c\} (\w+)$/);
+    return m && RARE_CAP[m[1]] ? m[1] : null;
+  };
+  const tooCommon = (name, base, nat) => {
+    const rare = rareOf(name, base);
+    if (rare && (rareUsed[rare] || 0) >= RARE_CAP[rare]) return true;
+    return (skel[nat]?.[name.replace(base, '{c}')] || 0) >= Math.max(3, Math.ceil(0.22 * (clubsOf[nat] || 10)));
+  };
   const noteSkeleton = (name, base, nat) => {
     const k = name.replace(base, '{c}');
     (skel[nat] = skel[nat] || {})[k] = (skel[nat][k] || 0) + 1;
+    const rare = rareOf(name, base);
+    if (rare) rareUsed[rare] = (rareUsed[rare] || 0) + 1;
   };
   const placeFor = new Map(),
     perPlace = {},

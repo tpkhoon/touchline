@@ -100,7 +100,7 @@
         cal.type === 'tourn'
           ? `${(s.tourns || []).map((t) => t.name).join(' · ') || 'The summer tournaments'} — ${others.length} match${others.length === 1 ? '' : 'es'} today.`
           : what;
-      hero = `<div class="hero" style="--c1:#1b2533;--c2:#0c1118"><div class="tag">${cal.type === 'playoff' ? 'Playoffs' : cal.type === 'intl' ? '🌍 International break' : cal.type === 'tourn' ? '🏆 Summer tournament' : cal.type === 'cup' ? (cal.world ? 'Club World Cup' : cal.stage ? 'Continental night' : 'Cup day') : 'Matchday'}</div><div class="h2" style="margin:10px 0 14px">No match for ${esc(c.short)} today</div><div class="small" style="opacity:.8;margin-bottom:12px">${esc(what2)}</div><div class="row" style="gap:8px"><button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Next match</button></div></div>`;
+      hero = `<div class="hero" style="--c1:#1b2533;--c2:#0c1118"><div class="tag">${cal.type === 'playoff' ? 'Playoffs' : cal.type === 'intl' ? '🌍 International break' : cal.type === 'tourn' ? '🏆 Summer tournament' : cal.type === 'cup' ? (cal.super ? 'Super Cups' : cal.world ? 'World Club Championship' : cal.stage ? 'Continental night' : 'Cup day') : 'Matchday'}</div><div class="h2" style="margin:10px 0 14px">No match for ${esc(c.short)} today</div><div class="small" style="opacity:.8;margin-bottom:12px">${esc(what2)}</div><div class="row" style="gap:8px"><button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Next match</button></div></div>`;
     }
     const row = s.comps[c.comp].table[c.id];
     const pos = W.position(c.id);
@@ -2005,7 +2005,7 @@
       lname = (c) => (c.nat && c.nat !== 'ENG' ? C.flag(c.nat) + ' ' : '') + c.name.replace('The ', '');
     const opts = [[mine, lname(S().comps[mine])]];
     if (S().comps[t] && S().comps[t].type === 'league' && t !== mine) opts.push([t, lname(S().comps[t])]);
-    opts.push(['world', '🗺️ All leagues']);
+    opts.push(['world', '🗺️ All leagues'], ['map', '📍 Map']);
     if (W.cups().length || W.continentals().length) opts.push(['cups', 'Cups']);
     opts.push(
       ['fixtures', 'Fixtures'],
@@ -2030,7 +2030,9 @@
                   ? cupsView()
                   : t === 'world'
                     ? worldView()
-                    : tableView(t))
+                    : t === 'map'
+                      ? UI.mapView()
+                      : tableView(t))
     );
   };
   // International football has its own tab: national teams, rankings, tournaments and your national job
@@ -2189,9 +2191,9 @@
           ? ['🟢 Champion', '🔵 Finals (top 6)']
           : null;
     const bracket = shown ? UI.koBracket(comp, shown) : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${tables}
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${UI.travelNote ? UI.travelNote(comp) : ''}${tables}
       <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
-      ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}`;
+      ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}${UI.compHistoryCard ? `<div class="card flat">${UI.compHistoryCard(comp)}</div>` : ''}`;
   }
   // A title playoff bracket: the seeds, then each round's ties
   UI.koBracket = function (comp, M) {
@@ -2842,12 +2844,12 @@
       ['continental', 'Continental'],
       ['domestic', 'Domestic'],
       ['regional', 'Regional'],
-      ['world', '🌍 Club World Cup'],
+      ['world', '🌍 World cups'],
     ]
       .map(([k, l]) => `<button class="chip ${v === k ? 'on' : ''}" data-act="cupsView" data-v="${k}">${l}</button>`)
       .join('')}</div>`;
     const inIt = (c) => c.clubs.includes(uc);
-    // each tournament folds away: open by default for those you are in (and the lone Club World Cup), as you left the rest
+    // each tournament folds away: open by default for those you are in (and the lone World Club Championship), as you left the rest
     const isOpen = (id) => UI._cupsOpen[id] ?? (!!S().comps[id] && (S().comps[id].clubs.includes(uc) || v === 'world'));
     // a finished competition's awards and team of the tournament close its card
     const awardsOf = (c) =>
@@ -2876,39 +2878,52 @@
       return `${one ? 'single-match knockouts' + (f.central ? ' at one venue' : '') : legs} · ${f.legs.f === 2 ? 'two-legged final' : 'neutral final'}`;
     };
     const cupFormat = (c) => cupFormat0(c) + (c.prize ? ` · 💰 ${U.money(c.prize)} prize fund` : '');
+    const groupsHtml = (c) =>
+      (c.groups || [])
+        .map(
+          (g) =>
+            `<div class="small b dim" style="margin:10px 0 2px">GROUP ${esc(g.name)}</div><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th></th></tr>${((
+              mk,
+            ) =>
+              FM.Cups.groupTable(g)
+                .map(
+                  (r, i) =>
+                    `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td title="${{ top: 'Group won', through: 'Through to the knockouts', out: 'Eliminated' }[mk[r.id]] || ''}" style="color:${mk[r.id] === 'out' ? 'var(--bad)' : 'var(--good)'};font-weight:800">${{ top: '★', through: '✓', out: '✗' }[mk[r.id]] || ''}</td></tr>`,
+                )
+                .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4, c.id))}</table>`,
+        )
+        .join('') +
+      (c.groups && c.groups.length
+        ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
+        : '');
     const wc = W.worldCups()
       .filter((c) => v === 'world' || (v === 'mine' && inIt(c)))
-      .map(
-        (
-          c,
-        ) => `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🌍 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">Last season's continental finalists · neutral venues · played mid-season</div>
-      <div class="chips" style="flex-wrap:wrap;margin-top:8px">${c.clubs.map((id) => `<span class="chip" style="${W.isUser(id) ? 'border-color:var(--acc)' : ''}">${C.flag(CL(id).nat)} ${esc(CL(id).short)}</span>`).join('')}</div>
-      ${FM.Cups.koList(c).length ? FM.Cups.koList(c).map(fxLine).join('') : '<div class="small dim" style="margin-top:8px">The quarter-finals are drawn after matchday 10.</div>'}</div>`,
-      )
+      .sort((x, y) => (x.fmt === 'ic' ? 0 : 1) - (y.fmt === 'ic' ? 0 : 1))
+      .map((c) => {
+        const ko = FM.Cups.koList(c),
+          isIc = c.fmt === 'ic';
+        const note = isIc
+          ? 'Every season, mid-season · the continental champions · neutral venues: the Asian and African champions meet, the American champions meet, the winners play the Challenger Cup and the European champion joins them in the final'
+          : c.on
+            ? '32 clubs in eight groups of four · the top two go through to a round of 16 · played in the summer, once every four seasons · neutral venues'
+            : `Once every four seasons, in the summer: 32 clubs in eight groups of four, then a round of 16 and the knockouts. Next: the ${FM.Cups.nextCwc()}/${String((FM.Cups.nextCwc() + 1) % 100).padStart(2, '0')} season. Places by continent: ${Object.entries(
+                D.CWC_QUOTA,
+              )
+                .map(([k, n]) => `${k} ${n}`)
+                .join(', ')}`;
+        const field = isIc
+          ? `<div class="chips" style="flex-wrap:wrap;margin-top:8px">${c.clubs.map((id) => `<span class="chip" style="${W.isUser(id) ? 'border-color:var(--acc)' : ''}">${C.flag(CL(id).nat)} ${esc(CL(id).short)}</span>`).join('')}</div>`
+          : '';
+        const empty = isIc ? 'The first round is drawn after matchday 10.' : c.on ? '' : 'Not this season.';
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🌍 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px;line-height:1.5">${note}</div>${field}${groupsHtml(c)}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : empty ? `<div class="small dim" style="margin-top:8px">${empty}</div>` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
+      })
       .join('');
     const cont = W.continentals()
       .filter((c) => v === 'continental' || (v === 'mine' && inIt(c)))
       .map((c) => {
-        const grp =
-          (c.groups || [])
-            .map(
-              (g) =>
-                `<div class="small b dim" style="margin:10px 0 2px">GROUP ${esc(g.name)}</div><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th></th></tr>${((
-                  mk,
-                ) =>
-                  FM.Cups.groupTable(g)
-                    .map(
-                      (r, i) =>
-                        `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td title="${{ top: 'Group won', through: 'Through to the knockouts', out: 'Eliminated' }[mk[r.id]] || ''}" style="color:${mk[r.id] === 'out' ? 'var(--bad)' : 'var(--good)'};font-weight:800">${{ top: '★', through: '✓', out: '✗' }[mk[r.id]] || ''}</td></tr>`,
-                    )
-                    .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4, c.id))}</table>`,
-            )
-            .join('') +
-          (c.groups && c.groups.length
-            ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
-            : '');
+        const grp = groupsHtml(c);
         const ko = FM.Cups.koList(c);
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">⭐ ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them
@@ -2952,6 +2967,19 @@
         return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🏅 ${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${U.plural(c.clubs.length, 'club')} · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
       })
       .join('');
+    // the super cups: one match at the start of a season (a nation's champions against its cup winners; the champions cup against its Shield)
+    const sup = Object.values(s.comps)
+      .filter(
+        (c) =>
+          c.type === 'super' &&
+          c.fx &&
+          ((v === 'mine' && c.clubs.includes(uc)) || (v === 'domestic' && c.nat) || (v === 'continental' && !c.nat)),
+      )
+      .map(
+        (c) =>
+          `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">🥇 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">🏆 ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">One match at a neutral ground early in the season: ${c.nat ? 'the league champions against the cup winners' : 'the champions cup winner against the Shield winner'} of last season</div>${fxLine(c.fx)}</div>`,
+      )
+      .join('');
     // (the European knockout cups, the Holders' and the Summer Cup, sit with the continental ones)
     const dom = W.cups()
       .filter((c) => (v === 'domestic' && !c.euro) || (v === 'continental' && c.euro) || (v === 'mine' && inIt(c)))
@@ -2969,7 +2997,7 @@
                   .join('')}`,
             )
             .join('') || '<div class="small dim" style="margin-top:8px">The draw has not been made yet.</div>'
-        }</div>`;
+        }${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     return (
@@ -2977,7 +3005,7 @@
       (((cards) =>
         cards
           ? `<div class="row" style="gap:8px;margin:8px 0 4px"><button class="btn sm grow" data-act="cupsFold" data-v="open">Open all</button><button class="btn sm grow" data-act="cupsFold" data-v="close">Fold all</button></div>${cards}`
-          : '')(foldAll(wc + cont + dom + regional)) ||
+          : '')(foldAll(wc + cont + sup + dom + regional)) ||
         `<div class="empty">${v === 'mine' ? "Your club isn't in any cup competitions right now." : 'Nothing here yet.'}</div>`)
     );
   }
@@ -3152,7 +3180,7 @@
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
-    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span></div></div></div></div>
+    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''}</div></div></div></div>
       <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${I.icon}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
         ${c.policy ? `<div class="phrase"><span>🏛️</span><span>A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club</span></div>` : ''}
         ${c.rival ? `<div class="phrase"><span>⚔️</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
@@ -3167,6 +3195,7 @@
         )
         .join('')}</div>
       ${UI.honoursCard(c, 'No trophies in this save — yet.')}
+      ${UI.loreCard ? UI.loreCard(c) : ''}
       ${UI.clubRecordsCard(c)}
       ${UI.stadiumCard(c)}
       <div class="card"><div class="h3">Backroom staff</div>${staff.map((st) => `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>${C.flag(st.nat)}</span><div class="grow"><b>${esc(st.fn + ' ' + st.ln)}</b><div class="dim tiny">${esc(st.role)}</div></div><span class="pill">${esc(st.personality)}</span></div>`).join('')}</div>`;
@@ -3229,6 +3258,7 @@
       ['signing', 'Signing-on fees'],
       ['agent', 'Agent fees'],
       ['interest', 'Interest on debt'],
+      ['travel', 'Away travel'],
     ];
     const total = U.sum(rows, ([k]) => sp[k] || 0),
       mx = Math.max(1, ...rows.map(([k]) => sp[k] || 0));
@@ -3275,7 +3305,8 @@
         'Most appearances',
         all.slice().sort((a, b) => b.apps - a.apps),
         (x) => x.apps,
-        (x) => `${x.pos}${x.era ? ' · ' + x.era : ''}${x.note ? ' · ' + x.note : ''}`,
+        (x) =>
+          `${x.pos}${x.era ? ' · ' + x.era : ''}${x.note ? ' · ' + x.note : ''}${x.hist && x.became ? ' · ' + x.became : ''}`,
       )}
       ${sec(
         'Academy graduates',

@@ -337,9 +337,9 @@ Every major footballing nation is represented, but simulation depth is tiered ra
 | Light simulation | Smaller leagues | Every fixture played by a statistical model from team strength; per-match goals, assists, cards and ratings for real players; clubs buy and sell |
 | Minimal simulation | Rest of the world | Scores from reputation; squads and players exist for scouting and the market |
 
-In the prototype, continental and Club World Cup ties always use the full engine, whatever tier a club plays in.
+In the prototype, continental and World Club Championship ties always use the full engine, whatever tier a club plays in.
 
-**Continental competitions:** UEFA Champions League, Europa League, Conference League, Copa Libertadores, AFC Champions League Elite, CAF Champions League, CONCACAF Champions Cup and the Club World Cup.
+**Continental competitions:** UEFA Champions League, Europa League, Conference League, Copa Libertadores, AFC Champions League Elite, CAF Champions League, CONCACAF Champions Cup, the Intercontinental Cup (every season) and the World Club Championship (32 clubs, every fourth summer).
 
 **Modular structure.** The game never hardcodes "Premier League, then Championship, then League One". It models competitions and the rules between them: Competition A has a promotion/relegation relationship with Competition B, and Competition X has a qualification rule into Competition Y. The editor then restructures football by changing those relationships.
 
@@ -397,7 +397,7 @@ The ambitious end state is a Football Universe Editor: start in 1900 with differ
 
 - Databases: 1998, 2005, a fictional 2035.
 - Leagues: the Singapore pyramid, Malaysian lower leagues, fictional African leagues, alternate European leagues.
-- Scenarios: Super League, 1990s alternate history, a modern financial crisis, a fictional World Cup.
+- Scenarios: Super League, 1990s alternate history, a modern financial crisis, a fictional World Championship.
 - Graphics: kits, logos, competition branding, stadiums.
 
 ## Mobile-first UX
@@ -429,7 +429,7 @@ Gameplay updates are free.
 
 ## Prototype status and roadmap
 
-Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 746 fictional clubs in 42 leagues (the real structure under invented names) across 32 nations in three simulation tiers, B teams and U21/U18 sides, 18 domestic cups, 14 continental cups (including the Europa League, Conference League and Copa Sudamericana) and a Club World Cup, international football with 92 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
+Four prototype builds, Alpha 1, the polish and small-features backlogs, mobile readiness step 2 and playtest feedback batches 1–6 are done: 746 fictional clubs in 42 leagues (the real structure under invented names) across 32 nations in three simulation tiers, B teams and U21/U18 sides, 117 domestic cups, 22 continental cups (including the Europa League, Conference League and Copa Sudamericana) and a World Club Championship, international football with 117 national teams, contract clauses and agents, player promises, board meetings, club records and rivalries that grow, and an installable app with save upgrades and backups.
 
 The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROADMAP.md](ROADMAP.md) and each competition's real rules in [COMPETITION_RULES.md](COMPETITION_RULES.md).
 
@@ -443,7 +443,7 @@ The full breakdown lives in [FEATURES.md](FEATURES.md), the phased plan in [ROAD
 | Youth and training | Nation-shaped intakes, facility and coach-driven development; U21 and U18 sides with youth leagues; B teams in Spain and Germany; training focus, intensity and individual training | University draft, scholarships, overseas trials; national youth pathways |
 | Club | Identities, fan culture, facilities, finances by country, attendance, wage pressure up to administration, staff whose ability has real effects, assistant notes, board meetings and ultimatums, club records, stadium history; analytics of your season | Club philosophy, deeper staff, deeper economics |
 | Season | Preview, pre-season friendlies and camps, weekly matchday digest | — |
-| Competitions | 64 leagues in 54 nations across full, light and minimal tiers (your league and its neighbours always full); 5 domestic cups; 7 continental cups (incl. Europa League and Copa Sudamericana) and a Club World Cup; playoffs; two-legged ties with optional away goals | A third-tier continental cup (Conference style); more nations |
+| Competitions | 132 leagues in 117 nations across full, light and minimal tiers (your league and its neighbours always full); 5 domestic cups; 7 continental cups (incl. Europa League and Copa Sudamericana) and a World Club Championship; playoffs; two-legged ties with optional away goals | A third-tier continental cup (Conference style); more nations |
 | World and stories | 35 nations, living world, story feed, shareable cards, World News filters, rivalries that emerge and cool, managers who move between clubs, record-breaking news | Podcasts and richer press; historical eras; scenarios; Football World screen |
 | Legacy and career | Hall of Fame, Archive, legends as managers, reputation, job offers, start unemployed or play on after a sacking, coaching licences, national team jobs, all-time head-to-heads, team-talk record | Retired players as owners and pundits |
 | Platform | Installable offline web app, save upgrades, compressed backups, background simulation, native-app projects (Android, iOS) | Device builds, cloud saves |

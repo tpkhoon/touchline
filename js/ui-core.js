@@ -468,6 +468,7 @@
       FM.DbImport.restore(state); // the game's clubs and leagues as this world has them (a database's, or the built-in ones)
       NG.db = null;
       FM.S = state;
+      if (FM.Lore) FM.Lore.ensure(); // (a save made before the world's lore existed gets it)
       UI.slot = n;
       if (from < FM.Save.VERSION) {
         // Keep the original, then write the upgraded save straight away
@@ -637,11 +638,15 @@
         : cal.type === 'cup'
           ? cal.regional
             ? 'Regional cups'
-            : cal.world
-              ? 'Club World Cup'
-              : cal.stage
-                ? 'Continental night'
-                : 'Cup day'
+            : cal.super
+              ? 'Super Cups'
+              : cal.world
+                ? cal.summer
+                  ? 'World Club Championship'
+                  : 'Intercontinental Cup'
+                : cal.stage
+                  ? 'Continental night'
+                  : 'Cup day'
           : cal.type === 'pre'
             ? `Pre-season ${cal.idx + 1}/${FM.D.PRESEASON_DAYS}`
             : cal.type === 'intl'
@@ -1069,6 +1074,11 @@
           on = NG.club === fake.id;
         return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${esc(I.label)} · <span style="color:${d.color}">● ${esc(d.label)}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
       };
+      // a nation is in a map region (the British Isles are in Europe too)
+      const regionHas = (reg, nat) => {
+        const r = UI.mapRegionOf(nat);
+        return reg === 'world' || r === reg || (reg === 'europe' && r === 'isles');
+      };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
       // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each
       // league opens with a card that says what it is like. Redrawn on its own as you type so the keyboard stays up
@@ -1080,6 +1090,7 @@
         const html = D.LEAGUES.map((l, i) => {
           const { id: cid, clubs: key, nat } = l;
           if (NG.lg !== 'all' && NG.lg !== cid) return '';
+          if (NG.reg && NG.reg !== 'all' && UI.mapRegionOf && !regionHas(NG.reg, nat)) return '';
           // B teams (row[9] names the parent) aren't yours to manage: their players belong to the parent club
           const rows = D[key].filter(
             (r) =>
@@ -1131,8 +1142,36 @@
           ])}
           <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
           <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${U.plural(D.facts().clubs, 'club')}</button></div>
-          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
+          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngView" data-v="map">🗺️ By region</button><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
           ${UI.dbCard()}
+          ${foot('')}`;
+      } else if (view === 'map') {
+        // Choose a region on the map: every club is a dot (its colour is how hard the job is); a tap picks it
+        const regions = UI.MAP_REGIONS || {};
+        const reg = NG.reg && regions[NG.reg] ? NG.reg : UI.mapRegionOf(NG.nat);
+        const pts = D.allClubRows()
+          .filter((r) => !r[9] && D.GEO && D.GEO[r[1]])
+          .map((r) => ({
+            id: 'c_' + r[1],
+            lat: D.GEO[r[1]][0],
+            lon: D.GEO[r[1]][1],
+            color: G.diff(r[1]).color,
+            r: NG.club === 'c_' + r[1] ? 2 : 1,
+            ring: NG.club === 'c_' + r[1] ? '#fff' : null,
+            act: 'ngClub',
+          }));
+        const code = NG.club && NG.club !== 'none' ? String(NG.club).replace(/^c_/, '') : null;
+        body = `<div class="h1" style="margin-top:2vh">Choose a region</div><div class="tag">Every club is a dot, coloured by how hard the job is. Tap one to read its story, or pick a region and browse.</div><div class="sp"></div>
+          <div class="chips" style="flex-wrap:wrap;margin-bottom:8px">${Object.entries(regions)
+            .map(
+              ([k, [name]]) =>
+                `<button class="chip ${reg === k ? 'on' : ''}" data-act="ngRegion" data-v="${k}">${name}</button>`,
+            )
+            .join('')}</div>
+          ${UI.mapSvg(pts, reg, { dots: reg === 'world' ? 150 : 100 })}
+          <div class="tiny" style="color:#6f7f96;margin:6px 2px 10px">${['Relaxed', 'Balanced', 'Tough', 'Brutal'].join(' · ')}: from calm dots to hard ones. Zoom with the regions above.</div>
+          ${code && rowOf(code) ? row(rowOf(code), `Tier ${(G.entry(code).l || {}).tier || ''}`, null, `${C.flag(G.entry(code).l.nat)} ${esc(D.NATIONS[G.entry(code).l.nat].name)} · ${esc(G.entry(code).l.name)}`) : ''}
+          <div class="actions" style="margin-top:10px"><button class="btn sm" data-act="ngBrowseRegion" data-v="${reg}">Browse this region's clubs</button><button class="btn sm" data-act="ngView" data-v="ask">Questions</button></div>
           ${foot('')}`;
       } else if (view === 'story') {
         body = `<div class="h1" style="margin-top:2vh">Story starts</div><div class="tag">A club with something at stake. Tap one to see its story.</div><div class="sp"></div>
@@ -1181,6 +1220,7 @@
                   .join('')}</optgroup>`,
             )
             .join('')}</select></div>
+          ${NG.reg && NG.reg !== 'all' && NG.reg !== 'world' ? `<div class="tiny" style="color:#9fb0c5;margin:0 2px 6px">Region: <b>${esc(UI.MAP_REGIONS[NG.reg][0])}</b> · <span class="tap" data-act="ngBrowseRegion" data-v="all" style="color:#c8ff3d">show every region</span></div>` : ''}
           <div class="seg" style="margin:0 0 4px">${[
             ['all', 'Any'],
             ['relaxed', 'Relaxed'],
@@ -1205,7 +1245,7 @@
         })()}
         ${UI.dbCard()}
         ${UI.simSetup()}
-        <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${U.plural(D.facts().clubs, 'club')} in ${U.plural(D.facts().leagues, 'league')} across ${U.plural(D.facts().nations, 'nation')}, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a Club World Cup, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Cup every four years and continental championships in between.</div></details>
+        <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${U.plural(D.facts().clubs, 'club')} in ${U.plural(D.facts().leagues, 'league')} across ${U.plural(D.facts().nations, 'nation')}, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a World Club Championship, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Championship every four years and continental championships in between.</div></details>
         ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
         <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button></div>`;
     }
@@ -1362,6 +1402,17 @@
   };
   UI.acts.ngDiff = (d) => {
     NG.df = d.v;
+    UI.newCareer();
+  };
+  // The map's region (and the region the list is cut to)
+  UI.acts.ngRegion = (d) => {
+    NG.reg = d.v;
+    UI.newCareer();
+  };
+  UI.acts.ngBrowseRegion = (d) => {
+    NG.reg = d.v;
+    NG.lg = 'all';
+    NG.view = 'browse';
     UI.newCareer();
   };
   UI.acts.ngView = (d) => {

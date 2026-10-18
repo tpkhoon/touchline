@@ -61,7 +61,7 @@
       if (p.nat !== 'KOR' || p.retired || p.service || p.exempt || !p.clubId) continue;
       const age = W.age(p);
       if (age < 26 || age > 28) continue;
-      // exempt after a medal at the Asian Games or a deep World Cup run: here, a long international career, or luck
+      // exempt after a medal at the Asian Games or a deep World Championship run: here, a long international career, or luck
       if ((p.intl && p.intl.caps >= 25 && U.chance(0.6)) || U.chance(0.12)) {
         p.exempt = true;
         if (W.ownPlayer(p) || p.ca >= 72)

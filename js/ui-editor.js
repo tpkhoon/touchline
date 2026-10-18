@@ -2478,7 +2478,7 @@
     ED.def.rules[d.k] = v;
     UI.worldEditor();
   };
-  // Cup names: the domestic cups, the continental cups and the Club World Cup, renamed through the definition's competitions
+  // Cup names: the domestic cups, the continental cups and the World Club Championship, renamed through the definition's competitions
   // (domestic cups: the game's, then the ones the definition adds)
   const outCups = () => new Set(ED.def.removeCups || []);
   const domCups = () => [
@@ -2501,7 +2501,8 @@
       .filter((c) => c.isNew && c.kind === 'cont')
       .map((c) => ({ id: c.id, name: c.name, short: c.short, isNew: true, group: 'Continental' })),
     ...D.EURO_CUPS.map((c) => ({ id: c.id, name: c.name, short: c.short, group: 'Continental' })),
-    { id: 'CWC', name: 'FIFA Club World Cup', short: 'CWC', group: 'Continental' },
+    { id: 'ICC', name: 'Intercontinental Cup', short: 'ICC', group: 'Continental' },
+    { id: 'CWC', name: 'World Club Championship', short: 'CWC', group: 'Continental' },
   ];
   // The cup's entry in the definition (its name, short name and, for the cups that have one, its format)
   const compOf = (id) => (ED.def.competitions || []).find((c) => c.id === id);
@@ -2929,7 +2930,11 @@
     SF2: 'Semi-final, second leg',
     F: 'Final',
   };
-  const WORLD_NAME = { QF: 'Quarter-finals', SF: 'Semi-finals', F: 'Final' };
+  const WORLD_NAME = {
+    QF: 'First round (the African–Asian Cup and the Derby of the Americas)',
+    SF: 'Challenger Cup',
+    F: 'Final',
+  };
   const calendarView = () => {
     const c = calNow(),
       cur = WD.calendarNow();
@@ -2939,7 +2944,7 @@
     const at = Array.from({ length: 22 }, () => []);
     c.cup.forEach((r) => at[r].push('Cup'));
     Object.entries(c.cont).forEach(([st, r]) => at[r].push(st));
-    Object.entries(c.world).forEach(([st, r]) => at[r].push('CWC ' + st));
+    Object.entries(c.world).forEach(([st, r]) => at[r].push('ICC ' + st));
     c.intl.forEach((r) => at[r].push('Break'));
     const glance = `<div class="card flat" style="padding:4px 10px;margin-top:6px">${at
       .map(
@@ -2962,7 +2967,7 @@
       <div class="tiny dim" style="margin-top:4px;line-height:1.5">The biggest cup needs a day for each of its rounds; the game adds days when a cup has more than you give it.</div>
       <div class="ng-label">Continental club cups</div>
       ${WD.CONT_STAGES.map((st) => mover('cont', st, c.cont[st], CONT_NAME[st])).join('')}
-      <div class="ng-label">Club World Cup</div>
+      <div class="ng-label">Intercontinental Cup <span class="tiny dim">· every season; the World Club Championship is played in the summer of every fourth</span></div>
       ${WD.WORLD_STAGES.map((st) => mover('world', st, c.world[st], WORLD_NAME[st])).join('')}
       <div class="ng-label">International breaks <span class="tiny dim">· two matchdays each</span></div>
       ${c.intl.map((r, i) => mover('intl', String(i), r, `Break ${i + 1}`)).join('')}

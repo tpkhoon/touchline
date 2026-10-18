@@ -4,7 +4,7 @@
 //            attributed to real players so scouts see honest numbers.
 //  minimal — fixtures produce scores only (from reputation); players get synthetic weekly stats
 //            (Season.minimalSimWeek), enough for scouting and the market.
-// Continental and Club World Cup ties always use the full engine, whatever tier a club plays in.
+// Continental and World Club Championship ties always use the full engine, whatever tier a club plays in.
 (function () {
   const FM = window.FM,
     U = FM.U,

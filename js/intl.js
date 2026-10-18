@@ -40,7 +40,7 @@
     world: [
       {
         id: 'WC',
-        name: 'FIFA World Cup',
+        name: 'World Championship',
         size: 16,
         pools: [
           [['EUR'], 9],
@@ -53,9 +53,9 @@
     ],
     confed: [{ id: 'CT', name: 'Continental Champions Trophy', size: 8, pools: [], confed: true }],
     continental: [
-      { id: 'EC', name: 'UEFA European Championship', size: 8, pools: [[['EUR'], 8]] },
-      { id: 'SA', name: 'Copa América', size: 4, pools: [[['SAM'], 4]] },
-      { id: 'AF', name: 'Africa Cup of Nations', size: 4, pools: [[['AFR'], 4]] },
+      { id: 'EC', name: 'European Nations Championship', size: 8, pools: [[['EUR'], 8]] },
+      { id: 'SA', name: 'South American Nations Cup', size: 4, pools: [[['SAM'], 4]] },
+      { id: 'AF', name: 'African Nations Cup', size: 4, pools: [[['AFR'], 4]] },
       { id: 'AS', name: 'Asia-Pacific Nations Cup', size: 4, pools: [[['ASIA', 'NAM'], 4]] },
     ],
   };
@@ -88,26 +88,58 @@
     return base;
   };
   I.TNAME = {
-    WC: 'FIFA World Cup',
-    EC: 'UEFA European Championship',
-    SA: 'Copa América',
-    AF: 'Africa Cup of Nations',
+    WC: 'World Championship',
+    EC: 'European Nations Championship',
+    SA: 'South American Nations Cup',
+    AF: 'African Nations Cup',
     AS: 'Asia-Pacific Nations Cup',
     CT: 'Continental Champions Trophy',
     NL: 'Nations League',
   }; // Asia and North America share one tournament here, so it keeps its own name
 
   // Invitational tournaments in the international windows: a host and three invited nations play semi-finals on the first day
-  // of the second window and a final and third-place match on the second, like the Kirin Cup. One a season, in turn, if
+  // of the second window and a final and third-place match on the second, like Japan's Cherry Blossom Cup. One a season, in turn, if
   // the host and the invited nations have no qualifier those days.
+  // A regional tournament has a pool instead of a host and guests of its own: the host rotates through the pool and the guests are the three best
+  // ranked nations of the rest of it (the Southeast Asian, Gulf and East Asian tournaments, which give those nations a calendar of their own)
   I.INVITES = [
-    { id: 'KIR', name: 'Kirin Cup', host: 'JPN' },
-    { id: 'KGC', name: "King's Cup", host: 'THA' },
-    { id: 'NEH', name: 'Nehru Cup', host: 'IND' },
+    { id: 'KIR', name: 'Cherry Blossom Cup', host: 'JPN' },
+    { id: 'SEA', name: 'Southeast Asian Nations Cup', pool: ['THA', 'VIE', 'IDN', 'MYS', 'PHI', 'SGP'] },
+    { id: 'KGC', name: 'Golden Elephant Cup', host: 'THA' },
+    { id: 'GLF', name: 'Gulf Nations Cup', pool: ['KSA', 'QAT', 'UAE', 'IRN', 'IRQ'] },
+    { id: 'NEH', name: 'Monsoon Cup', host: 'IND' },
+    { id: 'EAS', name: 'East Asian Nations Cup', pool: ['JPN', 'KOR', 'CHN', 'AUS'] },
+    { id: 'CEA', name: 'East African Nations Cup', pool: ['KEN', 'UGA', 'TAN', 'ETH'] },
+    { id: 'SAF', name: 'Southern African Nations Cup', pool: ['RSA', 'ZAM', 'ZIM', 'MOZ', 'ANG'] },
+    {
+      id: 'WAF',
+      name: 'West African Nations Cup',
+      pool: ['NGA', 'GHA', 'SEN', 'CIV', 'MLI', 'BFA', 'GUI', 'TOG', 'CPV'],
+    },
+    { id: 'NAF', name: 'North African Nations Cup', pool: ['EGY', 'MAR', 'TUN', 'ALG', 'LBY'] },
+    {
+      id: 'ARB',
+      name: 'Arab Nations Cup',
+      pool: ['KSA', 'QAT', 'UAE', 'IRQ', 'JOR', 'EGY', 'MAR', 'TUN', 'ALG', 'KUW', 'OMA', 'BHR'],
+    },
+    { id: 'CAS', name: 'Central Asian Nations Cup', pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'] },
+    { id: 'BAL', name: 'Baltic Cup', pool: ['EST', 'LVA', 'LTU', 'FIN'] },
+    { id: 'NOR', name: 'Nordic Nations Cup', pool: ['SWE', 'DEN', 'NOR', 'FIN', 'ISL'] },
+    { id: 'BLK', name: 'Balkan Cup', pool: ['SRB', 'CRO', 'BIH', 'ALB', 'MKD', 'MNE', 'SVN', 'BUL', 'ROU', 'GRE'] },
+    { id: 'CEU', name: 'Central European Cup', pool: ['CZE', 'SVK', 'HUN', 'POL', 'AUT', 'SVN'] },
+    { id: 'CEL', name: 'Celtic Nations Cup', pool: ['SCO', 'WAL', 'IRL', 'NIR'] },
+    { id: 'CAU', name: 'Caucasus Cup', pool: ['GEO', 'ARM', 'AZE', 'TUR'] },
+    { id: 'CCA', name: 'Central American and Caribbean Cup', pool: ['CRC', 'HON', 'PAN', 'GUA', 'SLV', 'JAM', 'TRI'] },
+    { id: 'AND', name: 'Andean Cup', pool: ['COL', 'ECU', 'PER', 'BOL', 'VEN', 'CHI'] },
+    { id: 'PLA', name: 'River Plate Cup', pool: ['ARG', 'URU', 'PAR', 'BRA', 'CHI'] },
   ];
-  I.TNAME.KIR = 'Kirin Cup';
-  I.TNAME.KGC = "King's Cup";
-  I.TNAME.NEH = 'Nehru Cup';
+  I.TNAME.KIR = 'Cherry Blossom Cup';
+  I.TNAME.SEA = 'Southeast Asian Nations Cup';
+  I.TNAME.KGC = 'Golden Elephant Cup';
+  I.TNAME.GLF = 'Gulf Nations Cup';
+  I.TNAME.NEH = 'Monsoon Cup';
+  I.TNAME.EAS = 'East Asian Nations Cup';
+  for (const v of I.INVITES) I.TNAME[v.id] = v.name;
   I.INVITE_IDS = I.INVITES.map((v) => v.id); // (what the game has: a world definition may play fewer, but its history still names them)
 
   // Every nation can field a team. A nation whose players the world didn't happen to give enough of (Malaysia, the
@@ -304,7 +336,9 @@
     return k === 0 ? 'world' : k === 2 ? 'continental' : k === 3 ? 'confed' : null;
   };
   I.kindName = (kind) =>
-    ({ world: 'World Cup', continental: 'continental championships', confed: 'Continental Champions Trophy' })[kind];
+    ({ world: 'World Championship', continental: 'continental championships', confed: 'Continental Champions Trophy' })[
+      kind
+    ];
   I.nextTournament = function () {
     for (let y = S().year; y < S().year + 4; y++) {
       const k = I.tournamentFor(y);
@@ -368,7 +402,8 @@
       s.quals = q;
     }
     s.nl = I.nlBuild();
-    s.invite = I.planInvite();
+    s.invites = I.planInvites();
+    s.invite = s.invites[0] || null;
     I.topUp();
     I.allegianceTick();
     I.refreshJobs();
@@ -523,13 +558,22 @@
 
   // The season's invitational: the host and three guests from different parts of the world, none of whom has a qualifier on
   // the days it is played (null when the host is busy or the world has too few nations)
-  I.planInvite = function () {
+  // (up to I.PER_SEASON a season, in turn: each takes its own host and guests, and no nation is in two of them)
+  I.PER_SEASON = 3;
+  I.planInvite = function (k = 0, taken = new Set()) {
     if (!I.INVITES.length) return null; // (a world definition can do without them)
     const s = S(),
-      spec = I.INVITES[((s.year % I.INVITES.length) + I.INVITES.length) % I.INVITES.length];
-    const host = Object.values(s.nteams || {}).find((t) => t.code === spec.host);
+      n = I.INVITES.length,
+      spec = I.INVITES[(((s.year * I.PER_SEASON + k) % n) + n) % n];
+    const teamsOf = (codes) =>
+      codes.map((c) => Object.values(s.nteams || {}).find((t) => t.code === c)).filter(Boolean);
+    const pool0 = spec.pool ? teamsOf(spec.pool) : null;
+    if (pool0 && pool0.length < 4) return null;
+    const host = pool0
+      ? pool0[Math.floor((s.year * I.PER_SEASON + k) / n) % pool0.length]
+      : Object.values(s.nteams || {}).find((t) => t.code === spec.host);
     if (!host) return null;
-    const busy = new Set();
+    const busy = new Set(taken);
     ((s.quals && s.quals.groups) || []).forEach((g) =>
       [2, 3].forEach((md) => (g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
     );
@@ -537,17 +581,21 @@
       [2, 3].forEach((md) => (x.g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
     );
     if (busy.has(host.id)) return null;
-    const pool = U.shuffle(
-      I.ranked()
-        .slice(0, 45)
-        .filter((t) => t !== host && !busy.has(t.id)),
-    );
+    const pool = pool0
+      ? pool0.filter((t) => t !== host && !busy.has(t.id)).sort((a, b) => b.coef - a.coef)
+      : U.shuffle(
+          I.ranked()
+            .slice(0, 45)
+            .filter((t) => t !== host && !busy.has(t.id)),
+        );
     const guests = [],
       regions = new Set([I.region(host.code)]);
-    for (const t of pool) {
-      if (guests.length === 3) break;
-      if (!regions.has(I.region(t.code))) (guests.push(t), regions.add(I.region(t.code)));
-    }
+    // (a regional tournament takes the best of its pool; the others take guests from different parts of the world)
+    if (!pool0)
+      for (const t of pool) {
+        if (guests.length === 3) break;
+        if (!regions.has(I.region(t.code))) (guests.push(t), regions.add(I.region(t.code)));
+      }
     for (const t of pool) if (guests.length < 3 && !guests.includes(t)) guests.push(t);
     if (guests.length < 3) return null;
     // seeded by rating: the best guest meets the host's side of the draw last
@@ -564,10 +612,28 @@
       runnerUp: null,
     };
   };
-  // Its fixtures for the window day: semi-finals on the first, the final and the third-place match on the second
+  I.planInvites = function () {
+    const taken = new Set(),
+      out = [];
+    for (let k = 0; k < I.PER_SEASON; k++) {
+      const inv = I.planInvite(k, taken);
+      if (inv && !out.some((x) => x.id === inv.id)) {
+        inv.teams.forEach((id) => taken.add(id));
+        out.push(inv);
+      }
+    }
+    return out;
+  };
+  // The season's invitationals (an older save has the one)
+  const invitesOf = (s) => s.invites || (s.invite ? [s.invite] : []);
+  I.invites = () => invitesOf(S());
+  // Their fixtures for the window day
   I.inviteDay = function (tag, busy) {
+    return invitesOf(S()).flatMap((inv) => I.oneInviteDay(inv, tag, busy));
+  };
+  // One invitational's fixtures for the window day: semi-finals on the first, the final and the third-place match on the second
+  I.oneInviteDay = function (inv, tag, busy) {
     const s = S(),
-      inv = s.invite,
       out = [];
     if (!inv || inv.winner) return out;
     const mk = (a, b, label, extra = {}) => {
@@ -607,7 +673,7 @@
   // A match of the invitational is over: the final names the winner
   I.inviteResult = function (fx) {
     const s = S(),
-      inv = s.invite;
+      inv = invitesOf(s).find((x) => x.id === fx.iid);
     if (!inv || !fx.final) return;
     inv.winner = FM.Season.winnerOf(fx);
     inv.runnerUp = fx.h === inv.winner ? fx.a : fx.h;
@@ -682,9 +748,12 @@
         s.tourns.forEach((t) => [...t.ko.qf, ...t.ko.sf, t.ko.final].filter(Boolean).forEach((f) => byId.set(f.id, f)));
         s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
       }
-      if (cal.type !== 'tourn' && s.invite) {
+      if (cal.type !== 'tourn' && invitesOf(s).length) {
         const byId = new Map(
-          [...(s.invite.sf || []), s.invite.third, s.invite.final].filter(Boolean).map((f) => [f.id, f]),
+          invitesOf(s)
+            .flatMap((inv) => [...(inv.sf || []), inv.third, inv.final])
+            .filter(Boolean)
+            .map((f) => [f.id, f]),
         );
         s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
       }

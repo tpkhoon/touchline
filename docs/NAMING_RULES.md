@@ -34,7 +34,8 @@ nicknamed "The Miners", wearing black and amber, playing at "The Pithead Ground"
 - Place + suffix: Town, City, United, Athletic, Rovers, Wanderers, Albion, Argyle, County, Rangers, Orient, Vale,
   Alexandra.
 - "United" often means a merger of two clubs. "Athletic" and "Rovers" are Victorian-era sports-club words. "Albion" and
-  "Argyle" are older, quirkier survivors.
+  "Argyle" are older, quirkier survivors. Alexandra, Wednesday, Orient and Argyle are one-offs (a country has one of
+  each, so the generated world has at most one of each, and two Harriers); `tools/worldgen.mjs` keeps to that.
 - Founding-origin names: Wednesday (the day a cricket club met), Thistle, Hotspur, Villa (a chapel).
 - Examples: Calderbridge Town, Marlow Vale, Haverton Rovers, St. Aldric's Athletic.
 

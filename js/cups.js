@@ -1,6 +1,6 @@
 // Cup competitions: domestic knockouts (seeded byes, extra time, penalties), continental cups
 // (groups of four, then quarter/semi-finals and a neutral final — two-legged when the world rule is on)
-// and the Club World Cup for last season's continental finalists.
+// and the World Club Championship for last season's continental finalists.
 // Entrants come from data-driven qualification rules on the leagues (rules.qualify).
 (function () {
   const FM = window.FM,
@@ -37,11 +37,12 @@
   Cu.decides = (f) => f.leg !== 1;
 
   // qualified: { CC: [clubIds], ... } from last season's tables, or null in the first season
-  // A domestic cup's entrants: every club in that nation's leagues, fully or lightly simulated (League One is in the FA Cup)
+  // A domestic cup's entrants: every club in that nation's leagues, whatever its simulation tier (the clubs of a nation simulated by scores
+  // only play its cup in the full engine, so the cup has real matches and real stories)
   // (a cup's format can keep it to the top divisions: opts.tiers = the lowest division that enters; too few clubs and it is open to all)
   Cu.entrants = (c) => {
     const all = Object.values(S().clubs).filter(
-      (x) => x.nat === c.nat && x.comp && S().comps[x.comp] && S().comps[x.comp].nat === c.nat && x.sim !== 'minimal',
+      (x) => x.nat === c.nat && x.comp && S().comps[x.comp] && S().comps[x.comp].nat === c.nat,
     );
     const t = (Cu.optsOf(c) || {}).tiers;
     if (!t) return all;
@@ -152,9 +153,69 @@
     }
     Cu.setupEuro(qualified);
     for (const c of W.worldCups()) Cu.setupWorld(c);
+    Cu.ensureSupers(S());
+    Cu.setupSupers();
     FM.Regional.setupSeason(); // county cups and state championships
     Cu.licenceCheck();
   };
+
+  // ---------- Super cups ----------
+  // One match at the start of each season at a neutral ground: in every nation the league champion against the cup winner (the
+  // league's runner-up when one club did both), and on each continent the champion of the champions cup against the winner of
+  // its Shield. A new world has no last season, so its first season has none.
+  Cu.SUPER_CONT = [
+    ['SUPEU', 'European Super Cup', 'CC', 'EL'],
+    ['SUPSA', 'South American Super Cup', 'CL', 'SA'],
+    ['SUPAF', 'African Super Cup', 'AF', 'AX'],
+    ['SUPAS', 'Asian Super Cup', 'AC', 'A2'],
+    ['SUPNA', 'North American Super Cup', 'NC', 'N2'],
+  ];
+  Cu.ensureSupers = function (st) {
+    const mk = (id, name, nat, short, prize) => {
+      if (!st.comps[id]) st.comps[id] = { id, type: 'super', name, short, nat, clubs: [], prize, rounds: [] };
+    };
+    for (const [id, nat] of D.DOMESTIC_CUPS.map((x) => [x[0].replace(/^CUP/, 'SUP'), x[1]]))
+      if (D.NATIONS[nat]) mk(id, `${D.NATIONS[nat].name} Super Cup`, nat, `${nat}S`, 4e5);
+    for (const [id, name] of Cu.SUPER_CONT) mk(id, name, '', id.slice(3) + 'S', 2e6);
+  };
+  Cu.setupSupers = function () {
+    const st = S(),
+      last = (st.archive || []).filter((e) => e.year === st.year - 1).pop();
+    for (const c of Object.values(st.comps)) {
+      if (c.type !== 'super') continue;
+      c.clubs = [];
+      c.winner = c.runnerUp = c.awards = c.fx = null;
+      let a = null,
+        b = null;
+      if (c.nat) {
+        const lg = W.leagues().find((l) => l.nat === c.nat && l.tier === 1),
+          le = last && lg && last.comps && last.comps[lg.id],
+          ce = last && last.cups && last.cups['CUP' + c.nat];
+        a = le && le.champion;
+        b = ce && ce.winner;
+        if (a && b && a === b) b = le.runnerUp;
+      } else {
+        const def = Cu.SUPER_CONT.find((x) => x[0] === c.id);
+        a = def && Cu.lastChampion(def[2]);
+        b = def && Cu.lastChampion(def[3]);
+      }
+      if (a && b && a !== b && st.clubs[a] && st.clubs[b]) {
+        c.clubs = [a, b];
+        c.fx = {
+          id: FM.nextId('f'),
+          comp: c.id,
+          h: a,
+          a: b,
+          res: null,
+          ko: true,
+          final: true,
+          neutral: true,
+          po: 'Super Cup',
+        };
+      }
+    }
+  };
+  Cu.supers = () => Object.values(S().comps).filter((c) => c.type === 'super' && c.fx);
 
   // ---------- European knockout cups: the Holders' Cup and the Summer Cup ----------
   const inContinental = () => new Set(W.continentals().flatMap((x) => x.clubs || []));
@@ -289,10 +350,34 @@
       prize: d.prize,
       opts: d.opts || {},
     });
+  Cu.CWC_PRIZE = 2.5e7;
+  Cu.newCwc = () => ({
+    id: 'CWC',
+    type: 'world',
+    fmt: 'cwc',
+    name: 'World Club Championship',
+    short: 'CWC',
+    clubs: [],
+    prize: Cu.CWC_PRIZE,
+    on: false,
+  });
+  Cu.newIc = () => ({
+    id: 'ICC',
+    type: 'world',
+    fmt: 'ic',
+    name: 'Intercontinental Cup',
+    short: 'ICC',
+    clubs: [],
+    prize: 1e7,
+  });
   Cu.ensureContinentals = function (s) {
     FM.Regional.ensure(s);
     for (const d of D.EURO_CUPS || []) if (!s.comps[d.id]) Cu.addEuro(s, d);
     for (const c of D.CONTINENTALS) if (!s.comps[c.id]) s.comps[c.id] = { ...c, type: 'continental', clubs: [] };
+    // (the Intercontinental Cup, and a World Club Championship of the 32-club format: older saves have the old eight-club one)
+    if (!s.comps.ICC) s.comps.ICC = Cu.newIc();
+    if (s.comps.CWC && !s.comps.CWC.fmt)
+      Object.assign(s.comps.CWC, { fmt: 'cwc', prize: Cu.CWC_PRIZE, on: false, clubs: [] });
     for (const [id, nat, name, short, opts] of D.DOMESTIC_CUPS)
       if (!s.comps[id]) Cu.addDomestic(s, id, nat, name, short, opts);
   };
@@ -317,30 +402,194 @@
       if (x.feeders && x.region === cc.region && (x.tier || 1) < (cc.tier || 1)) skip += x.feeders[compId] || 0;
     return skip;
   };
-  // Club World Cup: last season's continental finalists; in the first season, each continent's biggest entrants
-  Cu.setupWorld = function (c) {
-    // Seed order keeps same-continent clubs apart in the quarter-finals (1v8, 4v5, 2v7, 3v6)
-    const seen = new Set();
-    let ids = D.CWC_SEEDS.map(([cid, i]) => {
-      const cc = S().comps[cid];
-      if (!cc) return null;
-      const list = cc.lastFinal ? [cc.lastFinal.w, cc.lastFinal.r] : cc.clubs.slice().sort((a, b) => rep(b) - rep(a));
-      return list[i];
-    }).filter((id) => id && S().clubs[id] && !seen.has(id) && seen.add(id));
-    if (ids.length < 8) {
-      // Top up with the best-known continental entrants
-      const extra = W.continentals()
-        .flatMap((cc) => cc.clubs)
-        .filter((id) => !seen.has(id))
-        .sort((a, b) => rep(b) - rep(a));
-      ids = ids.concat(extra).slice(0, 8);
+  // ---------- The two world competitions ----------
+  // The Intercontinental Cup is played every season (mid-season): the continental champions of the season before, the Asian and
+  // African champions first, the American champions against each other, the winners in the Challenger Cup and the European
+  // champion in the final. The World Club Championship is played in the summer of every fourth season: 32 clubs in eight groups of four,
+  // then a round of 16, quarter-finals, semi-finals and the final (the same neutral venues all through).
+  Cu.cwcYear = (y = S().year) => (((y - (FM.Intl && FM.Intl.CYCLE != null ? FM.Intl.CYCLE : 2)) % 4) + 4) % 4 === 1;
+  // The season of the next World Club Championship (the one now, if this is its season)
+  Cu.nextCwc = () => {
+    let y = S().year;
+    while (!Cu.cwcYear(y)) y++;
+    return y;
+  };
+  // Continental points: how far each club went in a continental cup, kept for four seasons (they rank the World Club Championship's places
+  // after the champions): winners 10, runners-up 7, semi-finalists 5, quarter-finalists 3, a group stage 1; a second-tier cup half
+  Cu.POINTS = {
+    Winners: 10,
+    'Runners-up': 7,
+    'Semi-finals': 5,
+    'Quarter-finals': 3,
+    'Knockout play-off': 2,
+    'Group stage': 1,
+  };
+  Cu.noteSeason = function (c) {
+    const st = S();
+    st.contHist = st.contHist || [];
+    st.contPts = st.contPts || {};
+    const pts = (st.contPts[st.year] = st.contPts[st.year] || {});
+    for (const id of c.clubs || []) {
+      const run = Cu.runOf(c, id);
+      if (run) pts[id] = (pts[id] || 0) + (Cu.POINTS[run] || 0) * ((c.tier || 1) > 1 ? 0.5 : 1);
     }
-    c.clubs = ids.slice(0, 8);
-    c.ko = { qf: [], sf: [], final: null };
+    for (const y of Object.keys(st.contPts)) if (+y < st.year - 5) delete st.contPts[y];
+  };
+  Cu.pointsOf = (id, from = S().year - 4, to = S().year - 1) =>
+    Object.entries(S().contPts || {}).reduce((t, [y, m]) => t + (y >= from && y <= to ? m[id] || 0 : 0), 0);
+  // The champions of a competition, newest first
+  Cu.champions = (compId) =>
+    (S().contHist || [])
+      .filter((h) => h.id === compId)
+      .sort((a, b) => b.year - a.year)
+      .map((h) => h.w);
+  // The last winner of a continental cup (older saves know only the last final)
+  Cu.lastChampion = function (compId) {
+    const cc = S().comps[compId];
+    return Cu.champions(compId)[0] || (cc && cc.lastFinal && cc.lastFinal.w) || null;
+  };
+  // Who plays the World Club Championship this summer: each continent's quota from its continental cups' champions of the last four
+  // seasons (each club once, most recent first), then by continental points, and no nation with more than two of its clubs
+  // where there is a choice. A new world has no past: the biggest clubs of the continent's cups fill the places.
+  Cu.cwcQualifiers = function () {
+    const quota = D.CWC_QUOTA,
+      cont = W.continentals(),
+      out = [],
+      taken = new Set(),
+      region = {};
+    const take = (id, reg) => {
+      if (!id || taken.has(id) || !S().clubs[id] || S().clubs[id].sim === 'nation') return false;
+      taken.add(id);
+      region[id] = reg;
+      out.push(id);
+      return true;
+    };
+    const perNat = (id) => out.filter((x) => S().clubs[x].nat === S().clubs[id].nat).length;
+    for (const [reg, n] of Object.entries(quota)) {
+      const main = cont.filter((x) => x.region === reg && (x.tier || 1) === 1),
+        pool = [...new Set(cont.filter((x) => x.region === reg).flatMap((x) => x.clubs || []))].filter(
+          (id) => S().clubs[id],
+        );
+      if (!main.length) continue;
+      let got = 0;
+      for (const m of main) for (const id of Cu.champions(m.id).slice(0, 4)) if (got < n && take(id, reg)) got++;
+      const rest = pool
+        .filter((id) => !taken.has(id))
+        .sort((a, b) => Cu.pointsOf(b) - Cu.pointsOf(a) || rep(b) - rep(a) || (a < b ? -1 : 1));
+      for (const id of rest) if (got < n && perNat(id) < 2 && take(id, reg)) got++;
+      for (const id of rest) if (got < n && take(id, reg)) got++;
+    }
+    // (a world with fewer continents than the quota: the best of the other entrants fill the 32)
+    const want = Object.values(quota).reduce((t, k) => t + k, 0);
+    if (out.length < want) {
+      const extra = cont
+        .flatMap((x) => x.clubs || [])
+        .filter((id) => !taken.has(id) && S().clubs[id])
+        .sort((a, b) => rep(b) - rep(a));
+      for (const id of extra)
+        if (out.length < want) take(id, (cont.find((x) => (x.clubs || []).includes(id)) || {}).region);
+    }
+    return { ids: out, region };
+  };
+  // Eight groups of four from four pots (the champions and strongest clubs first), a continent kept out of the same group
+  // where it can be (Europe may have two in a group)
+  Cu.cwcGroups = function (ids, region) {
+    const G = ids.length >= 32 ? 8 : ids.length >= 16 ? 4 : 0;
+    if (!G) return [];
+    const seeded = ids.slice(0, G * 4).sort((a, b) => Cu.pointsOf(b) - Cu.pointsOf(a) + (rep(b) - rep(a)) * 0.01);
+    const groups = [...Array(G)].map(() => []);
+    for (let p = 0; p < seeded.length; p += G) {
+      let pot = U.shuffle(seeded.slice(p, p + G)),
+        best = pot,
+        worst = 99;
+      for (let tries = 0; tries < 60; tries++) {
+        const clash = groups.reduce((t, g, gi) => {
+          if (!pot[gi]) return t;
+          const same = g.filter((x) => region[x] === region[pot[gi]]).length;
+          return t + (same >= (region[pot[gi]] === 'Europe' ? 2 : 1) ? 1 : 0);
+        }, 0);
+        if (clash < worst) {
+          worst = clash;
+          best = pot;
+        }
+        if (!clash) break;
+        pot = U.shuffle(pot);
+      }
+      best.forEach((id, gi) => groups[gi].push(id));
+    }
+    return groups;
+  };
+  const mkGroups = (c, groupsIds) =>
+    groupsIds.map((ids, gi) => ({
+      name: String.fromCharCode(65 + gi),
+      clubs: ids,
+      table: mkTable(ids),
+      // (a single round robin: the first half of the home-and-away one)
+      fixtures: W.roundRobin(ids)
+        .slice(0, W.roundRobin(ids).length / 2)
+        .map((rd, r) =>
+          rd.map(([h, a]) => ({
+            id: FM.nextId('f'),
+            comp: c.id,
+            group: String.fromCharCode(65 + gi),
+            round: r,
+            h,
+            a,
+            res: null,
+            neutral: true,
+            po: `Group ${String.fromCharCode(65 + gi)} · MD${r + 1}`,
+          })),
+        ),
+    }));
+  Cu.setupWorld = function (c) {
+    c.fmt = c.fmt || 'cwc';
+    c.ko = c.fmt === 'ic' ? { qf: [], sf: [], final: null } : { r16: [], qf: [], sf: [], final: null };
+    c.groups = undefined;
     c.winner = null;
     c.awards = null;
     c.runnerUp = null;
-    c.clubs.forEach((id) => pay(id, 2e6, c, 'participation'));
+    c.clubs = [];
+    if (c.fmt === 'ic') {
+      // the champions of the season just played (in the first season, each continent's biggest entrant)
+      const B = D.IC_BRACKET,
+        champ = (cid) => {
+          const cc = S().comps[cid];
+          if (!cc) return null;
+          const last = Cu.lastChampion(cid);
+          return last && S().clubs[last] ? last : cc.clubs.slice().sort((a, b) => rep(b) - rep(a))[0] || null;
+        };
+      const seen = new Set();
+      c.ic = {};
+      for (const cid of [...B.first, ...B.americas, B.final]) {
+        const id = champ(cid);
+        if (id && !seen.has(id)) {
+          seen.add(id);
+          c.ic[cid] = id;
+        }
+      }
+      c.clubs = Object.values(c.ic);
+      c.clubs.forEach((id) => pay(id, (c.prize || 0) * 0.2, c, 'participation'));
+      return;
+    }
+    // the World Club Championship: only in its season
+    c.on = Cu.cwcYear();
+    if (!c.on) return;
+    const { ids, region } = Cu.cwcQualifiers();
+    const groupsIds = Cu.cwcGroups(ids, region);
+    if (!groupsIds.length) {
+      c.on = false;
+      return;
+    }
+    c.clubs = groupsIds.flat();
+    c.region = region;
+    c.groups = mkGroups(c, groupsIds);
+    c.clubs.forEach((id) => pay(id, (c.prize || 0) * 0.05, c, 'participation'));
+    FM.News.add({
+      type: 'world',
+      title: `${c.name}: the 32 clubs and the draw`,
+      body: c.groups.map((g) => `Group ${g.name}: ${g.clubs.map((id) => S().clubs[id].name).join(', ')}`).join('\n'),
+      big: true,
+    });
   };
 
   // Fixtures a cup plays on the current calendar day (draws are made lazily, on the day)
@@ -354,6 +603,7 @@
     if (comp.type === 'cup') return domestic(comp);
     if (comp.type === 'regional') return FM.Regional.fixturesFor(comp);
     if (comp.type === 'world') return world(comp, cal.stage);
+    if (comp.type === 'super') return comp.fx ? [comp.fx] : [];
     const list = continental(comp, cal.stage);
     for (const f of list) {
       if (f.res) continue;
@@ -501,11 +751,12 @@
       }
       return c.clubs && c.clubs.includes(id) ? 'First round' : null;
     }
-    if (c.type === 'continental') {
+    if (c.type === 'continental' || (c.type === 'world' && c.groups)) {
       const ko = c.ko || {},
         inR = (a) => (a || []).some((f) => f && (f.h === id || f.a === id));
       if (inR(ko.sf) || inR(ko.sf2)) return 'Semi-finals';
       if (inR(ko.qf) || inR(ko.qf2)) return 'Quarter-finals';
+      if (inR(ko.r16)) return 'Round of 16';
       if (inR(ko.po)) return 'Knockout play-off';
       return c.clubs && c.clubs.includes(id) ? 'Group stage' : null;
     }
@@ -709,7 +960,7 @@
     return [];
   }
 
-  // Club World Cup: single-leg neutral knockout, strongest continent's champion against the weakest seed
+  // The world competitions' fixtures for a calendar day's stage (single matches at neutral grounds; draws are made on the day)
   function world(c, stage) {
     if (!c.clubs || c.clubs.length < 2) return [];
     const tie = (h, a, po, fin) => ({
@@ -723,49 +974,113 @@
       neutral: true,
       final: !!fin,
     });
+    const names = (ties) =>
+      ties
+        .map(
+          (f) =>
+            `${S().clubs[f.h].name} ${D.NATIONS[S().clubs[f.h].nat].flag} v ${D.NATIONS[S().clubs[f.a].nat].flag} ${S().clubs[f.a].name}`,
+        )
+        .join('\n');
+    const announce = (title, ties) =>
+      FM.News.add({ type: 'world', title: `${c.name}: ${title}`, body: names(ties), big: true });
+    if (c.fmt === 'ic') {
+      const B = D.IC_BRACKET,
+        has = (cid) => c.ic && c.ic[cid];
+      if (stage === 'QF') {
+        if (!c.ko.qf.length) {
+          if (has(B.first[0]) && has(B.first[1]))
+            c.ko.qf.push(tie(c.ic[B.first[0]], c.ic[B.first[1]], 'African–Asian Cup'));
+          if (has(B.americas[0]) && has(B.americas[1]))
+            c.ko.qf.push(tie(c.ic[B.americas[0]], c.ic[B.americas[1]], 'Derby of the Americas'));
+          if (c.ko.qf.length) announce('first round', c.ko.qf);
+        }
+        return c.ko.qf;
+      }
+      // (a side whose partner is missing from a custom world goes straight through)
+      const through = (cids) => {
+        const f = c.ko.qf.find((x) => cids.some((cid) => c.ic[cid] === x.h));
+        return f ? winnerOf(f) : cids.map((cid) => c.ic[cid]).find(Boolean) || null;
+      };
+      const side = () => (c.ko.qf.some((f) => !f.res) ? null : [through(B.first), through(B.americas)]);
+      if (stage === 'SF') {
+        if (!c.ko.sf.length) {
+          const [x, y] = side() || [];
+          if (x && y) {
+            c.ko.sf = [tie(y, x, 'Challenger Cup')];
+            announce('the Challenger Cup', c.ko.sf);
+          }
+        }
+        return c.ko.sf;
+      }
+      if (stage === 'F') {
+        if (!c.ko.final) {
+          const e = c.ic[B.final],
+            ch = c.ko.sf.length ? (c.ko.sf[0].res ? winnerOf(c.ko.sf[0]) : null) : (side() || []).find(Boolean);
+          if (!e || !ch) return [];
+          c.ko.final = tie(e, ch, 'Final', true);
+        }
+        return [c.ko.final];
+      }
+      return [];
+    }
+    // the World Club Championship
+    if (!c.on || !c.groups) return [];
+    if (stage[0] === 'G') return c.groups.flatMap((g) => g.fixtures[+stage.slice(1) - 1] || []);
+    const groupsDone = () => c.groups.every((g) => g.fixtures.flat().every((f) => f.res)),
+      tabs = () => c.groups.map(Cu.groupTable),
+      winners = (key) => {
+        const l = c.ko[key];
+        return l.length && l.every((f) => f.res) ? l.map(winnerOf) : null;
+      };
+    const first = c.groups.length >= 8 ? 'r16' : 'qf';
+    if (stage === 'R16' && first === 'r16') {
+      if (!c.ko.r16.length && groupsDone()) {
+        const t = tabs(),
+          pairs = [];
+        for (let i = 0; i + 1 < t.length; i += 2)
+          pairs.push([t[i][0].id, t[i + 1][1].id], [t[i + 1][0].id, t[i][1].id]);
+        c.ko.r16 = pairs.map(([h, a]) => tie(h, a, 'Round of 16'));
+        announce('the round of 16', c.ko.r16);
+      }
+      return c.ko.r16;
+    }
     if (stage === 'QF') {
       if (!c.ko.qf.length) {
-        const s = c.clubs;
-        c.ko.qf = [
-          [0, 7],
-          [3, 4],
-          [1, 6],
-          [2, 5],
-        ]
-          .filter(([i, j]) => s[i] && s[j])
-          .map(([i, j]) => tie(s[i], s[j], 'Quarter-final'));
-        FM.News.add({
-          type: 'world',
-          title: `${c.name}: the draw`,
-          body: c.ko.qf
-            .map(
-              (f) =>
-                `${S().clubs[f.h].name} ${D.NATIONS[S().clubs[f.h].nat].flag} v ${D.NATIONS[S().clubs[f.a].nat].flag} ${S().clubs[f.a].name}`,
-            )
-            .join('\n'),
-          big: true,
-        });
+        let pairs = null;
+        if (first === 'r16') {
+          const w = winners('r16');
+          pairs = w && [0, 2, 4, 6].map((i) => [w[i], w[i + 1]]);
+        } else if (groupsDone()) {
+          const [A, B, C, Dd] = tabs();
+          pairs = [
+            [A[0].id, B[1].id],
+            [B[0].id, A[1].id],
+            [C[0].id, Dd[1].id],
+            [Dd[0].id, C[1].id],
+          ];
+        }
+        if (pairs) {
+          c.ko.qf = pairs.map(([h, a]) => tie(h, a, 'Quarter-final'));
+          announce('the quarter-finals', c.ko.qf);
+        }
       }
       return c.ko.qf;
     }
     if (stage === 'SF') {
       if (!c.ko.sf.length) {
-        if (!c.ko.qf.length || c.ko.qf.some((f) => !f.res)) return [];
-        const w = c.ko.qf.map(winnerOf);
-        c.ko.sf = [
-          [w[0], w[1]],
-          [w[2], w[3]],
-        ]
-          .filter(([a, b]) => a && b)
-          .map(([h, a]) => tie(h, a, 'Semi-final'));
+        const w = winners('qf');
+        if (w) {
+          c.ko.sf = [tie(w[0], w[1], 'Semi-final'), tie(w[2], w[3], 'Semi-final')];
+          announce('the semi-finals', c.ko.sf);
+        }
       }
       return c.ko.sf;
     }
     if (stage === 'F') {
       if (!c.ko.final) {
-        if (c.ko.sf.length < 2 || c.ko.sf.some((f) => !f.res)) return [];
-        const [h, a] = c.ko.sf.map(winnerOf);
-        c.ko.final = tie(h, a, 'Final', true);
+        const w = winners('sf');
+        if (!w) return [];
+        c.ko.final = tie(w[0], w[1], 'Final', true);
       }
       return [c.ko.final];
     }
@@ -814,14 +1129,26 @@
     c.winner = w;
     c.runnerUp = l;
     c.lastFinal = { w, r: l, year: S().year };
+    if (c.type === 'continental' || c.type === 'world') {
+      // (the winners of every season, for the World Club Championship's places and the competition's history)
+      S().contHist = S().contHist || [];
+      S().contHist.push({ id: c.id, year: S().year, w, r: l });
+      if (c.type === 'continental') Cu.noteSeason(c);
+    }
     if (FM.Records) FM.Records.finishComp(c); // its awards and team of the tournament
     club.titles[c.id] = (club.titles[c.id] || 0) + 1;
     pay(w, c.type === 'cup' ? (c.prize || 0) * 0.25 : c.prize || 0, c, c.type === 'cup' ? 'winners' : 'title'); // (a domestic cup's ladder has paid most of its fund by now)
-    W.nudgeRep(club, c.type === 'regional' ? 0.5 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5);
+    W.nudgeRep(
+      club,
+      c.type === 'regional' ? 0.5 : c.type === 'super' ? 1 : c.type === 'cup' ? 2 : c.type === 'world' ? 4 : 5,
+    );
     club.fanMood = Math.min(100, club.fanMood + 15);
     if (W.isUser(w)) {
       if (c.type !== 'regional') S().user.stats.trophies++; // (a county cup is an honour, not a trophy of the season)
-      S().user.rep = Math.min(99, S().user.rep + (c.type === 'regional' ? 1 : c.type === 'cup' ? 4 : 8));
+      S().user.rep = Math.min(
+        99,
+        S().user.rep + (c.type === 'regional' ? 1 : c.type === 'cup' || c.type === 'super' ? 4 : 8),
+      );
       club.boardConf = Math.min(100, club.boardConf + 15);
     }
     if (c.euro === 'summer') Cu.summerPlaces(c);
@@ -830,9 +1157,11 @@
       kicker:
         c.type === 'world'
           ? 'CHAMPIONS OF THE WORLD'
-          : c.type === 'continental'
-            ? 'CHAMPIONS OF THE CONTINENT'
-            : 'CUP WINNERS',
+          : c.type === 'super'
+            ? 'SUPER CUP WINNERS'
+            : c.type === 'continental'
+              ? 'CHAMPIONS OF THE CONTINENT'
+              : 'CUP WINNERS',
       title: `${club.name} win the ${c.name}`,
       sub: `${S().clubs[l].name} beaten in the final. Title number ${club.titles[c.id]}.`,
       big: c.type === 'world' ? '🌍' : '🏆',
@@ -845,6 +1174,7 @@
     c.ko
       ? [
           ...(c.ko.po || []),
+          ...(c.ko.r16 || []),
           ...(c.ko.qf || []),
           ...(c.ko.qf2 || []),
           ...(c.ko.sf || []),
@@ -864,8 +1194,10 @@
       }
       if (c.type === 'cup') (c.rounds || []).forEach((r) => out.push(...r.ties, ...(r.ties2 || [])));
       if (c.type === 'regional') out.push(...FM.Regional.allFixtures(c));
-      if (c.type === 'continental') (c.groups || []).forEach((g) => out.push(...g.fixtures.flat()));
+      if (c.type === 'continental' || c.type === 'world')
+        (c.groups || []).forEach((g) => out.push(...g.fixtures.flat()));
       if (c.type === 'continental' || c.type === 'world') out.push(...Cu.koList(c));
+      if (c.type === 'super' && c.fx) out.push(c.fx);
     }
     return out.filter(Boolean);
   };
@@ -925,8 +1257,10 @@
           ? 'Final'
           : [...c.ko.sf, ...(c.ko.sf2 || [])].some(mine)
             ? 'Semi-finals'
-            : 'Quarter-finals';
-      if (c.type === 'world') {
+            : (c.ko.qf || []).some(mine) || !(c.ko.r16 || []).length
+              ? 'Quarter-finals'
+              : 'Round of 16';
+      if (c.type === 'world' && !(c.groups && c.groups.length)) {
         out.push({ c, text: koOut ? 'Knocked out' : stageName, alive: !koOut });
         continue;
       }

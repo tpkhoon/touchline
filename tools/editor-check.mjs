@@ -15,6 +15,10 @@ const { FM } = loadSim(+(args.seed || 7), {
     delete store[k];
   },
 });
+// every nation of the game has a league now: the test makes one that has none (a copy of Peru under another name)
+FM.D.NATIONS.TST = { ...FM.D.NATIONS.PER, name: 'Testland' };
+FM.D.NT_COLORS.TST = FM.D.NT_COLORS.PER;
+FM.D.NATIVE_POOL.TST = FM.D.NATIVE_POOL.PER;
 const W = FM.W,
   Sea = FM.Season,
   WD = FM.WorldDef,
@@ -108,13 +112,13 @@ def.clubs = def.clubs.filter((c) => c.id !== gone);
 def.removeClubs.push(gone);
 const urus = Array.from({ length: 10 }, (_, i) => ({
   ...mk('c_PER' + (i + 1), 'Lima ' + (i + 1), 'PER1'),
-  nat: 'PER',
+  nat: 'TST',
 }));
 def.leagues.push({
   id: 'PER1',
   name: 'Uruguayan Test League',
   short: 'PER',
-  nat: 'PER',
+  nat: 'TST',
   tier: 1,
   sim: 'light',
   repBand: [70, 45],
@@ -199,7 +203,7 @@ check(
   E.setCup('CUPENG', { format: { legs: [4, 2], neutral: 'all', tiers: 2, prize: 7e6 } }).ok,
   'a valid domestic cup format was refused',
 );
-// two of the game's own cups taken out of the world, and two invitationals (only the Kirin Cup is kept below)
+// two of the game's own cups taken out of the world, and two invitationals (only the Cherry Blossom Cup is kept below)
 def.removeCups = ['CUPFRA', 'CUPJPN'];
 check(E.setCup('CUPITA', { format: { legs: [], neutral: [] } }).ok, 'a valid Italian cup format was refused');
 check(
@@ -326,15 +330,15 @@ check(
   !E.addCup({ id: 'CUPXX', nat: 'ENG', name: 'Another English Cup', short: 'AEC' }).ok,
   'a second cup for England was accepted',
 );
-check(!E.addCup({ id: 'FOO', nat: 'PER', name: 'Bad Id Cup', short: 'BIC' }).ok, 'a cup id without CUP was accepted');
+check(!E.addCup({ id: 'FOO', nat: 'TST', name: 'Bad Id Cup', short: 'BIC' }).ok, 'a cup id without CUP was accepted');
 check(
   !E.addCup({ id: 'CUPMAR', nat: 'MAR', name: 'Moroccan Cup', short: 'MC' }).ok,
   'a cup for a nation with no simulated clubs was accepted',
 );
 check(
   E.addCup({
-    id: 'CUPPER',
-    nat: 'PER',
+    id: 'CUPTST',
+    nat: 'TST',
     name: 'Peruvian Test Cup',
     short: 'UTC',
     format: { legs: [4], neutral: [2], prize: 2e6, tiers: 0 },
@@ -666,7 +670,7 @@ check(
 );
 check(W.squad('c_PER1').length >= 16, 'a club of the new league has no squad');
 check(
-  S.comps.CL.clubs.length === 16 && S.comps.CL.groups.length === 4,
+  S.comps.CL.clubs.length === 20 && S.comps.CL.groups.length === 5,
   `the South American cup has ${S.comps.CL.clubs.length} clubs in ${S.comps.CL.groups.length} groups with the new league's place`,
 );
 const n1 = S.comps.D1.clubs.length,
@@ -744,10 +748,10 @@ console.log(`D1 has ${n1} clubs`);
     'the past World Championship is not in the archive and the nations titles',
   );
   check(
-    S.comps.CUPPER &&
-      S.comps.CUPPER.name === 'Peruvian Test Cup' &&
-      S.comps.CUPPER.clubs.length === 10 &&
-      S.comps.CUPPER.prize === 2e6,
+    S.comps.CUPTST &&
+      S.comps.CUPTST.name === 'Peruvian Test Cup' &&
+      S.comps.CUPTST.clubs.length === 10 &&
+      S.comps.CUPTST.prize === 2e6,
     'the definitions own cup is not in the world',
   );
   check(
@@ -864,7 +868,7 @@ check(
   `clubs played ${t && [...new Set(t.map((x) => x.p))].join('/')} games, not ${(n1 - 1) * 2}`,
 );
 check(
-  arch && arch.cups && arch.cups.CUPPER && arch.cups.CUPPER.winner && FM.S.comps.CUPPER.clubs.length === 10,
+  arch && arch.cups && arch.cups.CUPTST && arch.cups.CUPTST.winner && FM.S.comps.CUPTST.clubs.length === 10,
   'the definitions own cup was not played',
 );
 {
@@ -909,8 +913,8 @@ DB.clear();
 check(
   FM.D.DOMESTIC_CUPS.some((c) => c[0] === 'CUPFRA') &&
     FM.D.DOMESTIC_CUPS.some((c) => c[0] === 'CUPJPN') &&
-    FM.Intl.INVITES.length === 3,
-  'clearing the database did not bring back the cups and invitationals taken out',
+    FM.Intl.INVITES.length === 21,
+  `clearing the database did not bring back the cups and invitationals taken out (${FM.D.DOMESTIC_CUPS.length} cups, ${FM.Intl.INVITES.length} invitationals: ${FM.Intl.INVITES.map((v) => v.id).join(' ')})`,
 );
 check(!(FM.D.CLUB_INFO[X.slice(2)] || [])[3], 'clearing the database left the crest in the picker data');
 check(
@@ -919,9 +923,9 @@ check(
 );
 check(
   FM.Intl.CYCLE === 2 &&
-    FM.Intl.TOURNS.world[0].name === 'FIFA World Cup' &&
+    FM.Intl.TOURNS.world[0].name === 'World Championship' &&
     FM.Intl.TOURNS.world[0].pools[0][1] === 9 &&
-    FM.Intl.TNAME.WC === 'FIFA World Cup' &&
+    FM.Intl.TNAME.WC === 'World Championship' &&
     FM.Intl.INVITES[0].host === 'JPN',
   'clearing the database left the international settings changed',
 );

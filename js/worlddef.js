@@ -411,7 +411,7 @@
   // ---------- The season's calendar ----------
   // Where the competitions fall in the season, counted in league rounds on the game's 22-round scale (0 = after the first
   // round; a longer league season stretches them to fit): the days of pre-season, the domestic cup's rounds, each stage of the
-  // continental cups (six group days, then QF1 and QF2, SF1 and SF2, the final), the Club World Cup and the two international
+  // continental cups (six group days, then QF1 and QF2, SF1 and SF2, the final), the World Club Championship and the two international
   // breaks. It lives in the game's data, so a definition that changes it goes into the patch like a cup format does.
   WD.CONT_STAGES = ['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'QF1', 'QF2', 'SF1', 'SF2', 'F'];
   WD.WORLD_STAGES = ['QF', 'SF', 'F'];
@@ -449,7 +449,7 @@
       }
     };
     if (c.cont != null) ordered(c.cont, WD.CONT_STAGES, 'the continental cups, stage');
-    if (c.world != null) ordered(c.world, WD.WORLD_STAGES, 'the Club World Cup, stage');
+    if (c.world != null) ordered(c.world, WD.WORLD_STAGES, 'the Intercontinental Cup, stage');
     if (c.intl != null) {
       if (!Array.isArray(c.intl) || c.intl.length !== 2 || !c.intl.every(round) || c.intl[1] - c.intl[0] < 2)
         e.push(`${at}: two international breaks, at least two league rounds apart`);
@@ -480,7 +480,7 @@
         { name: tn.name, slots: tn.pools.map(([, n]) => n), ...(tn.pools.length ? { qual: tn.qualSize || 4 } : {}) },
       ]),
     ),
-    invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host })),
+    invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool })),
   });
   WD.validateIntl = function (x) {
     const e = [];
@@ -510,7 +510,8 @@
     for (const v of x.invites || []) {
       if (!inviteIds().has(v.id)) e.push(`international: the game has no invitational "${v.id}"`);
       if (!String(v.name || '').trim()) e.push(`invitational ${v.id}: needs a name`);
-      if (!D.NATIONS[v.host]) e.push(`invitational ${v.id}: unknown host nation "${v.host}"`);
+      // (a regional tournament has a pool of nations and no host of its own)
+      if (!v.pool && !D.NATIONS[v.host]) e.push(`invitational ${v.id}: unknown host nation "${v.host}"`);
     }
     return e;
   };
@@ -535,7 +536,7 @@
     }
     for (const v of x.invites || []) {
       const o = I().INVITES.find((i) => i.id === v.id);
-      if (o) ((o.name = v.name), (o.host = v.host), (I().TNAME[v.id] = v.name));
+      if (o) ((o.name = v.name), v.pool ? 0 : (o.host = v.host), (I().TNAME[v.id] = v.name));
     }
   };
 

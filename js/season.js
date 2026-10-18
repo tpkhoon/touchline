@@ -1032,11 +1032,15 @@
       : c.type === 'cup'
         ? c.regional
           ? 'Regional cups'
-          : c.world
-            ? 'Club World Cup'
-            : c.stage
-              ? 'Continental night'
-              : 'Cup day'
+          : c.super
+            ? 'Super Cups'
+            : c.world
+              ? c.summer
+                ? 'World Club Championship'
+                : 'Intercontinental Cup'
+              : c.stage
+                ? 'Continental night'
+                : 'Cup day'
         : c.type === 'pre'
           ? 'Pre-season'
           : c.type === 'intl'
@@ -1543,17 +1547,25 @@
       fin.com += com;
       fin.gate += gate;
       let inc = tv + com + gate;
+      // the away trip: a coach for a short way, a flight for a long one (FM.Lore.tripCost)
+      const af =
+        FM.Lore && todays.find((f) => f.a === c.id && !f.neutral && !f.intl && S.comps[f.comp].type !== 'friendly');
+      const trip = af ? FM.Lore.tripCost(c, af.h) : 0;
+      if (trip) {
+        fin.travel = (fin.travel || 0) + trip;
+        if (W.isUser(c.id)) Sea.spend('travel', trip);
+      }
       const staffW = W.isUser(c.id) ? U.sum(W.userStaff(), (st) => st.wage) * wk : 0;
       const wages = (wageBill[c.id] || 0) * wk + staffW;
       if (W.isUser(c.id)) {
         Sea.spend('wages', wages - staffW);
         Sea.spend('staff', staffW);
       }
-      c.balance += inc - wages;
+      c.balance += inc - wages - trip;
       if (W.isUser(c.id)) {
         const bonuses = S.user.bonusesToday || 0; // appearance/goal bonuses were paid as matches finished
         S.user.bonusesToday = 0;
-        c.ledger.push({ day: S.day, inc: Math.round(inc), exp: Math.round(wages + bonuses) });
+        c.ledger.push({ day: S.day, inc: Math.round(inc), exp: Math.round(wages + bonuses + trip) });
         c.ledger = c.ledger.slice(-40);
       }
     });
@@ -1839,9 +1851,10 @@
     entry.qualified = qualified;
     entry.cups = {};
     entry.regional = {}; // county cups and state championships: kept apart, they are not the season's trophies
+    entry.supers = {}; // super cups: kept apart, a nation's cup winners and champions already hold the season's trophies
     for (const c of Object.values(S.comps))
       if (c.type !== 'league' && c.winner)
-        (c.type === 'regional' ? entry.regional : entry.cups)[c.id] = {
+        (c.type === 'regional' ? entry.regional : c.type === 'super' ? entry.supers : entry.cups)[c.id] = {
           name: c.name,
           winner: c.winner,
           runnerUp: c.runnerUp,
@@ -1860,7 +1873,9 @@
           topBy[p.clubId] = { g, a, n: W.name(p), id: p.id };
         if (a > 0 && (!appsBy[p.clubId] || a > appsBy[p.clubId].a)) appsBy[p.clubId] = { a, n: W.name(p), id: p.id };
       }
-      const cups = Object.values(S.comps).filter((c) => c.type === 'cup' || c.type === 'continental');
+      const cups = Object.values(S.comps).filter(
+        (c) => c.type === 'cup' || c.type === 'continental' || (c.type === 'world' && c.clubs && c.clubs.length),
+      );
       entry.clubInfo = {};
       for (const c of Object.values(S.clubs)) {
         if (!c.comp || !S.comps[c.comp] || c.sim === 'nation') continue;

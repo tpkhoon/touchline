@@ -37,6 +37,59 @@ const cid = Object.values(FM.S.clubs).find((c) => c.comp === 'D1' && c.rep < 75)
 W.takeCharge(cid, 'Test Manager');
 W.seedLegends();
 FM.Stories.welcome();
+// the world's lore: details for every club, a place for every club, a past for every fallen giant, legend lines with variety, the kind of
+// club it is, and managers who are legends
+{
+  const L = FM.Lore,
+    S0 = FM.S;
+  const real = Object.values(S0.clubs).filter((c) => c.comp && c.sim !== 'nation' && !c.parent);
+  check(!!S0.lore && real.every((c) => S0.lore.clubs[c.id]), 'lore: a club has no details');
+  check(
+    real.every((c) => FM.D.GEO[c.id.replace(/^c_/, '')]),
+    `geo: ${real.filter((c) => !FM.D.GEO[c.id.replace(/^c_/, '')]).length} clubs have no place`,
+  );
+  const far = real.filter((c) => {
+    const m = L.natMid(c.nat);
+    const p = L.place(c);
+    return Math.hypot(p[0] - m[0], (p[1] - m[1]) * 0.7) > 40;
+  });
+  check(!far.length, `geo: ${far.length} clubs are far from their nation (${far.slice(0, 3).map((c) => c.name)})`);
+  const old = real.filter((c) => c.identity === 'fallen' && (L.LEAGUE_START[c.nat] || 1950) < S0.year - 5);
+  check(
+    old.every((c) => L.allTitles(c) >= 1),
+    `older glory: ${old.filter((c) => !L.allTitles(c)).length} of ${old.length} fallen giants have no title`,
+  );
+  const counts = {};
+  for (const c of real)
+    for (const l of c.legends || []) {
+      const k = l.note.replace(/\d+/g, '#');
+      counts[k] = (counts[k] || 0) + 1;
+    }
+  const worst = Object.entries(counts)
+    .filter(([k]) => !/^Club record goalscorer/.test(k))
+    .sort((a, b) => b[1] - a[1])[0];
+  check(worst[1] <= 0.15 * real.length, `legends: "${worst[0]}" is used ${worst[1]} times in ${real.length} clubs`);
+  const bj = S0.clubs.c_BUJ;
+  check(!bj || (L.kind(bj) && L.kind(bj).key === 'military'), 'club types: the army club is not a military club');
+  check(
+    Object.values(S0.clubs).every((c) => !c.manager || !S0.staff[c.manager] === false),
+    'people: a club has a manager who is not in the staff list',
+  );
+  const lm = Object.values(S0.staff).filter((m) => m.lore);
+  check(
+    lm.every((m) => Object.values(S0.clubs).some((c) => c.manager === m.id)),
+    'people: a legend manager is not in charge of a club',
+  );
+  check(
+    real.every((c) => !c.rival || (S0.clubs[c.rival] && S0.clubs[c.rival].rival)),
+    'rivalries: a club has a rival that does not exist',
+  );
+  // the two world competitions: the Intercontinental Cup is set for the season, the World Club Championship only in its year
+  const icc = S0.comps.ICC,
+    cwc = S0.comps.CWC;
+  check(icc && icc.clubs.length >= 4, 'the Intercontinental Cup has no clubs');
+  check(cwc && cwc.fmt === 'cwc', 'the World Club Championship is missing');
+}
 // the club guide (UI-only, so loaded here by hand): every club has a difficulty, all four labels are used, each league
 // has a card, and the strongest club of a league is never rated harder than its weakest
 vm.runInContext(fs.readFileSync(new URL('../js/clubguide.js', import.meta.url), 'utf8'), ctx);
@@ -188,6 +241,7 @@ function marketMoves() {
     else return;
   }
 }
+let cwcDone = false;
 let tSeason = Date.now();
 const userClubs = new Set(); // (the clubs you have run: nobody covers their keepers for you)
 for (let s = 0; s < SEASONS; s++) {
@@ -269,6 +323,25 @@ for (let s = 0; s < SEASONS; s++) {
   }
   check(FM.S.year === year + 1, `season ${s + 1}: year did not advance`);
   check(summary && summary.entry, `season ${s + 1}: no season summary`);
+  // the super cups of the new season are drawn from the one just played (a club in each, never the same twice)
+  check(
+    FM.Cups.supers().length >= 100 && FM.Cups.supers().every((c) => c.clubs.length === 2 && c.clubs[0] !== c.clubs[1]),
+    `season ${s + 1}: ${FM.Cups.supers().length} super cups for the next season`,
+  );
+  // the Intercontinental Cup is won every season; the World Club Championship in the summer of every fourth (32 clubs, eight groups)
+  {
+    const won = (id) => (FM.S.contHist || []).filter((h) => h.id === id && h.year === year);
+    check(won('ICC').length === 1, `season ${s + 1}: the Intercontinental Cup was won ${won('ICC').length} times`);
+    check(
+      won('CWC').length === (FM.Cups.cwcYear(year) ? 1 : 0),
+      `season ${s + 1}: the World Club Championship was won ${won('CWC').length} times in a ${FM.Cups.cwcYear(year) ? '' : 'non-'}World Club Championship year`,
+    );
+    if (FM.Cups.cwcYear(year)) {
+      const cw = (FM.S.contHist || []).find((h) => h.id === 'CWC' && h.year === year);
+      check(cw && cw.w !== cw.r, `season ${s + 1}: the World Club Championship final was not between two clubs`);
+      cwcDone = true;
+    }
+  }
   // the American league: conferences, 34 games each, a seven-a-side playoff ending in one final, then a draft
   {
     const us = summary && summary.entry && summary.entry.comps.US1;
@@ -781,6 +854,10 @@ check(new Set(mgrs).size === mgrs.length, 'one manager is in charge of two clubs
 check(
   mgrs.every((id) => !S.staff[id].unemployed),
   'a club is managed by someone marked unemployed',
+);
+check(
+  SEASONS < 2 || cwcDone,
+  'a run of two seasons or more played no World Club Championship (it falls in the second)',
 );
 check(stats.userMatches >= 15 * SEASONS, `only ${stats.userMatches} user matches in ${SEASONS} seasons`);
 if (stats.jobs) console.log(`(the test manager was sacked ${stats.jobs}× and took a new job)`);

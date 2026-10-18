@@ -104,7 +104,7 @@ Six more top flights, each one division in the game: the **Singapore Premier Lea
 ## Asian rules beyond the squad list
 
 - **Japan's university route:** the J.League holds a two-round graduate draft each winter from a class of 22-year-old university players, in the order of last season's table with the weakest first; the AI picks as the clock reaches it, you pick on the Graduates board or leave it to your assistant.
-- **Korea's military service:** a Korean player is called up between 26 and 28 unless he has been exempted (a long international career helps, as the Asian Games and World Cup medals do). He serves two seasons, his contract is extended to cover it and he comes back a point or two rusty. The best go to the army's club, a K League side whose whole squad is conscripts on loan from their own clubs (up to 30, never fewer than three keepers); it signs nobody else and has no academy, and nobody pays the conscripts' wages.
+- **Korea's military service:** a Korean player is called up between 26 and 28 unless he has been exempted (a long international career helps, as the Asian Games and World Championship medals do). He serves two seasons, his contract is extended to cover it and he comes back a point or two rusty. The best go to the army's club, a K League side whose whole squad is conscripts on loan from their own clubs (up to 30, never fewer than three keepers); it signs nobody else and has no academy, and nobody pays the conscripts' wages.
 - **Gulf money:** Oil-Backed clubs of the Saudi Pro League pay well above the market in fee and wages for a famous name in his late twenties or thirties, one or two a window.
 
 ## Saudi Arabia and clubs with a signing policy
@@ -120,7 +120,7 @@ Six more top flights, each one division in the game: the **Singapore Premier Lea
 
 ## Invitational tournaments
 
-- One a season, in turn: the Kirin Cup (Japan hosts), the King's Cup (Thailand) and the Nehru Cup (India). The host and three
+- One a season, in turn: the Cherry Blossom Cup (Japan hosts), the Golden Elephant Cup (Thailand) and the Monsoon Cup (India). The host and three
   invited nations from different parts of the world, none of whom has a qualifier on the days it is played, play semi-finals on
   the first day of the second international window and a final and a third-place match on the second; ties go to penalties.
   They count as friendlies for fitness and call-ups and a little more than a friendly for the national-team coefficient.
@@ -181,7 +181,7 @@ home draw), the finals at a neutral ground unless noted.
 
 ## Continental Champions Trophy
 
-- Played in the summer before each World Cup (one season in four), in the same calendar days as the other summer finals.
+- Played in the summer before each World Championship (one season in four), in the same calendar days as the other summer finals.
   Eight nations: the winners of the last continental championships (a continent that has not had one sends its best-ranked
   nation), the world champions, a host picked from the sixteen best-ranked nations, and the best-ranked others to make up the
   eight. Two groups of four, semi-finals and a final at neutral grounds; ties go to penalties.
@@ -204,7 +204,41 @@ All have groups of four then knockouts, as the game's scaled-down format.
 | European Holders' Cup (a knockout from the first round) | Semi-finals over two legs, other rounds single matches | One match, neutral |
 | European Summer Cup | Single matches | One match, neutral |
 
-The Club World Cup is single matches at neutral grounds.
+### Cups in every nation, and the regional ones
+
+Every nation with a league (all 92) has a domestic cup: a seeded single-leg knockout for all its clubs (every division), extra time and
+penalties, the final at a neutral ground. Asia has two regional club cups after the Asian cups: the Southeast Asian Club Cup
+(Thailand, Vietnam, Indonesia, Malaysia three clubs each, Singapore and the Philippines two) and the Gulf Club Cup (Saudi Arabia,
+the UAE, Qatar and Iran four each): groups of four, then the knockouts. Nations also meet in the Southeast Asian, Gulf and East Asian
+Nations Cups, invitational tournaments in the international windows with a host that rotates through the region.
+
+### Super cups and the other regional competitions
+
+At the start of each season every nation plays a Super Cup: the league champions against the cup winners of the season before (the
+league's runner-up when one club won both), one match at a neutral ground with extra time and penalties. Each continent has one too:
+the champions cup winner against the winner of its Shield. Besides the Asian regional club cups above, there are the Arab, West
+African, East and Southern African, Central American, Andean and Atlantic Club Cups (groups of four, then the knockouts). Three
+regional tournaments for nations are played each season in turn (the Southeast Asian, Gulf, East Asian, East, Southern, West and North
+African, Arab, Central Asian, Baltic, Nordic, Balkan, Central European, Celtic, Caucasus, Central American and Caribbean, Andean and
+River Plate cups, and the Cherry Blossom, Golden Elephant and Monsoon Cups): a host rotating through the region's nations, the three
+best-ranked others, semi-finals and a final in the international windows.
+
+### The two world competitions
+
+Both are single matches at neutral grounds (extra time and penalties in the knockouts).
+
+- **Intercontinental Cup** (every season, mid-season, three days): the African and Asian champions meet (the African–Asian
+  Cup) and the South American and North American champions meet (the Derby of the Americas); the winners play the
+  Challenger Cup; the European champion joins the winner in the final. The entrants are the continental champions of the
+  season before (in the first season, each continent's biggest entrant).
+- **World Club Championship** (the summer of every fourth season, the year before the World Championship, seven days after the playoffs): 32
+  clubs in eight groups of four, each a single round robin (three matchdays), the top two going on to a round of 16,
+  then quarter-finals, semi-finals and the final. A group winner meets the runner-up of its neighbouring group. Places by
+  continent: Europe 12, South America 6, Asia 5, Africa 4, North America 5. The continental champions of the last four
+  seasons come first (most recent first, each club once), then the rest by continental points kept for four seasons
+  (winners 10, runners-up 7, semi-finalists 5, quarter-finalists 3, a group stage 1; a second-tier cup counts half),
+  with no more than two clubs of a nation where there is a choice. Four pots (by points and reputation) make the draw, and a
+  continent does not meet itself in a group except Europe, which may have two clubs in one.
 
 ### Second-tier and regional cups
 
@@ -279,8 +313,8 @@ everything else keeps the world's:
   in a two-legged tie (off everywhere by default), and, in a continental cup, points for a win in the groups.
 - **Fixtures:** a league that plays a plain round-robin can have a match put on a matchday by hand; the rest of the
   schedule is built around it.
-- **Calendar:** the days of pre-season, the domestic cup's rounds, each stage of the continental cups, the Club World Cup
-  and the two international breaks can be moved. A league day falls Friday to Sunday (some midweek in a long season), a
+- **Calendar:** the days of pre-season, the domestic cup's rounds, each stage of the continental cups, the
+  Intercontinental Cup and the two international breaks can be moved (the World Club Championship keeps its summer days). A league day falls Friday to Sunday (some midweek in a long season), a
   cup day Tuesday to Thursday, and at most one cup day sits between two league rounds.
 
 - **Registration (a league):** the squad list and its homegrown places, work permits, non-EU limits and signings from abroad,

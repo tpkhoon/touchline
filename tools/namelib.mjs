@@ -31,7 +31,7 @@ export const isRude = (text) => {
 
 export const LANG = {
   eng: {
-    nations: 'ENG SCO WAL IRL AUS USA RSA GHA NGA',
+    nations: 'ENG SCO WAL IRL AUS USA RSA GHA NGA ZAM ZIM KEN UGA ETH TRI',
     a: words(
       `Abing Ald Ames Ash Aston Bar Bay Beck Bed Bever Bex Birk Black Bourn Brad Bran Brent Brid Brom Buck Bur Bux Cal Cam
       Cans Car Chal Chel Chip Clay Cleve Clif Cob Col Cran Crew Croy Dal Dar Dart Dav Den Der Dor Dun Eden Elm Ep Ever Ex
@@ -111,7 +111,7 @@ export const LANG = {
     cup: 'Challenge Cup',
   },
   spa: {
-    nations: 'ESP CHI COL VEN PER ECU BOL',
+    nations: 'ESP CHI COL VEN PER ECU BOL CRC HON PAN GUA SLV',
     link: 'aeo',
     a: words(
       `Alcal Almaz Arroy Benav Cabr Calat Casti Cerv Cord Corv Cuen Escal Frag Fresn Fuent Gand Guad Jarand Lerm Lior Mayor
@@ -179,7 +179,7 @@ export const LANG = {
     cup: 'Copa de la Federación',
   },
   por: {
-    nations: 'POR',
+    nations: 'POR CPV ANG MOZ',
     link: 'aeo',
     a: words(
       `Alcob Alent Arga Ave Barc Bragan Cast Cov Elv Estr Fig Gouv Guim Lam Leir Lous Marv Matos Mir Moncor Ovar Pen Port Sant
@@ -348,7 +348,7 @@ export const LANG = {
     cup: 'Copa de la Federación',
   },
   ger: {
-    nations: 'GER AUT SUI',
+    nations: 'GER AUT SUI LUX',
     a: words(
       `Alt Bach Berg Bran Dorn Eich Els Frei Furt Gold Grün Hag Heid Hohen Holz Kirch Kron Lind Lüt Mühl Nieder Ober Rhein Rot
       Schwarz Stein Thal Wald Wester Wies Zell Burg Hirsch Ahr Bruch Dill Eber Fels Greif Hain Imm Kal Lang Marien Neckar`,
@@ -480,7 +480,7 @@ export const LANG = {
     cup: 'Forbundspokal',
   },
   fra: {
-    nations: 'FRA MAR ALG TUN SEN CIV CMR COD MLI BFA GUI',
+    nations: 'FRA MAR ALG TUN',
     a: words(
       `Aub Bel Cha Dur Fon Lan Mon Nan Pon Roc Tour Vil Val Mar Bour Beau Cler Cour Lav Mont Cher Ar Dam Blan Cass Dieu Gren
       Joy Lun Mir Pau Quim Rib Sar Tho Vend`,
@@ -736,7 +736,7 @@ export const LANG = {
     cup: 'Federation Kypello',
   },
   slav: {
-    nations: 'SRB ROU SVK SVN BUL CRO BIH',
+    nations: 'SRB ROU SVK SVN BUL CRO BIH ALB MKD MNE MDA KOS',
     a: words(
       `Bor Dra Gor Kra Lub Mal Nov Pol Rad Sla Tar Vel Zag Bel Ples Brat Kos Mir Zel Bog Doln Hrad Jas Kam Lipt Mik Ost
       Pet Ryb Slav Tur Vys`,
@@ -776,7 +776,7 @@ export const LANG = {
     cup: 'Savezni Kup',
   },
   tur: {
-    nations: 'TUR',
+    nations: 'TUR AZE',
     a: words(
       'Ak Bay Çam Dem Kar Mer Öz Sar Tek Yeni Gül Esk Kız Boz Kara Sultan Ali Yal Ayd Çan Dur Gön İnc Kay Orh Tav Uşa',
     ),
@@ -885,7 +885,7 @@ export const LANG = {
     cup: 'National Cup',
   },
   tha: {
-    nations: 'THA IND UZB IRN',
+    nations: 'THA IRN',
     a: words('Ban Chiang Nakhon Sri Phra Lam Pak Ubon Sing Mae Nong Kao Phu Tha Wang Khao Bang Rat Sak Tak'),
     b: words('buri pur mai nong kaeo chan ra sai yai thong lek nam'),
     elide: false,
@@ -917,10 +917,229 @@ export const LANG = {
     tiers: ['Premier League', 'Division 1', 'Division 2', 'Division 3', 'Regional League'],
     cup: 'Champions Cup',
   },
+  // West and Central Africa: towns from Mande, Wolof, Akan and Bantu stems, clubs of the French and English sporting-club patterns
+  afr: {
+    nations: 'SEN CIV CMR COD MLI BFA GUI TOG',
+    a: words(
+      'Bam Kou Sik Ban Dak Zig Man Kan Sé Gao Tam Kor Ou Bob Dio Yam Ab Kat Nzé Lub Kis Mbu Bou Fou Lab Kin Mop Sas Tou Yop Mat Kay Sin Gu Bok Dal',
+    ),
+    b: words('ko dougou gou ré ngo mbé dala sso ya kro bala dian guéré tou kassa mbo ndé loum bia'),
+    elide: false,
+    pre: ['Grand', 'Petit', 'Nouveau'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...rep(['AS {c}', 'US {c}', 'FC {c}', '{c} FC'], 2),
+      'Stade {c}',
+      'Union {c}',
+      'Étoile de {c}',
+      'Olympique {c}',
+      'Racing {c}',
+      'SC {c}',
+      '{c} Académie',
+    ],
+    ground: ['Stade {x}', 'Stade Municipal de {c}', 'Stade {p}', 'Complexe Sportif de {c}'],
+    colours: {
+      red: 'Rouges',
+      blue: 'Bleus',
+      white: 'Blancs',
+      black: 'Noirs',
+      yellow: 'Jaunes',
+      green: 'Verts',
+      orange: 'Oranges',
+      claret: 'Grenats',
+      sky: 'Ciel',
+      navy: 'Marines',
+    },
+    misc: words('Lions Éléphants Panthères Aigles Buffles Léopards Crocodiles Antilopes Faucons Hippopotames'),
+    tiers: ['Division Nationale', 'Division 2', 'Division 3', 'Division Régionale', 'Division Provinciale'],
+    cup: 'Coupe Nationale',
+  },
+  // The Baltic states: towns in -iai, -ava, -is and -mu, clubs of the FK and FC pattern
+  bal: {
+    nations: 'EST LVA LTU',
+    a: words(
+      'Val Kaun Pan Siau Liep Jelg Ces Sig Tuk Ven Jur Rez Mar Plung Kret Anyk Ukm Tal Par Rak Vil Tar Haap Narv Kur Aluk Dau',
+    ),
+    b: words('iai a is ava ai e uni ele ga mu iena ola'),
+    elide: true,
+    pre: ['Jaun', 'Vec', 'Uus', 'Vana'],
+    preGap: '',
+    joins: [],
+    club: [
+      ...rep(['FK {c}', '{c} FK', 'FC {c}'], 2),
+      'SK {c}',
+      '{c} United',
+      'Dinamo {c}',
+      'Spartaks {c}',
+      '{c} City',
+      'Sporting {c}',
+    ],
+    ground: ['{x} Stadium', '{c} Arena', '{x} Sports Park', 'Municipal Stadium {c}'],
+    colours: {
+      red: 'Reds',
+      blue: 'Blues',
+      white: 'Whites',
+      black: 'Blacks',
+      yellow: 'Yellows',
+      green: 'Greens',
+      orange: 'Oranges',
+      claret: 'Crimsons',
+      sky: 'Sky Blues',
+      navy: 'Navy',
+    },
+    misc: words('Lions Eagles Wolves Falcons Bears Elks Storks Knights'),
+    tiers: ['Higher League', 'First League', 'Second League', 'Regional League'],
+    cup: 'National Cup',
+  },
+  // Georgia: towns in -i, -eli and -ani; Dinamo, Torpedo and Lokomotivi, Soviet-era names for the old clubs
+  geo: {
+    nations: 'GEO ARM',
+    a: words('Tbil Kut Bat Rust Gor Pot Zug Tel Sig Mtsk Ak Oz Sam Khash Bor Lan Och Tskal Kobul Sach Dus Mar'),
+    b: words('isi aisi umi avi ori idi ani eli ura ari eti ia'),
+    elide: true,
+    pre: [],
+    preGap: '',
+    joins: [],
+    club: [
+      ...rep(['FC {c}', 'Dinamo {c}', '{c} United'], 2),
+      'Torpedo {c}',
+      'Lokomotivi {c}',
+      'Sporting {c}',
+      '{c} FC',
+      'WIT {c}',
+    ],
+    ground: ['{x} Stadium', '{c} Arena', '{x} Sports Park'],
+    colours: {
+      red: 'Reds',
+      blue: 'Blues',
+      white: 'Whites',
+      black: 'Blacks',
+      yellow: 'Yellows',
+      green: 'Greens',
+      orange: 'Oranges',
+      claret: 'Crimsons',
+      sky: 'Sky Blues',
+      navy: 'Navy',
+    },
+    misc: words('Lions Eagles Wolves Falcons Bulls Knights Stags Bears'),
+    tiers: ['Erovnuli Liga', 'Liga 2', 'Liga 3', 'Regional League'],
+    cup: 'National Cup',
+  },
+  // Israel: Maccabi, Hapoel, Beitar and Bnei with a town of the Hebrew kind
+  heb: {
+    nations: 'ISR',
+    a: words(
+      'Beer Ash Netan Had Rish Petah Rehov Kfar Tir Haif Kiry Kar Nes Yav Mod Sder Bat Or Zich Gan Tel Eil Dim Arad',
+    ),
+    b: words('ya ot im on ayim at ona ia el ar ut it'),
+    elide: true,
+    pre: ['Kiryat', 'Kfar', 'Beit', 'Ramat', 'Tel'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...rep(['Maccabi {c}', 'Hapoel {c}'], 3),
+      'Beitar {c}',
+      'Bnei {c}',
+      'Ironi {c}',
+      'FC {c}',
+      'Hapoel {c} United',
+      'Maccabi {c} FC',
+    ],
+    ground: ['{x} Stadium', '{c} Municipal Stadium', '{x} Arena', 'Sports Park {c}'],
+    colours: {
+      red: 'Reds',
+      blue: 'Blues',
+      white: 'Whites',
+      black: 'Blacks',
+      yellow: 'Yellows',
+      green: 'Greens',
+      orange: 'Oranges',
+      claret: 'Crimsons',
+      sky: 'Sky Blues',
+      navy: 'Navy',
+    },
+    misc: words('Lions Eagles Knights Falcons Foxes Tigers Gazelles Hawks'),
+    tiers: ['Premier League', 'National League', 'Liga Alef', 'Liga Bet'],
+    cup: 'State Cup',
+  },
+  // Uzbekistan: towns in -kent, -bad, -qand and -gan; FK, Dinamo, Lokomotiv and the cotton and gold of the industrial clubs
+  uzb: {
+    nations: 'UZB KAZ',
+    a: words('Tash Sam Buk Nam And Far Kok Qar Ter Nuk Khiv Chir Zar Jiz Gul Ang Bek Urg Shakh Mar Olm'),
+    b: words('kent bad qand ara gan iz ush chik anch ez ok abad'),
+    elide: true,
+    pre: ['Yangi', 'Eski', 'Katta'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...rep(['FK {c}', '{c} FK', '{c} United'], 2),
+      'Dinamo {c}',
+      'Lokomotiv {c}',
+      'Neftchi {c}',
+      '{c} City',
+      'Sport Club {c}',
+    ],
+    ground: ['{x} Stadium', '{c} Markaziy Stadium', '{x} Arena', 'Olimpiya {c}'],
+    colours: {
+      red: 'Reds',
+      blue: 'Blues',
+      white: 'Whites',
+      black: 'Blacks',
+      yellow: 'Yellows',
+      green: 'Greens',
+      orange: 'Oranges',
+      claret: 'Crimsons',
+      sky: 'Sky Blues',
+      navy: 'Navy',
+    },
+    misc: words('Lions Eagles Falcons Wolves Tigers Camels Bulls Leopards'),
+    tiers: ['Super League', 'Pro League', 'First League', 'Second League'],
+    cup: 'National Cup',
+  },
+  // India: towns from the Hindi and Dravidian stems (-pur, -abad, -nagar, -garh, -palli), clubs of the Indian pattern (FC, United, City,
+  // Sporting, Athletic) and grounds named for sports complexes and municipal stadiums
+  ind: {
+    nations: 'IND PAK BAN',
+    a: words(
+      'Kal Sur Ban Gur Jam Pun Luc Man Ahm Vish Nag Rai Bhop Indo Jaip Patn Ranc Kan Meer Moti Hub Amb Sil Pat Dar Kol Chan Sol Nasi Aur Vad Tir Ujj Gwal Jod Bik Ajm Ud Ner Sam Hos Sat Tum Mad Cha Bel Dhan Kar Bhil Vidy Sang Rour Gan',
+    ),
+    b: words('pur abad nagar garh kot wala pet halli ganj puram bad dhar gaon pally kheda saran gunj ner'),
+    elide: false,
+    pre: [...rep(['New', 'Old', 'Sri', 'Port'], 1), 'Nava', 'Shri'],
+    preGap: ' ',
+    joins: [],
+    club: [
+      ...rep(['{c} FC', '{c} United', 'FC {c}'], 3),
+      '{c} City',
+      '{c} Athletic',
+      'Sporting {c}',
+      '{c} Rangers',
+      '{c} Town',
+      '{c} Wanderers',
+      '{c} SC',
+    ],
+    ground: ['{x} Stadium', '{c} Sports Complex', '{x} Arena', '{c} Municipal Stadium', '{x} Sports Park'],
+    colours: {
+      red: 'Reds',
+      blue: 'Blues',
+      white: 'Whites',
+      black: 'Blacks',
+      yellow: 'Yellows',
+      green: 'Greens',
+      orange: 'Oranges',
+      claret: 'Maroons',
+      sky: 'Sky Blues',
+      navy: 'Navy',
+    },
+    misc: words('Tigers Elephants Lions Peacocks Cobras Eagles Rhinos Leopards Gladiators Warriors Royals Mariners'),
+    tiers: ['Super League', 'I-League', 'Second Division', 'Third Division', 'Regional League'],
+    cup: 'Federation Cup',
+  },
   // The Gulf and the Arab world: "Al" ("the") and a concept — a quality, a bird, a direction, a hope: Al Fajr (dawn).
   // Clubs are named for the idea and then the town; the club's own story decides which (a company, a prince, a tribe).
   arab: {
-    nations: 'KSA QAT UAE IRQ',
+    nations: 'KSA QAT UAE IRQ JOR OMA BHR KUW',
     a: words(
       'Bur Hof Maj Kha Naj Tab Sak Abh Yan Qas Jub Ras Sha Tur Ula Diri Zul Mah Ain Bah Dam Jed Riy Hai Taim Bish Raf',
     ),
@@ -1866,6 +2085,11 @@ const SEA_BASE = {
   ground: ['{x} Stadium', '{c} Provincial Stadium', '{x} Arena', '{x} Sports Park'],
   colours: LANG.tha.colours,
   tiers: ['Premier League', 'Division 1', 'Division 2', 'Division 3', 'Regional League'],
+};
+NATION_L.ARM = {
+  ...LANG.geo,
+  tiers: ['Premier League', 'First League', 'Second League', 'Regional League'],
+  cup: 'Independence Cup',
 };
 NATION_L.SGP = {
   ...LANG.tha,

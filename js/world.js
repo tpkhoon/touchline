@@ -1921,7 +1921,7 @@
     return n;
   };
 
-  // League days with midweek cup, continental, Club World Cup and international days slotted in between.
+  // League days with midweek cup, continental, World Club Championship and international days slotted in between.
   // Two-legged knockouts add a second leg day; tournament summers append the finals at the end.
   const KO_STAGES = ['M1', 'M2', 'M3', 'M4'];
   // the kind of title playoff a league has: 'mls', 'finals6', 'liguilla' or 'zones' (none: null)
@@ -2003,6 +2003,9 @@
     const mid = W.leagues().filter((c) => W.koType(c) && c.torneos);
     const cal = [];
     for (let i = 0; i < D.PRESEASON_DAYS; i++) cal.push({ type: 'pre', idx: i });
+    // The super cups, in one day before the first league round
+    const sup = FM.Cups.supers();
+    if (sup.length) cal.push({ type: 'cup', comps: sup.map((c) => c.id), stage: 'SUP', super: true });
     for (let r = 0; r < rounds; r++) {
       cal.push({ type: 'league', round: r });
       // the first tournament's knockouts follow its last round
@@ -2015,8 +2018,16 @@
       // a final played over two legs (the CAF and CONCACAF cups) has its return on the next day
       if (st === 'F' && legs && W.continentals().length)
         cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: 'F2' });
-      if (CWC[r] && W.worldCups().length)
-        cal.push({ type: 'cup', comps: W.worldCups().map((c) => c.id), stage: CWC[r], world: true });
+      // the Intercontinental Cup, mid-season (the World Club Championship has its own days in the summer, below)
+      if (CWC[r] && W.worldCups().some((c) => c.fmt === 'ic'))
+        cal.push({
+          type: 'cup',
+          comps: W.worldCups()
+            .filter((c) => c.fmt === 'ic')
+            .map((c) => c.id),
+          stage: CWC[r],
+          world: true,
+        });
       if (CUP[r] && W.domesticCups().length) cal.push({ type: 'cup', comps: W.domesticCups().map((c) => c.id) });
       if (RC[r]) cal.push({ type: 'cup', regional: true, comps: FM.Regional.regionals().map((c) => c.id) });
       if (INTL[r] && S.nteams) INTL[r].forEach((tag) => cal.push({ type: 'intl', tag }));
@@ -2035,6 +2046,12 @@
         { type: 'playoff', stage: 'F2' },
       );
     else cal.push({ type: 'playoff', stage: 'SF' }, { type: 'playoff', stage: 'F' });
+    // The World Club Championship: every fourth summer, after the playoffs (seven days: three of groups, then the knockouts)
+    const cwc = W.worldCups().filter((c) => c.fmt === 'cwc' && c.on && c.groups);
+    if (cwc.length)
+      for (const stage of D.CWC_SUMMER)
+        if (stage !== 'R16' || cwc.some((c) => c.groups.length >= 8))
+          cal.push({ type: 'cup', comps: cwc.map((c) => c.id), stage, world: true, summer: true });
     // International tournament finals in the summer at the end of this season
     if (S.nteams && FM.Intl.tournamentFor(S.year))
       FM.Intl.tournamentStages(S.year).forEach((stage) => cal.push({ type: 'tourn', stage }));
@@ -2207,7 +2224,8 @@
     S.comps.FR = { id: 'FR', type: 'friendly', name: 'Pre-season friendly', short: 'FR', clubs: [] };
     D.CONTINENTALS.forEach((c) => (S.comps[c.id] = { ...c, type: 'continental', clubs: [] }));
     D.EURO_CUPS.forEach((d) => FM.Cups.addEuro(S, d));
-    S.comps.CWC = { id: 'CWC', type: 'world', name: 'FIFA Club World Cup', short: 'CWC', clubs: [], prize: 1e7 };
+    S.comps.CWC = FM.Cups.newCwc();
+    S.comps.ICC = FM.Cups.newIc();
 
     const mkClub = (row, compId, nat, sim) => {
       const [name, code, city, c1, c2, identity, rep] = row;
@@ -2622,6 +2640,9 @@
         (c, y, g) => `The best the supporters saw in the ${y}s`,
       ],
     };
+    const used = {}; // (each plain line is used once in a nation before any is used twice: FM.Lore.plain)
+    const story = (kind, c, y, i) => (FM.Lore ? FM.Lore.story(kind, c, y, used, i, near) : U.pick(stories[kind])(c, y));
+    const plain = (c, y, g, i) => (FM.Lore ? FM.Lore.plain(c, y, g, used, i) : U.pick(stories.plain)(c, y, g));
     Object.values(S.clubs)
       .filter((c) => c.comp && c.sim !== 'nation')
       .forEach((c) => {
@@ -2645,14 +2666,14 @@
           if (kind === 'title' && titles.length) {
             const y = U.pick(titles);
             from = Math.max(first, Math.min(from, y - 2));
-            note = U.pick(stories.title)(c, y);
+            note = story('title', c, y, i);
           } else if (kind === 'record') note = `Club record goalscorer with ${U.plural(Math.max(goals, 90), 'goal')}`;
-          else if (kind === 'cup' && cups.length) note = U.pick(stories.cup)(c, U.pick(cups));
+          else if (kind === 'cup' && cups.length) note = story('cup', c, U.pick(cups), i);
           else if (kind === 'stay') {
             const ys = [];
             for (let y = from + 1; y < from + yrs && y < now; y++) if (!downs.has(y)) ys.push(y);
-            note = ys.length ? U.pick(stories.stay)(c, U.pick(ys)) : U.pick(stories.plain)(c, from + 2, yrs);
-          } else note = U.pick(stories.plain)(c, from + U.randi(1, Math.max(1, yrs - 1)), yrs);
+            note = ys.length ? story('stay', c, U.pick(ys), i) : plain(c, from + 2, yrs, i);
+          } else note = plain(c, from + U.randi(1, Math.max(1, yrs - 1)), yrs, i);
           return {
             name: `${nm[0]} ${nm[1]}`,
             nat: pool ? c.nat : nat,
@@ -2673,6 +2694,8 @@
         }
         c.legends.sort((a, b) => b.apps - a.apps);
       });
+    // the rest of the world's lore: older glory, club details, rivalries, competitions, the people (FM.Lore)
+    if (FM.Lore) FM.Lore.seed({ fresh: true });
   };
 
   // A nickname that names a colour must be one of the club's colours (a real club's "Canaries" do not fit a red and blue

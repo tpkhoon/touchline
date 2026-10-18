@@ -410,6 +410,7 @@
       note: l.note,
       era: l.era,
       hist: true,
+      became: FM.Lore && l.role ? FM.Lore.roleText(l) : undefined,
     }));
     const all = withClub.concat(legends);
     return {
