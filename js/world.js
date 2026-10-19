@@ -1630,7 +1630,8 @@
         const v =
           W.effAt(p, slots[i].t, slots[i], tactic.roles && tactic.roles[i]) *
           W.fitnessPick(p) *
-          (p.loan && p.loan.promised ? 1.1 : 1);
+          (p.loan && p.loan.promised ? 1.1 : 1) *
+          (p.minutesPlan ? 1.07 : 1); // a prospect his club wants to see play
         if (v > bv) {
           bv = v;
           best = p;
@@ -2371,6 +2372,79 @@
   };
 
   // ---------------- New world ----------------
+  // One club of the world from its row (name, code, city, colours, identity, reputation, ground, capacity): the club itself,
+  // its manager, attributes and a squad. Used for every club of a new world and for the clubs an expansion adds
+  W.mkClub = function (row, compId, nat, sim) {
+    const S = FM.S;
+    const [name, code, city, c1, c2, identity, rep] = row;
+    const info = D.CLUB_INFO[code] || [],
+      short = info[0] || code.replace(/([A-Z]{3,})\d$/, '$1'); // what the game shows: the club's real abbreviation
+    const stadium =
+      row[7] || { MEX: `Estadio ${city}`, MAR: `Stade de ${city}`, SRB: `Stadion ${city}` }[nat] || `${city} Stadium`;
+    const cap = row[8] || Math.round((8000 + (rep - 40) * 900) / 500) * 500;
+    const id = 'c_' + code,
+      parent = row[9] ? 'c_' + row[9] : null; // a B team's parent club
+    const idt = D.IDENTITY[identity];
+    // (a first season's budget, from what the club earns: the ambition of its identity and its revenue; later ones follow its accounts)
+    const budget =
+      Math.round((FM.Season.revenuePotential({ rep }) * 0.15 * idt.budget) / 1e5) *
+      1e5 *
+      (sim === 'full' ? 1 : sim === 'light' ? 0.6 : 0.3);
+    const club = {
+      id,
+      name,
+      short,
+      nick: W.nickClash(info[1], [c1, c2]) ? '' : info[1] || '', // its nickname, where it has a well-known one that fits its colours
+      founded: info[2] || null, // the year it was founded, where the world has one
+      crest: info[3] || null, // a design of its own: [shape, pattern, emblem] (a world definition's)
+      city,
+      nat,
+      colors: [c1, c2],
+      identity,
+      policy: D.CLUB_POLICY[code] || null, // who the club will sign (the Basque and Catalan clubs of Spain's second division)
+      rep,
+      parent,
+      stadium: { name: stadium, cap, cap0: cap },
+      comp: compId,
+      sim,
+      balance: budget * 2.5 + 4e6,
+      budget,
+      fanMood: 60,
+      boardConf: 65,
+      facilities: {
+        training: U.randi(2, 4),
+        academy: identity === 'youth' ? 4 : U.randi(1, 3),
+        medical: U.randi(2, 3),
+        analytics: U.randi(1, 3),
+        stadium: 1,
+        fanzone: U.randi(1, 2),
+        museum: rep > 70 ? 2 : 1,
+      },
+      tactic: W.aiTactic({ identity, rep }),
+      chant: U.pick(D.CHANTS)
+        .replace('{city}', city)
+        .replace('{short}', short)
+        .replace('{nick}', (info[1] || name.split(' ').pop()).replace(/^(The|Die|Les|Los|Los|Le|La|El|Il|De) /, '')),
+      tradition: D.TRADITIONS[U.hash(code) % D.TRADITIONS.length], // fixed by the club, so the picker can show it first
+      rival: null,
+      derby: null,
+      titles: {},
+      ledger: [],
+      bestSales: [],
+      manager:
+        sim === 'minimal'
+          ? null
+          : W.genStaff('Manager', U.chance(0.75) ? nat : U.pick(D.nationCodes()), {
+              rep: Math.round(rep * U.rand(0.8, 1.05)),
+            }).id,
+    };
+    S.clubs[id] = club;
+    S.comps[compId].clubs.push(id);
+    W.clubAttr(club);
+    genSquad(club);
+    return club;
+  };
+
   W.newWorld = function (opts) {
     FM.S = {
       version: FM.SAVE_VERSION,
@@ -2439,75 +2513,7 @@
     S.comps.CWC = FM.Cups.newCwc();
     S.comps.ICC = FM.Cups.newIc();
 
-    const mkClub = (row, compId, nat, sim) => {
-      const [name, code, city, c1, c2, identity, rep] = row;
-      const info = D.CLUB_INFO[code] || [],
-        short = info[0] || code.replace(/([A-Z]{3,})\d$/, '$1'); // what the game shows: the club's real abbreviation
-      const stadium =
-        row[7] || { MEX: `Estadio ${city}`, MAR: `Stade de ${city}`, SRB: `Stadion ${city}` }[nat] || `${city} Stadium`;
-      const cap = row[8] || Math.round((8000 + (rep - 40) * 900) / 500) * 500;
-      const id = 'c_' + code,
-        parent = row[9] ? 'c_' + row[9] : null; // a B team's parent club
-      const idt = D.IDENTITY[identity];
-      // (a first season's budget, from what the club earns: the ambition of its identity and its revenue; later ones follow its accounts)
-      const budget =
-        Math.round((FM.Season.revenuePotential({ rep }) * 0.15 * idt.budget) / 1e5) *
-        1e5 *
-        (sim === 'full' ? 1 : sim === 'light' ? 0.6 : 0.3);
-      const club = {
-        id,
-        name,
-        short,
-        nick: W.nickClash(info[1], [c1, c2]) ? '' : info[1] || '', // its nickname, where it has a well-known one that fits its colours
-        founded: info[2] || null, // the year it was founded, where the world has one
-        crest: info[3] || null, // a design of its own: [shape, pattern, emblem] (a world definition's)
-        city,
-        nat,
-        colors: [c1, c2],
-        identity,
-        policy: D.CLUB_POLICY[code] || null, // who the club will sign (the Basque and Catalan clubs of Spain's second division)
-        rep,
-        parent,
-        stadium: { name: stadium, cap, cap0: cap },
-        comp: compId,
-        sim,
-        balance: budget * 2.5 + 4e6,
-        budget,
-        fanMood: 60,
-        boardConf: 65,
-        facilities: {
-          training: U.randi(2, 4),
-          academy: identity === 'youth' ? 4 : U.randi(1, 3),
-          medical: U.randi(2, 3),
-          analytics: U.randi(1, 3),
-          stadium: 1,
-          fanzone: U.randi(1, 2),
-          museum: rep > 70 ? 2 : 1,
-        },
-        tactic: W.aiTactic({ identity, rep }),
-        chant: U.pick(D.CHANTS)
-          .replace('{city}', city)
-          .replace('{short}', short)
-          .replace('{nick}', (info[1] || name.split(' ').pop()).replace(/^(The|Die|Les|Los|Los|Le|La|El|Il|De) /, '')),
-        tradition: D.TRADITIONS[U.hash(code) % D.TRADITIONS.length], // fixed by the club, so the picker can show it first
-        rival: null,
-        derby: null,
-        titles: {},
-        ledger: [],
-        bestSales: [],
-        manager:
-          sim === 'minimal'
-            ? null
-            : W.genStaff('Manager', U.chance(0.75) ? nat : U.pick(D.nationCodes()), {
-                rep: Math.round(rep * U.rand(0.8, 1.05)),
-              }).id,
-      };
-      S.clubs[id] = club;
-      S.comps[compId].clubs.push(id);
-      W.clubAttr(club);
-      genSquad(club);
-      return club;
-    };
+    const mkClub = W.mkClub;
     D.LEAGUES.forEach((l) => D[l.clubs].forEach((r) => mkClub(r, l.id, l.nat, simOf(l))));
     D.RIVALS.forEach(([a, b, name]) => {
       if (!S.clubs['c_' + a] || !S.clubs['c_' + b]) return;
@@ -2573,6 +2579,7 @@
     for (const id in S.players) W.backfillHistory(S.players[id]); // up to three seasons of stats behind each player
     for (const id in S.players) S.players[id].value = W.value(S.players[id]); // priced with their final club and contract
     FM.Youth.assignAll(); // U21 and U18 squads from the start
+    FM.Transfers.seedLoans(); // lower-division clubs start with players on loan from the better clubs
     return S;
   };
 

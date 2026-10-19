@@ -802,6 +802,7 @@
       }
     }
 
+    T.aiProspects(full, share, true); // wonderkids and key prospects: minutes or a loan
     T.aiLoans(full, share);
     if (FM.Season.baseRound() >= 10) T.winterExits(full, share);
   };
@@ -865,6 +866,131 @@
         sizes.delete(parent.id);
       }
     }
+  };
+
+  // A new world starts as football is: clubs in the lower divisions have players on loan from the better clubs of their country (two or
+  // three a club in the second and third divisions, now and then in the fourth), mostly young players who would not play at home.
+  T.seedLoans = function () {
+    const S = FM.S;
+    const fresh = !S.seasonLog;
+    if (fresh) S.seasonLog = { upsets: [], transfers: [], net: {}, spend: {} };
+    const byNat = {};
+    for (const c of Object.values(S.clubs)) {
+      const comp = S.comps[c.comp];
+      if (!comp || comp.type !== 'league' || c.sim === 'nation' || c.sim === 'minimal' || c.parent || W.army(c))
+        continue;
+      (byNat[c.nat] = byNat[c.nat] || []).push({ c, tier: comp.tier || 1 });
+    }
+    let made = 0;
+    for (const list of Object.values(byNat)) {
+      const bottom = Math.max(...list.map((x) => x.tier));
+      if (bottom < 2) continue;
+      for (const b of U.shuffle(list.filter((x) => x.tier >= 2))) {
+        const want = b.tier <= 3 ? U.randi(1, 3) + (b.tier === 3 && Math.random() < 0.4 ? 1 : 0) : U.randi(0, 2);
+        const level = W.levelFor(b.c.rep);
+        for (let k = 0; k < want; k++) {
+          if (W.squad(b.c.id).length >= W.squadTarget(b.c) + 3) break;
+          const lenders = list.filter((x) => x.tier < b.tier && x.c.rep > b.c.rep + 2);
+          if (!lenders.length) break;
+          let done = false;
+          for (let tries = 0; tries < 30 && !done; tries++) {
+            const from = U.wpick(lenders, (x) => x.c.rep + (x.tier === b.tier - 1 ? 10 : 0)).c;
+            const home = W.squad(from.id).filter((p) => !p.loan);
+            const prospects = home.filter((p) => {
+              const a = W.age(p),
+                g = D.POS_GROUP[p.pos];
+              if (a < 18 || a > 24 || p.contract <= S.year) return false;
+              if (p.ca < level - 7 || p.ca > level + 9) return false;
+              if (a <= 21 ? p.pa - p.ca < 3 : Math.random() < 0.6) return false;
+              // the parent keeps enough in his position, and he is not one of its starters
+              const same = home.filter((q) => !q.team && D.POS_GROUP[q.pos] === g);
+              const rank = same.filter((q) => q.ca > p.ca).length;
+              return same.length > STARTERS[g] + 1 && rank >= STARTERS[g] && (g !== 'GK' || Math.random() < 0.3);
+            });
+            const p = prospects.length ? U.pick(prospects) : null;
+            if (!p || !T.canRegister(b.c, p)) continue;
+            T.loan(p, b.c.id, U.pick([0.5, 0.75, 1]), 0);
+            made++;
+            done = true;
+          }
+          if (!done) break;
+        }
+      }
+    }
+    S.seasonLog.transfers.length = 0; // (the loans were there before the season began: they are not its transfers)
+    if (fresh) delete S.seasonLog;
+    return made;
+  };
+
+  // Wonderkids and key prospects at the AI clubs: a young player with a future who is not playing is either given minutes (a boost in
+  // picking the team: p.minutesPlan) when he is close to the first eleven, or sent on loan to a club where he would play, as the best
+  // clubs do with theirs. Run each week of the season and in the transfer windows.
+  T.aiProspects = function (full, share = 1, windowOpen = false) {
+    const S = FM.S;
+    const levels = new Map();
+    const levelOf = (c, g) => {
+      const key = c.id + '|' + g;
+      if (!levels.has(key)) levels.set(key, starterLevel(W.squad(c.id), g));
+      return levels.get(key);
+    };
+    let loans = 0;
+    for (const c of full) {
+      if (W.isUserSide(c.id) || W.army(c) || c.sim === 'minimal') continue;
+      const games = FM.Season.gamesPlayed(c.id),
+        level = W.levelFor(c.rep);
+      const sq = W.squad(c.id).filter((p) => !p.loan);
+      for (const p of sq) {
+        const a = W.age(p);
+        if (a > 21 || p.inj) {
+          if (p.minutesPlan) p.minutesPlan = false;
+          continue;
+        }
+        const key = p.pa >= level + 6 || (p.pa >= 78 && a <= 20); // a prospect the club has plans for
+        if (!key) {
+          if (p.minutesPlan) p.minutesPlan = false;
+          continue;
+        }
+        const g = D.POS_GROUP[p.pos],
+          start = levelOf(c, g),
+          share0 = games >= 5 ? p.season.apps / games : 1;
+        const close = T.outlook(p) >= start - 6; // close to the first eleven
+        if (close) {
+          // minutes: picked ahead of a slightly better player until he has played his share
+          p.minutesPlan = share0 < 0.5;
+          continue;
+        }
+        p.minutesPlan = false;
+        if (!windowOpen || p.contract <= S.year || (games >= 5 && share0 >= 0.3) || p.devLoan === S.year) continue;
+        // too far from the team to play: out on loan to a club where he would
+        const home = sq.filter((q) => !q.team);
+        if (
+          home.length <= W.squadTarget(c) - 2 ||
+          home.filter((q) => D.POS_GROUP[q.pos] === g).length <= STARTERS[g] + 1
+        )
+          continue;
+        const dests = Object.values(S.clubs)
+          .filter(
+            (d) =>
+              (d.sim === 'full' || d.sim === 'light') &&
+              d.id !== c.id &&
+              FM.Youth.owner(d.id) !== c.id &&
+              d.rep < c.rep - 2 &&
+              W.squad(d.id).length < W.squadTarget(d) + 3 &&
+              p.ca >= levelOf(d, g) - 1 &&
+              p.ca <= W.levelFor(d.rep) + 12,
+          )
+          .sort((x, y) => (x.nat === c.nat ? 0 : 1) - (y.nat === c.nat ? 0 : 1) || y.rep - x.rep);
+        const ok = dests.slice(0, 8).filter((d) => T.canRegister(d, p));
+        const d = ok[Math.floor(Math.random() * Math.min(3, ok.length))];
+        if (d) {
+          T.loan(p, d.id, U.pick([0.5, 0.75, 1]), 0);
+          p.devLoan = S.year;
+          levels.delete(d.id + '|' + g);
+          loans++;
+        }
+      }
+    }
+    return loans;
   };
   // Winter exits: a few clubs with a bloated squad agree to cancel the contract of a veteran who isn't playing
   T.winterExits = function (full, share = 1) {

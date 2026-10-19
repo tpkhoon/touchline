@@ -1094,6 +1094,57 @@
       newOffer: newOffer(),
     };
   };
+  // Sim forward a number of days, our own matches included (played by the engine for us, as an instant result): stops early
+  // for a decision in the feed, a transfer window opening or closing, deadline day, the season's end, a new job offer or a sacking
+  Sea.simDaysSteps = function* (days) {
+    const S = FM.S;
+    let summary = null,
+      n = 0,
+      winChange = false,
+      deadline = false;
+    const win0 = Sea.windowOpen(),
+      dd0 = FM.Market.isDeadline(),
+      seen = new Set((S.user.offers || []).map((o) => o.id)),
+      employed0 = W.employed();
+    const newOffer = () => !W.employed() && (S.user.offers || []).some((o) => !seen.has(o.id));
+    do {
+      yield [n, Sea.dayLabel()];
+      const fx = employed0 && Sea.userFixture();
+      if (fx) Sea.applyUserMatch(FM.quickSim(fx, !!fx.ko));
+      summary = Sea.advance(null);
+      n++;
+      winChange = !summary && employed0 && Sea.windowOpen() !== win0;
+      deadline = !summary && employed0 && !dd0 && FM.Market.isDeadline();
+    } while (
+      !summary &&
+      !winChange &&
+      !deadline &&
+      n < days &&
+      !S.user.sacked &&
+      W.employed() === employed0 &&
+      !newOffer() &&
+      Sea.today() &&
+      !Sea.pendingDecision()
+    );
+    return {
+      summary,
+      n,
+      days,
+      winChange,
+      win0,
+      deadline,
+      pending: !summary && Sea.pendingDecision(),
+      pendingText: !summary && Sea.pendingText(),
+      done: !summary && n >= days,
+      newOffer: newOffer(),
+    };
+  };
+  Sea.simDays = function (onDay, days) {
+    const it = Sea.simDaysSteps(days);
+    let r;
+    while (!(r = it.next()).done) onDay && onDay(...r.value);
+    return r.value;
+  };
   Sea.skipToMatch = function (onDay) {
     const it = Sea.skipSteps();
     let r;
@@ -1172,6 +1223,12 @@
     if (employed) Sea.ensureUserSquad(11);
     Sea.ensureKeepers();
     Sea.ensureAiSquads();
+    if (S.day % 6 === 0 && !Sea.windowOpen())
+      FM.Transfers.aiProspects(
+        Object.values(S.clubs).filter((c) => c.sim === 'full' && !W.isUserSide(c.id)),
+        1,
+        false,
+      ); // (wonderkids get their minutes)
     Sea.finances();
     if (employed) {
       Sea.userMorale();
@@ -2012,6 +2069,85 @@
     if (!e || e.n < 200) return;
     S.era = U.clamp((S.era || 1) * Math.pow(FM.CAL.targetGoals / (e.g / e.n), 0.6), 0.85, 1.15);
   };
+  // ---------- Expansion ----------
+  // A closed league (nothing goes up or down) can take new clubs at the start of a season, as a franchise league does: the clubs come
+  // from FM.D.EXPANSION (ready-made fictional clubs, js/expansion.js) and fill their squads in an expansion draft from the clubs already
+  // in the league (FM.WorldDef.expansionDraft). The request is queued (S.expansionQueue: { league id: how many }) and runs as the
+  // new season is made, before its fixtures are drawn.
+  Sea.isClosed = function (id) {
+    const c = FM.S.comps[id];
+    if (!c || c.type !== 'league') return false;
+    const r = c.rules || {};
+    if (r.promote || r.relegate) return false;
+    return !Object.values(FM.S.comps).some(
+      (x) =>
+        x.type === 'league' &&
+        x.rules &&
+        ((x.rules.promote && x.rules.promote.to === id) || (x.rules.relegate && x.rules.relegate.to === id)),
+    );
+  };
+  Sea.expansionPool = (id) => ((FM.D.EXPANSION || {})[id] || []).filter((r) => !FM.S.clubs['c_' + r[1]]);
+  // The draft's settings for n new clubs joining a league of `rest` clubs: each club protects its best 12 and loses as few as it can
+  Sea.expansionSpec = function (rest, n) {
+    for (const maxLoss of [1, 2, 3, 4]) {
+      const size = Math.min(20, Math.floor((rest * maxLoss) / n));
+      if (size >= 18 || maxLoss === 4) return { protect: 12, maxLoss, size };
+    }
+  };
+  // How many clubs a closed league can take: up to three, as many as the pool and the draft can supply (11 players a club at least)
+  Sea.expansionMax = function (id) {
+    const c = FM.S.comps[id];
+    if (!Sea.isClosed(id)) return 0;
+    const rest = c.clubs.length;
+    let n = Math.min(3, Sea.expansionPool(id).length);
+    while (n > 0 && (rest < 6 || Sea.expansionSpec(rest, n).size < 11)) n--;
+    return n;
+  };
+  Sea.expansionQueued = (id) => (FM.S.expansionQueue || {})[id] || 0;
+  Sea.queueExpansion = function (id, n) {
+    const S = FM.S;
+    n = Math.max(0, Math.min(n, Sea.expansionMax(id)));
+    S.expansionQueue = S.expansionQueue || {};
+    if (n) S.expansionQueue[id] = n;
+    else delete S.expansionQueue[id];
+    return n;
+  };
+  Sea.runExpansions = function () {
+    const S = FM.S,
+      q = S.expansionQueue || {};
+    for (const id of Object.keys(q)) {
+      const comp = S.comps[id],
+        n = Math.min(q[id], Sea.expansionMax(id));
+      if (!comp || !n) continue;
+      const added = [];
+      for (const row of Sea.expansionPool(id).slice(0, n)) {
+        const [, code, , , , , , , , abbr, nick] = row;
+        FM.D.CLUB_INFO[code] = [abbr, nick, S.year];
+        const c = W.mkClub(row.slice(0, 9), id, comp.nat, comp.sim);
+        c.short = abbr;
+        c.nick = nick || '';
+        c.founded = S.year;
+        added.push(c);
+      }
+      if (!added.length) continue;
+      const spec = Sea.expansionSpec(comp.clubs.length - added.length, added.length);
+      FM.WorldDef.expansionDraft(S, id, { clubs: added.map((c) => c.id), ...spec });
+      // (a player of ours the draft took leaves the line-up)
+      const t = S.user && S.user.tactic;
+      if (t && t.lineup)
+        t.lineup = t.lineup.map((pid) =>
+          pid && S.players[pid] && S.players[pid].clubId === S.user.clubId ? pid : null,
+        );
+      for (const c of added) if (FM.Lore && FM.Lore.addClub) FM.Lore.addClub(c);
+      FM.News.add({
+        type: 'world',
+        title: `${comp.name} expands: ${added.map((c) => c.name).join(' and ')} join${added.length === 1 ? 's' : ''} the league`,
+        body: `${U.plural(added.length, 'new club')} for the new season, with ${added.length === 1 ? 'its' : 'their'} players drafted from the existing clubs (each protected its best ${spec.protect}).`,
+        clubId: added[0].id,
+      });
+    }
+    S.expansionQueue = {};
+  };
   Sea.newSeason = function (entry) {
     const S = FM.S;
     Sea.settleEra();
@@ -2218,6 +2354,7 @@
       uc.budget = Math.max(5e5, FM.Finance.budgetFor(uc));
       uc.warned = false;
     }
+    Sea.runExpansions(); // clubs that join a closed league, before the contracts, youth sides and fixtures are made
     FM.Stories.worldEvents(entry);
     FM.Contracts.newSeason();
     FM.Youth.newSeason(); // youth sides re-sorted, B teams restocked

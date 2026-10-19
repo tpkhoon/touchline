@@ -74,7 +74,7 @@
         ${aggNote ? `<div class="small center b" style="margin:-4px 0 10px;opacity:.9">${esc(aggNote)}</div>` : ''}
         <div class="row small" style="margin-bottom:${lastLine ? 4 : 12}px;opacity:.9"><span>Win chance ${Math.round(pw * 100)}%</span><span class="grow"></span><span>Their form</span>${C.form(oppForm)}</div>
         ${lastLine ? `<div class="tiny ellip" style="margin-bottom:12px;opacity:.8;text-align:right">${esc(lastLine)}</div>` : ''}
-        <button class="play" data-act="preview">▶ MATCHDAY</button></div>`;
+        <div class="row" style="gap:8px"><button class="play grow" data-act="preview">▶ MATCHDAY</button><button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;padding:0 14px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button></div></div>`;
     } else if (cal) {
       const others = FM.Season.dayFixtures();
       const away =
@@ -100,7 +100,7 @@
         cal.type === 'tourn'
           ? `${(s.tourns || []).map((t) => t.name).join(' · ') || 'The summer tournaments'} — ${others.length} match${others.length === 1 ? '' : 'es'} today.`
           : what;
-      hero = `<div class="hero" style="--c1:#1b2533;--c2:#0c1118"><div class="tag">${cal.type === 'playoff' ? 'Playoffs' : cal.type === 'intl' ? '🌍 International break' : cal.type === 'tourn' ? '🏆 Summer tournament' : cal.type === 'cup' ? (cal.super ? 'Super Cups' : cal.world ? 'World Club Championship' : cal.stage ? 'Continental night' : 'Cup day') : 'Matchday'}</div><div class="h2" style="margin:10px 0 14px">No match for ${esc(c.short)} today</div><div class="small" style="opacity:.8;margin-bottom:12px">${esc(what2)}</div><div class="row" style="gap:8px"><button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Next match</button></div></div>`;
+      hero = `<div class="hero" style="--c1:#1b2533;--c2:#0c1118"><div class="tag">${cal.type === 'playoff' ? 'Playoffs' : cal.type === 'intl' ? '🌍 International break' : cal.type === 'tourn' ? '🏆 Summer tournament' : cal.type === 'cup' ? (cal.super ? 'Super Cups' : cal.world ? 'World Club Championship' : cal.stage ? 'Continental night' : 'Cup day') : 'Matchday'}</div><div class="h2" style="margin:10px 0 14px">No match for ${esc(c.short)} today</div><div class="small" style="opacity:.8;margin-bottom:12px">${esc(what2)}</div><div class="row" style="gap:8px"><button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Next match</button><button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;padding:0 14px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button></div></div>`;
     }
     const row = s.comps[c.comp].table[c.id];
     const pos = W.position(c.id);
@@ -456,6 +456,66 @@
         r.pending ? 5000 : 3500,
       );
   };
+  // Sim forward a number of days (our own matches are played for us); stops for what needs you
+  UI.acts.simDaysAsk = () => {
+    const chips = [3, 7, 14, 30, 60]
+      .map((n) => `<button class="chip" data-act="simDays" data-n="${n}">${U.plural(n, 'day')}</button>`)
+      .join('');
+    UI.sheet(
+      `<div class="tiny dim" style="margin-bottom:8px">Sim forward through the days. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer.</div>
+      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
+      <div class="row" style="gap:8px"><input type="number" id="sim-days" min="1" max="120" value="7" inputmode="numeric" style="width:90px"><span class="dim small grow">days</span><button class="btn pri" data-act="simDaysGo">Sim ⏩</button></div>`,
+      { title: 'Sim forward' },
+    );
+  };
+  UI.acts.simDaysGo = () => UI.acts.simDays({ n: (document.getElementById('sim-days') || {}).value });
+  UI.acts.simDays = async (d) => {
+    const n = Math.max(1, Math.min(120, Math.floor(+d.n) || 7));
+    UI.closeAllSheets();
+    const r = await FM.SimRunner.run('days', n);
+    if (!r) return;
+    if (!r.summary && r.pending && W.employed()) UI.sub.feed = 'reply';
+    UI.afterDay(r.summary);
+    const days = `${r.n} day${r.n === 1 ? '' : 's'}`;
+    if (!r.summary)
+      UI.toast(
+        r.done
+          ? `⏩ ${days} simulated`
+          : r.newOffer
+            ? `⏩ ${days} simulated — a new job offer has arrived`
+            : r.winChange
+              ? `⏸ Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
+              : r.deadline
+                ? `⏸ Stopped after ${days}: it's deadline day`
+                : r.pending
+                  ? `⏸ Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
+                  : `⏸ Stopped after ${days} (of ${r.days})`,
+        r.pending ? 5000 : 3500,
+      );
+  };
+  // A closed league can take new clubs at the start of the next season, with an expansion draft (FM.Season.runExpansions)
+  UI.expansionCard = function (comp) {
+    const Sea = FM.Season;
+    if (!comp || !Sea.isClosed(comp.id)) return '';
+    const max = Sea.expansionMax(comp.id),
+      q = Sea.expansionQueued(comp.id);
+    const chips = [0, 1, 2, 3]
+      .filter((n) => n <= max)
+      .map(
+        (n) =>
+          `<button class="chip ${q === n ? 'on' : ''}" data-act="expandSet" data-id="${comp.id}" data-n="${n}">${n ? `+${n}` : 'None'}</button>`,
+      )
+      .join('');
+    return `<div class="card" style="margin-top:10px"><div class="row"><div class="h3 grow">🏟️ Expansion</div><span class="tiny dim">${U.plural(comp.clubs.length, 'club')}</span></div>
+      <div class="tiny dim" style="margin:4px 0 8px;line-height:1.5">${max ? `This league has no promotion or relegation, so it can grow. Clubs added for the next season fill their squads in an expansion draft: each existing club protects its best twelve players and loses one or two of the rest.` : 'No expansion clubs are left for this league.'}</div>
+      ${max ? `<div class="chips" style="flex-wrap:wrap">${chips}</div>` : ''}
+      ${q ? `<div class="small" style="margin-top:8px">✅ ${U.plural(q, 'new club')} join at the start of next season, with a draft.</div>` : ''}</div>`;
+  };
+  UI.acts.expandSet = (d) => {
+    FM.Season.queueExpansion(d.id, +d.n);
+    UI.save();
+    UI.render();
+  };
   UI.acts.preview = () => FM.MatchView.preview();
 
   UI.afterDay = function (summary) {
@@ -502,7 +562,7 @@
     };
     return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
         <div class="small" style="opacity:.75;margin-top:8px">Reputation ${U.repText(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
-        <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Wait for an offer</button>'}</div></div>
+        <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Wait for an offer</button>'}${'<button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;padding:0 14px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button>'}</div></div>
       <div class="sec"><div class="h3">Job offers</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
       ${offers.map(card).join('') || '<div class="empty">No offers right now. Keep waiting — clubs in your range will call.</div>'}
       <div class="sec"><div class="h3">The Feed</div></div>
@@ -2189,7 +2249,7 @@
           ? ['🟢 Champion', '🔵 Finals (top 6)']
           : null;
     const bracket = shown ? UI.koBracket(comp, shown) : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${UI.travelNote ? UI.travelNote(comp) : ''}${tables}
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${UI.travelNote ? UI.travelNote(comp) : ''}${tables}${UI.expansionCard(comp)}
       <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
       ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}${UI.compHistoryCard ? `<div class="card flat">${UI.compHistoryCard(comp)}</div>` : ''}`;
   }

@@ -23,6 +23,7 @@ self.onmessage = function (e) {
   try {
     let out;
     if (d.mode === 'toMatch') out = Sea.skipToMatch(progress);
+    else if (d.mode === 'days') out = Sea.simDays(progress, d.arg);
     else {
       progress(0, Sea.dayLabel());
       out = { summary: Sea.advance(null), n: 1 };

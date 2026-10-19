@@ -18,6 +18,7 @@
     'passes',
     'setpieces',
     'clubs',
+    'expansion',
     'geo',
     'world',
     'refstats',
@@ -121,7 +122,7 @@
       });
   };
 
-  function viaWorker(mode, prog) {
+  function viaWorker(mode, prog, arg) {
     return getWorker().then(
       (w) =>
         new Promise((res, rej) => {
@@ -146,21 +147,21 @@
             } else if (m.type === 'error') rej(Object.assign(new Error(m.message), { sim: true })); // the season code threw
           };
           w.onerror = (e) => rej(new Error(e.message || 'worker error'));
-          w.postMessage({ type: 'run', id, mode, json: JSON.stringify(FM.S) });
+          w.postMessage({ type: 'run', id, mode, arg, json: JSON.stringify(FM.S) });
         }),
     );
   }
   // Let the overlay paint between days; browsers pause animation frames in a hidden tab, so don't wait on one then
   const frame = () =>
     new Promise((r) => (document.hidden ? setTimeout(r, 0) : requestAnimationFrame(() => setTimeout(r, 0))));
-  async function viaMain(mode, prog) {
+  async function viaMain(mode, prog, arg) {
     const Sea = FM.Season;
-    if (mode !== 'toMatch') {
+    if (mode !== 'toMatch' && mode !== 'days') {
       prog(0, Sea.dayLabel());
       await frame();
       return { summary: Sea.advance(null), n: 1 };
     }
-    const it = Sea.skipSteps();
+    const it = mode === 'days' ? Sea.simDaysSteps(arg) : Sea.skipSteps();
     let r;
     while (!(r = it.next()).done) {
       prog(...r.value);
@@ -174,14 +175,14 @@
   // its content only appears if the day takes longer than 180 ms, so quick days never flash
   let ov = null,
     showT = null;
-  function show(mode) {
+  function show(mode, arg) {
     ov = document.createElement('div');
     ov.className = 'simov wait';
     document.getElementById('app').appendChild(ov);
     showT = setTimeout(() => {
       if (!ov) return;
       ov.classList.remove('wait');
-      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div></div>`;
+      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? `Simulating ${arg} day${arg === 1 ? '' : 's'}` : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div></div>`;
       if (R._label) progress(R._n, R._label);
     }, 180);
   }
@@ -197,20 +198,20 @@
     ov = null;
   }
 
-  // mode: 'day' (advance one day) or 'toMatch' (skip to our next match). Resolves to
+  // mode: 'day' (advance one day), 'toMatch' (skip to our next match) or 'days' (sim forward `arg` days, matches included). Resolves to
   // { summary, n, ... } once FM.S holds the new state, or null if a simulation is already running.
-  R.run = async function (mode = 'day') {
+  R.run = async function (mode = 'day', arg) {
     if (UI.simBusy) return null;
     UI.simBusy = true;
     const t0 = performance.now();
     let usedWorker = false;
     R._label = null;
-    show(mode);
+    show(mode, arg);
     try {
       let out = null;
       if (R.available()) {
         try {
-          out = await viaWorker(mode, progress);
+          out = await viaWorker(mode, progress, arg);
           usedWorker = true;
         } catch (e) {
           // A bug in the season code would fail on the main thread too, and there it would leave a half-played
@@ -220,7 +221,7 @@
           R.broken = true;
         }
       }
-      if (!out) out = await viaMain(mode, progress);
+      if (!out) out = await viaMain(mode, progress, arg);
       return out;
     } catch (e) {
       console.error('Simulation failed', e);

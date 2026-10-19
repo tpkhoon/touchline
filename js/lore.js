@@ -1419,6 +1419,13 @@
     return lore;
   };
   // A world that has no lore yet gets it (a save from before; a world made another way)
+  // A club that joined the world after it began (an expansion club): its details are made like any club's, with no past to speak of
+  L.addClub = function (c) {
+    const st = S();
+    if (!st.lore || !st.lore.clubs || !c) return;
+    c.legends = c.legends || [];
+    st.lore.clubs[c.id] = L.clubDetails(c, archiveFacts());
+  };
   L.ensure = function () {
     const st = S();
     if (!st || !st.clubs || (st.lore && st.lore.v >= L.SEED_V)) return false;
