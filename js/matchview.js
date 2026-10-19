@@ -796,7 +796,9 @@
         x.fillStyle = 'rgba(0,0,0,.3)';
         x.fill();
         x.beginPath();
-        x.arc(cx, cy, r, 0, Math.PI * 2);
+        // (colour-blind kits: the away side's players are squares, the home side's circles, whatever the colours)
+        if (k && FM.S.settings && FM.S.settings.colourBlind) x.rect(cx - r * 0.9, cy - r * 0.9, r * 1.8, r * 1.8);
+        else x.arc(cx, cy, r, 0, Math.PI * 2);
         x.fillStyle = sd.slots[i].t === 'GK' ? (k ? '#f59e0b' : '#a3e635') : c1;
         x.fill();
         x.lineWidth = green && sd.slots[i].t !== 'GK' ? 3.5 : 2.5;
@@ -1041,6 +1043,18 @@
   const rgb = (h) => (/^#[0-9a-f]{6}$/i.test(h) ? [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) : null);
   const dist = (a, b) => (a && b ? Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) : 999);
   // (a club can carry shirt colours of its own, club.kit = { home, away }; the away shirt is worn unless it clashes)
+  // Colour-blind kits (Settings): the way a colour looks with red-green colour blindness (a standard simulation of the two common
+  // kinds), so that red against green, or two reds, are told apart by how they look to such an eye, not by their codes
+  const CVD = [
+    [0.367, 0.861, -0.228, 0.28, 0.673, 0.047, -0.012, 0.043, 0.969], // protanopia
+    [0.625, 0.375, 0, 0.7, 0.3, 0, 0, 0.3, 0.7], // deuteranopia
+  ];
+  const seen = (c, m) => {
+    const v = rgb(c);
+    return v ? [0, 3, 6].map((i) => m[i] * v[0] + m[i + 1] * v[1] + m[i + 2] * v[2]) : null;
+  };
+  // how far apart two colours look, to the worst of the two kinds of eye (and to a normal one)
+  MV.looksApart = (a, b) => Math.min(dist(rgb(a), rgb(b)), ...CVD.map((m) => dist(seen(a, m), seen(b, m))));
   MV.kit = function (m, k) {
     const shirt = (club) => (club.kit && club.kit.home) || club.colors[0];
     const home = shirt(m.sides[0].club);
@@ -1048,6 +1062,16 @@
     const away = m.sides[1].club,
       [, c2] = away.colors,
       c1 = shirt(away);
+    if (FM.S.settings && FM.S.settings.colourBlind) {
+      // the away side wears the first of its own colours that looks different enough, else whichever of them and plain white,
+      // black or yellow looks most different from the home shirt
+      const own = [away.kit && away.kit.away, c1, c2].filter(Boolean);
+      const ok = own.find((c) => MV.looksApart(c, home) >= 110);
+      if (ok) return ok;
+      return [...own, '#ffffff', '#111111', '#ffd100'].sort(
+        (a, b) => MV.looksApart(b, home) - MV.looksApart(a, home),
+      )[0];
+    }
     const clash = (c) => dist(rgb(c), rgb(home)) < 80;
     if (away.kit && away.kit.away && !clash(away.kit.away)) return away.kit.away;
     return clash(c1) && !clash(c2) ? c2 : c1;

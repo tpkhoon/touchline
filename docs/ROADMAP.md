@@ -61,6 +61,7 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 - Loans: a new world starts with lower-division clubs holding players on loan from the better clubs of their country (about 400 loans: two or three a club in the second and third divisions, mostly 18 to 22-year-olds who would not play at home).
 - AI clubs manage their wonderkids and key prospects: a young player with a future who is close to the first eleven is picked ahead of a slightly better player until he has played his share (a +7% pick boost); one too far from the team is loaned to a club where he would play, in every window, and the check runs every week of the season.
 - Three small additions: a press-conference answer now says what it did in brackets after the reply ("Fans like it. (squad morale +2, fans +3, board −1)"); Settings has a Reduced motion switch (screen animations, the ball trail and the slow-down on big moments in the match view, on top of the device's own setting); and captains count: each season's end notes who wore the armband at every club, the legends card lists its longest-serving captains (three years or more), and when a captain of three years or more leaves your club the feed tells it.
+- Four more small ones: a Colour-blind kits switch in Settings (the away shirt is picked so the sides differ to red-green colour blindness too, and the away side's players are squares on the pitch); a saved search can have a bell: the feed names any player who newly matches it (checked every three days, up to three named at once); every player you send out on loan gets a goal (appearances, and goals for a forward) and the feed reports every four games whether the loan is on track, with the recall offered when it is behind; and pressing high on a short week (three days or fewer since the last match) costs 25% more legs, shows in the squad's fitness afterwards, and tired legs make mistakes late on, with a line in the match when the press is spent.
 - The map is gone: the By region start on the new-career screen and the Map tab of the league screen (distances, away trips and the longest-trip note stay).
 - The Load a save screen has a rename button (a name of your own, kept through every later save and shown on the title screen's Continue button) and a delete button (a second tap confirms) for each save.
 - The world editor can create a nation (National teams, Create a nation): a name, three-letter code, flag emoji, part of the world, the culture its players' names come from, how it plays, colours and how common its players are abroad. Leagues, clubs and players can then belong to it and, with sixteen players, it fields a national team.
@@ -693,7 +694,7 @@ Checked against the game: already in are AI clubs filling the positions they lac
 - [x] Captains become club legends: a long-serving captain's years as captain count towards the club's legends card and are told when he leaves
 - [ ] Rest defence as one choice: keep two, three or four back when we attack
 - [ ] AI managers adjust in the match (a back five to protect a lead, a second striker when chasing) and the commentary says so
-- [ ] Pressing every three days costs: tired players make mistakes late on, shown in the match and the squad's fitness, not through a new menu
+- [x] Pressing every three days costs: tired players make mistakes late on, shown in the match and the squad's fitness, not through a new menu
 - [ ] Set-piece report: how the opposition defends and attacks corners and free kicks, and the routine that answers it
 - [ ] National-team chemistry: players who are often picked together play better together, a simple boost without a training-camp system
 
@@ -706,14 +707,14 @@ Checked against the game: the training-ground cap and stadium expansion, saved f
 - [ ] Set-piece coach: a specialist role with one job, more goals from corners and free kicks, shown as a visible result ("set-piece goals up from 4 to 9 since she joined")
 - [ ] Sports psychologist: a specialist role that helps players recover from bad form and handle big matches, pairing with the Big-Match Nerves and Clutch traits; each hire reports its effect in the feed
 - [ ] Youth hub with clear pathways: one card per youngster saying where he is, what comes next and who blocks him ("Mace (18), ready for first-team minutes in about a year, blocked by Fouda")
-- [ ] Loan objectives: one simple goal per loan ("15 league starts", "play as a striker"); the monthly loan report says whether it is on track and offers the recall if it is not
+- [x] Loan objectives: one simple goal per loan ("15 league starts", "play as a striker"); the monthly loan report says whether it is on track and offers the recall if it is not
 - [ ] Negotiation moments with a little drama: at key points two or three choices (the agent says another club has offered more: match it, call the bluff or walk away), with the agent's personality changing how each deal goes
 - [ ] Tactics for the opponent: save a tactic as "use against high-pressing teams" or "use away at big clubs" and the assistant suggests it on the matchday screen when the opponent fits
-- [ ] Colour-blind mode: team colours on the pitch and in the match view stay distinguishable when both sides wear similar colours (red against red)
+- [x] Colour-blind mode: team colours on the pitch and in the match view stay distinguishable when both sides wear similar colours (red against red)
 - [x] Reduced motion setting inside the game: tones down the ball trail, slow motion and screen animations (the system's own setting is already honoured)
 - [x] Public comments show their effect: a press conference answer says what it did to the fans ("Fans approved of your defence of the captain: mood +3")
 - [ ] A visual of the ground growing: the stadium picture changes with each expansion and with the training ground's level
-- [ ] Saved searches that alert you: a saved filter ("young left-backs under 2M") tells you in the feed when a new player matches it
+- [x] Saved searches that alert you: a saved filter ("young left-backs under 2M") tells you in the feed when a new player matches it
 
 **Identity and living world (external review, October 2026)**
 

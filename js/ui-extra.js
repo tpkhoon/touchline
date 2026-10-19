@@ -967,7 +967,7 @@
     const presets = `<div class="chips noswipe" style="margin-top:8px"><span class="chip-lbl">Saved</span>${saved
       .map(
         (p, i) =>
-          `<button class="chip" data-act="sfApplyPreset" data-i="${i}">${esc(p.name)}</button><button class="chip" data-act="sfDelPreset" data-i="${i}" aria-label="Delete ${esc(p.name)}">✕</button>`,
+          `<button class="chip" data-act="sfApplyPreset" data-i="${i}">${esc(p.name)}</button><button class="chip ${p.alert ? 'on' : ''}" data-act="sfAlertPreset" data-i="${i}" aria-label="${p.alert ? 'Stop alerting me about' : 'Alert me about'} ${esc(p.name)}" title="${p.alert ? 'Alerts on: the feed tells you when a new player matches' : 'Alert me in the feed when a new player matches'}">${p.alert ? '🔔' : '🔕'}</button><button class="chip" data-act="sfDelPreset" data-i="${i}" aria-label="Delete ${esc(p.name)}">✕</button>`,
       )
       .join('')}${saved.length ? '' : '<span class="tiny dim">none yet</span>'}</div>`;
     return `<div class="card flat" style="padding:8px 10px;margin-bottom:8px">
@@ -1065,6 +1065,66 @@
     sfReset();
     Object.assign(UI._sf, { ...SF_DEFAULT(), ...JSON.parse(JSON.stringify(p.f)) });
     UI.render();
+  };
+  // A saved search that alerts you: switched on with the bell, it is looked at every few days and the feed names any player who now
+  // matches that it has not named before (the first look only notes who matches already)
+  UI.acts.sfAlertPreset = (d) => {
+    const p = sfPresets()[+d.i];
+    if (!p) return;
+    p.alert = !p.alert;
+    if (p.alert) p.seen = null; // (a fresh baseline)
+    UI.toast(p.alert ? `🔔 The feed will tell you when a new player matches “${p.name}”` : '🔕 Alerts off', 2500);
+    UI.save();
+    UI.render();
+  };
+  UI.checkAlerts = function () {
+    const s = S(),
+      u = s.user;
+    if (!u || !u.filterPresets || !W.employed()) return;
+    const key = s.year * 1000 + s.day; // (a look every three days, however the days were played)
+    if (u.alertAt != null && key >= u.alertAt && key - u.alertAt < 3) return;
+    if (!Object.values(u.filterPresets).some((l) => (l || []).some((p) => p.alert))) return;
+    u.alertAt = key;
+    const keep = { f: { ...UI._sf }, scope: sfScope };
+    try {
+      for (const [scope, list] of Object.entries(u.filterPresets)) {
+        for (const pr of list || []) {
+          if (!pr.alert) continue;
+          sfScope = scope;
+          UI._sf = {
+            ...SF_DEFAULT(),
+            ...JSON.parse(JSON.stringify(pr.f)),
+            more: false,
+            sort: 'default',
+            rev: false,
+            limit: 50,
+          };
+          let pool = Object.values(s.players).filter((p) => !p.retired && !W.ownPlayer(p) && FM.Scouting.scoutable(p));
+          if (scope === 'free') pool = pool.filter((p) => !p.clubId);
+          const hits = sfApply(pool);
+          const seen = new Set(pr.seen || []);
+          const fresh = hits.filter((p) => !seen.has(p.id));
+          if (pr.seen && fresh.length) {
+            fresh
+              .sort((a, b) => b.ca - a.ca)
+              .slice(0, 3)
+              .forEach((p) =>
+                FM.News.add({
+                  type: 'club',
+                  title: `Saved search “${pr.name}”: ${W.name(p)}`,
+                  body: `${W.age(p)}, ${D.POS_NAME[p.pos].toLowerCase()}, ${p.clubId ? s.clubs[p.clubId].name : 'a free agent'}${p.clubId && p.value ? ` · valued at ${U.money(p.value)}` : ''}. A new match for a search you saved${fresh.length > 3 ? ` (and ${fresh.length - 3} more)` : ''}.`,
+                  pid: p.id,
+                  clubId: u.clubId,
+                }),
+              );
+          }
+          pr.seen = hits.map((p) => p.id).slice(0, 400);
+        }
+      }
+    } finally {
+      UI._sf = keep.f;
+      sfScope = keep.scope;
+    }
   };
   UI.acts.sfDelPreset = (d) => {
     sfPresets().splice(+d.i, 1);

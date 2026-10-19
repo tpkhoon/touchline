@@ -543,6 +543,8 @@
       res = m.result();
     fx.res = res;
     const comp = S.comps[fx.comp];
+    const day = Sea.today();
+    if (day && day.dn != null) for (const id of [fx.h, fx.a]) if (S.clubs[id]) S.clubs[id].lastDn = day.dn; // (for the short-week check)
     if (comp.type === 'friendly') return Sea.applyFriendly(fx, m);
     const [hc, ac] = [S.clubs[fx.h], S.clubs[fx.a]];
     // the formation each side started with, for its profile (this season's count)
@@ -2182,7 +2184,7 @@
     FM.Injury.expireDecisions(true); // last season's medical questions are settled before the year turns
     S.year++;
     FM.Analytics.newSeason();
-    Object.values(S.clubs).forEach((cl) => (cl.forms = undefined)); // (the formations used are counted afresh)
+    Object.values(S.clubs).forEach((cl) => ((cl.forms = undefined), (cl.lastDn = undefined))); // (the formations used are counted afresh; a new calendar has no last match)
     FM.Transfers.endLoans();
     // retirements, contracts, history snapshot
     Object.values(S.players).forEach((p) => {

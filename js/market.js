@@ -314,6 +314,47 @@
     }
     return { games: FM.Season.gamesPlayed(p.clubId) - l.wg, apps: sp.apps - l.wa };
   };
+  // The loan report: every four games at the host the feed says how the loan stands against its goal, and when it is behind the
+  // desk offers the recall
+  M.loanReport = function (p) {
+    const g = p.loan.goal,
+      host = S().clubs[p.clubId],
+      sp = W.spell(p);
+    if (!g || !host || !sp) return;
+    const games = FM.Season.gamesPlayed(host.id),
+      since = games - (p.loan.reportAt ?? g.at);
+    if (since < 4) return;
+    p.loan.reportAt = games;
+    const elapsed = games - g.at,
+      k = Math.min(1, elapsed / g.total);
+    const appsOk = sp.apps >= Math.floor(g.apps * k * 0.8),
+      goalsOk = !g.goals || sp.goals >= Math.floor(g.goals * k * 0.8);
+    const line = `${U.plural(sp.apps, 'appearance')} of ${g.apps}${g.goals ? `, ${U.plural(sp.goals, 'goal')} of ${g.goals}` : ''} after ${U.plural(elapsed, 'game')} at ${host.name}.`;
+    if (appsOk && goalsOk) {
+      FM.News.add({
+        type: 'club',
+        title: `${W.name(p)}'s loan is on track`,
+        body: `Goal: ${g.label}. ${line}`,
+        pid: p.id,
+        clubId: W.userClub().id,
+      });
+      return;
+    }
+    if (S().news.some((n) => n.type === 'desk' && n.kind === 'loan' && !n.resolved && n.pid === p.id)) return;
+    M.desk({
+      kind: 'loan',
+      title: `${W.name(p)}'s loan is behind its goal`,
+      body: `Goal: ${g.label}. ${line} ${W.age(p) <= 21 ? 'He needs games more than anything.' : 'He is not getting what he went for.'}`,
+      pid: p.id,
+      rec: 0,
+      def: 2,
+      choices: [
+        { k: 'recall', label: FM.Season.windowOpen() ? 'Recall him' : 'Recall him when the window opens' },
+        ...(p.loan.promised ? [] : [{ k: 'complain', label: `Tell ${host.name} to play him` }]),
+        { k: 'leave', label: 'Leave him there' },
+      ],
+    });
+  };
   M.loanWatch = function () {
     const c = W.userClub(),
       open = FM.Season.windowOpen();
@@ -331,7 +372,9 @@
         });
         continue;
       }
-      if (p.loan.recall || p.inj) continue;
+      if (p.loan.recall) continue;
+      M.loanReport(p);
+      if (p.inj) continue;
       const { games, apps } = M.loanMinutes(p);
       if (games < M.LOAN_GAMES || apps >= games * M.LOAN_SHARE) continue;
       const host = S().clubs[p.clubId];

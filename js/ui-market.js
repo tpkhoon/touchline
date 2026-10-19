@@ -408,7 +408,8 @@
     const host = S().clubs[p.clubId],
       sp = W.spell(p),
       open = FM.Season.windowOpen();
-    return `<div class="warnline" style="margin-bottom:12px">On loan at ${esc(host.name)}: ${sp.apps} appearance${sp.apps === 1 ? '' : 's'} so far${p.loan.promised ? ' · they promised him minutes' : ''}${p.loan.recall ? ' · recall booked for the next window' : ''}. <button class="btn sm" data-act="recallLoan" data-id="${p.id}" ${p.loan.recall && !open ? 'disabled' : ''}>${open ? 'Recall now' : 'Recall when the window opens'}</button></div>`;
+    const g = p.loan.goal;
+    return `<div class="warnline" style="margin-bottom:12px">${g ? `🎯 Loan goal: ${esc(g.label)} · ` : ''}On loan at ${esc(host.name)}: ${sp.apps} appearance${sp.apps === 1 ? '' : 's'}${g && g.goals ? `, ${sp.goals} goal${sp.goals === 1 ? '' : 's'}` : ''} so far${p.loan.promised ? ' · they promised him minutes' : ''}${p.loan.recall ? ' · recall booked for the next window' : ''}. <button class="btn sm" data-act="recallLoan" data-id="${p.id}" ${p.loan.recall && !open ? 'disabled' : ''}>${open ? 'Recall now' : 'Recall when the window opens'}</button></div>`;
   };
   UI.acts.recallLoan = (d) => {
     const p = P(d.id);

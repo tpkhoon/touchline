@@ -36,6 +36,7 @@
     star: 0.04, // in a big game a side's best player raises his level by this
     snow: 0.85, // chance rate in snow
     heat: 1.3, // fatigue in the heat
+    pressShort: 1.25, // a high press on a short week (three days or fewer since the last match) costs this much more in legs
     targetGoals: 2.72, // tactical equilibrium: the league scoring rate the game settles back toward over long saves
   });
   const AW = { GK: 0, CB: 0.1, FB: 0.25, WB: 0.35, DM: 0.2, CM: 0.4, WM: 0.6, AM: 0.8, W: 0.85, ST: 1 };
@@ -343,6 +344,20 @@
       };
       // a long away trip tires the visitors (FM.Lore.wear: nothing up to 350 km)
       const wear = idx === 1 && !this.neutral && FM.Lore ? FM.Lore.wear(this.o.h, this.o.a) : 0;
+      // a short week: the club played three days ago or fewer (club.lastDn is the calendar day of its last match)
+      {
+        const cl = FM.clubOf(idx === 0 ? this.o.h : this.o.a),
+          today = FM.S && FM.S.calendar && FM.Season ? FM.Season.today() : null;
+        sd.shortWeek = !!(
+          cl &&
+          cl.sim !== 'nation' &&
+          cl.lastDn != null &&
+          today &&
+          today.dn != null &&
+          today.dn - cl.lastDn > 0 &&
+          today.dn - cl.lastDn <= 3
+        );
+      }
       xi.forEach((p) => {
         if (p) {
           sd.st[p.id] = wear ? Math.max(30, p.fitness - wear) : p.fitness;
@@ -414,6 +429,7 @@
     }
     factor(sd, p) {
       let f = 0.72 + 0.28 * Math.sqrt((sd.st[p.id] ?? 100) / 100);
+      if (sd.shortWeek && sd.tactic.press === 'High Press' && (sd.st[p.id] ?? 100) < 60) f *= 0.97; // tired from pressing again: mistakes
       f *= 0.96 + p.morale / 1250;
       if (this.weather[0] === 'Rain' && W.hasTrait(p, 'Fair-Weather')) f *= 0.9;
       if (this.big && W.hasTrait(p, 'Big Game Player')) f *= 1.06;
@@ -1341,8 +1357,22 @@
 
     fatigue(tl, out) {
       this.sides.forEach((sd) => {
+        // late on, after pressing on a short week, the legs have gone: the match says so once
+        if (sd.shortWeek && !sd.tiredNote && sd.tactic.press === 'High Press' && tl.m >= 62) {
+          const on = this.onPitch(sd).filter(({ i }) => sd.slots[i].t !== 'GK');
+          if (on.length && U.avg(on, ({ p }) => sd.st[p.id]) < 62) {
+            sd.tiredNote = true;
+            out.events.push({
+              k: 'tired',
+              side: sd.idx,
+              min: tl.label,
+              text: `The press is costing ${sd.club.short}: heavy legs and loose passes after a short week.`,
+            });
+          }
+        }
         const pf =
           { 'High Press': 1.35, 'Mid Block': 1, 'Low Block': 0.82 }[sd.tactic.press] *
+          (sd.shortWeek && sd.tactic.press === 'High Press' ? CAL.pressShort : 1) * // pressing again after a short week
           (this.weather[0] === 'Hot' ? CAL.heat : 1) * // the heat drains legs
           (sd.warm === 'intense' ? 1.07 : sd.warm === 'light' ? 0.94 : 1); // and so does an intense warm-up
         const rfs = (sd.rfC = sd.rfC || []);

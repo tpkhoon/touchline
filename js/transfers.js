@@ -102,6 +102,27 @@
     T.loan(p, club.id, share, fee);
     return { ok: true, msg: `✅ ${W.name(p)} joins on a season-long loan (${Math.round(share * 100)}% of wages).` };
   };
+  // A goal for a player we send out on loan: so many appearances at the host (and goals, for a forward), judged pro rata in the
+  // monthly loan report (FM.Market.loanWatch)
+  T.loanGoal = function (p, host) {
+    const S = FM.S,
+      comp = S.comps[host.comp];
+    const total = Math.max(4, ((comp && comp.fixtures && comp.fixtures.length) || 30) - FM.Season.gamesPlayed(host.id));
+    const apps = Math.max(3, Math.round(total * (W.age(p) <= 21 ? 0.6 : 0.5)));
+    const goals =
+      ['ST', 'W', 'AM'].includes(p.pos) && total >= 12
+        ? Math.max(2, Math.round(apps * (p.pos === 'ST' ? 0.3 : 0.15)))
+        : 0;
+    return {
+      apps,
+      goals,
+      total,
+      at: FM.Season.gamesPlayed(host.id),
+      label: goals
+        ? `${U.plural(apps, 'appearance')} and ${U.plural(goals, 'goal')}`
+        : `${U.plural(apps, 'appearance')}`,
+    };
+  };
   T.loan = function (p, toId, share, fee = 0) {
     const S = FM.S,
       from = S.clubs[p.clubId],
@@ -117,6 +138,7 @@
     W.startSpell(p, toId);
     W.spell(p).loan = true;
     W.spell(p).signed = true;
+    if (W.isUser(from.id)) p.loan.goal = T.loanGoal(p, to); // one simple goal for the loan
     p.morale = Math.min(100, p.morale + 6);
     if (W.isUser(toId)) S.user.knowledge[p.id] = 100;
     if (W.isUser(from.id) && S.user.tactic.lineup)
