@@ -420,6 +420,49 @@
       apps: all.slice().sort((a, b) => b.apps - a.apps),
     };
   };
+  // ---------- Captains ----------
+  // Each season's end notes who wore the armband at every club (c.capt: { pid, name, nat, pos, from, to, n }): a long-serving captain's
+  // years count towards the club's legends card, and the feed tells it when he leaves (the user's club).
+  R.captainSeason = function () {
+    const s = S();
+    for (const c of Object.values(s.clubs)) {
+      if (!c.comp || c.sim === 'nation' || c.parent) continue;
+      const list = (c.capt = c.capt || []);
+      const p = FM.Matchday.captainOf(c.id);
+      if (p) {
+        const last = list[list.length - 1];
+        if (last && !last.done && last.pid === p.id) {
+          last.n++;
+          last.to = s.year;
+        } else list.push({ pid: p.id, name: W.name(p), nat: p.nat, pos: p.pos, from: s.year, to: s.year, n: 1 });
+      }
+      for (const r of list) {
+        if (r.done) continue;
+        const pl = s.players[r.pid];
+        if (pl && !pl.retired && pl.clubId === c.id) continue;
+        r.done = true; // he has gone (a transfer, retirement or release)
+        r.left = s.year;
+        if (r.n >= 3 && W.isUser(c.id))
+          news({
+            type: 'story',
+            kicker: 'CAPTAIN',
+            title: `${r.name} leaves after ${U.plural(r.n, 'year')} as ${poss(c.name)} captain`,
+            sub: `He wore the armband from ${r.from} to ${r.to}: his years as captain go on the club's legends card.`,
+            big: String(r.n),
+            clubId: c.id,
+            pid: r.pid,
+          });
+      }
+      if (list.length > 14) list.splice(0, list.length - 14);
+    }
+  };
+  // A club's longest-serving captains (three seasons or more): the legends card's captains list
+  R.captains = (clubId) =>
+    ((club(clubId) || {}).capt || [])
+      .filter((r) => r.n >= 3)
+      .slice()
+      .sort((a, b) => b.n - a.n || b.to - a.to)
+      .slice(0, 5);
   // After our match: did anyone just become the club's all-time top scorer or appearance maker?
   R.checkAllTime = function (clubId, fx, res, side) {
     const at = R.allTime(clubId),

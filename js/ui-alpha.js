@@ -518,7 +518,16 @@
         })
         .join('')}`;
     };
-    return `<div class="card"><div class="h3">Club legends</div>${five('TOP SCORERS', at.scorers, (x) => x.goals, 'goals')}${five('MOST APPEARANCES', at.apps, (x) => x.apps, 'games')}</div>`;
+    const caps = FM.Records.captains(id);
+    const captains = caps.length
+      ? `<div class="small b dim" style="margin:10px 0 2px">LONGEST-SERVING CAPTAINS</div>${caps
+          .map(
+            (r, i) =>
+              `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:18px">${i + 1}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(r.name)}${r.done ? '' : ' <span class="pill acc">Captain now</span>'}</div><div class="tiny dim">${r.from}–${r.to}</div></div><b>${r.n}</b><span class="dim tiny" style="margin-left:4px">${r.n === 1 ? 'year' : 'years'}</span></div>`,
+          )
+          .join('')}`
+      : '';
+    return `<div class="card"><div class="h3">Club legends</div>${five('TOP SCORERS', at.scorers, (x) => x.goals, 'goals')}${five('MOST APPEARANCES', at.apps, (x) => x.apps, 'games')}${captains}</div>`;
   };
   UI.acts.clubHistory = (d) =>
     UI.sheet(UI.clubSeasonsCard(d.id, true) + UI.clubLegendsCard(d.id), {

@@ -580,7 +580,8 @@
       return;
     }
     const big = out.events.some((e) => (e.k === 'chance' || e.k === 'goal') && e.big);
-    st.minuteMs = ((st.text ? 600 : 1150) / st.speed) * (big ? 2.4 : 1);
+    st.minuteMs =
+      ((st.text ? 600 : 1150) / st.speed) * (big && !(FM.S.settings && FM.S.settings.reduceMotion) ? 2.4 : 1); // (a big moment slows the match down, unless motion is reduced)
     st.minuteT = 0;
     if (st.text) st.actions = [];
     else MV.planActions(out.script);
@@ -840,7 +841,8 @@
       x.fillText(t, cx, cy - r - 12);
     }
     // ball trail + ball
-    st.trail.forEach(([tx, ty], i) => {
+    const still = !!(FM.S.settings && FM.S.settings.reduceMotion); // (reduced motion: no ball trail)
+    (still ? [] : st.trail).forEach(([tx, ty], i) => {
       const [a, bb] = px(tx, ty);
       x.beginPath();
       x.arc(a, bb, 2 + i * 0.3, 0, Math.PI * 2);

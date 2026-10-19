@@ -713,8 +713,15 @@
     if (n.resolved) return;
     n.resolved = ch.label;
     const sq = W.squad(c.id);
-    if (f.player && n.pid && FM.S.players[n.pid])
-      FM.S.players[n.pid].morale = U.clamp(FM.S.players[n.pid].morale + f.player, 0, 100);
+    // what the answer did, in words after the reply: "fans +3, board −1"
+    const eff = [],
+      sg = (d) => (d > 0 ? `+${d}` : `−${Math.abs(d)}`);
+    if (f.player && n.pid && FM.S.players[n.pid]) {
+      const p = FM.S.players[n.pid],
+        was = p.morale;
+      p.morale = U.clamp(p.morale + f.player, 0, 100);
+      if (Math.round(p.morale - was)) eff.push(`${W.short(p)} ${sg(Math.round(p.morale - was))}`);
+    }
     if (f.match && n.pre) {
       FM.S.user.preMatch = { opp: n.pre.opp, day: FM.S.day, year: FM.S.year, us: f.match.us, them: f.match.them };
       if (!ch.reply)
@@ -722,13 +729,27 @@
           f.match.us > 0
             ? 'It gets under their skin. Your players are buzzing.'
             : "It backfires: they've pinned it on their dressing-room wall.";
+      eff.push(f.match.us > 0 ? 'your side fired up for the match' : 'their side fired up for the match');
     }
-    if (f.morale)
+    if (f.morale) {
       sq.forEach((p) => (p.morale = U.clamp(p.morale + f.morale + (W.hasTrait(p, 'Media Friendly') ? 2 : 0), 0, 100)));
-    if (f.youth) sq.filter((p) => W.age(p) <= 21).forEach((p) => (p.morale = Math.min(100, p.morale + f.youth)));
-    if (f.fans) c.fanMood = U.clamp(c.fanMood + f.fans, 0, 100);
-    if (f.board) c.boardConf = U.clamp(c.boardConf + f.board, 0, 100);
-    n.reply = ch.reply;
+      eff.push(`squad morale ${sg(f.morale)}`);
+    }
+    if (f.youth) {
+      sq.filter((p) => W.age(p) <= 21).forEach((p) => (p.morale = Math.min(100, p.morale + f.youth)));
+      eff.push(`young players ${sg(f.youth)}`);
+    }
+    if (f.fans) {
+      const was = c.fanMood;
+      c.fanMood = U.clamp(c.fanMood + f.fans, 0, 100);
+      if (Math.round(c.fanMood - was)) eff.push(`fans ${sg(Math.round(c.fanMood - was))}`);
+    }
+    if (f.board) {
+      const was = c.boardConf;
+      c.boardConf = U.clamp(c.boardConf + f.board, 0, 100);
+      if (Math.round(c.boardConf - was)) eff.push(`board ${sg(Math.round(c.boardConf - was))}`);
+    }
+    n.reply = eff.length ? `${ch.reply} (${eff.join(', ')})` : ch.reply;
   };
 
   St.share = function (o) {

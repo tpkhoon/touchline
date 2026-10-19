@@ -561,6 +561,11 @@
       'dark';
     document.documentElement.dataset.theme = t;
     UI.applyClubTheme();
+    UI.applyMotion();
+  };
+  // The in-game reduced-motion switch (the system's own setting is honoured by the stylesheet)
+  UI.applyMotion = function () {
+    document.documentElement.classList.toggle('reduce-motion', !!(FM.S && FM.S.settings && FM.S.settings.reduceMotion));
   };
 
   // ---------------- Shell ----------------

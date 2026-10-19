@@ -2178,6 +2178,7 @@
   Sea.newSeason = function (entry) {
     const S = FM.S;
     Sea.settleEra();
+    FM.Records.captainSeason(); // who wore the armband this season (before the year turns)
     FM.Injury.expireDecisions(true); // last season's medical questions are settled before the year turns
     S.year++;
     FM.Analytics.newSeason();

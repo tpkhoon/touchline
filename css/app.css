@@ -336,6 +336,25 @@ main::-webkit-scrollbar {
   }
 }
 
+/* the in-game reduced-motion switch (Settings): the same as the system's, for everything that moves */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+.reduce-motion .simbox .simball,
+.reduce-motion .simbar i {
+  animation: none !important;
+}
+.reduce-motion .simbar i {
+  left: 0;
+  width: 100%;
+  opacity: 0.5;
+}
+
 /* ---------- Generic ---------- */
 .card {
   background: var(--card);
