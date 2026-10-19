@@ -507,7 +507,7 @@
       )
       .join('');
     return `<div class="card" style="margin-top:10px"><div class="row"><div class="h3 grow">🏟️ Expansion</div><span class="tiny dim">${U.plural(comp.clubs.length, 'club')}</span></div>
-      <div class="tiny dim" style="margin:4px 0 8px;line-height:1.5">${max ? `This league has no promotion or relegation, so it can grow. Clubs added for the next season fill their squads in an expansion draft: each existing club protects its best twelve players and loses one or two of the rest.` : 'No expansion clubs are left for this league.'}</div>
+      <div class="tiny dim" style="margin:4px 0 8px;line-height:1.5">${max ? `This league has no promotion or relegation, so it can grow. Clubs added for the next season fill their squads in an expansion draft: each existing club protects its best twelve players and loses at most ${Sea.expansionSpec(comp.clubs.length, q || 1).maxLoss} of the rest${q ? '' : ' (for one new club; more clubs can mean more)'}: ${q ? `${U.plural(q, 'new club')} draft` : 'a new club drafts'} about ${Sea.expansionSpec(comp.clubs.length, q || 1).size} players.` : 'No expansion clubs are left for this league.'}</div>
       ${max ? `<div class="chips" style="flex-wrap:wrap">${chips}</div>` : ''}
       ${q ? `<div class="small" style="margin-top:8px">✅ ${U.plural(q, 'new club')} join at the start of next season, with a draft.</div>` : ''}</div>`;
   };
