@@ -2101,6 +2101,20 @@
     const rest = c.clubs.length;
     let n = Math.min(3, Sea.expansionPool(id).length);
     while (n > 0 && (rest < 6 || Sea.expansionSpec(rest, n).size < 11)) n--;
+    // a league of two zones or two conferences needs them to stay equal in size, or its clubs would play different numbers of games
+    const r = c.rules || {};
+    if (r.zones) while (n > 0 && (rest + n) % 2) n--;
+    if (r.conferences) {
+      const conf = W.conferenceOf(c),
+        names = Object.keys(r.conferences),
+        size = Object.fromEntries(names.map((k) => [k, c.clubs.filter((x) => conf[x] === k).length]));
+      const equal = (k) => {
+        const s = { ...size };
+        for (let i = 0; i < k; i++) s[Object.keys(s).sort((a, b) => s[a] - s[b])[0]]++;
+        return Object.values(s)[0] === Object.values(s)[1];
+      };
+      while (n > 0 && !equal(n)) n--;
+    }
     return n;
   };
   Sea.expansionQueued = (id) => (FM.S.expansionQueue || {})[id] || 0;
@@ -2111,6 +2125,18 @@
     if (n) S.expansionQueue[id] = n;
     else delete S.expansionQueue[id];
     return n;
+  };
+  // A league that splits after its regular season (the Scottish split, the Belgian play-offs) has to fit the clubs it now has: the
+  // regular season is the same number of meetings among more clubs, and the new clubs join the last group
+  Sea.fitSplit = function (comp, added) {
+    const sp = comp.rules && comp.rules.split;
+    if (!sp || !added) return;
+    const n = comp.clubs.length,
+      per = (k) => (k % 2 ? k : k - 1);
+    const legs = Math.max(1, Math.round(sp.after / per(n - added)));
+    sp.after = legs * per(n);
+    sp.groups = sp.groups.slice();
+    sp.groups[sp.groups.length - 1] += added;
   };
   Sea.runExpansions = function () {
     const S = FM.S,
@@ -2130,6 +2156,7 @@
         added.push(c);
       }
       if (!added.length) continue;
+      Sea.fitSplit(comp, added.length);
       const spec = Sea.expansionSpec(comp.clubs.length - added.length, added.length);
       FM.WorldDef.expansionDraft(S, id, { clubs: added.map((c) => c.id), ...spec });
       // (a player of ours the draft took leaves the line-up)
