@@ -18,12 +18,20 @@ for (const l of shipped.split('\n')) {
     if (c.length >= 2) entries.push({ build: c[0], cell: c.slice(1).join(' | ') });
   }
 }
-const rows = entries.slice(0, 10).map(({ build, bullets, cell }) => ({
-  build,
-  text: (cell ?? bullets.join(' '))
+const plain = (t) =>
+  t
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links to plain text
-    .replace(/\*\*/g, ''),
-}));
+    .replace(/\*\*/g, '');
+// a build with bullets keeps them apart (`items`: a bold lead-in such as "**Scouting:**" becomes `lead`), so the screen can list them
+const rows = entries.slice(0, 10).map(({ build, bullets, cell }) => {
+  const row = { build, text: plain(cell ?? bullets.join(' ')) };
+  if (bullets && bullets.length)
+    row.items = bullets.map((b) => {
+      const m = /^\*\*([^*]+?):?\*\*:?\s*(.*)$/.exec(b);
+      return m ? { lead: m[1], text: plain(m[2]).replace(/^./, (c) => c.toUpperCase()) } : { text: plain(b) };
+    });
+  return row;
+});
 const out = `// Generated from docs/ROADMAP.md by tools/changelog.mjs (npm run changelog): the newest builds, for Settings → What's new.
 window.FM = window.FM || {};
 window.FM.CHANGELOG = ${JSON.stringify(rows, null, 2)};

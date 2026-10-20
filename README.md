@@ -2,7 +2,7 @@
 
 **The deepest football management experience built for mobile. Your club. Your stories. Your history.**
 
-Full design: [docs/GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) · [docs/SYSTEMS.md](docs/SYSTEMS.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/FEATURES.md](docs/FEATURES.md) · [docs/COMPETITION_RULES.md](docs/COMPETITION_RULES.md) · [docs/NAMING_RULES.md](docs/NAMING_RULES.md).
+**Docs:** [design document](docs/GAME_DESIGN_DOCUMENT.md) · [systems](docs/SYSTEMS.md) · [roadmap and what shipped](docs/ROADMAP.md) · [feature list](docs/FEATURES.md) · [competition rules](docs/COMPETITION_RULES.md) · [naming rules](docs/NAMING_RULES.md). The game's own **Settings → Help → What's new** lists the latest builds.
 
 A playable vertical slice: **1877 fictional clubs in 132 leagues across 117 nations, in three simulation tiers**. The world is made up (clubs, towns, grounds, nicknames, leagues, cups and derbies all have invented names, and so do the players), but it keeps the real thing's structure: each nation's leagues at their real sizes, with real promotion and relegation, real cup and continental places, real registration rules and kit colours. Club identities and ratings are the game's own. (The real names are kept apart, in `data/real-world.json`, and can come back as an optional pack; see [The world and its names](#the-world-and-its-names).)
 
@@ -92,7 +92,7 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | `npm run docs:sync-status`                                              | List docs whose Claude Docs copy has changed since the last sync.                                                                                        |
 | `npm run docs:synced`                                                   | Record the docs as synced (run it right after syncing).                                                                                                  |
 | `npm run check:docs`                                                    | Check the headline numbers in the README and design document against the data.                                                                           |
-| `npm run changelog`                                                     | Regenerate `js/changelog.js` (Settings → What's new) from the Shipped list in `docs/ROADMAP.md`.                                                          |
+| `npm run changelog`                                                     | Regenerate `js/changelog.js` (Settings → Help → What's new, with each bullet of a build listed) from the Shipped list in `docs/ROADMAP.md`; start a bullet with a bold lead-in such as `**Scouting:**`.                                                          |
 | `npm run lint`                                                          | ESLint.                                                                                                                                                  |
 | `npm run format`                                                        | Prettier (`npm run format:check` only reports).                                                                                                          |
 | `npm run build`                                                         | Minified production build in `dist/`.                                                                                                                    |
@@ -283,6 +283,7 @@ The game runs on a fictional world: the same 1877 clubs, 132 leagues, cups and d
 
 - The tools that need real names (`worldgen`, `realworld`, `newleagues`, `realplayers:fetch`, `realplayers:build`, and the name generator's check against real clubs and towns) read them from a private folder, `touchline-private/` beside the repository (or wherever `TOUCHLINE_PRIVATE` points; `tools/private.mjs`). It holds a names database, `real-world.json`, keyed by club code (nation, league, kit colours, identity, rank, derbies). It is not in the repository or its site; where it is missing (as in CI) these tools say so and skip.
 - `node tools/worldgen.mjs --seed 1 --out data/fictional-world.json` generates the fictional names from that database: towns, clubs, grounds, nicknames, founding years, leagues, cups, sponsors and derbies, by each nation's naming conventions (`tools/namelib.mjs`, rules in [docs/NAMING_RULES.md](docs/NAMING_RULES.md)). It is deterministic from the seed.
+- The names are refined by tools: `tools/renameclubs.mjs` (a nation's clubs, towns, grounds and competitions in its own words, from `tools/namelib-new.mjs`), `tools/renick.mjs` (club nicknames, varied per nation) and `tools/expansionpool.mjs` (the clubs that can join a closed league).
 - `node tools/realworld.mjs apply data/fictional-world.json` puts a names file into the game (`js/clubs.js` and `js/data.js`). A club's id is `c_` and its code, which is the club's own abbreviation. The ids were renamed once, in save format 9 (they had been the real clubs' abbreviations), so saves from before it cannot be opened; otherwise ids never change, so saves keep working.
 - The players are fictional in the game itself: names come from each nation's pools, with known real-name combinations blocked. A player who wants a world of real clubs and squads can build a pack of their own with the tools to build a pack of your own (`npm run realplayers:fetch` and `realplayers:build`, which read openly licensed sources into a cache folder and write a world pack in the game's own format to a private folder outside the repository; the game ships none); it opens from Import a database on the new-career screen. See `data/packs/README.md`.
 - Real club and league names are trademarks, so the game ships the fictional set and no real names or players; packs people build themselves stay on their own machines.
@@ -295,17 +296,17 @@ The game runs on a fictional world: the same 1877 clubs, 132 leagues, cups and d
 | **Tactical prompts** | Analyst insights, chasing the game, protecting a lead, "pinned back", tired legs, injuries, red cards, half-time team talk (personalities react differently). Assistant has a personality and sometimes disagrees. |
 | **Tactical depth** | 6 formations (back 3/4/5), build-up (Short/Direct/Counter/Possession), pressing (High/Mid/Low), inverted full-backs, roles (Segundo Volante, Carrilero, Mezzala, Inverted Winger, False 9, Libero…), each with engine effects. |
 | **Players** | 1–20 attributes, star ratings measured against your own league (no overall numbers), family heritage and larger name pools, morale, wage, value, contract, form, traits (Big Game Player, Injury Prone, Late Bloomer, Loyal, Mercenary, Leader, Fair-Weather…), hidden attributes + personality. Radar, form chart, heat map, career history. Realistic career shapes (plus hidden arcs: wonderkids who flop, one-season wonders, early primes, long primes): fast growth in the teens, a peak around 27–29, decline through the thirties (pace first, reading of the game last); keepers and centre-backs age later, every player's clock runs a little early or late, and veterans wind down on one-year deals before retiring at ~33–35. Potential moves each summer until 25 (performance, game time, academy, injuries, luck); Basque and Catalan heritage. |
-| **Scouting** | Scouts with regional strengths. Assignments by region or league, filtered by position, age, minimum potential, max fee and focus (undervalued / wonderkids / ready now). Reports are graded A–D, with a Sign / Loan / Monitor / Avoid recommendation, the scout's own words and gradual reveal of personality, injuries and hidden attributes. Target-versus-your-starter comparison. Nationality mixes per league are realistic (35 nations). Fees and wages use fine-grained steppers and exact input. |
-| **Youth** | Annual intake shaped by academy level and nationality (Japan = technicians, Brazil = flair, Serbia = defenders, France = athletes). Development depends on age, training facilities, professionalism, minutes and Late Bloomer. U21 and U18 sides play national youth leagues; B teams in Spain and Germany (a club's second side) play in the lower divisions, can never go up to their parent's division, and their players belong to the parent. |
+| **Scouting** | Scouts with regional strengths. Assignments by region or league, filtered by position, age, minimum potential, max fee and focus (undervalued / wonderkids / ready now). Reports are graded A–D, with a Sign / Loan / Monitor / Avoid recommendation, the scout's own words and gradual reveal of personality, injuries and hidden attributes. Target-versus-your-starter comparison. Assignments can target one exact position (ST, LW, RB, CB ...). Nationality mixes per league are realistic (35 nations), and a new manager's scouts come from his club's own part of the world. Fees and wages use fine-grained steppers and exact input. |
+| **Youth** | Annual intake shaped by academy level, nationality (Japan = technicians, Brazil = flair, Serbia = defenders, France = athletes) and the nation's youth rating, which moves each season with its national team, academies and prospects. AI clubs give their wonderkids minutes or loan them out. Development depends on age, training facilities, professionalism, minutes and Late Bloomer. U21 and U18 sides play national youth leagues; B teams in Spain and Germany (a club's second side) play in the lower divisions, can never go up to their parent's division, and their players belong to the parent. |
 | **Training & analytics** | Team focus (eight) and intensity (three), individual focus or a new position for any player: development, which attributes grow, training injuries, recovery, set pieces and familiarity. Analytics tab: your season's xG match by match, against the league, chance types, goal times and the analyst's reading. |
-| **Competitions** | 132 leagues in three simulation tiers (your league and its neighbours always fully simulated) (full engine / light statistical model / minimal scores-only), promotion, relegation and playoffs, 117 domestic cups (seeded knockouts with byes, extra time and penalties). the European, South American, Asian, African and North American Champions Cups and their second-tier Shields and Trophy, all fed by data-driven rules, plus a mid-season World Club Championship for last season's finalists. Knockouts and playoff semi-finals can be two-legged, with an optional away-goals rule. |
+| **Competitions** | 132 leagues in three simulation tiers (your league and its neighbours always fully simulated) (full engine / light statistical model / minimal scores-only), promotion, relegation and playoffs, 117 domestic cups (seeded knockouts with byes, extra time and penalties). the European, South American, Asian, African and North American Champions Cups and their second-tier Shields and Trophy, all fed by data-driven rules, plus a mid-season World Club Championship for last season's finalists. Knockouts and playoff semi-finals can be two-legged, with an optional away-goals rule. A closed league can grow by one to three clubs a season, each filling its squad in an expansion draft. |
 | **Transfers** | Offers, counter-offers, loyal/ambitious refusals, windows, rumours, AI bids for your players. Contract packages: wage, length, squad status, signing-on fee, appearance and goal bonuses, release clause, yearly rise, relegation wage cut. Agents with personalities (Shark, Pragmatic, Family, Showman, Rookie) set demands, patience and fees; release clauses can be paid — by you or by rivals. International market, marquee raids, veterans abroad, Transfer Centre. AI clubs keep their squads moving: they replace their weakest starter (judging ageing players on where they're heading), buy from smaller clubs or at a premium from peers (never from a direct domestic rival), and sell the player who lost his place to a smaller club, so players climb the pyramid as they improve and slide down it as they fade. |
 | **Club identity** | 1877 fictional clubs in 132 leagues at their real sizes (invented names, towns, grounds, nicknames and derbies; the real kit colours and structure; the game's own ratings), each with an identity: Oil-Backed, Historic Giant, Fan-Owned, Youth-Focused, Selling Club, Fallen Giant. Board demands, fan culture, derbies. The two Spanish second-division clubs that follow Athletic Club's policy sign only Basque or only Catalan players (scouting included); Saudi Pro League and First Division, mostly Oil-Backed. Each club also has a market, supporters, a youth catchment and an owner, which set a ceiling its reputation cannot pass without a cause (a takeover, years of success); identity drives recruitment, what fans expect of your style, players' willingness, the board's patience and revenue. |
 | **Stories** | Feed of newspaper headlines, fan social posts (with rival fans on derby day), press conferences with choices, dressing-room events. Instagram-style **shareable story cards** export as 1080×1350 PNG ("26-year-old Brazilian winger scores on debut"). |
 | **Living world** | AI sackings, takeovers, administration and points deductions, stadium expansions, rule changes (subs, homegrown rules, TV deals), retirements, legends returning as managers. |
 | **People** | One-to-one talks (praise, criticism, promises of minutes, a new contract, a debut, not being sold, or permission to leave). Promises are tracked, kept or broken, and move morale and squad trust. Players ask for meetings when unhappy or underpaid. Board meetings (transfer funds, owner-funded facilities, patience, a youth project), a mid-season review and five-game ultimatums. |
 | **International** | 117 national teams, coefficient ranking, qualifying groups in the season before a tournament, two double-header breaks, and the summer finals played as calendar days. Take a national team job alongside your club: pick call-ups, set tactics, play the matches live; failing to qualify ends it. Coaching licences (B → A → Pro) unlock bigger jobs. Invitational tournaments in the windows (Cherry Blossom Cup, Golden Elephant Cup, Monsoon Cup). |
-| **Career** | Create your manager: first and last name, country and avatar (your country knows you). Start with a club or start unemployed. Out of work (from the start or after a sacking), the world keeps playing and clubs in your reputation range make offers that come and go; a national team job carries on. The club picker gives every club a difficulty (Relaxed to Brutal), opens with three questions and three suggested clubs, shows each club's story and each league in a card, and the first season keeps introducing the world. A database (world-definition JSON or historical CSV tables) can replace the world: new clubs and leagues, renamed clubs, every player; Settings exports the world you play. Your manager profile is discovered, not picked (youth, attack, spending, stability, learned from what you do), boards, players and the job market react to it, and your standing is kept by country. |
+| **Career** | Create your manager: first and last name, country and avatar (your country knows you). Start with a club or start unemployed. Out of work (from the start or after a sacking), the world keeps playing and clubs in your reputation range make offers that come and go; a national team job carries on. The club picker gives every club a difficulty (Relaxed to Brutal), opens with three questions and three suggested clubs, shows each club's story and each league in a card, and the first season keeps introducing the world. Sim forward a set number of days, stopping for anything that needs you. A database (world-definition JSON or historical CSV tables) can replace the world: new clubs and leagues, renamed clubs, every player; Settings exports the world you play. Your manager profile is discovered, not picked (youth, attack, spending, stability, learned from what you do), boards, players and the job market react to it, and your standing is kept by country. |
 | **Legacy** | Hall of Fame (top scorers, appearances, academy graduates, cult heroes, biggest sales + seeded historic legends), Football Archive per season, manager identity tags (Youth Developer, Giant Killer…), sacking and job offers. Every club's season by season (league, position, record, top scorer, most appearances, cup runs, honours) and a Club legends card with the all-time top five scorers and appearance makers. |
 | **Real rules** | Every career plays by each competition's real rules (kept under the fictional names): three points, five substitutions, each league's foreign-player rules, two-legged continental knockouts and play-off semi-finals, no away goals. Competitions use data-driven rules (`promote`/`relegate`/`playoff` relationships in `js/world.js`), not hardcoded leagues. MLS has its own: a salary budget (the 20 biggest wage charges up to $5.2M, no more than $700K counted for any player), three Designated Players above that, a 30-man senior roster, eight international slots and a three-round draft; the AI's clubs are kept within it. |
 | **Board** | Demands set each season: a league aim and a minimum ("Qualify for the European Champions Cup — at the very least a European Shield place"), cup targets that fit the club, finances (wages against revenue, debt) and the club's identity, each critical, important or a bonus. Four board meetings a season: the board's view and its own demands, then one request (transfer funds, a wage budget, facilities, a stadium expansion, a youth project, a marquee signing, a lower target, patience, a training camp), answered on confidence, money, form, your reputation and what you asked before. |
@@ -319,58 +320,79 @@ The game runs on a fictional world: the same 1877 clubs, 132 leagues, cups and d
 | **Matchday** | Captain choice (armband boost, Leader effects), penalty / free-kick / corner takers used by the engine, pre-match team talk with the assistant's pick, weekly matchday digest in the feed. Pressure before a match (an opponent in form, a full house away) weighs on nervy players; shouts in a live match (Push up, Hold shape, Get stuck in, Calm down, Concentrate, Encourage, Slow it down) for a few minutes at a time. |
 | **The world remembers** | Club records and record-breaking news (club, all-time, world transfer), all-time head-to-heads, rivalries that emerge from knockouts and red cards and cool if not fed, Player of the Month, injury histories, transfer fees on career timelines, managers who move between clubs, stadium histories, World News filters. |
 | **Saves & platform** | Installable offline web app; saves upgrade automatically between versions; compressed backup export/import; matchday simulation in a Web Worker; autosave when backgrounded; back button, safe areas, haptics and share sheet; Capacitor projects for Android and iOS. |
+| **Editing** | A world editor for leagues, clubs, players, cups, national teams and whole nations, with drafts saved as you go. In a career in progress, Settings → Edit the world fixes one player or club, or changes many at once (players, clubs, prize money, youth ratings); it can be switched off. |
 | **UI** | Mobile-first, swipe between tabs, bottom sheets, dark/light theme, money in your club's currency, tap any club badge for its overview. |
-| **Recent (playtest feedback)** | Four more leagues, wide midfielders, position versatility, real transfer flows, a coefficient world ranking, more cups and the real rules of each competition, club abbreviations and nicknames, stats compared with a player's position, contract cost tables and a past for every player; feed of your club with a Needs reply list and a daily transfer round-up; transfer-window rules and deadline day hour by hour; pre-contracts; full bid negotiation; Plan A/Plan B and twelve formations; weather and home advantage; keeper stats and season-by-season history; finances by country and wage pressure; following clubs, competitions, nations and players; training, analytics, B teams and youth sides. Details in [docs/ROADMAP.md](docs/ROADMAP.md). |
+| **Recent (playtest feedback)** | Sim forward, expansion drafts, starting loans, prospect management, exact-position scouting, nation youth ratings, bulk editing, a nation creator, names of their own for more than thirty nations, realistic player histories, pounds by default, colour-blind kits and reduced motion; before them wide midfielders, real transfer flows, a coefficient world ranking, the real rules of each competition, transfer-window and deadline-day detail, pre-contracts, full bid negotiation, twelve formations, weather, following clubs and players, and B teams and youth sides. Details in [docs/ROADMAP.md](docs/ROADMAP.md). |
 
 ## Code map
 
 ```
-js/core.js       utilities, namespace
-js/data.js       nations, leagues, traits, formations, roles, scouting phrases
-js/clubs.js      every league's clubs (B teams name their parent), rivalries
-js/clubguide.js difficulty, hooks, tags and suggestions for the club picker (before a world exists)
-js/names.js     name pools, demographics and heritage; js/nations.js: more cultures (Basque, Catalan, East Slavic ...)
-js/world.js      world generation, player model, XI selection, competitions, calendar
-js/worlddef.js  the world as data: definitions, validation, patches to the game's clubs and leagues
-js/dbimport.js  database import: adapters, staging, building a world from a file, export
-js/ui-editor.js the world editor screens (opened from the new-career screen)
-js/histimport.js the historical CSV tables adapter
-js/realstats.js real statistics to attributes
-js/draft.js     the American league's college draft
-js/engine.js     match engine (incl. aggregate/away goals), commentary, tactical prompts
-js/season.js     matchday loop, finances, facilities, season end
-js/careers.js    development curve, career arcs, youth intake, retirement, AI renewals
-js/cups.js       domestic knockouts, continental groups + (two-legged) knockouts, the Intercontinental Cup and the World Club Championship
-js/intl.js       national teams, Elo, qualifiers, summer finals, national team jobs
-js/tiers.js      light and minimal simulation tiers
-js/contracts.js  agents, contract clauses, negotiation model, release clauses, bonuses
-js/people.js     player talks and promises, meetings, board, coaching licences
-js/mstyle.js    the manager's discovered profile and standing by country
-js/advice.js     assistant notes, scout picks, season preview, staff market
-js/matchmotion.js  fluid on-pitch movement for the live match
-js/scouting.js   scouting knowledge and reports
-js/transfers.js  transfer market: prices, loans, offers, AI windows, bids for your players
-js/market.js     deadline day, trials, loan watch, fee talks, instalments, pre-contracts, transfer reactions
-js/registration.js  each league's foreign-player and squad rules, the MLS salary budget, signing policies
-js/finance.js    revenue by country, attendance, wage pressure, administration
-js/youth.js      B teams, U21 and U18 sides, youth leagues
-js/training.js   training focus, intensity and individual training
-js/analytics.js  match log and league comparison for the Analytics tab
-js/stories.js    news feed, story cards, living-world events
-js/asia.js       Korea's military service (the AFC places are in registration.js, Gulf money in transfers.js)
-js/ui-*.js       shell, components, screens
-js/matchview.js  live pitch renderer + post-match analysis
-js/ui-alpha.js   negotiation, talks, boardroom, licences, national team screens
-js/matchday.js   captain, set-piece takers, pressure before a match, pre-match team talk, why it went that way, matchday digest
-js/records.js    club records, head-to-heads, rivalry heat, Player of the Month, injury history, manager moves, stadiums
-js/geo.js       a place for every club (made by tools/geocode.mjs); js/lore.js: distances, away trips, older glory, club details, rivalries, competition histories, club types and legends' roles; js/ui-lore.js: their cards and the world map
-js/injuries.js   injury catalogue and risk model, training injuries, recovery, medical decisions (surgery, risk him?)
-js/save.js       save format, migrations, storage backends (files / IndexedDB), backup export/import
-js/simrun.js     runs matchday simulation in the Web Worker (js/sim-worker.js) with a progress overlay
-js/native.js     Capacitor plugins with web fallbacks, back button, background autosave, boot
-tools/           namegen.mjs (name generator), sim-test.mjs (regression test), calibrate.mjs (realism report), regens.mjs (career-shape test), harness.mjs (seeded loader they share), build.mjs (production build)
+Core and data
+js/core.js        utilities, namespace, save version
+js/data.js        nations, leagues, traits, formations, roles, scouting phrases
+js/clubs.js       every league's clubs (B teams name their parent), rivalries
+js/expansion.js   ready-made clubs for expansion drafts in closed leagues (tools/expansionpool.mjs)
+js/names.js       name pools, demographics and heritage (names-more*.js, nations.js: more cultures and nations)
+js/geo.js         a place for every club (tools/geocode.mjs); js/lore.js: distances, away trips, club details, rivalries, histories
+js/clubguide.js   difficulty, hooks, tags and suggestions for the club picker (before a world exists)
+
+The world and the season
+js/world.js       world generation, player model, XI selection, competitions, calendar
+js/season.js      matchday loop, finances, facilities, season end, expansion drafts, sim forward
+js/careers.js     development curve, career arcs, youth intake and nations' youth ratings, retirement, AI renewals
+js/cups.js        domestic knockouts, continental groups and knockouts, the Intercontinental Cup, the World Club Championship
+js/regional.js    the Brazilian state championships
+js/intl.js        national teams, coefficient ranking, qualifiers, summer finals, national team jobs
+js/tiers.js       light and minimal simulation tiers
+js/youth.js       B teams, U21 and U18 sides, youth leagues
+js/draft.js       the American league's college draft
+js/asia.js        Korea's military service (AFC places are in registration.js, Gulf money in transfers.js)
+
+Clubs, players and money
+js/transfers.js   transfer market: prices, loans, offers, AI windows, bids for your players
+js/market.js      deadline day, trials, loan watch, fee talks, instalments, pre-contracts
+js/contracts.js   agents, contract clauses, negotiation model, release clauses, bonuses
+js/registration.js each league's foreign-player and squad rules, the MLS salary budget, signing policies
+js/finance.js     revenue by country, attendance, wage pressure, administration
+js/scouting.js    scouting assignments (by region, league, group or exact position), knowledge and reports
+js/training.js    training focus, intensity and individual training
+js/injuries.js    injury catalogue and risk model, training injuries, recovery, medical decisions
+js/people.js      player talks and promises, meetings, board, coaching licences
+js/board.js       board demands and meetings
+js/mstyle.js      the manager's discovered profile and standing by country
+js/advice.js      assistant notes, scout picks, season preview, staff market
+js/analytics.js   match log and league comparison for the Analytics tab
+js/stories.js     news feed, story cards, living-world events; js/media.js: the five outlets
+js/records.js     club records, head-to-heads, rivalry heat, Player of the Month, injury history, stadiums
+
+The match
+js/engine.js      match engine (aggregate and away goals), commentary, tactical prompts
+js/matchday.js    captain, set-piece takers, pressure, pre-match team talk, digest
+js/matchmotion.js fluid on-pitch movement for the live match
+js/matchview.js   live pitch renderer and post-match analysis
+js/carries.js, movement.js, passes.js, setpieces.js, shapes.js, shots.js, layouts.js, refstats.js
+                  tables generated from open football data (their headers name the source and the tool)
+
+World data and the editor
+js/worlddef.js    the world as data: definitions, validation, patches to the game's clubs and leagues
+js/dbimport.js    database import: adapters, staging, building a world from a file, export
+js/histimport.js  the historical CSV tables adapter; js/realstats.js: real statistics to attributes
+js/ui-editor.js   the world editor (from the new-career screen) and editing the world you play (Settings)
+
+Interface and platform
+js/ui-core.js     shell, components, sheets, navigation, title and new-career flow
+js/ui-screens.js  main tabs, player card, tactics, scouting, league, club, Settings
+js/ui-extra.js, ui-alpha.js, ui-market.js, ui-training.js, ui-youth.js, ui-follow.js, ui-lore.js, ui-access.js
+                  further screens: previews, negotiation and boardroom, market depth, training and analytics, academy, following, lore cards, accessibility
+js/save.js        save format, migrations, storage backends (files / IndexedDB), backup export and import
+js/simrun.js      runs the matchday simulation in a Web Worker (js/sim-worker.js) with a progress overlay
+js/native.js      Capacitor plugins with web fallbacks, back button, background autosave, boot
+js/changelog.js   "What's new" (generated from docs/ROADMAP.md by tools/changelog.mjs)
+
+tools/            namegen, namelib*, worldgen, renameclubs, renick, expansionpool (the world's names and clubs);
+                  sim-test, calibrate, regens, suite and the other checks, all on harness.mjs (the seeded loader); build.mjs (production build)
 ```
 
 ## Not yet built (next candidates)
 
-See [docs/ROADMAP.md](docs/ROADMAP.md). Next is the last playtest feedback batch (platform), then Alpha 2: the rest of the world editor (zones, conferences and two-tournament formats as choices), historical eras and scenarios, the youth pathway, player and manager career histories, relationships, deeper economics and database export/import. The Living world backlog follows (Football World screen, club philosophy, deeper staff, tactical evolution, agents, media); device builds come before Beta.
+See [docs/ROADMAP.md](docs/ROADMAP.md). Next is the platform batch of playtest feedback, then Alpha 2: the rest of the world editor (zones, conferences and two-tournament formats as choices), historical eras and scenarios, the youth pathway, player and manager career histories, relationships, deeper economics and database export and import. The living-world backlog follows (Football World screen, club philosophy, deeper staff, tactical evolution, agents, media); device builds come before Beta.
