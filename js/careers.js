@@ -278,6 +278,63 @@
   // Potential of academy prospects: mean rises with academy level (and a youth-focused club), plus rare wonderkids.
   // Tuned so each year's intake grows into an elite about as strong as the one it replaces (no inflation).
   Sea.YOUTH = { base: 51, perAcad: 4, youthClub: 4, sd: 6.5, wonder: 0.006 };
+  // A nation's youth rating (about 50 for an average nation, higher for a nation that makes players): it moves a little every
+  // season toward what the nation's clubs and national team are worth, and sets how good the academy intakes of its clubs are.
+  // Starts from the same things; a nation never seen in a save starts there.
+  const natClubs = (nat) => Object.values(FM.S.clubs).filter((c) => c.nat === nat && c.comp && !W.army(c));
+  // (measured against the world's own averages, so 50 stays the average nation whatever the world looks like)
+  let refMemo = { S: null, key: '', coef: 50, acad: 2.5 };
+  const natRef = () => {
+    const S = FM.S,
+      key = `${S.year},${S.day}`;
+    if (refMemo.S !== S || refMemo.key !== key) {
+      const ts = Object.values(S.nteams || {}),
+        cl = Object.values(S.clubs).filter((c) => c.comp && !W.army(c));
+      refMemo = {
+        S,
+        key,
+        coef: ts.length ? U.avg(ts, (t) => t.coef) : 50,
+        acad: cl.length ? U.avg(cl, (c) => c.facilities.academy || 2) : 2.5,
+      };
+    }
+    return refMemo;
+  };
+  const natTarget = (nat, prospects) => {
+    const t = FM.S.nteams && FM.S.nteams['n_' + nat],
+      cl = natClubs(nat),
+      ref = natRef(),
+      acad = cl.length ? U.avg(cl, (c) => c.facilities.academy || 2) : ref.acad;
+    return U.clamp(
+      50 +
+        ((t ? t.coef : ref.coef) - ref.coef) * 0.45 +
+        (acad - ref.acad) * 7 +
+        Math.min(5, (prospects || 0) * 0.4) -
+        1,
+      15,
+      95,
+    );
+  };
+  Sea.youthRating = (nat) => {
+    const S = FM.S;
+    S.youthRate = S.youthRate || {};
+    if (S.youthRate[nat] == null) S.youthRate[nat] = Math.round(natTarget(nat, 0) * 10) / 10;
+    return S.youthRate[nat];
+  };
+  Sea.youthTrend = (nat) => (FM.S.youthTrend && FM.S.youthTrend[nat]) || 0;
+  Sea.updateYouthRatings = function () {
+    const S = FM.S,
+      by = {};
+    for (const p of Object.values(S.players))
+      if (!p.retired && p.pa >= 75 && W.age(p) <= 21) by[p.nat] = (by[p.nat] || 0) + 1;
+    S.youthTrend = {};
+    for (const nat of D.nationCodes()) {
+      const was = Sea.youthRating(nat),
+        step = U.clamp((natTarget(nat, by[nat]) - was) * 0.25 + U.gauss(0, 0.8), -3, 3),
+        now = U.clamp(Math.round((was + step) * 10) / 10, 15, 95);
+      S.youthRate[nat] = now;
+      S.youthTrend[nat] = Math.round((now - was) * 10) / 10;
+    }
+  };
   Sea.youthIntake = function () {
     const Y = Sea.YOUTH;
     const S = FM.S;
@@ -288,13 +345,18 @@
       const made = [];
       for (let i = 0; i < n; i++) {
         const nat = W.youthNat(c);
+        const shift = Sea.youthRating(nat) - 50; // (a strong youth nation: a little more ability and potential, and more wonderkids)
         const pos = U.pick(['GK', 'CB', 'CB', 'FB', 'WB', 'DM', 'CM', 'CM', 'WM', 'AM', 'W', 'W', 'ST', 'ST']);
-        const ca = Math.round(U.clamp(U.gauss(26 + acad * 3, 4), 18, 48));
+        const ca = Math.round(U.clamp(U.gauss(26 + acad * 3 + shift * 0.04, 4), 18, 48));
         let pa = Math.round(
-          U.clamp(U.gauss(Y.base + acad * Y.perAcad + (c.identity === 'youth' ? Y.youthClub : 0), Y.sd), ca + 8, 94),
+          U.clamp(
+            U.gauss(Y.base + acad * Y.perAcad + (c.identity === 'youth' ? Y.youthClub : 0) + shift * 0.1, Y.sd),
+            ca + 8,
+            94,
+          ),
         );
         // Real wonderkids are rare: about 10 a year across the whole world
-        if (Math.random() < Y.wonder * acad) pa = U.randi(83, 95);
+        if (Math.random() < Y.wonder * acad * U.clamp(1 + shift / 50, 0.4, 2)) pa = U.randi(83, 95);
         const p = W.genPlayer({ nat, pos, age: U.randi(15, 16), ca, pa, clubId: c.id, youthClub: c.id });
         p.career.apps = 0;
         p.career.goals = 0;

@@ -99,6 +99,12 @@
     return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button><button class="btn sm grow" data-act="loanList" data-id="${p.id}">${p.loanListed ? 'Loan list ✓' : 'Loan list'}</button>${p.loanListed ? `<button class="btn sm grow pri" data-act="offerLoan" data-id="${p.id}">📣 Offer loan</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
   };
 
+  // a nation's youth rating with its last move (▲ or ▼)
+  UI.youthBadge = (code) => {
+    const r = FM.Season.youthRating(code),
+      d = FM.Season.youthTrend(code);
+    return `${Math.round(r)}${d >= 0.5 ? ' ▲' : d <= -0.5 ? ' ▼' : ''}`;
+  };
   // "Loan out" (the assistant's suggestion) now puts him on the loan list: clubs ask for him, or offer him around
   UI.acts.loanOut = (d) => {
     const p = P(d.id);
@@ -1979,7 +1985,7 @@
               .join('')
           : '<div class="empty">None of your players have been capped yet.</div>'
       }</div>
-      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row"><div class="h3 grow">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient</span></div></summary>
+      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row"><div class="h3 grow">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient · 🌱 youth rating</span></div></summary>
       <select data-input="intlRegion" style="margin:8px 0" aria-label="Part of the world"><option value="all">The whole world</option>${FM.Guide.CONTINENTS.map(([k, n]) => `<option value="${k}" ${UI._intlReg === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
       <table class="t">${ranked
         .map((t, i) => [t, i])
@@ -1995,7 +2001,7 @@
                     ),
                   )}</span>`
                 : ''
-            }</div></td><td class="b">${t.coef.toFixed(1)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
+            }</div></td><td class="b">${t.coef.toFixed(1)}</td><td class="tiny" title="Youth rating">🌱${UI.youthBadge(t.code)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
         )
         .join('')}</table></details>
       <div class="sec"><div class="h3">Recent results</div></div>
@@ -2020,7 +2026,7 @@
     const games = s.intlLog.filter((g) => g.h === t.id || g.a === t.id).slice(0, 8);
     const rank = FM.Intl.ranked().indexOf(t) + 1;
     UI.sheet(
-      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
+      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · Youth rating ${UI.youthBadge(t.code)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
         ${
           Object.keys(t.titles).length
             ? `<div class="small" style="margin-top:8px">${Object.entries(t.titles)

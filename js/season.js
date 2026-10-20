@@ -1718,6 +1718,7 @@
   // ---------- Season end ----------
   Sea.endSeason = function () {
     Sea.testimonials();
+    Sea.updateYouthRatings();
     const S = FM.S,
       log = S.seasonLog,
       club = W.userClub();

@@ -4358,7 +4358,7 @@
   // ---------- Editing the world you are playing ----------
   // A name, a rating, a colour changed in a career in progress: it takes effect at once and is saved, and nothing marks the save
   // as edited. The player and club sheets carry an Edit button, and Settings has a search for both.
-  const live = () => FM.S && FM.S.user && FM.S.players;
+  const live = () => FM.S && FM.S.user && FM.S.players && !(FM.S.settings && FM.S.settings.noLiveEdit);
   const persist = () => {
     if (FM.SimRunner) FM.SimRunner.packed = null; // (a save packed before the edit would bring the old numbers back)
     UI.save();
@@ -4373,6 +4373,7 @@
     if (!live() || busy()) return;
     const sh = UI.sheet(
       `<div class="tiny dim" style="line-height:1.5">Fix a name or a rating in the world you are playing. A change takes effect at once and nothing marks the save.</div>
+      <button class="btn sm block" style="margin-top:10px" data-act="liveBulk">🧰 Bulk edit: many players, clubs or prizes at once</button>
       <div class="ng-find" style="margin-top:10px"><input type="search" id="le-q" placeholder="A player or a club" autocomplete="off"></div>
       <div id="le-res"></div>`,
       { title: 'Edit the world' },
@@ -4489,6 +4490,217 @@
     UI.closeSheet();
     UI.render();
     UI.toast('Saved', 1500);
+  };
+  // ---------- Bulk edits in the world you are playing ----------
+  // One change to many at once: players (by nation, league, position, age), clubs, league and cup prize money, a nation's
+  // youth rating. Like the single edits, it takes effect at once and nothing marks the save.
+  const compsOf = (f) => Object.values(FM.S.comps).filter(f);
+  const natOpts = () =>
+    D.nationCodes()
+      .slice()
+      .sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name))
+      .map((k) => `<option value="nat:${k}">${esc(D.NATIONS[k].name)}</option>`)
+      .join('');
+  const leagueOpts = () =>
+    compsOf((c) => c.type === 'league')
+      .sort((a, b) => a.nat.localeCompare(b.nat) || a.tier - b.tier)
+      .map((c) => `<option value="lg:${esc(c.id)}">${esc(c.name)}</option>`)
+      .join('');
+  const scopeSel = (id, free) =>
+    `<select id="${id}"><option value="all">Everyone in the world</option>${free ? '<option value="free">Free agents</option>' : ''}<optgroup label="A nation">${natOpts()}</optgroup><optgroup label="A league">${leagueOpts()}</optgroup></select>`;
+  const inClubScope = (c, sc) =>
+    sc === 'all' ||
+    (sc.startsWith('nat:') && c.nat === sc.slice(4)) ||
+    (sc.startsWith('lg:') && c.comp === sc.slice(3));
+  const bulkNum = (id, label) =>
+    `<div style="flex:1 1 44%;min-width:120px"><div class="tiny dim" style="margin-top:8px">${label}</div><input type="number" id="${id}" inputmode="numeric" placeholder="0"></div>`;
+  const bv = (id) => {
+    const v = ($('#' + id) || {}).value;
+    return v === '' || v == null || isNaN(+v) ? null : +v;
+  };
+  const bulkPlayers = () => {
+    const sc = ($('#bk-pscope') || {}).value || 'all',
+      grp = ($('#bk-ppos') || {}).value || '',
+      lo = bv('bk-pmin') ?? 0,
+      hi = bv('bk-pmax') ?? 99;
+    return Object.values(FM.S.players).filter((p) => {
+      if (p.retired) return false;
+      const c = p.clubId && FM.S.clubs[p.clubId];
+      if (sc === 'free') {
+        if (p.clubId) return false;
+      } else if (sc !== 'all' && !(sc.startsWith('nat:') ? p.nat === sc.slice(4) : c && inClubScope(c, sc)))
+        return false;
+      if (grp && D.POS_GROUP[p.pos] !== grp) return false;
+      const a = FM.W.age(p);
+      return a >= lo && a <= hi;
+    });
+  };
+  const bulkClubs = () => {
+    const sc = ($('#bk-cscope') || {}).value || 'all';
+    return Object.values(FM.S.clubs).filter((c) => c.comp && !FM.W.army(c) && inClubScope(c, sc));
+  };
+  const bulkComps = () => {
+    const sc = ($('#bk-zscope') || {}).value || 'all',
+      kind = ($('#bk-zkind') || {}).value || 'both';
+    return compsOf((c) => {
+      const prize = c.type === 'league' ? c.rules && c.rules.prize : c.prize;
+      if (!(prize > 0)) return false;
+      if (kind === 'league' ? c.type !== 'league' : kind === 'cup' && c.type === 'league') return false;
+      return (
+        sc === 'all' ||
+        (sc.startsWith('nat:') && c.nat === sc.slice(4)) ||
+        (sc.startsWith('lg:') && c.id === sc.slice(3))
+      );
+    });
+  };
+  const bulkNations = () => {
+    const sc = ($('#bk-nscope') || {}).value || 'all';
+    return D.nationCodes().filter((k) => sc === 'all' || FM.Guide.continentOf(k) === sc);
+  };
+  let bulkKind = 'p';
+  const bulkCount = () => {
+    const el = $('#bk-count');
+    if (!el) return;
+    const n = { p: bulkPlayers, c: bulkClubs, z: bulkComps, n: bulkNations }[bulkKind]().length;
+    el.textContent = `Apply to ${U.plural(n, { p: 'player', c: 'club', z: 'competition', n: 'nation' }[bulkKind])}`;
+  };
+  const bulkForm = () => {
+    const tabs = [
+      ['p', 'Players'],
+      ['c', 'Clubs'],
+      ['z', 'Prizes'],
+      ['n', 'Youth'],
+    ]
+      .map(([k, n]) => `<button class="${bulkKind === k ? 'on' : ''}" data-act="bulkKind" data-k="${k}">${n}</button>`)
+      .join('');
+    const body = {
+      p: `<div class="ng-label">Who</div>${scopeSel('bk-pscope', true)}
+        <div class="row" style="gap:8px;margin-top:8px"><select id="bk-ppos" class="grow"><option value="">Any position</option><option value="GK">Goalkeepers</option><option value="DEF">Defenders</option><option value="MID">Midfielders</option><option value="ATT">Forwards</option></select>
+        <input type="number" id="bk-pmin" inputmode="numeric" placeholder="Age from" style="width:90px"><input type="number" id="bk-pmax" inputmode="numeric" placeholder="to" style="width:70px"></div>
+        <div class="ng-label">Change <span class="tiny dim">· leave a box empty to leave that alone</span></div>
+        <div class="row" style="gap:8px;flex-wrap:wrap">${bulkNum('bk-pattr', 'Every attribute (+ or −, on the 1 to 20 scale)')}${bulkNum('bk-ppa', 'Potential (+ or −)')}${bulkNum('bk-pcon', 'Contract runs for (years from now)')}${bulkNum('bk-pwage', 'Wage change (%)')}${bulkNum('bk-pmor', 'Morale set to (0 to 100)')}</div>
+        <label class="row" style="gap:8px;margin-top:10px"><input type="checkbox" id="bk-pheal"> <span class="small">Heal every injury</span></label>`,
+      c: `<div class="ng-label">Which clubs</div>${scopeSel('bk-cscope')}
+        <div class="ng-label">Change</div>
+        <div class="row" style="gap:8px;flex-wrap:wrap">${bulkNum('bk-crep', 'Reputation (+ or −)')}${bulkNum('bk-cbud', 'Transfer budget change (%)')}${bulkNum('bk-cbal', 'Bank balance change (%)')}${bulkNum('bk-ccap', 'Stadium capacity change (%)')}${bulkNum('bk-cacad', 'Academy level (+ or −, 1 to 5)')}${bulkNum('bk-ctrain', 'Training level (+ or −, 1 to 5)')}${bulkNum('bk-cmed', 'Medical level (+ or −, 1 to 5)')}</div>`,
+      z: `<div class="ng-label">Which</div>${scopeSel('bk-zscope')}
+        <select id="bk-zkind" style="margin-top:8px"><option value="both">Leagues and cups</option><option value="league">Leagues only</option><option value="cup">Cups only</option></select>
+        <div class="row" style="gap:8px;flex-wrap:wrap">${bulkNum('bk-zprize', 'Prize money change (%)')}</div>
+        <div class="tiny dim" style="margin-top:8px;line-height:1.5">Only competitions with a fixed prize fund are changed; a league that pays by club revenue is left as it is.</div>`,
+      n: `<div class="ng-label">Which nations</div><select id="bk-nscope"><option value="all">Every nation</option>${FM.Guide.CONTINENTS.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join('')}</select>
+        <div class="row" style="gap:8px;flex-wrap:wrap">${bulkNum('bk-nyouth', 'Youth rating (+ or −; 15 to 95, 50 is average)')}</div>
+        <div class="tiny dim" style="margin-top:8px;line-height:1.5">A nation's youth rating sets how good the academy intakes of its clubs are. It moves by itself every season.</div>`,
+    }[bulkKind];
+    return `<div class="seg" style="margin-bottom:6px">${tabs}</div>${body}<div class="actions" style="margin-top:14px"><button class="btn pri block" id="bk-count" data-act="bulkApply">Apply</button></div>`;
+  };
+  UI.acts.liveBulk = () => {
+    if (!live() || busy()) return;
+    bulkKind = 'p';
+    const sh = UI.sheet(`<div id="bk-body">${bulkForm()}</div>`, { title: 'Bulk edit', full: true });
+    sh.addEventListener('input', bulkCount);
+    sh.addEventListener('change', bulkCount);
+    bulkCount();
+  };
+  UI.acts.bulkKind = (d) => {
+    bulkKind = d.k;
+    const b = $('#bk-body');
+    if (b) b.innerHTML = bulkForm();
+    bulkCount();
+  };
+  UI.acts.bulkApply = () => {
+    if (!live() || busy()) return;
+    const S = FM.S,
+      cl = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+    let n = 0;
+    if (bulkKind === 'p') {
+      const attr = bv('bk-pattr'),
+        pa = bv('bk-ppa'),
+        con = bv('bk-pcon'),
+        wage = bv('bk-pwage'),
+        mor = bv('bk-pmor'),
+        heal = ($('#bk-pheal') || {}).checked;
+      for (const p of bulkPlayers()) {
+        let hit = false;
+        if (attr) {
+          for (const k of D.ATTRS) p.attrs[k] = cl(Math.round(p.attrs[k] + attr), 1, 20);
+          FM.W.refresh(p);
+          if (p.pa < p.ca) p.pa = p.ca;
+          hit = true;
+        }
+        if (pa) {
+          p.pa = cl(p.pa + Math.round(pa), p.ca, 99);
+          hit = true;
+        }
+        if (con != null && p.clubId) {
+          p.contract = cl(S.year + Math.round(con), S.year, S.year + 8);
+          hit = true;
+        }
+        if (wage) {
+          p.wage = Math.max(100, Math.round((p.wage * (100 + wage)) / 100));
+          hit = true;
+        }
+        if (mor != null) {
+          p.morale = cl(Math.round(mor), 0, 100);
+          hit = true;
+        }
+        if (heal && p.inj) {
+          p.inj = null;
+          hit = true;
+        }
+        if (hit) n++;
+      }
+    } else if (bulkKind === 'c') {
+      const rep = bv('bk-crep'),
+        bud = bv('bk-cbud'),
+        bal = bv('bk-cbal'),
+        cap = bv('bk-ccap'),
+        fac = { academy: bv('bk-cacad'), training: bv('bk-ctrain'), medical: bv('bk-cmed') };
+      for (const c of bulkClubs()) {
+        let hit = false;
+        if (rep) {
+          c.rep = cl(Math.round(c.rep + rep), 20, 99);
+          hit = true;
+        }
+        if (bud) {
+          c.budget = Math.round((c.budget * (100 + bud)) / 100);
+          hit = true;
+        }
+        if (bal) {
+          c.balance = Math.round((c.balance * (100 + bal)) / 100);
+          hit = true;
+        }
+        if (cap) {
+          c.stadium.cap = c.stadium.cap0 = cl(Math.round((c.stadium.cap * (1 + cap / 100)) / 500) * 500, 1000, 120000);
+          hit = true;
+        }
+        for (const k of Object.keys(fac))
+          if (fac[k]) {
+            c.facilities[k] = cl(Math.round((c.facilities[k] || 2) + fac[k]), 1, 5);
+            hit = true;
+          }
+        if (hit) n++;
+      }
+    } else if (bulkKind === 'z') {
+      const pct = bv('bk-zprize');
+      if (pct)
+        for (const c of bulkComps()) {
+          if (c.type === 'league') c.rules.prize = Math.round((c.rules.prize * (100 + pct)) / 100);
+          else c.prize = Math.round((c.prize * (100 + pct)) / 100);
+          n++;
+        }
+    } else {
+      const d = bv('bk-nyouth');
+      if (d)
+        for (const k of bulkNations()) {
+          FM.Season.youthRating(k);
+          S.youthRate[k] = cl(Math.round((S.youthRate[k] + d) * 10) / 10, 15, 95);
+          n++;
+        }
+    }
+    if (!n) return UI.toast('Nothing changed: fill in a change first', 2500);
+    persist();
+    UI.render();
+    UI.toast(`${U.plural(n, 'row')} changed`, 2500);
   };
   // An Edit button at the foot of every player and club sheet
   const withEdit = (name, act) => {
