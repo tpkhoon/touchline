@@ -1,8 +1,10 @@
 # TOUCHLINE — mobile football manager (prototype)
 
+Oct 21, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/0b6aa68e-a100-4929-839e-2dd1d3cdc28f)
+
 **The deepest football management experience built for mobile. Your club. Your stories. Your history.**
 
-**Docs:** [design document](docs/GAME_DESIGN_DOCUMENT.md) · [systems](docs/SYSTEMS.md) · [roadmap and what shipped](docs/ROADMAP.md) · [feature list](docs/FEATURES.md) · [competition rules](docs/COMPETITION_RULES.md) · [naming rules](docs/NAMING_RULES.md). The game's own **Settings → Help → What's new** lists the latest builds.
+**Docs:** [design document](docs/GAME_DESIGN_DOCUMENT.md) · [systems](docs/SYSTEMS.md) · [roadmap](docs/ROADMAP.md) · [changelog](docs/CHANGELOG.md) · [feature list](docs/FEATURES.md) · [competition rules](docs/COMPETITION_RULES.md) · [naming rules](docs/NAMING_RULES.md). The game's own **Settings → Help → What's new** lists the latest builds.
 
 A playable vertical slice: **1877 fictional clubs in 132 leagues across 117 nations, in three simulation tiers**. The world is made up (clubs, towns, grounds, nicknames, leagues, cups and derbies all have invented names, and so do the players), but it keeps the real thing's structure: each nation's leagues at their real sizes, with real promotion and relegation, real cup and continental places, real registration rules and kit colours. Club identities and ratings are the game's own. (The real names are kept apart, in `data/real-world.json`, and can come back as an optional pack; see [The world and its names](#the-world-and-its-names).)
 
@@ -92,7 +94,7 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | `npm run docs:sync-status`                                              | List docs whose Claude Docs copy has changed since the last sync.                                                                                        |
 | `npm run docs:synced`                                                   | Record the docs as synced (run it right after syncing).                                                                                                  |
 | `npm run check:docs`                                                    | Check the headline numbers in the README and design document against the data.                                                                           |
-| `npm run changelog`                                                     | Regenerate `js/changelog.js` (Settings → Help → What's new, with each bullet of a build listed) from the Shipped list in `docs/ROADMAP.md`; start a bullet with a bold lead-in such as `**Scouting:**`.                                                          |
+| `npm run changelog`                                                     | Regenerate `js/changelog.js` and `docs/CHANGELOG.md` (Settings → Help → What's new, with each bullet of a build listed) from the Shipped list in `docs/ROADMAP.md`; start a bullet with a bold lead-in such as `**Scouting:**`.                                                          |
 | `npm run lint`                                                          | ESLint.                                                                                                                                                  |
 | `npm run format`                                                        | Prettier (`npm run format:check` only reports).                                                                                                          |
 | `npm run build`                                                         | Minified production build in `dist/`.                                                                                                                    |
@@ -247,7 +249,7 @@ The jobs added for them: **Win chance** (`npm run test:winchance`) plays matches
 
 ## Docs syncing
 
-The roadmap, feature list and design document have copies in Claude Docs, which cannot be read from here. `docs/SYNC.json` holds a hash of each at the moment it was last synced.
+The roadmap, feature list, design document, README and changelog have copies in Claude Docs, which cannot be read from here. `docs/SYNC.json` holds a hash of each at the moment it was last synced.
 
 - `npm run docs:sync-status` lists the ones that have changed since.
 - `npm run docs:synced` records them as synced (run it right after syncing).
@@ -387,7 +389,7 @@ js/ui-extra.js, ui-alpha.js, ui-market.js, ui-training.js, ui-youth.js, ui-follo
 js/save.js        save format, migrations, storage backends (files / IndexedDB), backup export and import
 js/simrun.js      runs the matchday simulation in a Web Worker (js/sim-worker.js) with a progress overlay
 js/native.js      Capacitor plugins with web fallbacks, back button, background autosave, boot
-js/changelog.js   "What's new" (generated from docs/ROADMAP.md by tools/changelog.mjs)
+js/changelog.js   "What's new" (with docs/CHANGELOG.md, generated from docs/ROADMAP.md by tools/changelog.mjs)
 
 tools/            namegen, namelib*, worldgen, renameclubs, renick, expansionpool (the world's names and clubs);
                   sim-test, calibrate, regens, suite and the other checks, all on harness.mjs (the seeded loader); build.mjs (production build)

@@ -7,8 +7,9 @@
 // synced, kept in docs/SYNC.json. A doc whose hash differs has changed since, and needs syncing again. Line endings are
 // ignored so a checkout on another system does not look like a change.
 //
-// The README has no Claude Docs copy, but it is tracked the same way: when it changes, `npm run check:docs` must be run (the
-// slot count, the simulation tiers and the headline numbers are checked against the code) before it is recorded.
+// The README is tracked the same way, and when it changes `npm run check:docs` must be run first (the slot count, the
+// simulation tiers and the headline numbers are checked against the code) before it is recorded. The changelog is generated
+// (npm run changelog) from the roadmap's Shipped list.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -16,8 +17,8 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FILE = path.join(ROOT, 'docs/SYNC.json');
-// The docs that have a Claude Docs copy, and the README (which is at the root of the repo, not in docs/)
-export const SYNCED = ['ROADMAP.md', 'FEATURES.md', 'GAME_DESIGN_DOCUMENT.md', 'README.md'];
+// The docs that have a Claude Docs copy; the README is at the root of the repo, not in docs/
+export const SYNCED = ['ROADMAP.md', 'FEATURES.md', 'GAME_DESIGN_DOCUMENT.md', 'README.md', 'CHANGELOG.md'];
 const pathOf = (f) => (f === 'README.md' ? path.join(ROOT, f) : path.join(ROOT, 'docs', f));
 
 const hash = (f) =>

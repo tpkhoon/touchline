@@ -1,6 +1,6 @@
 # Touchline — Game Design Document
 
-Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/db0a1349-77d1-4363-b0df-55ef94250bd5)
+Oct 21, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/db0a1349-77d1-4363-b0df-55ef94250bd5)
 
 ## Contents
 

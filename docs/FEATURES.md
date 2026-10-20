@@ -1,6 +1,6 @@
 # Touchline — Feature List
 
-Oct 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/dcc1d812-21cc-47af-86dd-67235bca8506)
+Oct 21, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/dcc1d812-21cc-47af-86dd-67235bca8506)
 
 ## Contents
 

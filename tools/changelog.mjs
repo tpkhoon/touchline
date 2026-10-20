@@ -1,5 +1,5 @@
-// Writes js/changelog.js (the "What's new" list in Settings) from the Shipped table in docs/ROADMAP.md, newest first, so
-// there is one place to write what changed. Run `npm run changelog` after adding a row there.
+// Writes js/changelog.js (the "What's new" list in Settings) and docs/CHANGELOG.md (every build, for reading and for Claude Docs)
+// from the Shipped list in docs/ROADMAP.md, newest first, so there is one place to write what changed. Run `npm run changelog` after adding a row there.
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT } from './harness.mjs';
@@ -8,11 +8,12 @@ const text = fs.readFileSync(path.join(ROOT, 'docs/ROADMAP.md'), 'utf8').replace
 const shipped = text.slice(text.indexOf('## Shipped'), text.indexOf('## Next'));
 // Two shapes, newest first: a table row `| Build | What shipped |` (the header and its rule are skipped), or a
 // `### Build` heading followed by `- ` bullets (joined with spaces, for builds too long for a table row).
-const entries = []; // { build, cell } for a table row, { build, bullets } for a heading
+const entries = []; // { build, cell } for a table row, { build, bullets, raw } for a heading (raw: its lines, nested bullets included)
 for (const l of shipped.split('\n')) {
   const last = entries[entries.length - 1];
-  if (l.startsWith('### ')) entries.push({ build: l.slice(4).trim(), bullets: [] });
-  else if (l.startsWith('- ') && last?.bullets) last.bullets.push(l.slice(2).trim());
+  if (l.startsWith('### ')) entries.push({ build: l.slice(4).trim(), bullets: [], raw: [] });
+  else if (l.startsWith('- ') && last?.bullets) (last.bullets.push(l.slice(2).trim()), last.raw.push(l));
+  else if (l.startsWith('  ') && l.trim() && last?.raw) last.raw.push(l);
   else if (l.startsWith('| ') && !l.startsWith('| Build') && !l.startsWith('| ---')) {
     const c = l.split(/ \| /).map((x) => x.replace(/^\| /, '').replace(/ \|$/, '').trim());
     if (c.length >= 2) entries.push({ build: c[0], cell: c.slice(1).join(' | ') });
@@ -38,3 +39,12 @@ window.FM.CHANGELOG = ${JSON.stringify(rows, null, 2)};
 `;
 fs.writeFileSync(path.join(ROOT, 'js/changelog.js'), out);
 console.log(`js/changelog.js: ${rows.length} builds, newest "${rows[0].build}"`);
+
+// the whole history, for reading: a heading per build, its bullets (nested ones too) or its sentence
+const md = entries.map((e) => `## ${e.build}\n\n${e.raw ? e.raw.join('\n') : e.cell}\n`).join('\n');
+const stamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+fs.writeFileSync(
+  path.join(ROOT, 'docs/CHANGELOG.md'),
+  `# Touchline — Changelog\n\n${stamp} · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.\n\n${md}`,
+);
+console.log(`docs/CHANGELOG.md: ${entries.length} builds`);
