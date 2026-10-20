@@ -33,7 +33,7 @@
     61276
    ],
    "short": "CLI",
-   "nick": "Canaries",
+   "nick": "Steelmen",
    "founded": 1865
   },
   "CHE": {
@@ -51,7 +51,7 @@
     60704
    ],
    "short": "CHE",
-   "nick": "Scarlets",
+   "nick": "Gunners of the Shire",
    "founded": 1897
   },
   "CHC": {
@@ -195,7 +195,7 @@
     62500
    ],
    "short": "FIL",
-   "nick": "Clarets",
+   "nick": "Falcons",
    "founded": 1882
   },
   "BRA": {
@@ -249,7 +249,7 @@
     29589
    ],
    "short": "TAD",
-   "nick": "Lilywhites",
+   "nick": "Bears",
    "founded": 1879
   },
   "TET": {
@@ -321,7 +321,7 @@
     37645
    ],
    "short": "SEL",
-   "nick": "Seagulls",
+   "nick": "Buzzards",
    "founded": 1876
   },
   "CAR": {
@@ -375,7 +375,7 @@
     32259
    ],
    "short": "ALD",
-   "nick": "Blues",
+   "nick": "Cutlers",
    "founded": 1881
   },
   "TTH": {
@@ -411,7 +411,7 @@
     30311
    ],
    "short": "GRE",
-   "nick": "Royals",
+   "nick": "Blues",
    "founded": 1879
   },
   "LIT": {
@@ -483,7 +483,7 @@
     26850
    ],
    "short": "YAR",
-   "nick": "Navy",
+   "nick": "Lamplighters",
    "founded": 1871
   },
   "TUT": {
@@ -519,7 +519,7 @@
     32609
    ],
    "short": "LAN",
-   "nick": "Mariners",
+   "nick": "Seagulls",
    "founded": 1947
   },
   "REY": {
@@ -555,7 +555,7 @@
     12600
    ],
    "short": "CHI",
-   "nick": "Crimsons",
+   "nick": "Chargers",
    "founded": 1966
   },
   "BEX": {
@@ -573,7 +573,7 @@
     30089
    ],
    "short": "BEX",
-   "nick": "Bees",
+   "nick": "Reds",
    "founded": 1867
   },
   "REA": {
@@ -645,7 +645,7 @@
     39732
    ],
    "short": "LIH",
-   "nick": "Foxes",
+   "nick": "Shipbuilders",
    "founded": 1904
   },
   "ROU": {
@@ -663,7 +663,7 @@
     31367
    ],
    "short": "ROU",
-   "nick": "Bluebirds",
+   "nick": "Stoats",
    "founded": 1888
   },
   "REC": {
@@ -807,7 +807,7 @@
     33280
    ],
    "short": "LAM",
-   "nick": "Blues",
+   "nick": "Wasps",
    "founded": 1906
   },
   "HYD": {
@@ -861,7 +861,7 @@
     28723
    ],
    "short": "GRT",
-   "nick": "Lilywhites",
+   "nick": "Druids",
    "founded": 1904
   },
   "HUC": {
@@ -879,7 +879,7 @@
     17900
    ],
    "short": "HUC",
-   "nick": "Robins",
+   "nick": "Imps",
    "founded": 1917
   },
   "SUT": {
@@ -897,7 +897,7 @@
     24161
    ],
    "short": "SUT",
-   "nick": "Bluebirds",
+   "nick": "Lighthouses",
    "founded": 1866
   },
   "WOR": {
@@ -1005,7 +1005,7 @@
     15314
    ],
    "short": "CLM",
-   "nick": "Bluebirds",
+   "nick": "Salmon",
    "founded": 1978
   },
   "MAN": {
@@ -1023,7 +1023,7 @@
     12021
    ],
    "short": "MAN",
-   "nick": "Reds",
+   "nick": "Vikings",
    "founded": 1905
   },
   "SCA": {
@@ -1041,7 +1041,7 @@
     10669
    ],
    "short": "SCA",
-   "nick": "Crimsons",
+   "nick": "Comets",
    "founded": 1942
   },
   "DEN": {
@@ -1059,7 +1059,7 @@
     15231
    ],
    "short": "DEN",
-   "nick": "Reds",
+   "nick": "Grecians",
    "founded": 1889
   },
   "FAL": {
@@ -1077,7 +1077,7 @@
     9271
    ],
    "short": "FAL",
-   "nick": "Reds",
+   "nick": "Miners",
    "founded": 1883
   },
   "DUW": {
@@ -1131,7 +1131,7 @@
     8696
    ],
    "short": "CAN",
-   "nick": "Red Devils",
+   "nick": "Bulldogs",
    "founded": 1894
   },
   "BES": {
@@ -1203,7 +1203,7 @@
     7798
    ],
    "short": "TAV",
-   "nick": "Maroons",
+   "nick": "Pike",
    "founded": 1909
   },
   "HOW": {
@@ -1239,7 +1239,7 @@
     5450
    ],
    "short": "DAD",
-   "nick": "Crimsons",
+   "nick": "Windmills",
    "founded": 1924
   },
   "CSH": {
@@ -1311,7 +1311,7 @@
     5000
    ],
    "short": "WIT",
-   "nick": "Magpies",
+   "nick": "Minstrels",
    "founded": 1887
   },
   "BUR": {
@@ -1437,7 +1437,7 @@
     5327
    ],
    "short": "LAE",
-   "nick": "Reds",
+   "nick": "Pitmen",
    "founded": 1921
   },
   "MIA": {
@@ -1509,7 +1509,7 @@
     30500
    ],
    "short": "HAR",
-   "nick": "Lilywhites",
+   "nick": "Lions",
    "founded": 1896
   },
   "PIC": {
@@ -1527,7 +1527,7 @@
     7850
    ],
    "short": "PIC",
-   "nick": "Oranges",
+   "nick": "Gulls",
    "founded": 1902
   },
   "CUR": {
@@ -1563,7 +1563,7 @@
     13512
    ],
    "short": "SHI",
-   "nick": "Royals",
+   "nick": "Norsemen",
    "founded": 1901
   },
   "YEO": {
@@ -1581,7 +1581,7 @@
     5108
    ],
    "short": "YEK",
-   "nick": "Crimsons",
+   "nick": "Ospreys",
    "founded": 1910
   },
   "HYT": {
@@ -1599,7 +1599,7 @@
     9875
    ],
    "short": "HYE",
-   "nick": "Bees",
+   "nick": "Crusaders",
    "founded": 1901
   },
   "TAR": {
@@ -1635,7 +1635,7 @@
     16587
    ],
    "short": "FOL",
-   "nick": "Magpies",
+   "nick": "Railwaymen",
    "founded": 1889
   },
   "HOC": {
@@ -1671,7 +1671,7 @@
     83186
    ],
    "short": "OLM",
-   "nick": "Blancos",
+   "nick": "Marineros",
    "founded": 1878
   },
   "CER": {
@@ -1689,7 +1689,7 @@
     99354
    ],
    "short": "CER",
-   "nick": "Rojos",
+   "nick": "Mineros",
    "founded": 1890
   },
   "OLC": {
@@ -1725,7 +1725,7 @@
     53289
    ],
    "short": "CUE",
-   "nick": "Rojos",
+   "nick": "Mulas",
    "founded": 1932
   },
   "PLA": {
@@ -1743,7 +1743,7 @@
     23500
    ],
    "short": "PLA",
-   "nick": "Cóndores",
+   "nick": "Amarillos",
    "founded": 1915
   },
   "LIO": {
@@ -1851,7 +1851,7 @@
     24870
    ],
    "short": "MOA",
-   "nick": "Celestes",
+   "nick": "Arrieros",
    "founded": 1925
   },
   "ARR": {
@@ -1869,7 +1869,7 @@
     23576
    ],
    "short": "ARR",
-   "nick": "Rojos",
+   "nick": "Toreros",
    "founded": 1890
   },
   "JUC": {
@@ -1905,7 +1905,7 @@
     40000
    ],
    "short": "CEC",
-   "nick": "Azules",
+   "nick": "Charros",
    "founded": 1872
   },
   "OSU": {
@@ -1941,7 +1941,7 @@
     16500
    ],
    "short": "BEN",
-   "nick": "Azules",
+   "nick": "Caudillos",
    "founded": 1904
   },
   "JUR": {
@@ -1959,7 +1959,7 @@
     19840
    ],
    "short": "ROB",
-   "nick": "Azules",
+   "nick": "Alfareros",
    "founded": 1913
   },
   "COR": {
@@ -1995,7 +1995,7 @@
     26354
    ],
    "short": "MOE",
-   "nick": "Rojos",
+   "nick": "Gauchos",
    "founded": 1908
   },
   "SOR": {
@@ -2013,7 +2013,7 @@
     31388
    ],
    "short": "SOR",
-   "nick": "Blancos",
+   "nick": "Alcarraza",
    "founded": 1933
   },
   "SAP": {
@@ -2031,7 +2031,7 @@
     32660
    ],
    "short": "PIE",
-   "nick": "Azules",
+   "nick": "Rayos",
    "founded": 1889
   },
   "SEG": {
@@ -2085,7 +2085,7 @@
     30044
    ],
    "short": "ELL",
-   "nick": "Azules",
+   "nick": "Panteras",
    "founded": 1873
   },
   "SAL": {
@@ -2103,7 +2103,7 @@
     15274
    ],
    "short": "SAL",
-   "nick": "Rojos",
+   "nick": "Halcones",
    "founded": 1940
   },
   "ARA": {
@@ -2139,7 +2139,7 @@
     12454
    ],
    "short": "NAV",
-   "nick": "Cóndores",
+   "nick": "Campesinos",
    "founded": 1904
   },
   "MOA": {
@@ -2193,7 +2193,7 @@
     22222
    ],
    "short": "MAR",
-   "nick": "Blancos",
+   "nick": "Linces",
    "founded": 1898
   },
   "PED": {
@@ -2247,7 +2247,7 @@
     15500
    ],
    "short": "SOA",
-   "nick": "Blancos",
+   "nick": "Potros",
    "founded": 1887
   },
   "CES": {
@@ -2319,7 +2319,7 @@
     12200
    ],
    "short": "MOR",
-   "nick": "Cóndores",
+   "nick": "Búhos",
    "founded": 1912
   },
   "CBR": {
@@ -2392,7 +2392,7 @@
     13346
    ],
    "short": "COA",
-   "nick": "Blancos",
+   "nick": "Cuervos",
    "founded": 1933
   },
   "JUB": {
@@ -2616,7 +2616,7 @@
     15105
    ],
    "short": "MAY",
-   "nick": "Negros",
+   "nick": "Segadores",
    "founded": 1897
   },
   "SEP": {
@@ -2634,7 +2634,7 @@
     8400
    ],
    "short": "SEP",
-   "nick": "Cóndores",
+   "nick": "Lagartos",
    "founded": 1932
   },
   "TOB": {
@@ -2706,7 +2706,7 @@
     30000
    ],
    "short": "CAC",
-   "nick": "Azules",
+   "nick": "Guerreros",
    "founded": 1884
   },
   "ELC": {
@@ -2724,7 +2724,7 @@
     4500
    ],
    "short": "ELC",
-   "nick": "Azules",
+   "nick": "Faroleros",
    "founded": 1943
   },
   "OSC": {
@@ -2742,7 +2742,7 @@
     7840
    ],
    "short": "OSA",
-   "nick": "Rojos",
+   "nick": "Cóndores",
    "founded": 1939
   },
   "MOS": {
@@ -2760,7 +2760,7 @@
     4000
    ],
    "short": "MTE",
-   "nick": "Negros",
+   "nick": "Delfines",
    "founded": 1876
   },
   "NUE": {
@@ -2778,7 +2778,7 @@
     7100
    ],
    "short": "NUE",
-   "nick": "Rojos",
+   "nick": "Cementeros",
    "founded": 1947
   },
   "DIL": {
@@ -2850,7 +2850,7 @@
     47069
    ],
    "short": "MEN",
-   "nick": "Weißen",
+   "nick": "Dragoner",
    "founded": 1914
   },
   "VID": {
@@ -2868,7 +2868,7 @@
     58000
    ],
    "short": "DOR",
-   "nick": "Fischer",
+   "nick": "Schwarzen",
    "founded": 1909
   },
   "VIB": {
@@ -2886,7 +2886,7 @@
     60449
    ],
    "short": "BUL",
-   "nick": "Gladiatoren",
+   "nick": "Weißen",
    "founded": 1873
   },
   "BRU": {
@@ -2940,7 +2940,7 @@
     54042
    ],
    "short": "BAC",
-   "nick": "Weißen",
+   "nick": "Husaren",
    "founded": 1873
   },
   "BER": {
@@ -2976,7 +2976,7 @@
     50000
    ],
    "short": "BRN",
-   "nick": "Weißen",
+   "nick": "Füchse",
    "founded": 1895
   },
   "BRF": {
@@ -3012,7 +3012,7 @@
     33305
    ],
    "short": "UNR",
-   "nick": "Roten",
+   "nick": "Bergleute",
    "founded": 1879
   },
   "SPB": {
@@ -3030,7 +3030,7 @@
     22012
    ],
    "short": "BUN",
-   "nick": "Roten",
+   "nick": "Fuhrleute",
    "founded": 1916
   },
   "MUH": {
@@ -3048,7 +3048,7 @@
     30150
    ],
    "short": "MUH",
-   "nick": "Blauen",
+   "nick": "Schwarzbären",
    "founded": 1989
   },
   "GEB": {
@@ -3066,7 +3066,7 @@
     30660
    ],
    "short": "BAN",
-   "nick": "Gladiatoren",
+   "nick": "Weißen",
    "founded": 1886
   },
   "BRG": {
@@ -3102,7 +3102,7 @@
     15000
    ],
    "short": "HAI",
-   "nick": "Roten",
+   "nick": "Schanzer",
    "founded": 1944
   },
   "EIN": {
@@ -3156,7 +3156,7 @@
     15034
    ],
    "short": "KIR",
-   "nick": "Fischer",
+   "nick": "Kicker",
    "founded": 1897
   },
   "FON": {
@@ -3174,7 +3174,7 @@
     26000
    ],
    "short": "NEC",
-   "nick": "Blauen",
+   "nick": "Weber",
    "founded": 1905
   },
   "STE": {
@@ -3210,7 +3210,7 @@
     49000
    ],
    "short": "ALS",
-   "nick": "Grünen",
+   "nick": "Lokomotiven",
    "founded": 1867
   },
   "SCW": {
@@ -3228,7 +3228,7 @@
     49327
    ],
    "short": "SCH",
-   "nick": "Roten",
+   "nick": "Stahlarbeiter",
    "founded": 1890
   },
   "IMT": {
@@ -3282,7 +3282,7 @@
     34302
    ],
    "short": "IMU",
-   "nick": "Blauen",
+   "nick": "Stiere",
    "founded": 1900
   },
   "BRV": {
@@ -3390,7 +3390,7 @@
     10000
    ],
    "short": "MAT",
-   "nick": "Schwarzen",
+   "nick": "Brauer",
    "founded": 1922
   },
   "FOB": {
@@ -3408,7 +3408,7 @@
     26515
    ],
    "short": "BAF",
-   "nick": "Blauen",
+   "nick": "Wildschweine",
    "founded": 1902
   },
   "SPH": {
@@ -3501,7 +3501,7 @@
     15000
    ],
    "short": "DIN",
-   "nick": "Himmelblauen",
+   "nick": "Köhler",
    "founded": 1892
   },
   "AHR": {
@@ -3519,7 +3519,7 @@
     22528
    ],
    "short": "AHR",
-   "nick": "Roten",
+   "nick": "Lotsen",
    "founded": 1894
   },
   "KRO": {
@@ -3573,7 +3573,7 @@
     8343
    ],
    "short": "BRB",
-   "nick": "Roten",
+   "nick": "Tuchmacher",
    "founded": 1888
   },
   "EIE": {
@@ -3609,7 +3609,7 @@
     16485
    ],
    "short": "HIG",
-   "nick": "Weinroten",
+   "nick": "Seeadler",
    "founded": 1886
   },
   "ALO": {
@@ -3645,7 +3645,7 @@
     5207
    ],
    "short": "KLE",
-   "nick": "Schwarzen",
+   "nick": "Schwäne",
    "founded": 1908
   },
   "SPV": {
@@ -3699,7 +3699,7 @@
     15210
    ],
    "short": "UER",
-   "nick": "Roten",
+   "nick": "Eisenmänner",
    "founded": 1922
   },
   "GRB": {
@@ -3735,7 +3735,7 @@
     31500
    ],
    "short": "HAF",
-   "nick": "Blauen",
+   "nick": "Hüttenknappen",
    "founded": 1871
   },
   "TED": {
@@ -3771,7 +3771,7 @@
     15800
    ],
    "short": "SCZ",
-   "nick": "Roten",
+   "nick": "Kreuzritter",
    "founded": 1897
   },
   "BUG": {
@@ -3789,7 +3789,7 @@
     15060
    ],
    "short": "BUF",
-   "nick": "Grünen",
+   "nick": "Kormorane",
    "founded": 1930
   },
   "QUI": {
@@ -3807,7 +3807,7 @@
     47929
    ],
    "short": "QUI",
-   "nick": "Marines",
+   "nick": "Tisserands",
    "founded": 1963
   },
   "LUN": {
@@ -3825,7 +3825,7 @@
     67394
    ],
    "short": "LUN",
-   "nick": "Blancs",
+   "nick": "Lynx",
    "founded": 1898
   },
   "AJC": {
@@ -3861,7 +3861,7 @@
     59186
    ],
    "short": "JOY",
-   "nick": "Blancs",
+   "nick": "Mouettes",
    "founded": 1904
   },
   "USM": {
@@ -3933,7 +3933,7 @@
     38223
    ],
    "short": "CNS",
-   "nick": "Jaunes",
+   "nick": "Taureaux",
    "founded": 1936
   },
   "THO": {
@@ -4005,7 +4005,7 @@
     35322
    ],
    "short": "LUU",
-   "nick": "Jaunes",
+   "nick": "Bûcherons",
    "founded": 1892
   },
   "QUR": {
@@ -4131,7 +4131,7 @@
     32900
    ],
    "short": "OLE",
-   "nick": "Oranges",
+   "nick": "Pionniers",
    "founded": 1913
   },
   "CLE": {
@@ -4185,7 +4185,7 @@
     18378
    ],
    "short": "BEU",
-   "nick": "Rouges",
+   "nick": "Marins",
    "founded": 1921
   },
   "CHR": {
@@ -4239,7 +4239,7 @@
     18467
    ],
    "short": "CHC",
-   "nick": "Oranges",
+   "nick": "Sangliers",
    "founded": 1954
   },
   "BEU": {
@@ -4275,7 +4275,7 @@
     12097
    ],
    "short": "CCA",
-   "nick": "Blancs",
+   "nick": "Sentinelles",
    "founded": 1930
   },
   "DIA": {
@@ -4293,7 +4293,7 @@
     10000
    ],
    "short": "DIE",
-   "nick": "Verts",
+   "nick": "Canonniers",
    "founded": 1908
   },
   "VIE": {
@@ -4311,7 +4311,7 @@
     5955
    ],
    "short": "VIL",
-   "nick": "Rouges",
+   "nick": "Mineurs",
    "founded": 1942
   },
   "BEO": {
@@ -4347,7 +4347,7 @@
     4933
    ],
    "short": "SAR",
-   "nick": "Bleus",
+   "nick": "Faucons",
    "founded": 1920
   },
   "AJR": {
@@ -4455,7 +4455,7 @@
     78838
    ],
    "short": "VIA",
-   "nick": "Rubro-Negros",
+   "nick": "Jaguatiricas",
    "founded": 1880
   },
   "GUA": {
@@ -4509,7 +4509,7 @@
     66795
    ],
    "short": "GIA",
-   "nick": "Alvinegros",
+   "nick": "Touros",
    "founded": 1885
   },
   "VIM": {
@@ -4527,7 +4527,7 @@
     46831
    ],
    "short": "VLA",
-   "nick": "Pretos",
+   "nick": "Capivaras",
    "founded": 1982
   },
   "PIT": {
@@ -4545,7 +4545,7 @@
     46000
    ],
    "short": "PIT",
-   "nick": "Pretos",
+   "nick": "Colibris",
    "founded": 1983
   },
   "UNG": {
@@ -4563,7 +4563,7 @@
     55662
    ],
    "short": "GUI",
-   "nick": "Azuis",
+   "nick": "Tamanduás",
    "founded": 1899
   },
   "GUI": {
@@ -4635,7 +4635,7 @@
     21880
    ],
    "short": "NAC",
-   "nick": "Alvinegros",
+   "nick": "Azulões",
    "founded": 1905
   },
   "URU": {
@@ -4653,7 +4653,7 @@
     16068
    ],
    "short": "URU",
-   "nick": "Alvinegros",
+   "nick": "Vaqueiros",
    "founded": 1912
   },
   "UBA": {
@@ -4689,7 +4689,7 @@
     63903
    ],
    "short": "JAB",
-   "nick": "Azuis",
+   "nick": "Raposas",
    "founded": 1957
   },
   "IPA": {
@@ -4797,7 +4797,7 @@
     15000
    ],
    "short": "CAT",
-   "nick": "Amarelos",
+   "nick": "Corvos",
    "founded": 1945
   },
   "USP": {
@@ -4815,7 +4815,7 @@
     75817
    ],
    "short": "PIO",
-   "nick": "Azzurri",
+   "nick": "Muli",
    "founded": 1891
   },
   "VIR": {
@@ -4833,7 +4833,7 @@
     41507
    ],
    "short": "GUB",
-   "nick": "Bianchi",
+   "nick": "Tessitori",
    "founded": 1865
   },
   "MON": {
@@ -4851,7 +4851,7 @@
     54726
    ],
    "short": "MRO",
-   "nick": "Celesti",
+   "nick": "Crociati",
    "founded": 1870
   },
   "PRO": {
@@ -4887,7 +4887,7 @@
     24950
    ],
    "short": "TRE",
-   "nick": "Cavalieri",
+   "nick": "Bersaglieri",
    "founded": 1976
   },
   "BEL": {
@@ -4941,7 +4941,7 @@
     36462
    ],
    "short": "FER",
-   "nick": "Rossi",
+   "nick": "Vignaioli",
    "founded": 1906
   },
   "USF": {
@@ -4977,7 +4977,7 @@
     13602
    ],
    "short": "FRA",
-   "nick": "Azzurri",
+   "nick": "Gufi",
    "founded": 1909
   },
   "GUB": {
@@ -4995,7 +4995,7 @@
     28177
    ],
    "short": "GUO",
-   "nick": "Granata",
+   "nick": "Camosci",
    "founded": 1894
   },
   "MIR": {
@@ -5013,7 +5013,7 @@
     25144
    ],
    "short": "MIA",
-   "nick": "Bianchi",
+   "nick": "Birrai",
    "founded": 1901
   },
   "ORV": {
@@ -5103,7 +5103,7 @@
     39211
    ],
    "short": "VAA",
-   "nick": "Gialli",
+   "nick": "Cavalieri",
    "founded": 1952
   },
   "VIC": {
@@ -5139,7 +5139,7 @@
     16003
    ],
    "short": "TNE",
-   "nick": "Rossi",
+   "nick": "Lupi",
    "founded": 1902
   },
   "AUM": {
@@ -5175,7 +5175,7 @@
     16917
    ],
    "short": "SAO",
-   "nick": "Rossi",
+   "nick": "Rondinelle",
    "founded": 1910
   },
   "GUS": {
@@ -5193,7 +5193,7 @@
     11150
    ],
    "short": "GTO",
-   "nick": "Neri",
+   "nick": "Delfini",
    "founded": 1903
   },
   "VIS": {
@@ -5247,7 +5247,7 @@
     36599
    ],
    "short": "POL",
-   "nick": "Cavalieri",
+   "nick": "Ducali",
    "founded": 1873
   },
   "CRC": {
@@ -5283,7 +5283,7 @@
     10336
    ],
    "short": "VNO",
-   "nick": "Bianchi",
+   "nick": "Leoni",
    "founded": 1939
   },
   "SEF": {
@@ -5337,7 +5337,7 @@
     23860
    ],
    "short": "JUV",
-   "nick": "Bianchi",
+   "nick": "Cinghiali",
    "founded": 1931
   },
   "AUT": {
@@ -5391,7 +5391,7 @@
     21525
    ],
    "short": "VCA",
-   "nick": "Cavalieri",
+   "nick": "Cigni",
    "founded": 1939
   },
   "SFX": {
@@ -5409,7 +5409,7 @@
     9500
    ],
    "short": "FAA",
-   "nick": "Gialli",
+   "nick": "Draghi",
    "founded": 1893
   },
   "LIB": {
@@ -5445,7 +5445,7 @@
     14844
    ],
    "short": "FOS",
-   "nick": "Bianchi",
+   "nick": "Marinai",
    "founded": 1932
   },
   "PRS": {
@@ -5463,7 +5463,7 @@
     5535
    ],
    "short": "MAA",
-   "nick": "Azzurri",
+   "nick": "Diavoli",
    "founded": 1906
   },
   "VLT": {
@@ -5481,7 +5481,7 @@
     26308
    ],
    "short": "VTE",
-   "nick": "Verdi",
+   "nick": "Minatori",
    "founded": 1884
   },
   "ASD": {
@@ -5535,7 +5535,7 @@
     64642
    ],
    "short": "POR",
-   "nick": "Rubro-Negros",
+   "nick": "Cruzados",
    "founded": 1900
   },
   "UNI": {
@@ -5679,7 +5679,7 @@
     12046
    ],
    "short": "GOU",
-   "nick": "Rubro-Negros",
+   "nick": "Panteras",
    "founded": 1897
   },
   "ESP": {
@@ -5697,7 +5697,7 @@
     5600
    ],
    "short": "ATO",
-   "nick": "Amarelos",
+   "nick": "Lampiões",
    "founded": 1937
   },
   "MAR": {
@@ -5715,7 +5715,7 @@
     9065
    ],
    "short": "MAS",
-   "nick": "Verdes",
+   "nick": "Bravos",
    "founded": 1961
   },
   "CAM": {
@@ -5733,7 +5733,7 @@
     6153
    ],
    "short": "CAO",
-   "nick": "Verdes",
+   "nick": "Veados",
    "founded": 1889
   },
   "TOM": {
@@ -5769,7 +5769,7 @@
     5132
    ],
    "short": "POA",
-   "nick": "Pretos",
+   "nick": "Lavradores",
    "founded": 1864
   },
   "SES": {
@@ -5859,7 +5859,7 @@
     55865
    ],
    "short": "ALK",
-   "nick": "Witten",
+   "nick": "Brouwers",
    "founded": 1891
   },
   "KLE": {
@@ -5913,7 +5913,7 @@
     19478
    ],
    "short": "GOT",
-   "nick": "Rooien",
+   "nick": "Molenaars",
    "founded": 1982
   },
   "VIT": {
@@ -5967,7 +5967,7 @@
     10400
    ],
    "short": "EXC",
-   "nick": "Rooien",
+   "nick": "Havenmannen",
    "founded": 1933
   },
   "VVG": {
@@ -5985,7 +5985,7 @@
     12500
    ],
    "short": "GRH",
-   "nick": "Rooien",
+   "nick": "Reuzen",
    "founded": 1880
   },
   "EXH": {
@@ -6039,7 +6039,7 @@
     11026
    ],
    "short": "ZAT",
-   "nick": "Rooien",
+   "nick": "Zeelieden",
    "founded": 1912
   },
   "MAA": {
@@ -6075,7 +6075,7 @@
     12500
    ],
    "short": "DVC",
-   "nick": "Geelen",
+   "nick": "Arenden",
    "founded": 1908
   },
   "ZAS": {
@@ -6111,7 +6111,7 @@
     12080
    ],
    "short": "WAG",
-   "nick": "Zwarten",
+   "nick": "Mijnwerkers",
    "founded": 1891
   },
   "LGD": {
@@ -6129,7 +6129,7 @@
     7384
    ],
    "short": "LAZ",
-   "nick": "Oranjes",
+   "nick": "Beren",
    "founded": 1930
   },
   "RKH": {
@@ -6165,7 +6165,7 @@
     5200
    ],
    "short": "ZWO",
-   "nick": "Witten",
+   "nick": "Pioniers",
    "founded": 1922
   },
   "SPO": {
@@ -6183,7 +6183,7 @@
     85018
    ],
    "short": "BUS",
-   "nick": "Albos",
+   "nick": "Estancieros",
    "founded": 1882
   },
   "BUS": {
@@ -6201,7 +6201,7 @@
     54000
    ],
    "short": "BUA",
-   "nick": "Azules",
+   "nick": "Hornero",
    "founded": 1892
   },
   "NAD": {
@@ -6237,7 +6237,7 @@
     48069
    ],
    "short": "DOZ",
-   "nick": "Rojos",
+   "nick": "Cruzados",
    "founded": 1884
   },
   "IND": {
@@ -6327,7 +6327,7 @@
     41654
    ],
    "short": "QUZ",
-   "nick": "Azules",
+   "nick": "Águilas",
    "founded": 1928
   },
   "PUE": {
@@ -6417,7 +6417,7 @@
     20000
    ],
    "short": "DOI",
-   "nick": "Amarillos",
+   "nick": "Cerveceros",
    "founded": 1978
   },
   "DOR": {
@@ -6471,7 +6471,7 @@
     42000
    ],
    "short": "GAR",
-   "nick": "Azules",
+   "nick": "Mineros",
    "founded": 1944
   },
   "URQ": {
@@ -6489,7 +6489,7 @@
     26282
    ],
    "short": "URQ",
-   "nick": "Azules",
+   "nick": "Pumas",
    "founded": 1972
   },
   "CAS": {
@@ -6525,7 +6525,7 @@
     26535
    ],
    "short": "DNA",
-   "nick": "Rojos",
+   "nick": "Zorros",
    "founded": 1971
   },
   "REQ": {
@@ -6543,7 +6543,7 @@
     34901
    ],
    "short": "RAS",
-   "nick": "Verdes",
+   "nick": "Pioneros",
    "founded": 1925
   },
   "GAP": {
@@ -6579,7 +6579,7 @@
     35200
    ],
    "short": "NCA",
-   "nick": "Celestes",
+   "nick": "Arrieros",
    "founded": 1903
   },
   "PEC": {
@@ -6597,7 +6597,7 @@
     28530
    ],
    "short": "PEZ",
-   "nick": "Albos",
+   "nick": "Panteras",
    "founded": 1943
   },
   "FRC": {
@@ -6615,7 +6615,7 @@
     4500
    ],
    "short": "FRI",
-   "nick": "Rojos",
+   "nick": "Ferroviarios",
    "founded": 1912
   },
   "TOR": {
@@ -6651,7 +6651,7 @@
     22000
    ],
    "short": "COL",
-   "nick": "Verdes",
+   "nick": "Gallos",
    "founded": 1949
   },
   "ARC": {
@@ -6687,7 +6687,7 @@
     21550
    ],
    "short": "ASP",
-   "nick": "Whites",
+   "nick": "Beacons",
    "founded": 1993
   },
   "SIL": {
@@ -6831,7 +6831,7 @@
     42500
    ],
    "short": "LAK",
-   "nick": "Maroons",
+   "nick": "Stallions",
    "founded": 1952
   },
   "FRT": {
@@ -6867,7 +6867,7 @@
     30000
    ],
    "short": "FOW",
-   "nick": "Yellows",
+   "nick": "Ospreys",
    "founded": 1977
   },
   "SPR": {
@@ -6939,7 +6939,7 @@
     19400
    ],
    "short": "HIC",
-   "nick": "Maroons",
+   "nick": "Eagles",
    "founded": 1941
   },
   "CED": {
@@ -6975,7 +6975,7 @@
     20213
    ],
    "short": "BLE",
-   "nick": "Reds",
+   "nick": "Fishermen",
    "founded": 1985
   },
   "PIN": {
@@ -7065,7 +7065,7 @@
     22423
    ],
    "short": "CEN",
-   "nick": "Reds",
+   "nick": "Gunners of the Shire",
    "founded": 1928
   },
   "MAP": {
@@ -7119,7 +7119,7 @@
     61500
    ],
    "short": "SUS",
-   "nick": "Sky Blues",
+   "nick": "Sparrows",
    "founded": 1960
   },
   "PNF": {
@@ -7137,7 +7137,7 @@
     20000
    ],
    "short": "PID",
-   "nick": "Blacks",
+   "nick": "Whalers",
    "founded": 1920
   },
   "SUM": {
@@ -7155,7 +7155,7 @@
     65878
    ],
    "short": "SUM",
-   "nick": "Navy",
+   "nick": "Windmills",
    "founded": 1961
   },
   "REN": {
@@ -7191,7 +7191,7 @@
     19619
    ],
    "short": "GRK",
-   "nick": "Blacks",
+   "nick": "Brewers",
    "founded": 1989
   },
   "PRA": {
@@ -7209,7 +7209,7 @@
     18000
    ],
    "short": "PRA",
-   "nick": "Blues",
+   "nick": "Wrens",
    "founded": 1968
   },
   "NIS": {
@@ -7281,7 +7281,7 @@
     28520
    ],
    "short": "SHO",
-   "nick": "Navy",
+   "nick": "Kingfishers",
    "founded": 1933
   },
   "SHF": {
@@ -7353,7 +7353,7 @@
     15489
    ],
    "short": "ASA",
-   "nick": "Navy",
+   "nick": "Lanterns",
    "founded": 1952
   },
   "HIG": {
@@ -7371,7 +7371,7 @@
     49970
    ],
    "short": "HIO",
-   "nick": "Blues",
+   "nick": "Samurai",
    "founded": 1985
   },
   "NAG": {
@@ -7389,7 +7389,7 @@
     15109
    ],
    "short": "NAG",
-   "nick": "Yellows",
+   "nick": "Aurora",
    "founded": 1956
   },
   "FUJ": {
@@ -7461,7 +7461,7 @@
     21600
    ],
    "short": "HOK",
-   "nick": "Crimsons",
+   "nick": "Dragons",
    "founded": 1958
   },
   "OKA": {
@@ -7533,7 +7533,7 @@
     19594
    ],
    "short": "MAI",
-   "nick": "Oranges",
+   "nick": "Vento",
    "founded": 1924
   },
   "NAA": {
@@ -7551,7 +7551,7 @@
     15479
    ],
    "short": "NNO",
-   "nick": "Reds",
+   "nick": "Bears",
    "founded": 1926
   },
   "AKM": {
@@ -7688,7 +7688,7 @@
     "Estadio Papanalco"
    ],
    "short": "JUA",
-   "nick": "Azulones",
+   "nick": "Toros",
    "founded": 1971
   },
   "XAL": {
@@ -7790,7 +7790,7 @@
     "Estadio Papanilco"
    ],
    "short": "PAC",
-   "nick": "Rojos",
+   "nick": "Cementeros",
    "founded": 1958
   },
   "ZAP": {
@@ -7807,7 +7807,7 @@
     "Estadio Chaletlán"
    ],
    "short": "ZAP",
-   "nick": "Azules",
+   "nick": "Alacranes",
    "founded": 1939
   },
   "UNX": {
@@ -7926,7 +7926,7 @@
     "Haesan Arena"
    ],
    "short": "CHG",
-   "nick": "Reds",
+   "nick": "Magpies",
    "founded": 1904
   },
   "CHS": {
@@ -7994,7 +7994,7 @@
     "Seowon Arena"
    ],
    "short": "CNG",
-   "nick": "Sharks",
+   "nick": "Warriors",
    "founded": 1989
   },
   "BUJ": {
@@ -8028,7 +8028,7 @@
     "Chungju Arena"
    ],
    "short": "HAE",
-   "nick": "Oranges",
+   "nick": "Whales",
    "founded": 1944
   },
   "GYE": {
@@ -8130,7 +8130,7 @@
     "Khaoyai Arena"
    ],
    "short": "NON",
-   "nick": "Reds",
+   "nick": "Elephants",
    "founded": 1929
   },
   "NOA": {
@@ -8181,7 +8181,7 @@
     "Ubonkaeo Arena"
    ],
    "short": "SAU",
-   "nick": "Blues",
+   "nick": "Lotus",
    "founded": 1973
   },
   "UBU": {
@@ -8198,7 +8198,7 @@
     "Ubonam Stadium"
    ],
    "short": "UBI",
-   "nick": "Blues",
+   "nick": "Rockets",
    "founded": 1925
   },
   "KHA": {
@@ -8232,7 +8232,7 @@
     "Chiangmai Sports Park"
    ],
    "short": "KHI",
-   "nick": "Knights",
+   "nick": "Garudas",
    "founded": 1978
   },
   "UBC": {
@@ -8249,7 +8249,7 @@
     "Ubonlek Arena"
    ],
    "short": "UBG",
-   "nick": "Reds",
+   "nick": "Knights",
    "founded": 1946
   },
   "WAN": {
@@ -8266,7 +8266,7 @@
     "Wangmai Provincial Stadium"
    ],
    "short": "WAN",
-   "nick": "Knights",
+   "nick": "Ravens",
    "founded": 1926
   },
   "PHU": {
@@ -8283,7 +8283,7 @@
     "Phunong Sports Park"
    ],
    "short": "PHU",
-   "nick": "Blues",
+   "nick": "Comets",
    "founded": 2003
   },
   "SKL": {
@@ -8300,7 +8300,7 @@
     "Khaoyai Stadium"
    ],
    "short": "SEK",
-   "nick": "Crimsons",
+   "nick": "Cobras",
    "founded": 1961
   },
   "MUA": {
@@ -8317,7 +8317,7 @@
     "Wangyai Stadium"
    ],
    "short": "MUA",
-   "nick": "Reds",
+   "nick": "Naga",
    "founded": 1984
   },
   "TKP": {
@@ -8334,7 +8334,7 @@
     "Nakhonsai Stadium"
    ],
    "short": "TAR",
-   "nick": "Blues",
+   "nick": "Kings",
    "founded": 1958
   },
   "MUU": {
@@ -8351,7 +8351,7 @@
     "Banlek Arena"
    ],
    "short": "MUG",
-   "nick": "Oranges",
+   "nick": "Eagles",
    "founded": 1949
   },
   "BAU": {
@@ -8368,7 +8368,7 @@
     "Badugu Independence Stadium"
    ],
    "short": "BAD",
-   "nick": "Blues",
+   "nick": "Warriors",
    "founded": 1909
   },
   "UAL": {
@@ -8419,7 +8419,7 @@
     "Oshano Stadium"
    ],
    "short": "AKO",
-   "nick": "Greens",
+   "nick": "Trout",
    "founded": 1965
   },
   "ABI": {
@@ -8453,7 +8453,7 @@
     "Adugu Independence Stadium"
    ],
    "short": "ADU",
-   "nick": "Elephants",
+   "nick": "Cutlers",
    "founded": 1911
   },
   "IKA": {
@@ -8470,7 +8470,7 @@
     "Ikagun Township Stadium"
    ],
    "short": "IKA",
-   "nick": "Reds",
+   "nick": "Potters",
    "founded": 1927
   },
   "AWU": {
@@ -8504,7 +8504,7 @@
     "Uorin Independence Stadium"
    ],
    "short": "SHG",
-   "nick": "Blues",
+   "nick": "Ospreys",
    "founded": 1905
   },
   "ADN": {
@@ -8521,7 +8521,7 @@
     "Nsibo Stadium"
    ],
    "short": "ADO",
-   "nick": "Elephants",
+   "nick": "Owls",
    "founded": 1939
   },
   "OWR": {
@@ -8555,7 +8555,7 @@
     "Akuna Arena"
    ],
    "short": "SOG",
-   "nick": "Greens",
+   "nick": "Colliers",
    "founded": 1919
   },
   "UMU": {
@@ -8572,7 +8572,7 @@
     "Umure Independence Stadium"
    ],
    "short": "UMU",
-   "nick": "Elephants",
+   "nick": "Blues",
    "founded": 1925
   },
   "IKU": {
@@ -8589,7 +8589,7 @@
     "Ikuko Independence Stadium"
    ],
    "short": "IKU",
-   "nick": "Greens",
+   "nick": "Vikings",
    "founded": 1964
   },
   "SHA": {
@@ -8623,7 +8623,7 @@
     "Umuko Stadium"
    ],
    "short": "AKY",
-   "nick": "Yellows",
+   "nick": "Wolves",
    "founded": 1916
   },
   "ILA": {
@@ -8640,7 +8640,7 @@
     "Ilano Sports Complex"
    ],
    "short": "ILA",
-   "nick": "Blues",
+   "nick": "Pike",
    "founded": 1960
   },
   "AWP": {
@@ -8708,7 +8708,7 @@
     "Stade Sidoun"
    ],
    "short": "SPO",
-   "nick": "Rouges",
+   "nick": "Loups",
    "founded": 1902
   },
   "NAJ": {
@@ -8725,7 +8725,7 @@
     "Stade Ifrek"
    ],
    "short": "NAJ",
-   "nick": "Atlas",
+   "nick": "Ours",
    "founded": 1907
   },
   "USN": {
@@ -8742,7 +8742,7 @@
     "Stade Municipal de Nadar"
    ],
    "short": "NAD",
-   "nick": "Atlas",
+   "nick": "Comètes",
    "founded": 1901
   },
   "SAF": {
@@ -8793,7 +8793,7 @@
     "Stade Tanouan"
    ],
    "short": "SIS",
-   "nick": "Jaunes",
+   "nick": "Écureuils",
    "founded": 1909
   },
   "SIB": {
@@ -8810,7 +8810,7 @@
     "Grand Stade de Sidi Benet"
    ],
    "short": "SII",
-   "nick": "Rouges",
+   "nick": "Mousquetaires",
    "founded": 1945
   },
   "TAZ": {
@@ -8827,7 +8827,7 @@
     "Stade Berira"
    ],
    "short": "TAZ",
-   "nick": "Atlas",
+   "nick": "Marins",
    "founded": 2006
   },
   "NAM": {
@@ -8844,7 +8844,7 @@
     "Complexe Sportif Midouan"
    ],
    "short": "NAM",
-   "nick": "Rouges",
+   "nick": "Cigognes",
    "founded": 1923
   },
   "SPI": {
@@ -8861,7 +8861,7 @@
     "Stade Municipal de Oued Safia"
    ],
    "short": "SPE",
-   "nick": "Bleus",
+   "nick": "Meuniers",
    "founded": 1983
   },
   "SIO": {
@@ -9184,7 +9184,7 @@
     "Stadion Mir Zelpol"
    ],
    "short": "ZAR",
-   "nick": "Crveni",
+   "nick": "Vukovi",
    "founded": 1985
   },
   "RAM": {
@@ -9252,7 +9252,7 @@
     "Stade Communal de Tilkerk"
    ],
    "short": "KON",
-   "nick": "Blauwen",
+   "nick": "Brouwers",
    "founded": 1891
   },
   "STS": {
@@ -9303,7 +9303,7 @@
     "Oostbrug Stadion"
    ],
    "short": "ROY",
-   "nick": "Blauwen",
+   "nick": "Rijders",
    "founded": 1885
   },
   "KVZ": {
@@ -9320,7 +9320,7 @@
     "Stedelijk Stadion Zwolhout"
    ],
    "short": "ZWT",
-   "nick": "Blauwen",
+   "nick": "Beren",
    "founded": 1865
   },
   "GRO": {
@@ -9337,7 +9337,7 @@
     "Stade Communal de Grootlo"
    ],
    "short": "GLO",
-   "nick": "Rooien",
+   "nick": "Herten",
    "founded": 1888
   },
   "KRC": {
@@ -9354,7 +9354,7 @@
     "Stade Veenhoven"
    ],
    "short": "KRC",
-   "nick": "Rooien",
+   "nick": "Zeemeeuwen",
    "founded": 1872
   },
   "KVT": {
@@ -9473,7 +9473,7 @@
     "Kleinbeek Stadion"
    ],
    "short": "OOS",
-   "nick": "Rooien",
+   "nick": "Pioniers",
    "founded": 1942
   },
   "RSC": {
@@ -9524,7 +9524,7 @@
     "Kızova Stadyumu"
    ],
    "short": "DEM",
-   "nick": "Kırmızılar",
+   "nick": "Akbabalar",
    "founded": 1923
   },
   "DEG": {
@@ -9541,7 +9541,7 @@
     "Gülbahçe Stadyumu"
    ],
    "short": "DER",
-   "nick": "Sarılar",
+   "nick": "Kargalar",
    "founded": 1906
   },
   "YEN": {
@@ -9558,7 +9558,7 @@
     "Demehir Şehir Stadyumu"
    ],
    "short": "YEN",
-   "nick": "Siyahlar",
+   "nick": "Aslanlar",
    "founded": 1899
   },
   "AYD": {
@@ -9575,7 +9575,7 @@
     "Demköy Stadyumu"
    ],
    "short": "AYD",
-   "nick": "Bordolar",
+   "nick": "Fırtına",
    "founded": 1930
   },
   "AKO": {
@@ -9592,7 +9592,7 @@
     "Demdere Stadyumu"
    ],
    "short": "AOY",
-   "nick": "Turuncular",
+   "nick": "Ayılar",
    "founded": 1960
   },
   "DMB": {
@@ -9609,7 +9609,7 @@
     "Dembahçe Şehir Stadyumu"
    ],
    "short": "DED",
-   "nick": "Kırmızılar",
+   "nick": "Kaplanlar",
    "founded": 1920
   },
   "KAR": {
@@ -9626,7 +9626,7 @@
     "Karpınar Şehir Stadyumu"
    ],
    "short": "KAR",
-   "nick": "Sarılar",
+   "nick": "Kuyruklu Yıldızlar",
    "founded": 1988
   },
   "GUL": {
@@ -9660,7 +9660,7 @@
     "Tavsaray Arena"
    ],
    "short": "KAY",
-   "nick": "Mavililer",
+   "nick": "Boğalar",
    "founded": 1950
   },
   "CNS": {
@@ -9677,7 +9677,7 @@
     "Çansaray Cumhuriyet Stadyumu"
    ],
    "short": "CANS",
-   "nick": "Yeşiller",
+   "nick": "Martılar",
    "founded": 1948
   },
   "USE": {
@@ -9711,7 +9711,7 @@
     "Bozlar Şehir Stadyumu"
    ],
    "short": "BOZ",
-   "nick": "Kırmızılar",
+   "nick": "Yeniçeriler",
    "founded": 1964
   },
   "BOG": {
@@ -9745,7 +9745,7 @@
     "Karova Stadyumu"
    ],
    "short": "TEK",
-   "nick": "Kırmızılar",
+   "nick": "Kurtlar",
    "founded": 1965
   },
   "CAB": {
@@ -9779,7 +9779,7 @@
     "Bozova Şehir Stadyumu"
    ],
    "short": "BOA",
-   "nick": "Yeşiller",
+   "nick": "Atmacalar",
    "founded": 1959
   },
   "GLR": {
@@ -9847,7 +9847,7 @@
     "Městský stadion Holava"
    ],
    "short": "HVA",
-   "nick": "Vínoví",
+   "nick": "Draci",
    "founded": 1908
   },
   "NYM": {
@@ -9881,7 +9881,7 @@
     "Aréna Kostany"
    ],
    "short": "ZEY",
-   "nick": "Nebesky modří",
+   "nick": "Jeleni",
    "founded": 1983
   },
   "SLA": {
@@ -9949,7 +9949,7 @@
     "Letní stadion Rychodov"
    ],
    "short": "RYC",
-   "nick": "Modří",
+   "nick": "Horníci",
    "founded": 1949
   },
   "SOS": {
@@ -9983,7 +9983,7 @@
     "Městský stadion Zlínava"
    ],
    "short": "ZLI",
-   "nick": "Zelení",
+   "nick": "Tuři",
    "founded": 1940
   },
   "VSE": {
@@ -10017,7 +10017,7 @@
     "Letní stadion Vsetínany"
    ],
    "short": "VSY",
-   "nick": "Červení",
+   "nick": "Racci",
    "founded": 1915
   },
   "DUK": {
@@ -10085,7 +10085,7 @@
     "Stadion u Kostov"
    ],
    "short": "STY",
-   "nick": "Žlutí",
+   "nick": "Gladiátoři",
    "founded": 1975
   },
   "GSM": {
@@ -10119,7 +10119,7 @@
     "Dimotiko Stadio Pelos"
    ],
    "short": "PES",
-   "nick": "Prásinoi",
+   "nick": "Psarádes",
    "founded": 1925
   },
   "DOX": {
@@ -10170,7 +10170,7 @@
     "Dimotiko Stadio Agouli"
    ],
    "short": "AGI",
-   "nick": "Kítrinoi",
+   "nick": "Gladiátores",
    "founded": 1942
   },
   "AOK": {
@@ -10221,7 +10221,7 @@
     "Dimotiko Stadio Ioanida"
    ],
    "short": "IOA",
-   "nick": "Kítrinoi",
+   "nick": "Delfínia",
    "founded": 1918
   },
   "TRA": {
@@ -10289,7 +10289,7 @@
     "Stadio Kypina"
    ],
    "short": "IOI",
-   "nick": "Galázioi",
+   "nick": "Ypsilánti",
    "founded": 1925
   },
   "AOC": {
@@ -10357,7 +10357,7 @@
     "Holholm Stadion"
    ],
    "short": "DYD",
-   "nick": "De Røde",
+   "nick": "Smedene",
    "founded": 1902
   },
   "BRK": {
@@ -10374,7 +10374,7 @@
     "Broløkke Idrætsanlæg"
    ],
    "short": "BRO",
-   "nick": "De Blå",
+   "nick": "Måkene",
    "founded": 1884
   },
   "HLV": {
@@ -10425,7 +10425,7 @@
     "Dyrnæs Stadion"
    ],
    "short": "KIL",
-   "nick": "De Blå",
+   "nick": "Ørnene",
    "founded": 1891
   },
   "LNG": {
@@ -10459,7 +10459,7 @@
     "Sydlund Stadion"
    ],
    "short": "HAV",
-   "nick": "De Røde",
+   "nick": "Svaner",
    "founded": 1900
   },
   "STN": {
@@ -10527,7 +10527,7 @@
     "Nordnyø Arena"
    ],
    "short": "NOY",
-   "nick": "De Blå",
+   "nick": "Hjortene",
    "founded": 1892
   },
   "SNX": {
@@ -10544,7 +10544,7 @@
     "Ringård Idrætspark"
    ],
    "short": "SNS",
-   "nick": "De Blå",
+   "nick": "Gladiatorene",
    "founded": 1880
   },
   "RIN": {
@@ -10612,7 +10612,7 @@
     "Stadion Kostów"
    ],
    "short": "JAR",
-   "nick": "Niebiescy",
+   "nick": "Rybacy",
    "founded": 1900
   },
   "RAD": {
@@ -10680,7 +10680,7 @@
     "Stadion im. Słupono"
    ],
    "short": "SUP",
-   "nick": "Niebiescy",
+   "nick": "Piwosze",
    "founded": 1962
   },
   "KSR": {
@@ -10697,7 +10697,7 @@
     "Stadion im. Siedlów"
    ],
    "short": "RAA",
-   "nick": "Biali",
+   "nick": "Kowale",
    "founded": 1901
   },
   "BUD": {
@@ -10748,7 +10748,7 @@
     "Stadion Ludowy Stary Białec"
    ],
    "short": "STB",
-   "nick": "Żółci",
+   "nick": "Komety",
    "founded": 1928
   },
   "RUC": {
@@ -10765,7 +10765,7 @@
     "Stadion Miejski im. Brzezewo"
    ],
    "short": "LUB",
-   "nick": "Pomarańczowi",
+   "nick": "Lwy",
    "founded": 1982
   },
   "ZAG": {
@@ -10799,7 +10799,7 @@
     "Stadion Miejski im. Radec"
    ],
    "short": "DAB",
-   "nick": "Żółci",
+   "nick": "Niedźwiedzie",
    "founded": 1939
   },
   "WOX": {
@@ -10867,7 +10867,7 @@
     "Stadion Jarosewo"
    ],
    "short": "NOW",
-   "nick": "Żółci",
+   "nick": "Husaria",
    "founded": 1967
   },
   "GKB": {
@@ -10884,7 +10884,7 @@
     "Stadion Słupowice"
    ],
    "short": "BRZ",
-   "nick": "Niebiescy",
+   "nick": "Flisacy",
    "founded": 1955
   },
   "GWA": {
@@ -11003,7 +11003,7 @@
     "Østgård Idrætspark"
    ],
    "short": "HOF",
-   "nick": "De Blå",
+   "nick": "Ulvene",
    "founded": 1876
   },
   "NOR": {
@@ -11088,7 +11088,7 @@
     "Storgård Park"
    ],
    "short": "NOI",
-   "nick": "De Røde",
+   "nick": "Hvalene",
    "founded": 1915
   },
   "ASK": {
@@ -11139,7 +11139,7 @@
     "Oberweiler-Arena"
    ],
    "short": "OBE",
-   "nick": "Schwarzen",
+   "nick": "Köhler",
    "founded": 1872
   },
   "SCH": {
@@ -11241,7 +11241,7 @@
     "Steinsee-Stadion"
    ],
    "short": "FRT",
-   "nick": "Blauen",
+   "nick": "Löwen",
    "founded": 1930
   },
   "OBM": {
@@ -11275,7 +11275,7 @@
     "Sportpark Furtkirchen"
    ],
    "short": "RHN",
-   "nick": "Schwarzen",
+   "nick": "Seeadler",
    "founded": 1934
   },
   "GEN": {
@@ -11343,7 +11343,7 @@
     "Neckarbrück-Stadion"
    ],
    "short": "BIA",
-   "nick": "Gelben",
+   "nick": "Husaren",
    "founded": 1872
   },
   "ENE": {
@@ -11360,7 +11360,7 @@
     "Stadion am Hainhausen"
    ],
    "short": "EIE",
-   "nick": "Weinroten",
+   "nick": "Hüttenknappen",
    "founded": 1903
   },
   "ROT": {
@@ -11428,7 +11428,7 @@
     "Waldstadion Hohen Waldheim"
    ],
    "short": "HOH",
-   "nick": "Weißen",
+   "nick": "Seeadler",
    "founded": 1876
   },
   "HOH": {
@@ -11496,7 +11496,7 @@
     "Sportpark Bruchkirchen"
    ],
    "short": "BEB",
-   "nick": "Roten",
+   "nick": "Salzsieder",
    "founded": 1877
   },
   "TEB": {
@@ -11530,7 +11530,7 @@
     "Rosock Park"
    ],
    "short": "STS",
-   "nick": "Greens",
+   "nick": "Robins",
    "founded": 1864
   },
   "STA": {
@@ -11598,7 +11598,7 @@
     "Nairnkirk Road"
    ],
    "short": "INT",
-   "nick": "Greens",
+   "nick": "Millers",
    "founded": 1873
   },
   "BAL": {
@@ -11632,7 +11632,7 @@
     "Mid Kilness Gardens"
    ],
    "short": "MID",
-   "nick": "Oranges",
+   "nick": "Ospreys",
    "founded": 1898
   },
   "KIB": {
@@ -11649,7 +11649,7 @@
     "Roside Park"
    ],
    "short": "KIE",
-   "nick": "Blues",
+   "nick": "Dockers",
    "founded": 1901
   },
   "JED": {
@@ -11717,7 +11717,7 @@
     "Kilrie-on-Forth Park"
    ],
    "short": "IER",
-   "nick": "Navy",
+   "nick": "Archers",
    "founded": 1919
   },
   "WOD": {
@@ -11751,7 +11751,7 @@
     "Geralnup Stadium"
    ],
    "short": "GER",
-   "nick": "Sky Blues",
+   "nick": "Robins",
    "founded": 1934
   },
   "WOF": {
@@ -11768,7 +11768,7 @@
     "Wodoville Stadium"
    ],
    "short": "WOE",
-   "nick": "Navy",
+   "nick": "Wolves",
    "founded": 1918
   },
   "GEV": {
@@ -11836,7 +11836,7 @@
     "Cofflea Stadium"
    ],
    "short": "COF",
-   "nick": "Navy",
+   "nick": "Sparrows",
    "founded": 1972
   },
   "NOW": {
@@ -11853,7 +11853,7 @@
     "Nowlea Sportsground"
    ],
    "short": "NOA",
-   "nick": "Reds",
+   "nick": "Stags",
    "founded": 1942
   },
   "TAM": {
@@ -11921,7 +11921,7 @@
     "Geralcannon Park"
    ],
    "short": "COB",
-   "nick": "Maroons",
+   "nick": "Vikings",
    "founded": 1924
   },
   "BAR": {
@@ -11938,7 +11938,7 @@
     "Barahegy Sportpálya"
    ],
    "short": "BAR",
-   "nick": "Zöldek",
+   "nick": "Halászok",
    "founded": 1932
   },
   "GYO": {
@@ -11972,7 +11972,7 @@
     "Dunetelek Sportpálya"
    ],
    "short": "DEK",
-   "nick": "Zöldek",
+   "nick": "Hollók",
    "founded": 1926
   },
   "ZAL": {
@@ -12023,7 +12023,7 @@
     "Győraháza Sportpálya"
    ],
    "short": "GYA",
-   "nick": "Kékek",
+   "nick": "Medvék",
    "founded": 1973
   },
   "BAV": {
@@ -12074,7 +12074,7 @@
     "Kálád Városi Stadion"
    ],
    "short": "KAD",
-   "nick": "Vörösök",
+   "nick": "Rókák",
    "founded": 1933
   },
   "ZAF": {
@@ -12108,7 +12108,7 @@
     "Zalavár Stadion"
    ],
    "short": "NAY",
-   "nick": "Vörösök",
+   "nick": "Sirályok",
    "founded": 1931
   },
   "ORR": {
@@ -12159,7 +12159,7 @@
     "Glengarvan Road"
    ],
    "short": "LIW",
-   "nick": "Greens",
+   "nick": "Pitmen",
    "founded": 1884
   },
   "ORA": {
@@ -12176,7 +12176,7 @@
     "Monlough Park"
    ],
    "short": "INO",
-   "nick": "Reds",
+   "nick": "Brewers",
    "founded": 1950
   },
   "COU": {
@@ -12210,7 +12210,7 @@
     "Rosglass Street"
    ],
    "short": "NEW",
-   "nick": "Reds",
+   "nick": "Buzzards",
    "founded": 1929
   },
   "POC": {
@@ -12312,7 +12312,7 @@
     "Stadiwm Talbach"
    ],
    "short": "TAL",
-   "nick": "Choristers",
+   "nick": "Stags",
    "founded": 1931
   },
   "LLA": {
@@ -12346,7 +12346,7 @@
     "Dolgfa Field"
    ],
    "short": "DON",
-   "nick": "Whites",
+   "nick": "Potters",
    "founded": 1930
   },
   "CLY": {
@@ -12380,7 +12380,7 @@
     "Maes Rhosogg"
    ],
    "short": "ABE",
-   "nick": "Choristers",
+   "nick": "Brewers",
    "founded": 1878
   },
   "CAH": {
@@ -12397,7 +12397,7 @@
     "Maes Corsfa"
    ],
    "short": "CYN",
-   "nick": "Yellows",
+   "nick": "Colliers",
    "founded": 1947
   },
   "BLN": {
@@ -12414,7 +12414,7 @@
     "Parc Llangwyn"
    ],
    "short": "BAT",
-   "nick": "Yellows",
+   "nick": "Dragons",
    "founded": 1902
   },
   "BLW": {
@@ -12431,7 +12431,7 @@
     "Maes Llanwyn"
    ],
    "short": "BYN",
-   "nick": "Reds",
+   "nick": "Whalers",
    "founded": 1952
   },
   "PEN": {
@@ -12448,7 +12448,7 @@
     "Porthach Field"
    ],
    "short": "PEO",
-   "nick": "Choristers",
+   "nick": "Miners",
    "founded": 1926
   },
   "TEN": {
@@ -12465,7 +12465,7 @@
     "Rhayfa Road"
    ],
    "short": "TEH",
-   "nick": "Choristers",
+   "nick": "Reds",
    "founded": 1916
   },
   "BNG": {
@@ -12517,7 +12517,7 @@
     60000
    ],
    "short": "JAH",
-   "nick": "Blues",
+   "nick": "Horsemen",
    "founded": 1946
   },
   "SAH": {
@@ -12535,7 +12535,7 @@
     25000
    ],
    "short": "MAW",
-   "nick": "Yellows",
+   "nick": "Caravans",
    "founded": 1973
   },
   "YAS": {
@@ -12553,7 +12553,7 @@
     62000
    ],
    "short": "NAW",
-   "nick": "Yellows",
+   "nick": "Dunes",
    "founded": 2001
   },
   "SAR": {
@@ -12571,7 +12571,7 @@
     27000
    ],
    "short": "SLM",
-   "nick": "Hawks",
+   "nick": "Greens",
    "founded": 1962
   },
   "FUR": {
@@ -12589,7 +12589,7 @@
     20000
    ],
    "short": "QAM",
-   "nick": "Yellows",
+   "nick": "Divers",
    "founded": 1962
   },
   "WAF": {
@@ -12643,7 +12643,7 @@
     20000
    ],
    "short": "AIQ",
-   "nick": "Falcons",
+   "nick": "Palms",
    "founded": 1921
   },
   "RAY": {
@@ -12715,7 +12715,7 @@
     25000
    ],
    "short": "HID",
-   "nick": "Hawks",
+   "nick": "Sultans",
    "founded": 1936
   },
   "TAQ": {
@@ -12733,7 +12733,7 @@
     22000
    ],
    "short": "MDN",
-   "nick": "Hawks",
+   "nick": "Pearls",
    "founded": 1971
   },
   "HAD": {
@@ -12751,7 +12751,7 @@
     15000
    ],
    "short": "JAA",
-   "nick": "Reds",
+   "nick": "Foxes",
    "founded": 1985
   },
   "ASL": {
@@ -12787,7 +12787,7 @@
     25000
    ],
    "short": "SHX",
-   "nick": "Reds",
+   "nick": "Knights",
    "founded": 1898
   },
   "RIA": {
@@ -12805,7 +12805,7 @@
     15000
    ],
    "short": "KEC",
-   "nick": "Hawks",
+   "nick": "Stallions",
    "founded": 1946
   },
   "NAK": {
@@ -12823,7 +12823,7 @@
     12000
    ],
    "short": "WAI",
-   "nick": "Greens",
+   "nick": "Dhows",
    "founded": 1982
   },
   "ZAM": {
@@ -12841,7 +12841,7 @@
     15000
    ],
    "short": "SIT",
-   "nick": "Yellows",
+   "nick": "Desert Foxes",
    "founded": 1970
   },
   "TAF": {
@@ -12967,7 +12967,7 @@
     10000
    ],
    "short": "IZZ",
-   "nick": "Hawks",
+   "nick": "Greens",
    "founded": 1997
   },
   "SHJ": {
@@ -13003,7 +13003,7 @@
     18000
    ],
    "short": "AWS",
-   "nick": "Falcons",
+   "nick": "Hawks",
    "founded": 1941
   },
   "TAH": {
@@ -13039,7 +13039,7 @@
     8000
    ],
    "short": "AIK",
-   "nick": "Reds",
+   "nick": "Oryx",
    "founded": 1920
   },
   "MAW": {
@@ -13057,7 +13057,7 @@
     12000
    ],
    "short": "STX",
-   "nick": "Yellows",
+   "nick": "Nomads",
    "founded": 1983
   },
   "QIM": {
@@ -13111,7 +13111,7 @@
     8000
    ],
    "short": "RSY",
-   "nick": "Greens",
+   "nick": "Eagles",
    "founded": 1948
   },
   "NOU": {
@@ -13129,7 +13129,7 @@
     6000
    ],
    "short": "AWH",
-   "nick": "Hawks",
+   "nick": "Desert Foxes",
    "founded": 1967
   },
   "KHL": {
@@ -13219,7 +13219,7 @@
     3000
    ],
    "short": "BYL",
-   "nick": "Reds",
+   "nick": "Sailors",
    "founded": 1989
   },
   "LTJ": {
@@ -13273,7 +13273,7 @@
     2700
    ],
    "short": "LRL",
-   "nick": "Reds",
+   "nick": "Tigers",
    "founded": 1918
   },
   "TES": {
@@ -13327,7 +13327,7 @@
     6000
    ],
    "short": "TIO",
-   "nick": "Reds",
+   "nick": "Dragons",
    "founded": 1952
   },
   "TAN": {
@@ -13363,7 +13363,7 @@
     25000
    ],
    "short": "PDR",
-   "nick": "Merah",
+   "nick": "Crocodiles",
    "founded": 1933
   },
   "PUL": {
@@ -13399,7 +13399,7 @@
     32000
    ],
    "short": "SSC",
-   "nick": "Hijau",
+   "nick": "Buaya",
    "founded": 1927
   },
   "SIP": {
@@ -13453,7 +13453,7 @@
     42000
    ],
    "short": "DAM",
-   "nick": "Kuning",
+   "nick": "Elephants",
    "founded": 1922
   },
   "SUP": {
@@ -13525,7 +13525,7 @@
     40000
    ],
    "short": "MUT",
-   "nick": "Merah",
+   "nick": "Eagles",
    "founded": 1948
   },
   "PUA": {
@@ -13561,7 +13561,7 @@
     18000
    ],
    "short": "PUU",
-   "nick": "Biru",
+   "nick": "Rockets",
    "founded": 2008
   },
   "PUI": {
@@ -13597,7 +13597,7 @@
     22500
    ],
    "short": "THE",
-   "nick": "Buffaloes",
+   "nick": "Reds",
    "founded": 1979
   },
   "THE": {
@@ -13633,7 +13633,7 @@
     22500
    ],
    "short": "CNG",
-   "nick": "Eagles",
+   "nick": "Tigers",
    "founded": 1988
   },
   "VIN": {
@@ -13651,7 +13651,7 @@
     30000
    ],
    "short": "SAI",
-   "nick": "Eagles",
+   "nick": "Rockets",
    "founded": 1930
   },
   "THM": {
@@ -13669,7 +13669,7 @@
     12000
    ],
    "short": "COG",
-   "nick": "Elephants",
+   "nick": "Kings",
    "founded": 1913
   },
   "THL": {
@@ -13705,7 +13705,7 @@
     18250
    ],
    "short": "CAG",
-   "nick": "Buffaloes",
+   "nick": "Crocodiles",
    "founded": 1956
   },
   "SON": {
@@ -13723,7 +13723,7 @@
     28000
    ],
    "short": "HOA",
-   "nick": "Elephants",
+   "nick": "Naga",
    "founded": 1904
   },
   "THT": {
@@ -13777,7 +13777,7 @@
     25000
    ],
    "short": "SLS",
-   "nick": "Eagles",
+   "nick": "Buffaloes",
    "founded": 1978
   },
   "THH": {
@@ -13795,7 +13795,7 @@
     20000
    ],
    "short": "SAT",
-   "nick": "Oranges",
+   "nick": "Hornbills",
    "founded": 1913
   },
   "BAO": {
@@ -13831,7 +13831,7 @@
     20000
    ],
    "short": "KOT",
-   "nick": "Sky Blues",
+   "nick": "Warriors",
    "founded": 1937
   },
   "KED": {
@@ -13849,7 +13849,7 @@
     38000
    ],
    "short": "KED",
-   "nick": "Blues",
+   "nick": "Warriors",
    "founded": 1930
   },
   "LAF": {
@@ -13885,7 +13885,7 @@
     46000
    ],
    "short": "PER",
-   "nick": "Greens",
+   "nick": "Hornbills",
    "founded": 1899
   },
   "PSP": {
@@ -13903,7 +13903,7 @@
     42000
    ],
    "short": "PSS",
-   "nick": "Blues",
+   "nick": "Tigers",
    "founded": 1955
   },
   "PES": {
@@ -13921,7 +13921,7 @@
     25000
    ],
    "short": "PEI",
-   "nick": "Tigers",
+   "nick": "Buffaloes",
    "founded": 1956
   },
   "LAG": {
@@ -13939,7 +13939,7 @@
     15000
    ],
    "short": "LYA",
-   "nick": "Reds",
+   "nick": "Rockets",
    "founded": 1937
   },
   "SUR": {
@@ -13957,7 +13957,7 @@
     16000
    ],
    "short": "SUR",
-   "nick": "Oranges",
+   "nick": "Sharks",
    "founded": 1925
   },
   "BHS": {
@@ -13975,7 +13975,7 @@
     21000
    ],
    "short": "BHA",
-   "nick": "Eagles",
+   "nick": "Tigers",
    "founded": 1931
   },
   "BHA": {
@@ -13993,7 +13993,7 @@
     15000
    ],
    "short": "BHI",
-   "nick": "Eagles",
+   "nick": "Reds",
    "founded": 1980
   },
   "BHT": {
@@ -14011,7 +14011,7 @@
     20000
    ],
    "short": "BTI",
-   "nick": "Crimsons",
+   "nick": "Kings",
    "founded": 1932
   },
   "PEI": {
@@ -14047,7 +14047,7 @@
     20000
    ],
    "short": "PEK",
-   "nick": "Tigers",
+   "nick": "Reds",
    "founded": 1912
   },
   "PST": {
@@ -14065,7 +14065,7 @@
     30000
    ],
    "short": "PPS",
-   "nick": "Tigers",
+   "nick": "Rockets",
    "founded": 1972
   },
   "TAP": {
@@ -14083,7 +14083,7 @@
     30000
    ],
    "short": "TAA",
-   "nick": "Blues",
+   "nick": "Dragons",
    "founded": 1934
   },
   "PPX": {
@@ -14101,7 +14101,7 @@
     30000
    ],
    "short": "PSP",
-   "nick": "Eagles",
+   "nick": "Yellows",
    "founded": 1943
   },
   "BHP": {
@@ -14137,7 +14137,7 @@
     30000
    ],
    "short": "PPA",
-   "nick": "Panthers",
+   "nick": "Eagles",
    "founded": 1961
   },
   "PUR": {
@@ -14209,7 +14209,7 @@
     3000
    ],
    "short": "BAG",
-   "nick": "Sky Blues",
+   "nick": "Elephants",
    "founded": 1927
   },
   "PAS": {
@@ -14245,7 +14245,7 @@
     15000
    ],
    "short": "BAW",
-   "nick": "Yellows",
+   "nick": "Dragons",
    "founded": 1934
   },
   "MAF": {
@@ -14371,7 +14371,7 @@
     94736
    ],
    "short": "NEL",
-   "nick": "Yellows",
+   "nick": "Hornets",
    "founded": 1903
   },
   "NEL": {
@@ -14389,7 +14389,7 @@
     40000
    ],
    "short": "NCH",
-   "nick": "Blacks",
+   "nick": "Dockers",
    "founded": 1939
   },
   "LDF": {
@@ -14407,7 +14407,7 @@
     28900
    ],
    "short": "LAU",
-   "nick": "Blues",
+   "nick": "Pitmen",
    "founded": 1942
   },
   "KRU": {
@@ -14425,7 +14425,7 @@
     55000
    ],
    "short": "KRU",
-   "nick": "Swallows",
+   "nick": "Merlins",
    "founded": 1969
   },
   "SBL": {
@@ -14443,7 +14443,7 @@
     16000
    ],
    "short": "SIB",
-   "nick": "Swallows",
+   "nick": "Herons",
    "founded": 1958
   },
   "THA": {
@@ -14479,7 +14479,7 @@
     12000
    ],
    "short": "THF",
-   "nick": "Yellows",
+   "nick": "Brewers",
    "founded": 1921
   },
   "LAS": {
@@ -14497,7 +14497,7 @@
     12000
    ],
    "short": "LAS",
-   "nick": "Maroons",
+   "nick": "Falcons",
    "founded": 1968
   },
   "SAS": {
@@ -14551,7 +14551,7 @@
     41733
    ],
    "short": "THS",
-   "nick": "Whites",
+   "nick": "Arrows",
    "founded": 1971
   },
   "VRE": {
@@ -14569,7 +14569,7 @@
     48000
    ],
    "short": "VRE",
-   "nick": "Blues",
+   "nick": "Colliers",
    "founded": 1963
   },
   "THF": {
@@ -14587,7 +14587,7 @@
     41733
    ],
    "short": "TUS",
-   "nick": "Swallows",
+   "nick": "Whites",
    "founded": 1930
   },
   "BET": {
@@ -14605,7 +14605,7 @@
     24000
    ],
    "short": "BEC",
-   "nick": "Reds",
+   "nick": "Weavers",
    "founded": 1914
   },
   "ULU": {
@@ -14659,7 +14659,7 @@
     45000
    ],
    "short": "SAH",
-   "nick": "Hawks",
+   "nick": "Nomads",
    "founded": 1935
   },
   "NIL": {
@@ -14695,7 +14695,7 @@
     18000
    ],
    "short": "KAF",
-   "nick": "Greens",
+   "nick": "Oryx",
    "founded": 1939
   },
   "SLM": {
@@ -14713,7 +14713,7 @@
     20000
    ],
    "short": "TAW",
-   "nick": "Yellows",
+   "nick": "Knights",
    "founded": 1938
   },
   "ITT": {
@@ -14749,7 +14749,7 @@
     30000
    ],
    "short": "LUX",
-   "nick": "Blues",
+   "nick": "Palms",
    "founded": 1971
   },
   "KAF": {
@@ -14785,7 +14785,7 @@
     10000
    ],
    "short": "QEN",
-   "nick": "Camels",
+   "nick": "Sultans",
    "founded": 1986
   },
   "POT": {
@@ -14893,7 +14893,7 @@
     8000
    ],
    "short": "BEW",
-   "nick": "Hawks",
+   "nick": "Divers",
    "founded": 2003
   },
   "ITD": {
@@ -14911,7 +14911,7 @@
     8000
    ],
    "short": "NIL",
-   "nick": "Hawks",
+   "nick": "Dunes",
    "founded": 1971
   },
   "HIL": {
@@ -14929,7 +14929,7 @@
     10000
    ],
    "short": "KAD",
-   "nick": "Camels",
+   "nick": "Stallions",
    "founded": 1934
   },
   "SUA": {
@@ -15019,7 +15019,7 @@
     22000
    ],
    "short": "USG",
-   "nick": "Noirs",
+   "nick": "Aigles",
    "founded": 1909
   },
   "BEE": {
@@ -15073,7 +15073,7 @@
     12000
    ],
    "short": "EOB",
-   "nick": "Verts",
+   "nick": "Faucons",
    "founded": 1967
   },
   "SCB": {
@@ -15145,7 +15145,7 @@
     8000
    ],
    "short": "BEM",
-   "nick": "Bleus",
+   "nick": "Faucons",
    "founded": 1967
   },
   "ETM": {
@@ -15163,7 +15163,7 @@
     6000
    ],
    "short": "SBG",
-   "nick": "Rouges",
+   "nick": "Marins",
    "founded": 1949
   },
   "NNC": {
@@ -15289,7 +15289,7 @@
     6000
    ],
    "short": "MOR",
-   "nick": "Navy",
+   "nick": "Buzzards",
    "founded": 1974
   },
   "TBT": {
@@ -15307,7 +15307,7 @@
     10000
    ],
    "short": "TMA",
-   "nick": "Blues",
+   "nick": "Miners",
    "founded": 1937
   },
   "TBK": {
@@ -15595,7 +15595,7 @@
     20000
    ],
    "short": "ASH",
-   "nick": "Verts",
+   "nick": "Sahariens",
    "founded": 1928
   },
   "BEC": {
@@ -15631,7 +15631,7 @@
     40000
    ],
    "short": "MBB",
-   "nick": "Rouges",
+   "nick": "Gazelles",
    "founded": 1926
   },
   "MNV": {
@@ -15649,7 +15649,7 @@
     30000
    ],
    "short": "MCT",
-   "nick": "Verts",
+   "nick": "Aigles",
    "founded": 1927
   },
   "TRL": {
@@ -15667,7 +15667,7 @@
     10000
    ],
    "short": "BRL",
-   "nick": "Verts",
+   "nick": "Lions",
    "founded": 1959
   },
   "SAG": {
@@ -15793,7 +15793,7 @@
     22000
    ],
    "short": "XAN",
-   "nick": "Kítrinoi",
+   "nick": "Drákontes",
    "founded": 1934
   },
   "GSX": {
@@ -15847,7 +15847,7 @@
     8000
    ],
    "short": "SEA",
-   "nick": "Kítrinoi",
+   "nick": "Lárioi",
    "founded": 1926
   },
   "PAK": {
@@ -15883,7 +15883,7 @@
     10000
    ],
    "short": "KYF",
-   "nick": "Galázioi",
+   "nick": "Nautikoí",
    "founded": 1925
   },
   "NII": {
@@ -15919,7 +15919,7 @@
     8000
    ],
    "short": "IOA",
-   "nick": "Galázioi",
+   "nick": "Titánes",
    "founded": 1973
   },
   "PAL": {
@@ -15955,7 +15955,7 @@
     4000
    ],
    "short": "XAA",
-   "nick": "Prásinoi",
+   "nick": "Gladiátores",
    "founded": 1934
   },
   "PAT": {
@@ -15973,7 +15973,7 @@
     6000
    ],
    "short": "TRI",
-   "nick": "Prásinoi",
+   "nick": "Kaloyéroi",
    "founded": 1917
   },
   "AKX": {
@@ -16117,7 +16117,7 @@
     5000
    ],
    "short": "RUD",
-   "nick": "Crveni",
+   "nick": "Hajduci",
    "founded": 2008
   },
   "PAP": {
@@ -16135,7 +16135,7 @@
     3500
    ],
    "short": "PAR",
-   "nick": "Zeleni",
+   "nick": "Ribari",
    "founded": 1985
   },
   "MFP": {
@@ -16207,7 +16207,7 @@
     8000
    ],
    "short": "MLA",
-   "nick": "Beli",
+   "nick": "Galebovi",
    "founded": 1972
   },
   "HED": {
@@ -16225,7 +16225,7 @@
     22500
    ],
    "short": "NOF",
-   "nick": "Blå",
+   "nick": "Renarna",
    "founded": 1866
   },
   "DYF": {
@@ -16243,7 +16243,7 @@
     50000
    ],
    "short": "GIF",
-   "nick": "Björnarna",
+   "nick": "Sjömännen",
    "founded": 1900
   },
   "GAF": {
@@ -16297,7 +16297,7 @@
     18000
    ],
    "short": "IFV",
-   "nick": "Björnarna",
+   "nick": "Sälarna",
    "founded": 1881
   },
   "FRH": {
@@ -16333,7 +16333,7 @@
     16000
    ],
    "short": "GIK",
-   "nick": "Gula",
+   "nick": "Smederna",
    "founded": 1879
   },
   "ISN": {
@@ -16369,7 +16369,7 @@
     12000
    ],
    "short": "BRE",
-   "nick": "Röda",
+   "nick": "Hammarna",
    "founded": 1876
   },
   "STO": {
@@ -16405,7 +16405,7 @@
     7000
    ],
    "short": "IFO",
-   "nick": "Gula",
+   "nick": "Björnarna",
    "founded": 1911
   },
   "SND": {
@@ -16423,7 +16423,7 @@
     8000
    ],
    "short": "SIG",
-   "nick": "Röda",
+   "nick": "Fiskarna",
    "founded": 1923
   },
   "STK": {
@@ -16477,7 +16477,7 @@
     4500
    ],
    "short": "NYN",
-   "nick": "Björnarna",
+   "nick": "Gruvarbetarna",
    "founded": 1903
   },
   "SYD": {
@@ -16513,7 +16513,7 @@
     55000
    ],
    "short": "VCT",
-   "nick": "Roșii",
+   "nick": "Minerii",
    "founded": 1919
   },
   "STI": {
@@ -16585,7 +16585,7 @@
     15000
    ],
    "short": "OLO",
-   "nick": "Minerii",
+   "nick": "Zimbrii",
    "founded": 1927
   },
   "MEL": {
@@ -16603,7 +16603,7 @@
     12000
    ],
    "short": "DRE",
-   "nick": "Roșii",
+   "nick": "Pescarii",
    "founded": 1922
   },
   "DNJ": {
@@ -16621,7 +16621,7 @@
     15000
    ],
    "short": "ACS",
-   "nick": "Albaștrii",
+   "nick": "Pescarii",
    "founded": 1966
   },
   "AOL": {
@@ -16657,7 +16657,7 @@
     15000
    ],
    "short": "MEH",
-   "nick": "Galbenii",
+   "nick": "Vulturii",
    "founded": 1921
   },
   "KAU": {
@@ -16675,7 +16675,7 @@
     4500
    ],
    "short": "GLO",
-   "nick": "Roșii",
+   "nick": "Zimbrii",
    "founded": 1928
   },
   "BRS": {
@@ -16729,7 +16729,7 @@
     2500
    ],
    "short": "CMS",
-   "nick": "Albaștrii",
+   "nick": "Minerii",
    "founded": 1911
   },
   "DOJ": {
@@ -16765,7 +16765,7 @@
     3000
    ],
    "short": "MEL",
-   "nick": "Minerii",
+   "nick": "Leii",
    "founded": 1966
   },
   "LOK": {
@@ -16783,7 +16783,7 @@
     11000
    ],
    "short": "ELZ",
-   "nick": "Minerii",
+   "nick": "Albaștrii",
    "founded": 1939
   },
   "VLD": {
@@ -16801,7 +16801,7 @@
     41000
    ],
    "short": "VAL",
-   "nick": "Blancos",
+   "nick": "Alcarraza",
    "founded": 1926
   },
   "ARO": {
@@ -16873,7 +16873,7 @@
     20000
    ],
    "short": "VAV",
-   "nick": "Amarillos",
+   "nick": "Búhos",
    "founded": 1932
   },
   "POD": {
@@ -16909,7 +16909,7 @@
     35000
    ],
    "short": "MAY",
-   "nick": "Rojos",
+   "nick": "Potros",
    "founded": 1942
   },
   "TLR": {
@@ -16945,7 +16945,7 @@
     16000
    ],
    "short": "LIO",
-   "nick": "Amarillos",
+   "nick": "Vaqueros",
    "founded": 1913
   },
   "GUD": {
@@ -16981,7 +16981,7 @@
     18000
    ],
    "short": "GUO",
-   "nick": "Azules",
+   "nick": "Delfines",
    "founded": 1913
   },
   "ATO": {
@@ -17017,7 +17017,7 @@
     8000
    ],
    "short": "SDD",
-   "nick": "Blancos",
+   "nick": "Jaguares",
    "founded": 1941
   },
   "ARN": {
@@ -17089,7 +17089,7 @@
     40000
    ],
    "short": "ORT",
-   "nick": "Amarillos",
+   "nick": "Potros",
    "founded": 1894
   },
   "DEO": {
@@ -17107,7 +17107,7 @@
     35000
    ],
    "short": "ORS",
-   "nick": "Albos",
+   "nick": "Pampas",
    "founded": 1921
   },
   "RGT": {
@@ -17179,7 +17179,7 @@
     9000
    ],
    "short": "VEA",
-   "nick": "Negros",
+   "nick": "Ñandúes",
    "founded": 1890
   },
   "SPL": {
@@ -17233,7 +17233,7 @@
     6000
    ],
    "short": "CAS",
-   "nick": "Azules",
+   "nick": "Delfines",
    "founded": 1905
   },
   "SRN": {
@@ -17269,7 +17269,7 @@
     7000
    ],
    "short": "ROA",
-   "nick": "Albos",
+   "nick": "Tamberos",
    "founded": 1917
   },
   "ESE": {
@@ -17323,7 +17323,7 @@
     5000
    ],
    "short": "BNA",
-   "nick": "Verdes",
+   "nick": "Lobos",
    "founded": 1968
   },
   "GMN": {
@@ -17377,7 +17377,7 @@
     45000
    ],
    "short": "VAB",
-   "nick": "Verdes",
+   "nick": "Panteras",
    "founded": 1917
   },
   "POS": {
@@ -17449,7 +17449,7 @@
     36000
    ],
    "short": "PZA",
-   "nick": "Rojos",
+   "nick": "Pastores",
    "founded": 1894
   },
   "CRA": {
@@ -17521,7 +17521,7 @@
     45000
    ],
    "short": "VVA",
-   "nick": "Rojos",
+   "nick": "Mulas",
    "founded": 1922
   },
   "ORI": {
@@ -17557,7 +17557,7 @@
     20000
    ],
    "short": "BAI",
-   "nick": "Amarillos",
+   "nick": "Arrieros",
    "founded": 1900
   },
   "FNT": {
@@ -17593,7 +17593,7 @@
     14000
    ],
    "short": "CER",
-   "nick": "Amarillos",
+   "nick": "Delfines",
    "founded": 1903
   },
   "ELU": {
@@ -17647,7 +17647,7 @@
     12000
    ],
    "short": "LUC",
-   "nick": "Amarillos",
+   "nick": "Alcarraza",
    "founded": 1966
   },
   "TAU": {
@@ -17701,7 +17701,7 @@
     10000
    ],
    "short": "BAJ",
-   "nick": "Rojos",
+   "nick": "Tejedores",
    "founded": 1917
   },
   "NUT": {
@@ -17737,7 +17737,7 @@
     6000
    ],
    "short": "KMF",
-   "nick": "Oranges",
+   "nick": "Voyageurs",
    "founded": 1973
   },
   "GRN": {
@@ -17773,7 +17773,7 @@
     6000
    ],
    "short": "CHD",
-   "nick": "Maroons",
+   "nick": "Moose",
    "founded": 1969
   },
   "HOR": {
@@ -17917,7 +17917,7 @@
     11000
    ],
    "short": "YAS",
-   "nick": "Whites",
+   "nick": "Stallions",
    "founded": 1989
   },
   "JAA": {
@@ -17935,7 +17935,7 @@
     12000
    ],
    "short": "BCX",
-   "nick": "Yellows",
+   "nick": "Pearls",
    "founded": 1939
   },
   "WAT": {
@@ -18025,7 +18025,7 @@
     4000
    ],
    "short": "KUT",
-   "nick": "Reds",
+   "nick": "Nomads",
    "founded": 1935
   },
   "DHA": {
@@ -18061,7 +18061,7 @@
     7000
    ],
    "short": "KRA",
-   "nick": "Greens",
+   "nick": "Lions",
    "founded": 1978
   },
   "NAW": {
@@ -18079,7 +18079,7 @@
     4000
    ],
    "short": "BSY",
-   "nick": "Yellows",
+   "nick": "Falcons",
    "founded": 1922
   },
   "FAA": {
@@ -18187,7 +18187,7 @@
     66000
    ],
    "short": "FAJ",
-   "nick": "Reds",
+   "nick": "Horsemen",
    "founded": 1934
   },
   "PAY": {
@@ -18205,7 +18205,7 @@
     30000
    ],
    "short": "PAY",
-   "nick": "Reds",
+   "nick": "Sultans",
    "founded": 1932
   },
   "ZOB": {
@@ -18241,7 +18241,7 @@
     15000
    ],
    "short": "NAI",
-   "nick": "Yellows",
+   "nick": "Foxes",
    "founded": 1915
   },
   "NFT": {
@@ -18295,7 +18295,7 @@
     15000
    ],
    "short": "GOB",
-   "nick": "Blues",
+   "nick": "Knights",
    "founded": 2007
   },
   "PYK": {
@@ -18403,7 +18403,7 @@
     5000
    ],
    "short": "SHA",
-   "nick": "Oranges",
+   "nick": "Hawks",
    "founded": 1956
   },
   "IHS": {
@@ -18529,7 +18529,7 @@
     13000
    ],
    "short": "SHW",
-   "nick": "Maroons",
+   "nick": "Caravans",
    "founded": 1926
   },
   "AIM": {
@@ -18583,7 +18583,7 @@
     7000
    ],
    "short": "DIC",
-   "nick": "Greens",
+   "nick": "Palms",
    "founded": 1909
   },
   "ABA": {
@@ -18601,7 +18601,7 @@
     12000
    ],
    "short": "AQA",
-   "nick": "Blues",
+   "nick": "Pearls",
    "founded": 1928
   },
   "SHM": {
@@ -18709,7 +18709,7 @@
     40000
    ],
    "short": "DNG",
-   "nick": "Reds",
+   "nick": "Sharks",
    "founded": 1976
   },
   "HEN": {
@@ -18727,7 +18727,7 @@
     50000
    ],
    "short": "MEY",
-   "nick": "Greens",
+   "nick": "Pines",
    "founded": 1960
   },
   "BSH": {
@@ -18745,7 +18745,7 @@
     54000
    ],
    "short": "RUY",
-   "nick": "Blues",
+   "nick": "Phoenix",
    "founded": 1915
   },
   "LOP": {
@@ -18781,7 +18781,7 @@
     52000
    ],
    "short": "BSH",
-   "nick": "Reds",
+   "nick": "Magpies",
    "founded": 1981
   },
   "WUJ": {
@@ -18799,7 +18799,7 @@
     38000
    ],
    "short": "LIH",
-   "nick": "Yellows",
+   "nick": "Whales",
    "founded": 1932
   },
   "BAF": {
@@ -18979,7 +18979,7 @@
     19000
    ],
    "short": "KAW",
-   "nick": "Yellows",
+   "nick": "Deer",
    "founded": 1900
   },
   "AKA": {
@@ -18997,7 +18997,7 @@
     19000
    ],
    "short": "AKA",
-   "nick": "Yellows",
+   "nick": "Wolves",
    "founded": 1902
   },
   "AKB": {
@@ -19033,7 +19033,7 @@
     17000
    ],
    "short": "INA",
-   "nick": "Blues",
+   "nick": "Stags",
    "founded": 1940
   },
   "TAE": {
@@ -19069,7 +19069,7 @@
     20000
    ],
    "short": "TAA",
-   "nick": "Blues",
+   "nick": "Whales",
    "founded": 1973
   },
   "KAB": {
@@ -19105,7 +19105,7 @@
     32000
    ],
    "short": "SAO",
-   "nick": "Reds",
+   "nick": "Pioneers",
    "founded": 1982
   },
   "INI": {
@@ -19177,7 +19177,7 @@
     18000
    ],
    "short": "FUJ",
-   "nick": "Blues",
+   "nick": "Ravens",
    "founded": 1918
   },
   "KUR": {
@@ -19231,7 +19231,7 @@
     25000
    ],
    "short": "YAM",
-   "nick": "Yellows",
+   "nick": "Typhoons",
    "founded": 1990
   },
   "HIB": {
@@ -19249,7 +19249,7 @@
     28000
    ],
    "short": "HIA",
-   "nick": "Blues",
+   "nick": "Comets",
    "founded": 1916
   },
   "OKB": {
@@ -19285,7 +19285,7 @@
     43000
    ],
    "short": "CHU",
-   "nick": "Blues",
+   "nick": "Bulls",
    "founded": 1926
   },
   "JEO": {
@@ -19303,7 +19303,7 @@
     20000
    ],
    "short": "JEO",
-   "nick": "Blues",
+   "nick": "Sharks",
    "founded": 1925
   },
   "BOJ": {
@@ -19393,7 +19393,7 @@
     27000
    ],
    "short": "BAN",
-   "nick": "Sharks",
+   "nick": "Comets",
    "founded": 1950
   },
   "NAB": {
@@ -19447,7 +19447,7 @@
     20000
    ],
    "short": "DON",
-   "nick": "Blues",
+   "nick": "Tigers",
    "founded": 1948
   },
   "CHJ": {
@@ -19465,7 +19465,7 @@
     26000
    ],
    "short": "CHN",
-   "nick": "Sky Blues",
+   "nick": "Pioneers",
    "founded": 1943
   },
   "BUB": {
@@ -19519,7 +19519,7 @@
     13000
    ],
    "short": "JIN",
-   "nick": "Sharks",
+   "nick": "Stags",
    "founded": 1917
   },
   "WOG": {
@@ -19573,7 +19573,7 @@
     8000
    ],
    "short": "RAT",
-   "nick": "Blues",
+   "nick": "Crocodiles",
    "founded": 1927
   },
   "PAA": {
@@ -19591,7 +19591,7 @@
     7000
    ],
    "short": "PAK",
-   "nick": "Reds",
+   "nick": "Pioneers",
    "founded": 1936
   },
   "THC": {
@@ -19699,7 +19699,7 @@
     5000
    ],
    "short": "PAR",
-   "nick": "Knights",
+   "nick": "Lions",
    "founded": 1975
   },
   "MAG": {
@@ -19735,7 +19735,7 @@
     25000
    ],
    "short": "PAI",
-   "nick": "Reds",
+   "nick": "Warriors",
    "founded": 1987
   },
   "BEK": {
@@ -19789,7 +19789,7 @@
     5000
    ],
    "short": "UBO",
-   "nick": "Yellows",
+   "nick": "Stags",
    "founded": 1954
   },
   "PHR": {
@@ -19807,7 +19807,7 @@
     6000
    ],
    "short": "PHR",
-   "nick": "Blues",
+   "nick": "Sharks",
    "founded": 1925
   },
   "TAS": {
@@ -19843,7 +19843,7 @@
     25000
    ],
    "short": "PER",
-   "nick": "Greens",
+   "nick": "Naga",
    "founded": 1927
   },
   "PEE": {
@@ -19861,7 +19861,7 @@
     36000
    ],
    "short": "PEI",
-   "nick": "Yellows",
+   "nick": "Lotus",
    "founded": 1914
   },
   "PSS": {
@@ -19915,7 +19915,7 @@
     10000
    ],
    "short": "KED",
-   "nick": "Tigers",
+   "nick": "Dragons",
    "founded": 1929
   },
   "SOL": {
@@ -19933,7 +19933,7 @@
     15000
    ],
    "short": "SOL",
-   "nick": "Tigers",
+   "nick": "Naga",
    "founded": 1921
   },
   "BOA": {
@@ -19951,7 +19951,7 @@
     20000
    ],
    "short": "BOG",
-   "nick": "Reds",
+   "nick": "Garudas",
    "founded": 1962
   },
   "KEN": {
@@ -20023,7 +20023,7 @@
     10000
    ],
    "short": "PUN",
-   "nick": "Reds",
+   "nick": "Buffaloes",
    "founded": 1930
   },
   "SUB": {
@@ -20041,7 +20041,7 @@
     15000
    ],
    "short": "SUR",
-   "nick": "Yellows",
+   "nick": "Eagles",
    "founded": 1917
   },
   "PEP": {
@@ -20059,7 +20059,7 @@
     10000
    ],
    "short": "PEP",
-   "nick": "Eagles",
+   "nick": "Greens",
    "founded": 1974
   },
   "PEF": {
@@ -20095,7 +20095,7 @@
     20000
    ],
    "short": "PSC",
-   "nick": "Reds",
+   "nick": "Elephants",
    "founded": 1935
   },
   "PAD": {
@@ -20131,7 +20131,7 @@
     10000
    ],
    "short": "PUA",
-   "nick": "Reds",
+   "nick": "Panthers",
    "founded": 2000
   },
   "BHB": {
@@ -20149,7 +20149,7 @@
     10000
    ],
    "short": "BHA",
-   "nick": "Greens",
+   "nick": "Sharks",
    "founded": 1954
   },
   "PSM": {
@@ -20167,7 +20167,7 @@
     10000
    ],
    "short": "PSM",
-   "nick": "Reds",
+   "nick": "Hornbills",
    "founded": 1971
   },
   "BHI": {
@@ -20185,7 +20185,7 @@
     15000
    ],
    "short": "BHI",
-   "nick": "Oranges",
+   "nick": "Elephants",
    "founded": 1930
   },
   "THD": {
@@ -20239,7 +20239,7 @@
     10000
    ],
    "short": "THN",
-   "nick": "Eagles",
+   "nick": "Sharks",
    "founded": 1970
   },
   "KHB": {
@@ -20311,7 +20311,7 @@
     25000
    ],
    "short": "STD",
-   "nick": "Yellows",
+   "nick": "Lotus",
    "founded": 1954
   },
   "THG": {
@@ -20329,7 +20329,7 @@
     20000
    ],
    "short": "SLL",
-   "nick": "Reds",
+   "nick": "Garudas",
    "founded": 1956
   },
   "BIA": {
@@ -20347,7 +20347,7 @@
     10000
    ],
    "short": "TSF",
-   "nick": "Buffaloes",
+   "nick": "Dragons",
    "founded": 1957
   },
   "SOA": {
@@ -20455,7 +20455,7 @@
     18000
    ],
    "short": "GWA",
-   "nick": "Sky Blues",
+   "nick": "Bulls",
    "founded": 1945
   },
   "SOB": {
@@ -20473,7 +20473,7 @@
     40000
    ],
    "short": "SOD",
-   "nick": "Yellows",
+   "nick": "Lotus",
    "founded": 1905
   },
   "MEE": {
@@ -20509,7 +20509,7 @@
     19000
    ],
    "short": "KAL",
-   "nick": "Oranges",
+   "nick": "Gladiators",
    "founded": 1904
   },
   "AHM": {
@@ -20545,7 +20545,7 @@
     40000
    ],
    "short": "KOL",
-   "nick": "Gladiators",
+   "nick": "Rhinos",
    "founded": 1931
   },
   "MAM": {
@@ -20563,7 +20563,7 @@
     24000
    ],
    "short": "MAD",
-   "nick": "Reds",
+   "nick": "Lions",
    "founded": 1927
   },
   "UJJ": {
@@ -20581,7 +20581,7 @@
     35000
    ],
    "short": "UJJ",
-   "nick": "Reds",
+   "nick": "Panthers",
    "founded": 1955
   },
   "UJH": {
@@ -20617,7 +20617,7 @@
     20000
    ],
    "short": "AMB",
-   "nick": "Mariners",
+   "nick": "Monsoon",
    "founded": 1936
   },
   "SAE": {
@@ -20689,7 +20689,7 @@
     48000
    ],
    "short": "PIO",
-   "nick": "Azules",
+   "nick": "Alfareros",
    "founded": 1915
   },
   "OLD": {
@@ -20761,7 +20761,7 @@
     20000
    ],
    "short": "SEP",
-   "nick": "Rojos",
+   "nick": "Leñadores",
    "founded": 1898
   },
   "PLC": {
@@ -20779,7 +20779,7 @@
     12000
    ],
    "short": "PLA",
-   "nick": "Verdes",
+   "nick": "Segadores",
    "founded": 1914
   },
   "CAG": {
@@ -20851,7 +20851,7 @@
     12000
    ],
    "short": "ARR",
-   "nick": "Naranjas",
+   "nick": "Búhos",
    "founded": 1916
   },
   "CAJ": {
@@ -20887,7 +20887,7 @@
     18000
    ],
    "short": "MAY",
-   "nick": "Amarillos",
+   "nick": "Cuervos",
    "founded": 1927
   },
   "ROA": {
@@ -20923,7 +20923,7 @@
     18000
    ],
    "short": "SEG",
-   "nick": "Rojos",
+   "nick": "Mineros",
    "founded": 1939
   },
   "ARD": {
@@ -20977,7 +20977,7 @@
     35000
    ],
    "short": "FUL",
-   "nick": "Azules",
+   "nick": "Cuervos",
    "founded": 1906
   },
   "SDD": {
@@ -20995,7 +20995,7 @@
     11000
    ],
    "short": "SDD",
-   "nick": "Celestes",
+   "nick": "Tejedores",
    "founded": 1917
   },
   "FUC": {
@@ -21013,7 +21013,7 @@
     40000
    ],
    "short": "FUA",
-   "nick": "Rojos",
+   "nick": "Zorros",
    "founded": 1917
   },
   "CAP": {
@@ -21031,7 +21031,7 @@
     40000
    ],
    "short": "CAL",
-   "nick": "Rojos",
+   "nick": "Linces",
    "founded": 1905
   },
   "VAF": {
@@ -21175,7 +21175,7 @@
     5000
    ],
    "short": "BEN",
-   "nick": "Rojos",
+   "nick": "Titanes",
    "founded": 1929
   },
   "LAC": {
@@ -21211,7 +21211,7 @@
     10000
    ],
    "short": "TOR",
-   "nick": "Azules",
+   "nick": "Toreros",
    "founded": 1944
   },
   "POB": {
@@ -21229,7 +21229,7 @@
     6000
    ],
    "short": "POZ",
-   "nick": "Blancos",
+   "nick": "Gauchos",
    "founded": 2007
   },
   "VIA": {
@@ -21283,7 +21283,7 @@
     40000
    ],
    "short": "LAV",
-   "nick": "Albos",
+   "nick": "Pescadores",
    "founded": 1937
   },
   "LAH": {
@@ -21319,7 +21319,7 @@
     10000
    ],
    "short": "ARO",
-   "nick": "Negros",
+   "nick": "Hornero",
    "founded": 1910
   },
   "CLA": {
@@ -21373,7 +21373,7 @@
     10000
    ],
    "short": "URI",
-   "nick": "Azules",
+   "nick": "Marineros",
    "founded": 1950
   },
   "ESC": {
@@ -21463,7 +21463,7 @@
     8000
    ],
    "short": "SAA",
-   "nick": "Rojos",
+   "nick": "Lobos",
    "founded": 1987
   },
   "REB": {
@@ -21517,7 +21517,7 @@
     10000
    ],
    "short": "DAU",
-   "nick": "Verts",
+   "nick": "Lynx",
    "founded": 1923
   },
   "LOU": {
@@ -21571,7 +21571,7 @@
     5000
    ],
    "short": "MAN",
-   "nick": "Bleus",
+   "nick": "Sentinelles",
    "founded": 1964
   },
   "ACA": {
@@ -21625,7 +21625,7 @@
     8000
    ],
    "short": "ZIG",
-   "nick": "Rouges",
+   "nick": "Comètes",
    "founded": 1953
   },
   "ZIR": {
@@ -21643,7 +21643,7 @@
     8000
    ],
    "short": "ZIR",
-   "nick": "Bleus",
+   "nick": "Bûcherons",
    "founded": 1952
   },
   "TAA24": {
@@ -21697,7 +21697,7 @@
     5000
    ],
    "short": "DAK",
-   "nick": "Bleus",
+   "nick": "Forgerons",
    "founded": 2002
   },
   "SUH": {
@@ -21715,7 +21715,7 @@
     40000
    ],
    "short": "SUH",
-   "nick": "Reds",
+   "nick": "Trout",
    "founded": 1920
   },
   "WAR": {
@@ -21805,7 +21805,7 @@
     5000
    ],
    "short": "ANO",
-   "nick": "Yellows",
+   "nick": "Miners",
    "founded": 1939
   },
   "TAB25": {
@@ -21859,7 +21859,7 @@
     10000
    ],
    "short": "WAA",
-   "nick": "Blues",
+   "nick": "Rams",
    "founded": 1913
   },
   "EFF": {
@@ -21895,7 +21895,7 @@
     3000
    ],
    "short": "KOH",
-   "nick": "Reds",
+   "nick": "Lamplighters",
    "founded": 1983
   },
   "KOM": {
@@ -21949,7 +21949,7 @@
     5000
    ],
    "short": "YEN",
-   "nick": "Yellows",
+   "nick": "Buffaloes",
    "founded": 1975
   },
   "ACE": {
@@ -21967,7 +21967,7 @@
     35000
    ],
    "short": "ACE",
-   "nick": "Jaunes",
+   "nick": "Comètes",
    "founded": 1899
   },
   "KAD": {
@@ -22003,7 +22003,7 @@
     10000
    ],
    "short": "SPO",
-   "nick": "Rouges",
+   "nick": "Canonniers",
    "founded": 1984
   },
   "LOL": {
@@ -22075,7 +22075,7 @@
     10000
    ],
    "short": "YAM",
-   "nick": "Verts",
+   "nick": "Mimosas",
    "founded": 1955
   },
   "AIE": {
@@ -22093,7 +22093,7 @@
     5000
    ],
    "short": "AIE",
-   "nick": "Bleus",
+   "nick": "Écureuils",
    "founded": 1913
   },
   "YAO": {
@@ -22147,7 +22147,7 @@
     5000
    ],
    "short": "DAO",
-   "nick": "Rouges",
+   "nick": "Corbeaux",
    "founded": 1990
   },
   "ACY": {
@@ -22183,7 +22183,7 @@
     20000
    ],
    "short": "SAS",
-   "nick": "Verts",
+   "nick": "Hyènes",
    "founded": 1900
   },
   "MSO": {
@@ -22291,7 +22291,7 @@
     5000
    ],
    "short": "GUD",
-   "nick": "Verts",
+   "nick": "Éléphants",
    "founded": 1986
   },
   "SIK": {
@@ -22399,7 +22399,7 @@
     18000
    ],
    "short": "ZIA",
-   "nick": "Noirs",
+   "nick": "Chacals",
    "founded": 1928
   },
   "NOC": {
@@ -22489,7 +22489,7 @@
     5000
    ],
    "short": "BON",
-   "nick": "Verts",
+   "nick": "Éléphants",
    "founded": 1984
   },
   "BOF": {
@@ -22579,7 +22579,7 @@
     8000
    ],
    "short": "ZIO",
-   "nick": "Verts",
+   "nick": "Gazelles",
    "founded": 1989
   },
   "LAJ": {
@@ -22597,7 +22597,7 @@
     8000
    ],
    "short": "LAB",
-   "nick": "Bleus",
+   "nick": "Hyènes",
    "founded": 1940
   },
   "OUS": {
@@ -22615,7 +22615,7 @@
     35000
    ],
    "short": "OUS",
-   "nick": "Blancs",
+   "nick": "Crocodiles",
    "founded": 1937
   },
   "OUO": {
@@ -22669,7 +22669,7 @@
     5000
    ],
    "short": "KAY",
-   "nick": "Bleus",
+   "nick": "Rhinocéros",
    "founded": 1934
   },
   "SED": {
@@ -22813,7 +22813,7 @@
     5000
    ],
    "short": "PIT",
-   "nick": "Verts",
+   "nick": "Aigles",
    "founded": 1947
   },
   "NOO": {
@@ -23011,7 +23011,7 @@
     5000
    ],
    "short": "DIE",
-   "nick": "Grenats",
+   "nick": "Pythons",
    "founded": 1912
   },
   "BYA": {
@@ -23029,7 +23029,7 @@
     5000
    ],
    "short": "BYA",
-   "nick": "Blancs",
+   "nick": "Baobabs",
    "founded": 1924
   },
   "MBE": {
@@ -23047,7 +23047,7 @@
     20000
    ],
    "short": "MBE",
-   "nick": "Rouges",
+   "nick": "Hyènes",
    "founded": 1920
   },
   "MRE": {
@@ -23065,7 +23065,7 @@
     20000
    ],
    "short": "MRE",
-   "nick": "Panthères",
+   "nick": "Rouges",
    "founded": 1900
   },
   "BOH": {
@@ -23101,7 +23101,7 @@
     5000
    ],
    "short": "NZM",
-   "nick": "Bleus",
+   "nick": "Rhinocéros",
    "founded": 1950
   },
   "TUM": {
@@ -23119,7 +23119,7 @@
     10000
    ],
    "short": "TUM",
-   "nick": "Rouges",
+   "nick": "Panthères",
    "founded": 1938
   },
   "TAD27": {
@@ -23137,7 +23137,7 @@
     5000
    ],
    "short": "TAE",
-   "nick": "Panthères",
+   "nick": "Chacals",
    "founded": 1985
   },
   "BAX": {
@@ -23173,7 +23173,7 @@
     5000
    ],
    "short": "TIA",
-   "nick": "Jaunes",
+   "nick": "Pythons",
    "founded": 1965
   },
   "MOP": {
@@ -23227,7 +23227,7 @@
     5000
    ],
    "short": "BAU",
-   "nick": "Verts",
+   "nick": "Éléphants",
    "founded": 1979
   },
   "MKO": {
@@ -23245,7 +23245,7 @@
     5000
    ],
    "short": "MKO",
-   "nick": "Panthères",
+   "nick": "Rouges",
    "founded": 1944
   },
   "VIF": {
@@ -23281,7 +23281,7 @@
     5000
    ],
    "short": "GDD",
-   "nick": "Azuis",
+   "nick": "Cabras",
    "founded": 1904
   },
   "LAP": {
@@ -23335,7 +23335,7 @@
     8000
    ],
    "short": "VIS",
-   "nick": "Pretos",
+   "nick": "Oleiros",
    "founded": 1979
   },
   "POE": {
@@ -23353,7 +23353,7 @@
     3000
    ],
    "short": "POR",
-   "nick": "Azuis",
+   "nick": "Cruzados",
    "founded": 1985
   },
   "VIH": {
@@ -23371,7 +23371,7 @@
     8000
    ],
    "short": "VIO",
-   "nick": "Azuis",
+   "nick": "Cegonhas",
    "founded": 1964
   },
   "POO": {
@@ -23443,7 +23443,7 @@
     20000
    ],
    "short": "VIA",
-   "nick": "Verdes",
+   "nick": "Lavradores",
    "founded": 1916
   },
   "OSS": {
@@ -23497,7 +23497,7 @@
     10000
    ],
    "short": "AVA",
-   "nick": "Azuis",
+   "nick": "Corsários",
    "founded": 1958
   },
   "ALV": {
@@ -23569,7 +23569,7 @@
     8000
    ],
    "short": "GGD",
-   "nick": "Azuis",
+   "nick": "Faroleiros",
    "founded": 1941
   },
   "FER": {
@@ -23587,7 +23587,7 @@
     10000
    ],
    "short": "FER",
-   "nick": "Azuis",
+   "nick": "Cabras",
    "founded": 1941
   },
   "NAP": {
@@ -23659,7 +23659,7 @@
     35000
    ],
    "short": "PRY",
-   "nick": "Pomaranchevi",
+   "nick": "Lvy",
    "founded": 1897
   },
   "BUC": {
@@ -23677,7 +23677,7 @@
     70000
    ],
    "short": "BUK",
-   "nick": "Bili",
+   "nick": "Zubry",
    "founded": 1913
   },
   "KOA": {
@@ -23695,7 +23695,7 @@
     25000
    ],
    "short": "KOL",
-   "nick": "Chervoni",
+   "nick": "Metalurhy",
    "founded": 1963
   },
   "STC": {
@@ -23767,7 +23767,7 @@
     7000
    ],
    "short": "HAN",
-   "nick": "Zhovti",
+   "nick": "Orly",
    "founded": 1929
   },
   "KAG": {
@@ -23839,7 +23839,7 @@
     28000
    ],
    "short": "KAE",
-   "nick": "Zeleni",
+   "nick": "Charivnyky",
    "founded": 1934
   },
   "NYZ": {
@@ -23875,7 +23875,7 @@
     5000
    ],
    "short": "POD",
-   "nick": "Zhovti",
+   "nick": "Hirnyky",
    "founded": 1935
   },
   "POH": {
@@ -23893,7 +23893,7 @@
     5000
    ],
    "short": "POA",
-   "nick": "Bili",
+   "nick": "Lvy",
    "founded": 1975
   },
   "AVD": {
@@ -23929,7 +23929,7 @@
     6000
    ],
    "short": "CHS",
-   "nick": "Zeleni",
+   "nick": "Kozaky",
    "founded": 1969
   },
   "ZEA": {
@@ -23947,7 +23947,7 @@
     22000
    ],
    "short": "TJP",
-   "nick": "Svetlomodrí",
+   "nick": "Levy",
    "founded": 1908
   },
   "MLT": {
@@ -24073,7 +24073,7 @@
     4000
    ],
    "short": "ISC",
-   "nick": "Žltí",
+   "nick": "Medvede",
    "founded": 1959
   },
   "ZER": {
@@ -24127,7 +24127,7 @@
     12000
    ],
    "short": "ISK",
-   "nick": "Modrí",
+   "nick": "Rytieri",
    "founded": 1935
   },
   "RAA": {
@@ -24145,7 +24145,7 @@
     6000
    ],
    "short": "HUT",
-   "nick": "Červení",
+   "nick": "Železiari",
    "founded": 1939
   },
   "SLE": {
@@ -24163,7 +24163,7 @@
     16000
    ],
    "short": "VET",
-   "nick": "Zeleni",
+   "nick": "Jeleni",
    "founded": 1928
   },
   "PEH": {
@@ -24181,7 +24181,7 @@
     12000
    ],
    "short": "NKA",
-   "nick": "Beli",
+   "nick": "Železarji",
    "founded": 1938
   },
   "PAG": {
@@ -24199,7 +24199,7 @@
     13000
    ],
    "short": "NBX",
-   "nick": "Rumeni",
+   "nick": "Rudarji",
    "founded": 1919
   },
   "NOV": {
@@ -24253,7 +24253,7 @@
     4000
    ],
    "short": "ZES",
-   "nick": "Črni",
+   "nick": "Ribiči",
    "founded": 1947
   },
   "LIP": {
@@ -24289,7 +24289,7 @@
     2000
    ],
    "short": "SVA",
-   "nick": "Beli",
+   "nick": "Volkovi",
    "founded": 1960
   },
   "LOA": {
@@ -24433,7 +24433,7 @@
     7000
    ],
    "short": "DON",
-   "nick": "Plavi",
+   "nick": "Rakete",
    "founded": 1944
   },
   "ZAB": {
@@ -24451,7 +24451,7 @@
     5000
    ],
    "short": "ZAG",
-   "nick": "Plavi",
+   "nick": "Rudari",
    "founded": 1987
   },
   "MAA24": {
@@ -24505,7 +24505,7 @@
     3000
    ],
    "short": "TOR",
-   "nick": "Crveni",
+   "nick": "Orlovi",
    "founded": 1945
   },
   "DMO": {
@@ -24523,7 +24523,7 @@
     3000
    ],
    "short": "DMO",
-   "nick": "Žuti",
+   "nick": "Pioniri",
    "founded": 1945
   },
   "DID": {
@@ -24577,7 +24577,7 @@
     9000
    ],
    "short": "LOM",
-   "nick": "Luanët",
+   "nick": "Kalorësit",
    "founded": 1901
   },
   "ZAR": {
@@ -24613,7 +24613,7 @@
     16000
    ],
    "short": "PAA",
-   "nick": "Të Kuqit",
+   "nick": "Shqiponjat",
    "founded": 1906
   },
   "HRY": {
@@ -24631,7 +24631,7 @@
     10000
    ],
    "short": "SHV",
-   "nick": "Luanët",
+   "nick": "Të Kuqit",
    "founded": 1939
   },
   "DIH": {
@@ -24685,7 +24685,7 @@
     5000
    ],
    "short": "DRI",
-   "nick": "Luanët",
+   "nick": "Dhelprat",
    "founded": 1916
   },
   "RYB": {
@@ -24757,7 +24757,7 @@
     15000
    ],
    "short": "SLD",
-   "nick": "Plavi",
+   "nick": "Medvedi",
    "founded": 1926
   },
   "VEY": {
@@ -24775,7 +24775,7 @@
     5000
    ],
    "short": "VEY",
-   "nick": "Crveni",
+   "nick": "Pioniri",
    "founded": 1913
   },
   "DIV": {
@@ -24829,7 +24829,7 @@
     3000
    ],
    "short": "HVA",
-   "nick": "Plavi",
+   "nick": "Jeleni",
    "founded": 1966
   },
   "ZIT": {
@@ -24847,7 +24847,7 @@
     8000
    ],
    "short": "ZIT",
-   "nick": "Crveni",
+   "nick": "Rakete",
    "founded": 1914
   },
   "ZEE": {
@@ -24901,7 +24901,7 @@
     4000
    ],
    "short": "LIV",
-   "nick": "Zeleni",
+   "nick": "Vitezovi",
    "founded": 1984
   },
   "MAC26": {
@@ -24919,7 +24919,7 @@
     10000
    ],
    "short": "MAC",
-   "nick": "Plavi",
+   "nick": "Vitezovi",
    "founded": 1923
   },
   "MAI": {
@@ -24937,7 +24937,7 @@
     5000
    ],
    "short": "MAI",
-   "nick": "Crveni",
+   "nick": "Baroni",
    "founded": 1908
   },
   "RAC": {
@@ -24955,7 +24955,7 @@
     5000
    ],
    "short": "RAP",
-   "nick": "Plavi",
+   "nick": "Bikovi",
    "founded": 1932
   },
   "ZEF": {
@@ -24973,7 +24973,7 @@
     5000
    ],
    "short": "ZED",
-   "nick": "Plavi",
+   "nick": "Pivari",
    "founded": 1913
   },
   "NVI": {
@@ -24991,7 +24991,7 @@
     3000
    ],
    "short": "NVI",
-   "nick": "Plavi",
+   "nick": "Topionice",
    "founded": 1939
   },
   "MLP": {
@@ -25009,7 +25009,7 @@
     3000
    ],
    "short": "MLP",
-   "nick": "Crveni",
+   "nick": "Lavovi",
    "founded": 1927
   },
   "NOF": {
@@ -25099,7 +25099,7 @@
     12000
    ],
    "short": "MIN",
-   "nick": "Zelenite",
+   "nick": "Lavovete",
    "founded": 1899
   },
   "SLK": {
@@ -25135,7 +25135,7 @@
     25000
    ],
    "short": "MIS",
-   "nick": "Sinite",
+   "nick": "Metalurzite",
    "founded": 1934
   },
   "SCE": {
@@ -25225,7 +25225,7 @@
     12000
    ],
    "short": "MNI",
-   "nick": "Zelenite",
+   "nick": "Orlite",
    "founded": 1899
   },
   "ZLA": {
@@ -25279,7 +25279,7 @@
     6000
    ],
    "short": "MIG",
-   "nick": "Zelenite",
+   "nick": "Sokolite",
    "founded": 1946
   },
   "BEJ": {
@@ -25351,7 +25351,7 @@
     10000
    ],
    "short": "UUS",
-   "nick": "Siniset",
+   "nick": "Rautamiehet",
    "founded": 1920
   },
   "STD": {
@@ -25423,7 +25423,7 @@
     6000
    ],
    "short": "TRM",
-   "nick": "Valkoiset",
+   "nick": "Karhut",
    "founded": 1965
   },
   "STG": {
@@ -25459,7 +25459,7 @@
     5000
    ],
    "short": "MIF",
-   "nick": "Keltaiset",
+   "nick": "Ahmat",
    "founded": 1910
   },
   "MAD27": {
@@ -25477,7 +25477,7 @@
     4000
    ],
    "short": "FFY",
-   "nick": "Vihreät",
+   "nick": "Sudet",
    "founded": 1925
   },
   "STJ": {
@@ -25495,7 +25495,7 @@
     6000
    ],
    "short": "KER",
-   "nick": "Siniset",
+   "nick": "Kalastajat",
    "founded": 1980
   },
   "DYA": {
@@ -25531,7 +25531,7 @@
     3000
    ],
    "short": "TAO",
-   "nick": "Vihreät",
+   "nick": "Hirvet",
    "founded": 1909
   },
   "NEB": {
@@ -25639,7 +25639,7 @@
     2000
    ],
    "short": "GRI",
-   "nick": "Bláir",
+   "nick": "Hafernir",
    "founded": 1980
   },
   "VBY": {
@@ -25693,7 +25693,7 @@
     3000
    ],
    "short": "VIF",
-   "nick": "Gulir",
+   "nick": "Sjómenn",
    "founded": 1990
   },
   "HEK": {
@@ -25711,7 +25711,7 @@
     3000
    ],
    "short": "RTT",
-   "nick": "Bláir",
+   "nick": "Selir",
    "founded": 1934
   },
   "SOG": {
@@ -25783,7 +25783,7 @@
     54000
    ],
    "short": "GUR",
-   "nick": "Lurjebi",
+   "nick": "Lomebi",
    "founded": 1911
   },
   "SAW": {
@@ -25801,7 +25801,7 @@
     20000
    ],
    "short": "TSK",
-   "nick": "Lurjebi",
+   "nick": "Tsxenebi",
    "founded": 1927
   },
   "MTB": {
@@ -25819,7 +25819,7 @@
     5000
    ],
    "short": "GUM",
-   "nick": "Tsitlebi",
+   "nick": "Mgelebi",
    "founded": 1945
   },
   "OCH": {
@@ -25837,7 +25837,7 @@
     14000
    ],
    "short": "MZI",
-   "nick": "Lurjebi",
+   "nick": "Arcivebi",
    "founded": 1913
   },
   "TSI": {
@@ -25909,7 +25909,7 @@
     3000
    ],
    "short": "SMG",
-   "nick": "Tsitlebi",
+   "nick": "Mgelebi",
    "founded": 1937
   },
   "OCI": {
@@ -25963,7 +25963,7 @@
     30000
    ],
    "short": "BNE",
-   "nick": "Yellows",
+   "nick": "Jackals",
    "founded": 1926
   },
   "MBI": {
@@ -25981,7 +25981,7 @@
     30000
    ],
    "short": "MBI",
-   "nick": "Greens",
+   "nick": "Lions",
    "founded": 1900
   },
   "MAE28": {
@@ -25999,7 +25999,7 @@
     16000
    ],
    "short": "MAE",
-   "nick": "Reds",
+   "nick": "Camels",
    "founded": 1920
   },
   "REH": {
@@ -26197,7 +26197,7 @@
     5000
    ],
    "short": "HPE",
-   "nick": "Reds",
+   "nick": "Sabras",
    "founded": 1929
   },
   "ZVE": {
@@ -26305,7 +26305,7 @@
     35000
    ],
    "short": "ZNA",
-   "nick": "Zelenye",
+   "nick": "Shakhtyory",
    "founded": 1991
   },
   "LIK": {
@@ -26323,7 +26323,7 @@
     45000
    ],
    "short": "LIK",
-   "nick": "Krasnye",
+   "nick": "Kazaki",
    "founded": 1923
   },
   "NIZ": {
@@ -26359,7 +26359,7 @@
     45000
    ],
    "short": "SHA",
-   "nick": "Zheltye",
+   "nick": "Zubry",
    "founded": 1901
   },
   "ARF": {
@@ -26377,7 +26377,7 @@
     44000
    ],
    "short": "ARD",
-   "nick": "Golubye",
+   "nick": "Zheleznodorozhniki",
    "founded": 1912
   },
   "ZEG": {
@@ -26575,7 +26575,7 @@
     8000
    ],
    "short": "KAS",
-   "nick": "Siniya",
+   "nick": "Hrenadzery",
    "founded": 1905
   },
   "NAR": {
@@ -26611,7 +26611,7 @@
     6000
    ],
    "short": "SAK",
-   "nick": "Siniya",
+   "nick": "Arly",
    "founded": 1933
   },
   "SPJ": {
@@ -26647,7 +26647,7 @@
     14000
    ],
    "short": "VED",
-   "nick": "Chyrvonyya",
+   "nick": "Konnitsa",
    "founded": 1910
   },
   "TOO": {
@@ -26665,7 +26665,7 @@
     8000
    ],
    "short": "TOO",
-   "nick": "Siniya",
+   "nick": "Vauki",
    "founded": 1970
   },
   "SSK": {
@@ -26737,7 +26737,7 @@
     6000
    ],
    "short": "GAE",
-   "nick": "Greens",
+   "nick": "Crusaders",
    "founded": 1901
   },
   "CLB": {
@@ -26755,7 +26755,7 @@
     3000
    ],
    "short": "CLA",
-   "nick": "Crimsons",
+   "nick": "Sparrows",
    "founded": 1918
   },
   "BRD": {
@@ -26773,7 +26773,7 @@
     3000
    ],
    "short": "BRI",
-   "nick": "Scarlets",
+   "nick": "Comets",
    "founded": 1902
   },
   "LED": {
@@ -26809,7 +26809,7 @@
     6000
    ],
    "short": "CHU",
-   "nick": "Royals",
+   "nick": "Seahawks",
    "founded": 1902
   },
   "GRR": {
@@ -26845,7 +26845,7 @@
     3000
    ],
    "short": "ELM",
-   "nick": "Robins",
+   "nick": "Dragons",
    "founded": 1901
   },
   "BUX": {
@@ -26881,7 +26881,7 @@
     2000
    ],
    "short": "LIT",
-   "nick": "Hornets",
+   "nick": "Ironmen",
    "founded": 1989
   },
   "HEH": {
@@ -26971,7 +26971,7 @@
     51000
    ],
    "short": "NUE",
-   "nick": "Amarillos",
+   "nick": "Halcones",
    "founded": 1913
   },
   "SAY": {
@@ -27043,7 +27043,7 @@
     15000
    ],
    "short": "LIO",
-   "nick": "Azules",
+   "nick": "Gauchos",
    "founded": 1926
   },
   "VAS": {
@@ -27097,7 +27097,7 @@
     15000
    ],
    "short": "ALB",
-   "nick": "Rojos",
+   "nick": "Búhos",
    "founded": 1900
   },
   "ELB": {
@@ -27115,7 +27115,7 @@
     8000
    ],
    "short": "ELC",
-   "nick": "Azules",
+   "nick": "Alcarraza",
    "founded": 1936
   },
   "ZAC": {
@@ -27187,7 +27187,7 @@
     45000
    ],
    "short": "COR",
-   "nick": "Celestes",
+   "nick": "Rayos",
    "founded": 1911
   },
   "COG": {
@@ -27205,7 +27205,7 @@
     42000
    ],
    "short": "COS",
-   "nick": "Amarillos",
+   "nick": "Lobos",
    "founded": 1909
   },
   "MNB": {
@@ -27313,7 +27313,7 @@
     10000
    ],
    "short": "BAC",
-   "nick": "Amarillos",
+   "nick": "Leones",
    "founded": 1942
   },
   "MMA": {
@@ -27367,7 +27367,7 @@
     30000
    ],
    "short": "FUE",
-   "nick": "Amarillos",
+   "nick": "Segadores",
    "founded": 1936
   },
   "ATA": {
@@ -27385,7 +27385,7 @@
     5000
    ],
    "short": "ATO",
-   "nick": "Azules",
+   "nick": "Lagartos",
    "founded": 1911
   },
   "OLE": {
@@ -27421,7 +27421,7 @@
     18000
    ],
    "short": "ALM",
-   "nick": "Rojos",
+   "nick": "Zorros",
    "founded": 1922
   },
   "NER": {
@@ -27493,7 +27493,7 @@
     5000
    ],
    "short": "QUI",
-   "nick": "Blancos",
+   "nick": "Pumas",
    "founded": 1948
   },
   "MOG": {
@@ -27547,7 +27547,7 @@
     4000
    ],
    "short": "BAP",
-   "nick": "Azules",
+   "nick": "Tigres",
    "founded": 1943
   },
   "NEE": {
@@ -27565,7 +27565,7 @@
     4000
    ],
    "short": "NEE",
-   "nick": "Amarillos",
+   "nick": "Panteras",
    "founded": 1952
   },
   "VAH": {
@@ -27637,7 +27637,7 @@
     9000
    ],
    "short": "MRS",
-   "nick": "Reds",
+   "nick": "Lions",
    "founded": 1929
   },
   "FEN": {
@@ -27673,7 +27673,7 @@
     5000
    ],
    "short": "SPN",
-   "nick": "Blacks",
+   "nick": "Streamertails",
    "founded": 1928
   },
   "YAB": {
@@ -27709,7 +27709,7 @@
     3000
    ],
    "short": "LNF",
-   "nick": "Blues",
+   "nick": "Hummingbirds",
    "founded": 1924
   },
   "HAC": {
@@ -27745,7 +27745,7 @@
     3000
    ],
    "short": "FUU",
-   "nick": "Yellows",
+   "nick": "Lions",
    "founded": 1923
   },
   "CAV": {
@@ -27781,7 +27781,7 @@
     5000
    ],
    "short": "PEM",
-   "nick": "Blues",
+   "nick": "Stingrays",
    "founded": 1944
   },
   "WCK": {
@@ -27961,7 +27961,7 @@
     8000
    ],
    "short": "VIV",
-   "nick": "Azules",
+   "nick": "Rayos",
    "founded": 1973
   },
   "CAW": {
@@ -28015,7 +28015,7 @@
     7000
    ],
    "short": "PLA",
-   "nick": "Rojos",
+   "nick": "Zorros",
    "founded": 1958
   },
   "RIC": {
@@ -28033,7 +28033,7 @@
     8000
    ],
    "short": "RIB",
-   "nick": "Verdes",
+   "nick": "Lagartos",
    "founded": 1958
   },
   "YEC": {
@@ -28051,7 +28051,7 @@
     8000
    ],
    "short": "YEO",
-   "nick": "Blancos",
+   "nick": "Potros",
    "founded": 1938
   },
   "YRO": {
@@ -28105,7 +28105,7 @@
     10000
    ],
    "short": "ALC",
-   "nick": "Verdes",
+   "nick": "Guerreros",
    "founded": 1921
   },
   "VAJ": {
@@ -28141,7 +28141,7 @@
     5000
    ],
    "short": "CAL",
-   "nick": "Azules",
+   "nick": "Mulas",
    "founded": 1952
   },
   "QUS": {
@@ -28195,7 +28195,7 @@
     4000
    ],
    "short": "ARR",
-   "nick": "Verdes",
+   "nick": "Tiburones",
    "founded": 1979
   },
   "QES": {
@@ -28249,7 +28249,7 @@
     5000
    ],
    "short": "GAN",
-   "nick": "Azules",
+   "nick": "Pastores",
    "founded": 1916
   },
   "YAN": {
@@ -28303,7 +28303,7 @@
     15000
    ],
    "short": "ESK",
-   "nick": "Greens",
+   "nick": "Falcons",
    "founded": 1927
   },
   "JIZ": {
@@ -28339,7 +28339,7 @@
     12000
    ],
    "short": "ANG",
-   "nick": "Blues",
+   "nick": "Lions",
    "founded": 1987
   },
   "OLK": {
@@ -28375,7 +28375,7 @@
     20000
    ],
    "short": "NEF",
-   "nick": "Blues",
+   "nick": "Camels",
    "founded": 1913
   },
   "NEI": {
@@ -28411,7 +28411,7 @@
     10000
    ],
    "short": "NHI",
-   "nick": "Reds",
+   "nick": "Tigers",
    "founded": 1988
   },
   "AND": {
@@ -28429,7 +28429,7 @@
     10000
    ],
    "short": "AND",
-   "nick": "Reds",
+   "nick": "Bulls",
    "founded": 1917
   },
   "TER": {
@@ -28447,7 +28447,7 @@
     8000
    ],
    "short": "TER",
-   "nick": "Yellows",
+   "nick": "Eagles",
    "founded": 1982
   },
   "KHI": {
@@ -28465,7 +28465,7 @@
     10000
    ],
    "short": "KHI",
-   "nick": "Reds",
+   "nick": "Wolves",
    "founded": 1942
   },
   "GRF": {
@@ -28573,7 +28573,7 @@
     3000
    ],
    "short": "PAB",
-   "nick": "Reds",
+   "nick": "Kiwis",
    "founded": 1966
   },
   "SUD": {
@@ -28645,7 +28645,7 @@
     3000
    ],
    "short": "ROS",
-   "nick": "Blues",
+   "nick": "Mariners",
    "founded": 1924
   },
   "ALR": {
@@ -28663,7 +28663,7 @@
     20000
    ],
    "short": "ZAR",
-   "nick": "Whites",
+   "nick": "Dunes",
    "founded": 1908
   },
   "AAL": {
@@ -28753,7 +28753,7 @@
     25000
    ],
    "short": "GHZ",
-   "nick": "Yellows",
+   "nick": "Caravans",
    "founded": 1964
   },
   "ALX": {
@@ -28789,7 +28789,7 @@
     15000
    ],
    "short": "SOH",
-   "nick": "Whites",
+   "nick": "Camels",
    "founded": 1961
   },
   "ARJ": {
@@ -28825,7 +28825,7 @@
     10000
    ],
    "short": "DAH",
-   "nick": "Reds",
+   "nick": "Sandstorm",
    "founded": 1920
   },
   "ALZ": {
@@ -28843,7 +28843,7 @@
     65000
    ],
    "short": "WAH",
-   "nick": "Foxes",
+   "nick": "Blues",
    "founded": 1929
   },
   "ZUL": {
@@ -29005,7 +29005,7 @@
     2000
    ],
    "short": "DUT",
-   "nick": "Punased",
+   "nick": "Karud",
    "founded": 1950
   },
   "JAU": {
@@ -29113,7 +29113,7 @@
     5000
    ],
    "short": "VAJ",
-   "nick": "Sarkanie",
+   "nick": "Lāči",
    "founded": 1991
   },
   "SIF": {
@@ -29131,7 +29131,7 @@
     3000
    ],
    "short": "ELE",
-   "nick": "Sarkanie",
+   "nick": "Alņi",
    "founded": 1921
   },
   "NAT": {
@@ -29149,7 +29149,7 @@
     2000
    ],
    "short": "SLN",
-   "nick": "Dzeltenie",
+   "nick": "Ērgļi",
    "founded": 1983
   },
   "LIF": {
@@ -29167,7 +29167,7 @@
     5000
    ],
    "short": "GAU",
-   "nick": "Sarkanie",
+   "nick": "Vanagi",
    "founded": 1918
   },
   "SIH": {
@@ -29275,7 +29275,7 @@
     5000
    ],
    "short": "GRS",
-   "nick": "Žalieji",
+   "nick": "Ereliai",
    "founded": 1929
   },
   "HAG": {
@@ -29383,7 +29383,7 @@
     2000
    ],
    "short": "ASR",
-   "nick": "Geltonieji",
+   "nick": "Šernai",
    "founded": 1986
   },
   "KUB": {
@@ -29401,7 +29401,7 @@
     2000
    ],
    "short": "GIT",
-   "nick": "Raudonieji",
+   "nick": "Gandrai",
    "founded": 1923
   },
   "JEL": {
@@ -29455,7 +29455,7 @@
     14000
    ],
    "short": "LOR",
-   "nick": "Karmirner",
+   "nick": "Artsivner",
    "founded": 1975
   },
   "RUS": {
@@ -29545,7 +29545,7 @@
     5000
    ],
    "short": "LOO",
-   "nick": "Gaylner",
+   "nick": "Dashtner",
    "founded": 1926
   },
   "LOC": {
@@ -29563,7 +29563,7 @@
     5000
    ],
    "short": "LON",
-   "nick": "Kapuytner",
+   "nick": "Gaylner",
    "founded": 1937
   },
   "OZE": {
@@ -29581,7 +29581,7 @@
     3000
    ],
    "short": "URA",
-   "nick": "Gaylner",
+   "nick": "Sarer",
    "founded": 2008
   },
   "SAA24": {
@@ -29635,7 +29635,7 @@
     31000
    ],
    "short": "LOY",
-   "nick": "Qaralar",
+   "nick": "Qartallar",
    "founded": 1911
   },
   "BUY": {
@@ -29653,7 +29653,7 @@
     10000
    ],
    "short": "QUB",
-   "nick": "Mavilər",
+   "nick": "Aslanlar",
    "founded": 1899
   },
   "BUE": {
@@ -29671,7 +29671,7 @@
     3000
    ],
    "short": "SDA",
-   "nick": "Qırmızılar",
+   "nick": "Neftçilər",
    "founded": 2001
   },
   "DUA": {
@@ -29689,7 +29689,7 @@
     2000
    ],
    "short": "GNX",
-   "nick": "Atlılar",
+   "nick": "Qırmızılar",
    "founded": 1969
   },
   "BOL": {
@@ -29707,7 +29707,7 @@
     2000
    ],
    "short": "QBX",
-   "nick": "Sarılar",
+   "nick": "Canavarlar",
    "founded": 1947
   },
   "DEA": {
@@ -29725,7 +29725,7 @@
     3000
    ],
    "short": "YUX",
-   "nick": "Atlılar",
+   "nick": "Pələnglər",
    "founded": 1945
   },
   "ESR": {
@@ -29743,7 +29743,7 @@
     3000
    ],
    "short": "PFA",
-   "nick": "Qırmızılar",
+   "nick": "Atlılar",
    "founded": 1978
   },
   "YED": {
@@ -29779,7 +29779,7 @@
     3000
    ],
    "short": "GOY",
-   "nick": "Atlılar",
+   "nick": "Şahinlər",
    "founded": 1939
   },
   "SUL": {
@@ -29797,7 +29797,7 @@
     3000
    ],
    "short": "PFZ",
-   "nick": "Mavilər",
+   "nick": "Canavarlar",
    "founded": 1935
   },
   "FAR": {
@@ -29815,7 +29815,7 @@
     30000
    ],
    "short": "ZHA",
-   "nick": "Sarylar",
+   "nick": "Shakhterlar",
    "founded": 1970
   },
   "FAD": {
@@ -29851,7 +29851,7 @@
     8000
    ],
    "short": "SKX",
-   "nick": "Sarylar",
+   "nick": "Arystandar",
    "founded": 1960
   },
   "BIK": {
@@ -29869,7 +29869,7 @@
     13000
    ],
    "short": "MUK",
-   "nick": "Kokter",
+   "nick": "Zholbarystar",
    "founded": 1938
   },
   "BEP": {
@@ -29887,7 +29887,7 @@
     20000
    ],
    "short": "ZHE",
-   "nick": "Zhasyldar",
+   "nick": "Kulandar",
    "founded": 1949
   },
   "NEH": {
@@ -29905,7 +29905,7 @@
     7000
    ],
    "short": "YSL",
-   "nick": "Sarylar",
+   "nick": "Zholbarystar",
    "founded": 1977
   },
   "NUK": {
@@ -29959,7 +29959,7 @@
     5000
    ],
    "short": "BYZ",
-   "nick": "Zhasyldar",
+   "nick": "Munaishylar",
    "founded": 1981
   },
   "CHW": {
@@ -30049,7 +30049,7 @@
     10000
    ],
    "short": "SPM",
-   "nick": "Verzii",
+   "nick": "Lupii",
    "founded": 1913
   },
   "MAH31": {
@@ -30085,7 +30085,7 @@
     3000
    ],
    "short": "DAC",
-   "nick": "Roșii",
+   "nick": "Minerii",
    "founded": 2006
   },
   "RUB": {
@@ -30103,7 +30103,7 @@
     2000
    ],
    "short": "LOC",
-   "nick": "Albaștrii",
+   "nick": "Vulturii",
    "founded": 1975
   },
   "TOF": {
@@ -30139,7 +30139,7 @@
     5000
    ],
    "short": "SRA",
-   "nick": "Roșii",
+   "nick": "Minerii",
    "founded": 1920
   },
   "BRE": {
@@ -30193,7 +30193,7 @@
     2000
    ],
    "short": "SUL",
-   "nick": "Verzii",
+   "nick": "Leii",
    "founded": 1937
   },
   "PLE": {
@@ -30229,7 +30229,7 @@
     5000
    ],
    "short": "SHL",
-   "nick": "Të Kuqit",
+   "nick": "Kalorësit",
    "founded": 2008
   },
   "DIC": {
@@ -30247,7 +30247,7 @@
     13000
    ],
    "short": "BSA",
-   "nick": "Të Kuqit",
+   "nick": "Kalorësit",
    "founded": 1908
   },
   "DIF": {
@@ -30265,7 +30265,7 @@
     3000
    ],
    "short": "NAP",
-   "nick": "Të Verdhët",
+   "nick": "Minatorët",
    "founded": 1926
   },
   "SLF": {
@@ -30337,7 +30337,7 @@
     8000
    ],
    "short": "NAT",
-   "nick": "Të Kaltrit",
+   "nick": "Shqiponjat",
    "founded": 1913
   },
   "PAV": {
@@ -30373,7 +30373,7 @@
     3000
    ],
    "short": "DRP",
-   "nick": "Të Kaltrit",
+   "nick": "Skifterët",
    "founded": 1924
   },
   "BUH": {
@@ -30409,7 +30409,7 @@
     7000
    ],
    "short": "ENE",
-   "nick": "Roten",
+   "nick": "Dragoner",
    "founded": 1914
   },
   "AIA": {
@@ -30463,7 +30463,7 @@
     2000
    ],
    "short": "HEI",
-   "nick": "Gelben",
+   "nick": "Rothirsche",
    "founded": 1979
   },
   "TUS": {
@@ -30499,7 +30499,7 @@
     7000
    ],
    "short": "HAN",
-   "nick": "Weißen",
+   "nick": "Stiere",
    "founded": 1918
   },
   "BAF29": {
@@ -30607,7 +30607,7 @@
     12000
    ],
    "short": "MUS",
-   "nick": "Reds",
+   "nick": "Caravans",
    "founded": 1915
   },
   "RAF": {
@@ -30625,7 +30625,7 @@
     5000
    ],
    "short": "UMA",
-   "nick": "Blues",
+   "nick": "Divers",
    "founded": 1915
   },
   "AUA": {
@@ -30769,7 +30769,7 @@
     8000
    ],
    "short": "JAW",
-   "nick": "Reds",
+   "nick": "Divers",
    "founded": 1900
   },
   "ALL34": {
@@ -30841,7 +30841,7 @@
     8000
    ],
    "short": "WAM",
-   "nick": "Reds",
+   "nick": "Palms",
    "founded": 1914
   },
   "BUL": {
@@ -30931,7 +30931,7 @@
     15000
    ],
    "short": "AIZ",
-   "nick": "Reds",
+   "nick": "Oryx",
    "founded": 1922
   },
   "ALQ38": {
@@ -31003,7 +31003,7 @@
     5000
    ],
    "short": "SSX",
-   "nick": "Reds",
+   "nick": "Falcons",
    "founded": 1982
   },
   "ALR39": {
@@ -31021,7 +31021,7 @@
     8000
    ],
    "short": "UMN",
-   "nick": "Greens",
+   "nick": "Desert Foxes",
    "founded": 1962
   },
   "ALS40": {
@@ -31129,7 +31129,7 @@
     18000
    ],
    "short": "MFY",
-   "nick": "Yellows",
+   "nick": "Palms",
    "founded": 1899
   },
   "AAB": {
@@ -31219,7 +31219,7 @@
     8000
    ],
    "short": "AJI",
-   "nick": "Greens",
+   "nick": "Sandstorm",
    "founded": 1970
   },
   "WAC": {
@@ -31255,7 +31255,7 @@
     5000
    ],
    "short": "QRY",
-   "nick": "Blues",
+   "nick": "Stallions",
    "founded": 1923
   },
   "JEB": {
@@ -31309,7 +31309,7 @@
     10000
    ],
    "short": "BLC",
-   "nick": "Blues",
+   "nick": "Snow Leopards",
    "founded": 1993
   },
   "HOM": {
@@ -31471,7 +31471,7 @@
     36000
    ],
    "short": "UTT",
-   "nick": "Blues",
+   "nick": "Kings",
    "founded": 1995
   },
   "NEJ": {
@@ -31489,7 +31489,7 @@
     36000
    ],
    "short": "DIU",
-   "nick": "Sky Blues",
+   "nick": "Titans",
    "founded": 1901
   },
   "VAM": {
@@ -31615,7 +31615,7 @@
     5000
    ],
    "short": "BRC",
-   "nick": "Greens",
+   "nick": "Cobras",
    "founded": 1912
   },
   "BHD": {
@@ -31633,7 +31633,7 @@
     5000
    ],
    "short": "NOK",
-   "nick": "Yellows",
+   "nick": "Leopards",
    "founded": 1969
   },
   "BUN": {
@@ -31651,7 +31651,7 @@
     10000
    ],
    "short": "ISO",
-   "nick": "Greens",
+   "nick": "Lions",
    "founded": 1984
   },
   "BUM": {
@@ -31669,7 +31669,7 @@
     10000
    ],
    "short": "MOW",
-   "nick": "Reds",
+   "nick": "Eagles",
    "founded": 1928
   },
   "BUP": {
@@ -31705,7 +31705,7 @@
     5000
    ],
    "short": "MPI",
-   "nick": "Reds",
+   "nick": "Buffaloes",
    "founded": 1964
   },
   "WEL": {
@@ -31723,7 +31723,7 @@
     10000
    ],
    "short": "MPC",
-   "nick": "Greens",
+   "nick": "Buffaloes",
    "founded": 1942
   },
   "BOP": {
@@ -31777,7 +31777,7 @@
     10000
    ],
    "short": "MWU",
-   "nick": "Reds",
+   "nick": "Lions",
    "founded": 1936
   },
   "RYA": {
@@ -31795,7 +31795,7 @@
     5000
    ],
    "short": "POM",
-   "nick": "Blues",
+   "nick": "Arrows",
    "founded": 1924
   },
   "WIF": {
@@ -31867,7 +31867,7 @@
     60000
    ],
    "short": "MAH",
-   "nick": "Greens",
+   "nick": "Elephants",
    "founded": 1926
   },
   "CHY": {
@@ -31957,7 +31957,7 @@
     5000
    ],
    "short": "HWA",
-   "nick": "Blues",
+   "nick": "Lions",
    "founded": 1980
   },
   "DRE": {
@@ -32011,7 +32011,7 @@
     30000
    ],
    "short": "OYA",
-   "nick": "Greens",
+   "nick": "Tembo",
    "founded": 1913
   },
   "CAZ": {
@@ -32029,7 +32029,7 @@
     30000
    ],
    "short": "OYP",
-   "nick": "Blues",
+   "nick": "Duma",
    "founded": 1928
   },
   "SPN": {
@@ -32101,7 +32101,7 @@
     10000
    ],
    "short": "NYR",
-   "nick": "Blues",
+   "nick": "Chui",
    "founded": 1982
   },
   "WOE": {
@@ -32191,7 +32191,7 @@
     5000
    ],
    "short": "BUF",
-   "nick": "Blues",
+   "nick": "Leopards",
    "founded": 2002
   },
   "FOC": {
@@ -32227,7 +32227,7 @@
     10000
    ],
    "short": "WAP",
-   "nick": "Reds",
+   "nick": "Hornbills",
    "founded": 1904
   },
   "LEW": {
@@ -32245,7 +32245,7 @@
     35000
    ],
    "short": "NKM",
-   "nick": "Blues",
+   "nick": "Cranes",
    "founded": 1920
   },
   "WAE": {
@@ -32317,7 +32317,7 @@
     5000
    ],
    "short": "KAP",
-   "nick": "Reds",
+   "nick": "Kobs",
    "founded": 1941
   },
   "PAW": {
@@ -32389,7 +32389,7 @@
     30000
    ],
    "short": "UAM",
-   "nick": "Reds",
+   "nick": "Zebras",
    "founded": 1930
   },
   "BPE": {
@@ -32407,7 +32407,7 @@
     10000
    ],
    "short": "LEK",
-   "nick": "Yellows",
+   "nick": "Lions",
    "founded": 1930
   },
   "MAL34": {
@@ -32479,7 +32479,7 @@
     10000
    ],
    "short": "LES",
-   "nick": "Reds",
+   "nick": "Falcons",
    "founded": 1944
   },
   "WEN": {
@@ -32587,7 +32587,7 @@
     5000
    ],
    "short": "DAD",
-   "nick": "Bleus",
+   "nick": "Hippopotames",
    "founded": 1954
   },
   "BOQ": {
@@ -32605,7 +32605,7 @@
     5000
    ],
    "short": "BOB",
-   "nick": "Rouges",
+   "nick": "Aigles",
    "founded": 1929
   },
   "KAK": {
@@ -32623,7 +32623,7 @@
     3000
    ],
    "short": "KAY",
-   "nick": "Bleus",
+   "nick": "Pythons",
    "founded": 1956
   },
   "YOA": {
@@ -32677,7 +32677,7 @@
     5000
    ],
    "short": "NOU",
-   "nick": "Rouges",
+   "nick": "Buffles",
    "founded": 1919
   },
   "DIG": {
@@ -32803,7 +32803,7 @@
     10000
    ],
    "short": "OVA",
-   "nick": "Verdes",
+   "nick": "Corsários",
    "founded": 1934
   },
   "VIU": {
@@ -32893,7 +32893,7 @@
     5000
    ],
    "short": "ACA",
-   "nick": "Rubro-Negros",
+   "nick": "Pescadores",
    "founded": 1939
   },
   "BEW": {
@@ -32911,7 +32911,7 @@
     30000
    ],
    "short": "BEN",
-   "nick": "Blancos",
+   "nick": "Titanes",
    "founded": 1935
   },
   "BEZ": {
@@ -32929,7 +32929,7 @@
     25000
    ],
    "short": "BER",
-   "nick": "Rojos",
+   "nick": "Segadores",
    "founded": 1903
   },
   "ROE": {
@@ -33001,7 +33001,7 @@
     5000
    ],
    "short": "CAA",
-   "nick": "Rojos",
+   "nick": "Mulas",
    "founded": 1948
   },
   "PAZ": {
@@ -33037,7 +33037,7 @@
     5000
    ],
    "short": "ONA",
-   "nick": "Azules",
+   "nick": "Caudillos",
    "founded": 1955
   },
   "SAD27": {
@@ -33091,7 +33091,7 @@
     8000
    ],
    "short": "HIN",
-   "nick": "Azules",
+   "nick": "Jaguares",
    "founded": 1934
   },
   "SDB": {
@@ -33109,7 +33109,7 @@
     5000
    ],
    "short": "SDD",
-   "nick": "Rojos",
+   "nick": "Marineros",
    "founded": 1978
   },
   "CEC": {
@@ -33181,7 +33181,7 @@
     7000
    ],
    "short": "ALO",
-   "nick": "Amarillos",
+   "nick": "Mineros",
    "founded": 1975
   },
   "ORC": {
@@ -33253,7 +33253,7 @@
     5000
    ],
    "short": "FRA",
-   "nick": "Azules",
+   "nick": "Leñadores",
    "founded": 1941
   },
   "CTA": {
@@ -33289,7 +33289,7 @@
     5000
    ],
    "short": "ESC",
-   "nick": "Rojos",
+   "nick": "Zorros",
    "founded": 1982
   },
   "MOK": {
@@ -33325,7 +33325,7 @@
     5000
    ],
    "short": "PEN",
-   "nick": "Amarillos",
+   "nick": "Caudillos",
    "founded": 1964
   },
   "WIL": {
@@ -33343,7 +33343,7 @@
     6000
    ],
    "short": "LOS",
-   "nick": "Reds",
+   "nick": "Panthers",
    "founded": 1986
   },
   "DAV": {
@@ -33397,7 +33397,7 @@
     5000
    ],
    "short": "PLC",
-   "nick": "Panthers",
+   "nick": "Cocricos",
    "founded": 1941
   },
   "MEF": {
@@ -33415,7 +33415,7 @@
     10000
    ],
    "short": "RIF",
-   "nick": "Scarlet Ibis",
+   "nick": "Blues",
    "founded": 1946
   },
   "CHB25": {
@@ -33433,7 +33433,7 @@
     10000
    ],
    "short": "RII",
-   "nick": "Scarlet Ibis",
+   "nick": "Ocelots",
    "founded": 2008
   },
   "PAA24": {
@@ -33451,7 +33451,7 @@
     3000
    ],
    "short": "PNR",
-   "nick": "Scarlet Ibis",
+   "nick": "Steelmen",
    "founded": 1948
   },
   "TIB": {
@@ -33505,7 +33505,7 @@
     3000
    ],
    "short": "CUC",
-   "nick": "Scarlet Ibis",
+   "nick": "Hummingbirds",
    "founded": 1922
   }
  },

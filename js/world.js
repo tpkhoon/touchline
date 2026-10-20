@@ -1026,17 +1026,28 @@
       games = (comp && comp.fixtures && comp.fixtures.length) || 38;
     const rows = [],
       spellAt = {};
+    // where he ranks in his position at his club decides his games: a starter plays most of the matches, the next man in about half,
+    // then a rotation place, then the fringe (the players of his own group at the club, by ability)
+    const grp = D.POS_GROUP[p.pos],
+      starters = { GK: 1, DEF: 4, MID: 3, ATT: 3 }[grp] || 3,
+      mates = W.squad(c.id).filter((q) => q !== p && !q.team && D.POS_GROUP[q.pos] === grp);
     for (let k = seasons; k >= 1; k--) {
       const y = S.year - k;
       const club = k <= here || !prev ? c : prev,
         young = age - k < 21;
-      // appearances: a regular if he is good for the club, a rotation player or a fringe man if not; the young play less
-      const rel = p.ca - (club === c ? lvl : W.levelFor(prev.rep)) - (age - k < 22 ? 4 : 0);
-      const apps = U.clamp(
-        Math.round(U.gauss(games * (0.45 + rel * 0.03) * (young ? 0.8 : 1), games * 0.14)),
-        0,
-        games,
-      );
+      // he was weaker then, if he was still growing (about two points a year before 23)
+      const then = p.ca - Math.max(0, Math.min(k, 23 - (age - k))) * 2;
+      const clubLvl = club === c ? lvl : W.levelFor(prev.rep);
+      const rel = then - clubLvl;
+      let share;
+      if (club === c) {
+        const rank = mates.filter((q) => q.ca > then).length;
+        share = rank < starters ? 0.8 : rank === starters ? 0.55 : rank === starters + 1 ? 0.35 : 0.15;
+        if (then >= lvl + 6) share = Math.max(share, 0.86); // a class above his club's level: always in the team
+      } else share = U.clamp(0.55 + rel * 0.025, 0.1, 0.88);
+      if (age - k < 19) share *= 0.6;
+      else if (young) share *= 0.85;
+      const apps = U.clamp(Math.round(U.gauss(games * share, games * 0.09)), 0, games);
       const finish = 0.6 + p.attrs.finishing / 25;
       const g = Math.round(apps * rate[0] * finish * U.rand(0.6, 1.4));
       const a = Math.round(apps * rate[1] * U.rand(0.6, 1.4));
@@ -1049,9 +1060,13 @@
         g,
         a,
         r: apps
-          ? +U.clamp(6.55 + rel * 0.025 + U.gauss(0, 0.12) + (g + a) / Math.max(1, apps) / 6, 5.8, 7.9).toFixed(2)
+          ? +U.clamp(
+              6.62 + U.clamp(rel * 0.04, -0.5, 0.9) + U.gauss(0, 0.12) + (g + a) / Math.max(1, apps) / 6,
+              5.8,
+              7.9,
+            ).toFixed(2)
           : 0,
-        mins: apps * Math.round(U.rand(66, 88)),
+        mins: apps * Math.round(share >= 0.7 ? U.rand(78, 90) : U.rand(55, 80)),
         sh: Math.round(apps * rate[2] * U.rand(0.7, 1.3)),
         kp: Math.round(apps * rate[3] * U.rand(0.7, 1.3)),
         tk: Math.round(apps * rate[4] * U.rand(0.7, 1.3)),

@@ -260,9 +260,30 @@
 
   // A scout's own (imperfect) read of potential, stable per scout+player
   Sc.scoutPA = (scout, p) => p.pa + ((U.hash(scout.id + p.id) % 1000) / 1000 - 0.5) * 2 * (21 - scout.judge) * 0.8;
+  // A scouting position: 'any', a group (GK, DEF, MID, ATT) or an exact position: ST, CB, DM, CM, AM, or a flank position with its side
+  // ('W:L' is a left winger, 'FB:R' a right-back ...)
+  Sc.POS_LABEL = {
+    'W:L': 'LW',
+    'W:R': 'RW',
+    'FB:L': 'LB',
+    'FB:R': 'RB',
+    'WB:L': 'LWB',
+    'WB:R': 'RWB',
+    'WM:L': 'LM',
+    'WM:R': 'RM',
+  };
+  Sc.posLabel = (k) => (k === 'any' ? 'all positions' : Sc.POS_LABEL[k] || k);
+  Sc.posMatch = (p, k) => {
+    if (!k || k === 'any' || D.POS_GROUP[p.pos] === k) return true;
+    if (k.includes(':')) {
+      const [pos, side] = k.split(':');
+      return p.pos === pos && p.side === side;
+    }
+    return p.pos === k;
+  };
   Sc.focusLabel = (a) => {
     const where = a.type === 'league' ? FM.S.comps[a.comp].name : D.REGIONS[a.region];
-    const bits = [a.pos === 'any' ? 'all positions' : a.pos, `≤${a.maxAge}`];
+    const bits = [Sc.posLabel(a.pos), `≤${a.maxAge}`];
     if (a.nat && a.nat !== 'any') bits.push(`${D.NATIONS[a.nat].name} only`);
     if (a.minStars) bits.push(`${a.minStars}★+ potential`);
     if (a.maxFee) bits.push(`under ${U.money(a.maxFee)}`);
@@ -291,7 +312,7 @@
             !dis[p.id] &&
             Sc.scoutable(p) &&
             (a.type === 'league' ? p.clubId && S.clubs[p.clubId].comp === a.comp : Sc.region(p) === a.region) &&
-            (a.pos === 'any' || D.POS_GROUP[p.pos] === a.pos) &&
+            Sc.posMatch(p, a.pos) &&
             (!a.nat || a.nat === 'any' || p.nat === a.nat) &&
             W.age(p) <= a.maxAge &&
             (!a.minStars || W.stars(Sc.scoutPA(scout, p), p.pos) >= a.minStars) &&

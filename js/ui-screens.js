@@ -74,7 +74,7 @@
         ${aggNote ? `<div class="small center b" style="margin:-4px 0 10px;opacity:.9">${esc(aggNote)}</div>` : ''}
         <div class="row small" style="margin-bottom:${lastLine ? 4 : 12}px;opacity:.9"><span>Win chance ${Math.round(pw * 100)}%</span><span class="grow"></span><span>Their form</span>${C.form(oppForm)}</div>
         ${lastLine ? `<div class="tiny ellip" style="margin-bottom:12px;opacity:.8;text-align:right">${esc(lastLine)}</div>` : ''}
-        <div class="row" style="gap:8px"><button class="play grow" data-act="preview">▶ MATCHDAY</button><button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;padding:0 14px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button></div></div>`;
+        <div class="row" style="gap:8px"><button class="play grow" data-act="preview">▶ MATCHDAY</button><button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;width:auto;min-width:54px;padding:14px 16px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button></div></div>`;
     } else if (cal) {
       const others = FM.Season.dayFixtures();
       const away =
@@ -100,7 +100,7 @@
         cal.type === 'tourn'
           ? `${(s.tourns || []).map((t) => t.name).join(' · ') || 'The summer tournaments'} — ${others.length} match${others.length === 1 ? '' : 'es'} today.`
           : what;
-      hero = `<div class="hero" style="--c1:#1b2533;--c2:#0c1118"><div class="tag">${cal.type === 'playoff' ? 'Playoffs' : cal.type === 'intl' ? '🌍 International break' : cal.type === 'tourn' ? '🏆 Summer tournament' : cal.type === 'cup' ? (cal.super ? 'Super Cups' : cal.world ? 'World Club Championship' : cal.stage ? 'Continental night' : 'Cup day') : 'Matchday'}</div><div class="h2" style="margin:10px 0 14px">No match for ${esc(c.short)} today</div><div class="small" style="opacity:.8;margin-bottom:12px">${esc(what2)}</div><div class="row" style="gap:8px"><button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Next match</button><button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;padding:0 14px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button></div></div>`;
+      hero = `<div class="hero" style="--c1:#1b2533;--c2:#0c1118"><div class="tag">${cal.type === 'playoff' ? 'Playoffs' : cal.type === 'intl' ? '🌍 International break' : cal.type === 'tourn' ? '🏆 Summer tournament' : cal.type === 'cup' ? (cal.super ? 'Super Cups' : cal.world ? 'World Club Championship' : cal.stage ? 'Continental night' : 'Cup day') : 'Matchday'}</div><div class="h2" style="margin:10px 0 14px">No match for ${esc(c.short)} today</div><div class="small" style="opacity:.8;margin-bottom:12px">${esc(what2)}</div><div class="row" style="gap:8px"><button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Next match</button><button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;width:auto;min-width:54px;padding:14px 16px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button></div></div>`;
     }
     const row = s.comps[c.comp].table[c.id];
     const pos = W.position(c.id);
@@ -563,7 +563,7 @@
     };
     return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
         <div class="small" style="opacity:.75;margin-top:8px">Reputation ${U.repText(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
-        <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Wait for an offer</button>'}${'<button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;padding:0 14px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button>'}</div></div>
+        <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">⏩ Wait for an offer</button>'}${'<button class="play" style="background:rgba(255,255,255,.14);color:#fff;flex:none;width:auto;min-width:54px;padding:14px 16px" data-act="simDaysAsk" aria-label="Sim forward some days">📅</button>'}</div></div>
       <div class="sec"><div class="h3">Job offers</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
       ${offers.map(card).join('') || '<div class="empty">No offers right now. Keep waiting — clubs in your range will call.</div>'}
       <div class="sec"><div class="h3">The Feed</div></div>
@@ -1926,7 +1926,7 @@
           const task = !a
             ? '<span class="pill">Idle</span>'
             : a.type === 'region'
-              ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.pos === 'any' ? 'all' : a.pos} · ≤${a.maxAge}</span>`
+              ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.pos === 'any' ? 'all' : FM.Scouting.posLabel(a.pos)} · ≤${a.maxAge}</span>`
               : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${a.weeks}w</span>`;
           return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${U.staffText(sc.judge)} · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
         <div class="small muted" style="margin:10px 0 6px">${esc(sc.note)}</div>
@@ -3527,12 +3527,12 @@
       <div class="card"><div class="row"><div class="grow"><div class="h3">Colour-blind kits</div><div class="small dim">Picks the away shirt so the two sides look different to red-green colour blindness too, and draws the away side's players as squares</div></div><div class="seg" style="width:120px"><button class="${!s.settings.colourBlind ? 'on' : ''}" data-act="setFlag" data-k="colourBlind" data-v="0">Off</button><button class="${s.settings.colourBlind ? 'on' : ''}" data-act="setFlag" data-k="colourBlind" data-v="1">On</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Haptics</div><div class="small dim">A light tap on every button (phones that support it)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="0">On</button><button class="${s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Matchday digest</div><div class="small dim">A round-up card in the feed after every league matchday</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="0">On</button><button class="${s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="1">Off</button></div></div></div>
-      <div class="card"><div class="row"><div class="grow"><div class="h3">Currency</div><div class="small dim">Auto uses your club's country's currency; prices are converted at fixed rates (the game keeps its money in dollars)</div></div></div><select data-input="currency" style="width:100%;margin-top:8px"><option value="auto" ${(s.settings.currency || 'auto') === 'auto' ? 'selected' : ''}>Auto (${esc(U.currency().name)})</option>${Object.entries(
+      <div class="card"><div class="row"><div class="grow"><div class="h3">Currency</div><div class="small dim">Pounds unless you choose another (Auto uses your club's country's currency); prices are converted at fixed rates (the game keeps its money in dollars)</div></div></div><select data-input="currency" style="width:100%;margin-top:8px"><option value="auto" ${s.settings.currency === 'auto' ? 'selected' : ''}>Auto: the club's own currency</option>${Object.entries(
         U.CURRENCIES,
       )
         .map(
           ([k, c]) =>
-            `<option value="${k}" ${s.settings.currency === k ? 'selected' : ''}>${esc(c.name)} (${esc(c.sym.trim())})</option>`,
+            `<option value="${k}" ${(s.settings.currency || 'GBP') === k ? 'selected' : ''}>${esc(c.name)} (${esc(c.sym.trim())})</option>`,
         )
         .join('')}</select></div>
       <div class="card"><div class="h3">World rules</div><div class="small muted" style="margin-top:6px;line-height:1.6">Points for a win: <b>${s.rules.win}</b> · Subs: <b>${s.rules.subs}</b> · Foreign players in squad: <b>${W.foreignLimitText()}</b><br>${UI.ownRules()}Rules may change as the football world evolves.</div></div>

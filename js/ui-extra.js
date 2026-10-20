@@ -674,6 +674,21 @@
         ['MID', 'MID'],
         ['ATT', 'ATT'],
       ])}
+      <div class="tiny dim" style="margin-top:6px">Or one position exactly</div>${chipRow('as', 'pos', a.pos, [
+        ['ST', 'ST'],
+        ['W:L', 'LW'],
+        ['W:R', 'RW'],
+        ['AM', 'AM'],
+        ['WM:L', 'LM'],
+        ['WM:R', 'RM'],
+        ['CM', 'CM'],
+        ['DM', 'DM'],
+        ['WB:L', 'LWB'],
+        ['WB:R', 'RWB'],
+        ['FB:L', 'LB'],
+        ['FB:R', 'RB'],
+        ['CB', 'CB'],
+      ])}
       <div class="h3" style="margin-top:6px">Nationality</div><select id="as-nat" class="as-nat"><option value="any">Any nationality</option>${natOpts.map((k) => `<option value="${k}" ${a.nat === k ? 'selected' : ''}>${D.NATIONS[k].flag} ${esc(D.NATIONS[k].name)}</option>`).join('')}</select>
       <div class="h3" style="margin-top:6px">Max age</div>${chipRow('as', 'maxAge', a.maxAge, [
         [19, '≤19'],

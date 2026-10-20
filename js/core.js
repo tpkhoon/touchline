@@ -50,18 +50,18 @@
       } while (p > L);
       return k - 1;
     },
-    // Display currency: amounts are kept in dollars and shown in the club's currency (settings.currency 'auto'),
-    // or a chosen one: £ for British clubs, € in the eurozone, $ elsewhere, converted at fixed rates
+    // Display currency: amounts are kept in dollars and shown in pounds unless another is chosen, or 'auto' (the club's own currency:
+    // £ for British clubs, € in the eurozone, $ elsewhere), converted at fixed rates
     currency() {
       const S = FM.S;
-      if (!S || !S.user) return FM.U.CURRENCIES.USD;
-      let k = (S.settings && S.settings.currency) || 'auto';
+      if (!S || !S.user) return FM.U.CURRENCIES.GBP;
+      let k = (S.settings && S.settings.currency) || 'GBP';
       if (k === 'auto') {
         const c = S.user.clubId && S.clubs[S.user.clubId];
         const nat = (c && c.nat) || S.user.nat;
         k = FM.U.CURRENCY_OF[nat] || 'USD';
       }
-      return FM.U.CURRENCIES[k] || FM.U.CURRENCIES.USD;
+      return FM.U.CURRENCIES[k] || FM.U.CURRENCIES.GBP;
     },
     // Amounts are kept in dollars; a currency is its symbol, its name and its (rough, fixed) rate against the dollar
     CURRENCIES: {

@@ -51,6 +51,80 @@
   const builtIn = () => (ED.base = ED.base || new Map(WD.fromStatic().clubs.map((c) => [c.id, c])));
   const stars = (rep) => `${(Math.round((rep / 100) * 10) / 2).toFixed(1)}★`;
 
+  // ---------- A draft: save while editing halfway ----------
+  // The world being edited is kept as a draft (in the save store, beside the careers) when you tap Save draft, a couple of seconds
+  // after any change, and when you go back, so a half-made world is still there next time the editor opens
+  const DRAFT = 'touchline.editdraft',
+    DRAFT_META = 'touchline.editdraft.meta';
+  const draftMeta = () => {
+    try {
+      return JSON.parse(localStorage.getItem(DRAFT_META));
+    } catch (e) {
+      return null;
+    }
+  };
+  const saveDraft = async (quiet) => {
+    const ed = ED;
+    if (!ed) return false;
+    const text = JSON.stringify({ v: 1, def: ed.def, start: ed.start, tab: ed.tab });
+    if (text === ed.lastDraft) {
+      if (!quiet) UI.toast('Draft saved', 1500);
+      return true;
+    }
+    try {
+      await FM.Save.store().put(DRAFT, text);
+      try {
+        localStorage.setItem(
+          DRAFT_META,
+          JSON.stringify({ name: ed.def.meta.name || 'My world', at: Date.now(), clubs: ed.def.clubs.length }),
+        );
+      } catch (e) {}
+      ed.lastDraft = text;
+      if (!quiet) UI.toast('Draft saved', 1500);
+      return true;
+    } catch (e) {
+      if (!quiet) UI.toast('Could not save the draft', 3000);
+      return false;
+    }
+  };
+  // (only when something has changed since the editor opened: an untouched editor leaves no draft)
+  const draftSoon = () => {
+    if (!ED) return;
+    clearTimeout(ED.dt);
+    ED.dt = setTimeout(() => {
+      if (ED && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true);
+    }, 2500);
+  };
+  UI.acts.edSaveDraft = () => saveDraft(false);
+  UI.acts.edLoadDraft = async () => {
+    try {
+      const text = await FM.Save.store().get(DRAFT);
+      const d = JSON.parse(text);
+      ED.def = d.def;
+      ED.start = d.start || clone(d.def);
+      ED.tab = d.tab || 'world';
+      ED.view = 'home';
+      ED.base = null;
+      ED.lastDraft = text;
+      ED.draftSeen = true;
+      UI.toast('Draft loaded', 1500);
+    } catch (e) {
+      UI.toast('The draft could not be read', 3000);
+    }
+    UI.worldEditor();
+  };
+  UI.acts.edDeleteDraft = async () => {
+    try {
+      await FM.Save.store().del(DRAFT);
+    } catch (e) {}
+    try {
+      localStorage.removeItem(DRAFT_META);
+    } catch (e) {}
+    ED.draftSeen = true;
+    ED.lastDraft = null;
+    UI.worldEditor();
+  };
+
   // ---------- Opening and closing ----------
   UI.acts.edOpen = () => {
     const cur = UI._ng().db;
@@ -79,6 +153,7 @@
   };
   UI.acts.edClose = () => {
     const toTitle = ED && ED.fromTitle;
+    if (ED && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true); // (going back keeps what you have made)
     dropNations();
     ED = null;
     const cur = UI._ng().db;
@@ -707,7 +782,12 @@
       m = ED.def.meta;
     const nations = [...new Set(ED.def.leagues.map((l) => l.nat))];
     const bad = s.chk.errors.length;
-    return `<div class="h1" style="margin-top:3vh">World editor</div><div class="tag">Change the clubs and leagues your world starts from. Nothing changes in the game until you use the world.</div>
+    const dm = draftMeta();
+    const draft =
+      dm && !ED.draftSeen
+        ? `<div class="card" style="margin:10px 0 0;padding:10px 12px"><div class="small b">📂 A draft is saved</div><div class="tiny dim" style="margin:2px 0 8px">“${esc(dm.name)}” · ${U.plural(dm.clubs, 'club')} · ${new Date(dm.at).toLocaleString()}</div><div class="row" style="gap:8px"><button class="btn sm pri" data-act="edLoadDraft">Continue the draft</button><button class="btn sm" data-act="edDeleteDraft">Discard it</button></div></div>`
+        : '';
+    return `<div class="h1" style="margin-top:3vh">World editor</div><div class="tag">Change the clubs and leagues your world starts from. Nothing changes in the game until you use the world.</div>${draft}
       <div class="seg ed-tabs" style="margin:10px 0 0">${TABS.map(([k, t]) => `<button class="${ED.tab === k ? 'on' : ''}" data-act="edTab" data-v="${k}">${t}</button>`).join('')}</div>
       <div style="${hide('world')}">
       <div class="ng-label">Name of this world</div><input type="text" id="ed-wname" maxlength="40" value="${esc(m.name || '')}">
@@ -847,7 +927,7 @@
         .join('')}
       <div class="actions" style="margin-top:16px"><button class="btn sm" data-act="edNewLeague">＋ Add a league</button><button class="btn sm" data-act="edReset">Start again from the built-in world</button></div>
       </div>
-      <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edExport">⬆️ Save as file</button><button class="btn sm pri grow" data-act="edUse">Use this world</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edSaveDraft" aria-label="Save a draft">💾 Draft</button><button class="btn sm" data-act="edExport">⬆️ File</button><button class="btn sm pri grow" data-act="edUse">Use this world</button></div>`;
   };
 
   // ---------- League rules and new leagues ----------
@@ -4170,7 +4250,12 @@
       changes: changesView,
     };
     const body = (views[ED.view] || homeView)();
-    app.innerHTML = `<div class="title ed-wide">${body}</div>`;
+    // (every screen but the home one has the draft button at the top: the home one has it in its footer)
+    const bar = views[ED.view]
+      ? '<div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm" data-act="edSaveDraft">💾 Save draft</button></div>'
+      : '';
+    app.innerHTML = `<div class="title ed-wide">${bar}${body}</div>`;
+    draftSoon();
     // a long list to pick from (the 90 nations) gets a box to type in
     document.querySelectorAll('.title select').forEach((sel) => {
       if (sel.options.length < 40 || sel.dataset.found) return;
