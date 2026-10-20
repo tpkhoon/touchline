@@ -333,7 +333,16 @@
         now = U.clamp(Math.round((was + step) * 10) / 10, 15, 95);
       S.youthRate[nat] = now;
       S.youthTrend[nat] = Math.round((now - was) * 10) / 10;
+      // the year's rating is kept for good (a nation's run of golden and lost generations)
+      const h = ((S.youthHist = S.youthHist || {})[nat] = S.youthHist[nat] || [[S.year - 1, was]]);
+      h.push([S.year, now]);
     }
+  };
+  Sea.youthHistory = (nat) => (FM.S.youthHist && FM.S.youthHist[nat]) || [];
+  // A part of the world's youth rating: the average of its nations, with the average move this season
+  Sea.regionYouth = (reg) => {
+    const ns = D.nationCodes().filter((k) => D.NATIONS[k].region === reg);
+    return { r: ns.length ? U.avg(ns, Sea.youthRating) : 50, d: ns.length ? U.avg(ns, Sea.youthTrend) : 0 };
   };
   Sea.youthIntake = function () {
     const Y = Sea.YOUTH;

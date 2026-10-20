@@ -1098,8 +1098,12 @@
   };
   // Sim forward a number of days, our own matches included (played by the engine for us, as an instant result): stops early
   // for a decision in the feed, a transfer window opening or closing, deadline day, the season's end, a new job offer or a sacking
-  Sea.simDaysSteps = function* (days) {
-    const S = FM.S;
+  // `arg` is a number of days, or { days, until }: until 'match' stops on the day of our next match (before it is played), until
+  // 'season' goes on through transfer windows and deadline day (it still stops for a decision, a job offer or a sacking)
+  Sea.simDaysSteps = function* (arg) {
+    const S = FM.S,
+      opt = typeof arg === 'object' ? arg : { days: arg },
+      days = opt.days;
     let summary = null,
       n = 0,
       winChange = false,
@@ -1115,10 +1119,11 @@
       if (fx) Sea.applyUserMatch(FM.quickSim(fx, !!fx.ko));
       summary = Sea.advance(null);
       n++;
-      winChange = !summary && employed0 && Sea.windowOpen() !== win0;
-      deadline = !summary && employed0 && !dd0 && FM.Market.isDeadline();
+      winChange = !summary && employed0 && opt.until !== 'season' && Sea.windowOpen() !== win0;
+      deadline = !summary && employed0 && opt.until !== 'season' && !dd0 && FM.Market.isDeadline();
     } while (
       !summary &&
+      !(opt.until === 'match' && employed0 && Sea.userFixture()) &&
       !winChange &&
       !deadline &&
       n < days &&

@@ -182,7 +182,7 @@
     showT = setTimeout(() => {
       if (!ov) return;
       ov.classList.remove('wait');
-      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? `Simulating ${arg} day${arg === 1 ? '' : 's'}` : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div></div>`;
+      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? (typeof arg === 'object' && arg.until ? (arg.until === 'match' ? 'Simulating to your next match' : 'Simulating to the end of the season') : `Simulating ${arg} day${arg === 1 ? '' : 's'}`) : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div></div>`;
       if (R._label) progress(R._n, R._label);
     }, 180);
   }

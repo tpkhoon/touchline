@@ -464,15 +464,20 @@
     UI.sheet(
       `<div class="tiny dim" style="margin-bottom:8px">Sim forward through the days. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer.</div>
       <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
+      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px"><button class="chip" data-act="simUntil" data-u="window">⏩ Until the window changes</button><button class="chip" data-act="simUntil" data-u="match">⏩ Until my next match</button><button class="chip" data-act="simUntil" data-u="season">⏩ Until the season ends</button></div>
       <div class="row" style="gap:8px"><input type="number" id="sim-days" min="1" max="120" value="7" inputmode="numeric" style="width:90px"><span class="dim small grow">days</span><button class="btn pri" data-act="simDaysGo">Sim ⏩</button></div>`,
       { title: 'Sim forward' },
     );
   };
   UI.acts.simDaysGo = () => UI.acts.simDays({ n: (document.getElementById('sim-days') || {}).value });
+  // Sim forward to a target instead of a number of days: the window opening or closing (what a plain sim stops for anyway), the
+  // day of our next match, or the end of the season (through the windows)
+  UI.acts.simUntil = (d) => UI.acts.simDays({ n: 400, until: d.u });
   UI.acts.simDays = async (d) => {
-    const n = Math.max(1, Math.min(120, Math.floor(+d.n) || 7));
+    const until = d.until === 'match' || d.until === 'season' || d.until === 'window' ? d.until : null;
+    const n = until ? 400 : Math.max(1, Math.min(120, Math.floor(+d.n) || 7));
     UI.closeAllSheets();
-    const r = await FM.SimRunner.run('days', n);
+    const r = await FM.SimRunner.run('days', until ? { days: n, until } : n);
     if (!r) return;
     if (!r.summary && r.pending && W.employed()) UI.sub.feed = 'reply';
     UI.afterDay(r.summary);
@@ -489,7 +494,9 @@
                 ? `⏸ Stopped after ${days}: it's deadline day`
                 : r.pending
                   ? `⏸ Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
-                  : `⏸ Stopped after ${days} (of ${r.days})`,
+                  : until === 'match'
+                    ? `⏩ ${days} simulated: your next match is today`
+                    : `⏸ Stopped after ${days} (of ${r.days})`,
         r.pending ? 5000 : 3500,
       );
   };

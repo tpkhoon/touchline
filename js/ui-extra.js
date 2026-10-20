@@ -100,6 +100,31 @@
   };
 
   // a nation's youth rating with its last move (▲ or ▼)
+  UI.regionYouth = (reg) => {
+    const y = FM.Season.regionYouth(reg);
+    return `🌱 ${Math.round(y.r)}${y.d >= 0.5 ? ' ▲' : y.d <= -0.5 ? ' ▼' : ''}`;
+  };
+  // a nation's youth rating over the seasons: a line, its range and where it stands in the world
+  UI.youthLine = (code) => {
+    const h = FM.Season.youthHistory(code);
+    const rank = D.nationCodes().filter((k) => FM.Season.youthRating(k) > FM.Season.youthRating(code)).length + 1;
+    let svg = '';
+    if (h.length >= 3) {
+      const v = h.map((p) => p[1]),
+        lo = Math.min(...v),
+        hi = Math.max(...v),
+        w = 120,
+        ht = 26,
+        pts = v
+          .map(
+            (x, i) =>
+              `${((i / (v.length - 1)) * w).toFixed(1)},${(ht - 2 - ((x - lo) / (hi - lo || 1)) * (ht - 4)).toFixed(1)}`,
+          )
+          .join(' ');
+      svg = `<svg width="${w}" height="${ht}" viewBox="0 0 ${w} ${ht}" style="vertical-align:middle;margin-left:8px" aria-label="Youth rating by season"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> <span style="opacity:.7">${h[0][0]}–${h[h.length - 1][0]}: ${lo.toFixed(0)} to ${hi.toFixed(0)}</span>`;
+    }
+    return `<div class="small" style="margin-top:8px">🌱 Youth rating ${UI.youthBadge(code)} · #${rank} in the world${svg}</div>`;
+  };
   UI.youthBadge = (code) => {
     const r = FM.Season.youthRating(code),
       d = FM.Season.youthTrend(code);
@@ -664,7 +689,10 @@
               'as',
               'region',
               a.region,
-              Object.entries(D.REGIONS).map(([k, l]) => [k, `${l} · ${Math.round((sc.regions[k] || 0) * 100)}%`]),
+              Object.entries(D.REGIONS).map(([k, l]) => [
+                k,
+                `${l} · ${Math.round((sc.regions[k] || 0) * 100)}% · ${UI.regionYouth(k)}`,
+              ]),
             )}`
           : `<div class="h3" style="margin-top:12px">League</div>${chipRow(
               'as',
@@ -2026,14 +2054,14 @@
     const games = s.intlLog.filter((g) => g.h === t.id || g.a === t.id).slice(0, 8);
     const rank = FM.Intl.ranked().indexOf(t) + 1;
     UI.sheet(
-      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · Youth rating ${UI.youthBadge(t.code)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
+      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
         ${
           Object.keys(t.titles).length
             ? `<div class="small" style="margin-top:8px">${Object.entries(t.titles)
                 .map(([k, n]) => `🏆 ${TNAME[k] || k} ×${n}`)
                 .join(' · ')}</div>`
             : ''
-        }</div>
+        }${UI.youthLine(t.code)}</div>
       <div class="card"><div class="h3">Squad</div><div class="tiny dim" style="margin-bottom:6px">The best ${squad.length} available ${esc(D.NATIONS[t.code].name)} players</div>${squad.map((p) => `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(s.clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps</div></div>${C.playerStars(p)}</div>`).join('')}</div>
       <div class="card"><div class="h3">Recent results</div>${games.map((g) => resultRow(g, t.id)).join('') || '<div class="small dim">No matches yet.</div>'}</div>`,
       { title: t.name },
