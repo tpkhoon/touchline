@@ -506,6 +506,7 @@
     if (!comp || !Sea.isClosed(comp.id)) return '';
     const max = Sea.expansionMax(comp.id),
       q = Sea.expansionQueued(comp.id);
+    const draft = Sea.expansionDraft(comp.id);
     const chips = [0, 1, 2, 3]
       .filter((n) => n <= max)
       .map(
@@ -513,10 +514,17 @@
           `<button class="chip ${q === n ? 'on' : ''}" data-act="expandSet" data-id="${comp.id}" data-n="${n}">${n ? `+${n}` : 'None'}</button>`,
       )
       .join('');
+    const modes = `<div class="chips" style="flex-wrap:wrap;margin-top:8px"><button class="chip ${draft ? 'on' : ''}" data-act="expandMode" data-id="${comp.id}" data-d="1">With an expansion draft</button><button class="chip ${draft ? '' : 'on'}" data-act="expandMode" data-id="${comp.id}" data-d="0">No draft: start empty</button></div>`;
     return `<div class="card" style="margin-top:10px"><div class="row"><div class="h3 grow">🏟️ Expansion</div><span class="tiny dim">${U.plural(comp.clubs.length, 'club')}</span></div>
-      <div class="tiny dim" style="margin:4px 0 8px;line-height:1.5">${max ? `This league has no promotion or relegation, so it can grow. Clubs added for the next season fill their squads in an expansion draft: each existing club protects its best twelve players and loses at most ${Sea.expansionSpec(comp.clubs.length, q || 1).maxLoss} of the rest${q ? '' : ' (for one new club; more clubs can mean more)'}: ${q ? `${U.plural(q, 'new club')} draft` : 'a new club drafts'} about ${U.plural(Sea.expansionSpec(comp.clubs.length, q || 1).size, 'player')}.` : 'No expansion clubs are left for this league.'}</div>
-      ${max ? `<div class="chips" style="flex-wrap:wrap">${chips}</div>` : ''}
-      ${q ? `<div class="small" style="margin-top:8px">✅ ${U.plural(q, 'new club')} join at the start of next season, with a draft.</div>` : ''}</div>`;
+      <div class="tiny dim" style="margin:4px 0 8px;line-height:1.5">${max ? `This league has no promotion or relegation, so it can grow. ${draft ? `Clubs added for the next season fill their squads in an expansion draft: each existing club protects its best twelve players and loses at most ${Sea.expansionSpec(comp.clubs.length, q || 1).maxLoss} of the rest${q ? '' : ' (for one new club; more clubs can mean more)'}: ${q ? `${U.plural(q, 'new club')} draft` : 'a new club drafts'} about ${U.plural(Sea.expansionSpec(comp.clubs.length, q || 1).size, 'player')}.` : 'Clubs added for the next season start with no players and no draft: they sign free agents and young players through the pre-season, and nobody is taken from the existing clubs.'}` : 'No expansion clubs are left for this league.'}</div>
+      ${max ? `<div class="chips" style="flex-wrap:wrap">${chips}</div>${modes}` : ''}
+      ${q ? `<div class="small" style="margin-top:8px">✅ ${U.plural(q, 'new club')} join at the start of next season, ${draft ? 'with a draft' : 'with no players and no draft'}.</div>` : ''}</div>`;
+  };
+  UI.acts.expandMode = (d) => {
+    const Sea = FM.Season;
+    Sea.setExpansionDraft(d.id, d.d === '1');
+    UI.save();
+    UI.render();
   };
   UI.acts.expandSet = (d) => {
     FM.Season.queueExpansion(d.id, +d.n);

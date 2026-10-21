@@ -2126,6 +2126,14 @@
     return n;
   };
   Sea.expansionQueued = (id) => (FM.S.expansionQueue || {})[id] || 0;
+  // whether the queued clubs fill their squads in an expansion draft (the default) or bring a squad of their own
+  Sea.expansionDraft = (id) => !(FM.S.expansionNoDraft || {})[id];
+  Sea.setExpansionDraft = function (id, draft) {
+    const S = FM.S;
+    S.expansionNoDraft = S.expansionNoDraft || {};
+    if (draft) delete S.expansionNoDraft[id];
+    else S.expansionNoDraft[id] = true;
+  };
   Sea.queueExpansion = function (id, n) {
     const S = FM.S;
     n = Math.max(0, Math.min(n, Sea.expansionMax(id)));
@@ -2166,7 +2174,14 @@
       if (!added.length) continue;
       Sea.fitSplit(comp, added.length);
       const spec = Sea.expansionSpec(comp.clubs.length - added.length, added.length);
-      FM.WorldDef.expansionDraft(S, id, { clubs: added.map((c) => c.id), ...spec });
+      const draft = Sea.expansionDraft(id);
+      if (draft) FM.WorldDef.expansionDraft(S, id, { clubs: added.map((c) => c.id), ...spec });
+      else {
+        // no draft: the new clubs start with no players at all (the squad they were made with goes), and sign free agents and
+        // young players through the pre-season (Sea.ensureAiSquads and the market)
+        for (const c of added) for (const p of W.squad(c.id)) delete S.players[p.id];
+        W.rosterVer++;
+      }
       // (a player of ours the draft took leaves the line-up)
       const t = S.user && S.user.tactic;
       if (t && t.lineup)
@@ -2177,11 +2192,14 @@
       FM.News.add({
         type: 'world',
         title: `${comp.name} expands: ${added.map((c) => c.name).join(' and ')} join${added.length === 1 ? 's' : ''} the league`,
-        body: `${U.plural(added.length, 'new club')} for the new season, with ${added.length === 1 ? 'its' : 'their'} players drafted from the existing clubs (each protected its best ${spec.protect}).`,
+        body: draft
+          ? `${U.plural(added.length, 'new club')} for the new season, with ${added.length === 1 ? 'its' : 'their'} players drafted from the existing clubs (each protected its best ${spec.protect}).`
+          : `${U.plural(added.length, 'new club')} for the new season, starting with no players: they sign free agents and young players through the pre-season, and no player was taken from the existing clubs.`,
         clubId: added[0].id,
       });
     }
     S.expansionQueue = {};
+    S.expansionNoDraft = {};
   };
   Sea.newSeason = function (entry) {
     const S = FM.S;
