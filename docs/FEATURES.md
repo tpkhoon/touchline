@@ -16,7 +16,7 @@ Every feature from the game design document, with what is playable in the protot
 
 | Area | Feature | Build |
 | --- | --- | --- |
-| Match | Top-down pitch with 22 moving dots, ball and visible pressing lines | Prototype 1 |
+| Match | Top-down pitch with 22 moving dots, ball and visible pressing lines (switched off: matches play as commentary; set `FM.MatchView.VISUAL` to true in `js/matchview.js` to bring it back) | Prototype 1 |
 | Match | Highlights every 20–40 seconds with slow motion and goal moments | Prototype 1 |
 | Match | Tactical prompts voiced by staff (analyst tips, chasing, protecting, pinned back, fatigue, injury, red card) | Prototype 1 |
 | Match | Half-time team talk; personalities react differently | Prototype 1 |

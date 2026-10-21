@@ -8,6 +8,9 @@
     C = UI.C;
   const esc = U.esc;
   const MV = (FM.MatchView = {});
+  // The pitch with moving players is switched off: matches are shown as commentary (the text view) and the Pitch / Text switch
+  // in Settings is hidden. Everything for the pitch is still in the code; set this to true to bring it back.
+  MV.VISUAL = false;
   // The view's own random numbers (where a shot is placed, how far a player carries): a stream of their own, so what is
   // drawn on screen can never change how the match itself plays out. The same match plays the same on the pitch, as text
   // and as an instant result.
@@ -343,8 +346,9 @@
       return MV.post();
     }
     const [H, A] = m.sides;
-    // Text only: the same simulation, with commentary in place of the pitch (lighter on the battery and the processor)
-    const text = FM.S.settings.matchView === 'text';
+    // Text only: the same simulation, with commentary in place of the pitch (lighter on the battery and the processor). The pitch
+    // view is still here, switched off: set MV.VISUAL to true to bring it back (and its Pitch / Text switch in Settings).
+    const text = !MV.VISUAL || FM.S.settings.matchView === 'text';
     MV.text = text;
     const ov = document.createElement('div');
     ov.className = 'match' + (text ? ' text' : '');
