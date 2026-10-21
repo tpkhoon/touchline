@@ -2,6 +2,7 @@
 // (Sea.runExpansions in js/season.js). A row: [name, code, city, colour 1, colour 2, identity, reputation, ground, capacity, abbreviation,
 // nickname]. Made by tools/expansionpool.mjs from the same name libraries as the rest of the world.
 (function () {
+  const FM = window.FM;
   FM.D.EXPANSION = {
     BR1: [
       [
