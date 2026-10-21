@@ -2,8 +2,13 @@
 // Receives the whole world state, runs the same season code as the main thread, and sends the
 // updated state back (structured clone keeps shared references intact).
 self.window = self;
-self.onmessage = function (e) {
+self.onmessage = async function (e) {
   const d = e.data;
+  if (d.type === 'stop') {
+    // (a run in progress looks at this between two days)
+    if (self.FM && self.FM.Season) self.FM.Season.stopRequested = true;
+    return;
+  }
   if (d.type === 'init') {
     try {
       importScripts(...d.scripts);
@@ -22,9 +27,16 @@ self.onmessage = function (e) {
   const progress = (n, label) => self.postMessage({ type: 'progress', id: d.id, n, label });
   try {
     let out;
-    if (d.mode === 'toMatch') out = Sea.skipToMatch(progress);
-    else if (d.mode === 'days') out = Sea.simDays(progress, d.arg);
-    else {
+    if (d.mode === 'toMatch' || d.mode === 'days') {
+      // a day at a time, with a pause between days so a Stop message can be heard
+      const it = d.mode === 'days' ? Sea.simDaysSteps(d.arg) : Sea.skipSteps();
+      let r;
+      while (!(r = it.next()).done) {
+        progress(...r.value);
+        await new Promise((res) => setTimeout(res, 0));
+      }
+      out = r.value;
+    } else {
       progress(0, Sea.dayLabel());
       out = { summary: Sea.advance(null), n: 1 };
     }

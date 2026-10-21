@@ -688,7 +688,7 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|simDaysAsk|simDays|simDaysGo|simUntil|expandSet|expandMode|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|closeSheet|player|clubView|takeJob|advance|skipToMatch|simDaysAsk|simDays|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
@@ -856,6 +856,7 @@
     db: null, // an imported database (FM.DbImport.import result) the world is built from, or null for the built-in world
     slot: 1,
     regionNations: false, // Catalonia and the Basque Country as nations of the world
+    liveEdit: true, // the in-game editor (Settings → Edit the world) is on: it can be switched off for a purist career
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
   // The simulation tiers a world can run each league in (the new-career screen lets you choose before the save starts).
@@ -1067,6 +1068,16 @@
           .map(
             ([v, t]) =>
               `<button class="${!!NG.regionNations === v ? 'on' : ''}" data-act="ngRegions" data-v="${v}">${t}</button>`,
+          )
+          .join('')}</div>
+        <div class="ng-label">Editing the world in game <span style="color:#6f7f96">· fix a name or rating, or change many at once, while you play</span></div>
+        <div class="seg">${[
+          [true, 'On'],
+          [false, 'Off'],
+        ]
+          .map(
+            ([v, t]) =>
+              `<button class="${!!NG.liveEdit === v ? 'on' : ''}" data-act="ngLiveEdit" data-v="${v}">${t}</button>`,
           )
           .join('')}</div>
         <div class="ng-label">Avatar</div>
@@ -1329,6 +1340,10 @@
     if (!NG.regionNations && D.NATIONS[NG.nat].optional) NG.nat = 'ESP';
     UI.newCareer();
   };
+  UI.acts.ngLiveEdit = (d) => {
+    NG.liveEdit = d.v === 'true';
+    UI.newCareer();
+  };
   UI.acts.ngSlot = (d) => {
     NG.slot = +d.n;
     UI.newCareer();
@@ -1513,7 +1528,7 @@
         }
       }
       if (!built) W.newWorld({ ...W.REAL_RULES, regionNations: NG.regionNations, sims });
-      FM.S.settings = theme;
+      FM.S.settings = { ...theme, noLiveEdit: !NG.liveEdit };
       FM.Season.init();
       if (NG.club === 'none') {
         // A career without a club: a modest reputation and offers from the lower leagues

@@ -182,7 +182,7 @@
     showT = setTimeout(() => {
       if (!ov) return;
       ov.classList.remove('wait');
-      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? (typeof arg === 'object' && arg.until ? (arg.until === 'match' ? 'Simulating to your next match' : 'Simulating to the end of the season') : `Simulating ${arg} day${arg === 1 ? '' : 's'}`) : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div></div>`;
+      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? (typeof arg === 'object' && arg.until ? (arg.until === 'match' ? 'Simulating to your next match' : 'Simulating to the end of the season') : `Simulating ${arg} day${arg === 1 ? '' : 's'}`) : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div>${mode === 'toMatch' || mode === 'days' ? '<button class="btn sm" id="simStopBtn" data-act="simStop" style="margin-top:14px">⏹ Stop simming</button>' : ''}</div>`;
       if (R._label) progress(R._n, R._label);
     }, 180);
   }
@@ -198,6 +198,16 @@
     ov = null;
   }
 
+  // Stop a sim forward or a skip to the next match at the end of the day it is on: the days played so far are kept
+  R.stop = () => {
+    FM.Season.stopRequested = true; // (the main-thread run looks at this between days)
+    if (worker) worker.postMessage({ type: 'stop' });
+    const b = document.getElementById('simStopBtn');
+    if (b) {
+      b.disabled = true;
+      b.textContent = 'Stopping at the end of the day…';
+    }
+  };
   // mode: 'day' (advance one day), 'toMatch' (skip to our next match) or 'days' (sim forward `arg` days, matches included). Resolves to
   // { summary, n, ... } once FM.S holds the new state, or null if a simulation is already running.
   R.run = async function (mode = 'day', arg) {

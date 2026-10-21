@@ -1064,6 +1064,7 @@
       seen = new Set((S.user.offers || []).map((o) => o.id)),
       employed0 = W.employed();
     let deadline = false;
+    Sea.stopRequested = false;
     // Out of work: stop for any offer that wasn't on the table when the wait began (the window doesn't matter)
     const newOffer = () => !W.employed() && (S.user.offers || []).some((o) => !seen.has(o.id));
     do {
@@ -1074,6 +1075,7 @@
       deadline = !summary && employed0 && !dd0 && FM.Market.isDeadline(); // stop for deadline day
     } while (
       !summary &&
+      !Sea.stopRequested &&
       !winChange &&
       !deadline &&
       !Sea.userFixture() &&
@@ -1093,6 +1095,7 @@
       pending: !summary && Sea.pendingDecision(),
       pendingText: !summary && Sea.pendingText(),
       cap: !summary && n >= (W.employed() ? 12 : 21),
+      stopped: !summary && Sea.stopRequested,
       newOffer: newOffer(),
     };
   };
@@ -1113,6 +1116,7 @@
       seen = new Set((S.user.offers || []).map((o) => o.id)),
       employed0 = W.employed();
     const newOffer = () => !W.employed() && (S.user.offers || []).some((o) => !seen.has(o.id));
+    Sea.stopRequested = false; // (set from outside, by the Stop button, between two days)
     do {
       yield [n, Sea.dayLabel()];
       const fx = employed0 && Sea.userFixture();
@@ -1123,6 +1127,7 @@
       deadline = !summary && employed0 && opt.until !== 'season' && !dd0 && FM.Market.isDeadline();
     } while (
       !summary &&
+      !Sea.stopRequested &&
       !(opt.until === 'match' && employed0 && Sea.userFixture()) &&
       !winChange &&
       !deadline &&
@@ -1143,6 +1148,7 @@
       pending: !summary && Sea.pendingDecision(),
       pendingText: !summary && Sea.pendingText(),
       done: !summary && n >= days,
+      stopped: !summary && Sea.stopRequested,
       newOffer: newOffer(),
     };
   };
@@ -2034,6 +2040,7 @@
     });
     entry.user = {
       club: club.id,
+      comp: userCompId,
       pos: userPos,
       trophies,
       promoted,
@@ -2095,6 +2102,29 @@
     );
   };
   Sea.expansionPool = (id) => ((FM.D.EXPANSION || {})[id] || []).filter((r) => !FM.S.clubs['c_' + r[1]]);
+  // The queued clubs as they will join, one row each ([name, code, city, colour 1, colour 2, identity, reputation, ground, capacity,
+  // abbreviation, nickname]), with anything the manager changed on top (S.expansionCustom: { league id: [a patch per club] })
+  const CUSTOM = { name: 0, city: 2, c1: 3, c2: 4, identity: 5, rep: 6, ground: 7, cap: 8, abbr: 9, nick: 10 };
+  Sea.expansionClubs = function (id, n) {
+    const custom = (FM.S.expansionCustom || {})[id] || [];
+    return Sea.expansionPool(id)
+      .slice(0, n)
+      .map((row, i) => {
+        const r = row.slice();
+        for (const [k, v] of Object.entries(custom[i] || {}))
+          if (k in CUSTOM && v !== '' && v != null) r[CUSTOM[k]] = v;
+        return r;
+      });
+  };
+  // Keep (or, with null, clear) the manager's changes to the club in slot i of a league's new clubs
+  Sea.customiseExpansion = function (id, i, patch) {
+    const S = FM.S;
+    S.expansionCustom = S.expansionCustom || {};
+    const list = (S.expansionCustom[id] = S.expansionCustom[id] || []);
+    if (patch) list[i] = patch;
+    else delete list[i];
+    if (!list.some(Boolean)) delete S.expansionCustom[id];
+  };
   // The draft's settings for n new clubs joining a league of `rest` clubs: each club protects its best 12 and loses as few as it can
   Sea.expansionSpec = function (rest, n) {
     for (const maxLoss of [1, 2, 3, 4]) {
@@ -2162,7 +2192,7 @@
         n = Math.min(q[id], Sea.expansionMax(id));
       if (!comp || !n) continue;
       const added = [];
-      for (const row of Sea.expansionPool(id).slice(0, n)) {
+      for (const row of Sea.expansionClubs(id, n)) {
         const [, code, , , , , , , , abbr, nick] = row;
         FM.D.CLUB_INFO[code] = [abbr, nick, S.year];
         const c = W.mkClub(row.slice(0, 9), id, comp.nat, comp.sim);
@@ -2200,6 +2230,7 @@
     }
     S.expansionQueue = {};
     S.expansionNoDraft = {};
+    S.expansionCustom = {};
   };
   Sea.newSeason = function (entry) {
     const S = FM.S;

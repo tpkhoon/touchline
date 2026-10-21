@@ -440,39 +440,82 @@
     const days = `${r.n} day${r.n === 1 ? '' : 's'}`;
     if (!r.summary)
       UI.toast(
-        r.newOffer
-          ? `⏩ ${days} simulated — a new job offer has arrived`
-          : !W.employed()
-            ? `⏩ ${days} simulated — no new offers yet`
-            : r.winChange
-              ? `⏸ Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
-              : r.deadline
-                ? `⏸ Stopped after ${days}: it's deadline day`
-                : r.pending
-                  ? `⏸ Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
-                  : r.cap
-                    ? `⏩ ${days} simulated (the longest skip) — your next match is further off`
-                    : `⏩ ${days} simulated`,
+        r.stopped
+          ? `⏹ Stopped after ${days}, as you asked`
+          : r.newOffer
+            ? `⏩ ${days} simulated — a new job offer has arrived`
+            : !W.employed()
+              ? `⏩ ${days} simulated — no new offers yet`
+              : r.winChange
+                ? `⏸ Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
+                : r.deadline
+                  ? `⏸ Stopped after ${days}: it's deadline day`
+                  : r.pending
+                    ? `⏸ Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
+                    : r.cap
+                      ? `⏩ ${days} simulated (the longest skip) — your next match is further off`
+                      : `⏩ ${days} simulated`,
         r.pending ? 5000 : 3500,
       );
   };
   // Sim forward a number of days (our own matches are played for us); stops for what needs you
-  UI.acts.simDaysAsk = () => {
-    const chips = [3, 7, 14, 30, 60]
-      .map((n) => `<button class="chip" data-act="simDays" data-n="${n}">${U.plural(n, 'day')}</button>`)
-      .join('');
-    UI.sheet(
-      `<div class="tiny dim" style="margin-bottom:8px">Sim forward through the days. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer.</div>
-      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
-      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px"><button class="chip" data-act="simUntil" data-u="window">⏩ Until the window changes</button><button class="chip" data-act="simUntil" data-u="match">⏩ Until my next match</button><button class="chip" data-act="simUntil" data-u="season">⏩ Until the season ends</button></div>
-      <div class="row" style="gap:8px"><input type="number" id="sim-days" min="1" max="120" value="7" inputmode="numeric" style="width:90px"><span class="dim small grow">days</span><button class="btn pri" data-act="simDaysGo">Sim ⏩</button></div>`,
-      { title: 'Sim forward' },
-    );
+  // The sheet picks how far to go (a number of days, or a target) and shows what will happen; nothing starts until Start
+  const SIM_TARGETS = {
+    window: 'until the transfer window changes',
+    match: 'until your next match',
+    season: 'until the end of the season',
   };
-  UI.acts.simDaysGo = () => UI.acts.simDays({ n: (document.getElementById('sim-days') || {}).value });
-  // Sim forward to a target instead of a number of days: the window opening or closing (what a plain sim stops for anyway), the
-  // day of our next match, or the end of the season (through the windows)
-  UI.acts.simUntil = (d) => UI.acts.simDays({ n: 400, until: d.u });
+  const simPlan = () => {
+    const sel = UI._simSel || { n: 7 };
+    return sel.u
+      ? `Sim ${SIM_TARGETS[sel.u]}`
+      : `Sim ${U.plural(Math.max(1, Math.min(120, Math.floor(+sel.n) || 7)), 'day')}`;
+  };
+  const simSheetHtml = () => {
+    const sel = UI._simSel || { n: 7 };
+    const chips = [3, 7, 14, 30, 60]
+      .map(
+        (n) =>
+          `<button class="chip ${!sel.u && +sel.n === n ? 'on' : ''}" data-act="simPick" data-n="${n}">${U.plural(n, 'day')}</button>`,
+      )
+      .join('');
+    const until = Object.entries(SIM_TARGETS)
+      .map(
+        ([k, label]) =>
+          `<button class="chip ${sel.u === k ? 'on' : ''}" data-act="simPick" data-u="${k}">⏩ ${label.replace('until ', 'Until ')}</button>`,
+      )
+      .join('');
+    return `<div class="tiny dim" style="margin-bottom:8px;line-height:1.5">Sim forward through the days. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer, and you can stop it yourself while it runs.</div>
+      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
+      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${until}</div>
+      <div class="row" style="gap:8px;margin-bottom:12px"><input type="number" id="sim-days" min="1" max="120" value="${sel.u ? '' : +sel.n || 7}" placeholder="days" inputmode="numeric" style="width:90px" data-input="simType"><span class="dim small grow">days (1 to 120)</span></div>
+      <div class="card flat" id="simPlan" style="margin-bottom:10px"><div class="small b">${simPlan()}</div><div class="tiny dim" style="margin-top:4px">Nothing happens until you press Start.</div></div>
+      <button class="btn pri block" data-act="simGo">▶ Start simming</button>`;
+  };
+  UI.acts.simDaysAsk = () => {
+    UI._simSel = { n: 7 };
+    UI.sheet(simSheetHtml(), { title: 'Sim forward' });
+  };
+  UI.acts.simPick = (d) => {
+    UI._simSel = d.u ? { u: d.u } : { n: +d.n };
+    const body = [...document.querySelectorAll('.sheet-wrap')].pop()?.querySelector('.sh-body');
+    if (body) body.innerHTML = simSheetHtml();
+  };
+  // typing a number of days picks it
+  UI.acts.simType = (d, el) => {
+    UI._simSel = { n: +el.value || 7 };
+    document
+      .querySelectorAll('.sheet [data-act="simPick"]')
+      .forEach((b) => b.classList.toggle('on', !b.dataset.u && +b.dataset.n === +el.value));
+    document.querySelectorAll('.sheet [data-act="simPick"][data-u]').forEach((b) => b.classList.remove('on'));
+    const p = document.querySelector('#simPlan .small');
+    if (p) p.textContent = simPlan();
+  };
+  UI.acts.simGo = () => {
+    const sel = UI._simSel || { n: 7 };
+    UI.acts.simDays(sel.u ? { n: 400, until: sel.u } : { n: sel.n });
+  };
+  UI.acts.simStop = () => FM.SimRunner.stop();
   UI.acts.simDays = async (d) => {
     const until = d.until === 'match' || d.until === 'season' || d.until === 'window' ? d.until : null;
     const n = until ? 400 : Math.max(1, Math.min(120, Math.floor(+d.n) || 7));
@@ -484,22 +527,32 @@
     const days = `${r.n} day${r.n === 1 ? '' : 's'}`;
     if (!r.summary)
       UI.toast(
-        r.done
-          ? `⏩ ${days} simulated`
-          : r.newOffer
-            ? `⏩ ${days} simulated — a new job offer has arrived`
-            : r.winChange
-              ? `⏸ Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
-              : r.deadline
-                ? `⏸ Stopped after ${days}: it's deadline day`
-                : r.pending
-                  ? `⏸ Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
-                  : until === 'match'
-                    ? `⏩ ${days} simulated: your next match is today`
-                    : `⏸ Stopped after ${days} (of ${r.days})`,
+        r.stopped
+          ? `⏹ Stopped after ${days}, as you asked`
+          : r.done
+            ? `⏩ ${days} simulated`
+            : r.newOffer
+              ? `⏩ ${days} simulated — a new job offer has arrived`
+              : r.winChange
+                ? `⏸ Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
+                : r.deadline
+                  ? `⏸ Stopped after ${days}: it's deadline day`
+                  : r.pending
+                    ? `⏸ Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
+                    : until === 'match'
+                      ? `⏩ ${days} simulated: your next match is today`
+                      : `⏸ Stopped after ${days} (of ${r.days})`,
         r.pending ? 5000 : 3500,
       );
   };
+  // The clubs that will join, each with a button to change its name, look, ground and rating before it does
+  const expansionClubRows = (id, q) =>
+    `<div style="margin-top:10px">${FM.Season.expansionClubs(id, q)
+      .map(
+        (r, i) =>
+          `<div class="row small tap" data-act="expandEdit" data-id="${id}" data-i="${i}" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,${esc(r[3])} 50%,${esc(r[4])} 50%);border:1px solid var(--line)"></span><span class="grow ellip"><b>${esc(r[0])}</b> <span class="dim">· ${esc(r[2])} · ${esc(r[7])}</span></span><span class="dim">✏️</span></div>`,
+      )
+      .join('')}</div>`;
   // A closed league can take new clubs at the start of the next season, with an expansion draft (FM.Season.runExpansions)
   UI.expansionCard = function (comp) {
     const Sea = FM.Season;
@@ -518,7 +571,63 @@
     return `<div class="card" style="margin-top:10px"><div class="row"><div class="h3 grow">🏟️ Expansion</div><span class="tiny dim">${U.plural(comp.clubs.length, 'club')}</span></div>
       <div class="tiny dim" style="margin:4px 0 8px;line-height:1.5">${max ? `This league has no promotion or relegation, so it can grow. ${draft ? `Clubs added for the next season fill their squads in an expansion draft: each existing club protects its best twelve players and loses at most ${Sea.expansionSpec(comp.clubs.length, q || 1).maxLoss} of the rest${q ? '' : ' (for one new club; more clubs can mean more)'}: ${q ? `${U.plural(q, 'new club')} draft` : 'a new club drafts'} about ${U.plural(Sea.expansionSpec(comp.clubs.length, q || 1).size, 'player')}.` : 'Clubs added for the next season start with no players and no draft: they sign free agents and young players through the pre-season, and nobody is taken from the existing clubs.'}` : 'No expansion clubs are left for this league.'}</div>
       ${max ? `<div class="chips" style="flex-wrap:wrap">${chips}</div>${modes}` : ''}
+      ${q ? expansionClubRows(comp.id, q) : ''}
       ${q ? `<div class="small" style="margin-top:8px">✅ ${U.plural(q, 'new club')} join at the start of next season, ${draft ? 'with a draft' : 'with no players and no draft'}.</div>` : ''}</div>`;
+  };
+  UI.acts.expandEdit = (d) => {
+    const Sea = FM.Season,
+      i = +d.i,
+      r = Sea.expansionClubs(d.id, Sea.expansionQueued(d.id))[i];
+    if (!r) return;
+    const f = (id, label, v, extra = '') =>
+      `<div style="flex:1;min-width:0"><div class="ng-label" style="margin-top:8px">${label}</div><input type="text" id="${id}" value="${esc(v ?? '')}" ${extra}></div>`;
+    const idOpts = Object.entries(D.IDENTITY)
+      .map(([k, v]) => `<option value="${k}" ${r[5] === k ? 'selected' : ''}>${esc(v.label)}</option>`)
+      .join('');
+    UI.sheet(
+      `${f('xc-name', 'Name', r[0], 'maxlength="40"')}
+      <div class="row" style="gap:8px">${f('xc-abbr', 'Short name (up to 5)', r[9], 'maxlength="5"')}${f('xc-nick', 'Nickname', r[10], 'maxlength="24"')}</div>
+      <div class="row" style="gap:8px">${f('xc-city', 'Town', r[2], 'maxlength="32"')}${f('xc-ground', 'Ground', r[7], 'maxlength="40"')}</div>
+      <div class="ng-label">Colours</div>
+      <div class="row" style="gap:10px"><input type="color" id="xc-c1" value="${esc(r[3])}" style="width:64px;height:44px;padding:2px"><input type="color" id="xc-c2" value="${esc(r[4])}" style="width:64px;height:44px;padding:2px"></div>
+      <div class="row" style="gap:8px"><div style="flex:1"><div class="ng-label" style="margin-top:8px">Capacity</div><input type="number" id="xc-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${r[8]}"></div><div style="flex:1"><div class="ng-label" style="margin-top:8px">Reputation</div><input type="number" id="xc-rep" min="20" max="99" inputmode="numeric" value="${r[6]}"></div></div>
+      <div class="ng-label">Identity</div><select id="xc-identity">${idOpts}</select>
+      <div class="actions" style="margin-top:14px;gap:8px"><button class="btn pri grow" data-act="expandSave" data-id="${esc(d.id)}" data-i="${i}">Save</button><button class="btn" data-act="expandReset" data-id="${esc(d.id)}" data-i="${i}">Back to the original</button></div>`,
+      { title: 'Customise the new club', full: true },
+    );
+  };
+  UI.acts.expandSave = (d) => {
+    const v = (id) => ((document.getElementById(id) || {}).value || '').trim();
+    const name = v('xc-name'),
+      abbr = v('xc-abbr').toUpperCase();
+    if (!name) return UI.toast('A club needs a name', 2500);
+    if (D.isRude && (D.isRude(name) || D.isRude(abbr) || D.isRude(v('xc-nick'))))
+      return UI.toast('That name contains a word the game will not use', 3000);
+    if (Object.values(S().clubs).some((c) => c.name.toLowerCase() === name.toLowerCase()))
+      return UI.toast('A club with that name already exists', 3000);
+    const num = (id, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+v(id) || 0)));
+    FM.Season.customiseExpansion(d.id, +d.i, {
+      name,
+      abbr: abbr || undefined,
+      nick: v('xc-nick'),
+      city: v('xc-city'),
+      ground: v('xc-ground'),
+      c1: v('xc-c1'),
+      c2: v('xc-c2'),
+      cap: num('xc-cap', 1000, 120000),
+      rep: num('xc-rep', 20, 99),
+      identity: v('xc-identity'),
+    });
+    UI.save();
+    UI.closeSheet();
+    UI.render();
+    UI.toast('Saved', 1500);
+  };
+  UI.acts.expandReset = (d) => {
+    FM.Season.customiseExpansion(d.id, +d.i, null);
+    UI.save();
+    UI.closeSheet();
+    UI.render();
   };
   UI.acts.expandMode = (d) => {
     const Sea = FM.Season;
@@ -3900,28 +4009,38 @@
   UI.seasonReview = function (sm) {
     const e = sm.entry;
     const c = e.user ? CL(e.user.club) : NOCLUB; // out of work all season: no club to review
+    // only the leagues you follow (and your own) are told about: the whole world's champions would be a long list
+    const fol = new Set([...UI.follows().comps, ...(e.user && e.user.comp ? [e.user.comp] : [])]),
+      shown = Object.entries(e.comps).filter(([id]) => fol.has(id)),
+      cupsShown = Object.entries(e.cups || {}).filter(([id, x]) => fol.has(id) || FM.W.isUser(x.winner));
     UI.sheet(
       `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="tag">Season review · ${esc(e.label)}</div><div class="h1" style="margin:10px 0">${!e.user ? 'A season out of the dugout' : sm.trophies.length ? '🏆 ' + esc(sm.trophies.join(' & ')) : `Finished ${U.ordinal(sm.userPos)}`}</div><div class="small" style="opacity:.9">${sm.promoted ? `⬆️ Promoted to the ${esc(S().comps[c.comp].name)}!` : sm.relegated ? '⬇️ Relegated. The rebuild starts now.' : esc(c.name)}</div></div>
       ${!e.user ? '<div class="small muted" style="margin:4px 2px 12px">The football world carried on without you. Your offers are on the Home tab.</div>' : ''}
       ${e.user ? `<div class="card"><div class="h3">Board verdict</div>${sm.objs.map((o) => `<div class="row small" style="margin-top:8px"><span>${o.ok || (o.promo && sm.promoted) ? '✅' : '❌'}</span><span class="grow">${esc(o.text)}</span></div>`).join('')}<div class="small muted" style="margin-top:10px">${sm.sacked ? 'The board have seen enough.' : 'Board confidence: ' + Math.round(c.boardConf) + '%'}</div></div>` : ''}
-      ${Object.values(e.comps)
+      ${shown
+        .map(([, x]) => x)
         .filter(W.homeLeague)
         .map(
           (x) =>
             `<div class="card flat"><div class="small b dim">${esc(x.name.toUpperCase())}</div><div class="row small" style="margin-top:6px">🏆 ${C.crest(CL(x.champion), 18)}<b class="grow">${esc(CL(x.champion).name)}</b></div>${x.topScorer ? `<div class="small" style="margin-top:4px">👟 ${esc(x.topScorer.name)} (${x.topScorer.goals})</div>` : ''}${x.poty ? `<div class="small" style="margin-top:4px">⭐ ${esc(x.poty.name)}</div>` : ''}</div>`,
         )
         .join('')}
-      <div class="card flat"><div class="small b dim">AROUND THE WORLD</div>${Object.values(e.comps)
-        .filter((x) => !W.homeLeague(x))
-        .map(
-          (x) =>
-            `<div class="row small" style="margin-top:6px">${C.flag(x.nat)} <span class="grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).short)}</b></div>`,
-        )
-        .join('')}</div>
+      <div class="card flat"><div class="small b dim">LEAGUES YOU FOLLOW</div>${
+        shown
+          .map(([, x]) => x)
+          .filter((x) => !W.homeLeague(x))
+          .map(
+            (x) =>
+              `<div class="row small" style="margin-top:6px">${C.flag(x.nat)} <span class="grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).short)}</b></div>`,
+          )
+          .join('') ||
+        '<div class="tiny dim" style="margin-top:6px">Follow a league (☆ on its screen) to see its champion here.</div>'
+      }</div>
       ${UI.regionalSeason(e, true)}
       ${
-        e.cups && Object.keys(e.cups).length
-          ? `<div class="card flat"><div class="small b dim">CUPS</div>${Object.values(e.cups)
+        cupsShown.length
+          ? `<div class="card flat"><div class="small b dim">CUPS</div>${cupsShown
+              .map(([, x]) => x)
               .map(
                 (x) =>
                   `<div class="row small" style="margin-top:6px">🏆 <span class="grow">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).short)}</b></div>`,
