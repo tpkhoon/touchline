@@ -2069,7 +2069,7 @@
           const task = !a
             ? '<span class="pill">Idle</span>'
             : a.type === 'region'
-              ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.pos === 'any' ? 'all' : FM.Scouting.posLabel(a.pos)} · ≤${a.maxAge}</span>`
+              ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.role ? a.role : a.pos === 'any' ? 'all' : FM.Scouting.posLabel(a.pos)} · ≤${a.maxAge}</span>`
               : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${a.weeks}w</span>`;
           return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${U.staffText(sc.judge)} · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
         <div class="small muted" style="margin:10px 0 6px">${esc(sc.note)}</div>

@@ -657,6 +657,7 @@
   UI.acts.assignScout = (d) => {
     UI._as.scout = d.id;
     const a = S().user.assignments.find((x) => x.scout === d.id && x.type !== 'player');
+    UI._as.role = null;
     if (a) Object.assign(UI._as, a, { scout: d.id });
     UI.assignSheet();
   };
@@ -723,6 +724,7 @@
         ['FB:R', 'RB'],
         ['CB', 'CB'],
       ])}
+      <div class="tiny dim" style="margin-top:6px">Or a type of player: the position and the role he plays best</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${FM.Scouting.TYPES.map(([label, pos, role], i) => `<button class="chip ${a.role === role && a.pos === pos ? 'on' : ''}" data-act="asType" data-i="${i}">${label}</button>`).join('')}</div>
       <div class="h3" style="margin-top:6px">Nationality</div><select id="as-nat" class="as-nat"><option value="any">Any nationality</option>${natOpts.map((k) => `<option value="${k}" ${a.nat === k ? 'selected' : ''}>${D.NATIONS[k].flag} ${esc(D.NATIONS[k].name)}</option>`).join('')}</select>
       <div class="h3" style="margin-top:6px">Max age</div>${chipRow('as', 'maxAge', a.maxAge, [
         [19, '≤19'],
@@ -758,9 +760,16 @@
     const nat = document.querySelector('.assign-sheet #as-nat');
     if (nat) nat.addEventListener('change', () => (UI._as.nat = nat.value));
   };
+  // a type of player: a position and a role in one tap
+  UI.acts.asType = (d) => {
+    const t = FM.Scouting.TYPES[+d.i];
+    if (t) Object.assign(UI._as, { pos: t[1], role: t[2] });
+    UI.assignSheet();
+  };
   UI.acts.as = (d) => {
     const num = ['maxAge', 'minStars', 'maxFee'].includes(d.k);
     UI._as[d.k] = num ? +d.v : d.v;
+    if (d.k === 'pos') UI._as.role = null; // (a position chosen by itself leaves the role open)
     UI.assignSheet();
   };
   UI.acts.doAssign = () => {
@@ -768,6 +777,7 @@
     const spec = {
       type: a.type,
       pos: a.pos,
+      role: a.role || null,
       nat: a.nat,
       maxAge: a.maxAge,
       minStars: a.minStars,

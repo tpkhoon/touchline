@@ -272,6 +272,27 @@
     'WM:L': 'LM',
     'WM:R': 'RM',
   };
+  // Types of player: a position and the role he plays best there (what a scout is sent to find: "a ball-playing centre-back")
+  Sc.TYPES = [
+    ['Ball-playing CB', 'CB', 'Ball-Playing CB'],
+    ['No-nonsense CB', 'CB', 'No-Nonsense CB'],
+    ['Sweeper keeper', 'GK', 'Sweeper Keeper'],
+    ['Inverted full-back', 'FB', 'Inverted FB'],
+    ['Wing-back', 'WB', 'Wing-Back'],
+    ['Anchor man', 'DM', 'Anchor'],
+    ['Regista', 'DM', 'Regista'],
+    ['Ball-winner', 'CM', 'Ball-Winning Mid'],
+    ['Box-to-box', 'CM', 'Box-to-Box'],
+    ['Playmaker', 'CM', 'Playmaker'],
+    ['Inverted winger', 'W', 'Inverted Winger'],
+    ['Inside forward', 'W', 'Inside Forward'],
+    ['Target man', 'ST', 'Target Man'],
+    ['Poacher', 'ST', 'Poacher'],
+    ['False 9', 'ST', 'False 9'],
+    ['Pressing forward', 'ST', 'Pressing Forward'],
+  ];
+  // does he play the role best (his best role at his own position)?
+  Sc.roleMatch = (p, role) => !role || (D.ROLES[p.pos] && FM.bestRole(p, p.pos) === role);
   Sc.posLabel = (k) => (k === 'any' ? 'all positions' : Sc.POS_LABEL[k] || k);
   Sc.posMatch = (p, k) => {
     if (!k || k === 'any' || D.POS_GROUP[p.pos] === k) return true;
@@ -283,7 +304,7 @@
   };
   Sc.focusLabel = (a) => {
     const where = a.type === 'league' ? FM.S.comps[a.comp].name : D.REGIONS[a.region];
-    const bits = [Sc.posLabel(a.pos), `≤${a.maxAge}`];
+    const bits = [a.role ? `${a.role}` : Sc.posLabel(a.pos), `≤${a.maxAge}`];
     if (a.nat && a.nat !== 'any') bits.push(`${D.NATIONS[a.nat].name} only`);
     if (a.minStars) bits.push(`${a.minStars}★+ potential`);
     if (a.maxFee) bits.push(`under ${U.money(a.maxFee)}`);
@@ -313,6 +334,7 @@
             Sc.scoutable(p) &&
             (a.type === 'league' ? p.clubId && S.clubs[p.clubId].comp === a.comp : Sc.region(p) === a.region) &&
             Sc.posMatch(p, a.pos) &&
+            Sc.roleMatch(p, a.role) &&
             (!a.nat || a.nat === 'any' || p.nat === a.nat) &&
             W.age(p) <= a.maxAge &&
             (!a.minStars || W.stars(Sc.scoutPA(scout, p), p.pos) >= a.minStars) &&

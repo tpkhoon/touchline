@@ -2558,7 +2558,16 @@
       sim: 'minimal',
       clubs: 'CLUBS_CY1',
       repBand: [52, 36],
-      rules: { qualify: { to: 'CC', n: 1 } },
+      rules: {
+        split: {
+          after: 26,
+          groups: [6, 8],
+          rounds: ['double', 'double'],
+          names: ['Championship group', 'Relegation group'],
+          halve: false,
+        },
+        qualify: { to: 'CC', n: 1 },
+      },
     },
     {
       id: 'HR1',
@@ -2591,7 +2600,16 @@
       sim: 'minimal',
       clubs: 'CLUBS_RO1',
       repBand: [58, 40],
-      rules: { qualify: { to: 'CC', n: 1 } },
+      rules: {
+        split: {
+          after: 30,
+          groups: [6, 10],
+          rounds: ['double', 'single'],
+          names: ['Championship play-off', 'Relegation play-out'],
+          halve: true,
+        },
+        qualify: { to: 'CC', n: 1 },
+      },
     },
     {
       id: 'EC1',
@@ -2910,7 +2928,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_SK1',
       repBand: [48, 36],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['double', 'double'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'SI1',
@@ -2976,7 +3002,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_BG1',
       repBand: [48, 34],
-      rules: {},
+      rules: {
+        split: {
+          after: 26,
+          groups: [6, 8],
+          rounds: ['single', 'single'],
+          names: ['Championship group', 'Relegation group'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'FI1',
@@ -2987,7 +3021,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_FI1',
       repBand: [47, 34],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship series', 'Challenger series'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'IS1',
@@ -2998,7 +3040,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_IS1',
       repBand: [42, 32],
-      rules: {},
+      rules: {
+        split: {
+          after: 22,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'GE1',
@@ -3020,7 +3070,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_IL1',
       repBand: [50, 36],
-      rules: {},
+      rules: {
+        split: {
+          after: 26,
+          groups: [6, 8],
+          rounds: ['double', 'double'],
+          names: ['Championship play-off', 'Relegation play-off'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'RU1',
@@ -3053,7 +3111,15 @@
       sim: 'minimal',
       clubs: 'CLUBS_NI1',
       repBand: [40, 31],
-      rules: {},
+      rules: {
+        split: {
+          after: 33,
+          groups: [6, 6],
+          rounds: ['single', 'single'],
+          names: ['Championship', 'Relegation'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'VE1',
