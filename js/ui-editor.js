@@ -3680,6 +3680,8 @@
       short: (v('nshort') || '').trim().toUpperCase(),
       colors: [v('nc1'), v('nc2')],
       coef: +v('ncoef') === 50 ? null : Math.round(+v('ncoef') * 10) / 10, // (50: the game works the points out)
+      youth:
+        v('nyouth') === '' || v('nyouth') == null ? null : Math.max(15, Math.min(95, Math.round(+v('nyouth') || 50))), // (empty: worked out)
       tactic: { formation: v('nform'), buildup: v('nbuild'), press: v('npress'), width: v('nwidth') },
     };
     if (JSON.stringify(patch.tactic) === JSON.stringify(NT_TACTIC)) patch.tactic = null;
@@ -3692,6 +3694,7 @@
       patch.name === N.name &&
       patch.short === ED.code &&
       patch.coef == null &&
+      patch.youth == null &&
       !patch.tactic &&
       sameColours(patch.colors, D.NT_COLORS[ED.code] || ['#ffffff', '#000000'])
     )
@@ -3731,7 +3734,7 @@
               .sort((a, b) => a[1].name.localeCompare(b[1].name))
               .map(([code, n]) => {
                 const o = ntOf(code);
-                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${n.flag} ${esc((o && o.name) || n.name)}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}</div></div><span class="dim">›</span></div></div>`;
+                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${n.flag} ${esc((o && o.name) || n.name)}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}${o && o.youth != null ? ` · youth ${o.youth}` : ''}</div></div><span class="dim">›</span></div></div>`;
               })
               .join('')}`,
         )
@@ -3849,6 +3852,8 @@
       <div class="ng-label">Ranking points <b id="ed-ncoefv" style="color:#e6edf6">${coef}</b> <span class="tiny dim">(about 50 for an average nation, 90 and over for the best; every match moves them)</span></div>
       <input type="range" id="ed-ncoef" min="20" max="100" step="0.5" value="${coef}" style="width:100%">
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Left at 50 the game works the points out from the nation's players, as it does without the editor.</div>
+      <div class="ng-label">Youth rating <span class="tiny dim">(15 to 95; about 50 is an average nation, higher means better academy intakes; it moves a little every season. Empty: the game works it out)</span></div>
+      <input type="number" id="ed-nyouth" min="15" max="95" step="1" inputmode="numeric" placeholder="Automatic" value="${o.youth != null ? o.youth : ''}" style="width:140px">
       <div class="ng-label">How they play</div>
       <div class="ng-names" style="margin-top:0"><select id="ed-nform" style="flex:1">${Object.keys(D.FORMATIONS)
         .map((k) => `<option ${tac.formation === k ? 'selected' : ''}>${k}</option>`)

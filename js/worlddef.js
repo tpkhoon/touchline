@@ -52,7 +52,7 @@
     intl: {}, // international football: { cycle, tourns: { id: { name, slots } }, invites: [{ id, name, host }] }
     agents: [], // the names of the agent firms (empty: the game's own)
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
-    nations: [], // national teams: { code, name, short, colors, coef }
+    nations: [], // national teams: { code, name, short, colors, coef, youth (the nation's youth rating, 15 to 95) }
     newNations: [], // nations the world adds: { code, name, flag, region, pool, style, colors, weight }
     confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
     history: { seasons: [] },
@@ -1732,6 +1732,8 @@
         errors.push(`${at}: colours must be two #rrggbb values`);
       if (n.coef != null && !(n.coef >= 20 && n.coef <= 100))
         errors.push(`${at}: ranking points must be between 20 and 100`);
+      if (n.youth != null && !(n.youth >= 15 && n.youth <= 95))
+        errors.push(`${at}: the youth rating must be between 15 and 95`);
       if (n.name != null && !String(n.name).trim()) errors.push(`${at}: a national team needs a name`);
       if (n.tactic) errors.push(...tacticErrors(n.tactic, at));
       if (n.short != null && (!String(n.short).trim() || String(n.short).length > 4))
@@ -1990,6 +1992,8 @@
     }
     // national teams: a name, a short name, colours and the ranking points they start with
     for (const n of def.nations || []) {
+      // the nation's youth rating (it moves from here by itself, a little each season)
+      if (n.youth != null) (S.youthRate = S.youthRate || {})[n.code] = Math.round(n.youth * 10) / 10;
       const tm = S.nteams && S.nteams['n_' + n.code];
       if (!tm) continue;
       if (n.name) ((tm.name = n.name), (tm.city = n.name));

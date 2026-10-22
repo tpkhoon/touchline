@@ -431,7 +431,17 @@
     if (r) UI.afterDay(r.summary);
   };
   // Sim through days without a match of ours; stop for our next fixture, a decision in the feed, or the season's end
-  UI.acts.skipToMatch = async () => {
+  // With Confirm before skipping on (Settings), a skip to the next match asks first, with what it stops for and how to stop it
+  UI.acts.skipToMatch = () => {
+    if (!S().settings.confirmSim) return UI.acts.skipToMatchGo();
+    UI.sheet(
+      `<div class="small" style="line-height:1.5">Skip through the days until your next match. It stops for a decision in the feed, a transfer window opening or closing, deadline day or a job offer, and you can stop it yourself while it runs.</div>
+      <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="skipToMatchGo">▶ Start skipping</button></div>`,
+      { title: 'Skip to your next match?' },
+    );
+  };
+  UI.acts.skipToMatchGo = async () => {
+    UI.closeAllSheets();
     const r = await FM.SimRunner.run('toMatch');
     if (!r) return;
     // stopped for a decision: say what it is and open the list of things waiting for a reply
@@ -3658,6 +3668,7 @@
       <div class="card"><div class="row"><div class="grow"><div class="h3">Season preview popup</div><div class="small dim">Show it automatically in pre-season (it's always on the Home screen)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.skipPreview ? 'on' : ''}" data-act="setFlag" data-k="skipPreview" data-v="0">On</button><button class="${s.settings.skipPreview ? 'on' : ''}" data-act="setFlag" data-k="skipPreview" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Reduced motion</div><div class="small dim">Tones down screen animations, the ball trail and the slow-down on big moments (your device's own setting is always honoured)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.reduceMotion ? 'on' : ''}" data-act="setFlag" data-k="reduceMotion" data-v="0">Off</button><button class="${s.settings.reduceMotion ? 'on' : ''}" data-act="setFlag" data-k="reduceMotion" data-v="1">On</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Colour-blind kits</div><div class="small dim">Picks the away shirt so the two sides look different to red-green colour blindness too, and draws the away side's players as squares</div></div><div class="seg" style="width:120px"><button class="${!s.settings.colourBlind ? 'on' : ''}" data-act="setFlag" data-k="colourBlind" data-v="0">Off</button><button class="${s.settings.colourBlind ? 'on' : ''}" data-act="setFlag" data-k="colourBlind" data-v="1">On</button></div></div></div>
+      <div class="card"><div class="row"><div class="grow"><div class="h3">Confirm before skipping</div><div class="small dim">Ask first before Next match skips through the days (the 📅 sheet always asks)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.confirmSim ? 'on' : ''}" data-act="setFlag" data-k="confirmSim" data-v="0">Off</button><button class="${s.settings.confirmSim ? 'on' : ''}" data-act="setFlag" data-k="confirmSim" data-v="1">On</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Haptics</div><div class="small dim">A light tap on every button (phones that support it)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="0">On</button><button class="${s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Matchday digest</div><div class="small dim">A round-up card in the feed after every league matchday</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="0">On</button><button class="${s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Currency</div><div class="small dim">Pounds unless you choose another (Auto uses your club's country's currency); prices are converted at fixed rates (the game keeps its money in dollars)</div></div></div><select data-input="currency" style="width:100%;margin-top:8px"><option value="auto" ${s.settings.currency === 'auto' ? 'selected' : ''}>Auto: the club's own currency</option>${Object.entries(
@@ -4015,6 +4026,30 @@
   };
 
   // ---------- Season review ----------
+  // The biggest leagues (by the reputation of their clubs) with a tap to follow, for the review's list of leagues
+  const followPicks = () => {
+    const fol = UI.follows().comps;
+    const top = Object.values(S().comps)
+      .filter((c) => c.type === 'league' && c.tier === 1 && c.clubs.length)
+      .map((c) => ({ c, r: U.avg(c.clubs, (id) => (S().clubs[id] || { rep: 0 }).rep) }))
+      .sort((a, b) => b.r - a.r)
+      .slice(0, 8)
+      .map((x) => x.c);
+    if (!top.length) return '';
+    return `<div class="tiny dim" style="margin-top:10px">Follow more leagues: their champions are listed here next season.</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${top
+      .map(
+        (c) =>
+          `<button class="chip ${fol.includes(c.id) ? 'on' : ''}" data-act="reviewFollow" data-id="${esc(c.id)}">${C.flag(c.nat)} ${esc(c.name)}</button>`,
+      )
+      .join('')}</div>`;
+  };
+  UI.acts.reviewFollow = (d, el) => {
+    const f = UI.follows(),
+      on = f.comps.includes(d.id);
+    f.comps = on ? f.comps.filter((x) => x !== d.id) : f.comps.concat(d.id);
+    UI.save();
+    if (el) el.classList.toggle('on', !on);
+  };
   UI.seasonReview = function (sm) {
     const e = sm.entry;
     const c = e.user ? CL(e.user.club) : NOCLUB; // out of work all season: no club to review
@@ -4044,7 +4079,7 @@
           )
           .join('') ||
         '<div class="tiny dim" style="margin-top:6px">Follow a league (☆ on its screen) to see its champion here.</div>'
-      }</div>
+      }${followPicks()}</div>
       ${UI.regionalSeason(e, true)}
       ${
         cupsShown.length

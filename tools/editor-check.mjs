@@ -321,6 +321,8 @@ check(
   E.setNation('ENG', { name: 'Albion', short: 'ALB', colors: ['#112233', '#ffffff'], coef: 88 }).ok,
   'a national team edit was refused',
 );
+check(!E.setNation('ENG', { youth: 5 }).ok, 'a youth rating of 5 was accepted');
+check(E.setNation('ENG', { youth: 82 }).ok, 'a youth rating of 82 was refused');
 // competitions: league formats, a play-off pair, a cup of the definition's own
 const lg = (id) => def.leagues.find((l) => l.id === id);
 check(!E.setLeague('D3', { rules: { ...lg('D3').rules, legs: 3 } }).ok, 'a league played three times was accepted');
@@ -825,6 +827,7 @@ console.log(`D1 has ${n1} clubs`);
     tn && tn.name === 'Albion' && tn.short === 'ALB' && tn.coef === 88 && tn.colors[0] === '#112233',
     'the national team edit did not reach the world',
   );
+  check(S.youthRate && S.youthRate.ENG === 82, 'the youth rating set in the editor did not reach the world');
   check(
     S.archive.some((e) => e.year === S.year - 1 && e.imported && e.comps.D1.champion === order[3]),
     'the past season is not in the archive',
