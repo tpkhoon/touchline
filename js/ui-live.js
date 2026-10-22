@@ -64,8 +64,9 @@
     });
     q.focus();
   };
+  // (the value is escaped by the caller)
   const fld = (id, label, value, extra = '') =>
-    `<div style="flex:1;min-width:0"><div class="ng-label" style="margin-top:8px">${label}</div><input type="text" id="${id}" value="${esc(value ?? '')}" ${extra}></div>`;
+    `<div style="flex:1;min-width:0"><div class="ng-label" style="margin-top:8px">${label}</div><input type="text" id="${id}" value="${value ?? ''}" ${extra}></div>`;
   UI.acts.liveEditPlayer = (d) => {
     const p = FM.S.players[d.id];
     if (!p || busy()) return;
@@ -75,7 +76,7 @@
         `<div style="flex:1 1 30%;min-width:96px"><div class="tiny dim">${esc((D.ATTR_LABEL || {})[k] || k)}</div><input type="number" id="le-a-${k}" min="1" max="20" inputmode="numeric" value="${Math.round(p.attrs[k])}"></div>`,
     ).join('');
     UI.sheet(
-      `<div class="row" style="gap:8px">${esc(fld('le-fn', 'First name', p.fn, 'maxlength="24"'))}${esc(fld('le-ln', 'Surname', p.ln, 'maxlength="32"'))}</div>
+      `<div class="row" style="gap:8px">${fld('le-fn', 'First name', esc(p.fn), 'maxlength="24"')}${fld('le-ln', 'Surname', esc(p.ln), 'maxlength="32"')}</div>
       <div class="row" style="gap:8px;margin-top:4px">
         <div style="flex:1"><div class="ng-label" style="margin-top:8px">Foot</div><select id="le-foot">${['Right', 'Left', 'Both'].map((f) => `<option ${p.foot === f ? 'selected' : ''}>${f}</option>`).join('')}</select></div>
         <div style="flex:1"><div class="ng-label" style="margin-top:8px">Potential</div><input type="number" id="le-pa" min="20" max="99" inputmode="numeric" value="${p.pa}"></div>
@@ -113,12 +114,12 @@
     if (!c || busy()) return;
     UI.closeSheet();
     UI.sheet(
-      `${fld('le-name', 'Name', c.name, 'maxlength="40"')}
-      <div class="row" style="gap:8px">${esc(fld('le-short', 'Short name (up to 5)', c.short, 'maxlength="5"'))}${esc(fld('le-nick', 'Nickname', c.nick || '', 'maxlength="24"'))}</div>
-      ${fld('le-city', 'City', c.city || '', 'maxlength="32"')}
+      `${fld('le-name', 'Name', esc(c.name), 'maxlength="40"')}
+      <div class="row" style="gap:8px">${fld('le-short', 'Short name (up to 5)', esc(c.short), 'maxlength="5"')}${fld('le-nick', 'Nickname', esc(c.nick || ''), 'maxlength="24"')}</div>
+      ${fld('le-city', 'City', esc(c.city || ''), 'maxlength="32"')}
       <div class="ng-label">Colours</div>
       <div class="row" style="gap:10px"><input type="color" id="le-c1" value="${esc(c.colors[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="le-c2" value="${esc(c.colors[1])}" style="width:64px;height:44px;padding:2px"></div>
-      ${fld('le-ground', 'Ground', c.stadium.name, 'maxlength="40"')}
+      ${fld('le-ground', 'Ground', esc(c.stadium.name), 'maxlength="40"')}
       <div class="row" style="gap:8px"><div style="flex:1"><div class="ng-label" style="margin-top:8px">Capacity</div><input type="number" id="le-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${esc(c.stadium.cap)}"></div><div style="flex:1"><div class="ng-label" style="margin-top:8px">Reputation</div><input type="number" id="le-rep" min="20" max="99" inputmode="numeric" value="${c.rep}"></div></div>
       <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="liveSaveClub" data-id="${esc(c.id)}">Save</button></div>`,
       { title: esc(c.name), full: true },
