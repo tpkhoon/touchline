@@ -332,6 +332,17 @@ check(
   E.addBan({ kind: 'nation', id: 'TOG', from: 2040, to: 2041, why: 'test' }).ok,
   'a sanction on a nation was refused',
 );
+const bra0 = { name: FM.D.NATIONS.BRA.name, flag: FM.D.NATIONS.BRA.flag, mix: FM.D.NAT_MIX.D1 && FM.D.NAT_MIX.D1.BRA };
+check(!E.setNationEdit('BRA', { abroad: 9 }).ok, 'a nation edit with players abroad x9 was accepted');
+check(
+  !E.setNationEdit('BRA', { region: 'MARS' }).ok,
+  'a nation edit with a part of the world that does not exist was accepted',
+);
+check(!E.setNationEdit('BRA', { name: 'England' }).ok, 'a nation edit took the name of another nation');
+check(
+  E.setNationEdit('BRA', { name: 'Brasilia', flag: '🏁', style: 'physical', abroad: 2 }).ok,
+  'a nation edit was refused',
+);
 // competitions: league formats, a play-off pair, a cup of the definition's own
 const lg = (id) => def.leagues.find((l) => l.id === id);
 check(!E.setLeague('D3', { rules: { ...lg('D3').rules, legs: 3 } }).ok, 'a league played three times was accepted');
@@ -838,6 +849,13 @@ console.log(`D1 has ${n1} clubs`);
   );
   check(S.youthRate && S.youthRate.ENG === 82, 'the youth rating set in the editor did not reach the world');
   check(
+    FM.D.NATIONS.BRA.name === 'Brasilia' &&
+      FM.D.NATIONS.BRA.flag === '🏁' &&
+      FM.D.NATIONS.BRA.style === 'Hard-working and physical' &&
+      (!bra0.mix || Math.abs(FM.D.NAT_MIX.D1.BRA - bra0.mix * 2) < 0.01),
+    'the nation edit (name, flag, style, players abroad) did not reach the game data',
+  );
+  check(
     (S.bans || []).some((b) => b.kind === 'nation' && b.id === 'TOG' && b.from === 2040 && b.to === 2041),
     'the sanction set in the editor did not reach the world',
   );
@@ -970,6 +988,12 @@ check(
   'clearing the database left the international settings changed',
 );
 check(!FM.D.allClubRows().some((row) => row[0] === 'Alphaton'), 'clearing the database left the new club in the data');
+check(
+  FM.D.NATIONS.BRA.name === bra0.name &&
+    FM.D.NATIONS.BRA.flag === bra0.flag &&
+    (!bra0.mix || FM.D.NAT_MIX.D1.BRA === bra0.mix),
+  'clearing the database left the nation edit in the data',
+);
 
 console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'editor check passed');
 process.exit(fails.length ? 1 : 0);

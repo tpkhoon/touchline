@@ -53,6 +53,7 @@
     agents: [], // the names of the agent firms (empty: the game's own)
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
     nations: [], // national teams: { code, name, short, colors, coef, youth (the nation's youth rating, 15 to 95) }
+    nationEdits: {}, // changes to a nation of the game: { code: { name, flag, region, style, abroad } } (abroad: a multiplier on how common its players are in leagues abroad)
     newNations: [], // nations the world adds: { code, name, flag, region, pool, style, colors, weight }
     bans: [], // sanctions: { kind: 'nation' | 'club', id, from, to, why } (out of international competition for the seasons from to to)
     confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
@@ -625,6 +626,7 @@
       removeCups: [],
       newConts: [],
       newNations: JSON.parse(JSON.stringify(def.newNations || [])),
+      nationEdits: JSON.parse(JSON.stringify(def.nationEdits || {})),
       intl: null,
       agents: null,
       calendar: null,
@@ -795,6 +797,7 @@
       (p.newConts || []).length ||
       (p.removeCups || []).length ||
       (p.newNations || []).length ||
+      Object.keys(p.nationEdits || {}).length ||
       p.agents ||
       p.intl ||
       p.calendar
@@ -857,6 +860,74 @@
     };
   };
   WD.addNations = addNations;
+  // Changes to the game's own nations (and the world's): a name, a flag, a part of the world, how they play, and how common their
+  // players are in leagues abroad (a multiplier on their share of every other nation's league mix). Returns what puts them back.
+  const editNations = (map) => {
+    const snaps = [];
+    for (const [code, e] of Object.entries(map || {})) {
+      const N = D.NATIONS[code];
+      if (!N || !e) continue;
+      snaps.push({
+        code,
+        name: N.name,
+        flag: N.flag,
+        region: N.region,
+        style: N.style,
+        bias: N.bias,
+        mix: Object.fromEntries(Object.entries(D.NAT_MIX).map(([l, m]) => [l, m[code]])),
+      });
+      if (e.name) N.name = e.name;
+      if (e.flag) N.flag = e.flag;
+      if (e.region) N.region = e.region;
+      if (e.style && WD.NATION_STYLES[e.style]) {
+        N.style = WD.NATION_STYLES[e.style][0];
+        N.bias = { ...WD.NATION_STYLES[e.style][1] };
+      }
+      if (e.abroad != null && e.abroad !== 1)
+        for (const l of D.LEAGUES) {
+          const m = D.NAT_MIX[l.id];
+          if (m && m[code] != null && l.nat !== code) m[code] = Math.round(m[code] * e.abroad * 1000) / 1000;
+        }
+    }
+    return function restore() {
+      for (const s of snaps.reverse()) {
+        const N = D.NATIONS[s.code];
+        if (!N) continue;
+        Object.assign(N, { name: s.name, flag: s.flag, region: s.region, style: s.style, bias: s.bias });
+        for (const [l, v] of Object.entries(s.mix)) if (D.NAT_MIX[l]) D.NAT_MIX[l][s.code] = v;
+      }
+    };
+  };
+  WD.editNations = editNations;
+  // the nation edits a world definition can hold are checked here (the part of the world, the style, the multiplier, the name)
+  WD.validateNationEdits = function (def) {
+    const e = [];
+    const regions = new Set([...Object.keys(WD.NATION_REGIONS), ...Object.values(D.NATIONS).map((n) => n.region)]);
+    const names = new Map();
+    for (const [code, n] of Object.entries(D.NATIONS)) names.set(n.name.toLowerCase(), code);
+    for (const [code, x] of Object.entries(def.nationEdits || {})) {
+      const at = `nation ${code}`;
+      if (!D.NATIONS[code] && !(def.newNations || []).some((n) => n.code === code)) {
+        e.push(`${at}: the game has no such nation`);
+        continue;
+      }
+      if (x.name != null) {
+        const name = String(x.name).trim();
+        if (name.length < 2 || name.length > 30) e.push(`${at}: the name is 2 to 30 characters`);
+        else if (names.has(name.toLowerCase()) && names.get(name.toLowerCase()) !== code)
+          e.push(`${at}: another nation is already called ${name}`);
+      }
+      if (x.flag != null && (!String(x.flag).trim() || String(x.flag).length > 12))
+        e.push(`${at}: the flag is an emoji (up to 12 characters)`);
+      if (x.region != null && !regions.has(x.region))
+        e.push(`${at}: the part of the world is one of ${[...regions].join(', ')}`);
+      if (x.style != null && !WD.NATION_STYLES[x.style])
+        e.push(`${at}: the way they play is one of ${Object.keys(WD.NATION_STYLES).join(', ')}`);
+      if (x.abroad != null && !(x.abroad >= 0.2 && x.abroad <= 3))
+        e.push(`${at}: how common its players are abroad is between 0.2 and 3`);
+    }
+    return e;
+  };
   WD.validateNewNations = function (def) {
     const e = [],
       seen = new Set(),
@@ -925,6 +996,7 @@
       intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE }),
     };
     const removeNations = addNations(patch.newNations); // (before the leagues: their mixes are copied from a twin)
+    const restoreNations = editNations(patch.nationEdits);
     for (const l of patch.leagues) {
       let cur = D.LEAGUES.find((x) => x.id === l.id);
       if (!cur) {
@@ -1014,6 +1086,7 @@
       }
     }
     return function undo() {
+      restoreNations();
       removeNations();
       D.LEAGUES.length = 0;
       for (const s of snap.leagues) {
@@ -1741,6 +1814,7 @@
       if (n.short != null && (!String(n.short).trim() || String(n.short).length > 4))
         errors.push(`${at}: the short name is 1–4 characters`);
     }
+    errors.push(...WD.validateNationEdits(def));
     // sanctions: a nation or a club kept out of international competition for some seasons
     for (const [i, b] of (def.bans || []).entries()) {
       const at = `sanction ${i + 1}`;
@@ -2593,6 +2667,22 @@
         return result([]);
       },
       // takes a nation out of the world: refused while a league, club, player, staff member or national team still belongs to it
+      // changes to a nation itself (not its national team): its name, flag, part of the world, style and how common its players are abroad
+      setNationEdit(code, patch) {
+        const edits = (def.nationEdits = def.nationEdits || {});
+        const next = { ...(edits[code] || {}), ...patch };
+        for (const k of Object.keys(next)) if (next[k] == null || next[k] === '') delete next[k];
+        const test = { ...def, nationEdits: { ...edits, [code]: next } };
+        const errs = WD.validateNationEdits(test);
+        if (errs.length) return result(errs);
+        if (Object.keys(next).length) edits[code] = next;
+        else delete edits[code];
+        return result([]);
+      },
+      clearNationEdit(code) {
+        if (def.nationEdits) delete def.nationEdits[code];
+        return result([]);
+      },
       // a sanction: a nation or a club out of international competition from one season to another (inclusive)
       addBan(spec) {
         const b = {

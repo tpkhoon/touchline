@@ -3789,12 +3789,39 @@
   // The name, short name, colours and ranking points a national team starts with (a nation too thin in players to field a team
   // keeps none; its entry is ignored)
   const ntOf = (code) => (ED.def.nations || []).find((n) => n.code === code);
+  // what the definition changes about a nation itself (see FM.WorldDef.editNations)
+  const nEdit = (code) => (ED.def.nationEdits || {})[code] || {};
+  const styleKey = (code) => {
+    const lab = (D.NATIONS[code] || {}).style;
+    return Object.keys(WD.NATION_STYLES).find((k) => WD.NATION_STYLES[k][0] === lab) || '';
+  };
   const NT_TACTIC = { formation: '4-3-3', buildup: 'Short', press: 'Mid Block', width: 'Balanced' }; // (how the game sets a national team up)
   const sameColours = (a, b) =>
     a.length === b.length && a.every((x, i) => String(x).toLowerCase() === String(b[i]).toLowerCase());
   UI.acts.edNation = (d) => {
     ED.view = 'nation';
     ED.code = d.code;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edSaveNationInfo = () => {
+    const v = (id) => (($('#' + id) || {}).value || '').trim();
+    const N = D.NATIONS[ED.code];
+    const abroad = Math.round((+v('ed-ninfoabroad') || 1) * 10) / 10;
+    const patch = {
+      name: v('ed-ninfoname') === N.name ? null : v('ed-ninfoname'),
+      flag: v('ed-ninfoflag') === N.flag ? null : v('ed-ninfoflag'),
+      region: v('ed-ninforeg') === N.region ? null : v('ed-ninforeg'),
+      style: v('ed-ninfostyle') === styleKey(ED.code) ? null : v('ed-ninfostyle'),
+      abroad: abroad === 1 ? null : abroad,
+    };
+    const r = WD.editor(ED.def, null).setNationEdit(ED.code, patch);
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+    if (r.ok) UI.toast('Nation saved', 1500);
+  };
+  UI.acts.edResetNationInfo = () => {
+    WD.editor(ED.def, null).clearNationEdit(ED.code);
     ED.err = [];
     UI.worldEditor();
   };
@@ -3861,7 +3888,7 @@
               .sort((a, b) => a[1].name.localeCompare(b[1].name))
               .map(([code, n]) => {
                 const o = ntOf(code);
-                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${n.flag} ${esc((o && o.name) || n.name)}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}${o && o.youth != null ? ` · youth ${o.youth}` : ''}</div></div><span class="dim">›</span></div></div>`;
+                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${nEdit(code).flag || n.flag} ${esc((o && o.name) || nEdit(code).name || n.name)}${Object.keys(nEdit(code)).length ? ' <span class="tiny dim">· nation changed</span>' : ''}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}${o && o.youth != null ? ` · youth ${o.youth}` : ''}</div></div><span class="dim">›</span></div></div>`;
               })
               .join('')}`,
         )
@@ -3971,8 +3998,31 @@
       cols = o.colors || D.NT_COLORS[ED.code] || ['#ffffff', '#000000'],
       coef = o.coef != null ? o.coef : 50,
       tac = o.tactic || NT_TACTIC;
-    return `<div class="h1" style="margin-top:2vh">${N.flag} ${esc(o.name || N.name)}</div><div class="tag">The national team of ${esc(N.name)}.</div>
+    const ne = nEdit(ED.code),
+      regs = { ...D.REGIONS };
+    const nationCard = `<div class="ng-label">The nation itself <span class="tiny dim">· what the game calls it, where it sits, how its players are made</span></div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Name</div><input type="text" id="ed-ninfoname" maxlength="30" value="${esc(ne.name || N.name)}"></div><div style="flex:0 0 90px"><div class="tiny dim">Flag</div><input type="text" id="ed-ninfoflag" maxlength="12" value="${esc(ne.flag || N.flag)}"></div></div>
+      <div class="ng-names" style="margin-top:8px"><div style="flex:1"><div class="tiny dim">Part of the world</div><select id="ed-ninforeg">${Object.entries(
+        regs,
+      )
+        .map(([k, l]) => `<option value="${k}" ${(ne.region || N.region) === k ? 'selected' : ''}>${esc(l)}</option>`)
+        .join(
+          '',
+        )}</select></div><div style="flex:1"><div class="tiny dim">How they play</div><select id="ed-ninfostyle">${Object.entries(
+        WD.NATION_STYLES,
+      )
+        .map(
+          ([k, v]) =>
+            `<option value="${k}" ${(ne.style || styleKey(ED.code)) === k ? 'selected' : ''}>${esc(v[0])}</option>`,
+        )
+        .join('')}</select></div></div>
+      <div class="tiny dim" style="margin-top:8px">Players abroad (a multiplier, 1 is as the game has it)</div><input type="number" id="ed-ninfoabroad" min="0.2" max="3" step="0.1" value="${ne.abroad != null ? ne.abroad : 1}" style="width:120px">
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edSaveNationInfo">Save the nation</button>${Object.keys(ne).length ? '<button class="btn sm" data-act="edResetNationInfo">Back to the default</button>' : ''}</div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">The part of the world sets who it qualifies with (until you move it in Confederations) and which scouts know its players. A new world built from this one takes the changes; the national team's own name, colours and ranking points are below.</div>
+      <div class="ng-label">The national team</div>`;
+    return `<div class="h1" style="margin-top:2vh">${esc(ne.flag || N.flag)} ${esc(o.name || ne.name || N.name)}</div><div class="tag">The national team of ${esc(ne.name || N.name)}.</div>
       ${errBox()}
+      ${nationCard}
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Name</div><input type="text" id="ed-nname" maxlength="32" value="${esc(o.name || N.name)}"></div><div style="flex:1;max-width:100px"><div class="ng-label" style="margin-top:0">Short</div><input type="text" id="ed-nshort" maxlength="4" value="${esc(o.short || ED.code)}"></div></div>
       <div class="ng-label">Colours</div>
       <div class="row" style="gap:10px"><input type="color" id="ed-nc1" value="${esc(cols[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="ed-nc2" value="${esc(cols[1])}" style="width:64px;height:44px;padding:2px"><span class="tiny dim">shirt, and the second colour</span></div>
