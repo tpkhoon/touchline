@@ -2105,16 +2105,49 @@
   // The queued clubs as they will join, one row each ([name, code, city, colour 1, colour 2, identity, reputation, ground, capacity,
   // abbreviation, nickname]), with anything the manager changed on top (S.expansionCustom: { league id: [a patch per club] })
   const CUSTOM = { name: 0, city: 2, c1: 3, c2: 4, identity: 5, rep: 6, ground: 7, cap: 8, abbr: 9, nick: 10 };
+  // Which club of the pool each slot takes: the manager's pick (S.expansionPick: { league id: [pool index per slot] }), else the
+  // first one nobody else has
+  const expansionIdx = (id, n) => {
+    const picks = (FM.S.expansionPick || {})[id] || [],
+      used = new Set(picks.filter((x) => x != null));
+    let next = 0;
+    return Array.from({ length: n }, (_, i) => {
+      if (picks[i] != null) return picks[i];
+      while (used.has(next)) next++;
+      used.add(next);
+      return next;
+    });
+  };
   Sea.expansionClubs = function (id, n) {
-    const custom = (FM.S.expansionCustom || {})[id] || [];
-    return Sea.expansionPool(id)
-      .slice(0, n)
-      .map((row, i) => {
-        const r = row.slice();
+    const custom = (FM.S.expansionCustom || {})[id] || [],
+      pool = Sea.expansionPool(id);
+    return expansionIdx(id, n)
+      .map((idx, i) => {
+        if (!pool[idx]) return null;
+        const r = pool[idx].slice();
         for (const [k, v] of Object.entries(custom[i] || {}))
           if (k in CUSTOM && v !== '' && v != null) r[CUSTOM[k]] = v;
         return r;
-      });
+      })
+      .filter(Boolean);
+  };
+  // Swap the club in slot i for the next one of the pool that no other slot has (the changes made to the old one go with it)
+  Sea.rerollExpansion = function (id, i) {
+    const S = FM.S,
+      n = Math.max(Sea.expansionQueued(id), i + 1),
+      pool = Sea.expansionPool(id),
+      idx = expansionIdx(id, n),
+      taken = new Set(idx.filter((_, j) => j !== i));
+    for (let step = 1; step <= pool.length; step++) {
+      const k = (idx[i] + step) % pool.length;
+      if (taken.has(k)) continue;
+      S.expansionPick = S.expansionPick || {};
+      const picks = (S.expansionPick[id] = idx.slice());
+      picks[i] = k;
+      Sea.customiseExpansion(id, i, null);
+      return true;
+    }
+    return false;
   };
   // Keep (or, with null, clear) the manager's changes to the club in slot i of a league's new clubs
   Sea.customiseExpansion = function (id, i, patch) {
@@ -2231,6 +2264,7 @@
     S.expansionQueue = {};
     S.expansionNoDraft = {};
     S.expansionCustom = {};
+    S.expansionPick = {};
   };
   Sea.newSeason = function (entry) {
     const S = FM.S;

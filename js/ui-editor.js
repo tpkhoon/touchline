@@ -4591,11 +4591,15 @@
         <div class="row" style="gap:8px;flex-wrap:wrap">${bulkNum('bk-nyouth', 'Youth rating (+ or −; 15 to 95, 50 is average)')}</div>
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">A nation's youth rating sets how good the academy intakes of its clubs are. It moves by itself every season.</div>`,
     }[bulkKind];
-    return `<div class="seg" style="margin-bottom:6px">${tabs}</div>${body}<div class="actions" style="margin-top:14px"><button class="btn pri block" id="bk-count" data-act="bulkApply">Apply</button></div>`;
+    const undo = UI._bulkUndo
+      ? `<div class="card flat" style="margin-top:12px"><div class="small">↩️ Last bulk edit: ${esc(UI._bulkUndo.label)}</div><button class="btn sm" style="margin-top:8px" data-act="bulkUndo">Undo it</button></div>`
+      : '';
+    return `<div class="seg" style="margin-bottom:6px">${tabs}</div>${body}<div class="actions" style="margin-top:14px"><button class="btn pri block" id="bk-count" data-act="bulkApply">Apply</button></div>${undo}`;
   };
   UI.acts.liveBulk = () => {
     if (!live() || busy()) return;
     bulkKind = 'p';
+    UI._bulkUndo = null;
     const sh = UI.sheet(`<div id="bk-body">${bulkForm()}</div>`, { title: 'Bulk edit', full: true });
     sh.addEventListener('input', bulkCount);
     sh.addEventListener('change', bulkCount);
@@ -4607,11 +4611,59 @@
     if (b) b.innerHTML = bulkForm();
     bulkCount();
   };
+  // What each kind of bulk edit can change, copied before it does, so the last one can be undone (while the Bulk edit sheet stays open)
+  const PFIELDS = ['pa', 'contract', 'wage', 'morale', 'inj'];
+  const snapPlayer = (p) => ({ attrs: { ...p.attrs }, ...Object.fromEntries(PFIELDS.map((k) => [k, p[k]])) });
+  const snapClub = (c) => ({
+    rep: c.rep,
+    budget: c.budget,
+    balance: c.balance,
+    cap: c.stadium.cap,
+    cap0: c.stadium.cap0,
+    fac: { ...c.facilities },
+  });
+  UI.acts.bulkUndo = () => {
+    const u = UI._bulkUndo,
+      S = FM.S;
+    if (!u || !live() || busy()) return;
+    for (const [id, o] of Object.entries(u.players || {})) {
+      const p = S.players[id];
+      if (!p) continue;
+      p.attrs = { ...o.attrs };
+      for (const k of PFIELDS) p[k] = o[k];
+      FM.W.refresh(p);
+      p.pa = o.pa;
+    }
+    for (const [id, o] of Object.entries(u.clubs || {})) {
+      const c = S.clubs[id];
+      if (!c) continue;
+      Object.assign(c, { rep: o.rep, budget: o.budget, balance: o.balance });
+      c.stadium.cap = o.cap;
+      c.stadium.cap0 = o.cap0;
+      c.facilities = { ...o.fac };
+    }
+    for (const [id, o] of Object.entries(u.comps || {})) {
+      const c = S.comps[id];
+      if (!c) continue;
+      if (c.type === 'league') c.rules.prize = o;
+      else c.prize = o;
+    }
+    for (const [k, o] of Object.entries(u.nations || {})) S.youthRate[k] = o;
+    const label = u.label;
+    UI._bulkUndo = null;
+    persist();
+    UI.render();
+    const b = $('#bk-body');
+    if (b) b.innerHTML = bulkForm();
+    bulkCount();
+    UI.toast(`Undone: ${label}`, 2500);
+  };
   UI.acts.bulkApply = () => {
     if (!live() || busy()) return;
     const S = FM.S,
       cl = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
     let n = 0;
+    const snap = { players: {}, clubs: {}, comps: {}, nations: {}, label: '' };
     if (bulkKind === 'p') {
       const attr = bv('bk-pattr'),
         pa = bv('bk-ppa'),
@@ -4621,6 +4673,7 @@
         heal = ($('#bk-pheal') || {}).checked;
       for (const p of bulkPlayers()) {
         let hit = false;
+        if (attr || pa || con != null || wage || mor != null || heal) snap.players[p.id] = snapPlayer(p);
         if (attr) {
           for (const k of D.ATTRS) p.attrs[k] = cl(Math.round(p.attrs[k] + attr), 1, 20);
           FM.W.refresh(p);
@@ -4657,6 +4710,7 @@
         fac = { academy: bv('bk-cacad'), training: bv('bk-ctrain'), medical: bv('bk-cmed') };
       for (const c of bulkClubs()) {
         let hit = false;
+        snap.clubs[c.id] = snapClub(c);
         if (rep) {
           c.rep = cl(Math.round(c.rep + rep), 20, 99);
           hit = true;
@@ -4684,6 +4738,7 @@
       const pct = bv('bk-zprize');
       if (pct)
         for (const c of bulkComps()) {
+          snap.comps[c.id] = c.type === 'league' ? c.rules.prize : c.prize;
           if (c.type === 'league') c.rules.prize = Math.round((c.rules.prize * (100 + pct)) / 100);
           else c.prize = Math.round((c.prize * (100 + pct)) / 100);
           n++;
@@ -4693,13 +4748,19 @@
       if (d)
         for (const k of bulkNations()) {
           FM.Season.youthRating(k);
+          snap.nations[k] = S.youthRate[k];
           S.youthRate[k] = cl(Math.round((S.youthRate[k] + d) * 10) / 10, 15, 95);
           n++;
         }
     }
     if (!n) return UI.toast('Nothing changed: fill in a change first', 2500);
+    snap.label = `${U.plural(n, { p: 'player', c: 'club', z: 'competition', n: 'nation' }[bulkKind])} changed`;
+    UI._bulkUndo = snap;
     persist();
     UI.render();
+    const bb = $('#bk-body');
+    if (bb) bb.innerHTML = bulkForm();
+    bulkCount();
     UI.toast(`${U.plural(n, 'row')} changed`, 2500);
   };
   // An Edit button at the foot of every player and club sheet

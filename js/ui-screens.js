@@ -493,7 +493,7 @@
       <button class="btn pri block" data-act="simGo">▶ Start simming</button>`;
   };
   UI.acts.simDaysAsk = () => {
-    UI._simSel = { n: 7 };
+    UI._simSel = (S().settings && S().settings.simLast) || { n: 7 }; // (the choice made last time)
     UI.sheet(simSheetHtml(), { title: 'Sim forward' });
   };
   UI.acts.simPick = (d) => {
@@ -513,6 +513,8 @@
   };
   UI.acts.simGo = () => {
     const sel = UI._simSel || { n: 7 };
+    if (S().settings)
+      S().settings.simLast = sel.u ? { u: sel.u } : { n: Math.max(1, Math.min(120, Math.floor(+sel.n) || 7)) };
     UI.acts.simDays(sel.u ? { n: 400, until: sel.u } : { n: sel.n });
   };
   UI.acts.simStop = () => FM.SimRunner.stop();
@@ -592,7 +594,7 @@
       <div class="row" style="gap:10px"><input type="color" id="xc-c1" value="${esc(r[3])}" style="width:64px;height:44px;padding:2px"><input type="color" id="xc-c2" value="${esc(r[4])}" style="width:64px;height:44px;padding:2px"></div>
       <div class="row" style="gap:8px"><div style="flex:1"><div class="ng-label" style="margin-top:8px">Capacity</div><input type="number" id="xc-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${r[8]}"></div><div style="flex:1"><div class="ng-label" style="margin-top:8px">Reputation</div><input type="number" id="xc-rep" min="20" max="99" inputmode="numeric" value="${r[6]}"></div></div>
       <div class="ng-label">Identity</div><select id="xc-identity">${idOpts}</select>
-      <div class="actions" style="margin-top:14px;gap:8px"><button class="btn pri grow" data-act="expandSave" data-id="${esc(d.id)}" data-i="${i}">Save</button><button class="btn" data-act="expandReset" data-id="${esc(d.id)}" data-i="${i}">Back to the original</button></div>`,
+      <div class="actions" style="margin-top:14px;gap:8px"><button class="btn pri grow" data-act="expandSave" data-id="${esc(d.id)}" data-i="${i}">Save</button><button class="btn" data-act="expandReroll" data-id="${esc(d.id)}" data-i="${i}">🎲 Try another club</button><button class="btn" data-act="expandReset" data-id="${esc(d.id)}" data-i="${i}">Back to the original</button></div>`,
       { title: 'Customise the new club', full: true },
     );
   };
@@ -622,6 +624,13 @@
     UI.closeSheet();
     UI.render();
     UI.toast('Saved', 1500);
+  };
+  UI.acts.expandReroll = (d) => {
+    if (!FM.Season.rerollExpansion(d.id, +d.i)) return UI.toast('No other club is waiting for this league', 2500);
+    UI.save();
+    UI.closeSheet();
+    UI.render();
+    UI.acts.expandEdit(d);
   };
   UI.acts.expandReset = (d) => {
     FM.Season.customiseExpansion(d.id, +d.i, null);
