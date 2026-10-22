@@ -95,6 +95,7 @@ The source runs as-is: no build is needed to play or develop. Node tooling (`npm
 | `npm run docs:synced`                                                   | Record the docs as synced (run it right after syncing).                                                                                                  |
 | `npm run check:docs`                                                    | Check the headline numbers in the README and design document against the data.                                                                           |
 | `npm run changelog`                                                     | Regenerate `js/changelog.js` and `docs/CHANGELOG.md` (Settings → Help → What's new, with each bullet of a build listed) from the Shipped list in `docs/ROADMAP.md`; start a bullet with a bold lead-in such as `**Scouting:**`.                                                          |
+| `npm run typecheck` | TypeScript over the files marked `// @ts-check` (twenty modules so far; a missing field or a wrong shape fails the deploy). |
 | `npm run lint`                                                          | ESLint.                                                                                                                                                  |
 | `npm run format`                                                        | Prettier (`npm run format:check` only reports).                                                                                                          |
 | `npm run build`                                                         | Minified production build in `dist/`.                                                                                                                    |
@@ -379,11 +380,11 @@ World data and the editor
 js/worlddef.js    the world as data: definitions, validation, patches to the game's clubs and leagues
 js/dbimport.js    database import: adapters, staging, building a world from a file, export
 js/histimport.js  the historical CSV tables adapter; js/realstats.js: real statistics to attributes
-js/ui-editor.js   the world editor (from the new-career screen) and editing the world you play (Settings)
+js/ui-editor.js   the world editor (from the new-career screen); js/ui-live.js: editing the world you play (Settings)
 
 Interface and platform
 js/ui-core.js     shell, components, sheets, navigation, title and new-career flow
-js/ui-screens.js  main tabs, player card, tactics, scouting, league, club, Settings
+js/ui-screens.js  main tabs, player card, tactics, scouting, league, club, Settings; js/ui-help.js: help, backups, the season review
 js/ui-extra.js, ui-alpha.js, ui-market.js, ui-training.js, ui-youth.js, ui-follow.js, ui-lore.js, ui-access.js
                   further screens: previews, negotiation and boardroom, market depth, training and analytics, academy, following, lore cards, accessibility
 js/save.js        save format, migrations, storage backends (files / IndexedDB), backup export and import

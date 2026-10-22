@@ -1,3 +1,4 @@
+// @ts-check
 // B teams and youth sides. A B team (a club's second side, "X B" or "X II") is a reserve side
 // in the lower divisions: it can never go up into its parent's division or above, its players belong to the
 // parent (who pays them and takes the fee if one is sold) and they move freely between the two. Every club in the
@@ -7,7 +8,7 @@
   const FM = window.FM,
     U = FM.U,
     W = FM.W;
-  const Y = (FM.Youth = {});
+  const Y = (FM.Youth = /** @type {any} */ ({}));
   const S = () => FM.S;
 
   // ---------- B teams ----------

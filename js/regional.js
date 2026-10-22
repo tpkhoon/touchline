@@ -1,3 +1,4 @@
+// @ts-check
 // Regional competitions: the Brazilian state championships. Small early-season tournaments among the clubs of one
 // area, played on their own days. A state championship is a league phase among the area's clubs and then a final
 // between the top two (an area can also be a knockout, 'ko', as the English county cups were: none is left). The clubs
@@ -7,7 +8,7 @@
     U = FM.U,
     D = FM.D,
     W = FM.W;
-  const Rg = (FM.Regional = {});
+  const Rg = (FM.Regional = /** @type {any} */ ({}));
   const S = () => FM.S;
 
   // [id, nation, format ('ko' knockout, 'rr' league phase and a final), name, short, club codes]

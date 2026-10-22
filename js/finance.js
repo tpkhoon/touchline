@@ -1,3 +1,4 @@
+// @ts-check
 // Club money by country, attendance, and the pressure of a wage bill: where revenue comes from (TV money in
 // England, gate receipts in Germany, player sales in the selling leagues), how full the ground is (results, fan
 // mood, ticket prices, the size of the stadium, the occasion), and what the board does when wages outgrow revenue
@@ -6,7 +7,7 @@
   const FM = window.FM,
     U = FM.U,
     W = FM.W;
-  const F = (FM.Finance = {});
+  const F = (FM.Finance = /** @type {any} */ ({}));
   const S = () => FM.S;
 
   // Revenue mix by country: multipliers on the broadcast, commercial and matchday shares of a club's revenue

@@ -1,3 +1,4 @@
+// @ts-check
 // Transfer market depth: the deadline (warning, deadline day, the window's summary), trials for free agents,
 // loanees who aren't playing, fee talks that go back and forth, a relative market (who needs to sell, who needs to
 // buy), players choosing between clubs, and structured fees (instalments, add-ons, sell-on clauses) with the
@@ -7,7 +8,7 @@
     U = FM.U,
     D = FM.D,
     W = FM.W;
-  const M = (FM.Market = {});
+  const M = (FM.Market = /** @type {any} */ ({}));
   const S = () => FM.S;
   const now = () => FM.Season.dayIndex();
 
@@ -35,6 +36,7 @@
       s.day = d0;
     }
   };
+  /** @type {any} */
   let leftCache = { k: null, v: 0 };
   // Days of the window left, today included (0 = shut)
   M.daysLeft = function () {
@@ -756,7 +758,7 @@
     const win = opts[0],
       mine = opts.find((o) => o.c === uc);
     // the biggest reason the winner looked better than the runner-up
-    const vs = win === mine ? opts[1] : mine;
+    const vs = (win === mine ? opts[1] : mine) || win; // (the runner-up; the winner itself if there is none)
     const key = Object.keys(WHY).sort((a, b) => win.a[b] - vs.a[b] - (win.a[a] - vs.a[a]))[0];
     return {
       club: win.c,

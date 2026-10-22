@@ -1,3 +1,4 @@
+// @ts-check
 // Contract depth: agents with personalities, contract clauses (signing-on fee, appearance and goal
 // bonuses, release clauses, yearly rises, relegation wage cut), squad-status promises, and a
 // negotiation model where the player weighs the whole package rather than the wage alone.
@@ -6,7 +7,7 @@
     U = FM.U,
     D = FM.D,
     W = FM.W;
-  const Co = (FM.Contracts = {});
+  const Co = (FM.Contracts = /** @type {any} */ ({}));
   const S = () => FM.S;
   const STATUS_ORDER = ['key', 'regular', 'rotation', 'backup', 'prospect'];
 

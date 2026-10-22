@@ -1,3 +1,4 @@
+// @ts-check
 // Detective-style scouting: regions, scout assignments, knowledge and reports. The transfer market is in transfers.js.
 (function () {
   const FM = window.FM,
@@ -5,7 +6,7 @@
     D = FM.D,
     W = FM.W;
 
-  const Sc = (FM.Scouting = {});
+  const Sc = (FM.Scouting = /** @type {any} */ ({}));
   Sc.region = function (p) {
     const c = p.clubId && FM.S.clubs[p.clubId];
     if (c) return c.nat === 'ENG' ? 'ENG' : D.NATIONS[c.nat].region;
@@ -62,6 +63,7 @@
   // How a player's stats compare with the other players in his position: the league he plays in (or, if that is too
   // small to mean anything, his country, then the world). Returns { scope, n, best: [{k, pct}], worst: [{k, pct}] },
   // pct = the share of those players he is better than (0–100). What you can see is as exact as what you know of him.
+  /** @type {any} */
   let peerCache = { key: null, by: {} };
   Sc.peers = function (p) {
     const S = FM.S,

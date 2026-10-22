@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "checkJs": false,
+    "checkJs": false, // (only a file with // @ts-check on its first line is checked: npm run typecheck)
+    "noImplicitAny": false,
+    "skipLibCheck": true,
     "allowJs": true,
     "noEmit": true
   },

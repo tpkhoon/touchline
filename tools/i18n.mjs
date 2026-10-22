@@ -27,6 +27,7 @@ export const hash = (t) => crypto.createHash('sha1').update(String(t)).digest('h
 const UI_FILES = [
   'ui-core',
   'ui-screens',
+  'ui-help',
   'matchview',
   'ui-extra',
   'ui-alpha',
@@ -34,6 +35,7 @@ const UI_FILES = [
   'ui-follow',
   'ui-youth',
   'ui-editor',
+  'ui-live',
   'ui-training',
   'ui-access',
 ];

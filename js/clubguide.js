@@ -1,3 +1,4 @@
+// @ts-check
 // The club guide: what a new player needs to choose a club in a world they don't know yet. It works from the static club
 // data alone (the world isn't built until the career starts): a difficulty label from squad strength against the league,
 // money and what the board will expect, a one-line hook, tags, a likely objective, the rival, the league in a card, and
@@ -6,8 +7,9 @@
   const FM = window.FM,
     D = FM.D,
     U = FM.U;
-  const G = (FM.Guide = {});
+  const G = (FM.Guide = /** @type {any} */ ({}));
 
+  /** @type {any} */
   let IDX = null;
   // Clubs ranked by reputation inside their league (B teams aren't yours to manage and are left out)
   G.reset = () => (IDX = null); // the data changed (a database was staged or removed)

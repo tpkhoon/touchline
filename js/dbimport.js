@@ -1,3 +1,4 @@
+// @ts-check
 // Database import: the framework that lets a player start a career in a world of their own instead of the built-in one.
 // A database is a file (or a few) in some format; an ADAPTER knows one format and turns it into a world definition
 // (FM.WorldDef, js/worlddef.js), the one format the game loads. The import runs in four steps, each usable alone:
@@ -23,7 +24,7 @@
 (function () {
   const FM = window.FM,
     WD = FM.WorldDef;
-  const DB = (FM.DbImport = {});
+  const DB = (FM.DbImport = /** @type {any} */ ({}));
   const ADAPTERS = [];
 
   DB.register = function (a) {
@@ -95,7 +96,7 @@
       const r = DB.read(files);
       return { ...r, ...DB.check(r.def) };
     } catch (e) {
-      return { ok: false, def: null, errors: [e.message], warnings: [], notes: [], summary: null };
+      return { ok: false, def: null, errors: [/** @type {any} */ (e).message], warnings: [], notes: [], summary: null };
     }
   };
 

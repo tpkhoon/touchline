@@ -1,3 +1,4 @@
+// @ts-check
 // Transfer market: asking prices, wage demands, loans, user offers, the AI market (windows, loans, winter exits)
 // and bids for your players.
 (function () {
@@ -6,12 +7,13 @@
     D = FM.D,
     W = FM.W;
 
-  const T = (FM.Transfers = {});
+  const T = (FM.Transfers = /** @type {any} */ ({}));
   // A player who has just moved or signed a new contract is settled for a year: he doesn't talk about leaving,
   // and clubs don't try to prise him away (p.settled = the day index it ends, same day next season)
   T.settle = (p) => (p.settled = FM.Season.dayIndex() + 1000);
   T.isSettled = (p) => p.settled != null && FM.Season.dayIndex() < p.settled;
   // A club's five best players (cached per matchday: the AI market asks this for thousands of players)
+  /** @type {any} */
   let keyCache = { k: null, m: null };
   T.isKey = function (p) {
     if (!p.clubId) return false;

@@ -1,3 +1,4 @@
+// @ts-check
 // The world remembers: club records, all-time head-to-heads, rivalries that grow out of what happens
 // on the pitch, player of the month, and injury histories. State lives in S.records (created lazily)
 // and in two optional player fields (honours, injHist). No DOM here: the simulation worker loads it.
@@ -5,7 +6,7 @@
   const FM = window.FM,
     U = FM.U,
     W = FM.W;
-  const R = (FM.Records = {});
+  const R = (FM.Records = /** @type {any} */ ({}));
   const S = () => FM.S;
   const MONTHS = [
     'August',

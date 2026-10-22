@@ -1,3 +1,4 @@
+// @ts-check
 // Real-stats converter: a real player's numbers in (age, position, minutes, goals, assists, xG, passes, tackles, saves,
 // the strength of his league ...), the game's attributes, current and potential ability out. Pure and deterministic (no
 // random numbers, no save needed), so the world editor, club data packs and the historical importer all build on it.
@@ -19,7 +20,7 @@
     D = FM.D,
     W = FM.W,
     U = FM.U;
-  const RS = (FM.RealStats = {});
+  const RS = (FM.RealStats = /** @type {any} */ ({}));
 
   // ---------- Positions people write ----------
   const POS_ALIAS = {
@@ -321,8 +322,8 @@
     // that bear on an attribute then move it
     const w = D.POS_W[pos],
       b = ca / 5,
-      a = {};
-    const zz = Object.assign({}, z);
+      a = /** @type {any} */ ({});
+    const zz = /** @type {any} */ (Object.assign({}, z));
     if (r.over != null) zz.over = U.clamp(r.over / 0.12, -3, 3);
     if (r.top != null) zz.top = U.clamp((r.top - 33) / 1.6, -3, 3);
     zz.mins = U.clamp((Math.min(r.mins, 3400) - 1900) / 700, -2, 2);

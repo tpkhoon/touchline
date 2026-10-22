@@ -1,10 +1,11 @@
+// @ts-check
 // Training: your club's weekly focus and intensity, plus an individual focus for any player. It shapes how your
 // players develop (how fast, and which attributes), training injuries, recovery between matches, set-piece
 // routines and how quickly the team learns its tactics. AI clubs train a balanced week.
 (function () {
   const FM = window.FM,
     W = FM.W;
-  const Tr = (FM.Training = {});
+  const Tr = (FM.Training = /** @type {any} */ ({}));
   const S = () => FM.S;
 
   // attrs: weight multipliers on growth. dev, inj, rec, fam, sp: development rate, training-injury risk, recovery

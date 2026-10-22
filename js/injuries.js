@@ -1,3 +1,4 @@
+// @ts-check
 // Injuries: a catalogue of real injury types with realistic layoffs, the risk model (proneness, age,
 // fatigue, match fitness, a recent return from injury), training knocks and illness, re-injuries,
 // the return to fitness, and medical decisions for your own players (surgery or rehab, rush him back?).
@@ -7,7 +8,7 @@
   const FM = window.FM,
     U = FM.U,
     W = FM.W;
-  const Inj = (FM.Injury = {});
+  const Inj = (FM.Injury = /** @type {any} */ ({}));
   const S = () => FM.S;
 
   // [name, body area, weight, min weeks, max weeks, where: 'c' contact (matches only) | 'a' anywhere, surgery option]

@@ -1,3 +1,4 @@
+// @ts-check
 // The media: five outlets with voices of their own cover your club. After every match, big signing, sale and season they
 // print a headline in their own register, and each keeps a view of you (-100 to 100) that moves with results at its own
 // speed: the tabloid swings fast and hunts for a crisis, the broadsheet weighs a run of games, the local paper is on your
@@ -12,7 +13,7 @@
     D = FM.D,
     W = FM.W,
     U = FM.U;
-  const M = (FM.Media = {});
+  const M = (FM.Media = /** @type {any} */ ({}));
 
   // The outlets. vol: how fast their view of you moves; base: where it settles when nothing happens.
   M.OUTLETS = {

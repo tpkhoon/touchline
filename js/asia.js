@@ -1,3 +1,4 @@
+// @ts-check
 // Asia: the things that make football there its own game. Korea's military service takes its players away for two seasons in
 // their mid-twenties unless a big tournament has exempted them. The best of them join the army's club (Bujeong Garrison,
 // D.CLUB_POLICY.BUJ), a Korean top-flight club whose squad is nothing but conscripts on loan from their own clubs; they return a
@@ -7,7 +8,7 @@
   const FM = window.FM,
     W = FM.W,
     U = FM.U;
-  const A = (FM.Asia = {});
+  const A = (FM.Asia = /** @type {any} */ ({}));
   A.SERVICE_YEARS = 2;
   A.CAMP_SIZE = 30; // the army's club takes this many; the rest serve in other units, away from football
   A.serving = (p) => !!p.service;

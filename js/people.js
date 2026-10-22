@@ -1,3 +1,4 @@
+// @ts-check
 // People management: one-to-one player talks, promises that are tracked and judged, meetings players
 // ask for, board meetings (requests, mid-season review, ultimatums) and coaching badge courses.
 (function () {
@@ -5,7 +6,7 @@
     U = FM.U,
     D = FM.D,
     W = FM.W;
-  const Pe = (FM.People = {});
+  const Pe = (FM.People = /** @type {any} */ ({}));
   const S = () => FM.S;
   const P = (id) => FM.S.players[id];
   const u = () => FM.S.user;
@@ -648,6 +649,7 @@
     if (!cands.length) return;
     const p = U.pick(cands),
       ready = p.ca >= lvl - 10;
+    /** @type {any[]} */
     const voices = Object.keys(ROLE)
       .map((k) => {
         const st = FM.Staff.get(k);

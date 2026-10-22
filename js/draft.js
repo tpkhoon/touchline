@@ -1,3 +1,4 @@
+// @ts-check
 // The college draft of a league that has one (the American league, like MLS): each winter the clubs take turns to pick
 // from a class of young prospects, the clubs that missed the playoffs first and the champions last. The AI picks for
 // itself as the clock reaches it; your club picks on the Draft screen (or lets the assistant do it). The class is kept
@@ -8,7 +9,7 @@
     U = FM.U,
     D = FM.D;
   const S = () => FM.S;
-  const Dr = (FM.Draft = {});
+  const Dr = (FM.Draft = /** @type {any} */ ({}));
 
   const POSW = { GK: 1, FB: 2, CB: 3, WB: 1, DM: 2, CM: 3, WM: 1, AM: 2, W: 2, ST: 3 };
   const posPool = Object.entries(POSW).flatMap(([k, n]) => Array(n).fill(k));

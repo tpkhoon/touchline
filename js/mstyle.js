@@ -1,3 +1,4 @@
+// @ts-check
 // The manager you turn out to be. Nothing is picked at the start: four slow-moving axes are worked out from what you do, and a
 // profile appears once there is enough to go on.
 //   youth    develops youngsters .......... buys established players   (who plays: the share of minutes to under-22s)
@@ -12,7 +13,7 @@
   const FM = window.FM,
     U = FM.U,
     W = FM.W;
-  const St = (FM.Style = {});
+  const St = (FM.Style = /** @type {any} */ ({}));
   St.MIN_GAMES = 10; // before this the profile says nothing
   St.AXES = {
     youth: ['Buys established players', 'Develops youngsters'],

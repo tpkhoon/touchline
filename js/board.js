@@ -1,3 +1,4 @@
+// @ts-check
 // The board: what it demands of you each season and the four meetings where you face it.
 // Demands are set when the season starts (they don't drift with results): a league aim and a minimum, cup targets
 // that fit the club, the club's finances and its identity, each critical, important or a bonus. At the season's end
@@ -9,7 +10,7 @@
     U = FM.U,
     W = FM.W,
     D = FM.D;
-  const B = (FM.Board = {});
+  const B = (FM.Board = /** @type {any} */ ({}));
   const S = () => FM.S;
   const Sea = () => FM.Season;
 

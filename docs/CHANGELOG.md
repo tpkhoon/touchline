@@ -1,6 +1,6 @@
 # Touchline — Changelog
 
-Oct 22, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.
+Oct 23, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.
 
 ## Playtest feedback, round 24
 
@@ -10,6 +10,7 @@ Oct 22, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e2
 - **Types of player for scouts:** an assignment can ask for a type as well as a position: ball-playing or no-nonsense centre-back, sweeper keeper, inverted full-back, wing-back, anchor man, regista, ball-winner, box-to-box, playmaker, inverted winger, inside forward, target man, poacher, false nine or pressing forward (the position and the role he plays best); the assignment line and the Scouting hub name it.
 - **More small ones:** a Confirm before skipping switch in Settings makes Next match ask first (the 📅 sheet always does; both can be stopped while they run); the season review's league list has the eight biggest leagues as tap-to-follow chips, so a new career is not left with an empty card; and the world editor's national team screen sets a nation's starting youth rating (15 to 95, empty to let the game work it out).
 - **Small conveniences:** the 📅 sheet opens on what you chose last time (days or a target); a bulk edit can be undone with an Undo button while the Bulk edit sheet is still open (it puts back the players', clubs', prize and youth-rating values it changed); and a queued expansion club has a Try another club button that swaps it for the next one waiting in the pool (the changes made to the old one go with it, and no two slots share a club).
+- **Engineering:** `npm run typecheck` (TypeScript over the files marked `// @ts-check`, twenty modules so far, now part of the deploy); `ui-live.js` and `ui-help.js` split out of the two largest screen files.
 - **The text match view is the default:** matches play as live commentary (the same simulation, lighter on the battery) and the pitch view is switched off, with its Pitch / Text switch hidden in Settings; all of the pitch code stays in `js/matchview.js`, and `FM.MatchView.VISUAL = true` brings it back.
 - **Setting up a career:** the first new-career screen has an Editing the world in game On/Off switch (Settings → Edit the world can still change it later), so a purist career never has Edit buttons.
 - **Season review:** the end-of-season sheet lists your own league and only the leagues you follow (a Leagues you follow card with a hint to follow one), and cups only when followed or won by you, not the whole world's champions.

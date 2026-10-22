@@ -1,3 +1,4 @@
+// @ts-check
 // Player careers: the development curve, hidden career arcs, youth intake, retirement and AI contract renewals.
 // Part of FM.Season (season.js drives when each runs).
 (function () {
