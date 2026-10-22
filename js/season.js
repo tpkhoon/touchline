@@ -1869,13 +1869,15 @@
         ? ((entry.comps[comp.id] && entry.comps[comp.id].champions) || []).filter(Boolean).reverse()
         : [champId];
       const order = kt ? [...new Set([...champs, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
-      if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(order.slice(0, R.qualify.n));
+      // (a club under sanction next season is passed over: the next one takes the place)
+      const open = order.filter((id) => !Sea.clubBanned(id, S.year + 1));
+      if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(open.slice(0, R.qualify.n));
       // second-tier continental cups: the next places down (in that order, so a playoff champion is never in two cups)
       for (const cc of D.CONTINENTALS) {
         const k = cc.feeders && cc.feeders[comp.id];
         if (!k) continue;
         const from = FM.Cups.skipFor(comp.id, cc);
-        qualified[cc.id] = (qualified[cc.id] || []).concat(order.slice(from, from + k));
+        qualified[cc.id] = (qualified[cc.id] || []).concat(open.slice(from, from + k));
       }
       if (R.relegate) t.slice(-R.relegate.n).forEach((r) => moves.push([r.id, comp.id, R.relegate.to]));
       if (R.promote) {
@@ -1913,11 +1915,12 @@
           const k = d.feeders[comp.id];
           if (!k) continue;
           const table = (entry.comps[comp.id] && entry.comps[comp.id].table) || [];
-          const ids = table.map((r) => r.id);
+          const ids = table.map((r) => r.id).filter((id) => !Sea.clubBanned(id, S.year + 1));
           const from = FM.Cups.skipFor(comp.id, d);
           qualified[d.id] = (qualified[d.id] || []).concat(ids.slice(from, from + k));
         }
     qualified.HC = FM.Cups.holdersFor(qualified, entry);
+    for (const k of Object.keys(qualified)) qualified[k] = qualified[k].filter((id) => !Sea.clubBanned(id, S.year + 1)); // (a cup winner under sanction too)
     S.qualified = qualified;
     entry.qualified = qualified;
     entry.cups = {};
@@ -2083,6 +2086,30 @@
     delete S.eraLog;
     if (!e || e.n < 200) return;
     S.era = U.clamp((S.era || 1) * Math.pow(FM.CAL.targetGoals / (e.g / e.n), 0.6), 0.85, 1.15);
+  };
+  // ---------- Sanctions ----------
+  // A club kept out of international competition for some seasons (S.bans, set in the world editor; a nation's are in FM.Intl.banned):
+  // its place in a continental cup goes to the next club of its league
+  Sea.clubBanned = (id, year = FM.S.year) =>
+    (FM.S.bans || []).some((b) => b.kind === 'club' && b.id === id && year >= b.from && year <= b.to);
+  // the feed on the day a sanction begins (the new season's first day), and when one ends
+  Sea.sanctionNews = function () {
+    const S = FM.S;
+    for (const b of S.bans || []) {
+      const club = b.kind === 'club' && S.clubs[b.id],
+        nat = b.kind === 'nation' && FM.D.NATIONS[b.id],
+        name = club ? club.name : nat ? nat.name : null;
+      if (!name || (b.from !== S.year && b.to + 1 !== S.year)) continue;
+      FM.News.add({
+        type: 'world',
+        title: b.from === S.year ? `${name} banned from international competition` : `${name}'s ban is over`,
+        body:
+          b.from === S.year
+            ? `${name} ${b.kind === 'club' ? 'are' : 'is'} out of ${b.kind === 'club' ? 'the continental cups' : 'qualifying and the tournaments'} until the end of ${b.to}${b.why ? ` (${b.why})` : ''}; ${b.kind === 'club' ? 'the next club of the league takes the place' : 'the next nation in line takes the place'}.`
+            : `${name} can enter international competition again.`,
+        ...(club ? { clubId: club.id } : {}),
+      });
+    }
   };
   // ---------- Expansion ----------
   // A closed league (nothing goes up or down) can take new clubs at the start of a season, as a franchise league does: the clubs come
@@ -2474,6 +2501,7 @@
       uc.warned = false;
     }
     Sea.runExpansions(); // clubs that join a closed league, before the contracts, youth sides and fixtures are made
+    Sea.sanctionNews();
     FM.Stories.worldEvents(entry);
     FM.Contracts.newSeason();
     FM.Youth.newSeason(); // youth sides re-sorted, B teams restocked

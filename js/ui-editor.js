@@ -757,6 +757,7 @@
     library: 'history',
     history: 'history',
     changes: 'world',
+    balance: 'world',
   };
   UI.acts.edTab = (d) => {
     ED.tab = d.v;
@@ -886,6 +887,7 @@
           '📜 History',
           `${ED.def.history.seasons.length} past season${ED.def.history.seasons.length === 1 ? '' : 's'}`,
         ],
+        ['balance', '⚖️ Balance check', `${U.plural(balanceIssues().length, 'thing')} to look at`],
         ['changes', '📝 Changes made', changeSummary()],
       ]
         .map(
@@ -3559,6 +3561,7 @@
         .join('')}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveIntl">Save the tournaments</button></div>
       <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="confeds"><div class="row"><div class="grow"><div class="small b">Confederations</div><div class="tiny dim">${confedSummary()}</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:8px 0 0;padding:10px 12px" data-act="edView" data-v="bans"><div class="row"><div class="grow"><div class="small b">Sanctions</div><div class="tiny dim">${(ED.def.bans || []).length ? U.plural((ED.def.bans || []).length, 'ban') : 'Keep a nation or a club out of international competition'}</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:6px 0 0;padding:10px 12px" data-act="edView" data-v="nations"><div class="row"><div class="grow"><div class="small b">National teams</div><div class="tiny dim">${(ED.def.nations || []).length} changed · name, colours, ranking points, how they play</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:6px 0 0;padding:10px 12px" data-act="edView" data-v="history"><div class="row"><div class="grow"><div class="small b">Past tournaments</div><div class="tiny dim">Who won each one is entered with the past seasons</div></div><span class="dim">›</span></div></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
@@ -3657,6 +3660,130 @@
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
   };
   const C_flag = (code) => UI.C.flag(code);
+
+  // ---------- Balance check ----------
+  // A look at the world before you play it (without playing it): a club far ahead of the rest of its league, a league with no spread
+  // or far too much, a lower division with clubs that outrank the division above. Each row opens the league it is about.
+  const balanceIssues = () => {
+    const out = [],
+      by = {};
+    for (const c of ED.def.clubs) (by[c.league] = by[c.league] || []).push(c);
+    const stat = (cs) => {
+      const r = cs.map((c) => c.rep).sort((a, b) => b - a);
+      return { r, mean: r.reduce((a, b) => a + b, 0) / r.length, med: r[Math.floor(r.length / 2)] };
+    };
+    for (const l of ED.def.leagues) {
+      const cs = (by[l.id] || []).filter((c) => !c.parent);
+      if (cs.length < 6) continue;
+      const s = stat(cs),
+        top = cs.slice().sort((a, b) => b.rep - a.rep)[0];
+      if (s.r[0] - s.r[1] >= 12 && s.r[0] - s.mean >= 20)
+        out.push({
+          lid: l.id,
+          text: `${top.name} (${s.r[0]}) is far ahead of the rest of ${l.name}: the next best is ${s.r[1]}, so it will win most seasons`,
+        });
+      const spread = s.r[0] - s.r[s.r.length - 1];
+      if (spread < 4)
+        out.push({
+          lid: l.id,
+          text: `${l.name} has almost no spread in reputation (${spread}): every club is about as strong as every other`,
+        });
+      else if (spread > 50)
+        out.push({
+          lid: l.id,
+          text: `${l.name} spans ${U.plural(spread, 'point')} of reputation, from ${s.r[s.r.length - 1]} to ${s.r[0]}: the bottom clubs will not compete`,
+        });
+    }
+    // a lower division of a nation that outranks the division above it
+    for (const l of ED.def.leagues) {
+      const up = ED.def.leagues.find((x) => x.nat === l.nat && x.tier === l.tier - 1);
+      if (!up) continue;
+      const lo = stat((by[l.id] || []).filter((c) => !c.parent)),
+        hi = stat((by[up.id] || []).filter((c) => !c.parent));
+      if (lo.r.length >= 6 && hi.r.length >= 6 && lo.r[0] > hi.med + 4)
+        out.push({
+          lid: l.id,
+          text: `The best club of ${l.name} (${lo.r[0]}) outranks the middle of ${up.name} (${hi.med}), the division above`,
+        });
+    }
+    return out;
+  };
+  const balanceView = () => {
+    const list = balanceIssues();
+    return `<div class="h1" style="margin-top:2vh">Balance check</div><div class="tag">A look at the world as it is now, without playing it: where one club will win everything, where a league has no spread, where a lower division is stronger than the one above. Reputation is what the game's ratings and finances start from, so these are the numbers to change.</div>
+      ${
+        list.length
+          ? list
+              .map(
+                (x) =>
+                  `<div class="card tap" style="margin:6px 0;padding:10px 12px" data-act="edView" data-v="league" data-lid="${esc(x.lid)}"><div class="row"><div class="grow small">${esc(x.text)}</div><span class="dim">›</span></div></div>`,
+              )
+              .join('')
+          : '<div class="empty">Nothing stands out: every league has a spread, no club runs away with its league, and no division outranks the one above.</div>'
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+
+  // ---------- Sanctions ----------
+  // A nation or a club kept out of international competition for some seasons (a ban, a what-if world): a nation sits out qualifying,
+  // the Nations League, the invitationals and the tournaments; a club is passed over for its league's continental places, which go to
+  // the next club. The sanction is kept in the world (def.bans) and lifts itself after its last season.
+  const banWho = (b) =>
+    b.kind === 'nation'
+      ? `${(D.NATIONS[b.id] || (ED.def.newNations || []).find((n) => n.code === b.id) || {}).flag || ''} ${esc((D.NATIONS[b.id] || (ED.def.newNations || []).find((n) => n.code === b.id) || { name: b.id }).name)}`
+      : esc((ED.def.clubs.find((c) => c.id === b.id) || { name: b.id }).name);
+  const bansView = () => {
+    const list = ED.def.bans || [],
+      y = yearOf() + 1;
+    const nats = natEntries()
+      .slice()
+      .sort((a, b) => a[1].name.localeCompare(b[1].name))
+      .map(([k, n]) => `<option value="${k}">${n.flag} ${esc(n.name)}</option>`)
+      .join('');
+    return `<div class="h1" style="margin-top:2vh">Sanctions</div><div class="tag">Keep a nation or a club out of international competition for some seasons. A nation sits out qualifying, the Nations League, the invitationals and the tournaments; a club is passed over for its league's continental places and the next club takes them. A sanction lifts itself after its last season.</div>
+      ${errBox()}
+      ${
+        list.length
+          ? list
+              .map(
+                (b, i) =>
+                  `<div class="card" style="margin:8px 0;padding:10px 12px"><div class="row"><div class="grow"><div class="small b">${banWho(b)}</div><div class="tiny dim">${b.kind === 'nation' ? 'National team' : 'Club'} · ${b.from === b.to ? `season ${b.from}` : `seasons ${b.from} to ${b.to}`}${b.why ? ` · ${esc(b.why)}` : ''}</div></div><button class="btn sm" data-act="edDelBan" data-i="${i}">Lift</button></div></div>`,
+              )
+              .join('')
+          : '<div class="empty">No sanctions.</div>'
+      }
+      <div class="ng-label">A new sanction</div>
+      <select id="ed-bkind"><option value="nation">A nation</option><option value="club">A club</option></select>
+      <select id="ed-bnat" style="margin-top:8px">${nats}</select>
+      <input type="text" id="ed-bclub" list="ed-bclubs" placeholder="Or a club: start typing its name" style="margin-top:8px" autocomplete="off"><datalist id="ed-bclubs">${ED.def.clubs.map((c) => `<option value="${esc(c.name)}"></option>`).join('')}</datalist>
+      <div class="ng-names" style="margin-top:8px"><div style="flex:1"><div class="tiny dim">First season</div><input type="number" id="ed-bfrom" value="${y}" inputmode="numeric"></div><div style="flex:1"><div class="tiny dim">Last season</div><input type="number" id="ed-bto" value="${y + 1}" inputmode="numeric"></div></div>
+      <input type="text" id="ed-bwhy" maxlength="80" placeholder="Reason (optional)" style="margin-top:8px">
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edAddBan">＋ Add it</button></div>
+      <div class="tiny dim" style="margin-top:8px;line-height:1.5">A season is named for the year it starts in, as in the game's own histories. Choose "A nation" to use the list, or "A club" to use what is typed.</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edAddBan = () => {
+    const v = (id) => (($('#' + id) || {}).value || '').trim();
+    const kind = v('ed-bkind');
+    let id = v('ed-bnat');
+    if (kind === 'club') {
+      const c = ED.def.clubs.find((x) => x.name.toLowerCase() === v('ed-bclub').toLowerCase());
+      if (!c) {
+        ED.err = ['Pick a club by its full name from the list'];
+        return UI.worldEditor();
+      }
+      id = c.id;
+    }
+    const r = WD.editor(ED.def, null).addBan({ kind, id, from: v('ed-bfrom'), to: v('ed-bto'), why: v('ed-bwhy') });
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+    if (r.ok) UI.toast('Sanction added', 1500);
+  };
+  UI.acts.edDelBan = (d) => {
+    WD.editor(ED.def, null).removeBan(+d.i);
+    ED.err = [];
+    UI.worldEditor();
+  };
 
   // ---------- National teams ----------
   // The name, short name, colours and ranking points a national team starts with (a nation too thin in players to field a team
@@ -4242,6 +4369,8 @@
       staffer: stafferView,
       nations: nationsView,
       confeds: confedsView,
+      bans: bansView,
+      balance: balanceView,
       nation: nationView,
       newnation: newNationView,
       history: historyView,

@@ -323,6 +323,13 @@
     return I.pool(code).filter(W.available).slice(0, 23);
   };
   I.ranked = () => Object.values(S().nteams).sort((a, b) => b.coef - a.coef);
+  // Sanctions (S.bans, set in the world editor): a nation out of international competition for some seasons. It keeps its place in
+  // the ranking but is left out of qualifying, the Nations League, the invitationals and the tournaments while the ban lasts.
+  I.banned = (t, year = S().year) => {
+    const code = typeof t === 'string' ? t.replace(/^n_/, '') : t && t.code;
+    return (S().bans || []).some((b) => b.kind === 'nation' && b.id === code && year >= b.from && year <= b.to);
+  };
+  I.openRanked = () => I.ranked().filter((t) => !I.banned(t));
 
   // ---------- Calendar ----------
   // A World Championship every fourth year, continental championships two years on, and in the year before each World
@@ -363,7 +370,7 @@
       const q = { kind, year: s.year, groups: [], direct: {} };
       I.tournsFor(kind).forEach((tn) =>
         tn.pools.forEach(([regions, slots], pi) => {
-          const teams = I.ranked().filter((t) => regions.includes(I.region(t.code)));
+          const teams = I.openRanked().filter((t) => regions.includes(I.region(t.code)));
           const key = `${tn.id}:${pi}`;
           if (teams.length <= slots) {
             q.direct[key] = teams.map((t) => t.id);
@@ -423,7 +430,9 @@
     const s = S();
     if (!I.nlYear(s.year)) return null;
     const by = {};
-    Object.values(s.nteams).forEach((t) => (by[I.region(t.code)] = by[I.region(t.code)] || []).push(t));
+    Object.values(s.nteams)
+      .filter((t) => !I.banned(t))
+      .forEach((t) => (by[I.region(t.code)] = by[I.region(t.code)] || []).push(t));
     const nl = { year: s.year, confeds: {} },
       per = I.NL.group * I.NL.groups;
     for (const cid of I.confedIds()) {
@@ -547,9 +556,12 @@
       .filter((id) => !I.CONFEDS[id])
       .forEach((id) => (from['X' + id] = [id]));
     for (const [tid, regions] of Object.entries(from))
-      add(won[tid] || (I.ranked().find((t) => regions.includes(I.region(t.code))) || {}).id);
-    add(won.WC || I.ranked()[0].id);
-    const hosts = I.ranked()
+      add(
+        (won[tid] && !I.banned(won[tid]) && won[tid]) ||
+          (I.openRanked().find((t) => regions.includes(I.region(t.code))) || {}).id,
+      );
+    add((won.WC && !I.banned(won.WC) && won.WC) || (I.openRanked()[0] || {}).id);
+    const hosts = I.openRanked()
       .slice(0, 16)
       .filter((t) => !ids.includes(t.id));
     if (hosts.length) add(U.pick(hosts).id);
@@ -574,6 +586,7 @@
       : Object.values(s.nteams || {}).find((t) => t.code === spec.host);
     if (!host) return null;
     const busy = new Set(taken);
+    Object.values(s.nteams || {}).forEach((t) => I.banned(t) && busy.add(t.id)); // (a nation under sanction takes no part)
     ((s.quals && s.quals.groups) || []).forEach((g) =>
       [2, 3].forEach((md) => (g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
     );
@@ -584,7 +597,7 @@
     const pool = pool0
       ? pool0.filter((t) => t !== host && !busy.has(t.id)).sort((a, b) => b.coef - a.coef)
       : U.shuffle(
-          I.ranked()
+          I.openRanked()
             .slice(0, 45)
             .filter((t) => t !== host && !busy.has(t.id)),
         );
@@ -801,7 +814,7 @@
       if (teams.length < tn.size)
         teams = teams
           .concat(
-            I.ranked().filter(
+            I.openRanked().filter(
               (t) => !teams.includes(t) && (tn.confed || tn.pools.some(([r]) => r.includes(I.region(t.code)))),
             ),
           )

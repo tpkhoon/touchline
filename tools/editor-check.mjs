@@ -323,6 +323,15 @@ check(
 );
 check(!E.setNation('ENG', { youth: 5 }).ok, 'a youth rating of 5 was accepted');
 check(E.setNation('ENG', { youth: 82 }).ok, 'a youth rating of 82 was refused');
+check(!E.addBan({ kind: 'planet', id: 'X', from: 2040, to: 2041 }).ok, 'a sanction on a planet was accepted');
+check(
+  !E.addBan({ kind: 'nation', id: 'TOG', from: 2042, to: 2040 }).ok,
+  'a sanction that ends before it starts was accepted',
+);
+check(
+  E.addBan({ kind: 'nation', id: 'TOG', from: 2040, to: 2041, why: 'test' }).ok,
+  'a sanction on a nation was refused',
+);
 // competitions: league formats, a play-off pair, a cup of the definition's own
 const lg = (id) => def.leagues.find((l) => l.id === id);
 check(!E.setLeague('D3', { rules: { ...lg('D3').rules, legs: 3 } }).ok, 'a league played three times was accepted');
@@ -828,6 +837,10 @@ console.log(`D1 has ${n1} clubs`);
     'the national team edit did not reach the world',
   );
   check(S.youthRate && S.youthRate.ENG === 82, 'the youth rating set in the editor did not reach the world');
+  check(
+    (S.bans || []).some((b) => b.kind === 'nation' && b.id === 'TOG' && b.from === 2040 && b.to === 2041),
+    'the sanction set in the editor did not reach the world',
+  );
   check(
     S.archive.some((e) => e.year === S.year - 1 && e.imported && e.comps.D1.champion === order[3]),
     'the past season is not in the archive',

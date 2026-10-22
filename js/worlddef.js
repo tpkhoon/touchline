@@ -54,6 +54,7 @@
     staff: [], // coaches, scouts and other staff: { role, fn, ln, nat, age, ability, club } (club: who comes with that job; none: on offer from the start)
     nations: [], // national teams: { code, name, short, colors, coef, youth (the nation's youth rating, 15 to 95) }
     newNations: [], // nations the world adds: { code, name, flag, region, pool, style, colors, weight }
+    bans: [], // sanctions: { kind: 'nation' | 'club', id, from, to, why } (out of international competition for the seasons from to to)
     confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
     history: { seasons: [] },
   });
@@ -96,6 +97,7 @@
           ...(WD.formatOf(c.id) ? { format: WD.formatOf(c.id) } : {}),
         });
     }
+    def.bans = JSON.parse(JSON.stringify(S.bans || []));
     for (const t of Object.values(S.nteams || {}))
       def.nations.push({
         code: t.code,
@@ -1739,6 +1741,23 @@
       if (n.short != null && (!String(n.short).trim() || String(n.short).length > 4))
         errors.push(`${at}: the short name is 1–4 characters`);
     }
+    // sanctions: a nation or a club kept out of international competition for some seasons
+    for (const [i, b] of (def.bans || []).entries()) {
+      const at = `sanction ${i + 1}`;
+      if (b.kind !== 'nation' && b.kind !== 'club') errors.push(`${at}: a nation or a club`);
+      else if (b.kind === 'nation' && !D.NATIONS[b.id] && !(def.newNations || []).some((n) => n.code === b.id))
+        errors.push(`${at}: the game has no nation ${b.id}`);
+      else if (
+        b.kind === 'club' &&
+        !(def.clubs || []).some((c) => c.id === b.id) &&
+        !D.allClubRows().some((r) => 'c_' + r[1] === b.id)
+      )
+        errors.push(`${at}: the game has no club ${b.id}`);
+      if (!isInt(b.from) || !isInt(b.to)) errors.push(`${at}: the first and last season are years`);
+      else if (b.to < b.from) errors.push(`${at}: the last season is before the first`);
+      else if (b.to - b.from > 50) errors.push(`${at}: a sanction is at most 50 seasons`);
+      if (b.why != null && String(b.why).length > 80) errors.push(`${at}: the reason is at most 80 characters`);
+    }
     const years = new Set();
     for (const s of def.history.seasons) {
       if (!isInt(s.year)) errors.push('A past season has no year');
@@ -2009,6 +2028,8 @@
       }
       rep.nations++;
     }
+    // sanctions: kept in the world (FM.Intl.banned and FM.Season.clubBanned read them)
+    S.bans = (def.bans || []).map((b) => ({ ...b }));
     // staff: kept with the world and handed over when the career begins (WD.seedStaff)
     if ((def.staff || []).length) {
       S.defStaff = { list: JSON.parse(JSON.stringify(def.staff)), pooled: false };
@@ -2572,6 +2593,27 @@
         return result([]);
       },
       // takes a nation out of the world: refused while a league, club, player, staff member or national team still belongs to it
+      // a sanction: a nation or a club out of international competition from one season to another (inclusive)
+      addBan(spec) {
+        const b = {
+          kind: spec.kind,
+          id: spec.id,
+          from: +spec.from,
+          to: +spec.to,
+          why: String(spec.why || '')
+            .trim()
+            .slice(0, 80),
+        };
+        const test = { ...def, bans: [...(def.bans || []), b] };
+        const errs = WD.validate(test, S).errors.filter((e) => e.startsWith('sanction'));
+        if (errs.length) return result(errs);
+        (def.bans = def.bans || []).push(b);
+        return result([]);
+      },
+      removeBan(i) {
+        def.bans = (def.bans || []).filter((_, j) => j !== i);
+        return result([]);
+      },
       removeNation(code) {
         const uses = [];
         if ((def.leagues || []).some((l) => l.nat === code)) uses.push('a league');
