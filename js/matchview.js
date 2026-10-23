@@ -1126,6 +1126,28 @@
     const s = C.shortName(club, 18);
     return s === club.short && club.name !== s ? club.name : s;
   };
+  // What a player did in the match, as small marks: player of the match, goals, assists and cards. Returns a function from a
+  // player id to the marks.
+  MV.markers = function (m) {
+    const by = {},
+      add = (pid, k) => {
+        if (!pid) return;
+        const o = (by[pid] = by[pid] || { g: 0, a: 0, y: 0, r: 0 });
+        o[k]++;
+      };
+    m.result().goals.forEach((g) => {
+      if (!g.og) add(g.pid, 'g');
+      add(g.ast, 'a');
+    });
+    m.events.forEach((e) => {
+      if (e.k === 'yellow') add(e.pid, 'y');
+      else if (e.k === 'red') add(e.pid, 'r');
+    });
+    return (pid) => {
+      const o = by[pid] || {};
+      return `${m.motm === pid ? '<span class="mk m" title="Player of the match">POTM</span>' : ''}${o.g ? `<span class="mk g" title="${o.g === 1 ? 'Goal' : o.g + ' goals'}">${o.g > 1 ? 'G' + o.g : 'G'}</span>` : ''}${o.a ? `<span class="mk a" title="${o.a === 1 ? 'Assist' : o.a + ' assists'}">${o.a > 1 ? 'A' + o.a : 'A'}</span>` : ''}${o.y ? '<span class="mk y" title="Yellow card"></span>' : ''}${o.r ? '<span class="mk r" title="Red card"></span>' : ''}`;
+    };
+  };
   MV.shirt = function (m, k) {
     const c = MV.kit(m, k),
       edge = MV.onGrass(c) || dist(rgb(c), [8, 12, 18]) < 60 ? '#fff' : 'rgba(0,0,0,.35)';
@@ -1253,21 +1275,14 @@
           .join('')}</div>
         ${MV.promptLog && MV.promptLog.length ? `<div class="card"><div class="h3">Your decisions</div>${MV.promptLog.map((l) => `<div class="small muted" style="margin-top:6px">${esc(l)}</div>`).join('')}</div>` : ''}`;
     } else if (t === 'ratings') {
+      const marks = MV.markers(m);
       const list = (sd) =>
         Object.entries(sd.rating)
           .filter(([pid]) => sd.mins[pid])
           .sort((a, b) => b[1] - a[1])
           .map(
             ([pid, r]) =>
-              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}${pid === m.motm ? '' : ''}${res.goals
-                .filter((g) => g.pid === pid)
-                .map(() => '')
-                .join('')}${res.goals
-                .filter((g) => g.ast === pid)
-                .map(() => '')
-                .join(
-                  '',
-                )}</span><span class="dim tiny" style="margin-right:6px">${sd.mins[pid]}'</span>${C.rating(r)}</div>`,
+              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}</span><span class="marks">${marks(pid)}</span><span class="dim tiny" style="margin-right:6px">${sd.mins[pid]}'</span>${C.rating(r)}</div>`,
           )
           .join('');
       body.innerHTML = `<div class="row" style="align-items:flex-start;gap:12px"><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(H.club, 18)} ${esc(H.club.short)}</div>${list(H)}</div><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(A.club, 18)} ${esc(A.club.short)}</div>${list(A)}</div></div>`;

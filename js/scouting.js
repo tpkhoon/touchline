@@ -484,7 +484,7 @@
   Sc.view = function (p) {
     const S = FM.S,
       u = S.user,
-      own = p.clubId === u.clubId;
+      own = p.clubId === u.clubId || !!(p.loan && p.loan.from === u.clubId); // (a player you have loaned out is still yours)
     const k = own ? 100 : Sc.know(p.id);
     const rep = u.reports[p.id];
     const scout = rep && S.staff[rep.scout];

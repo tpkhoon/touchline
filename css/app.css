@@ -2690,3 +2690,46 @@ tr.tap {
   min-height: 44px;
   color: inherit;
 }
+
+/* what a player did in the match, beside his name */
+.mk {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  vertical-align: 1px;
+  background: var(--card2);
+  border: 1px solid var(--line2);
+  color: var(--ink);
+}
+.mk.m {
+  background: var(--gold);
+  border-color: transparent;
+  color: #1a1300;
+}
+.mk.g {
+  background: var(--good);
+  border-color: transparent;
+  color: var(--bad-ink);
+}
+.mk.y,
+.mk.r {
+  width: 9px;
+  height: 13px;
+  padding: 0;
+  vertical-align: -1px;
+  background: #f5c518;
+  border-color: transparent;
+}
+.mk.r {
+  background: #e0312b;
+}
+
+.marks {
+  flex: none;
+  white-space: nowrap;
+  margin-right: 6px;
+}

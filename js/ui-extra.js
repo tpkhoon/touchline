@@ -94,6 +94,7 @@
   };
 
   UI.ownActions = function (p) {
+    if (p.loan && W.isUser(p.loan.from)) return UI.loanLine(p); // (yours, out on loan: his club, his games, bringing him back)
     if (p.loan)
       return `<div class="warnline">On loan from ${esc(CL(p.loan.from).name)} until the end of the season. You pay ${Math.round(p.loan.share * 100)}% of his wages.</div>`;
     return `<div class="row pbtns" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">Offer to clubs</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button><button class="btn sm grow" data-act="pMore" data-id="${p.id}">More ▾</button></div>`;
@@ -1824,10 +1825,11 @@
   MV.statTable = function (sd, compact) {
     // each player's share of the team's full passing total (the engine simulates only the passes that matter)
     const scale = MV.m && sd.passCount ? MV.m.passStats(sd.idx).total / sd.passCount : 1;
+    const marks = MV.m ? MV.markers(MV.m) : () => '';
     const rows = Object.keys(sd.mins)
       .map((pid) => ({ p: P(pid), s: sd.ps[pid] || {}, r: sd.rating[pid], min: sd.mins[pid], st: sd.st[pid] }))
       .sort((a, b) => b.r - a.r);
-    return `<div class="card"><div class="row b small" style="margin-bottom:6px">${C.crest(sd.club, 18)} ${esc(sd.club.name)}</div><table class="t"><tr><th class="l">Player</th><th>Min</th><th>Pas</th><th>KP</th><th>Sh</th><th>Tk</th><th>Int</th><th>En</th><th>Rt</th></tr>${rows.map((x) => `<tr><td class="l ellip" style="max-width:96px">${x.p ? C.pname(x.p, (x.p.no ? x.p.no + ' ' : '') + x.p.ln) : '?'}${x.p && x.p.id === MV.m.motm ? '' : ''}</td><td class="dim">${x.min}</td><td>${Math.round((x.s.pass || 0) * scale)}</td><td>${x.s.kp || 0}</td><td>${x.s.sh || 0}${x.s.sot ? `<span class="dim">/${x.s.sot}</span>` : ''}</td><td>${x.s.tk || 0}</td><td>${x.s.ic || 0}</td><td style="color:${x.st < 45 ? 'var(--bad)' : x.st < 65 ? 'var(--warn)' : 'var(--ink2)'}">${Math.round(x.st)}</td><td>${C.rating(x.r)}</td></tr>`).join('')}</table>${compact ? '' : '<div class="tiny dim" style="margin-top:6px">Pas passes · KP key passes · Sh shots/on target · Tk tackles · Int interceptions · En energy at the end</div>'}</div>`;
+    return `<div class="card"><div class="row b small" style="margin-bottom:6px">${C.crest(sd.club, 18)} ${esc(sd.club.name)}</div><table class="t"><tr><th class="l">Player</th><th>Min</th><th>Pas</th><th>KP</th><th>Sh</th><th>Tk</th><th>Int</th><th>En</th><th>Rt</th></tr>${rows.map((x) => `<tr><td class="l ellip" style="max-width:96px">${x.p ? C.pname(x.p, (x.p.no ? x.p.no + ' ' : '') + x.p.ln) : '?'}${x.p ? marks(x.p.id) : ''}</td><td class="dim">${x.min}</td><td>${Math.round((x.s.pass || 0) * scale)}</td><td>${x.s.kp || 0}</td><td>${x.s.sh || 0}${x.s.sot ? `<span class="dim">/${x.s.sot}</span>` : ''}</td><td>${x.s.tk || 0}</td><td>${x.s.ic || 0}</td><td style="color:${x.st < 45 ? 'var(--bad)' : x.st < 65 ? 'var(--warn)' : 'var(--ink2)'}">${Math.round(x.st)}</td><td>${C.rating(x.r)}</td></tr>`).join('')}</table>${compact ? '' : '<div class="tiny dim" style="margin-top:6px">Pas passes · KP key passes · Sh shots/on target · Tk tackles · Int interceptions · En energy at the end</div>'}</div>`;
   };
   // Analyst insights — a better analyst says more (and more precisely)
   MV.insights = function (m) {
