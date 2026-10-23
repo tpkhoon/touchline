@@ -1953,7 +1953,7 @@
       ['#DA000C', '#FFFFFF'],
     ],
   ];
-  const OCEANIA = ['FIJ', 'PNG', 'SOL', 'VAN', 'NCL', 'TAH', 'WSM', 'TGA', 'NZL', 'AUS']; // (Australia is in Oceania here, as it was before 2006)
+  const OCEANIA = ['FIJ', 'PNG', 'SOL', 'VAN', 'NCL', 'TAH', 'WSM', 'TGA', 'NZL']; // (New Zealand and the island nations; Australia is in Asia, as in real life)
   for (const [code, name, iso, region, style, bias, pool, weight, ties, colors] of MORE)
     LIST.push(N(code, name, FL(iso), OCEANIA.includes(code) ? 'OFC' : region, style, bias, pool, weight, ties, colors));
 
