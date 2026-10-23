@@ -29,10 +29,19 @@
     trim(S) {
       const cid = S.user && S.user.clubId;
       // open decisions take their club places first; the oldest other club items make room for them
+      // (the rare stories of the world, a club liquidated or in administration, a ban, keep their own places, up to 60, so a day of
+      // ordinary transfer news does not push them out of the feed: they are marked keep)
       let club = S.news.filter(FM.News.isOpen).length,
-        world = 0;
+        world = 0,
+        big = 0;
       S.news = S.news.filter((n) =>
-        FM.News.isOpen(n) ? true : FM.News.isClub(n, cid) ? ++club <= FM.News.CAP : ++world <= FM.News.CAP,
+        FM.News.isOpen(n)
+          ? true
+          : FM.News.isClub(n, cid)
+            ? ++club <= FM.News.CAP
+            : n.keep && ++big <= 60
+              ? true
+              : ++world <= FM.News.CAP,
       );
     },
     // What you follow (S.user.follow): clubs, players, competitions and nations whose news comes into your feed

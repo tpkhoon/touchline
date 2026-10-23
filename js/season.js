@@ -2108,6 +2108,7 @@
             ? `${name} ${b.kind === 'club' ? 'are' : 'is'} out of ${b.kind === 'club' ? 'the continental cups' : 'qualifying and the tournaments'} until the end of ${b.to}${b.why ? ` (${b.why})` : ''}; ${b.kind === 'club' ? 'the next club of the league takes the place' : 'the next nation in line takes the place'}.`
             : `${name} can enter international competition again.`,
         ...(club ? { clubId: club.id } : {}),
+        keep: true,
       });
     }
   };

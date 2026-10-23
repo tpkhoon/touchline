@@ -57,6 +57,7 @@
       body: `Debts of ${U.money(-c.balance)} leave the club facing ${r.deduct > 0 ? `a ${r.deduct}-point deduction, ` : ''}${r.embargo ? 'a transfer embargo for the season and ' : ''}a fire sale.`,
       clubId: c.id,
       big: true,
+      keep: true,
     });
     c.balance = 0;
   };
@@ -144,6 +145,7 @@
       }${stepped.length ? ` ${stepped.map((x) => x.name).join(', ')} ${stepped.length === 1 ? 'is' : 'are'} promoted to fill the gap.` : ''}`,
       clubId: c.id,
       big: true,
+      keep: true,
     });
   };
 
