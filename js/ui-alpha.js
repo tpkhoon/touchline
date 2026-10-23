@@ -543,7 +543,9 @@
     if (A.thin)
       return `<div class="card">${head}<div class="small dim" style="margin-top:6px">${A.n ? `Only ${A.n} league matches with details so far: the numbers need ${A.need}.` : 'No league matches played yet.'}</div></div>`;
     const c = S().clubs[id],
-      col = c.colors[0] === '#FFFFFF' || c.colors[0].toUpperCase() === '#FFFFFF' ? c.colors[1] : c.colors[0];
+      col = U.readable(
+        c.colors[0] === '#FFFFFF' || c.colors[0].toUpperCase() === '#FFFFFF' ? c.colors[1] : c.colors[0],
+      );
     // the radar: six percentiles (the best rank in the league is the rim)
     const cx = 130,
       cy = 108,

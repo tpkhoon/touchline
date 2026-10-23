@@ -14,6 +14,7 @@
   --good: #34d399;
   --warn: #fbbf24;
   --bad: #f87171;
+  --bad-ink: #0b0f14;
   --gold: #f5c542;
   --pitch1: #1f7a3f;
   --pitch2: #23864a;
@@ -41,6 +42,7 @@
   --good: #14773a;
   --warn: #a84a08;
   --bad: #c81e1e;
+  --bad-ink: #ffffff;
   --gold: #8f5f10;
   --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
@@ -237,7 +239,7 @@ main::-webkit-scrollbar {
   left: 50%;
   margin-left: 5px;
   background: var(--bad);
-  color: #fff;
+  color: var(--bad-ink, #fff);
   font-size: 10px;
   min-width: 16px;
   height: 16px;
@@ -1991,7 +1993,7 @@ table.t tr.zone-down td:first-child {
   display: grid;
   place-items: center;
   font-weight: 900;
-  color: #fff;
+  color: var(--bad-ink);
 }
 .tpitch {
   position: relative;
@@ -2326,7 +2328,7 @@ main {
   font-weight: 700;
 }
 .attr.na {
-  opacity: 0.45;
+  opacity: 0.7;
 }
 
 /* a tournament's card on the Cups screen folds away behind its title */
@@ -2644,4 +2646,10 @@ select {
 .btnrow > .btn {
   flex: 1 1 auto;
   white-space: nowrap;
+}
+
+/* the captain's mark: white on the deeper gold of the light theme */
+:root[data-theme='light'] .capt-tag,
+:root[data-theme='light'] .slot-dot .capt {
+  color: #ffffff;
 }

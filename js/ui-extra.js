@@ -1566,7 +1566,7 @@
     }
   };
   const colOf = (sd) =>
-    U.onDark(
+    U.readable(
       sd.club.colors[0] === '#FFFFFF' || sd.club.colors[0].toUpperCase() === '#FFFFFF'
         ? sd.club.colors[1]
         : sd.club.colors[0],

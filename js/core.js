@@ -239,29 +239,34 @@
     // Contrast-aware text colour for a background hex
     ink(hex) {
       const c = hex.replace('#', '');
-      const r = parseInt(c.substr(0, 2), 16),
-        g = parseInt(c.substr(2, 2), 16),
-        b = parseInt(c.substr(4, 2), 16);
-      return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? '#0b0f14' : '#ffffff';
+      const v = [0, 2, 4].map((i) => parseInt(c.substr(i, 2), 16));
+      const lin = (x) => ((x /= 255) <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4));
+      const l = 0.2126 * lin(v[0]) + 0.7152 * lin(v[1]) + 0.0722 * lin(v[2]);
+      // the text colour with the better contrast on it: white or the dark page colour (0.0045 is its luminance)
+      return 1.05 / (l + 0.05) > (l + 0.05) / 0.0545 ? '#ffffff' : '#0b0f14';
     },
-    // A banner colour white text can sit on: a light kit colour (white, gold, sky blue) is darkened toward navy,
-    // keeping its hue, until white text reads clearly on it; dark colours are left as they are
-    // A team colour that can be read as text on the dark screens: a dark colour is lightened toward white until it has the
-    // contrast of normal text against the panel behind it (4.5 to 1), keeping its hue
-    onDark(hex) {
+    // A team colour that can be read as text on the screen behind it: on the dark theme a dark colour is lightened toward white,
+    // on the light theme a pale one is darkened toward black, until it has the contrast of normal text (4.5 to 1) against the panel,
+    // keeping its hue
+    readable(hex) {
       const c = String(hex || '#ffffff').replace('#', '');
       if (c.length < 6) return hex;
+      const light = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light';
       const v = [0, 2, 4].map((i) => parseInt(c.substr(i, 2), 16));
       const lin = (x) => ((x /= 255) <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4));
       const L = (a) => 0.2126 * lin(a[0]) + 0.7152 * lin(a[1]) + 0.0722 * lin(a[2]);
-      const bg = L([20, 27, 38]);
+      const bg = L(light ? [255, 255, 255] : [20, 27, 38]);
+      const toward = light ? 0 : 255;
       let f = 0,
         out = v;
-      while (f < 1 && (L(out) + 0.05) / (bg + 0.05) < 4.5) {
+      while (f < 1 && (Math.max(L(out), bg) + 0.05) / (Math.min(L(out), bg) + 0.05) < 4.5) {
         f += 0.05;
-        out = v.map((x) => Math.round(x + (255 - x) * f));
+        out = v.map((x) => Math.round(x + (toward - x) * f));
       }
       return '#' + out.map((x) => x.toString(16).padStart(2, '0')).join('');
+    },
+    onDark(hex) {
+      return this.readable(hex);
     },
     heroShade(hex) {
       const c = String(hex || '#1b2533').replace('#', '');
