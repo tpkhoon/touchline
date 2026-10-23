@@ -344,7 +344,11 @@
     c.clubs !== undefined &&
     c.type !== 'friendly';
   // a deal's chance of there being one: the top league nearly always, the cups and lower leagues less
-  const hasDeal = (c) => Math.random() < (c.type === 'cup' ? 0.55 : c.tier === 1 ? 0.92 : c.tier === 2 ? 0.7 : 0.4);
+  const hasDeal = (c) => {
+    const big = c.sim === 'full' ? 1 : c.sim === 'light' ? 0.55 : 0.3; // (the bigger the league, the likelier a sponsor)
+    const base = c.type === 'cup' ? 0.4 : c.tier === 1 ? 0.75 : c.tier === 2 ? 0.35 : 0.1;
+    return Math.random() < base * (c.type === 'cup' ? Math.max(0.5, big) : big);
+  };
   const dealLength = (c) => (c.type === 'cup' ? U.randi(2, 4) : U.randi(3, 5));
   const setName = (c, brand) => {
     c.name = brand ? `${brand} ${c.baseName}` : c.baseName;

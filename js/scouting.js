@@ -216,7 +216,7 @@
     if (spec.type === 'player') {
       const s = FM.S.staff[scoutId],
         p = FM.S.players[spec.pid];
-      spec.weeks = Math.max(1, Math.round(3 - 2 * s.regions[Sc.region(p)]));
+      spec.weeks = Math.max(1, Math.round(3 - 2 * (s.regions[Sc.region(p)] ?? 0.2)));
     }
     u.assignments.push({ scout: scoutId, since: FM.S.day, ...spec });
   };
@@ -224,7 +224,7 @@
   function learn(scout, p, mult = 1) {
     const u = FM.S.user,
       reg = Sc.region(p),
-      exp = scout.regions[reg];
+      exp = scout.regions[reg] ?? 0.2;
     const gain = (6 + 24 * exp + scout.judge * 0.6) * mult;
     const before = u.knowledge[p.id] || 0;
     u.knowledge[p.id] = Math.min(100, before + gain * (1 - before / 140));
@@ -493,7 +493,7 @@
     const unc = 1 - k / 100;
     // one scout's read of ability and potential: his errors, his knowledge of the region and his lean
     const estOf = (r, sc) => {
-      const e = sc ? sc.regions[Sc.region(p)] : 0.4;
+      const e = sc ? (sc.regions[Sc.region(p)] ?? 0.2) : 0.4;
       const ca = U.clamp(p.ca + (r ? r.err : 0) * unc * 14 * (1.3 - e) + Sc.leanAdj(sc, p) * unc * 1.2, 20, 99);
       return { ca, pa: U.clamp(Math.max(ca, p.pa + (r ? r.errP : 0) * unc * 22 * (1.3 - e)), 20, 99) };
     };

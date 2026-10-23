@@ -1953,9 +1953,9 @@
       ['#DA000C', '#FFFFFF'],
     ],
   ];
-  const OCEANIA = ['FIJ', 'PNG', 'SOL', 'VAN', 'NCL', 'TAH', 'WSM', 'TGA', 'NZL'];
+  const OCEANIA = ['FIJ', 'PNG', 'SOL', 'VAN', 'NCL', 'TAH', 'WSM', 'TGA', 'NZL', 'AUS']; // (Australia is in Oceania here, as it was before 2006)
   for (const [code, name, iso, region, style, bias, pool, weight, ties, colors] of MORE)
-    LIST.push(N(code, name, FL(iso), region, style, bias, pool, weight, ties, colors));
+    LIST.push(N(code, name, FL(iso), OCEANIA.includes(code) ? 'OFC' : region, style, bias, pool, weight, ties, colors));
 
   // The nations join the game (a first-name and surname pool each, widened from the culture's)
   for (const n of LIST) {
@@ -1964,7 +1964,7 @@
     if (n.extra) D.NATIVE_EXTRA[n.code] = [n.extra];
     D.NT_COLORS[n.code] = n.colors;
   }
-  for (const c of OCEANIA) D.NATIONS[c].confed = 'OFC'; // (its region stays Asia for scouting and staff: the confederation is what qualifying reads)
+  for (const c of OCEANIA) D.NATIONS[c].region = D.NATIONS[c].confed = 'OFC';
   D.widenNames();
 
   // Their players are spread through the leagues with a mix: weight × where emigrants go (the ties count four times,

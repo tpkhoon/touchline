@@ -1432,6 +1432,7 @@
     NAM: ['SAM', 'ENG', 'EUR'],
     ASIA: ['AFR', 'EUR', 'NAM'],
     AFR: ['EUR', 'ENG', 'ASIA'],
+    OFC: ['ASIA', 'ENG', 'EUR'],
   };
   // The nationality of a member of staff (or a scout) a club in `nat` would hire: mostly the club's own part of the world
   // (a fifth the club's own nation), then the regions it has ties with, and now and then anyone

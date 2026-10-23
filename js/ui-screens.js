@@ -106,7 +106,7 @@
     const pos = W.position(c.id);
     const objs = FM.Season.objectives(c);
     // The home feed is about your club; the wider game lives under World (older saves may remember another tab)
-    if (!['club', 'reply', 'world'].includes(UI.sub.feed)) UI.sub.feed = 'club';
+    if (!['club', 'reply', 'following', 'press', 'world'].includes(UI.sub.feed)) UI.sub.feed = 'club';
     const waiting = s.news.filter(UI.isOpenDecision).length;
     return `${hero}
       <div class="kpis">

@@ -1268,6 +1268,7 @@
     NAM: 'North America',
     ASIA: 'Asia',
     AFR: 'Africa',
+    OFC: 'Oceania',
   };
 
   // Realistic nationality mix per league (weights ≈ % of squads) and per academy

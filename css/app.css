@@ -2614,7 +2614,8 @@ details.cupfold:not([open]) > summary > .row::after {
 
 /* the profile's everyday buttons stay on one line, all the same height */
 .pbtns > .btn.sm {
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.2;
 }
 .kpi .l {
   white-space: normal;

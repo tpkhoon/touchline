@@ -789,7 +789,7 @@
     if (ctrl)
       ctrl.insertAdjacentHTML(
         'beforeend',
-        '<button class="m-gear" data-act="mSettings" aria-label="Settings" title="Settings"></button>',
+        `<button class="m-gear" data-act="mSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`,
       );
   };
   UI.acts.mSettings = () => {
