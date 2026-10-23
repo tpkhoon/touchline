@@ -353,13 +353,13 @@
     const ov = document.createElement('div');
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
-    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(C.shortName(H.club))}</span>${MV.shirt(m, 0)}</div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(C.shortName(A.club))}</span>${MV.shirt(m, 1)}</div></div>
+    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(MV.teamName(H.club))}</span>${MV.shirt(m, 0)}</div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(MV.teamName(A.club))}</span>${MV.shirt(m, 1)}</div></div>
       <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
-      <div class="m-mom"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>
+      <div class="m-mom${text ? ' big' : ''}"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>${text ? '<div class="m-panel" id="mPanel"></div>' : ''}
       <div class="m-ticker${text ? ' m-feed' : ''}" id="mTicker"><div>The teams are out${capt ? `, ${esc(W.short(capt))} wearing the armband` : ''}. ${esc(H.club.name)} vs ${esc(A.club.name)}.</div>${talkMsg ? `<div>🗣️ ${esc(talkMsg)}</div>` : ''}</div>
-      <div class="m-ctrl"><button id="mPause" data-act="mPause">⏸</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mShout">📣 Shout</button><button data-act="mSubs">Subs</button><button data-act="mSim">⏭ End</button></div>`;
+      <div class="m-ctrl"><button id="mPause" data-act="mPause">Pause</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mShout">Shout</button><button data-act="mSubs">Subs</button><button data-act="mSkip">Skip ▾</button></div>`;
     document.getElementById('app').appendChild(ov);
     MV.st = {
       paused: false,
@@ -655,6 +655,46 @@
     g('mPoss').textContent =
       `Possession ${Math.round((100 * (H.possAcc || 1)) / tot)}% – ${Math.round((100 * (A.possAcc || 1)) / tot)}%`;
     g('mMom').innerHTML = MV.momSVG(m, 120, 36);
+    if (g('mPanel')) g('mPanel').innerHTML = MV.panelHTML(m);
+  };
+  // The text view's live panel: the match on a line (goals, cards, chances), the numbers so far, and how your players are doing
+  MV.panelHTML = function (m) {
+    const [H, A] = m.sides,
+      n = Math.max(95, m.momentum.length);
+    const pos = (e) => `left:${U.clamp(((e.mi || 0) / n) * 100, 0, 99)}%`;
+    const kitOf = (k) => MV.kit(m, k);
+    const marks = m.events
+      .map((e) => {
+        const up = e.side === MV.us ? 'top:0' : 'bottom:0';
+        if (e.k === 'goal')
+          return `<i class="tl-goal" style="${pos(e)};${up};background:${kitOf(e.side)}" title="Goal ${esc(e.min || '')}"></i>`;
+        if (e.k === 'yellow')
+          return `<i class="tl-yc" style="${pos(e)};${up}" title="Yellow card ${esc(e.min || '')}"></i>`;
+        if (e.k === 'red') return `<i class="tl-rc" style="${pos(e)};${up}" title="Red card ${esc(e.min || '')}"></i>`;
+        if (e.k === 'chance' && e.outcome !== 'goal' && e.xg >= 0.2)
+          return `<i class="tl-ch" style="${pos(e)};${up}" title="Chance ${esc(e.min || '')}"></i>`;
+        return '';
+      })
+      .join('');
+    const cards = (k) => m.events.filter((e) => (e.k === 'yellow' || e.k === 'red') && e.side === k).length;
+    const tot = (H.possAcc || 1) + (A.possAcc || 1);
+    const row = (label, a, b, fmt = (x) => x) => {
+      const s = a + b || 1;
+      return `<div class="pn-row"><b>${fmt(a)}</b><div class="pn-bar"><i style="width:${(a / s) * 100}%;background:${kitOf(0)}"></i><i style="width:${(b / s) * 100}%;background:${kitOf(1)}"></i></div><b>${fmt(b)}</b><span>${label}</span></div>`;
+    };
+    const sd = m.sides[MV.us];
+    const mine = sd.xi
+      .filter(Boolean)
+      .map((p) => {
+        const out = sd.sentOff[p.id],
+          r = sd.rating[p.id] || 6,
+          f = Math.round(sd.st[p.id] ?? p.fitness);
+        return `<div class="pn-pl"><span class="ellip">${esc(W.short(p))}</span><b style="color:${out ? '#ff7676' : r >= 7.2 ? '#6ee7a0' : r < 5.8 ? '#ff9d9d' : '#e6edf6'}">${out ? 'off' : r.toFixed(1)}</b><i title="Energy ${f}%"><u style="width:${U.clamp(f, 0, 100)}%;background:${f < 55 ? '#ff9d9d' : f < 75 ? '#ffd166' : '#6ee7a0'}"></u></i></div>`;
+      })
+      .join('');
+    return `<div class="tl" aria-label="Match timeline"><b class="tl-t">0'</b><b class="tl-t" style="left:50%">HT</b><b class="tl-t" style="left:auto;right:0">90'</b>${marks}</div>
+      <div class="pn-stats">${row('Shots', H.shots, A.shots)}${row('On target', H.sot, A.sot)}${row('Chances (xG)', H.xg, A.xg, (x) => x.toFixed(2))}${row('Possession', H.possAcc || 1, A.possAcc || 1, (x) => Math.round((100 * x) / tot) + '%')}${row('Cards', cards(0), cards(1))}</div>
+      <div class="pn-h">Your players: rating and energy</div><div class="pn-players">${mine}</div>`;
   };
   MV.momSVG = function (m, w, h) {
     const n = Math.max(95, m.momentum.length);
@@ -896,7 +936,7 @@
   UI.acts.mPause = () => {
     const st = MV.st;
     st.paused = !st.paused;
-    document.getElementById('mPause').textContent = st.paused ? '▶' : '⏸';
+    document.getElementById('mPause').textContent = st.paused ? 'Play' : 'Pause';
   };
   UI.acts.mSpeed = () => {
     const st = MV.st;
@@ -991,7 +1031,7 @@
   UI.acts.mResume = () => {
     UI.closeSheet();
     MV.st.paused = false;
-    document.getElementById('mPause').textContent = '⏸';
+    document.getElementById('mPause').textContent = 'Pause';
   };
   UI.acts.mSubs = () => {
     MV.subsSheet(null);
@@ -1081,6 +1121,11 @@
     return clash(c1) && !clash(c2) ? c2 : c1;
   };
   // A small shirt in the colour the side is wearing in this match (the away kit changes when the two would look alike), by its name
+  // both sides in the same style: the name (never the code), shortened by dropping its tail words
+  MV.teamName = (club) => {
+    const s = C.shortName(club, 18);
+    return s === club.short && club.name !== s ? club.name : s;
+  };
   MV.shirt = function (m, k) {
     const c = MV.kit(m, k),
       edge = MV.onGrass(c) || dist(rgb(c), [8, 12, 18]) < 60 ? '#fff' : 'rgba(0,0,0,.35)';

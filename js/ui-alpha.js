@@ -37,7 +37,7 @@
       d.rise ? `📈 +${Math.round(d.rise * 100)}% a year` : '',
       d.relegCut ? '⬇️ 25% wage cut if relegated' : '',
     ].filter(Boolean);
-    const talk = `<button class="btn sm grow pri" data-act="talk" data-id="${p.id}">💬 Talk</button>`;
+    const talk = `<button class="btn sm grow pri" data-act="talk" data-id="${p.id}">Talk</button>`;
     const card = `<div class="card"><div class="row"><div class="h3 grow">Contract</div><span class="small dim">until ${p.contract}</span></div>
       <div class="row small" style="margin-top:6px"><span class="grow muted">Wage</span><b>${U.money(p.wage)}/wk</b></div>
       ${clauses.length ? `<div style="margin-top:6px">${clauses.map((x) => `<span class="trait">${esc(x)}</span>`).join('')}</div>` : '<div class="tiny dim" style="margin-top:6px">No clauses.</div>'}
@@ -1084,7 +1084,7 @@
           .map((id) => {
             const n = T(id),
               ok = FM.Intl.canTake(n);
-            return `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(n.code)}</span><div class="grow"><div class="b tap" data-act="nation" data-id="${id}">${esc(n.name)} <span class="tiny dim">· squad ›</span></div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(n) + 1} · needs ${FM.Intl.badgeNeeded(n)}${ok.ok ? '' : ' · ' + esc(ok.why)}</div></div><button class="btn sm ${ok.ok ? 'pri' : ''}" data-act="ntTake" data-id="${id}" ${ok.ok ? '' : 'disabled'}>Apply</button></div>`;
+            return `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(n.code)}</span><div class="grow"><div class="b tap" data-act="nation" data-id="${id}" style="padding:12px 0;margin:-12px 0">${esc(n.name)} <span class="small dim">· squad ›</span></div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(n) + 1} · needs ${FM.Intl.badgeNeeded(n)}${ok.ok ? '' : ' · ' + esc(ok.why)}</div></div><button class="btn sm ${ok.ok ? 'pri' : ''}" data-act="ntTake" data-id="${id}" ${ok.ok ? '' : 'disabled'}>Apply</button></div>`;
           })
           .join('') || '<div class="small dim" style="margin-top:6px">No vacancies right now.</div>'
       }<div class="tiny dim" style="margin-top:8px">You keep your club job. National teams play in the international breaks and the summer finals; failing to qualify ends the job.</div></div>`;

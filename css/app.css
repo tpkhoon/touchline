@@ -146,8 +146,8 @@ select option {
 }
 .topbar .settings-btn {
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
 }
 .topbar .settings-btn.on {
   border-color: var(--acc);
@@ -171,7 +171,7 @@ main::-webkit-scrollbar {
   left: 0;
   right: 0;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch;
   background: color-mix(in srgb, var(--bg) 97%, transparent);
   backdrop-filter: blur(14px);
@@ -208,16 +208,16 @@ main::-webkit-scrollbar {
   height: 24px;
   font-size: 20px;
   line-height: 1;
-  filter: grayscale(1) opacity(0.7);
+  opacity: 0.7;
   transition:
     transform 0.25s,
-    filter 0.2s;
+    opacity 0.2s;
 }
 .nav button.on {
   color: var(--ink);
 }
 .nav button.on .ni {
-  filter: none;
+  opacity: 1;
   transform: translateY(-2px) scale(1.1);
 }
 .nav button.on::after {
@@ -398,10 +398,10 @@ main::-webkit-scrollbar {
   color: var(--ink3);
 }
 .small {
-  font-size: 12px;
+  font-size: 13px;
 }
 .tiny {
-  font-size: 11px;
+  font-size: 12px;
 }
 .b {
   font-weight: 700;
@@ -513,7 +513,8 @@ main::-webkit-scrollbar {
   width: 100%;
 }
 .btn.sm {
-  padding: 7px 11px;
+  padding: 11px 14px;
+  min-height: 44px;
   font-size: 13px;
   border-radius: 10px;
 }
@@ -535,7 +536,8 @@ main::-webkit-scrollbar {
   display: none;
 }
 .chip {
-  padding: 9px 14px;
+  padding: 11px 14px;
+  min-height: 44px;
   border-radius: 999px;
   background: var(--card);
   border: 1px solid var(--line);
@@ -2393,9 +2395,18 @@ details.cupfold:not([open]) > summary > .row::after {
   vertical-align: 0.1em;
 }
 
-/* seven tabs on a phone: a touch smaller labels */
+/* five tabs on a phone: room for a readable label */
 .nav button {
-  font-size: 10px;
+  font-size: 12px;
+}
+.nav button .ni svg {
+  display: block;
+}
+/* a link inside a line of text keeps its small type but a finger-sized target */
+.lnk {
+  display: inline-block;
+  padding: 14px 4px;
+  margin: -14px 0;
 }
 
 /* a player row's name shrinks with an ellipsis; its tags (listed, injured, suspended...) always stay visible */
@@ -2415,4 +2426,197 @@ details.cupfold:not([open]) > summary > .row::after {
   display: inline-flex;
   gap: 4px;
   align-items: center;
+}
+
+/* the quieter buttons under a hero's main action */
+.hero .play.sec {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  box-shadow: none;
+  font-size: 14px;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+/* the live match, text view: a bigger momentum chart, the match on a line, the numbers and your players */
+.m-mom.big svg {
+  height: 56px;
+}
+.m-panel {
+  flex: none;
+  max-height: 46%;
+  overflow-y: auto;
+  padding: 4px 14px 6px;
+}
+.tl {
+  position: relative;
+  height: 30px;
+  margin: 4px 0 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+.tl::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px dashed rgba(255, 255, 255, 0.18);
+}
+.tl .tl-t {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: #8ea0b7;
+  z-index: 1;
+}
+.tl i {
+  position: absolute;
+  display: block;
+  z-index: 2;
+}
+.tl .tl-goal {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  margin: 3px 0 0 -6px;
+}
+.tl .tl-yc,
+.tl .tl-rc {
+  width: 6px;
+  height: 9px;
+  border-radius: 1px;
+  margin: 4px 0 4px -3px;
+  background: #ffd166;
+}
+.tl .tl-rc {
+  background: #ff5c5c;
+}
+.tl .tl-ch {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd6e4;
+  margin: 5px 0 5px -3px;
+}
+.pn-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 2px 8px;
+  font-size: 13px;
+  padding: 2px 0;
+}
+.pn-row b:last-of-type {
+  text-align: right;
+}
+.pn-row span {
+  grid-column: 1 / 4;
+  text-align: center;
+  font-size: 11px;
+  color: #8ea0b7;
+  margin-top: -2px;
+}
+.pn-bar {
+  display: flex;
+  height: 6px;
+  gap: 2px;
+}
+.pn-bar i {
+  display: block;
+  border-radius: 3px;
+  min-width: 2px;
+}
+.pn-h {
+  font-size: 11px;
+  color: #8ea0b7;
+  margin: 8px 0 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.pn-players {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 14px;
+}
+.pn-pl {
+  display: grid;
+  grid-template-columns: 1fr 30px 38px;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 3px 0;
+}
+.pn-pl i {
+  display: block;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.pn-pl u {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+}
+.m-ctrl button {
+  min-height: 44px;
+}
+
+/* first-time tips: a bubble beside the real button, never a cover over the screen */
+.tipbubble {
+  position: absolute;
+  z-index: 30;
+  width: 260px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+.tipbubble > div {
+  align-self: stretch;
+}
+
+.buildbar {
+  width: 220px;
+  height: 4px;
+  margin: 22px auto 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+.buildbar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--acc);
+  transform-origin: left;
+  animation: buildbar 30s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+@keyframes buildbar {
+  from {
+    transform: scaleX(0.04);
+  }
+  to {
+    transform: scaleX(0.95);
+  }
+}
+
+/* the profile's everyday buttons stay on one line, all the same height */
+.row > .btn.sm.grow {
+  white-space: nowrap;
+}
+.kpi .l {
+  white-space: normal;
+  line-height: 1.25;
 }

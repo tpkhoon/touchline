@@ -210,7 +210,7 @@
     );
     UI.sheet(
       `<div style="line-height:1.6">${rows.map((t) => `<p style="margin:0 0 10px">${t}</p>`).join('')}</div><div class="tiny dim">Skippable, and it is always under Help.</div>`,
-      { title: '🗺️ How this world works' },
+      { title: 'How this world works' },
     );
   };
   UI.acts.primer = () => UI.primer();
@@ -240,25 +240,82 @@
   UI.acts.tutSkip = () => UI.closeSheet();
   UI.acts.tutReplay = () => {
     UI.closeAllSheets();
-    UI.tutorial(0);
+    set('touchline.tips', '[]');
+    set('touchline.tutorial', '');
+    UI.toast('The tips will show again as you go');
+    UI.render();
   };
+  // ---------------- First-time tips ----------------
+  // Short tips that point at the real button, each shown once the first time the screen it is about is up. They sit over the
+  // screen without blocking it, and go with a tap anywhere else.
+  const TIPS = [
+    [
+      'home',
+      'home',
+      '.hero .play',
+      '<b>Continue</b> plays forward until something needs you, so nothing slips past. <b>One day</b> moves a single day.',
+    ],
+    [
+      'more',
+      'home',
+      '#nav-more',
+      'Scouting, Nations, the Club (staff, finances, press) and Settings are under <b>More</b>.',
+    ],
+    [
+      'squad',
+      'squad',
+      '[data-act=sqSheet]',
+      'Tap a player for his profile. <b>Sort &amp; filter</b> finds anyone fast.',
+    ],
+    [
+      'transfers',
+      'transfers',
+      'main .chips',
+      "Deals happen in the transfer windows (free agents can be signed any time), and every signing needs a registration place under your league's rules.",
+    ],
+  ];
+  const tipsDone = () => {
+    try {
+      return JSON.parse(get('touchline.tips') || '[]');
+    } catch (e) {
+      return [];
+    }
+  };
+  UI.tipOff = () => get('touchline.tutorial') === 'done' && !get('touchline.tips');
+  UI.hideTip = () => document.querySelectorAll('.tipbubble').forEach((e) => e.remove());
+  UI.acts.tipOk = (d) => {
+    set('touchline.tips', JSON.stringify([...new Set([...tipsDone(), d.k])]));
+    UI.hideTip();
+  };
+  UI.showTips = function () {
+    UI.hideTip();
+    if (UI.tipOff() || !FM.S || !FM.S.user || document.querySelector('.sheet-wrap, #matchOv, .simov')) return;
+    const seen = tipsDone();
+    const app = document.getElementById('app');
+    for (const [k, tab, sel, text] of TIPS) {
+      if (seen.includes(k) || tab !== UI.tab) continue;
+      const el = document.querySelector(sel);
+      if (!el || !app) continue;
+      const r = el.getBoundingClientRect(),
+        a = app.getBoundingClientRect();
+      const below = r.top < a.top + a.height * 0.55;
+      const b = document.createElement('div');
+      b.className = 'tipbubble';
+      b.style.cssText = `left:${Math.round(Math.max(8, Math.min(a.width - 268, r.left - a.left + r.width / 2 - 130)))}px;${below ? `top:${Math.round(r.bottom - a.top + 8)}px` : `bottom:${Math.round(a.bottom - r.top + 8)}px`}`;
+      b.innerHTML = `<div>${text}</div><button class="btn sm pri" data-act="tipOk" data-k="${k}">Got it</button>`;
+      app.appendChild(b);
+      return;
+    }
+  };
+  UI.afterRender = () => setTimeout(UI.showTips, 400);
   // After a new career begins (never on loading a save, never twice)
   const mount = UI.mount;
   UI.mount = function () {
     // the welcome comes first; the season preview stays a tap away on Home instead of opening over it
     if (UI._newCareer && FM.S && FM.S.user) FM.S.user.previewSeen = true;
     const r = mount.apply(this, arguments);
-    if (UI._newCareer) {
-      UI._newCareer = false;
-      // (it waits for anything else on screen, such as the season preview, to be closed)
-      const tries = { n: 0 },
-        show = () => {
-          if (get('touchline.tutorial') === 'done' || ++tries.n > 120) return;
-          if (document.querySelector('.sheet-wrap') || document.querySelector('.simov')) setTimeout(show, 1000);
-          else UI.tutorial(0);
-        };
-      setTimeout(show, 600);
-    }
+    // (a new career gets the tips as each screen comes up, not a wall of text over the buttons)
+    UI._newCareer = false;
     return r;
   };
 
@@ -315,7 +372,7 @@
       .join('\n');
   UI.helpExtras = () => {
     const n = readLog().length;
-    return `<button class="btn sm block" style="margin-top:8px" data-act="primer">🗺️ How this world works</button><button class="btn sm block" style="margin-top:8px" data-act="tutReplay">🎓 Replay the tutorial</button>${n ? `<div class="row small" style="margin-top:10px"><span class="grow dim">${n} error${n > 1 ? 's' : ''} logged on this device; the problem report includes them</span><button class="btn sm" data-act="errLogClear">Clear</button></div>` : ''}`;
+    return `<button class="btn sm block" style="margin-top:8px" data-act="primer">How this world works</button><button class="btn sm block" style="margin-top:8px" data-act="tutReplay">Show the tips again</button>${n ? `<div class="row small" style="margin-top:10px"><span class="grow dim">${n} error${n > 1 ? 's' : ''} logged on this device; the problem report includes them</span><button class="btn sm" data-act="errLogClear">Clear</button></div>` : ''}`;
   };
   UI.acts.errLogClear = () => {
     set(LOG, '[]');

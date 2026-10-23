@@ -141,7 +141,7 @@
     const a = (Math.round(lo * 2) / 2 / 5) * 100,
       b = (Math.round(hi * 2) / 2 / 5) * 100;
     const p = pot != null ? (Math.round(pot * 2) / 2 / 5) * 100 : b;
-    return `<span class="stars" style="background:linear-gradient(90deg,var(--gold) ${a}%,color-mix(in srgb,var(--gold) 55%,transparent) ${a}% ${Math.max(b, a)}%,color-mix(in srgb,var(--gold) 28%,transparent) ${Math.max(b, a)}% ${Math.max(p, b)}%,var(--line2) ${Math.max(p, b)}%);-webkit-background-clip:text;background-clip:text;color:transparent">★★★★★</span>`;
+    return `<span class="stars" style="background:linear-gradient(90deg,var(--gold) ${a}%,color-mix(in srgb,var(--gold) 55%,transparent) ${a}% ${Math.max(b, a)}%,color-mix(in srgb,var(--gold) 28%,transparent) ${Math.max(b, a)}% ${Math.max(p, b)}%,color-mix(in srgb,var(--ink3) 50%,transparent) ${Math.max(p, b)}%);-webkit-background-clip:text;background-clip:text;color:transparent" role="img" aria-label="${Math.round(lo * 2) / 2} out of 5 stars">★★★★★</span>`;
   };
   // His rating in stars against the league you manage in (no numbers): a scouted player's is a range.
   C.playerOverall = function (p) {
@@ -279,7 +279,7 @@
         return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink2)">${k}</text>`;
       })
       .join('');
-    return `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:${size}px;display:block;margin:auto">${g}<polygon points="${poly}" fill="color-mix(in srgb, var(--acc) 30%, transparent)" stroke="var(--acc)" stroke-width="2" ${approx ? 'stroke-dasharray="4 3" style="filter:blur(1.2px)"' : ''}/>${labels}</svg>`;
+    return `<svg viewBox="-36 0 ${size + 72} ${size}" width="100%" style="max-width:${size + 72}px;display:block;margin:auto">${g}<polygon points="${poly}" fill="color-mix(in srgb, var(--acc) 30%, transparent)" stroke="var(--acc)" stroke-width="2" ${approx ? 'stroke-dasharray="4 3" style="filter:blur(1.2px)"' : ''}/>${labels}</svg>`;
   };
   C.bar = (v, color) =>
     `<div class="bar"><i style="width:${U.clamp(v, 0, 100)}%;${color ? 'background:' + color : ''}"></i></div>`;
@@ -569,15 +569,30 @@
   };
 
   // ---------------- Shell ----------------
+  // Five tabs on a phone; Scout, Nations and Club sit behind More (they are still screens of their own, UI.tab 'scout' ...)
+  const svg = (d) =>
+    `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  UI.icon = {
+    home: svg('<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>'),
+    squad: svg('<path d="M8 4l-5 3 2 4 3-1v10h8V10l3 1 2-4-5-3a4 4 0 0 1-8 0z"/>'),
+    transfers: svg('<path d="M4 8h14l-3-3M20 16H6l3 3"/>'),
+    league: svg('<path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/>'),
+    more: svg('<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'),
+    gear: svg(
+      '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+    ),
+  };
   const TABS = [
-    ['home', '🏠', 'Home'],
-    ['squad', '👕', 'Squad'],
-    ['scout', '🔭', 'Scout'],
-    ['transfers', '🔁', 'Transfers'],
-    ['league', '🏆', 'League'],
-    ['intl', '🌍', 'Nations'],
-    ['club', '🏟️', 'Club'],
+    ['home', UI.icon.home, 'Home'],
+    ['squad', UI.icon.squad, 'Squad'],
+    ['transfers', UI.icon.transfers, 'Transfers'],
+    ['league', UI.icon.league, 'League'],
+    ['more', UI.icon.more, 'More'],
   ];
+  // the screens More leads to: the tab that lights is More
+  const MORE_TABS = ['scout', 'intl', 'club'];
+  const navOf = (tab) => (MORE_TABS.includes(tab) ? 'more' : tab);
+  const SWIPE = ['home', 'squad', 'transfers', 'league'];
   UI.mount = function () {
     const app = $('#app');
     app.innerHTML = `<header class="topbar" id="topbar"></header><main id="main"></main><nav class="nav" id="nav">${TABS.map(([k, i, l]) => `<button data-act="tab" data-tab="${k}" id="nav-${k}"><span class="ni">${i}</span><span class="nl">${l}</span></button>`).join('')}</nav>`;
@@ -603,9 +618,10 @@
           dy = e.changedTouches[0].clientY - sy;
         if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8 && Date.now() - st < 500) {
           if (e.target.closest('.chips, canvas, input, .noswipe')) return;
-          const i = TABS.findIndex((t) => t[0] === UI.tab);
-          const ni = U.clamp(i + (dx < 0 ? 1 : -1), 0, TABS.length - 1);
-          if (ni !== i) UI.go(TABS[ni][0], dx < 0 ? 'fromR' : 'fromL');
+          const i = SWIPE.indexOf(UI.tab);
+          if (i < 0) return;
+          const ni = U.clamp(i + (dx < 0 ? 1 : -1), 0, SWIPE.length - 1);
+          if (ni !== i) UI.go(SWIPE[ni], dx < 0 ? 'fromR' : 'fromL');
         }
       },
       { passive: true },
@@ -616,7 +632,7 @@
   // Going to a tab slides it in from the side of the tab you tapped; the same tab again just fades
   UI.go = function (tab, anim) {
     if (!anim) {
-      const order = TABS.map(([k]) => k),
+      const order = [...SWIPE, 'more', ...MORE_TABS],
         a = order.indexOf(UI.tab),
         b = order.indexOf(tab);
       anim = a < 0 || b < 0 || a === b ? 'fadeIn' : b > a ? 'fromR' : 'fromL';
@@ -631,7 +647,7 @@
     const S = FM.S,
       club = W.userClub();
     UI.applyClubTheme();
-    TABS.forEach(([k]) => $('#nav-' + k).classList.toggle('on', k === UI.tab));
+    TABS.forEach(([k]) => $('#nav-' + k).classList.toggle('on', k === navOf(UI.tab)));
     const unread = S.news.filter(FM.News.isOpen).length;
     $('#nav-home').querySelector('.badge')?.remove();
     if (unread) $('#nav-home').insertAdjacentHTML('beforeend', `<span class="badge">${unread}</span>`);
@@ -675,8 +691,8 @@
         : md;
     const nt = !club && S.user.nation && S.nteams && S.nteams[S.user.nation];
     $('#topbar').innerHTML = club
-      ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><div class="money">${U.money(club.balance)}</div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">⚙️</button>`
-      : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${md} · <span style="color:var(--warn)">Out of work</span>${nt ? ` · ${esc(nt.name)}` : ''}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">⚙️</button>`;
+      ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><div class="money">${U.money(club.balance)}</div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
+      : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${md} · <span style="color:var(--warn)">Out of work</span>${nt ? ` · ${esc(nt.name)}` : ''}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
     const html =
       !club && ['squad', 'scout', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
@@ -1375,13 +1391,10 @@
   // Database: the built-in world, or one imported from a file (FM.DbImport reads the formats it has adapters for)
   UI.dbCard = function () {
     const r = NG.db;
-    const list = FM.DbImport.adapters()
-      .map((a) => esc(a.name))
-      .join(', ');
     const body = !r
-      ? `<div class="tiny" style="color:#9fb0c5;margin-top:6px;line-height:1.5">Start in the built-in world, or load a database of your own (${list}). A database can rename clubs, change ratings, add players and bring past seasons.</div><button class="btn sm" style="margin-top:10px" data-act="ngDbPick">📂 Import a database…</button>`
+      ? `<div class="tiny" style="color:#9fb0c5;margin-top:6px;line-height:1.5">Most people start in the built-in world. If you have a world file of your own (from the editor, or a set of spreadsheet tables), you can load it here: it can rename clubs, change ratings, add players and bring past seasons.</div><button class="btn sm" style="margin-top:10px" data-act="ngDbPick">Import a world file…</button>`
       : r.ok
-        ? `<div class="small b" style="margin-top:6px;color:#c8ff3d">✅ ${esc(r.summary.name)}${r.summary.author ? ` <span style="color:#9fb0c5;font-weight:400">by ${esc(r.summary.author)}</span>` : ''}</div>
+        ? `<div class="small b" style="margin-top:6px;color:#c8ff3d">${esc(r.summary.name)}${r.summary.author ? ` <span style="color:#9fb0c5;font-weight:400">by ${esc(r.summary.author)}</span>` : ''}</div>
           ${r.summary.description ? `<div class="tiny" style="color:#c9d4e3;margin-top:4px">${esc(r.summary.description)}</div>` : ''}
           <div class="tiny" style="color:#9fb0c5;margin-top:6px">${U.plural(r.summary.clubs, 'club')}${r.summary.newClubs ? ` (${r.summary.newClubs} new)` : ''} · ${U.plural(r.summary.leagues, 'league')}${r.summary.newLeagues ? ` (${r.summary.newLeagues} new)` : ''} · ${U.plural(r.summary.playerRows, 'player')} · ${r.summary.seasons} past seasons${r.summary.startYear ? ` · starts ${r.summary.startYear}` : ''}</div>
           ${
@@ -1401,7 +1414,7 @@
             .map((e) => `• ${esc(e)}`)
             .join('<br>')}</div>`
         : '';
-    return `<div class="card" style="margin-top:16px;padding:12px 14px"><div class="small b">🗄️ Database</div>${body}${err}<div class="actions" style="margin-top:10px"><button class="btn sm" data-act="edOpen">✏️ ${r && r.ok ? 'Edit this world' : 'World editor'}</button></div></div>`;
+    return `<details class="card" style="margin-top:16px;padding:12px 14px" ${r ? 'open' : ''}><summary class="small b" style="cursor:pointer;min-height:24px">Advanced: your own world</summary>${body}${err}<div class="actions" style="margin-top:10px"><button class="btn sm" data-act="edOpen">${r && r.ok ? 'Edit this world' : 'World editor'}</button></div></details>`;
   };
   // The clubs and leagues the picker lists just changed (a database came or went): a club chosen before may be gone, and
   // the filters and suggestions were made against the old list
@@ -1505,7 +1518,7 @@
   };
   UI.acts.ngStart = () => {
     $('#app').innerHTML =
-      `<div class="title"><div class="logo" style="font-size:40px">Building<br>your world<span>…</span></div><div class="tag">Generating clubs, players, personalities and scouting networks.</div></div>`;
+      `<div class="title"><div class="logo" style="font-size:40px">Building<br>your world<span>…</span></div><div class="tag">Generating clubs, players, personalities and scouting networks. This takes a little while on a phone.</div><div class="buildbar" aria-hidden="true"><i></i></div><div class="tiny" style="color:#9fb0c5;margin-top:18px;line-height:1.6;max-width:300px;margin-left:auto;margin-right:auto;text-align:left"><b style="color:#e6edf6">While you wait</b><br>${U.pick(['Continue plays forward until something needs you: nothing slips past.', 'Stars are measured against your own league: three and a half is a typical starter there.', 'Young players grow with minutes; a talented teenager on the bench stalls.', 'Every signing needs a registration place under your league rules.', 'A tired side concedes late goals: rotate before a run of games.'])}</div></div>`;
     setTimeout(() => {
       const theme = (FM.S && FM.S.settings) || { theme: document.documentElement.dataset.theme || 'dark', speed: 1 };
       FM.S = null;

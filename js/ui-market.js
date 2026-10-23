@@ -528,9 +528,9 @@
       dl = FM.Reg.deadlineIn(),
       un = W.squad(c.id).filter((p) => p.unreg).length;
     const warn = over.length
-      ? `<div class="warnline tap" style="margin:-4px 0 8px" data-act="regInfo">⚠️ Over the registration limits (${over.map((g) => `${esc(g.label)} ${g.n}/${g.cap}`).join(', ')}). ${dl != null ? `Deadline in ${dl} day${dl === 1 ? '' : 's'}: sell, loan out or choose who to leave out ›` : 'Fixed at the next window ›'}</div>`
+      ? `<div class="warnline tap" style="margin:-4px 0 8px" data-act="regInfo">Over the registration limits (${over.map((g) => `${esc(g.label)} ${g.n}/${g.cap}`).join(', ')}). ${dl != null ? `Deadline in ${dl} day${dl === 1 ? '' : 's'}: sell, loan out or choose who to leave out ›` : 'Fixed at the next window ›'}</div>`
       : '';
-    return `${warn}<div class="tiny dim tap" style="margin:-4px 2px 8px" data-act="regInfo">📋 Registration: ${esc(sum)}${un ? ` · ${un} unregistered` : ''} ›</div>`;
+    return `${warn}<div class="small dim tap" style="margin:-4px 2px 8px;padding:12px 0" data-act="regInfo">Registration: ${esc(sum)}${un ? ` · ${un} unregistered` : ''} ›</div>`;
   };
   UI.acts.regInfo = () => {
     const c = W.userClub(),

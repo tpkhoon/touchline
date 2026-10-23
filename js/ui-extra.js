@@ -96,7 +96,7 @@
   UI.ownActions = function (p) {
     if (p.loan)
       return `<div class="warnline">On loan from ${esc(CL(p.loan.from).name)} until the end of the season. You pay ${Math.round(p.loan.share * 100)}% of his wages.</div>`;
-    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">📣 Offer</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button><button class="btn sm grow" data-act="loanList" data-id="${p.id}">${p.loanListed ? 'Loan list ✓' : 'Loan list'}</button>${p.loanListed ? `<button class="btn sm grow pri" data-act="offerLoan" data-id="${p.id}">📣 Offer loan</button>` : ''}<button class="btn sm grow danger" data-act="release" data-id="${p.id}">Release</button></div>`;
+    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">Offer to clubs</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button><button class="btn sm grow" data-act="pMore" data-id="${p.id}">More ▾</button></div>`;
   };
 
   // a nation's youth rating with its last move (▲ or ▼)
@@ -146,6 +146,18 @@
     UI.toast(`${W.short(p)} joins ${CL(o.club).name} on loan`);
     UI.save();
     UI.render();
+  };
+  // Loan and release are kept a tap away from the everyday buttons; release still asks first
+  UI.acts.pMore = (d) => {
+    const p = P(d.id);
+    UI.sheet(
+      `<div class="col" style="gap:8px"><button class="btn block" data-act="pMoreDo" data-a="loanList" data-id="${p.id}">${p.loanListed ? 'Take off the loan list' : 'Loan list'}</button>${p.loanListed ? `<button class="btn block pri" data-act="pMoreDo" data-a="offerLoan" data-id="${p.id}">Offer him on loan</button>` : ''}<button class="btn block danger" data-act="pMoreDo" data-a="release" data-id="${p.id}">Release…</button></div>`,
+      { title: 'More for ' + W.short(p) },
+    );
+  };
+  UI.acts.pMoreDo = (d) => {
+    UI.closeSheet();
+    UI.acts[d.a](d);
   };
   UI.acts.release = (d) => {
     const p = P(d.id);
@@ -353,7 +365,7 @@
     if (UI.sub.squad !== 'list') return html;
     const a = FM.Advice.assistant();
     const out = Object.values(S().players).filter((p) => p.loan && W.isUser(p.loan.from));
-    const notes = `<div class="card"><div class="row"><div style="font-size:26px">🗒️</div><div class="grow"><div class="h3">${esc(a.who)}'s notes</div><div class="tiny dim">${a.role}${a.personality ? ' · ' + esc(a.personality) : ''}</div></div></div>
+    const notesFull = `<div class="card"><div class="row"><div class="grow"><div class="h3">${esc(a.who)}'s notes</div><div class="tiny dim">${a.role}${a.personality ? ' · ' + esc(a.personality) : ''}</div></div></div>
       ${a.notes
         .slice(0, UI._notesAll ? 99 : 2)
         .map(
@@ -363,6 +375,11 @@
         .join(
           '',
         )}${a.notes.length > 2 ? `<button class="btn sm block" style="margin-top:8px" data-act="notesMore">${UI._notesAll ? 'Show fewer' : `Show ${a.notes.length - 2} more`}</button>` : ''}</div>`;
+    const notes = !a.notes.length
+      ? ''
+      : UI._notesAll
+        ? notesFull
+        : `<button class="card row tap" style="width:100%;text-align:left;min-height:44px" data-act="notesMore"><div class="grow small"><b>${U.plural(a.notes.length, 'note')}</b> from your assistant</div><span class="dim">›</span></button>`;
     const loans = out.length
       ? `<div class="sec"><div class="h3">Out on loan</div><span class="dim small">${out.length}</span></div><div class="card flat list" style="padding:4px 12px">${out.map((p) => C.playerRow(p, ` · at ${esc(CL(p.clubId).short)} · ${p.season.apps} apps${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) : ''}`)).join('')}</div>`
       : '';
@@ -491,8 +508,11 @@
     }
     const lr = FM.Season.baseRound();
     if (cal.type === 'pre' || lr <= 2)
-      top += `<button class="card row tap" style="width:100%;text-align:left" data-act="preview2"><span style="font-size:26px">🔮</span><div class="grow"><div class="h3">Season preview</div><div class="small dim">Predicted finish, title odds and your best XI</div></div><span class="dim">›</span></button>`;
-    return top + html;
+      top += `<button class="card row tap" style="width:100%;text-align:left" data-act="preview2"><div class="grow"><div class="h3">Season preview</div><div class="small dim">Predicted finish, title odds and your best XI</div></div><span class="dim">›</span></button>`;
+    // the main action stays at the top; the planner and the preview come under it
+    return html.includes('<div class="kpis">')
+      ? html.replace('<div class="kpis">', top + '<div class="kpis">')
+      : html + top;
   };
   function planner(today) {
     const s = S(),
@@ -510,9 +530,22 @@
           : `⚽ ${CL(x.fx.h === club().id ? x.fx.a : x.fx.h).name} (${x.fx.h === club().id ? 'H' : 'A'})${x.fx.res ? ` · ${x.fx.res.hg}–${x.fx.res.ag}` : ''}`;
       return `<div class="row small" style="padding:9px 0;border-top:1px solid var(--line)"><span class="pill ${cur ? 'acc' : ''}">Day ${i + 1}</span><span class="grow ellip ${done ? 'dim' : ''}">${esc(label)}</span>${!done ? `<button class="btn sm" data-act="plan" data-i="${i}">${x ? 'Change' : 'Book'}</button>` : ''}</div>`;
     };
-    return `<div class="card"><div class="row"><span style="font-size:24px">☀️</span><div class="grow"><div class="h3">Pre-season</div><div class="tiny dim">Book friendlies or camps for each day, then play/advance. Familiarity ${Math.round(s.user.tactic.fam ?? 60)}%.</div></div></div>${[...Array(D.PRESEASON_DAYS).keys()].map(slot).join('')}</div>`;
+    // shown in full until you have seen it once; after that it folds to a line (tap to open it)
+    const open = UI.sub.planOpen != null ? UI.sub.planOpen : !(s.user.planSeen || today > 0);
+    const left = [...Array(D.PRESEASON_DAYS).keys()].filter((i) => i >= today && !plan[i]).length;
+    if (!open)
+      return `<button class="card row tap" style="width:100%;text-align:left;min-height:44px" data-act="planToggle"><div class="grow small"><b>Pre-season:</b> ${left ? U.plural(left, 'day') + ' to book' : 'every day booked'}</div><span class="dim">›</span></button>`;
+    return `<div class="card"><div class="row"><div class="grow"><div class="h3">Pre-season</div><div class="tiny dim">Book friendlies or camps for each day, then continue. Familiarity ${Math.round(s.user.tactic.fam ?? 60)}%.</div></div><button class="btn sm" data-act="planToggle">Hide</button></div>${[...Array(D.PRESEASON_DAYS).keys()].map(slot).join('')}</div>`;
   }
+  UI.acts.planToggle = () => {
+    const s = S();
+    const open = UI.sub.planOpen != null ? UI.sub.planOpen : !(s.user.planSeen || FM.Season.today().idx > 0);
+    s.user.planSeen = true;
+    UI.sub.planOpen = !open;
+    UI.render();
+  };
   UI.acts.plan = (d) => {
+    S().user.planSeen = true;
     const i = +d.i,
       opts = FM.Season.friendlyOptions();
     UI.sheet(
@@ -923,7 +956,7 @@
   };
   const sfSnapshot = () => Object.fromEntries(SF_KEYS.map((k) => [k, JSON.parse(JSON.stringify(UI._sf[k]))]));
   // Position chips for any list: All, the four groups (a tap picks or drops the whole group) and each position
-  UI.posFilter = (on, actPos, actGroup) => {
+  UI.posFilter = (on, actPos, actGroup, short = false) => {
     const group = (g) => D.POS.filter((x) => D.POS_GROUP[x] === g);
     const chip = (act, v, l, isOn) =>
       `<button class="chip ${isOn ? 'on' : ''}" data-act="${act}" data-v="${v}">${l}</button>`;
@@ -936,8 +969,12 @@
           group(g).every((x) => on.includes(x)),
         ),
       )
-      .join('')}</div>
-      <div class="chips noswipe" style="margin-top:4px">${D.POS.map((x) => chip(actPos, x, x, on.includes(x))).join('')}</div>`;
+      .join('')}</div>${
+      short
+        ? ''
+        : `
+      <div class="chips noswipe" style="margin-top:4px">${D.POS.map((x) => chip(actPos, x, x, on.includes(x))).join('')}</div>`
+    }`;
   };
   const posChips = () => UI.posFilter(Array.isArray(UI._sf.pos) ? UI._sf.pos : [], 'sfPos', 'sfPosGroup');
   // (how many match, and a button for more when the list is cut short)
@@ -1908,16 +1945,27 @@
   MV._origStart = MV.start;
   MV.start = function (fx, instant) {
     MV._origStart(fx, instant);
-    const ctrl = document.querySelector('#matchOv .m-ctrl');
-    if (ctrl && !instant)
-      ctrl
-        .querySelector('[data-act=mSim]')
-        .insertAdjacentHTML('beforebegin', '<button id="mHT" data-act="mSimHT">⏩ HT</button>');
   };
   const origHT = FM.Prompts.halftime;
   FM.Prompts.halftime = (m) => {
     document.getElementById('mHT')?.remove();
     return origHT(m);
+  };
+  // Skip: to half-time or to full time, from one button
+  UI.acts.mSkip = () => {
+    const st = MV.st,
+      m = MV.m;
+    st.paused = true;
+    const htIdx = m.timeline.findIndex((t) => t.ev === 'HT');
+    UI.sheet(
+      `<div class="col" style="gap:8px">${m.idx <= htIdx ? '<button class="btn block" data-act="mSkipDo" data-a="mSimHT">Skip to half-time</button>' : ''}<button class="btn block" data-act="mSkipDo" data-a="mSim">Skip to full time</button><button class="btn block" data-act="mSkipDo" data-a="">Keep watching</button></div>`,
+      { title: 'Skip ahead', onClose: () => (MV.st.paused = false) },
+    );
+  };
+  UI.acts.mSkipDo = (d) => {
+    MV.st.paused = false;
+    UI.closeSheet();
+    if (d.a) UI.acts[d.a]();
   };
   UI.acts.mSimHT = () => {
     const st = MV.st,
