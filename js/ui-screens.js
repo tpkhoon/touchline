@@ -2326,7 +2326,7 @@
     const mine = club() && names[FM.Intl.baseConfed(club().nat)];
     const folded = (k) => (UI.sub.wvFold && UI.sub.wvFold[k] != null ? UI.sub.wvFold[k] : k !== mine);
     const tierPill = (sim) =>
-      `<span class="pill ${sim === 'full' ? 'acc' : ''}" title="${FM.Tiers.LABEL[sim]}" style="font-size:10px">${FM.Tiers.ICON[sim]} ${sim}</span>`;
+      `<span class="pill ${sim === 'full' ? 'acc' : ''}" title="${FM.Tiers.LABEL[sim]}">${FM.Tiers.ICON[sim]} ${sim}</span>`;
     return (
       spotsCard() +
       `<div class="small muted" style="margin:0 2px 10px;line-height:1.5">${U.plural(W.leagues().length, 'league')} in three simulation tiers. <b>Full</b>: every match in the engine. <b>Light</b>: every fixture played by a fast statistical model. <b>Minimal</b>: scores only — squads exist for scouting. Tap a league for its table.</div>` +
@@ -3480,7 +3480,7 @@
       <div class="card"><div class="h3">Board objectives</div>${FM.Season.objectives(c)
         .map(
           (o) =>
-            `<div class="row small" style="margin-top:8px;align-items:flex-start"><span>${o.ok ? '✓' : o.minOk ? '●' : '…'}</span><span class="grow">${esc(o.text)}${o.minText ? `<div class="tiny dim">At the very least: ${esc(o.minText)}</div>` : ''}</span><span class="pill ${o.weight === 'critical' ? 'bad' : o.weight === 'bonus' ? '' : 'warn'}" style="font-size:10px">${esc(FM.Board.WEIGHT[o.weight || 'important'].label)}</span><span class="dim" style="margin-left:6px">${esc(o.status)}</span></div>`,
+            `<div class="row small" style="margin-top:8px;align-items:flex-start"><span>${o.ok ? '✓' : o.minOk ? '●' : '…'}</span><span class="grow">${esc(o.text)}${o.minText ? `<div class="tiny dim">At the very least: ${esc(o.minText)}</div>` : ''}</span><span class="pill ${o.weight === 'critical' ? 'bad' : o.weight === 'bonus' ? '' : 'warn'}">${esc(FM.Board.WEIGHT[o.weight || 'important'].label)}</span><span class="dim" style="margin-left:6px">${esc(o.status)}</span></div>`,
         )
         .join('')}</div>
       ${UI.honoursCard(c, 'No trophies in this save — yet.')}

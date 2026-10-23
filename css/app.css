@@ -240,7 +240,7 @@ main::-webkit-scrollbar {
   margin-left: 5px;
   background: var(--bad);
   color: var(--bad-ink, #fff);
-  font-size: 10px;
+  font-size: 11px;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
@@ -462,7 +462,7 @@ main::-webkit-scrollbar {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 999px;
@@ -680,7 +680,7 @@ main::-webkit-scrollbar {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 .hero .tag {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -705,7 +705,7 @@ main::-webkit-scrollbar {
   line-height: 1;
 }
 .kpi .l {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink3);
   margin-top: 4px;
   font-weight: 600;
@@ -717,11 +717,11 @@ main::-webkit-scrollbar {
   gap: 3px;
 }
 .formdots i {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 5px;
   font-style: normal;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
   display: grid;
   place-items: center;
@@ -752,7 +752,7 @@ main::-webkit-scrollbar {
   align-items: center;
   gap: 8px;
   padding: 12px 14px 0;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
@@ -821,7 +821,7 @@ main::-webkit-scrollbar {
   margin-top: 2px;
 }
 .post .lk {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ink3);
   margin-top: 4px;
 }
@@ -884,7 +884,7 @@ main::-webkit-scrollbar {
   background: #fff;
   color: #0b0f14;
   font-weight: 900;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 1.6px;
   padding: 5px 9px;
   border-radius: 6px;
@@ -917,7 +917,7 @@ main::-webkit-scrollbar {
   align-items: center;
   justify-content: space-between;
   margin-top: 14px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 1.4px;
   opacity: 0.85;
@@ -949,7 +949,7 @@ main::-webkit-scrollbar {
   width: 34px;
   height: 24px;
   border-radius: 7px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   display: grid;
   place-items: center;
@@ -994,7 +994,7 @@ main::-webkit-scrollbar {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
@@ -1013,7 +1013,7 @@ main::-webkit-scrollbar {
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 800;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
@@ -1277,7 +1277,7 @@ main::-webkit-scrollbar {
 .m-xg {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 12px;
   color: #9fb0c5;
   padding: 0 14px 6px;
   font-weight: 600;
@@ -1313,7 +1313,7 @@ main::-webkit-scrollbar {
   z-index: 3;
 }
 .m-banner .k {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.4px;
   color: var(--acc2);
@@ -1419,7 +1419,7 @@ main::-webkit-scrollbar {
 }
 .ev-team {
   display: inline-block;
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.4px;
   line-height: 14px;
@@ -1505,7 +1505,7 @@ main::-webkit-scrollbar {
 .prompt .q b {
   font-style: normal;
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: #8ea0b7;
   margin-bottom: 2px;
 }
@@ -1572,7 +1572,7 @@ table.t th {
   text-align: center;
   color: var(--ink3);
   font-weight: 700;
-  font-size: 11px;
+  font-size: 12px;
   padding: 6px 2px;
   text-transform: uppercase;
 }
@@ -1915,12 +1915,12 @@ table.t tr.zone-down td:first-child {
   display: grid;
   place-items: center;
   font-weight: 800;
-  font-size: 11px;
+  font-size: 12px;
   border: 2px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
 }
 .slot-dot .n {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -1930,7 +1930,7 @@ table.t tr.zone-down td:first-child {
   text-overflow: ellipsis;
 }
 .slot-dot .r {
-  font-size: 9px;
+  font-size: 10px;
   color: #d9ffe0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
@@ -1947,7 +1947,7 @@ table.t tr.zone-down td:first-child {
   border-radius: 3px;
   background: var(--gold);
   color: #1a1300;
-  font-size: 8.5px;
+  font-size: 9.5px;
   font-weight: 900;
   text-shadow: none;
   vertical-align: 1px;
@@ -2208,7 +2208,7 @@ main {
   border-radius: 4px;
   background: var(--gold);
   color: #1a1300;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
   vertical-align: 1px;
 }
@@ -2314,7 +2314,7 @@ main {
   min-width: 1.5em;
   margin-right: 4px;
   text-align: center;
-  font-size: 0.72em;
+  font-size: 12px;
   font-weight: 800;
   color: var(--ink3);
   border: 1px solid var(--line2);
@@ -2355,7 +2355,7 @@ details.cupfold:not([open]) > summary > .row::after {
   flex: none;
   align-self: center;
   padding: 0 2px 0 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -2470,7 +2470,7 @@ details.cupfold:not([open]) > summary > .row::after {
   top: 50%;
   left: 0;
   transform: translateY(-50%);
-  font-size: 10px;
+  font-size: 11px;
   color: #8ea0b7;
   z-index: 1;
 }
@@ -2518,7 +2518,7 @@ details.cupfold:not([open]) > summary > .row::after {
 .pn-row span {
   grid-column: 1 / 4;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #8ea0b7;
   margin-top: -2px;
 }
@@ -2533,7 +2533,7 @@ details.cupfold:not([open]) > summary > .row::after {
   min-width: 2px;
 }
 .pn-h {
-  font-size: 11px;
+  font-size: 12px;
   color: #8ea0b7;
   margin: 8px 0 3px;
   text-transform: uppercase;
@@ -2635,8 +2635,8 @@ details.cupfold:not([open]) > summary > .row::after {
   min-height: 44px;
 }
 .swatch {
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 44px;
+  min-height: 44px;
 }
 select {
   min-height: 44px;
@@ -2652,4 +2652,31 @@ select {
 :root[data-theme='light'] .capt-tag,
 :root[data-theme='light'] .slot-dot .capt {
   color: #ffffff;
+}
+
+/* finger-sized targets: a tappable row is 44px tall, a small link in a line of text has a 44px area around it (it costs no room) */
+.row.tap,
+.row[data-act],
+.prow,
+.card.tap {
+  min-height: 44px;
+}
+tr.tap {
+  height: 44px;
+}
+.ellip[data-act],
+.ellip.tap {
+  padding-block: 14px;
+}
+:is(span, b, i).tap {
+  position: relative;
+}
+:is(span, b, i).tap::after {
+  content: '';
+  position: absolute;
+  inset: -14px 0;
+}
+.share {
+  min-width: 44px;
+  min-height: 44px;
 }
