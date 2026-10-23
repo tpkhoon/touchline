@@ -186,7 +186,7 @@
           if (k > far) ((far = k), (pair = [a, b]));
         }
     return far >= 350
-      ? `<div class="tiny dim" style="margin:0 4px 10px">✈️ The longest trip in this league: ${esc(pair[0].short)} – ${esc(pair[1].short)}, ${km(far)} km${far >= 1000 ? ' — a day of travel, and tired legs' : ''}.</div>`
+      ? `<div class="tiny dim" style="margin:0 4px 10px">The longest trip in this league: ${esc(pair[0].short)} – ${esc(pair[1].short)}, ${km(far)} km${far >= 1000 ? ' — a day of travel, and tired legs' : ''}.</div>`
       : '';
   };
 })();

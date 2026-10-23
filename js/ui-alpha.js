@@ -30,24 +30,24 @@
       ag = Co.agentInfo(p),
       open = Pe.openPromises(p.id);
     const clauses = [
-      d.status ? `📋 ${D.STATUS[d.status].label}` : '',
-      d.release ? `🔓 Release clause ${U.money(d.release)}` : '',
-      d.app ? `👟 ${U.money(d.app)} per appearance` : '',
-      d.goal ? `⚽ ${U.money(d.goal)} per goal` : '',
-      d.rise ? `📈 +${Math.round(d.rise * 100)}% a year` : '',
-      d.relegCut ? '⬇️ 25% wage cut if relegated' : '',
+      d.status ? `${D.STATUS[d.status].label}` : '',
+      d.release ? `Release clause ${U.money(d.release)}` : '',
+      d.app ? `${U.money(d.app)} per appearance` : '',
+      d.goal ? `${U.money(d.goal)} per goal` : '',
+      d.rise ? `+${Math.round(d.rise * 100)}% a year` : '',
+      d.relegCut ? '▼ 25% wage cut if relegated' : '',
     ].filter(Boolean);
     const talk = `<button class="btn sm grow pri" data-act="talk" data-id="${p.id}">Talk</button>`;
     const card = `<div class="card"><div class="row"><div class="h3 grow">Contract</div><span class="small dim">until ${p.contract}</span></div>
       <div class="row small" style="margin-top:6px"><span class="grow muted">Wage</span><b>${U.money(p.wage)}/wk</b></div>
       ${clauses.length ? `<div style="margin-top:6px">${clauses.map((x) => `<span class="trait">${esc(x)}</span>`).join('')}</div>` : '<div class="tiny dim" style="margin-top:6px">No clauses.</div>'}
       <div class="row small" style="margin-top:8px"><span class="grow muted">Agent</span><b>${ag.icon} ${esc(ag.name)}</b></div><div class="tiny dim">${esc(ag.firm)} · ${esc(ag.style)} — ${esc(ag.desc)}</div>
-      ${open.length ? `<div class="h3" style="margin-top:10px">Promises</div>${open.map((x) => `<div class="row small" style="margin-top:4px"><span>🤝</span><span class="grow">${esc(Pe.PROMISE[x.type].label)}</span><span class="dim tiny">${esc(Pe.PROMISE[x.type].desc(x))}</span>${Pe.canRenegotiate(x) ? `<button class="btn sm" data-act="renegotiate" data-id="${x.id}" aria-label="New deadline">🔁</button>` : ''}</div>`).join('')}` : ''}
+      ${open.length ? `<div class="h3" style="margin-top:10px">Promises</div>${open.map((x) => `<div class="row small" style="margin-top:4px"><span></span><span class="grow">${esc(Pe.PROMISE[x.type].label)}</span><span class="dim tiny">${esc(Pe.PROMISE[x.type].desc(x))}</span>${Pe.canRenegotiate(x) ? `<button class="btn sm" data-act="renegotiate" data-id="${x.id}" aria-label="New deadline">New deadline</button>` : ''}</div>`).join('')}` : ''}
       ${p.wantsOut ? '<div class="warnline" style="margin-top:8px">He wants to leave the club.</div>' : ''}</div>`;
     return (
       base.replace(
-        '<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap">',
-        `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap">${talk}`,
+        '<div class="row pbtns" style="gap:6px;margin-bottom:12px;flex-wrap:wrap">',
+        `<div class="row pbtns" style="gap:6px;margin-bottom:12px;flex-wrap:wrap">${talk}`,
       ) + card
     );
   };
@@ -189,7 +189,7 @@
         !renew && p.clubId && o.mode !== 'pre'
           ? `<div class="row" style="margin-top:12px"><div class="h3 grow">Transfer fee</div><span class="tiny dim">asking ~${U.money(T.userAsk(p))}</span></div>
           ${numIn('fee', o.fee, 'ngFee')}${stepBtns('fee', [-1e6, -1e5, -1e4, 1e4, 1e5, 1e6])}
-          ${clause ? `<div class="tiny" style="margin-top:6px;color:var(--acc2)">🔓 Release clause ${U.money(clause)} — pay it and ${esc(S().clubs[p.clubId].name)} can't refuse. <button class="btn sm" data-act="ngClause">Pay clause</button></div>` : ''}
+          ${clause ? `<div class="tiny" style="margin-top:6px;color:var(--acc2)">Release clause ${U.money(clause)} — pay it and ${esc(S().clubs[p.clubId].name)} can't refuse. <button class="btn sm" data-act="ngClause">Pay clause</button></div>` : ''}
           ${dealBlock(o, p)}`
           : '';
       const w = p.wage;
@@ -229,7 +229,7 @@
     }
     const rivals = !renew && o.mode !== 'loan' ? FM.Market.rivals(p) : [];
     const reg = !renew ? (FM.Reg.real() ? FM.Reg.canSign(c, p) : FM.Reg.policy(c, p)) : { ok: true };
-    const extraLines = `${rivals.length ? `<div class="warnline" style="margin-top:10px">⚔️ Also in for him: <b>${rivals.map((x) => esc(x.name)).join(', ')}</b>. Once everything is agreed he'll weigh up the league, the club, playing time, wages and home.</div>` : ''}${reg.ok ? '' : `<div class="warnline" style="margin-top:10px;color:var(--bad)">📋 ${esc(reg.why)}</div>`}`;
+    const extraLines = `${rivals.length ? `<div class="warnline" style="margin-top:10px">Also in for him: <b>${rivals.map((x) => esc(x.name)).join(', ')}</b>. Once everything is agreed he'll weigh up the league, the club, playing time, wages and home.</div>` : ''}${reg.ok ? '' : `<div class="warnline" style="margin-top:10px;color:var(--bad)">${esc(reg.why)}</div>`}`;
     const agentBtn =
       o.counterTerms && o.mode !== 'loan'
         ? `<button class="btn block" style="margin-top:10px" data-act="ngAgentTerms">Take the agent's proposal: ${U.money(o.counterTerms.wage)}/wk, rest unchanged</button>`
@@ -254,7 +254,7 @@
     const first = log[0].gap,
       last = log[log.length - 1];
     const closed = first > 0 ? Math.round((1 - last.gap / first) * 100) : 0;
-    return `<div class="warnline" style="margin-top:10px">🗒️ ${log.length} offer${log.length === 1 ? '' : 's'} so far · last time the agent wanted <b>${U.money(last.need)}/wk</b> (you offered ${U.money(last.wage)})${log.length > 1 ? ` · gap ${U.money(first)} → ${U.money(last.gap)}${closed > 0 ? ` (${closed}% closed)` : ''}` : ''}</div>`;
+    return `<div class="warnline" style="margin-top:10px">${log.length} offer${log.length === 1 ? '' : 's'} so far · last time the agent wanted <b>${U.money(last.need)}/wk</b> (you offered ${U.money(last.wage)})${log.length > 1 ? ` · gap ${U.money(first)} → ${U.money(last.gap)}${closed > 0 ? ` (${closed}% closed)` : ''}` : ''}</div>`;
   };
   // How the fee is paid (permanent transfers): instalments, an add-on, a sell-on clause for the seller
   const dealOf = (o) =>
@@ -421,7 +421,7 @@
     return S().user.reports[p.id]
       ? html.replace(
           /<\/div>$/,
-          `<button class="btn sm block" style="margin-top:8px" data-act="dismissReport" data-id="${p.id}">🗑 Dismiss report</button></div>`,
+          `<button class="btn sm block" style="margin-top:8px" data-act="dismissReport" data-id="${p.id}">Dismiss report</button></div>`,
         )
       : html;
   };
@@ -474,7 +474,7 @@
       if (line.c.champion === id || (line.c.champions || []).includes(id))
         won.unshift(tn.length ? `${line.c.name} (${tn.join(' and ')})` : line.c.name);
       if (line.c.shield === id) won.push("Supporters' Shield");
-      const move = (e.promoted || []).includes(id) ? '⬆️' : (e.relegated || []).includes(id) ? '⬇️' : '';
+      const move = (e.promoted || []).includes(id) ? '▲' : (e.relegated || []).includes(id) ? '▼' : '';
       const info = e.clubInfo && e.clubInfo[id];
       rows.push({ e, ...line, won, move, info });
     }
@@ -488,10 +488,10 @@
         `<tr><td class="l">${esc(e.label || String(e.year))}</td><td class="l"><span class="ellip" style="max-width:120px;display:inline-block">${esc(c.name)}</span></td><td>${U.ordinal(pos)}${move}</td><td style="white-space:nowrap">${r.w != null ? `${r.w}-${r.d}-${r.l}` : '—'}</td><td style="white-space:nowrap">${r.gf != null ? `${r.gf}–${r.ga}` : '—'}</td><td class="b">${r.pts}</td></tr>${
           won.length || info
             ? `<tr><td colspan="6" class="l tiny dim" style="padding:0 0 6px">${[
-                won.length ? `🏆 ${esc(won.join(', '))}` : '',
+                won.length ? `${esc(won.join(', '))}` : '',
                 info && info.m ? `Manager ${esc(info.m)}` : '',
-                info && info.t ? `⚽ ${esc(info.t[0])} ${info.t[1]}` : '',
-                info && info.a ? `👟 ${esc(info.a[0])} ${info.a[1]} apps` : '',
+                info && info.t ? `${esc(info.t[0])} ${info.t[1]}` : '',
+                info && info.a ? `${esc(info.a[0])} ${info.a[1]} apps` : '',
                 ...((info && info.c) || []).map(([n, run]) => `${esc(n)}: ${esc(run)}`),
               ]
                 .filter(Boolean)
@@ -619,7 +619,7 @@
       penalty: 'Penalties',
     };
     const mix = A.mix
-      ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Where your chances come from</div>${A.mix.map((x) => `<div class="row small" style="padding:3px 0;gap:8px"><span style="width:84px">${TYPE[x.ty] || x.ty}</span><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(x.share * 100)}%;background:${col}"></i></span><span class="dim" style="width:92px;text-align:right">${Math.round(x.share * 100)}% · ${x.n} (${x.g}⚽)</span></div>`).join('')}`
+      ? `<div class="small b dim" style="margin:14px 0 4px;text-transform:uppercase;letter-spacing:.6px">Where your chances come from</div>${A.mix.map((x) => `<div class="row small" style="padding:3px 0;gap:8px"><span style="width:84px">${TYPE[x.ty] || x.ty}</span><span class="grow" style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(x.share * 100)}%;background:${col}"></i></span><span class="dim" style="width:92px;text-align:right">${Math.round(x.share * 100)}% · ${x.n} (${x.g})</span></div>`).join('')}`
       : '';
     return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${U.plural(A.n, 'match', 'matches')} in ${esc(A.comp)}, per match, ranked among ${U.plural(A.of, 'club')}. The radar's rim is the best in the league.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${radar}<div style="margin-top:6px">${rowsHtml}</div>${trend}${forms}${mix}</div>`;
   };
@@ -669,11 +669,11 @@
     const rivalTag = !me
       ? ''
       : s.clubs[me].rival === id
-        ? '⚔️ Derby rivals'
+        ? 'Derby rivals'
         : heat >= FM.Records.RIVALRY
-          ? '⚔️ Rivals'
+          ? 'Rivals'
           : heat >= FM.Records.EMERGING
-            ? '🔥 A rivalry is emerging'
+            ? 'A rivalry is emerging'
             : '';
     const allTimeCard = at
       ? `<div class="card"><div class="row"><div class="h3 grow">All-time head-to-head</div><span class="small b">P${at.p} · ${at.w}W ${at.d}D ${at.l}L · ${at.gf}–${at.ga}</span></div>
@@ -758,7 +758,7 @@
         <div class="row small" style="margin-top:6px"><span class="grow muted">Stadium</span><b>${esc(c.stadium ? c.stadium.name : '—')}${c.stadium ? ` · ${c.stadium.cap.toLocaleString()}${c.sim === 'full' ? ` · opened ${esc(FM.Records.stadium(c).opened)}` : ''}` : ''}</b></div>
         ${UI.clubAttrRows(c)}
         ${c.policy ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Signing policy</span><b>Only ${esc(c.policy.label)} players</b></div>` : ''}
-        ${c.rival ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Rival</span><b class="tap" data-act="clubView" data-id="${c.rival}">⚔️ ${esc(s.clubs[c.rival].name)}</b></div>` : ''}
+        ${c.rival ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Rival</span><b class="tap" data-act="clubView" data-id="${c.rival}">${esc(s.clubs[c.rival].name)}</b></div>` : ''}
         ${rivalTag ? `<div class="row small" style="margin-top:6px"><span class="grow muted">With your club</span><b>${rivalTag}</b></div>` : ''}
         ${row ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Form</span>${C.form(row.form)}</div>` : ''}
         ${c.sim && c.sim !== 'full' ? `<div class="tiny dim" style="margin-top:8px">${FM.Tiers.ICON[c.sim]} ${FM.Tiers.LABEL[c.sim]}</div>` : ''}</div>
@@ -789,7 +789,7 @@
     if (ctrl)
       ctrl.insertAdjacentHTML(
         'beforeend',
-        '<button class="m-gear" data-act="mSettings" aria-label="Settings" title="Settings">⚙️</button>',
+        '<button class="m-gear" data-act="mSettings" aria-label="Settings" title="Settings"></button>',
       );
   };
   UI.acts.mSettings = () => {
@@ -830,7 +830,7 @@
           [0, 'Off'],
         ],
       )}</div></div>
-      <div class="tiny dim" style="margin:4px 2px 12px">Everything else is under the ⚙️ in the top bar after the match.</div>
+      <div class="tiny dim" style="margin:4px 2px 12px">Everything else is under the in the top bar after the match.</div>
       <button class="btn pri block" data-act="mSettingsDone">Resume</button>`;
     if (document.querySelector('.sheet-wrap .m-settings')) UI.refreshSheet(`<div class="m-settings">${html}</div>`);
     else
@@ -875,7 +875,7 @@
   });
   window.addEventListener('appinstalled', () => {
     UI._installEvt = null;
-    UI.toast('✅ Touchline installed — find it on your home screen');
+    UI.toast('✓ Touchline installed — find it on your home screen');
   });
   UI.standalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   const isIOS = () =>
@@ -884,16 +884,16 @@
   UI.installCard = function () {
     const offline = navigator.serviceWorker && navigator.serviceWorker.controller;
     let body;
-    if (UI.standalone()) body = '<div class="small muted" style="margin-top:6px">✅ Running as an installed app.</div>';
+    if (UI.standalone()) body = '<div class="small muted" style="margin-top:6px">✓ Running as an installed app.</div>';
     else if (UI._installEvt)
-      body = '<button class="btn sm pri" style="margin-top:8px" data-act="installApp">📲 Install Touchline</button>';
+      body = '<button class="btn sm pri" style="margin-top:8px" data-act="installApp">Install Touchline</button>';
     else if (isIOS())
       body =
         '<div class="small muted" style="margin-top:6px;line-height:1.5">In Safari, tap <b>Share</b> ⎋ then <b>Add to Home Screen</b>.</div>';
     else
       body =
         '<div class="small muted" style="margin-top:6px;line-height:1.5">Open the game in Chrome, Edge or Safari over https (or localhost) to install it.</div>';
-    return `<div class="card"><div class="h3">Install as an app</div>${body}<div class="tiny dim" style="margin-top:8px">${offline ? '🟢 Offline ready — the game works without internet.' : '⚪ Offline mode starts after the first load over https or localhost.'}</div></div>`;
+    return `<div class="card"><div class="h3">Install as an app</div>${body}<div class="tiny dim" style="margin-top:8px">${offline ? '● Offline ready — the game works without internet.' : '● Offline mode starts after the first load over https or localhost.'}</div></div>`;
   };
   UI.acts.installApp = async () => {
     const e = UI._installEvt;
@@ -914,7 +914,7 @@
     if (a && !UI.standalone() && (UI._installEvt || isIOS()))
       a.insertAdjacentHTML(
         'beforeend',
-        `<button class="btn block" data-act="installApp">📲 Install app${isIOS() && !UI._installEvt ? ' (Share → Add to Home Screen)' : ''}</button>`,
+        `<button class="btn block" data-act="installApp">Install app${isIOS() && !UI._installEvt ? ' (Share → Add to Home Screen)' : ''}</button>`,
       );
   };
   // Ask the browser not to evict saves under storage pressure (once per session)
@@ -957,7 +957,7 @@
     const row = S().comps[c.comp].table[c.id];
     const days = next && S().calendar ? Math.max(0, Math.floor(S().calendar.length * next.at) - S().day) : 0;
     const open = S().news.find((n) => n.type === 'desk' && n.kind === 'board' && !n.resolved);
-    return `<div class="card"><div class="row"><div class="h3 grow">🏛️ Boardroom</div><span class="tiny dim">${held.length} of ${B.MEETINGS.length} meetings held</span></div>
+    return `<div class="card"><div class="row"><div class="h3 grow">Boardroom</div><span class="tiny dim">${held.length} of ${B.MEETINGS.length} meetings held</span></div>
       <div class="row small" style="margin-top:8px"><span style="width:90px" class="dim">Confidence</span><div class="grow">${C.bar(c.boardConf, C.moodColor(c.boardConf))}</div><b style="margin-left:8px">${Math.round(c.boardConf)}%</b></div>
       ${(() => {
         const n = [
@@ -970,10 +970,10 @@
         ].filter(Boolean);
         return n.length ? `<div class="tiny dim" style="margin-top:8px">${n.map(esc).join(' ')}</div>` : '';
       })()}
-      ${ult ? `<div class="warnline" style="margin-top:10px">⚠️ Ultimatum: ${U.plural(ult.need, 'point')} from 5 league games. So far ${row.pts - ult.pts} from ${row.p - ult.from}.</div>` : ''}
-      ${b.agenda ? `<div class="warnline" style="margin-top:10px">📌 The board's demand: ${esc(b.agenda.text)}. They will check at the next meeting.</div>` : ''}
+      ${ult ? `<div class="warnline" style="margin-top:10px">Ultimatum: ${U.plural(ult.need, 'point')} from 5 league games. So far ${row.pts - ult.pts} from ${row.p - ult.from}.</div>` : ''}
+      ${b.agenda ? `<div class="warnline" style="margin-top:10px">The board's demand: ${esc(b.agenda.text)}. They will check at the next meeting.</div>` : ''}
       <div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap">${B.MEETINGS.map((m) => `<span class="pill ${held.includes(m.k) ? 'good' : next && next.k === m.k ? 'acc' : ''}" title="${esc(m.label)}">${held.includes(m.k) ? '✓ ' : ''}${esc(m.label.replace(/ board (meeting|review)/, '').replace('Pre-season', 'Pre-season'))}</span>`).join('')}</div>
-      <div class="small muted" style="margin-top:8px">${open ? '🔔 A board meeting is waiting for you in the feed.' : next ? `Next: ${esc(next.label)}${days ? `, in about ${days} day${days === 1 ? '' : 's'}` : ', today'}.` : 'No more meetings this season.'}</div>
+      <div class="small muted" style="margin-top:8px">${open ? 'A board meeting is waiting for you in the feed.' : next ? `Next: ${esc(next.label)}${days ? `, in about ${days} day${days === 1 ? '' : 's'}` : ', today'}.` : 'No more meetings this season.'}</div>
       <div class="tiny dim" style="margin-top:8px">Four meetings a season. At each the board say how they see things, may make a demand of their own, and hear one request: they answer on confidence, money, recent form, your reputation and what you have asked before.</div></div>`;
   };
 
@@ -1008,12 +1008,12 @@
       nb = Pe.nextBadge(),
       course = u.course;
     const spec = nb && D.BADGE_COURSE[nb];
-    const lic = `<div class="card"><div class="row"><span style="font-size:24px">🎓</span><div class="grow"><div class="h3">Coaching licence: ${esc(u.badges)}</div><div class="tiny dim">${D.BADGES.map((b) => (b === u.badges ? `<b>${b}</b>` : b)).join(' → ')}</div></div></div>
-      ${course ? `<div class="small" style="margin-top:8px">📚 Studying for the ${esc(course.badge)} — ${Math.max(0, course.until - s.day)} day(s) to go.</div>` : nb ? `<div class="small muted" style="margin-top:8px">Next: ${esc(nb)} — ${U.money(spec.cost)}, ${U.plural(spec.days, 'day')}, needs ${U.plural(Pe.courseReq(nb), 'game')} in charge. Higher licences unlock bigger national team jobs and speed up tactical familiarity (+12% per level).</div><button class="btn sm pri" style="margin-top:8px" data-act="course">Enrol</button>` : '<div class="small muted" style="margin-top:8px">You hold the highest licence.</div>'}</div>`;
+    const lic = `<div class="card"><div class="row"><span style="font-size:24px"></span><div class="grow"><div class="h3">Coaching licence: ${esc(u.badges)}</div><div class="tiny dim">${D.BADGES.map((b) => (b === u.badges ? `<b>${b}</b>` : b)).join(' → ')}</div></div></div>
+      ${course ? `<div class="small" style="margin-top:8px">Studying for the ${esc(course.badge)} — ${Math.max(0, course.until - s.day)} day(s) to go.</div>` : nb ? `<div class="small muted" style="margin-top:8px">Next: ${esc(nb)} — ${U.money(spec.cost)}, ${U.plural(spec.days, 'day')}, needs ${U.plural(Pe.courseReq(nb), 'game')} in charge. Higher licences unlock bigger national team jobs and speed up tactical familiarity (+12% per level).</div><button class="btn sm pri" style="margin-top:8px" data-act="course">Enrol</button>` : '<div class="small muted" style="margin-top:8px">You hold the highest licence.</div>'}</div>`;
     const t = u.nation && s.nteams[u.nation];
     const nt = t
       ? `<div class="card row tap" data-act="goNation"><span style="font-size:30px">${C.flag(t.code)}</span><div class="grow"><div class="h3">${esc(t.name)} manager</div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(t) + 1} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''} · tap to manage</div></div><span class="dim">›</span></div>`
-      : `<div class="card row tap" data-act="goNation"><span style="font-size:26px">🌍</span><div class="grow"><div class="h3">National team jobs</div><div class="tiny dim">${(s.ntJobs || []).length} vacanc${(s.ntJobs || []).length === 1 ? 'y' : 'ies'} — manage a country alongside your club</div></div><span class="dim">›</span></div>`;
+      : `<div class="card row tap" data-act="goNation"><span style="font-size:26px"></span><div class="grow"><div class="h3">National team jobs</div><div class="tiny dim">${(s.ntJobs || []).length} vacanc${(s.ntJobs || []).length === 1 ? 'y' : 'ies'} — manage a country alongside your club</div></div><span class="dim">›</span></div>`;
     return lic + nt;
   };
   UI.acts.course = () => {
@@ -1058,10 +1058,10 @@
     };
     return `<div class="card"><div class="h3">The federation</div>
       <div class="row small" style="margin-top:8px;gap:10px"><span class="dim" style="width:84px">Confidence</span><div class="grow">${C.bar(conf, C.moodColor(conf))}</div><b style="width:36px;text-align:right">${conf}%</b></div>
-      ${obj ? `<div class="small" style="margin-top:10px">🎯 ${esc(obj.text)}${pos ? ` — you are ${U.ordinal(pos)}` : ''}.</div>` : ''}
+      ${obj ? `<div class="small" style="margin-top:10px">${esc(obj.text)}${pos ? ` — you are ${U.ordinal(pos)}` : ''}.</div>` : ''}
       ${up.length ? `<div class="small b dim" style="margin-top:12px">COMING UP</div>${up.map((x) => `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:60px">in ${x.in}d</span><span class="grow ellip">${x.opp ? `${x.home ? 'v' : 'at'} ${C.flag(x.opp.code)} ${esc(x.opp.name)}` : 'Opponent drawn on the day'}</span><span class="tiny dim">${esc(x.label)}</span></div>`).join('')}` : ''}
       ${recent.length ? `<div class="small b dim" style="margin-top:12px">RECENT</div>${recent.map(res).join('')}` : ''}
-      ${elig.length ? `<button class="btn sm block" style="margin-top:12px" data-act="ntSquad" data-tab="eligible">🌍 ${elig.length} eligible player${elig.length === 1 ? '' : 's'} you could win over</button>` : ''}</div>`;
+      ${elig.length ? `<button class="btn sm block" style="margin-top:12px" data-act="ntSquad" data-tab="eligible">${elig.length} eligible player${elig.length === 1 ? '' : 's'} you could win over</button>` : ''}</div>`;
   };
   // A card that folds away behind its title (what the player chose is kept: UI._cupsOpen, as on the Cups screen)
   const nfold = (id, summary, body, open, cls = 'card') =>
@@ -1077,7 +1077,7 @@
       const next = s.calendar.slice(s.day).findIndex((d) => d.type === 'intl' || d.type === 'tourn');
       top += `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:44px">${C.flag(t.code)}</div><div class="grow"><div class="tag">Your national team</div><div class="h2" style="margin-top:4px">${esc(t.name)}</div><div class="small" style="opacity:.9">World #${rank} · Coefficient ${t.coef.toFixed(1)} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''}</div></div></div>
         <div class="small" style="margin-top:8px;opacity:.9">${next >= 0 ? `Next international match in ${next} day${next === 1 ? '' : 's'}.` : 'No more internationals this season.'} ${t.picks ? `${U.plural(t.picks.length, 'player')} hand-picked.` : 'Squad auto-picked (best available).'}</div>
-        <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="ntSquad">👕 Squad & tactics</button><button class="btn sm grow danger" data-act="ntResign">Resign</button></div></div>${ntOverview(t)}`;
+        <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="ntSquad">Squad & tactics</button><button class="btn sm grow danger" data-act="ntResign">Resign</button></div></div>${ntOverview(t)}`;
     } else {
       top += `<div class="card"><div class="row"><div class="h3 grow">National team vacancies</div><span class="tiny dim">refreshed each season</span></div>${
         (s.ntJobs || [])
@@ -1092,7 +1092,7 @@
     if (s.tourns) {
       top += s.tourns
         .map((tn) => {
-          const summary = `<div class="row"><div class="h3 grow">🏆 ${esc(tn.name)}</div>${tn.winner ? `<span class="pill acc">${C.flag(T(tn.winner).code)} ${esc(T(tn.winner).name)}</span>` : ''}</div>`;
+          const summary = `<div class="row"><div class="h3 grow">${esc(tn.name)}</div>${tn.winner ? `<span class="pill acc">${C.flag(T(tn.winner).code)} ${esc(T(tn.winner).name)}</span>` : ''}</div>`;
           const body = `${tn.groups.map((g) => `<div class="small b dim" style="margin:10px 0 2px">${tn.groups.length > 1 ? 'GROUP ' + g.name : 'GROUP'}</div>${miniTable(g.table, g.teams, 2, u.nation)}`).join('')}
         ${[...tn.ko.qf, ...tn.ko.sf, tn.ko.final]
           .filter(Boolean)
@@ -1156,7 +1156,7 @@
                   .join('')}`,
             )
             .join('');
-          const summary = `<div class="row"><div class="h3 grow">🌍 ${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${C.flag(T(c.winner).code)} ${esc(T(c.winner).name)}</span>` : ''}</div>`;
+          const summary = `<div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${C.flag(T(c.winner).code)} ${esc(T(c.winner).name)}</span>` : ''}</div>`;
           return nfold('nl_' + c.id, summary, body, c.id === mine);
         })
         .join('')}`;
@@ -1196,7 +1196,7 @@
       `<div class="row small" style="margin-top:6px;gap:8px"><span class="dim" style="width:84px">${label}</span><select data-input="ntRole" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><option value="">Automatic</option>${squad.map((p) => `<option value="${p.id}" ${cur === p.id ? 'selected' : ''}>${esc(W.short(p))} (${p.pos})</option>`).join('')}</select></div>`;
     const form = (p) => (p.form && p.form.length ? U.avg(p.form.slice(-5)).toFixed(1) : '—');
     const row = (p, click, extra = '') =>
-      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✅ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].short) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps · form ${form(p)}${!W.available(p) ? ' · 🚑 unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
+      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].short) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps · form ${form(p)}${!W.available(p) ? ' · unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
     let body;
     if (tab === 'eligible') {
       const el = I.eligibleSwitch(t.code);

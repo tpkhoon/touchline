@@ -905,28 +905,28 @@
   const KINDS = [
     {
       key: 'military',
-      icon: '🎖️',
+      icon: '',
       label: 'Military club',
       test: (c) => (c.policy && c.policy.military) || /Garrison|Army|Military|Barracks|Dukla|CSKA/i.test(c.name),
       text: 'Players serve here during national service: they are on loan from their own clubs and go back when it ends. The army pays them, so the club pays no wages and keeps no one.',
     },
     {
       key: 'police',
-      icon: '🛡️',
+      icon: '',
       label: 'Police / security club',
       test: (c) => /Dinamo|Dynamo|Police|Constabulary|Gendarm/i.test(c.name),
       text: 'Founded as the sports society of the police and security services. Its players were officers once; today it is a normal club with an institutional past, steady money and loyal, older supporters.',
     },
     {
       key: 'railway',
-      icon: '🚂',
+      icon: '',
       label: 'Railway club',
       test: (c) => /Lokomotiv|Locomotiv|Railway|Rail\b/i.test(c.name),
       text: 'Founded by railway workers, as railway towns did: a works team that became the town’s team.',
     },
     {
       key: 'works',
-      icon: '🏭',
+      icon: '',
       label: 'Works / company club',
       test: (c) =>
         /\bWorks\b|Colliery|Foundry|Ironworks|Steelworks|Mill\b|Electric|Motors|Brewery|Torpedo|Metallurg|Zenit|Chemic|Textile|Refinery|Shipyard|Mining/i.test(
@@ -936,21 +936,21 @@
     },
     {
       key: 'union',
-      icon: '🧑‍🏭',
+      icon: '',
       label: 'Trade-union society',
       test: (c) => /Spartak|Trud\b|Avanhard|Burevestnik/i.test(c.name),
       text: 'Founded as a trade-union sports society, one of the great sporting clubs of the old order, with a big, older following.',
     },
     {
       key: 'university',
-      icon: '🎓',
+      icon: '',
       label: 'University club',
       test: (c) => /Universidad|Universit|Academical|Academicals|Students|Studenten|Akadem/i.test(c.name),
       text: 'Founded by students and graduates of a university: amateur in spirit, young in squad and proud of it.',
     },
     {
       key: 'reserve',
-      icon: '🧩',
+      icon: '',
       label: 'Reserve side',
       test: (c) => !!c.parent,
       text: null,
@@ -978,25 +978,25 @@
     if (key !== 'fan' || !c) return base;
     const k = KINDS.find((x) => x.test(c));
     const alt = {
-      military: ['State-Backed', '🛡️', 'Paid for by the state: steady money, loyal older supporters and no romance.'],
+      military: ['State-Backed', '', 'Paid for by the state: steady money, loyal older supporters and no romance.'],
       police: [
         'State-Backed',
-        '🛡️',
+        '',
         'Backed by the security services: steady money, older supporters and a safe, attacking mid-table side.',
       ],
       union: [
         'Society-Owned',
-        '🧑‍🏭',
+        '',
         'Owned by a trade-union society: a big, older following that wants attacking football and a club that lives within its means.',
       ],
       railway: [
         'Company-Backed',
-        '🚂',
+        '',
         'Backed by the railway and its workers: modest money, attacking football and a club that lives within its means.',
       ],
       works: [
         'Company-Backed',
-        '🏭',
+        '',
         'Backed by the works: modest money, attacking football and a club that lives within its means.',
       ],
     }[k && k.key];

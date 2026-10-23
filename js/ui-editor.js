@@ -197,7 +197,7 @@
       });
       if (r !== 'cancelled') UI.toast(`Database ${r === 'saved' ? 'saved' : 'ready'}: ${name}`, 3500);
     } catch (e) {
-      UI.toast('⚠️ ' + (e.message || 'Export failed'), 4000);
+      UI.toast('' + (e.message || 'Export failed'), 4000);
     }
   };
   UI.acts.edReset = () => {
@@ -479,7 +479,7 @@
     const player = (p) =>
       `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edFindPlayer" data-pid="${esc(p.id)}" data-cid="${esc(p.club || FREE)}"><div class="row"><div class="grow"><div class="small b">${esc(p.fn)} ${esc(p.ln)}</div><div class="tiny dim">${esc(p.pos)} · ${esc((ED.def.clubs.find((c) => c.id === p.club) || {}).name || 'free agent')}</div></div><span class="dim">›</span></div></div>`;
     const cup = (n) =>
-      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="cups"><div class="row"><div class="grow"><div class="small b">🏆 ${esc(n)}</div><div class="tiny dim">Cup</div></div><span class="dim">›</span></div></div>`;
+      `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="cups"><div class="row"><div class="grow"><div class="small b">${esc(n)}</div><div class="tiny dim">Cup</div></div><span class="dim">›</span></div></div>`;
     if (!clubs.length && !leagues.length && !players.length && !comps.length)
       return '<div class="empty">Nothing matches.</div>';
     return `${leagues.slice(0, 8).map(lg).join('')}${comps.slice(0, 6).map(cup).join('')}${players.map(player).join('')}${clubs.slice(0, 12).map(club).join('')}${clubs.length > 12 ? `<div class="tiny dim" style="margin:4px 0">${clubs.length - 12} more: type more of the name.</div>` : ''}`;
@@ -697,7 +697,7 @@
     if (D.isRude(name)) w.push('That name is one the game will not use: it contains a rude word.');
     if (clubsOf(l.id).length < 8) w.push(`A league needs at least eight clubs; this one has ${clubsOf(l.id).length}.`);
     return w.length
-      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `${esc(x)}`).join('<br>')}</div>`
       : '';
   };
   const playerWarn = (p) => {
@@ -713,7 +713,7 @@
     const age = yearOf() - (+v('born', p.born) || p.born);
     if (age < 15 || age > 44) w.push(`An age of ${age} is outside what the game plays (15 to 44).`);
     return w.length
-      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `${esc(x)}`).join('<br>')}</div>`
       : '';
   };
   const clubWarn = (c) => {
@@ -736,7 +736,7 @@
     const [a, b] = [rgb(cols[0]), rgb(cols[1])];
     if (Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 60) w.push('The two colours are too alike to tell apart.');
     return w.length
-      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `${esc(x)}`).join('<br>')}</div>`
       : '';
   };
 
@@ -788,7 +788,7 @@
     const dm = draftMeta();
     const draft =
       dm && !ED.draftSeen
-        ? `<div class="card" style="margin:10px 0 0;padding:10px 12px"><div class="small b">📂 A draft is saved</div><div class="tiny dim" style="margin:2px 0 8px">“${esc(dm.name)}” · ${U.plural(dm.clubs, 'club')} · ${new Date(dm.at).toLocaleString()}</div><div class="row" style="gap:8px"><button class="btn sm pri" data-act="edLoadDraft">Continue the draft</button><button class="btn sm" data-act="edDeleteDraft">Discard it</button></div></div>`
+        ? `<div class="card" style="margin:10px 0 0;padding:10px 12px"><div class="small b">A draft is saved</div><div class="tiny dim" style="margin:2px 0 8px">“${esc(dm.name)}” · ${U.plural(dm.clubs, 'club')} · ${new Date(dm.at).toLocaleString()}</div><div class="row" style="gap:8px"><button class="btn sm pri" data-act="edLoadDraft">Continue the draft</button><button class="btn sm" data-act="edDeleteDraft">Discard it</button></div></div>`
         : '';
     return `<div class="h1" style="margin-top:3vh">World editor</div><div class="tag">Change the clubs and leagues your world starts from. Nothing changes in the game until you use the world.</div>${draft}
       <div class="seg ed-tabs" style="margin:10px 0 0">${TABS.map(([k, t]) => `<button class="${ED.tab === k ? 'on' : ''}" data-act="edTab" data-v="${k}">${t}</button>`).join('')}</div>
@@ -798,7 +798,7 @@
       <div class="ng-label">Description</div><input type="text" id="ed-wdesc" maxlength="120" value="${esc(m.description || '')}">
       <div class="ng-names"><div style="flex:1"><div class="ng-label">Version</div><input type="text" id="ed-wver" maxlength="12" placeholder="1.0" value="${esc(m.version || '')}"></div><div style="flex:2"><div class="ng-label">Licence</div><input type="text" id="ed-wlic" maxlength="60" placeholder="e.g. CC BY-SA 4.0" value="${esc(m.license || '')}"></div></div>
       <div class="ng-label">Credits and sources <span class="tiny dim">· who made it, where real data came from; who is responsible for what it says</span></div><input type="text" id="ed-wcred" maxlength="200" value="${esc(m.credits || '')}">
-      <div class="small" style="margin-top:14px;color:${bad ? '#f87171' : '#c8ff3d'}">${bad ? `⚠️ ${bad} problem${bad > 1 ? 's' : ''} to fix` : '✅ Ready to use'} <span style="color:#9fb0c5">· ${s.changed} club${s.changed === 1 ? '' : 's'} changed${s.added ? `, ${s.added} added` : ''}${s.leaguesAdded ? ` · ${s.leaguesAdded} league${s.leaguesAdded === 1 ? '' : 's'} added` : ''}${s.leaguesChanged ? ` · ${s.leaguesChanged} league${s.leaguesChanged === 1 ? '' : 's'} changed` : ''}${(ED.def.removeClubs || []).length ? ` · ${ED.def.removeClubs.length} taken out` : ''}</span></div>
+      <div class="small" style="margin-top:14px;color:${bad ? '#f87171' : '#c8ff3d'}">${bad ? `${bad} problem${bad > 1 ? 's' : ''} to fix` : '✓ Ready to use'} <span style="color:#9fb0c5">· ${s.changed} club${s.changed === 1 ? '' : 's'} changed${s.added ? `, ${s.added} added` : ''}${s.leaguesAdded ? ` · ${s.leaguesAdded} league${s.leaguesAdded === 1 ? '' : 's'} added` : ''}${s.leaguesChanged ? ` · ${s.leaguesChanged} league${s.leaguesChanged === 1 ? '' : 's'} changed` : ''}${(ED.def.removeClubs || []).length ? ` · ${ED.def.removeClubs.length} taken out` : ''}</span></div>
       ${
         bad
           ? `<div class="tiny" style="color:#9fb0c5;margin-top:6px;line-height:1.5">${s.chk.errors
@@ -875,24 +875,24 @@
       ])}
       </div>
       ${[
-        ['cups', '🏆 Cups', `${(ED.def.competitions || []).length} changed · names, formats and rules`],
-        ['calendar', '📅 Season calendar', calendarSummary()],
-        ['library', '📚 Library, files and packs', 'worlds kept on this device, files, and club data packs'],
+        ['cups', 'Cups', `${(ED.def.competitions || []).length} changed · names, formats and rules`],
+        ['calendar', 'Season calendar', calendarSummary()],
+        ['library', 'Library, files and packs', 'worlds kept on this device, files, and club data packs'],
         [
           'staffhub',
-          '🧑‍🏫 Staff, managers and agents',
+          'Staff, managers and agents',
           `${(ED.def.staff || []).length} coaches and scouts · ${U.plural((ED.def.managers || []).length, 'manager')}`,
         ],
-        ['intl', '🌍 International football', `tournaments, national teams and their history`],
+        ['intl', 'International football', `tournaments, national teams and their history`],
         [
           'history',
-          '📜 History',
+          'History',
           `${ED.def.history.seasons.length} past season${ED.def.history.seasons.length === 1 ? '' : 's'}`,
         ],
-        ['failure', '💸 When clubs fail', failureSummary()],
-        ['csv', '📄 CSV files', 'download, edit in a spreadsheet, upload'],
-        ['balance', '⚖️ Balance check', `${U.plural(balanceIssues().length, 'thing')} to look at`],
-        ['changes', '📝 Changes made', changeSummary()],
+        ['failure', 'When clubs fail', failureSummary()],
+        ['csv', 'CSV files', 'download, edit in a spreadsheet, upload'],
+        ['balance', 'Balance check', `${U.plural(balanceIssues().length, 'thing')} to look at`],
+        ['changes', 'Changes made', changeSummary()],
       ]
         .map(
           ([v, t, s]) =>
@@ -912,8 +912,8 @@
         .join('')}</div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">${(ED.def.players || []).length} player${(ED.def.players || []).length === 1 ? '' : 's'} made so far. Open a club, then Players.</div>
       ${squadsCard()}
-      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">⬇️ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
-      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">🆓 Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">▼ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
+      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
       </div>
       <div style="${hide('clubs')}">
       <div class="ng-label">Find</div><div class="ng-find"><input type="search" id="ed-hq" placeholder="Find a club, league or nation" value="${esc(ED.hq || '')}" autocomplete="off"></div>
@@ -933,7 +933,7 @@
         .join('')}
       <div class="actions" style="margin-top:16px"><button class="btn sm" data-act="edNewLeague">＋ Add a league</button><button class="btn sm" data-act="edReset">Start again from the built-in world</button></div>
       </div>
-      <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edSaveDraft" aria-label="Save a draft">💾 Draft</button><button class="btn sm" data-act="edExport">⬆️ File</button><button class="btn sm pri grow" data-act="edUse">Use this world</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edSaveDraft" aria-label="Save a draft">Draft</button><button class="btn sm" data-act="edExport">▲ File</button><button class="btn sm pri grow" data-act="edUse">Use this world</button></div>`;
   };
 
   // ---------- League rules and new leagues ----------
@@ -1223,7 +1223,7 @@
         <div class="tiny dim" style="margin-top:6px;line-height:1.5">Each club that takes part picks in turn, the best player it can take (keeping a balanced squad), until it has that many; a club that loses a player signs a younger one. What the new club's own squad had is replaced, and players you made for it stay.</div>`
           : `<div class="tiny dim" style="margin-top:6px;line-height:1.5">A club you add to the league can start with players taken from the clubs already in it, as expansion teams do.</div>`
       }
-      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edView" data-v="pins" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">📌 Fixed fixtures</div><div class="tiny dim">${(r.pins || []).length ? `${r.pins.length} match${r.pins.length === 1 ? '' : 'es'} put on a matchday` : 'Put a derby or the opening day where you want it'}</div></div><span class="dim">›</span></div></div>`;
+      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edView" data-v="pins" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">Fixed fixtures</div><div class="tiny dim">${(r.pins || []).length ? `${r.pins.length} match${r.pins.length === 1 ? '' : 'es'} put on a matchday` : 'Put a derby or the opening day where you want it'}</div></div><span class="dim">›</span></div></div>`;
   };
   // Two zones (Argentina's format: the clubs split into two zones by reputation, two tournaments a year, a play-off of the top
   // eight of each zone) or two conferences (the American league's: a table of its own for each, cross-conference matches, seven
@@ -1794,8 +1794,8 @@
   const squadsCard = () => {
     const fixed = ED.def.meta.players === 'replace' && (ED.def.players || []).length > 2000;
     return fixed
-      ? `<div class="card" style="margin:12px 0 0;padding:10px 12px"><div class="small b">🧬 The squads are in this world</div><div class="tiny dim" style="line-height:1.5">${(ED.def.players || []).length.toLocaleString('en')} players: open a club, then Players, to change any of them. The world gives the same players every time.</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edClearSquads">Go back to squads made fresh each time</button></div></div>`
-      : `<div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edBuildSquads"><div class="row"><div class="grow"><div class="small b">🧬 Build the squads to edit them</div><div class="tiny dim">Makes every club's squad now (about half a minute), so each player can be changed and the world keeps them</div></div><span class="dim">›</span></div></div>`;
+      ? `<div class="card" style="margin:12px 0 0;padding:10px 12px"><div class="small b">The squads are in this world</div><div class="tiny dim" style="line-height:1.5">${(ED.def.players || []).length.toLocaleString('en')} players: open a club, then Players, to change any of them. The world gives the same players every time.</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edClearSquads">Go back to squads made fresh each time</button></div></div>`
+      : `<div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edBuildSquads"><div class="row"><div class="grow"><div class="small b">Build the squads to edit them</div><div class="tiny dim">Makes every club's squad now (about half a minute), so each player can be changed and the world keeps them</div></div><span class="dim">›</span></div></div>`;
   };
   UI.acts.edBuildSquads = () => {
     UI.toast('Building the world… this takes a little while', 60000);
@@ -2194,7 +2194,7 @@
       });
       if (r !== 'cancelled') UI.toast(`${r === 'saved' ? 'Saved' : 'Ready'}: ${name}`, 3500);
     } catch (e) {
-      UI.toast('⚠️ ' + (e.message || 'Could not save the file'), 4000);
+      UI.toast('' + (e.message || 'Could not save the file'), 4000);
     }
   };
   UI.acts.edLibrary = async () => {
@@ -2299,7 +2299,7 @@
   const PACK_INDEXES = ['data/packs/index.json'];
   const packsList = () => {
     if (!ED.packs)
-      return `<div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPacksLook">🔎 Look for packs</button></div>`;
+      return `<div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPacksLook">Look for packs</button></div>`;
     if (ED.packs.error) return `<div class="tiny" style="color:#f87171;line-height:1.5">${esc(ED.packs.error)}</div>`;
     return (
       ED.packs.list
@@ -2366,7 +2366,7 @@
       }
       <div class="actions" style="margin-top:8px"><button class="btn sm pri" data-act="edLibSave">Keep this world here</button></div>
       <div class="ng-label">Files</div>
-      <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edOpenFile">📂 Open a world from a file…</button><button class="btn sm" data-act="edExport">⬆️ Save this world as a file</button></div>
+      <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edOpenFile">Open a world from a file…</button><button class="btn sm" data-act="edExport">▲ Save this world as a file</button></div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">A world file holds everything you made. Send it to a friend, who opens it here or on the new-career screen.</div>
       <div class="ng-label">Packs to download <span class="tiny dim">· worlds other people made, listed in the game's packs folder</span></div>
       ${packsList()}
@@ -2784,7 +2784,7 @@
       w.push(`Another cup is already "${short}".`);
     if (D.isRude(name) || D.isRude(short)) w.push('That name is one the game will not use: it contains a rude word.');
     return w.length
-      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `⚠️ ${esc(x)}`).join('<br>')}</div>`
+      ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `${esc(x)}`).join('<br>')}</div>`
       : '';
   };
   const saveCupNames = () => {
@@ -3407,7 +3407,7 @@
     const free = ED.sclub === FREE,
       c = free ? null : ED.def.clubs.find((x) => x.id === ED.sclub),
       list = staffHere();
-    return `<div class="h1" style="margin-top:2vh">${free ? '🧑‍🏫 Coaches and scouts for hire' : `${crestDot(c)} ${esc(c.name)}: staff`}</div><div class="tag">${free ? 'People who are on offer in the staff market from the first day.' : 'These come with the job when you take charge of this club: an assistant, a coach, an analyst, a physio, a director and up to five scouts. They replace the ones a new manager is given.'}</div>
+    return `<div class="h1" style="margin-top:2vh">${free ? 'Coaches and scouts for hire' : `${crestDot(c)} ${esc(c.name)}: staff`}</div><div class="tag">${free ? 'People who are on offer in the staff market from the first day.' : 'These come with the job when you take charge of this club: an assistant, a coach, an analyst, a physio, a director and up to five scouts. They replace the ones a new manager is given.'}</div>
       ${errBox()}
       ${
         list
@@ -3713,7 +3713,7 @@
     const r = ED.csv || null;
     return `<div class="h1" style="margin-top:2vh">CSV files</div><div class="tag">Take the world out as spreadsheets, change it there, and put it back. Three files: leagues.csv, clubs.csv and players.csv. A club is matched by its id or its name; a new name makes a new club, a column left empty changes nothing, and a club with remove set to yes is taken out.</div>
       ${errBox()}
-      <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:8px"><button class="btn sm" data-act="edCsvDown" data-k="world">⬇️ This world as CSV</button><button class="btn sm" data-act="edCsvDown" data-k="template">⬇️ Templates to fill in</button><button class="btn sm pri" data-act="edCsvUp">⬆️ Upload CSV files</button></div>
+      <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:8px"><button class="btn sm" data-act="edCsvDown" data-k="world">▼ This world as CSV</button><button class="btn sm" data-act="edCsvDown" data-k="template">▼ Templates to fill in</button><button class="btn sm pri" data-act="edCsvUp">▲ Upload CSV files</button></div>
       ${
         r
           ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${r.errors.length ? U.plural(r.errors.length, 'problem') : 'No problems'}${r.notes.length ? ` · ${esc(r.notes.join(' · '))}` : ''}</div>${
@@ -3745,7 +3745,7 @@
         });
       UI.toast('leagues.csv, clubs.csv and players.csv ready', 3000);
     } catch (e) {
-      UI.toast('⚠️ ' + (e.message || 'Download failed'), 4000);
+      UI.toast('' + (e.message || 'Download failed'), 4000);
     }
   };
   UI.acts.edCsvUp = async () => {
@@ -4181,7 +4181,7 @@
         madeFor(ED.code)
           .map(
             (p) =>
-              `<div class="row" style="gap:10px;margin:4px 0;align-items:center"><button class="btn sm" data-act="edToggleCall" data-pid="${esc(p.id)}" aria-label="Call up">${p.callup ? '🌐' : '＋'}</button><div class="grow small"><b>${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</b> <span class="tiny dim">${esc(D.POS_NAME[p.pos] || p.pos)} · ability ${abilityOf(p.attrs, p.pos)}${p.callup ? ' · called up' : ''}</span></div></div>`,
+              `<div class="row" style="gap:10px;margin:4px 0;align-items:center"><button class="btn sm" data-act="edToggleCall" data-pid="${esc(p.id)}" aria-label="Call up">${p.callup ? '' : '＋'}</button><div class="grow small"><b>${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</b> <span class="tiny dim">${esc(D.POS_NAME[p.pos] || p.pos)} · ability ${abilityOf(p.attrs, p.pos)}${p.callup ? ' · called up' : ''}</span></div></div>`,
           )
           .join('') ||
         '<div class="tiny dim" style="line-height:1.5">None yet. The squad is the nation\'s best twenty-three players. Players you make for this country (on a club\'s Players screen) can be called up here: they are picked ahead of better players for three years.</div>'
@@ -4327,23 +4327,23 @@
             .filter((l) => l.nat === nat)
             .map((l) => {
               const e = s.comps[l.id];
-              return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonLeague" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.champion))} · ${esc(nameOf(e.runnerUp))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
+              return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonLeague" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">${e ? `${esc(nameOf(e.champion))} · ${esc(nameOf(e.runnerUp))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
             })
             .join('')}${domCups()
             .filter((k) => k.nat === nat && !k.removed)
             .map((k) => {
               const e = (s.cups || {})[k.id];
-              return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonCup" data-cup="${k.id}"><div class="row"><div class="grow"><div class="small b">${esc((compOf(k.id) || k).name)}</div><div class="tiny dim">${e ? `🏆 ${esc(nameOf(e.winner))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
+              return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonCup" data-cup="${k.id}"><div class="row"><div class="grow"><div class="small b">${esc((compOf(k.id) || k).name)}</div><div class="tiny dim">${e ? `${esc(nameOf(e.winner))}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
             })
             .join('')}`;
         })
         .join('')}
-      <div class="card tap" style="margin:12px 0 4px;padding:10px 12px" data-act="edSeasonTransfers"><div class="row"><div class="grow"><div class="small b">💰 Big transfers</div><div class="tiny dim">${(s.transfers || []).length ? `${s.transfers.length} entered` : 'None entered'}</div></div><span class="dim">›</span></div></div>
-      <div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">🌍 International</div>
+      <div class="card tap" style="margin:12px 0 4px;padding:10px 12px" data-act="edSeasonTransfers"><div class="row"><div class="grow"><div class="small b">Big transfers</div><div class="tiny dim">${(s.transfers || []).length ? `${s.transfers.length} entered` : 'None entered'}</div></div><span class="dim">›</span></div></div>
+      <div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">International</div>
       ${tourns
         .map((id) => {
           const e = (s.intl || {})[id];
-          return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonIntl" data-tid="${id}"><div class="row"><div class="grow"><div class="small b">${esc(tName(id))}</div><div class="tiny dim">${e ? `🏆 ${(D.NATIONS[e.winner] || {}).flag || ''} ${esc((ntOf(e.winner) || D.NATIONS[e.winner] || { name: e.winner }).name)}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
+          return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edSeasonIntl" data-tid="${id}"><div class="row"><div class="grow"><div class="small b">${esc(tName(id))}</div><div class="tiny dim">${e ? `${(D.NATIONS[e.winner] || {}).flag || ''} ${esc((ntOf(e.winner) || D.NATIONS[e.winner] || { name: e.winner }).name)}` : 'Not filled in'}</div></div><span class="dim">›</span></div></div>`;
         })
         .join('')}
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelSeason">Delete this season</button></div>
@@ -4494,17 +4494,17 @@
       list = playersOf(ED.cid).sort((a, b) => abilityOf(b.attrs, b.pos) - abilityOf(a.attrs, a.pos)),
       year = yearOf(),
       replace = ED.def.meta.players === 'replace';
-    return `<div class="h1" style="margin-top:2vh">${free ? '🆓 Free agents' : `${crestDot(c)} ${esc(c.name)}: players`}</div><div class="tag">${free ? 'Players with no club. Every club can sign them, and they wait in the free agent list from the first day.' : `The players you make for this club. ${replace ? 'A club with 11 or more of them gets exactly this squad (any gaps are made up).' : 'Each one takes the place of the weakest player in his position once the squad is full.'}`}</div>
+    return `<div class="h1" style="margin-top:2vh">${free ? 'Free agents' : `${crestDot(c)} ${esc(c.name)}: players`}</div><div class="tag">${free ? 'Players with no club. Every club can sign them, and they wait in the free agent list from the first day.' : `The players you make for this club. ${replace ? 'A club with 11 or more of them gets exactly this squad (any gaps are made up).' : 'Each one takes the place of the weakest player in his position once the squad is full.'}`}</div>
       ${errBox()}
       ${
         list
           .map((p) => {
             const ca = abilityOf(p.attrs, p.pos);
-            return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edPlayer" data-pid="${esc(p.id)}"><div class="row"><div class="grow"><div class="small b">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</div><div class="tiny dim">${p.callup ? '🌐 ' : ''}${esc(D.POS_NAME[p.pos] || p.pos)} · ${year - p.born} · ability ${ca} · potential ${p.pa ?? ca}</div></div><span class="dim">›</span></div></div>`;
+            return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edPlayer" data-pid="${esc(p.id)}"><div class="row"><div class="grow"><div class="small b">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</div><div class="tiny dim">${p.callup ? '' : ''}${esc(D.POS_NAME[p.pos] || p.pos)} · ${year - p.born} · ability ${ca} · potential ${p.pa ?? ca}</div></div><span class="dim">›</span></div></div>`;
           })
           .join('') || `<div class="empty">No players made ${free ? 'as free agents' : 'for this club'} yet.</div>`
       }
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm" data-act="edImportPlayers">⬇️ Import</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm" data-act="edImportPlayers">▼ Import</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
   };
 
   const playerView = () => {
@@ -4576,7 +4576,7 @@
     const body = (views[ED.view] || homeView)();
     // (every screen but the home one has the draft button at the top: the home one has it in its footer)
     const bar = views[ED.view]
-      ? '<div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm" data-act="edSaveDraft">💾 Save draft</button></div>'
+      ? '<div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm" data-act="edSaveDraft">Save draft</button></div>'
       : '';
     app.innerHTML = `<div class="title ed-wide">${bar}${body}</div>`;
     draftSoon();

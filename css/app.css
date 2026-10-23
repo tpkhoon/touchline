@@ -2613,7 +2613,7 @@ details.cupfold:not([open]) > summary > .row::after {
 }
 
 /* the profile's everyday buttons stay on one line, all the same height */
-.row > .btn.sm.grow {
+.pbtns > .btn.sm {
   white-space: nowrap;
 }
 .kpi .l {

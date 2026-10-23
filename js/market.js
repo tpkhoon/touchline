@@ -114,7 +114,7 @@
     const c = W.userClub();
     FM.News.add({
       type: 'club',
-      title: '⏰ Deadline day',
+      title: 'Deadline day',
       body: 'The window shuts at 23:00. Follow it hour by hour from the Home screen: late bids, panic buys, deals collapsing at the last minute. Anything you want done has to be done today.',
       clubId: c.id,
     });
@@ -826,7 +826,7 @@
     s.news
       .filter((n) => n.type === 'bid' && n.data.status === 'open')
       .slice(0, s.news.filter((n) => n.type === 'bid').length - bids0)
-      .forEach((n) => lines.push({ h: hour, t: `📨 ${n.title}`, k: 'bid', nid: n.id }));
+      .forEach((n) => lines.push({ h: hour, t: `${n.title}`, k: 'bid', nid: n.id }));
     // a move that falls through at the last minute (a failed medical, a late hitch over personal terms)
     if (Math.random() < 0.18) {
       const cands = Object.values(s.players).filter((p) => p.clubId && !p.loan && p.ca >= 68 && !T().isSettled(p));
@@ -842,11 +842,11 @@
         lines.push({
           h: hour,
           pid: p.id,
-          t: `❌ ${W.name(p)}'s move to ${c.name} collapses ${U.pick(['over his medical', 'over personal terms', 'after a late counter-bid', 'as the paperwork misses the deadline'])}`,
+          t: `✕ ${W.name(p)}'s move to ${c.name} collapses ${U.pick(['over his medical', 'over personal terms', 'after a late counter-bid', 'as the paperwork misses the deadline'])}`,
           k: 'world',
         });
     }
-    if (hour === 23) lines.push({ h: hour, t: '🔒 The window is shut.', k: 'mine' });
+    if (hour === 23) lines.push({ h: hour, t: 'The window is shut.', k: 'mine' });
     d.log = lines.concat(d.log).slice(0, 80);
     return lines;
   };
@@ -920,7 +920,7 @@
       clubId: club.id,
       big: true,
     });
-    return { ok: true, msg: `✅ ${W.name(p)} will join you on a free when his contract ends this summer.` };
+    return { ok: true, msg: `✓ ${W.name(p)} will join you on a free when his contract ends this summer.` };
   };
   // Season end: the pre-contract comes good (returns true if he moved)
   M.completePre = function (p) {
@@ -1189,17 +1189,14 @@
       const star = p.ca >= xiAvg + 4 || fee >= 2.5e7;
       if (star) {
         mood += 4;
-        posts.push(
-          `What a signing. ${W.short(p)} is exactly what we needed 🔥`,
-          `${uc.name} mean business this season.`,
-        );
+        posts.push(`What a signing. ${W.short(p)} is exactly what we needed`, `${uc.name} mean business this season.`);
       } else if (p.ca < xiAvg - 8 && fee > 0) {
         mood -= 2;
         posts.push(`${U.money(fee)} for ${W.short(p)}? Who's watched him play?`, 'Not convinced by this one.');
       } else posts.push(`Welcome ${W.short(p)}! Solid addition.`, `Squad needed depth, this does the job.`);
       if (from && from.id === uc.rival) {
         mood += 3;
-        posts.push(`Taking ${W.short(p)} from ${from.short}. Love it 😂`);
+        posts.push(`Taking ${W.short(p)} from ${from.short}. Love it`);
       }
       // the board: fee against the budget, wages, age
       if (fee > 0 && a >= 30 && fee >= 5e6) {
@@ -1227,7 +1224,7 @@
         mood -= 6;
         posts.push(
           `Selling a ${a}-year-old with that talent for ${U.money(fee)}? Madness.`,
-          `${W.short(p)} could have been ours for a decade. Robbed. 😡`,
+          `${W.short(p)} could have been ours for a decade. Robbed.`,
         );
       } else if (key || fav) {
         mood -= 5;

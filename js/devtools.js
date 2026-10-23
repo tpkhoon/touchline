@@ -258,7 +258,7 @@
     rows
       .map(
         ([k, ok]) =>
-          `<div class="row small" style="padding:4px 0;border-top:1px solid var(--line)"><span>${ok ? '✅' : '❌'}</span><span class="grow" style="margin-left:8px">${esc(k)}</span></div>`,
+          `<div class="row small" style="padding:4px 0;border-top:1px solid var(--line)"><span>${ok ? '✓' : '✕'}</span><span class="grow" style="margin-left:8px">${esc(k)}</span></div>`,
       )
       .join('');
   const show = (title, html) => {
@@ -269,14 +269,14 @@
     UI.sheet(
       `<div class="small dim" style="line-height:1.5">Developer tools. Runs on a copy of your save; the real one is put back. This panel isn't in public builds.</div>
       <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn sm" data-act="devCheck">✅ World check</button>
-        <button class="btn sm" data-act="devMarket">💱 Market so far</button>
-        <button class="btn sm" data-act="devKids">🌱 Wonderkids</button>
-        <button class="btn sm" data-act="devSpeed">⏱ Speed (5 days)</button>
-        <button class="btn sm" data-act="devSeason">🏁 Play a season</button>
-        <button class="btn sm" data-act="devSmoke">🔎 UI smoke test</button>
+        <button class="btn sm" data-act="devCheck">✓ World check</button>
+        <button class="btn sm" data-act="devMarket">Market so far</button>
+        <button class="btn sm" data-act="devKids">Wonderkids</button>
+        <button class="btn sm" data-act="devSpeed">Speed (5 days)</button>
+        <button class="btn sm" data-act="devSeason">Play a season</button>
+        <button class="btn sm" data-act="devSmoke">UI smoke test</button>
       </div><div id="dev-out"></div>`,
-      { title: '🛠 Developer tools', full: true },
+      { title: 'Developer tools', full: true },
     );
   UI.acts.devCheck = () => {
     const r = Dev.invariants();

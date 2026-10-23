@@ -371,7 +371,7 @@
     const af = Co.applyTerms(p, club, t, 'transfer', fee);
     return {
       ok: true,
-      msg: `✅ ${W.name(p)} signs for ${club.name}${triggered ? ' — release clause paid' : ''}!${ch.beat ? ` He turned down ${ch.beat.join(' and ')} to join you.` : ''} ${t.bonus ? `Signing-on fee ${U.money(t.bonus)}. ` : ''}Agent fee ${U.money(af)}.`,
+      msg: `✓ ${W.name(p)} signs for ${club.name}${triggered ? ' — release clause paid' : ''}!${ch.beat ? ` He turned down ${ch.beat.join(' and ')} to join you.` : ''} ${t.bonus ? `Signing-on fee ${U.money(t.bonus)}. ` : ''}Agent fee ${U.money(af)}.`,
     };
   };
 
@@ -421,7 +421,7 @@
     FM.People.onRenewed(p);
     return {
       ok: true,
-      msg: `✍️ ${W.short(p)} signs until ${p.contract} on ${U.money(p.wage)}/wk. Agent fee ${U.money(af)}.`,
+      msg: `${W.short(p)} signs until ${p.contract} on ${U.money(p.wage)}/wk. Agent fee ${U.money(af)}.`,
     };
   };
 

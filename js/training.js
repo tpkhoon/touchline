@@ -11,35 +11,35 @@
   // attrs: weight multipliers on growth. dev, inj, rec, fam, sp: development rate, training-injury risk, recovery
   // per day (fitness points), familiarity growth, set-piece quality.
   Tr.FOCUS = {
-    balanced: { label: 'Balanced', icon: '⚖️', desc: 'A bit of everything. No strengths, no gaps.' },
+    balanced: { label: 'Balanced', icon: '', desc: 'A bit of everything. No strengths, no gaps.' },
     fitness: {
       label: 'Fitness',
-      icon: '🏃',
+      icon: '',
       desc: 'Pace, stamina and strength grow faster. Players recover a little quicker.',
       attrs: { pace: 1.7, stamina: 1.8, strength: 1.6, workRate: 1.3 },
       rec: 2,
     },
     attacking: {
       label: 'Attacking',
-      icon: '🎯',
+      icon: '',
       desc: 'Finishing, dribbling and composure in front of goal.',
       attrs: { finishing: 1.8, dribbling: 1.5, composure: 1.4, technique: 1.2 },
     },
     defending: {
       label: 'Defending',
-      icon: '🛡️',
+      icon: '',
       desc: 'Tackling, positioning and strength. Shape without the ball.',
       attrs: { tackling: 1.8, positioning: 1.7, strength: 1.3, workRate: 1.2 },
     },
     technical: {
       label: 'Technical',
-      icon: '🎩',
+      icon: '',
       desc: 'Passing, technique and vision: keeping the ball.',
       attrs: { passing: 1.7, technique: 1.7, vision: 1.5, composure: 1.2 },
     },
     setpieces: {
       label: 'Set pieces',
-      icon: '🚩',
+      icon: '',
       desc: 'Rehearsed corners and free kicks: better chances from dead balls.',
       attrs: { technique: 1.2, passing: 1.1 },
       sp: 1.1,
@@ -47,7 +47,7 @@
     },
     tactics: {
       label: 'Tactics',
-      icon: '🧠',
+      icon: '',
       desc: 'Drills your system: familiarity grows half as fast again.',
       attrs: { positioning: 1.3, vision: 1.3 },
       fam: 1.5,
@@ -55,7 +55,7 @@
     },
     recovery: {
       label: 'Recovery',
-      icon: '🛁',
+      icon: '',
       desc: 'Light sessions and treatment. Fresher legs and fewer knocks, slower development.',
       rec: 6,
       inj: 0.6,
@@ -73,7 +73,7 @@
     defending: Tr.FOCUS.defending,
     technical: Tr.FOCUS.technical,
     fitness: Tr.FOCUS.fitness,
-    keeping: { label: 'Goalkeeping', icon: '🧤', attrs: { reflexes: 1.8, handling: 1.8, positioning: 1.3 } },
+    keeping: { label: 'Goalkeeping', icon: '', attrs: { reflexes: 1.8, handling: 1.8, positioning: 1.3 } },
   };
   Tr.LEARN_STEP = 0.006; // a position learned in training each league day (about half a game's worth)
 

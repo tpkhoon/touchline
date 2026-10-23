@@ -57,24 +57,8 @@
     '→': 'Next',
     '‹': 'Back',
     '›': 'Open',
-    '⚙️': 'Settings',
-    '🔍': 'Search',
-    '🏠': 'Home',
-    '👕': 'Squad',
-    '🔭': 'Scouting',
-    '🏆': 'League',
-    '🌍': 'Nations',
-    '🏟️': 'Club',
-    '⭐': 'Favourite',
     '☆': 'Favourite',
     '▶': 'Play',
-    '⏸': 'Pause',
-    '⏩': 'Faster',
-    '🔔': 'Notifications',
-    '📤': 'Share',
-    '⬆️': 'Export',
-    '⬇️': 'Import',
-    '🗑': 'Delete',
     '＋': 'Add',
     '+': 'Add',
     '−': 'Remove',
@@ -148,27 +132,27 @@
   // ---------------- First-time tutorial ----------------
   const TUT = [
     [
-      '👋 Welcome, manager',
+      'Welcome, manager',
       'You run the football side of your club. The <b>Home</b> tab shows what needs you now: replies, decisions and the next fixture. <b>Next match</b> plays the days forward and stops when something needs an answer, so nothing slips past.',
     ],
     [
-      '👕 Squad and tactics',
+      'Squad and tactics',
       "The <b>Squad</b> tab holds your players, their stars (measured against your league), fitness and mood. <b>Tactics</b> sets the formation, each player's role and a Plan B you can switch to during a match. Pick a captain and give a team talk before kick-off.",
     ],
     [
-      '⚽ Matchdays',
+      'Matchdays',
       'Watch the match on the pitch or as text only (Club → Settings), change speed, and answer the prompts that come up: substitutions, shouts, set pieces. You can also take an instant result when you would rather not watch.',
     ],
     [
-      '💸 Transfers and scouting',
+      'Transfers and scouting',
       "Use <b>Scouting</b> to assign scouts and filter players. Transfers and loans happen in the windows; free agents can be signed any time. Make offers, haggle, and watch the deadline: every deal needs a registration place under your league's rules.",
     ],
     [
-      '📰 The feed',
+      'The feed',
       "Board meetings, press questions, injuries, contract talks and offers arrive in the Home feed. Some need a choice; the rest are the story of your season. Tap any player's name to see his profile.",
     ],
     [
-      '🏟️ Your club and your saves',
+      'Your club and your saves',
       'The <b>Club</b> tab has finances, training, the youth teams and the board. The game saves itself after every matchday and when you leave the app. Under Settings you can export a backup, switch save slots, and replay this tutorial.',
     ],
   ];

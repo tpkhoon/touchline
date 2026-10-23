@@ -19,7 +19,7 @@
     `<span class="grade g${g === '?' ? 'X' : g}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * 0.55)}px">${g}</span>`;
   const recPill = (r) =>
     r
-      ? `<span class="pill ${r === 'Sign' ? 'good' : r === 'Loan' ? 'acc' : r === 'Avoid' ? 'bad' : ''}">${r === 'Sign' ? '✍️ Sign' : r === 'Loan' ? '🔁 Loan' : r === 'Avoid' ? '✋ Avoid' : r === 'Scout' ? '🔭 Scout more' : '👀 Monitor'}</span>`
+      ? `<span class="pill ${r === 'Sign' ? 'good' : r === 'Loan' ? 'acc' : r === 'Avoid' ? 'bad' : ''}">${r === 'Sign' ? 'Sign' : r === 'Loan' ? 'Loan' : r === 'Avoid' ? 'Avoid' : r === 'Scout' ? 'Scout more' : 'Monitor'}</span>`
       : '';
   const knowBar = (k) =>
     `<div class="bar" style="height:4px;width:54px"><i style="width:${k}%;background:${k >= 70 ? 'var(--good)' : k >= 35 ? 'var(--warn)' : 'var(--bad)'}"></i></div>`;
@@ -41,7 +41,7 @@
     const one = (o) =>
       `<div class="q" style="margin:8px 0;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13.5px;border-left:3px solid var(--acc2)"><div class="row" style="gap:8px;align-items:center">${gradeBadge(o.grade, 26)}<div class="grow"><div class="small b">${o.scout ? esc(o.scout.fn + ' ' + o.scout.ln) : 'The assistant'}</div><div class="tiny dim">${o.scout ? lean[o.lean] : 'a quick look'}</div></div>${recPill(o.rec)}</div><div style="margin-top:6px;font-style:italic">${esc(o.quote)}</div></div>`;
     const more = v.opinions.length === 1 && u.scouts.length >= 2 && v.k < 100 && !v.own;
-    return `${v.opinions.map(one).join('')}${v.disagree ? '<div class="warnline" style="margin:8px 0">The scouts disagree. Weigh them up: it is your decision.</div>' : ''}${more ? `<button class="btn sm block" style="margin:4px 0 8px" data-act="scoutPlayer" data-id="${p.id}">🔭 Ask another scout for a second opinion</button>` : ''}`;
+    return `${v.opinions.map(one).join('')}${v.disagree ? '<div class="warnline" style="margin:8px 0">The scouts disagree. Weigh them up: it is your decision.</div>' : ''}${more ? `<button class="btn sm block" style="margin:4px 0 8px" data-act="scoutPlayer" data-id="${p.id}">Ask another scout for a second opinion</button>` : ''}`;
   };
   // What he would cost, three ways, and what he would do for the side
   UI.pricesBlock = function (p, v, isFree) {
@@ -49,8 +49,8 @@
     const need = v.need;
     const needLine = need
       ? need.helps
-        ? `<div class="phrase"><span>🧱</span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${esc(p.pos)} (${need.depth} of ${need.want})` : ''}</span></div>`
-        : `<div class="phrase"><span>🧱</span><span>Your <b>${p.pos}</b> spot is covered: he would not improve the eleven (${Math.round(need.delta)})</span></div>`
+        ? `<div class="phrase"><span></span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${esc(p.pos)} (${need.depth} of ${need.want})` : ''}</span></div>`
+        : `<div class="phrase"><span></span><span>Your <b>${p.pos}</b> spot is covered: he would not improve the eleven (${Math.round(need.delta)})</span></div>`
       : '';
     if (isFree || !pr || !p.clubId)
       return `${needLine}<div class="row small" style="margin-top:10px"><span class="grow muted">${isFree ? 'Free agent — wants' : 'Estimated fee'}</span><b>${isFree ? U.money(FM.Transfers.wageDemand(p, club())) + '/wk' : v.fee != null ? '~' + U.money(v.fee) : '?'}</b></div>`;
@@ -68,41 +68,41 @@
     const reg = FM.Scouting.region(p);
     const isFree = !p.clubId;
     const loanT = p.clubId && !p.loan ? FM.Transfers.loanTerms(p) : null;
-    return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">🔭 Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v.rec)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
+    return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v.rec)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
       <div class="h2" style="margin:12px 0 4px">“${esc(v.verdict)}”</div>
-      ${v.expect ? `<div class="phrase"><span>🎽</span><span${v.expect[1] ? ` style="color:var(--${v.expect[1]})"` : ''}>${esc(v.expect[0])}</span></div>` : ''}
+      ${v.expect ? `<div class="phrase"><span></span><span${v.expect[1] ? ` style="color:var(--${v.expect[1]})"` : ''}>${esc(v.expect[0])}</span></div>` : ''}
       ${UI.opinionsBlock(p, v)}
-      ${v.strengths.map((t) => `<div class="phrase"><span>✅</span><span>${esc(t)}</span></div>`).join('')}
-      ${v.weaknesses.map((t) => `<div class="phrase"><span>⚠️</span><span>${esc(t)}</span></div>`).join('')}
-      ${v.k < 25 ? '<div class="lock">🔒 Strengths & weaknesses — needs more scouting</div>' : ''}
+      ${v.strengths.map((t) => `<div class="phrase"><span>✓</span><span>${esc(t)}</span></div>`).join('')}
+      ${v.weaknesses.map((t) => `<div class="phrase"><span></span><span>${esc(t)}</span></div>`).join('')}
+      ${v.k < 25 ? '<div class="lock">Strengths & weaknesses — needs more scouting</div>' : ''}
       <div class="hr"></div>
-      <div class="phrase"><span>🧠</span><span>${v.personality ? `Personality: <b>${esc(v.personality)}</b>` : '<span class="dim">Personality unknown (50%)</span>'}</span></div>
-      <div class="phrase"><span>🩺</span><span>${v.injury ? esc(v.injury) : '<span class="dim">Injury history unknown (55%)</span>'}</span></div>
-      ${v.hidden ? v.hidden.map((h) => `<div class="phrase"><span>🔍</span><span>${esc(h)}</span></div>`).join('') : '<div class="phrase"><span>🔍</span><span class="dim">Hidden attributes unlock at 75%</span></div>'}
-      ${v.foot ? `<div class="phrase"><span>🦶</span><span>${esc(v.foot)}-footed${v.alt && v.alt.length ? ` · can also play ${v.alt.join(', ')}` : ''}</span></div>` : ''}
-      ${v.role ? `<div class="phrase"><span>🎭</span><span>Best suited to <b>${esc(v.role)}</b></span></div>` : ''}
-      ${v.situation ? `<div class="phrase"><span>📋</span><span>${esc(v.situation)}</span></div>` : ''}
-      ${v.mental ? v.mental.map((t) => `<div class="phrase"><span>🧭</span><span>${esc(t)}</span></div>`).join('') : ''}
-      ${v.agent ? `<div class="phrase"><span>💼</span><span>${esc(v.agent.name)} (${esc(v.agent.style)}) · would want ~${U.money(v.wageAsk)}/wk from us</span></div>` : ''}
-      <div class="phrase"><span>🧩</span><span>Tactical fit: best as <b>${v.fit.slot}</b> (${esc(v.fit.role)}) in your ${s.user.tactic.formation}</span></div>
-      ${!v.own && FM.Scouting.nextRung(v.k) ? `<div class="tiny dim" style="margin-top:6px">🔭 ${Math.round(v.k)}% known · at ${FM.Scouting.nextRung(v.k)[0]}%: ${esc(FM.Scouting.nextRung(v.k)[1])}</div>` : ''}
-      <div class="phrase"><span>📈</span><span>Potential confidence: <b>${v.confidence}</b></span></div>
-      ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">📊 ${esc(v.moneyball)}</div>` : ''}
+      <div class="phrase"><span></span><span>${v.personality ? `Personality: <b>${esc(v.personality)}</b>` : '<span class="dim">Personality unknown (50%)</span>'}</span></div>
+      <div class="phrase"><span></span><span>${v.injury ? esc(v.injury) : '<span class="dim">Injury history unknown (55%)</span>'}</span></div>
+      ${v.hidden ? v.hidden.map((h) => `<div class="phrase"><span></span><span>${esc(h)}</span></div>`).join('') : '<div class="phrase"><span></span><span class="dim">Hidden attributes unlock at 75%</span></div>'}
+      ${v.foot ? `<div class="phrase"><span></span><span>${esc(v.foot)}-footed${v.alt && v.alt.length ? ` · can also play ${v.alt.join(', ')}` : ''}</span></div>` : ''}
+      ${v.role ? `<div class="phrase"><span></span><span>Best suited to <b>${esc(v.role)}</b></span></div>` : ''}
+      ${v.situation ? `<div class="phrase"><span></span><span>${esc(v.situation)}</span></div>` : ''}
+      ${v.mental ? v.mental.map((t) => `<div class="phrase"><span></span><span>${esc(t)}</span></div>`).join('') : ''}
+      ${v.agent ? `<div class="phrase"><span></span><span>${esc(v.agent.name)} (${esc(v.agent.style)}) · would want ~${U.money(v.wageAsk)}/wk from us</span></div>` : ''}
+      <div class="phrase"><span></span><span>Tactical fit: best as <b>${v.fit.slot}</b> (${esc(v.fit.role)}) in your ${s.user.tactic.formation}</span></div>
+      ${!v.own && FM.Scouting.nextRung(v.k) ? `<div class="tiny dim" style="margin-top:6px">${Math.round(v.k)}% known · at ${FM.Scouting.nextRung(v.k)[0]}%: ${esc(FM.Scouting.nextRung(v.k)[1])}</div>` : ''}
+      <div class="phrase"><span></span><span>Potential confidence: <b>${v.confidence}</b></span></div>
+      ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">${esc(v.moneyball)}</div>` : ''}
       ${UI.pricesBlock(p, v, isFree)}
       ${loanT && loanT.available ? `<div class="row small" style="margin-top:4px"><span class="grow muted">Loan possible</span><b>~${Math.round(Math.min(1, loanT.share) * 100)}% of wages</b></div>` : ''}
-      <div class="row" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">🔭 Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}">⚖️ Compare</button>${UI.trialButton(p)}${p.loan ? '' : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div></div>`;
+      <div class="row" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}">Compare</button>${UI.trialButton(p)}${p.loan ? '' : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div></div>`;
   };
 
   UI.ownActions = function (p) {
     if (p.loan)
       return `<div class="warnline">On loan from ${esc(CL(p.loan.from).name)} until the end of the season. You pay ${Math.round(p.loan.share * 100)}% of his wages.</div>`;
-    return `<div class="row" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">Offer to clubs</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button><button class="btn sm grow" data-act="pMore" data-id="${p.id}">More ▾</button></div>`;
+    return `<div class="row pbtns" style="gap:6px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="listPlayer" data-id="${p.id}">${p.listed ? 'Unlist' : 'Transfer list'}</button>${p.listed ? `<button class="btn sm grow pri" data-act="offerClubs" data-id="${p.id}">Offer to clubs</button>` : ''}<button class="btn sm grow" data-act="renew" data-id="${p.id}">Renew</button><button class="btn sm grow" data-act="pMore" data-id="${p.id}">More ▾</button></div>`;
   };
 
   // a nation's youth rating with its last move (▲ or ▼)
   UI.regionYouth = (reg) => {
     const y = FM.Season.regionYouth(reg);
-    return `🌱 ${Math.round(y.r)}${y.d >= 0.5 ? ' ▲' : y.d <= -0.5 ? ' ▼' : ''}`;
+    return `${Math.round(y.r)}${y.d >= 0.5 ? ' ▲' : y.d <= -0.5 ? ' ▼' : ''}`;
   };
   // a nation's youth rating over the seasons: a line, its range and where it stands in the world
   UI.youthLine = (code) => {
@@ -123,7 +123,7 @@
           .join(' ');
       svg = `<svg width="${w}" height="${ht}" viewBox="0 0 ${w} ${ht}" style="vertical-align:middle;margin-left:8px" aria-label="Youth rating by season"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> <span style="opacity:.7">${h[0][0]}–${h[h.length - 1][0]}: ${lo.toFixed(0)} to ${hi.toFixed(0)}</span>`;
     }
-    return `<div class="small" style="margin-top:8px">🌱 Youth rating ${UI.youthBadge(code)} · #${rank} in the world${svg}</div>`;
+    return `<div class="small" style="margin-top:8px">Youth rating ${UI.youthBadge(code)} · #${rank} in the world${svg}</div>`;
   };
   UI.youthBadge = (code) => {
     const r = FM.Season.youthRating(code),
@@ -437,10 +437,10 @@
     const roles = Object.entries(D.STAFF_ROLES).filter(([, r]) => r.key !== 'scout');
     const card = (st, role, key) => {
       const r = D.STAFF_ROLES[role];
-      return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? '🪑' : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
+      return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? '' : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
         <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
         ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div>` : ''}
-        <div class="small" style="margin-top:6px">⚡ ${esc(FM.Staff.IMPACT[key](st.ability).text)}</div>${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">📋 On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
+        <div class="small" style="margin-top:6px">${esc(FM.Staff.IMPACT[key](st.ability).text)}</div>${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
         <div class="tiny dim" style="margin-top:4px">${r.effect}${st.vacant ? '' : ` · contract to ${st.contract}`}</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="staffMarket" data-role="${esc(role)}">${st.vacant ? 'Hire' : key === 'scout' ? 'Hire another' : 'Replace'}</button>${st.vacant ? '' : `<button class="btn sm grow danger" data-act="staffFire" data-id="${st.id}">Release (${U.money(FM.Staff.compensation(st))})</button>`}</div></div>`;
     };
@@ -527,7 +527,7 @@
           : 'Not booked'
         : x.type === 'camp'
           ? `${D.CAMPS[x.key].icon} ${D.CAMPS[x.key].name}`
-          : `⚽ ${CL(x.fx.h === club().id ? x.fx.a : x.fx.h).name} (${x.fx.h === club().id ? 'H' : 'A'})${x.fx.res ? ` · ${x.fx.res.hg}–${x.fx.res.ag}` : ''}`;
+          : `${CL(x.fx.h === club().id ? x.fx.a : x.fx.h).name} (${x.fx.h === club().id ? 'H' : 'A'})${x.fx.res ? ` · ${x.fx.res.hg}–${x.fx.res.ag}` : ''}`;
       return `<div class="row small" style="padding:9px 0;border-top:1px solid var(--line)"><span class="pill ${cur ? 'acc' : ''}">Day ${i + 1}</span><span class="grow ellip ${done ? 'dim' : ''}">${esc(label)}</span>${!done ? `<button class="btn sm" data-act="plan" data-i="${i}">${x ? 'Change' : 'Book'}</button>` : ''}</div>`;
     };
     // shown in full until you have seen it once; after that it folds to a line (tap to open it)
@@ -602,7 +602,7 @@
       <div class="card"><div class="h3">Title odds</div>${pv.odds.map((o) => `<div class="row small" style="padding:5px 0">${C.crest(CL(o.id), 18)}<span class="grow ${W.isUser(o.id) ? 'b' : ''}">${esc(CL(o.id).name)}</span><b>${o.odds}</b></div>`).join('')}</div>
       <div class="card"><div class="h3">Predicted table</div><table class="t" style="margin-top:6px">${pv.rows.map((r, i) => `<tr class="${W.isUser(r.id) ? 'me' : ''}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip">${esc(CL(r.id).name)}</span></div></td><td class="dim">${r.pts}</td></tr>`).join('')}</table><div class="tiny dim" style="margin-top:6px">Number = predicted points. Your assistant's read — a better assistant predicts more accurately.</div></div>
       <div class="card"><div class="h3" style="margin-bottom:8px">Pre-season best XI · ${pv.formation}</div><div class="tpitch">${dots}</div></div>
-      <div class="card">${pv.star ? `<div class="row small tap" data-act="player" data-id="${pv.star.id}" style="padding:6px 0">⭐ <span class="grow">Key man: <b>${esc(W.name(pv.star))}</b></span>${C.playerStars(pv.star)}</div>` : ''}${pv.kid ? `<div class="row small tap" data-act="player" data-id="${pv.kid.id}" style="padding:6px 0">🌱 <span class="grow">One to watch: <b>${esc(W.name(pv.kid))}</b> (${W.age(pv.kid)})</span>${C.playerStars(pv.kid)}</div>` : ''}${pv.signings.length ? `<div class="small" style="padding:6px 0">✍️ Summer signings: ${pv.signings.map((p) => esc(W.short(p))).join(', ')}</div>` : ''}</div>
+      <div class="card">${pv.star ? `<div class="row small tap" data-act="player" data-id="${pv.star.id}" style="padding:6px 0"><span class="grow">Key man: <b>${esc(W.name(pv.star))}</b></span>${C.playerStars(pv.star)}</div>` : ''}${pv.kid ? `<div class="row small tap" data-act="player" data-id="${pv.kid.id}" style="padding:6px 0"><span class="grow">One to watch: <b>${esc(W.name(pv.kid))}</b> (${W.age(pv.kid)})</span>${C.playerStars(pv.kid)}</div>` : ''}${pv.signings.length ? `<div class="small" style="padding:6px 0">Summer signings: ${pv.signings.map((p) => esc(W.short(p))).join(', ')}</div>` : ''}</div>
       <button class="btn pri block" data-act="closeSheet">Let's go</button>`,
       { title: 'Season preview' },
     );
@@ -619,7 +619,7 @@
     // Transfers tab
     const nScouts = s.user.scouts.length,
       busy = s.user.assignments.length;
-    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">🔭</span><div class="grow"><div class="b small">Scouting network</div><div class="tiny dim">${nScouts} scout${nScouts === 1 ? '' : 's'} · ${busy} on assignment · ${newCount} new report${newCount === 1 ? '' : 's'}</div></div><button class="btn sm" data-act="tab" data-tab="transfers">🔁 Transfers</button></div>`;
+    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px"></span><div class="grow"><div class="b small">Scouting network</div><div class="tiny dim">${nScouts} scout${nScouts === 1 ? '' : 's'} · ${busy} on assignment · ${newCount} new report${newCount === 1 ? '' : 's'}</div></div><button class="btn sm" data-act="tab" data-tab="transfers">Transfers</button></div>`;
     const tabs = [
       ['hub', 'Hub'],
       ['reports', `Reports${newCount ? ` (${newCount})` : ''}`],
@@ -642,8 +642,8 @@
   };
   const reportRow = (p, v, extra = '', dismiss = false) => {
     const c = p.clubId && CL(p.clubId);
-    const clause = p.clubId && v.k >= 40 && p.deal && p.deal.release ? ` · 🔓 ${U.money(p.deal.release)}` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:10px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">⚖️</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
+    const clause = p.clubId && v.k >= 40 && p.deal && p.deal.release ? ` · ${U.money(p.deal.release)}` : '';
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:10px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="btn sm" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">Compare</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
   };
   function hubView() {
     const s = S();
@@ -1063,7 +1063,7 @@
     const presets = `<div class="chips noswipe" style="margin-top:8px"><span class="chip-lbl">Saved</span>${saved
       .map(
         (p, i) =>
-          `<button class="chip" data-act="sfApplyPreset" data-i="${i}">${esc(p.name)}</button><button class="chip ${p.alert ? 'on' : ''}" data-act="sfAlertPreset" data-i="${i}" aria-label="${p.alert ? 'Stop alerting me about' : 'Alert me about'} ${esc(p.name)}" title="${p.alert ? 'Alerts on: the feed tells you when a new player matches' : 'Alert me in the feed when a new player matches'}">${p.alert ? '🔔' : '🔕'}</button><button class="chip" data-act="sfDelPreset" data-i="${i}" aria-label="Delete ${esc(p.name)}">✕</button>`,
+          `<button class="chip" data-act="sfApplyPreset" data-i="${i}">${esc(p.name)}</button><button class="chip ${p.alert ? 'on' : ''}" data-act="sfAlertPreset" data-i="${i}" aria-label="${p.alert ? 'Stop alerting me about' : 'Alert me about'} ${esc(p.name)}" title="${p.alert ? 'Alerts on: the feed tells you when a new player matches' : 'Alert me in the feed when a new player matches'}">${p.alert ? '' : ''}</button><button class="chip" data-act="sfDelPreset" data-i="${i}" aria-label="Delete ${esc(p.name)}">✕</button>`,
       )
       .join('')}${saved.length ? '' : '<span class="tiny dim">none yet</span>'}</div>`;
     return `<div class="card flat" style="padding:8px 10px;margin-bottom:8px">
@@ -1169,7 +1169,7 @@
     if (!p) return;
     p.alert = !p.alert;
     if (p.alert) p.seen = null; // (a fresh baseline)
-    UI.toast(p.alert ? `🔔 The feed will tell you when a new player matches “${p.name}”` : '🔕 Alerts off', 2500);
+    UI.toast(p.alert ? `The feed will tell you when a new player matches “${p.name}”` : 'Alerts off', 2500);
     UI.save();
     UI.render();
   };
@@ -1261,7 +1261,7 @@
       ).length;
     return `<div class="row" style="gap:6px;margin-bottom:8px">${['A', 'B', 'C', 'D'].map((g) => `<div class="kpi tap grow" style="padding:8px;text-align:center" data-act="rf" data-k="grade" data-v="${f.grade === g ? 'all' : g}">${gradeBadge(g, 24)}<div class="tiny dim" style="margin-top:4px">${cnt(g)}</div></div>`).join('')}</div>
       ${sfPanel('reports', reps.length)}
-      <div class="row" style="justify-content:flex-end;gap:6px;margin:-2px 0 6px;flex-wrap:wrap">${nDis ? `<button class="btn sm ${f.dismissed ? 'pri' : ''}" data-act="rfDismissed">${f.dismissed ? '← Back to reports' : `Dismissed (${nDis})`}</button>` : ''}${!f.dismissed && cnt('C') + cnt('D') ? `<button class="btn sm" data-act="dismissWeak">🗑 Dismiss all C & D (${cnt('C') + cnt('D')})</button>` : ''}</div>
+      <div class="row" style="justify-content:flex-end;gap:6px;margin:-2px 0 6px;flex-wrap:wrap">${nDis ? `<button class="btn sm ${f.dismissed ? 'pri' : ''}" data-act="rfDismissed">${f.dismissed ? '← Back to reports' : `Dismissed (${nDis})`}</button>` : ''}${!f.dismissed && cnt('C') + cnt('D') ? `<button class="btn sm" data-act="dismissWeak">Dismiss all C & D (${cnt('C') + cnt('D')})</button>` : ''}</div>
       ${chipRow('rf', 'sort', f.sort, [
         ['grade', 'Sort: grade'],
         ['newest', 'Newest'],
@@ -1309,7 +1309,7 @@
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
       <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
       ${sfPanel('search', ps.length)}
-      ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">🏛️ ${esc(W.userClub().name)} only sign ${esc(W.userClub().policy.label)} players, so only they are scouted and listed.</div>` : ''}
+      ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">${esc(W.userClub().name)} only sign ${esc(W.userClub().policy.label)} players, so only they are scouted and listed.</div>` : ''}
       <div class="card flat list" style="padding:4px 12px">${
         ps
           .slice(0, UI._sf.limit)
@@ -1555,7 +1555,7 @@
     if (t === 'stats') body.innerHTML = MV.statTable(me) + MV.statTable(op, true);
     if (t === 'insights') {
       const a = FM.Staff.get('analyst');
-      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px">📊</span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${U.staffText(a.ability)}</div></div></div>${MV.insights(
+      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px"></span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${U.staffText(a.ability)}</div></div></div>${MV.insights(
         m,
       )
         .map(
@@ -1817,7 +1817,7 @@
     const a = agg(0),
       b = agg(1);
     const types = Object.keys(TYPE_NAME).filter((t) => a[t] || b[t]);
-    return `<table class="t"><tr><th class="l">Type</th><th>${esc(H.club.short)}</th><th>xG</th><th>${esc(A.club.short)}</th><th>xG</th></tr>${types.map((t) => `<tr><td class="l">${TYPE_NAME[t]}</td><td>${a[t] ? `${a[t].n}${a[t].g ? ` (${a[t].g}⚽)` : ''}` : '–'}</td><td class="dim">${a[t] ? a[t].xg.toFixed(2) : '–'}</td><td>${b[t] ? `${b[t].n}${b[t].g ? ` (${b[t].g}⚽)` : ''}` : '–'}</td><td class="dim">${b[t] ? b[t].xg.toFixed(2) : '–'}</td></tr>`).join('')}</table>`;
+    return `<table class="t"><tr><th class="l">Type</th><th>${esc(H.club.short)}</th><th>xG</th><th>${esc(A.club.short)}</th><th>xG</th></tr>${types.map((t) => `<tr><td class="l">${TYPE_NAME[t]}</td><td>${a[t] ? `${a[t].n}${a[t].g ? ` (${a[t].g})` : ''}` : '–'}</td><td class="dim">${a[t] ? a[t].xg.toFixed(2) : '–'}</td><td>${b[t] ? `${b[t].n}${b[t].g ? ` (${b[t].g})` : ''}` : '–'}</td><td class="dim">${b[t] ? b[t].xg.toFixed(2) : '–'}</td></tr>`).join('')}</table>`;
   };
   MV.statTable = function (sd, compact) {
     // each player's share of the team's full passing total (the engine simulates only the passes that matter)
@@ -1825,7 +1825,7 @@
     const rows = Object.keys(sd.mins)
       .map((pid) => ({ p: P(pid), s: sd.ps[pid] || {}, r: sd.rating[pid], min: sd.mins[pid], st: sd.st[pid] }))
       .sort((a, b) => b.r - a.r);
-    return `<div class="card"><div class="row b small" style="margin-bottom:6px">${C.crest(sd.club, 18)} ${esc(sd.club.name)}</div><table class="t"><tr><th class="l">Player</th><th>Min</th><th>Pas</th><th>KP</th><th>Sh</th><th>Tk</th><th>Int</th><th>En</th><th>Rt</th></tr>${rows.map((x) => `<tr><td class="l ellip" style="max-width:96px">${x.p ? C.pname(x.p, (x.p.no ? x.p.no + ' ' : '') + x.p.ln) : '?'}${x.p && x.p.id === MV.m.motm ? ' ⭐' : ''}</td><td class="dim">${x.min}</td><td>${Math.round((x.s.pass || 0) * scale)}</td><td>${x.s.kp || 0}</td><td>${x.s.sh || 0}${x.s.sot ? `<span class="dim">/${x.s.sot}</span>` : ''}</td><td>${x.s.tk || 0}</td><td>${x.s.ic || 0}</td><td style="color:${x.st < 45 ? 'var(--bad)' : x.st < 65 ? 'var(--warn)' : 'var(--ink2)'}">${Math.round(x.st)}</td><td>${C.rating(x.r)}</td></tr>`).join('')}</table>${compact ? '' : '<div class="tiny dim" style="margin-top:6px">Pas passes · KP key passes · Sh shots/on target · Tk tackles · Int interceptions · En energy at the end</div>'}</div>`;
+    return `<div class="card"><div class="row b small" style="margin-bottom:6px">${C.crest(sd.club, 18)} ${esc(sd.club.name)}</div><table class="t"><tr><th class="l">Player</th><th>Min</th><th>Pas</th><th>KP</th><th>Sh</th><th>Tk</th><th>Int</th><th>En</th><th>Rt</th></tr>${rows.map((x) => `<tr><td class="l ellip" style="max-width:96px">${x.p ? C.pname(x.p, (x.p.no ? x.p.no + ' ' : '') + x.p.ln) : '?'}${x.p && x.p.id === MV.m.motm ? '' : ''}</td><td class="dim">${x.min}</td><td>${Math.round((x.s.pass || 0) * scale)}</td><td>${x.s.kp || 0}</td><td>${x.s.sh || 0}${x.s.sot ? `<span class="dim">/${x.s.sot}</span>` : ''}</td><td>${x.s.tk || 0}</td><td>${x.s.ic || 0}</td><td style="color:${x.st < 45 ? 'var(--bad)' : x.st < 65 ? 'var(--warn)' : 'var(--ink2)'}">${Math.round(x.st)}</td><td>${C.rating(x.r)}</td></tr>`).join('')}</table>${compact ? '' : '<div class="tiny dim" style="margin-top:6px">Pas passes · KP key passes · Sh shots/on target · Tk tackles · Int interceptions · En energy at the end</div>'}</div>`;
   };
   // Analyst insights — a better analyst says more (and more precisely)
   MV.insights = function (m) {
@@ -1839,15 +1839,15 @@
       xgd = me.xg - op.xg;
     if (xgd > 0.8 && gd <= 0)
       out.push([
-        '🍀',
+        '',
         `We created ${me.xg.toFixed(2)} xG to their ${op.xg.toFixed(2)} and didn't win — on another day that's a comfortable victory. Keep doing the same things.`,
       ]);
     else if (xgd < -0.8 && gd >= 0)
       out.push([
-        '😅',
+        '',
         `We rode our luck: they generated ${op.xg.toFixed(2)} xG to our ${me.xg.toFixed(2)}. The result flatters us.`,
       ]);
-    else out.push(['⚖️', `On balance the result was fair — xG ${me.xg.toFixed(2)} vs ${op.xg.toFixed(2)}.`]);
+    else out.push(['', `On balance the result was fair — xG ${me.xg.toFixed(2)} vs ${op.xg.toFixed(2)}.`]);
     const typ = (side) => {
       const o = {};
       m.shotLog
@@ -1861,12 +1861,12 @@
       ot = typ(1 - us)[0];
     if (mt)
       out.push([
-        '🎯',
+        '',
         `Most of our threat came from ${TYPE_NAME[mt[0]].toLowerCase()} (${mt[1].toFixed(2)} xG, ${Math.round((mt[1] / Math.max(0.01, me.xg)) * 100)}% of our total).`,
       ]);
     if (ot && ot[1] >= 0.4)
       out.push([
-        '🛑',
+        '',
         `Their ${TYPE_NAME[ot[0]].toLowerCase()} hurt us (${ot[1].toFixed(2)} xG).${ot[0] === 'counter' ? ' A deeper line or less aggressive press would help.' : ot[0] === 'cross' ? ' We need to stop the crosses at source.' : ot[0] === 'longshot' ? ' Closing down shooters earlier would help.' : ''}`,
       ]);
     const half = (side, h2) =>
@@ -1875,7 +1875,7 @@
       h2 = half(us, true);
     if (Math.abs(h1 - h2) > 0.5)
       out.push([
-        '⏱️',
+        '',
         `${h2 > h1 ? 'We were much better after the break' : 'We faded in the second half'}: ${h1.toFixed(2)} xG before half-time, ${h2.toFixed(2)} after.`,
       ]);
     if (m.changeAt != null && m.changeAt > 5 && m.changeAt < m.xgLine.length - 5) {
@@ -1889,7 +1889,7 @@
         bA = rate(mid[1 - us], at),
         aA = rate(end[1 - us] - mid[1 - us], L.length - at);
       out.push([
-        '📋',
+        '',
         `Your first tactical change came at ~${Math.min(90, at)}'. Before: ${bF.toFixed(1)} xG for / ${bA.toFixed(1)} against per 90. After: ${aF.toFixed(1)} / ${aA.toFixed(1)}. ${aF - aA > bF - bA ? 'It worked.' : "It didn't shift the balance."}`,
       ]);
     }
@@ -1900,7 +1900,7 @@
       .filter(Boolean);
     if (tired.length)
       out.push([
-        '🔋',
+        '',
         `${tired
           .slice(0, 3)
           .map((p) => `${W.short(p)} (${Math.round(me.st[p.id])}%)`)
@@ -1910,12 +1910,12 @@
       ]);
     const tk = (sd) => U.sum(Object.values(sd.ps), (x) => x.tk || 0);
     out.push([
-      '🧲',
+      '',
       `We won possession back ${tk(me)} times to their ${tk(op)}${me.tactic.press === 'High Press' ? ' — the high press is doing its job' : ''}.`,
     ]);
     const creators = Object.entries(me.ps).sort((x, y) => (y[1].kp || 0) - (x[1].kp || 0))[0];
     if (creators && creators[1].kp >= 2)
-      out.push(['🔑', `${W.short(P(creators[0]))} was our chief creator with ${creators[1].kp} key passes.`]);
+      out.push(['', `${W.short(P(creators[0]))} was our chief creator with ${creators[1].kp} key passes.`]);
     const zone = (grid) => {
       let fin = 0,
         tot = 0;
@@ -1926,19 +1926,19 @@
       return tot ? Math.round((fin / tot) * 100) : 0;
     };
     out.push([
-      '🗺️',
+      '',
       `${zone(me.heat)}% of our touches came in the final third${zone(me.heat) < 25 ? ' — we struggled to get into dangerous areas' : zone(me.heat) > 38 ? ' — we pinned them back' : ''}.`,
     ]);
     {
       const mp = m.passStats(us).total,
         op2 = m.passStats(1 - us).total;
       out.push([
-        '🔁',
+        '',
         `Passes: ${mp} vs ${op2}. ${mp > op2 * 1.3 ? 'We dominated the ball.' : op2 > mp * 1.3 ? 'They had far more of it.' : 'An even contest for control.'}`,
       ]);
     }
     if (a.vacant)
-      out.unshift(['🪑', "No Head of Analytics — this is the caretaker's best effort. Hire one for deeper analysis."]);
+      out.unshift(['', "No Head of Analytics — this is the caretaker's best effort. Hire one for deeper analysis."]);
     return out.slice(0, n + (a.vacant ? 1 : 0));
   };
   // ---------- Sim to half-time ----------
@@ -1987,7 +1987,7 @@
     m.events
       .filter((e) => e.k === 'goal')
       .slice(goalsBefore)
-      .forEach((e) => MV.ticker(`⚽ ${e.min} ${W.short(P(e.pid))} (${m.sides[e.side].club.short})`));
+      .forEach((e) => MV.ticker(`${e.min} ${W.short(P(e.pid))} (${m.sides[e.side].club.short})`));
     st.ball = { x: 0.5, y: 0.5, side: 1, slot: m.kickoffSlot(m.sides[1]), h: 0 };
     MV.initDots();
     MV.updateHUD();
@@ -2058,7 +2058,7 @@
     const called = new Set(own.filter((p) => FM.Intl.squad(FM.Intl.nationOf(p)).includes(p)).map((p) => p.id));
     const ranked = FM.Intl.ranked();
     const history = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
-    return `<div class="card"><div class="row"><span style="font-size:26px">🌍</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
+    return `<div class="card"><div class="row"><span style="font-size:26px"></span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
       <div class="sec"><div class="h3">Your internationals</div><span class="dim small">${called.size} in current squads</span></div>
       <div class="card flat list" style="padding:4px 12px">${
         mine.length
@@ -2071,7 +2071,7 @@
               .join('')
           : '<div class="empty">None of your players have been capped yet.</div>'
       }</div>
-      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row"><div class="h3 grow">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient · 🌱 youth rating</span></div></summary>
+      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row"><div class="h3 grow">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient · youth rating</span></div></summary>
       <select data-input="intlRegion" style="margin:8px 0" aria-label="Part of the world"><option value="all">The whole world</option>${FM.Guide.CONTINENTS.map(([k, n]) => `<option value="${k}" ${UI._intlReg === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
       <table class="t">${ranked
         .map((t, i) => [t, i])
@@ -2080,14 +2080,14 @@
           ([t, i]) =>
             `<tr class="tap" data-act="nation" data-id="${t.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px"><span>${C.flag(t.code)}</span><span class="ellip" style="max-width:120px">${esc(t.name)}</span>${
               Object.keys(t.titles).length
-                ? `<span class="tiny">${'🏆'.repeat(
+                ? `<span class="tiny">${''.repeat(
                     Math.min(
                       3,
                       Object.values(t.titles).reduce((a, b) => a + b, 0),
                     ),
                   )}</span>`
                 : ''
-            }</div></td><td class="b">${t.coef.toFixed(1)}</td><td class="tiny" title="Youth rating">🌱${UI.youthBadge(t.code)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
+            }</div></td><td class="b">${t.coef.toFixed(1)}</td><td class="tiny" title="Youth rating">${UI.youthBadge(t.code)}</td><td class="l">${C.form((t.form || []).slice(-4))}</td></tr>`,
         )
         .join('')}</table></details>
       <div class="sec"><div class="h3">Recent results</div></div>
@@ -2116,7 +2116,7 @@
         ${
           Object.keys(t.titles).length
             ? `<div class="small" style="margin-top:8px">${Object.entries(t.titles)
-                .map(([k, n]) => `🏆 ${TNAME[k] || k} ×${n}`)
+                .map(([k, n]) => `${TNAME[k] || k} ×${n}`)
                 .join(' · ')}</div>`
             : ''
         }${UI.youthLine(t.code)}</div>

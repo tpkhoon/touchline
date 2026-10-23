@@ -422,7 +422,7 @@
           sprint: true,
           dive: true,
         };
-      if (a.big) MV.banner(`⚡ ${MV.m.clock}`, MV.pendingChanceText || 'Big chance…', false);
+      if (a.big) MV.banner(`${MV.m.clock}`, MV.pendingChanceText || 'Big chance…', false);
     }
     // perpendicular unit vector for curling balls
     const dx = x1 - b.x,

@@ -945,7 +945,7 @@
   };
 
   // The board's demands for the season (FM.Board), with progress. Until three league games are played nothing
-  // counts as achieved yet (⏳).
+  // counts as achieved yet (…).
   Sea.objectives = function (club = W.userClub()) {
     return FM.Board.list(club).map((o) => ({ ...o, ...Sea.objProgress(o, club) }));
   };
@@ -1664,13 +1664,13 @@
 
   // ---------- Facilities ----------
   Sea.FAC = {
-    training: { name: 'Training Ground', icon: '🏋️', effect: 'Faster player development' },
-    academy: { name: 'Youth Academy', icon: '🌱', effect: 'Better & more youth intake prospects' },
-    medical: { name: 'Medical Centre', icon: '🩺', effect: 'Shorter injury layoffs' },
-    analytics: { name: 'Analytics Dept.', icon: '📊', effect: 'Moneyball insights in scout reports' },
-    stadium: { name: 'Stadium', icon: '🏟️', effect: '+6,000 capacity per level' },
-    fanzone: { name: 'Fan Zone', icon: '🎉', effect: 'Commercial income & fan mood' },
-    museum: { name: 'Club Museum', icon: '🏛️', effect: 'Reputation & honours legends' },
+    training: { name: 'Training Ground', icon: '', effect: 'Faster player development' },
+    academy: { name: 'Youth Academy', icon: '', effect: 'Better & more youth intake prospects' },
+    medical: { name: 'Medical Centre', icon: '', effect: 'Shorter injury layoffs' },
+    analytics: { name: 'Analytics Dept.', icon: '', effect: 'Moneyball insights in scout reports' },
+    stadium: { name: 'Stadium', icon: '', effect: '+6,000 capacity per level' },
+    fanzone: { name: 'Fan Zone', icon: '', effect: 'Commercial income & fan mood' },
+    museum: { name: 'Club Museum', icon: '', effect: 'Reputation & honours legends' },
   };
   Sea.facCost = (k, lvl) => Math.round(((k === 'stadium' ? 9e6 : 2.2e6) * Math.pow(lvl, 1.5)) / 1e5) * 1e5;
   Sea.facWeeks = (k, lvl) => (k === 'stadium' ? 8 : 3) + lvl * 2;

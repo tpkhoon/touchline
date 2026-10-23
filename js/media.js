@@ -20,7 +20,7 @@
     tabloid: {
       name: 'The Daily Roar',
       kind: 'Tabloid',
-      icon: '🗞️',
+      icon: '',
       vol: 1.6,
       base: -8,
       line: 'Looks for a crisis. Quick to turn on you and quick to forgive.',
@@ -28,7 +28,7 @@
     paper: {
       name: 'The Chronicle',
       kind: 'Broadsheet',
-      icon: '📰',
+      icon: '',
       vol: 0.6,
       base: 0,
       line: 'Weighs a run of games, not one. Hard to win over, hard to lose.',
@@ -36,7 +36,7 @@
     local: {
       name: null,
       kind: 'Local paper',
-      icon: '🏘️',
+      icon: '',
       vol: 0.5,
       base: 18,
       line: 'Your own town’s paper: on your side, and sorry when you lose.',
@@ -44,7 +44,7 @@
     tv: {
       name: 'Touchline Tonight',
       kind: 'Television',
-      icon: '📺',
+      icon: '',
       vol: 1.0,
       base: 0,
       line: 'A panel that argues about your tactics and picks sides.',
@@ -52,7 +52,7 @@
     radio: {
       name: 'Radio Terrace',
       kind: 'Phone-in',
-      icon: '📻',
+      icon: '',
       vol: 1.3,
       base: -4,
       line: 'The fans on the line: loud, fair-weather, and mostly right.',

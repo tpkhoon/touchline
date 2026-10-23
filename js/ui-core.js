@@ -234,8 +234,15 @@
             : '🏳️';
   // The manager's avatar (older careers without one get a neutral face)
   C.avatar = (user, size = 40) => {
-    const a = (user && user.avatar) || { e: '🧑‍💼', bg: '#243042' };
-    return `<div class="avatar" style="width:${size}px;height:${size}px;background:${a.bg};font-size:${Math.round(size * 0.58)}px">${a.e}</div>`;
+    const a = (user && user.avatar) || { bg: '#243042' };
+    const ini = String((user && user.name) || 'M')
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return `<div class="avatar" style="width:${size}px;height:${size}px;background:${a.bg};font-size:${Math.round(size * 0.4)}px;font-weight:800;color:#fff">${esc(ini)}</div>`;
   };
   C.vcls = (v) => (v >= 16 ? 'v-e' : v >= 13 ? 'v-g' : v >= 9 ? 'v-m' : 'v-p');
   C.fitColor = (f) => (f >= 90 ? 'var(--good)' : f >= 75 ? 'var(--acc2)' : f >= 60 ? 'var(--warn)' : 'var(--bad)');
@@ -290,12 +297,12 @@
     const tags = [];
     if (own && FM.Matchday && FM.Matchday.captainOf(p.clubId) === p)
       tags.push('<span class="capt-tag" title="Club captain">C</span>');
-    if (p.inj) tags.push(`<span class="pill bad" title="${esc(p.inj.type)}">🚑 ${FM.Injury.weeksLeft(p)}w</span>`);
+    if (p.inj) tags.push(`<span class="pill bad" title="${esc(p.inj.type)}">${FM.Injury.weeksLeft(p)}w</span>`);
     else if (own && p.injRisk)
-      tags.push('<span class="pill warn" title="Just back from injury: higher risk of a setback">🩹</span>');
-    if (p.susp) tags.push(`<span class="pill warn">🟥 ${p.susp}</span>`);
-    if (p.listed) tags.push(`<span class="pill acc" title="On the transfer list">💰 Listed</span>`);
-    if (p.loanListed) tags.push(`<span class="pill acc" title="On the loan list">🔁 Loan list</span>`);
+      tags.push('<span class="pill warn" title="Just back from injury: higher risk of a setback"></span>');
+    if (p.susp) tags.push(`<span class="pill warn">${p.susp}</span>`);
+    if (p.listed) tags.push(`<span class="pill acc" title="On the transfer list">Listed</span>`);
+    if (p.loanListed) tags.push(`<span class="pill acc" title="On the loan list">Loan list</span>`);
     if (own && p.unreg)
       tags.push(
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',
@@ -450,12 +457,12 @@
       const pre = FM.SimRunner && FM.SimRunner.takePacked(FM.S);
       FM.Save.write(UI.slot, FM.S, pre).catch((e) => {
         console.warn('save failed', e);
-        UI.toast('⚠️ Could not save (storage full?)');
+        UI.toast('Could not save (storage full?)');
       });
       return true;
     } catch (e) {
       console.warn('save failed', e);
-      UI.toast('⚠️ Could not save');
+      UI.toast('Could not save');
       return false;
     }
   };
@@ -628,7 +635,7 @@
     );
   };
   UI.noClubView = (tab) =>
-    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '👕' : tab === 'transfers' ? '🔁' : '🔭'}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
+    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '' : tab === 'transfers' ? '' : ''}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
   // Going to a tab slides it in from the side of the tab you tapped; the same tab again just fades
   UI.go = function (tab, anim) {
     if (!anim) {
@@ -773,10 +780,10 @@
       <div class="tag">${esc(D.HOOK)}</div>
       <div class="actions">
         ${cont ? `<button class="btn pri block" data-act="continue" data-n="${cont.n}">▶ Continue: ${esc(cont.m.label || cont.m.club.name)} · ${cont.m.year}</button>` : ''}
-        ${cont ? '<button class="btn block" data-act="loadPick">📂 Load a save</button>' : ''}
+        ${cont ? '<button class="btn block" data-act="loadPick">Load a save</button>' : ''}
         <button class="btn ${cont ? '' : 'pri'} block" data-act="newCareer">＋ New career</button>
-        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="edOpenTitle">🛠️ World editor</button>
-        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="importSave">⬇️ Import a save</button>
+        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="edOpenTitle">World editor</button>
+        <button class="btn block" style="background:transparent;border-color:#243042;color:#9fb0c5" data-act="importSave">▼ Import a save</button>
         <div class="tiny center" style="color:#5d6d82;margin-top:8px">Prototype build · One-time purchase · No energy · No packs · No pay-to-win</div>
       </div></div>`;
   };
@@ -793,7 +800,7 @@
           if (ask.ren === s.n)
             return `<div class="prow"><b style="width:52px">Slot ${s.n}</b><input type="text" id="load-ren" maxlength="40" class="grow" value="${esc(s.m.label || '')}" placeholder="${esc(s.m.club.name)} · ${s.m.year}" style="min-width:0"><button class="btn sm pri" data-act="loadRenameSave" data-n="${s.n}">Save</button><button class="btn sm" data-act="loadRenameCancel">✕</button></div>`;
           const del = ask.del === s.n;
-          return `<div class="prow"><div class="row tap grow" style="gap:8px;min-width:0" data-act="continue" data-n="${s.n}"><b style="width:52px">Slot ${s.n}</b><div class="grow small ellip">${s.m.label ? `<b>${esc(s.m.label)}</b> · ` : ''}${esc(s.m.club.name)} · ${s.m.year}${s.m.name ? ` · ${esc(s.m.name)}` : ''}</div></div><button class="btn sm" data-act="loadRename" data-n="${s.n}" aria-label="Rename save ${s.n}">✏️</button><button class="btn sm ${del ? 'danger' : ''}" data-act="loadDelete" data-n="${s.n}" aria-label="Delete save ${s.n}">${del ? 'Delete?' : '🗑️'}</button></div>`;
+          return `<div class="prow"><div class="row tap grow" style="gap:8px;min-width:0" data-act="continue" data-n="${s.n}"><b style="width:52px">Slot ${s.n}</b><div class="grow small ellip">${s.m.label ? `<b>${esc(s.m.label)}</b> · ` : ''}${esc(s.m.club.name)} · ${s.m.year}${s.m.name ? ` · ${esc(s.m.name)}` : ''}</div></div><button class="btn sm" data-act="loadRename" data-n="${s.n}" aria-label="Rename save ${s.n}">Rename</button><button class="btn sm ${del ? 'danger' : ''}" data-act="loadDelete" data-n="${s.n}" aria-label="Delete save ${s.n}">${del ? 'Delete?' : 'Delete'}</button></div>`;
         })
         .join('')}</div>`,
       { title: 'Load a save' },
@@ -861,7 +868,7 @@
     fn: '',
     ln: '',
     nat: 'ENG',
-    avatar: { e: '🧑', bg: '#1f6feb' },
+    avatar: { e: '', bg: '#1f6feb' },
     club: null,
     q: '', // club picker search
     lg: 'all', // club picker league filter
@@ -1097,7 +1104,6 @@
           )
           .join('')}</div>
         <div class="ng-label">Avatar</div>
-        <div class="avgrid">${W.AVATARS.map((e) => `<button class="avpick ${NG.avatar.e === e ? 'on' : ''}" data-act="ngAvatar" data-e="${e}" aria-label="Avatar ${e}">${e}</button>`).join('')}</div>
         <div class="swatches">${W.AVATAR_BG.map((bg) => `<button class="swatch ${NG.avatar.bg === bg ? 'on' : ''}" style="background:${bg}" data-act="ngAvatarBg" data-bg="${bg}" aria-label="Avatar background"></button>`).join('')}</div>
         <div class="ng-label">Save slot</div>
         <div class="seg">${FM.Save.SLOTS.map((n) => `<button class="${NG.slot === n ? 'on' : ''}" data-act="ngSlot" data-n="${n}">Slot ${n}${UI.slotMeta(n) ? ' (overwrite)' : ''}</button>`).join('')}</div>
@@ -1181,7 +1187,7 @@
           )
           .join('')}</div>`;
       const foot = (extra) =>
-        `<div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button>${extra}<button class="btn sm" data-act="ngRandom">🎲 Random</button><button class="btn sm" data-act="ngUnemployed">🧳 No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
+        `<div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button>${extra}<button class="btn sm" data-act="ngRandom">Random</button><button class="btn sm" data-act="ngUnemployed">No club</button><button class="btn sm pri grow" data-act="ngNext" ${NG.club && NG.club !== 'none' ? '' : 'disabled'}><span style="display:block;overflow:hidden;text-overflow:ellipsis">${NG.club && NG.club !== 'none' ? `${esc(D.allClubRows().find((r) => 'c_' + r[1] === NG.club)[0])} →` : 'Next →'}</span></button></div>`;
       const rowOf = (code) => D.allClubRows().find((r) => r[1] === code);
       if (view === 'ask') {
         // (arranged by continent: each has an "anywhere in" line, then its nations, each with its leagues)
@@ -1218,7 +1224,7 @@
           ])}
           <div class="ng-label">Where?</div><select id="ng-where"><option value="any" ${NG.want.where === 'any' ? 'selected' : ''}>Anywhere in the world</option>${leagueOpts}</select>
           <div class="actions" style="margin-top:18px"><button class="btn pri" data-act="ngSuggest">Suggest clubs</button><button class="btn" data-act="ngView" data-v="browse">Browse all ${U.plural(D.facts().clubs, 'club')}</button></div>
-          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">📖 Story starts</button><button class="btn sm" data-act="ngFirst">👍 Good first clubs</button></div>
+          <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="ngStories">Story starts</button><button class="btn sm" data-act="ngFirst">Good first clubs</button></div>
           ${UI.dbCard()}
           ${foot('')}`;
       } else if (view === 'story') {
@@ -1286,7 +1292,7 @@
             .map(([v, t]) => `<button class="${NG.df === v ? 'on' : ''}" data-act="ngDiff" data-v="${v}">${t}</button>`)
             .join('')}</div>
           <div id="ng-list">${UI._ngList()}</div>
-          ${foot('<button class="btn sm" data-act="ngView" data-v="ask" aria-label="Questions">❓</button>')}`;
+          ${foot('<button class="btn sm" data-act="ngView" data-v="ask" aria-label="Questions">?</button>')}`;
       }
     } else {
       // Your world: what's in it and the rules it plays by (each competition's real ones; not chosen here)
@@ -1301,8 +1307,8 @@
         ${UI.dbCard()}
         ${UI.simSetup()}
         <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${U.plural(D.facts().clubs, 'club')} in ${U.plural(D.facts().leagues, 'league')} across ${U.plural(D.facts().nations, 'nation')}, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a World Club Championship, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Championship every four years and continental championships in between.</div></details>
-        ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">🧳 You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
-        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet 🧳' : 'Start career ⚽'}</button></div>`;
+        ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
+        <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet' : 'Start career'}</button></div>`;
     }
     app.innerHTML = `<div class="title">${body}</div>`;
     const simBox = $('#ng-sim');
@@ -1514,7 +1520,7 @@
     UI.newCareer();
     const el = document.querySelector(`[data-act=ngClub][data-id="${NG.club}"]`);
     if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    UI.toast('🎲 Fate has chosen…');
+    UI.toast('Fate has chosen…');
   };
   UI.acts.ngStart = () => {
     $('#app').innerHTML =
@@ -1537,7 +1543,7 @@
           built = true;
         } catch (e) {
           console.warn(e);
-          UI.toast('⚠️ The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
+          UI.toast('The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
         }
       }
       if (!built) W.newWorld({ ...W.REAL_RULES, regionNations: NG.regionNations, sims });

@@ -1311,7 +1311,7 @@
               side: sd.idx,
               pid: p.id,
               min: tl.label,
-              text: `🟥 Second yellow! ${W.short(p)} is sent off.`,
+              text: `Second yellow! ${W.short(p)} is sent off.`,
               big: true,
             });
           } else {
@@ -1333,7 +1333,7 @@
               side: sd.idx,
               pid: p.id,
               min: tl.label,
-              text: `🟨 ${W.short(p)} booked ${why}.`,
+              text: `${W.short(p)} booked ${why}.`,
             });
           }
         } else if (Math.random() < CAL.redRate) {
@@ -1348,7 +1348,7 @@
             side: sd.idx,
             pid: o.p.id,
             min: tl.label,
-            text: `🟥 Straight red! ${W.short(o.p)} sees red for a reckless lunge.`,
+            text: `Straight red! ${W.short(o.p)} sees red for a reckless lunge.`,
             big: true,
           });
         }
@@ -1395,7 +1395,7 @@
               side: sd.idx,
               pid: p.id,
               min: tl.label,
-              text: `🚑 ${W.short(p)} ${U.pick(['goes down holding his hamstring.', 'pulls up clutching his thigh.', 'is down after a heavy challenge.', 'lands awkwardly and stays down.', "signals to the bench — he can't go on."])}`,
+              text: `${W.short(p)} ${U.pick(['goes down holding his hamstring.', 'pulls up clutching his thigh.', 'is down after a heavy challenge.', 'lands awkwardly and stays down.', "signals to the bench — he can't go on."])}`,
               big: true,
             });
             if (!sd.user) this.makeSub(sd, i, null, tl, out);
@@ -1512,7 +1512,7 @@
         pid: pIn.id,
         out: out && out.id,
         min: tl ? tl.label : this.clock,
-        text: `🔁 ${W.short(pIn)} replaces ${out ? W.short(out) : '—'}.`,
+        text: `${W.short(pIn)} replaces ${out ? W.short(out) : '—'}.`,
       };
       sd.subsMade.push(ev);
       (batch ? batch.events : this.events).push(ev);
@@ -1684,7 +1684,7 @@
   Match.SHOUTS = {
     push: {
       label: 'Push up',
-      icon: '⬆️',
+      icon: '▲',
       att: 0.05,
       mid: 0.01,
       def: -0.05,
@@ -1694,7 +1694,7 @@
     },
     hold: {
       label: 'Hold shape',
-      icon: '🧱',
+      icon: '',
       att: -0.04,
       def: 0.05,
       dur: 8,
@@ -1703,7 +1703,7 @@
     },
     tackle: {
       label: 'Get stuck in',
-      icon: '💪',
+      icon: '',
       mid: 0.03,
       att: 0.01,
       cards: 1.6,
@@ -1713,7 +1713,7 @@
     },
     calm: {
       label: 'Calm down',
-      icon: '🧘',
+      icon: '',
       cards: 0.4,
       mid: 0.01,
       dur: 8,
@@ -1723,7 +1723,7 @@
     },
     focus: {
       label: 'Concentrate',
-      icon: '🎯',
+      icon: '',
       def: 0.04,
       mid: 0.02,
       dur: 10,
@@ -1732,7 +1732,7 @@
     },
     cheer: {
       label: 'Encourage',
-      icon: '👏',
+      icon: '',
       conf: 0.3,
       morale: 2,
       att: 0.01,
@@ -1742,7 +1742,7 @@
     },
     slow: {
       label: 'Slow it down',
-      icon: '⏳',
+      icon: '…',
       att: -0.03,
       mid: 0.02,
       rate: 0.88,
@@ -1915,7 +1915,7 @@
       if (injured) {
         used['inj' + injured.p.id] = min;
         return mk('injury', {
-          icon: '🚑',
+          icon: '',
           title: `${W.short(injured.p)} is injured`,
           body: "The physio signals he can't continue at full speed.",
           quote: quote(FM.Staff.get('physio'), 'Take him off. Playing on risks a longer layoff.'),
@@ -1933,7 +1933,7 @@
       }
       if (m.events.some((e) => e.k === 'red' && e.side === sd.idx) && !used.red) {
         return mk('red', {
-          icon: '🟥',
+          icon: '',
           title: `Down to ${NUM_WORD[Math.max(1, m.onPitch(sd).length)] || m.onPitch(sd).length} men`,
           body: 'How do we respond?',
           quote: quote(
@@ -1975,7 +1975,7 @@
           .sort((a, b) => b.p.attrs.pace - a.p.attrs.pace)[0];
         if (opDef && ourFast && ourFast.p.attrs.pace - opDef.p.attrs.pace >= 3) {
           return mk('analyst', {
-            icon: '📊',
+            icon: '',
             title: 'Analyst insight',
             body: `Their ${D.POS_NAME[op.slots[opDef.i].t].toLowerCase()} ${W.short(opDef.p)} is struggling for pace. ${W.short(ourFast.p)} is winning every race.`,
             quote: quote(anl, `Overload that side — our data says it's their weak link.`),
@@ -1995,7 +1995,7 @@
       }
       if (min >= 55 && diff < 0 && since('chase', 18)) {
         return mk('chase', {
-          icon: '⏱️',
+          icon: '',
           title: `${Math.abs(diff) > 1 ? 'Two down' : 'Behind'} with ${90 - min} to play`,
           body: 'The crowd is getting restless.',
           quote: quote(
@@ -2030,7 +2030,7 @@
       }
       if (min >= 72 && diff > 0 && !used.protect) {
         return mk('protect', {
-          icon: '🛡️',
+          icon: '',
           title: 'Protect the lead?',
           body: `We lead ${sd.goals}–${op.goals}. ${U.plural(90 - min, 'minute')} left.`,
           quote: quote(asst, "Your call, boss. They'll come at us now."),
@@ -2068,7 +2068,7 @@
       }
       if (min >= 20 && last.length === 6 && last.every((v) => v * sign < -0.35) && since('pinned', 20)) {
         return mk('pinned', {
-          icon: '🌊',
+          icon: '',
           title: "They're pinning us back",
           body: `${op.club.name} are dominating the ball and territory.`,
           quote: quote(asst, "We can't get out. Change something or ride it out?"),
@@ -2114,7 +2114,7 @@
               .filter((p) => !Object.hasOwn(sd.on, p.id) && (slot === 'GK') === (p.pos === 'GK'))
               .sort((a, b) => W.effAt(b, slot) - W.effAt(a, slot))[0];
           return mk('tired', {
-            icon: '🔋',
+            icon: '',
             title: `${W.short(t.p)} is running on empty`,
             body: `Energy at ${Math.round(sd.st[t.p.id])}%. He's losing his duels.`,
             quote: quote(asst, pIn ? `${W.short(t.p)} is spent. Bring on ${W.short(pIn)}?` : 'Fresh legs would help.'),
@@ -2161,7 +2161,7 @@
       };
       return {
         id: 'ht',
-        icon: '🗣️',
+        icon: '',
         title: 'Half-time team talk',
         body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.\n${read.lines.map(([i, t]) => `${i} ${t}`).join('\n')}`,
         options: [

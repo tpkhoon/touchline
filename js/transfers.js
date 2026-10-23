@@ -102,7 +102,7 @@
       return { ok: false, msg: `His club want him to play regularly — they don't think he'd get minutes with you.` };
     if (fee > club.budget) return { ok: false, msg: `The loan fee exceeds your budget.` };
     T.loan(p, club.id, share, fee);
-    return { ok: true, msg: `✅ ${W.name(p)} joins on a season-long loan (${Math.round(share * 100)}% of wages).` };
+    return { ok: true, msg: `✓ ${W.name(p)} joins on a season-long loan (${Math.round(share * 100)}% of wages).` };
   };
   // A goal for a player we send out on loan: so many appearances at the host (and goals, for a forward), judged pro rata in the
   // monthly loan report (FM.Market.loanWatch)
@@ -288,7 +288,7 @@
     T.execute(p, club.id, fee, wage);
     return {
       ok: true,
-      msg: `✅ ${W.name(p)} signs for ${club.name}!${bonus ? ` Signing-on bonus: ${U.money(bonus)}.` : ''}`,
+      msg: `✓ ${W.name(p)} signs for ${club.name}!${bonus ? ` Signing-on bonus: ${U.money(bonus)}.` : ''}`,
     };
   };
 

@@ -28,7 +28,7 @@
     if (!live() || busy()) return;
     const sh = UI.sheet(
       `<div class="tiny dim" style="line-height:1.5">Fix a name or a rating in the world you are playing. A change takes effect at once and nothing marks the save.</div>
-      <button class="btn sm block" style="margin-top:10px" data-act="liveBulk">🧰 Bulk edit: many players, clubs or prizes at once</button>
+      <button class="btn sm block" style="margin-top:10px" data-act="liveBulk">Bulk edit: many players, clubs or prizes at once</button>
       <div class="ng-find" style="margin-top:10px"><input type="search" id="le-q" placeholder="A player or a club" autocomplete="off"></div>
       <div id="le-res"></div>`,
       { title: 'Edit the world' },
@@ -248,7 +248,7 @@
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">A nation's youth rating sets how good the academy intakes of its clubs are. It moves by itself every season.</div>`,
     }[bulkKind];
     const undo = UI._bulkUndo
-      ? `<div class="card flat" style="margin-top:12px"><div class="small">↩️ Last bulk edit: ${esc(UI._bulkUndo.label)}</div><button class="btn sm" style="margin-top:8px" data-act="bulkUndo">Undo it</button></div>`
+      ? `<div class="card flat" style="margin-top:12px"><div class="small">↩ Last bulk edit: ${esc(UI._bulkUndo.label)}</div><button class="btn sm" style="margin-top:8px" data-act="bulkUndo">Undo it</button></div>`
       : '';
     return `<div class="seg" style="margin-bottom:6px">${tabs}</div>${body}<div class="actions" style="margin-top:14px"><button class="btn pri block" id="bk-count" data-act="bulkApply">Apply</button></div>${undo}`;
   };
@@ -429,7 +429,7 @@
       if (live() && body && !body.querySelector('[data-act="' + act + '"]'))
         body.insertAdjacentHTML(
           'beforeend',
-          `<div class="actions" style="margin:14px 0 4px"><button class="btn sm" data-act="${act}" data-id="${esc(id)}">✏️ Edit</button></div>`,
+          `<div class="actions" style="margin:14px 0 4px"><button class="btn sm" data-act="${act}" data-id="${esc(id)}">Edit</button></div>`,
         );
       return r;
     };

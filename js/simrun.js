@@ -184,7 +184,7 @@
     showT = setTimeout(() => {
       if (!ov) return;
       ov.classList.remove('wait');
-      ov.innerHTML = `<div class="simbox"><div class="simball">⚽</div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? (typeof arg === 'object' && arg.until ? (arg.until === 'match' ? 'Simulating to your next match' : 'Simulating to the end of the season') : `Simulating ${arg} day${arg === 1 ? '' : 's'}`) : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div>${mode === 'toMatch' || mode === 'days' ? '<button class="btn sm" id="simStopBtn" data-act="simStop" style="margin-top:14px">⏹ Stop simming</button>' : ''}</div>`;
+      ov.innerHTML = `<div class="simbox"><div class="simball"></div><div class="h3">${mode === 'toMatch' ? 'Simulating to your next match' : mode === 'days' ? (typeof arg === 'object' && arg.until ? (arg.until === 'match' ? 'Simulating to your next match' : 'Simulating to the end of the season') : `Simulating ${arg} day${arg === 1 ? '' : 's'}`) : 'Simulating the matchday'}</div><div class="small dim" id="simLabel">Kicking off around the world…</div><div class="simbar"><i></i></div>${mode === 'toMatch' || mode === 'days' ? '<button class="btn sm" id="simStopBtn" data-act="simStop" style="margin-top:14px">Stop simming</button>' : ''}</div>`;
       if (R._label) progress(R._n, R._label);
     }, 180);
   }
@@ -237,7 +237,7 @@
       return out;
     } catch (e) {
       console.error('Simulation failed', e);
-      UI.toast('⚠️ Something went wrong simulating the day. Your save is unchanged — please report this bug.', 6000);
+      UI.toast('Something went wrong simulating the day. Your save is unchanged — please report this bug.', 6000);
       return null;
     } finally {
       UI.simBusy = false;

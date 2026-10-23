@@ -34,7 +34,7 @@
     const row = FM.Season.schedule(me.id).find((r) => !r.tbd && r.f.id === fx.id);
     if (!row || row.rest == null || row.rest > 3) return '';
     const tired = FM.W.pickXI(me.id, FM.S.user.tactic).xi.filter((p) => p && p.fitness < 80).length;
-    return `<div class="warnline">⏱ ${row.rest} day${row.rest === 1 ? '' : 's'} since your last match${row.load >= 3 ? ` — ${U.plural(row.load, 'game')} in 14 days` : ''}.${tired ? ` ${tired} of the XI below 80% fitness: think about rotating.` : ''}</div>`;
+    return `<div class="warnline">${row.rest} day${row.rest === 1 ? '' : 's'} since your last match${row.load >= 3 ? ` — ${U.plural(row.load, 'game')} in 14 days` : ''}.${tired ? ` ${tired} of the XI below 80% fitness: think about rotating.` : ''}</div>`;
   };
   MV.predictedXI = function (opp, key) {
     const t = opp.tactic,
@@ -122,7 +122,7 @@
       .map((p, i) => p && { p, t: slots[i].t, fit: W.fitAt(p, slots[i].t, slots[i], myTactic.roles[i]) })
       .filter((x) => x && x.fit < 0.8);
     UI.sheet(
-      `${derby ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚔️ ${esc(me.derby)} — the fans will never forget this one, win or lose.</div>` : heat >= FM.Records.EMERGING ? `<div class="warnline">🔥 ${heat >= FM.Records.RIVALRY ? `${esc(opp.name)} are rivals now` : `A rivalry is building with ${esc(opp.name)}`} — expect a big crowd and a few crunching tackles.</div>` : ''}
+      `${derby ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">${esc(me.derby)} — the fans will never forget this one, win or lose.</div>` : heat >= FM.Records.EMERGING ? `<div class="warnline">${heat >= FM.Records.RIVALRY ? `${esc(opp.name)} are rivals now` : `A rivalry is building with ${esc(opp.name)}`} — expect a big crowd and a few crunching tackles.</div>` : ''}
       <div class="row" style="justify-content:space-around;text-align:center;margin:6px 0 12px"><div>${C.crest(CL(fx.h), 56)}<div class="small b">${esc(CL(fx.h).name)}</div></div><div class="h2">VS</div><div>${C.crest(CL(fx.a), 56)}<div class="small b">${esc(CL(fx.a).name)}</div></div></div>
       <div class="card"><div class="h3">Opposition</div>
         <div class="row small" style="margin-top:8px"><span class="grow dim">Manager</span><b>${mgr ? esc(mgr.fn + ' ' + mgr.ln) : '—'}</b></div>${UI.mgrLegendLine ? UI.mgrLegendLine(mgr, opp.id, me.id) : ''}
@@ -142,11 +142,11 @@
           )
           .join(' · ')}</div>
         ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, FM.W.shirt(p)) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
-      ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">⚠️ ${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
+      ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(x.p.ln)} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
       ${MV.oppCard(fx)}
       ${MV.talkCard(fx)}
-      <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">⚡ Instant</button></div>`,
+      <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">Instant</button></div>`,
       { title: fx.po || (FM.S.comps[fx.comp] ? FM.S.comps[fx.comp].name : 'International') },
     );
   };
@@ -155,21 +155,21 @@
     const out = [];
     // Bookings count across all club competitions
     xi.filter((p) => p.season.yc % 5 === 4 && !nt).forEach((p) =>
-      out.push(['🟨', `${W.short(p)} is one booking from a one-match ban.`]),
+      out.push(['', `${W.short(p)} is one booking from a one-match ban.`]),
     );
     const tired = xi.filter((p) => p.fitness < 70).sort((a, b) => a.fitness - b.fitness);
     if (tired.length)
       out.push([
-        '🔋',
+        '',
         `${tired.map((p) => `${W.short(p)} (${Math.round(p.fitness)}%)`).join(', ')} ${tired.length === 1 ? 'is' : 'are'} short of match fitness — injury risk and a weaker second half.`,
       ]);
     // (players out of position have their own warning above the reminders)
-    if (xi.length < 11) out.push(['⚠️', `Only ${xi.length} fit players for the starting XI.`]);
+    if (xi.length < 11) out.push(['', `Only ${xi.length} fit players for the starting XI.`]);
     if (!nt) {
       const leaving = xi.filter((p) => !p.loan && p.contract <= FM.S.year);
       if (leaving.length)
         out.push([
-          '⏳',
+          '…',
           `${leaving.map((p) => W.short(p)).join(', ')} ${leaving.length === 1 ? 'is' : 'are'} out of contract this summer.`,
         ]);
     }
@@ -200,7 +200,7 @@
       <div id="insList">${Object.entries(Md.INS)
         .map(([id, d]) => {
           const a = advice[id];
-          return `<button class="btn sm ins ${MV.ins.includes(id) ? 'pri' : ''}" style="margin:4px 4px 0 0" data-act="insPick" data-v="${id}" title="${esc(d.desc)}">${esc(d.short)}${a ? (a.s > 0 ? ' 👍' : ' ⚠️') : ''}</button>`;
+          return `<button class="btn sm ins ${MV.ins.includes(id) ? 'pri' : ''}" style="margin:4px 4px 0 0" data-act="insPick" data-v="${id}" title="${esc(d.desc)}">${esc(d.short)}${a ? (a.s > 0 ? '' : '') : ''}</button>`;
         })
         .join('')}</div>
       <div class="small muted" id="insDesc" style="margin-top:8px;line-height:1.45">${MV.insDesc()}</div>
@@ -213,7 +213,7 @@
       ? MV.ins
           .map(
             (id) =>
-              `<b>${esc(Md.INS[id].label)}.</b> ${esc(Md.INS[id].desc)}.${adv[id] && adv[id].s < 0 ? ` <span style="color:var(--warn)">⚠️ ${esc(adv[id].why)}.</span>` : ''}`,
+              `<b>${esc(Md.INS[id].label)}.</b> ${esc(Md.INS[id].desc)}.${adv[id] && adv[id].s < 0 ? ` <span style="color:var(--warn)">${esc(adv[id].why)}.</span>` : ''}`,
           )
           .join('<br>')
       : 'No instructions: play the system as set.';
@@ -251,7 +251,7 @@
         )
         .join('')}</div>
       <div class="small muted" id="talkDesc" style="margin-top:8px;line-height:1.45">${MV.talkDesc(sugg)}</div>
-      ${ctx.notes && ctx.notes.length ? `<div class="tiny" style="margin-top:6px;color:var(--warn)">😬 Weighing on the players: ${esc(ctx.notes.join('; '))}.</div>` : ''}
+      ${ctx.notes && ctx.notes.length ? `<div class="tiny" style="margin-top:6px;color:var(--warn)">Weighing on the players: ${esc(ctx.notes.join('; '))}.</div>` : ''}
       ${capt ? `<div class="tiny dim" style="margin-top:6px">© ${esc(W.name(capt))} leads the team out${W.hasTrait(capt, 'Leader') ? ' — a Leader keeps heads level if the message misses' : ''}.</div>` : ''}</div>
       <div class="card"><div class="h3">Warm-up</div>
       <div class="seg" style="margin-top:8px">${Object.entries(Md.WARMUPS)
@@ -268,7 +268,7 @@
     const el = document.getElementById('warmDesc');
     if (el) el.textContent = FM.Matchday.WARMUPS[d.v].desc + '.';
   };
-  MV.talkDesc = (k) => `${esc(FM.Matchday.TALKS[k].desc)}.${k === MV.talkSugg ? " <b>💡 Assistant's pick.</b>" : ''}`;
+  MV.talkDesc = (k) => `${esc(FM.Matchday.TALKS[k].desc)}.${k === MV.talkSugg ? " <b>Assistant's pick.</b>" : ''}`;
   UI.acts.talkPick = (d) => {
     MV.talk = d.v;
     document.querySelectorAll('[data-act=talkPick]').forEach((b) => b.classList.toggle('on', b.dataset.v === d.v));
@@ -354,11 +354,11 @@
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
     ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(MV.teamName(H.club))}</span>${MV.shirt(m, 0)}</div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(MV.teamName(A.club))}</span>${MV.shirt(m, 1)}</div></div>
-      <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · ⚔️ DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
+      <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
       <div class="m-mom${text ? ' big' : ''}"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>${text ? '<div class="m-panel" id="mPanel"></div>' : ''}
-      <div class="m-ticker${text ? ' m-feed' : ''}" id="mTicker"><div>The teams are out${capt ? `, ${esc(W.short(capt))} wearing the armband` : ''}. ${esc(H.club.name)} vs ${esc(A.club.name)}.</div>${talkMsg ? `<div>🗣️ ${esc(talkMsg)}</div>` : ''}</div>
+      <div class="m-ticker${text ? ' m-feed' : ''}" id="mTicker"><div>The teams are out${capt ? `, ${esc(W.short(capt))} wearing the armband` : ''}. ${esc(H.club.name)} vs ${esc(A.club.name)}.</div>${talkMsg ? `<div>${esc(talkMsg)}</div>` : ''}</div>
       <div class="m-ctrl"><button id="mPause" data-act="mPause">Pause</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mShout">Shout</button><button data-act="mSubs">Subs</button><button data-act="mSkip">Skip ▾</button></div>`;
     document.getElementById('app').appendChild(ov);
     MV.st = {
@@ -517,7 +517,7 @@
       d = Math.max(420, dur * 1.1);
       arc = a.type === 'longshot' ? 0.02 : 0;
       if (a.big) {
-        MV.banner(`⚡ ${MV.m.clock}`, MV.pendingChanceText || 'Big chance…', false);
+        MV.banner(`${MV.m.clock}`, MV.pendingChanceText || 'Big chance…', false);
       }
     }
     st.act = { a, t: 0, dur: d, x0: b.x, y0: b.y, x1, y1, arc };
@@ -553,7 +553,7 @@
     const out = m.step();
     if (!out) return;
     if (out.ev === 'HT') {
-      MV.ticker('⏸ Half-time');
+      MV.ticker('Half-time');
       st.restartNext = { side: m.ball.side, to: m.ball.slot }; // (the second half is kicked off from the centre spot)
       MV.banner('HALF-TIME', `${m.sides[0].goals}–${m.sides[1].goals}. Time for the team talk.`);
       return MV.showPrompt(FM.Prompts.halftime(m));
@@ -562,7 +562,7 @@
       const aggLine = m.agg
         ? `Level on aggregate at ${m.agg[0] + m.sides[0].goals}–${m.agg[1] + m.sides[1].goals}${m.awayGoals ? ', away goals level too' : ''}. `
         : '';
-      MV.ticker(m.agg ? '⏱ Level on aggregate — extra time!' : '⏱ Extra time!');
+      MV.ticker(m.agg ? 'Level on aggregate — extra time!' : 'Extra time!');
       MV.banner('EXTRA TIME', `${aggLine}Thirty more minutes.`);
       st.hold = 1200;
       return;
@@ -612,10 +612,10 @@
       void sc.offsetWidth;
       sc.classList.add('pop');
       if (mine) FM.Native.haptic('goal');
-      MV.ticker(`⚽ ${e.min} ${e.text}`, e.side);
+      MV.ticker(`${e.min} ${e.text}`, e.side);
     } else if (e.k === 'chance') {
       if (e.big) MV.banner(`${e.outcome === 'saved' ? 'SAVE' : 'CHANCE'} · ${e.min}`, e.text, false, e.side);
-      MV.ticker(`${e.outcome === 'saved' ? '🧤' : '💨'} ${e.min} ${e.text}`, e.side);
+      MV.ticker(`${e.outcome === 'saved' ? '' : ''} ${e.min} ${e.text}`, e.side);
     } else if (e.text) {
       if (e.big) MV.banner(`${e.min || ''}`, e.text, false, e.side);
       MV.ticker(`${e.min ? e.min + ' ' : ''}${e.text}`, e.side);
@@ -929,7 +929,7 @@
     const msg = o.subIn ? (MV.doSub(o.subOut, o.subIn) ? null : o.apply(MV.m)) : o.apply(MV.m);
     document.querySelectorAll('#matchOv .prompt').forEach((e) => e.remove());
     st.prompt = null;
-    if (msg) MV.ticker('📋 ' + msg);
+    if (msg) MV.ticker('' + msg);
     if (o.sub !== undefined) MV.subsSheet(o.sub >= 0 ? o.sub : null);
     MV.promptLog = (MV.promptLog || []).concat([`${MV.m.clock} ${p.title} → ${o.label}`]);
   };
@@ -976,7 +976,7 @@
       ${wait ? `<div class="tiny dim" style="margin-top:8px">The last call needs ${wait} more minute${wait === 1 ? '' : 's'} to sink in.</div>` : ''}
       <button class="btn pri block" style="margin-top:14px" data-act="mResume">Resume</button>`;
     if (document.querySelector('.sheet-wrap')) UI.refreshSheet(html);
-    else UI.sheet(html, { title: '📣 Shouts', onClose: () => (MV.st.paused = false) });
+    else UI.sheet(html, { title: 'Shouts', onClose: () => (MV.st.paused = false) });
   };
   UI.acts.mShoutDo = (d) => {
     const r = MV.m.shout(MV.m.sides[MV.us], d.k);
@@ -984,7 +984,7 @@
       UI.toast(r.msg, 2500);
       return MV.shoutSheet();
     }
-    MV.ticker(`📣 ${r.msg}`);
+    MV.ticker(`${r.msg}`);
     UI.acts.mResume();
   };
   MV.tacticsSheet = function () {
@@ -995,7 +995,7 @@
     const B = FM.S.user.tactic2,
       planB =
         B && !sd.switched && sd.club.sim !== 'nation'
-          ? `<button class="btn block" style="margin-bottom:14px" data-act="mPlanB">🔁 Switch to Plan B · ${B.formation} · ${B.buildup} · ${B.press} (familiarity ${Math.round(B.fam ?? 40)}%)</button>`
+          ? `<button class="btn block" style="margin-bottom:14px" data-act="mPlanB">Switch to Plan B · ${B.formation} · ${B.buildup} · ${B.press} (familiarity ${Math.round(B.fam ?? 40)}%)</button>`
           : sd.switched
             ? '<div class="tiny dim" style="margin-bottom:10px">Playing Plan B.</div>'
             : '';
@@ -1011,7 +1011,7 @@
   };
   UI.acts.mTac = (d) => {
     MV.m.sides[MV.us].tactic[d.k] = d.v;
-    MV.ticker(`📋 Switched to ${d.v}`);
+    MV.ticker(`Switched to ${d.v}`);
     MV.tacticsSheet();
   };
   UI.acts.mPlanB = () => {
@@ -1020,7 +1020,7 @@
     if (!B) return;
     if (MV.m.changeAt == null) MV.m.changeAt = MV.m.momentum.length;
     MV.m.switchTactic(sd, B);
-    MV.ticker(`📋 Plan B: ${B.formation}, ${B.buildup}, ${B.press}`);
+    MV.ticker(`Plan B: ${B.formation}, ${B.buildup}, ${B.press}`);
     MV.tacticsSheet();
   };
   UI.acts.mInv = () => {
@@ -1047,7 +1047,7 @@
       const on = m.onPitch(sd);
       const bench = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id));
       return `<div class="small muted">Subs left: <b>${sd.subsLeft}</b> of ${W.rule(m.comp, 'subs')}</div>
-        <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? '🚑' : ''}${sd.yc[p.id] ? '🟨' : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
+        <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? '' : ''}${sd.yc[p.id] ? '' : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
         <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + C.starText(W.effAt(p, sd.slots[MV._subOut].t), sd.slots[MV._subOut].t) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
         <button class="btn block" style="margin-top:12px" data-act="mResume">Done</button>`;
     };
@@ -1170,10 +1170,10 @@
         ${m.agg ? `<div class="center small b">Aggregate ${m.agg[0] + H.goals}–${m.agg[1] + A.goals} · ${esc(m.sides[m.tieWinner() ?? 0].club.name)} go through</div>` : ''}
         <div class="row small" style="align-items:flex-start;opacity:.92"><div class="grow">${res.goals
           .filter((g) => g.side === 0)
-          .map((g) => `⚽ ${C.pname(P(g.pid))} ${g.min}`)
+          .map((g) => `${C.pname(P(g.pid))} ${g.min}`)
           .join('<br>')}</div><div class="grow" style="text-align:right">${res.goals
           .filter((g) => g.side === 1)
-          .map((g) => `${C.pname(P(g.pid))} ${g.min} ⚽`)
+          .map((g) => `${C.pname(P(g.pid))} ${g.min}`)
           .join('<br>')}</div></div></div>
       <div style="padding:12px 16px 0"><div class="chips" id="postChips">${[
         ['summary', 'Summary'],
@@ -1248,10 +1248,10 @@
           .filter((e) => ['goal', 'red', 'injury', 'sub', 'pens'].includes(e.k) || (e.k === 'chance' && e.big))
           .map(
             (e) =>
-              `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:40px">${e.min || ''}</span><span class="grow">${MV.teamTag(m, e.side)}${e.k === 'goal' ? '⚽ ' : e.k === 'chance' ? (e.outcome === 'saved' ? '🧤 ' : '💨 ') : ''}${esc(e.text)}</span></div>`,
+              `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:40px">${e.min || ''}</span><span class="grow">${MV.teamTag(m, e.side)}${e.k === 'goal' ? '' : e.k === 'chance' ? (e.outcome === 'saved' ? '' : '') : ''}${esc(e.text)}</span></div>`,
           )
           .join('')}</div>
-        ${MV.promptLog && MV.promptLog.length ? `<div class="card"><div class="h3">Your decisions</div>${MV.promptLog.map((l) => `<div class="small muted" style="margin-top:6px">📋 ${esc(l)}</div>`).join('')}</div>` : ''}`;
+        ${MV.promptLog && MV.promptLog.length ? `<div class="card"><div class="h3">Your decisions</div>${MV.promptLog.map((l) => `<div class="small muted" style="margin-top:6px">${esc(l)}</div>`).join('')}</div>` : ''}`;
     } else if (t === 'ratings') {
       const list = (sd) =>
         Object.entries(sd.rating)
@@ -1259,12 +1259,12 @@
           .sort((a, b) => b[1] - a[1])
           .map(
             ([pid, r]) =>
-              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}${pid === m.motm ? ' ⭐' : ''}${res.goals
+              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}${pid === m.motm ? '' : ''}${res.goals
                 .filter((g) => g.pid === pid)
-                .map(() => ' ⚽')
+                .map(() => '')
                 .join('')}${res.goals
                 .filter((g) => g.ast === pid)
-                .map(() => ' 🅰️')
+                .map(() => '')
                 .join(
                   '',
                 )}</span><span class="dim tiny" style="margin-right:6px">${sd.mins[pid]}'</span>${C.rating(r)}</div>`,

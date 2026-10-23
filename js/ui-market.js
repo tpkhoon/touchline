@@ -14,7 +14,7 @@
   // "Window open · 3 days left" / "Deadline day"
   UI.windowLabel = () => {
     const n = M.daysLeft();
-    return n === 1 ? '⏰ Deadline day' : n ? `Window open · ${U.plural(n, 'day')} left` : 'Window closed';
+    return n === 1 ? 'Deadline day' : n ? `Window open · ${U.plural(n, 'day')} left` : 'Window closed';
   };
 
   // ======================= The Transfers tab =======================
@@ -25,16 +25,16 @@
       c = W.userClub(),
       win = FM.Season.windowOpen();
     const CL = (id) => FM.clubOf(id);
-    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${win ? '🟢' : '🔴'}</span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14. Until then only free agents can sign.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
+    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px"><span style="color:var(--${win ? 'good' : 'bad'})">●</span></span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14. Until then only free agents can sign.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
     const links = `<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">${[
-      ['search', '🔎 Search players'],
-      ['free', '🆓 Free agents'],
-      ['shortlist', '⭐ Shortlist'],
-      ['market', '🌍 Transfer Centre'],
+      ['search', 'Search players'],
+      ['free', 'Free agents'],
+      ['shortlist', 'Shortlist'],
+      ['market', 'Transfer Centre'],
       ...(c &&
       (s.comps[c.comp].rules.mls || s.comps[c.comp].rules.uni) &&
       (FM.Draft.current() || (s.draftLog || []).length)
-        ? [['draft', FM.Draft.isUni(c.comp) ? '🎓 Graduates' : '🎓 Draft']]
+        ? [['draft', FM.Draft.isUni(c.comp) ? 'Graduates' : 'Draft']]
         : []),
     ]
       .map(([v, l]) => `<button class="btn sm grow" data-act="trGo" data-v="${v}">${l}</button>`)
@@ -56,7 +56,7 @@
           ? players
               .map(
                 (p) =>
-                  `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="${act}" data-id="${p.id}">📣 Offer</button></div>`,
+                  `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><div class="grow tap" data-act="player" data-id="${p.id}" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="tiny dim">${C.pos(p)} ${W.age(p)} · ${C.starText(p.ca, p.pos)} · ${U.money(p.value)}</div></div><button class="btn sm pri" data-act="${act}" data-id="${p.id}">Offer</button></div>`,
               )
               .join('')
           : `<div class="small dim" style="padding:10px 0">${empty}</div>`
@@ -97,7 +97,7 @@
     const deal = (t) => {
       const buy = W.isUser(t.to),
         other = buy ? t.from && CL(t.from) : CL(t.to);
-      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><span style="width:20px">${buy ? '🟢' : '🔴'}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''}</div><div class="tiny dim">${buy ? 'from' : 'to'} ${other ? esc(other.name) : 'free agency'}</div></div><div style="text-align:right"><b>${t.fee ? U.money(t.fee) : 'Free'}</b>${t.inst ? `<div class="tiny dim">total · ${t.inst} instalments</div>` : ''}</div></div>`;
+      return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><span style="width:20px"><span style="color:var(--${buy ? 'good' : 'bad'})">●</span></span><div class="grow" style="min-width:0"><div class="b ellip">${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''}</div><div class="tiny dim">${buy ? 'from' : 'to'} ${other ? esc(other.name) : 'free agency'}</div></div><div style="text-align:right"><b>${t.fee ? U.money(t.fee) : 'Free'}</b>${t.inst ? `<div class="tiny dim">total · ${t.inst} instalments</div>` : ''}</div></div>`;
     };
     const deals = `<div class="sec"><div class="h3">Your deals this season</div><span class="dim small">${mine.length}</span></div><div class="card flat" style="padding:2px 12px">${mine.slice(0, 10).map(deal).join('') || '<div class="empty">No deals yet this season.</div>'}</div>`;
     // the biggest elsewhere
@@ -163,7 +163,7 @@
     n.data.loan
       ? `<div class="row" style="margin-top:10px;gap:6px;flex-wrap:wrap"><button class="btn sm pri" data-act="bid" data-id="${n.id}" data-v="1">Accept the loan</button><button class="btn sm" data-act="bid" data-id="${n.id}" data-v="0">Turn it down</button><span class="grow"></span><button class="btn sm" data-act="player" data-id="${n.data.pid}">View</button></div>`
       : (n.data.deal
-          ? `<div class="tiny" style="margin-top:8px">💷 Paid as ${esc(M.describeDeal(n.data.fee, n.data.deal))}</div>`
+          ? `<div class="tiny" style="margin-top:8px">Paid as ${esc(M.describeDeal(n.data.fee, n.data.deal))}</div>`
           : '') +
         `<div class="row" style="margin-top:10px;gap:6px;flex-wrap:wrap"><button class="btn sm pri" data-act="bid" data-id="${n.id}" data-v="1">Accept ${U.money(n.data.fee)}</button>${[1.15, 1.3].map((m) => `<button class="btn sm" data-act="bidCounter" data-id="${n.id}" data-v="${m}">Ask ${U.money(U.roundMoney(n.data.fee * m))}</button>`).join('')}<button class="btn sm" data-act="bidNeg" data-id="${n.id}">Negotiate…</button><button class="btn sm" data-act="bid" data-id="${n.id}" data-v="0">Reject</button><span class="grow"></span><button class="btn sm" data-act="player" data-id="${n.data.pid}">View</button></div>`;
   // ---------- Negotiating a bid for your player ----------
@@ -252,7 +252,7 @@
     const d = M.dd(),
       i = d ? d.i : 0,
       next = M.DD_HOURS[i];
-    return `<div class="card row tap" data-act="ddOpen" style="border:1px solid var(--warn)"><span style="font-size:28px">⏰</span><div class="grow"><div class="h3">Deadline day${next ? ` · ${String(next).padStart(2, '0')}:00` : ' · window shut'}</div><div class="tiny dim">${next ? 'Follow it hour by hour: late bids, panic buys, deals collapsing.' : 'The window has shut. Advance to play the day.'}</div></div><span class="dim">›</span></div>`;
+    return `<div class="card row tap" data-act="ddOpen" style="border:1px solid var(--warn)"><span style="font-size:28px"></span><div class="grow"><div class="h3">Deadline day${next ? ` · ${String(next).padStart(2, '0')}:00` : ' · window shut'}</div><div class="tiny dim">${next ? 'Follow it hour by hour: late bids, panic buys, deals collapsing.' : 'The window has shut. Advance to play the day.'}</div></div><span class="dim">›</span></div>`;
   };
   UI.acts.ddOpen = () => UI.deadlineSheet();
   UI.deadlineSheet = function () {
@@ -269,11 +269,11 @@
           .join('')
       : '<div class="small dim" style="padding:8px 0">09:00. Phones are ringing. Step through the day hour by hour.</div>';
     const html = `<div class="row"><div class="h2 grow">${next ? `${String(next).padStart(2, '0')}:00` : 'Window shut'}</div><span class="tiny dim">Budget ${U.money(W.userClub().budget)}</span></div>
-      <div class="row" style="gap:8px;margin:10px 0">${next ? `<button class="btn pri grow" data-act="ddNext">Next hour ▶</button><button class="btn grow" data-act="ddAll">To 23:00 ⏩</button>` : '<button class="btn grow" data-act="closeSheet">Done</button>'}</div>
+      <div class="row" style="gap:8px;margin:10px 0">${next ? `<button class="btn pri grow" data-act="ddNext">Next hour ▶</button><button class="btn grow" data-act="ddAll">To 23:00</button>` : '<button class="btn grow" data-act="closeSheet">Done</button>'}</div>
       <div class="row" style="gap:8px;margin-bottom:6px"><button class="btn sm grow" data-act="ddGo" data-v="market">Transfer Centre</button><button class="btn sm grow" data-act="ddGo" data-v="reply">Bids to answer</button></div>
       <div class="card flat" style="padding:2px 12px;max-height:55vh;overflow:auto">${log}</div>`;
     if (document.querySelector('.sheet-wrap .dd-sheet')) UI.refreshSheet(`<div class="dd-sheet">${html}</div>`);
-    else UI.sheet(`<div class="dd-sheet">${html}</div>`, { title: '⏰ Deadline day' });
+    else UI.sheet(`<div class="dd-sheet">${html}</div>`, { title: 'Deadline day' });
   };
   UI.acts.ddNext = () => {
     M.deadlineHour();
@@ -308,7 +308,7 @@
     const d = Dr && Dr.current();
     if (!d || !W.employed() || !Dr.userToPick()) return '';
     const left = d.order.slice(d.pick).filter((id) => W.isUser(id)).length;
-    return `<div class="card row tap" data-act="draftOpen" style="border:1px solid var(--acc)"><span style="font-size:28px">🎓</span><div class="grow"><div class="h3">You're on the clock · pick ${d.pick + 1}</div><div class="tiny dim">${left} pick${left === 1 ? '' : 's'} left in the ${d.year} draft. Advancing the day lets your assistant pick for you.</div></div><span class="dim">›</span></div>`;
+    return `<div class="card row tap" data-act="draftOpen" style="border:1px solid var(--acc)"><span style="font-size:28px"></span><div class="grow"><div class="h3">You're on the clock · pick ${d.pick + 1}</div><div class="tiny dim">${left} pick${left === 1 ? '' : 's'} left in the ${d.year} draft. Advancing the day lets your assistant pick for you.</div></div><span class="dim">›</span></div>`;
   };
   const prospectRow = (p, act) => {
     const star = (ca, pos) => W.stars(ca, pos);
@@ -344,7 +344,7 @@
         .join('')}${own.length ? '' : ''}`;
     }
     UI.sheet(html, {
-      title: d ? `🎓 ${d.year} ${Dr.isUni(d.comp) ? 'Graduate draft' : 'Draft'}` : '🎓 Draft results',
+      title: d ? `${d.year} ${Dr.isUni(d.comp) ? 'Graduate draft' : 'Draft'}` : 'Draft results',
       full: true,
     });
   };
@@ -366,11 +366,11 @@
     UI.render();
   };
   UI.BID_STATUS = {
-    accepted: '✅ Accepted',
-    rejected: '❌ Rejected',
-    expired: '⌛ Expired',
-    refused: '🙅 He said no',
-    withdrawn: '🚪 They pulled out',
+    accepted: '✓ Accepted',
+    rejected: '✕ Rejected',
+    expired: 'Expired',
+    refused: 'He said no',
+    withdrawn: 'They pulled out',
     void: '—',
   };
   UI.acts.bidCounter = (d, el) => {
@@ -387,8 +387,8 @@
   // ---------- Trials ----------
   UI.trialButton = (p) => {
     if (p.clubId || !W.employed()) return '';
-    if (M.onTrial(p)) return '<button class="btn sm grow" disabled>🏃 On trial</button>';
-    return `<button class="btn sm grow" data-act="trial" data-id="${p.id}">🏃 Trial</button>`;
+    if (M.onTrial(p)) return '<button class="btn sm grow" disabled>On trial</button>';
+    return `<button class="btn sm grow" data-act="trial" data-id="${p.id}">Trial</button>`;
   };
   UI.acts.trial = (d) => {
     const r = M.startTrial(d.id);
@@ -409,7 +409,7 @@
       sp = W.spell(p),
       open = FM.Season.windowOpen();
     const g = p.loan.goal;
-    return `<div class="warnline" style="margin-bottom:12px">${g ? `🎯 Loan goal: ${esc(g.label)} · ` : ''}On loan at ${esc(host.name)}: ${sp.apps} appearance${sp.apps === 1 ? '' : 's'}${g && g.goals ? `, ${sp.goals} goal${sp.goals === 1 ? '' : 's'}` : ''} so far${p.loan.promised ? ' · they promised him minutes' : ''}${p.loan.recall ? ' · recall booked for the next window' : ''}. <button class="btn sm" data-act="recallLoan" data-id="${p.id}" ${p.loan.recall && !open ? 'disabled' : ''}>${open ? 'Recall now' : 'Recall when the window opens'}</button></div>`;
+    return `<div class="warnline" style="margin-bottom:12px">${g ? `Loan goal: ${esc(g.label)} · ` : ''}On loan at ${esc(host.name)}: ${sp.apps} appearance${sp.apps === 1 ? '' : 's'}${g && g.goals ? `, ${sp.goals} goal${sp.goals === 1 ? '' : 's'}` : ''} so far${p.loan.promised ? ' · they promised him minutes' : ''}${p.loan.recall ? ' · recall booked for the next window' : ''}. <button class="btn sm" data-act="recallLoan" data-id="${p.id}" ${p.loan.recall && !open ? 'disabled' : ''}>${open ? 'Recall now' : 'Recall when the window opens'}</button></div>`;
   };
   UI.acts.recallLoan = (d) => {
     const p = P(d.id);
@@ -444,7 +444,7 @@
         x.why === 'addon'
           ? `after ${U.plural(x.apps, 'appearance')}`
           : `${Math.floor(x.due / 1000)}/${String((Math.floor(x.due / 1000) + 1) % 100).padStart(2, '0')}`;
-      return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '➡️' : '⬅️'} ${C.pname(p)} <span class="tiny dim">${esc(x.why === 'addon' ? 'add-on' : 'instalment')} · ${other ? esc(other.short) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
+      return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '→' : '←'} ${C.pname(p)} <span class="tiny dim">${esc(x.why === 'addon' ? 'add-on' : 'instalment')} · ${other ? esc(other.short) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
     };
     const clauses = Object.values(s.players).filter(
       (p) => !p.retired && p.sellOn && p.sellOn.some((x) => x.c === c.id),

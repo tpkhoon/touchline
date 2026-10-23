@@ -98,15 +98,15 @@
   Md.SP = {
     pen: {
       label: 'Penalties',
-      icon: '🎯',
+      icon: '',
       score: (A) => (A.finishing * 1.2 + A.composure * 1.3 + A.technique * 0.5) / 3,
     },
     fk: {
       label: 'Free kicks',
-      icon: '🌀',
+      icon: '',
       score: (A) => (A.technique * 1.3 + A.finishing * 0.8 + A.vision * 0.4 + A.composure * 0.5) / 3,
     },
-    cor: { label: 'Corners', icon: '⛳', score: (A) => (A.passing * 1.1 + A.technique + A.vision * 0.9) / 3 },
+    cor: { label: 'Corners', icon: '', score: (A) => (A.passing * 1.1 + A.technique + A.vision * 0.9) / 3 },
   };
   Md.spScore = (p, k) => Md.SP[k].score(p.attrs) + (W.hasTrait(p, 'Set-Piece Expert') ? 3 : 0);
   Md.bestTaker = (players, k) =>
@@ -320,22 +320,22 @@
     const rep = { press: T.press, width: T.width, buildup: T.buildup, fb, key, lead, pace: key ? key.attrs.pace : 0 };
     const lines = [];
     if (T.press === 'High Press')
-      lines.push(['🔥', 'They press high: the space behind their line is there for counters.']);
+      lines.push(['', 'They press high: the space behind their line is there for counters.']);
     if (T.press === 'Low Block')
-      lines.push(['🧱', 'They sit deep and compact: the middle is shut, and they give up shots from distance.']);
-    if (T.width === 'Narrow') lines.push(['↔️', 'A narrow side: the flanks are open to crosses.']);
-    if (T.width === 'Wide') lines.push(['↔️', 'They play wide: stretched in the middle, strong on the wings.']);
-    if (T.buildup === 'Direct') lines.push(['🚀', 'They go long early: win the first ball.']);
-    if (T.buildup === 'Counter') lines.push(['↩️', 'Built to counter: do not leave space behind us.']);
+      lines.push(['', 'They sit deep and compact: the middle is shut, and they give up shots from distance.']);
+    if (T.width === 'Narrow') lines.push(['↔', 'A narrow side: the flanks are open to crosses.']);
+    if (T.width === 'Wide') lines.push(['↔', 'They play wide: stretched in the middle, strong on the wings.']);
+    if (T.buildup === 'Direct') lines.push(['', 'They go long early: win the first ball.']);
+    if (T.buildup === 'Counter') lines.push(['↩', 'Built to counter: do not leave space behind us.']);
     if (fb.side && fb.gap >= 6)
       lines.push([
-        '🎯',
+        '',
         `Their ${fb.side} side is the weaker: ${fb.gap >= 10 ? 'a big gap' : 'a clear step down'} between their flanks.`,
       ]);
     // (in words: everything else in the game uses stars, not rating points)
     if (key && lead >= 5)
       lines.push([
-        '⭐',
+        '',
         `${W.name(key)} is their danger: ${lead >= 14 ? 'in a different class from' : lead >= 9 ? 'far better than' : 'clearly better than'} their other attackers.`,
       ]);
     const advice = Object.keys(Md.INS)
@@ -380,7 +380,7 @@
       out.push({
         tag: 'instruction',
         kind: ok ? 'good' : 'bad',
-        icon: '📋',
+        icon: '',
         weight: ok ? 1.1 : 1.15,
         title: `${L}: ${ok ? 'it worked' : 'it did not'}`,
         text,
@@ -400,7 +400,7 @@
     const cAg = ty(op, 'counter');
     if (T.press === 'High Press' && cAg[0] >= 2) {
       lines.push([
-        '↩️',
+        '↩',
         `${cAg[0]} counter-attack chances against us (${cAg[2].toFixed(2)} xG): the press leaves space behind.`,
       ]);
       offer('Drop the press a notch', 'Mid block: they get fewer runs in behind.', () => {
@@ -410,7 +410,7 @@
     }
     const central = ty(op, 'through')[2] + ty(op, 'cutback')[2];
     if (T.press === 'Low Block' && central >= 0.7) {
-      lines.push(['🕳️', `They have found ${central.toFixed(2)} xG through the middle: the block is being opened.`]);
+      lines.push(['', `They have found ${central.toFixed(2)} xG through the middle: the block is being opened.`]);
       offer('Step up to a mid block', 'Get tighter to them so the passes through are cut off.', () => {
         T.press = 'Mid Block';
         return 'Stepping up: the block moves higher.';
@@ -418,7 +418,7 @@
     }
     const crossAg = ty(op, 'cross')[2] + ty(op, 'cutback')[2];
     if (crossAg >= 0.7 && T.width === 'Narrow') {
-      lines.push(['↔️', `${crossAg.toFixed(2)} xG from crosses against our narrow shape.`]);
+      lines.push(['↔', `${crossAg.toFixed(2)} xG from crosses against our narrow shape.`]);
       offer('Widen the shape', 'Cover the flanks they are using.', () => {
         T.width = 'Balanced';
         return 'Wider: the flanks are covered.';
@@ -430,7 +430,7 @@
       op.tactic.press === 'Low Block' &&
       sd.goals <= op.goals
     ) {
-      lines.push(['🧱', `Only ${sd.shots} shot${sd.shots === 1 ? '' : 's'}: the block is not being worked open.`]);
+      lines.push(['', `Only ${sd.shots} shot${sd.shots === 1 ? '' : 's'}: the block is not being worked open.`]);
       offer('Get the ball wide', 'Stretch them: more crosses and cutbacks.', () => {
         sd.ins = (sd.ins || [])
           .filter((x) => x !== 'patience')
@@ -443,7 +443,7 @@
       mine = Math.round((sd.possTicks / poss) * 100);
     if (mine <= 40 && op.xg > sd.xg + 0.5) {
       lines.push([
-        '⚖️',
+        '',
         `${100 - mine}% of the ball to them and ${op.xg.toFixed(2)} xG to ${sd.xg.toFixed(2)}: we are being overrun.`,
       ]);
       offer('Compact the midfield', 'More bodies in the middle to win it back.', () => {
@@ -454,10 +454,10 @@
     }
     if (!lines.length) {
       if (sd.xg > op.xg + 0.5 && sd.goals <= op.goals)
-        lines.push(['🎯', `${sd.xg.toFixed(2)} xG to ${op.xg.toFixed(2)}: the plan is working, the goals will come.`]);
+        lines.push(['', `${sd.xg.toFixed(2)} xG to ${op.xg.toFixed(2)}: the plan is working, the goals will come.`]);
       else if (op.xg > sd.xg + 0.5)
-        lines.push(['⚠️', `They have had the better chances (${op.xg.toFixed(2)} xG to ${sd.xg.toFixed(2)}).`]);
-      else lines.push(['👀', 'An even half: nothing to fix, just a decision to make.']);
+        lines.push(['', `They have had the better chances (${op.xg.toFixed(2)} xG to ${sd.xg.toFixed(2)}).`]);
+      else lines.push(['', 'An even half: nothing to fix, just a decision to make.']);
     }
     return { lines, fix };
   };
@@ -489,7 +489,7 @@
       add(
         'finishing',
         'good',
-        '🎯',
+        '',
         1 + (me.goals - me.xg) * 0.5,
         'Clinical',
         `${U.plural(me.goals, 'goal')} from ${f2(me.xg)} expected: you took what you made.`,
@@ -498,7 +498,7 @@
       add(
         'finishing',
         'bad',
-        '🧤',
+        '',
         1 + (me.xg - me.goals) * 0.5,
         'Wasteful',
         `${me.goals} goal${me.goals === 1 ? '' : 's'} from ${f2(me.xg)} expected: the chances were there.`,
@@ -507,7 +507,7 @@
       add(
         'finishing',
         'bad',
-        '🎯',
+        '',
         1 + (op.goals - op.xg) * 0.5,
         'They took everything',
         `${U.plural(op.goals, 'goal')} from ${f2(op.xg)} expected: hard to defend against.`,
@@ -516,7 +516,7 @@
       add(
         'finishing',
         'good',
-        '🧤',
+        '',
         1 + (op.xg - op.goals) * 0.5,
         'They wasted it',
         `${op.goals} goal${op.goals === 1 ? '' : 's'} from ${f2(op.xg)} expected: a bit of fortune, or a good keeper.`,
@@ -530,7 +530,7 @@
         add(
           'press',
           'bad',
-          '↩️',
+          '↩',
           1.2 + xgOf(op, 'counter') * 2,
           'Space behind the press',
           `Their ${counterAg} counter-attack chances (${f2(xgOf(op, 'counter'))} xG) came in the space your press left.`,
@@ -539,7 +539,7 @@
         add(
           'press',
           'good',
-          '🔥',
+          '',
           1 + (poss - 50) / 10,
           'The press worked',
           `${poss}% of the ball and ${winsOf(me)} tackles and interceptions: they had no time on it.`,
@@ -551,7 +551,7 @@
         add(
           'block',
           'good',
-          '🧱',
+          '',
           1.3,
           'The block held',
           `They had ${theirPoss}% of the ball but only ${f2(op.xg)} xG and ${central} central chance${central === 1 ? '' : 's'}.`,
@@ -560,7 +560,7 @@
         add(
           'block',
           'bad',
-          '🕳️',
+          '',
           1.2 + op.xg * 0.3,
           'The block was broken',
           `${central} through balls and cutbacks (${f2(xgOf(op, 'through', 'cutback'))} xG): sitting deep was not enough.`,
@@ -569,7 +569,7 @@
         add(
           'block',
           'good',
-          '⚡',
+          '',
           1 + counterFor * 0.2,
           'Chances on the break',
           `${counterFor} counter-attack chances (${f2(xgOf(me, 'counter'))} xG) from winning it back deep.`,
@@ -579,7 +579,7 @@
       add(
         'press',
         'bad',
-        '🔥',
+        '',
         1.2,
         'Pressed out of the game',
         `Their high press left you ${poss}% of the ball: hard to play out.`,
@@ -588,7 +588,7 @@
       add(
         'press',
         'good',
-        '⚡',
+        '',
         1.2 + xgOf(me, 'counter') * 2,
         'Behind their press',
         `${counterFor} counter-attack chances (${f2(xgOf(me, 'counter'))} xG) in the space they left.`,
@@ -602,7 +602,7 @@
       add(
         'fatigue',
         'bad',
-        '🪫',
+        '',
         1.1 + (60 - tired) / 20 + late * 0.4,
         'The legs went',
         `Your players finished on ${Math.round(tired)}%${late ? ` and ${late} goal${late === 1 ? '' : 's'} went in after the 70th minute` : ''}${T.press === 'High Press' ? ': a high press is expensive' : ''}.`,
@@ -613,7 +613,7 @@
       add(
         'width',
         'bad',
-        '↔️',
+        '↔',
         1 + shots(op, 'cross') * 0.12,
         'The flanks were open',
         `A narrow shape: they crossed it ${shots(op, 'cross')} times (${f2(xgOf(op, 'cross'))} xG).`,
@@ -622,7 +622,7 @@
       add(
         'width',
         'bad',
-        '↔️',
+        '↔',
         1,
         'Plenty of crosses, little threat',
         `${shots(me, 'cross')} crosses for ${f2(xgOf(me, 'cross'))} xG: the delivery was not enough.`,
@@ -631,7 +631,7 @@
       add(
         'width',
         'good',
-        '↔️',
+        '↔',
         1,
         'Through the middle',
         `${shots(me, 'through', 'cutback')} chances through the centre (${f2(xgOf(me, 'through', 'cutback'))} xG) with a narrow shape.`,
@@ -640,18 +640,18 @@
       add(
         'style',
         'bad',
-        '🔁',
+        '',
         1.2,
         'Possession without penetration',
         `${poss}% of the ball, but only ${f2(me.xg)} xG: nothing behind their back line.`,
       );
     if (T.buildup === 'Counter' && poss <= 42 && counterFor === 0)
-      add('style', 'bad', '⚡', 1, 'No counters came', `You gave them the ball and then did not get a break on it.`);
+      add('style', 'bad', '', 1, 'No counters came', `You gave them the ball and then did not get a break on it.`);
     if (T.buildup === 'Direct' && shots(me, 'cross', 'longshot') >= 8 && me.xg < 1)
       add(
         'style',
         'bad',
-        '🚀',
+        '',
         1,
         'Direct, but low quality',
         `${shots(me, 'cross', 'longshot')} crosses and long shots for ${f2(me.xg)} xG.`,
@@ -671,7 +671,7 @@
         add(
           'discipline',
           e.side === us ? 'bad' : 'good',
-          '🟥',
+          '',
           e.side === us ? 1.6 : 1.4,
           e.side === us ? `Down to ${word}` : `They were down to ${word}`,
           `${e.side === us ? 'Your' : 'Their'} player was sent off in the ${minute(e)}th minute.`,
@@ -681,7 +681,7 @@
         add(
           'injury',
           'bad',
-          '🚑',
+          '',
           0.9,
           'An early injury',
           `A key player went down in the ${minute(e)}th minute and the plan changed.`,
@@ -690,9 +690,8 @@
     const dead = (side) =>
       m.events.filter((e) => e.k === 'goal' && e.side === side && (e.sp || e.type === 'penalty')).length;
     if (dead(us) >= 2)
-      add('setpiece', 'good', '🚩', 1, 'Dead balls', `${U.plural(dead(us), 'goal')} from set pieces and penalties.`);
-    if (dead(1 - us) >= 2)
-      add('setpiece', 'bad', '🚩', 1, 'Set pieces', `They scored ${dead(1 - us)} from dead balls.`);
+      add('setpiece', 'good', '', 1, 'Dead balls', `${U.plural(dead(us), 'goal')} from set pieces and penalties.`);
+    if (dead(1 - us) >= 2) add('setpiece', 'bad', '', 1, 'Set pieces', `They scored ${dead(1 - us)} from dead balls.`);
 
     const won = gd > 0 || (m.pens && m.pens[us] > m.pens[1 - us]),
       lost = gd < 0 || (m.pens && m.pens[us] < m.pens[1 - us]);
@@ -915,7 +914,7 @@
       const w = big.res.hg > big.res.ag ? big.h : big.a,
         l = w === big.h ? big.a : big.h;
       notes.push(
-        `💥 Biggest win: ${S.clubs[w].name} ${Math.max(big.res.hg, big.res.ag)}–${Math.min(big.res.hg, big.res.ag)} ${S.clubs[l].name}`,
+        `Biggest win: ${S.clubs[w].name} ${Math.max(big.res.hg, big.res.ag)}–${Math.min(big.res.hg, big.res.ag)} ${S.clubs[l].name}`,
       );
     }
     const cnt = {},
@@ -933,7 +932,7 @@
         ([pid, k]) =>
           P(pid) &&
           notes.push(
-            `🎩 ${k === 3 ? 'Hat-trick' : k + ' goals'} for ${W.name(P(pid))} (${S.clubs[P(pid).clubId] ? S.clubs[P(pid).clubId].short : ''})`,
+            `${k === 3 ? 'Hat-trick' : k + ' goals'} for ${W.name(P(pid))} (${S.clubs[P(pid).clubId] ? S.clubs[P(pid).clubId].short : ''})`,
           ),
       );
     const star = Object.entries(ga).sort((a, b) => b[1] - a[1] || (cnt[b[0]] || 0) - (cnt[a[0]] || 0))[0];
@@ -947,10 +946,10 @@
     });
     if (upset) {
       const hw = upset.res.hg > upset.res.ag;
-      notes.push(`😮 Shock: ${S.clubs[hw ? upset.h : upset.a].name} beat ${S.clubs[hw ? upset.a : upset.h].name}`);
+      notes.push(`Shock: ${S.clubs[hw ? upset.h : upset.a].name} beat ${S.clubs[hw ? upset.a : upset.h].name}`);
     }
     const leader = table[0];
-    if (snap.order[0] !== leader.id && round > 0) notes.push(`👑 ${S.clubs[leader.id].name} go top`);
+    if (snap.order[0] !== leader.id && round > 0) notes.push(`${S.clubs[leader.id].name} go top`);
     // Golden boot race in this league
     const leaguePlayers = comp.clubs.flatMap((id) => W.squad(id));
     const scorer = leaguePlayers.filter((p) => p.season.goals > 0).sort((a, b) => b.season.goals - a.season.goals)[0];

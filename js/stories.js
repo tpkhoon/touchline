@@ -256,7 +256,7 @@
     const pool =
       won && exp >= 0.65
         ? [
-            'Job done. Never in doubt 👍',
+            'Job done. Never in doubt',
             '{score}, as it should be. On to the next one',
             'Professional. {best} was different class',
             'Expected the three points and got them. No complaints',
@@ -270,29 +270,29 @@
             ]
           : !won && !lost && exp <= 0.45
             ? [
-                "A point against {opp}? I'll take that all day 👏",
+                "A point against {opp}? I'll take that all day",
                 'Great point. {best} was immense',
                 'Nobody gave us a chance. Proud of the lads today',
                 "That's a point gained, not two dropped",
               ]
             : won
               ? [
-                  'What a performance!!! {best} you absolute legend 🔥',
+                  'What a performance!!! {best} you absolute legend',
                   "{score}. GET IN!!! {mgr} knows exactly what he's doing",
-                  "Best I've seen us play in years. Proper football 👏",
+                  "Best I've seen us play in years. Proper football",
                   '{best} is levels above this league. Do NOT sell him.',
-                  'Three points, clean shirts, happy days 😎',
+                  'Three points, clean shirts, happy days',
                 ]
               : lost
                 ? [
                     "Embarrassing. {worst} shouldn't be anywhere near the XI",
                     '{mgr} out? Too early to say but that was dire.',
                     'Nothing about that was good enough. Nothing.',
-                    "Players don't look like they care 😡",
+                    "Players don't look like they care",
                     'Paid {ticket} to watch that. Never again (see you next week)',
                   ]
                 : [
-                    "Point's a point I suppose 🤷",
+                    "Point's a point I suppose",
                     "Should've won that. {worst} was poor again.",
                     'xG says we deserved more. Frustrating.',
                     '{best} was the only one who turned up today',
@@ -307,19 +307,19 @@
     const say = {
       opt: won
         ? early
-          ? ['What a start. This team is going places 🚀', 'A win on the board. {mgr} has this right']
-          : ['Another win. This team is going places 🚀', 'Every week it clicks a bit more. {mgr} has this right']
+          ? ['What a start. This team is going places', 'A win on the board. {mgr} has this right']
+          : ['Another win. This team is going places', 'Every week it clicks a bit more. {mgr} has this right']
         : lost
           ? early
             ? [
                 'One bad day. We go again — this squad is better than that',
-                "Heads up, lads. It's early, plenty of season left 💪",
+                "Heads up, lads. It's early, plenty of season left",
               ]
             : [
                 'One bad day. We go again — this squad is better than that',
-                'Heads up, lads. We have been brilliant for weeks 💪',
+                'Heads up, lads. We have been brilliant for weeks',
               ]
-          : ["Plenty to build on. We'll win the next one", 'A point and a lot of positives 👏'],
+          : ["Plenty to build on. We'll win the next one", 'A point and a lot of positives'],
       doom: won
         ? ["Won, but we'll be punished for that defending eventually", 'Enjoy it. {worst} will cost us soon enough']
         : lost
@@ -348,13 +348,13 @@
       posts.unshift({
         h: handle(),
         t: won
-          ? 'DERBY DAY!!! {rival} fans are awfully quiet tonight 🤫'
+          ? 'DERBY DAY!!! {rival} fans are awfully quiet tonight'
           : "Worst day of the season. Can't show my face at work tomorrow.",
         likes: U.randi(800, 9000),
       });
       posts.push({
         h: `@${opp.short}_Faithful`,
-        t: won ? 'Ref gifted them that. Enjoy it while it lasts.' : 'Our city 😂😂😂',
+        t: won ? 'Ref gifted them that. Enjoy it while it lasts.' : 'Our city',
         likes: U.randi(300, 5000),
         rival: true,
       });
@@ -379,7 +379,7 @@
           kicker: 'DEBUT',
           title: `${describe(p)} scores on debut`,
           sub: `${W.name(p)} marks his first game for ${club.name} with ${scored > 1 ? scored + ' goals' : 'a goal'}.`,
-          big: scored > 1 ? `${scored}⚽` : '⚽',
+          big: scored > 1 ? `${scored}` : '',
           clubId: club.id,
           pid,
         });
@@ -418,7 +418,7 @@
         kicker: 'HAT-TRICK',
         title: `${W.name(P(hat[0]))} hits a hat-trick`,
         sub: `${club.name} ${gf}–${ga} ${opp.name}`,
-        big: `${hat[1]}⚽`,
+        big: `${hat[1]}`,
         clubId: club.id,
         pid: hat[0],
       });
@@ -947,7 +947,7 @@
         kicker: 'HOMECOMING',
         title: `Club legend ${legend.fn} ${legend.ln} returns as ${c.name} manager`,
         sub: `${legend.spells.filter((s) => s.c === c.id).reduce((a, s) => a + s.apps, 0)} games as a player. Now he's in the dugout.`,
-        big: '🏠',
+        big: '',
         clubId: c.id,
       });
     } else {
@@ -1174,7 +1174,7 @@
         kicker: 'ACADEMY',
         title: `${describe(best)} joins the academy`,
         sub: `Staff at ${c.name} believe ${W.name(best)} could be one of the best they've produced.`,
-        big: '🌱',
+        big: '',
         clubId: c.id,
         pid: best.id,
       });
@@ -1226,7 +1226,7 @@
         kicker: 'CHAMPIONS',
         title: `${ch.name} are ${x.name} champions`,
         sub: `${e.label}. Title number ${ch.titles[cid]}.${x.topScorer ? ` Golden Boot: ${x.topScorer.name} (${x.topScorer.goals}).` : ''}`,
-        big: '🏆',
+        big: '',
         clubId: ch.id,
       });
       if (x.poty)
@@ -1277,7 +1277,7 @@
         kicker: 'NEW CAREER',
         title: `${S.user.name} is looking for a first job`,
         sub: 'No club yet. The phone could ring any day.',
-        big: '🧳',
+        big: '',
       });
       return;
     }
@@ -1307,7 +1307,7 @@
       kicker: 'NEW ERA',
       title: `${S.user.name} appointed ${c.name} manager`,
       sub: `${I.label}. ${c.stadium.name}, ${c.stadium.cap.toLocaleString()} seats. The story starts now.`,
-      big: '✍️',
+      big: '',
       clubId: c.id,
     });
   };

@@ -332,16 +332,16 @@
   };
   // The requests on the table at a meeting: what fits the club's situation now
   B.REQUESTS = {
-    funds: { label: 'More money for transfers', icon: '💰' },
-    wages: { label: 'A bigger wage budget', icon: '🧾' },
-    facility: { label: 'Fund a facility upgrade', icon: '🏗️' },
-    stadium: { label: 'Expand the stadium', icon: '🏟️' },
-    youth: { label: 'Back a youth-first project', icon: '🌱' },
-    marquee: { label: 'Back a marquee signing', icon: '⭐' },
-    lower: { label: 'Lower the league target', icon: '📉' },
-    patience: { label: 'Ask for patience', icon: '⏳' },
-    camp: { label: 'Pay for a pre-season training camp', icon: '🏔️' },
-    none: { label: 'Nothing to ask today', icon: '🤝' },
+    funds: { label: 'More money for transfers', icon: '' },
+    wages: { label: 'A bigger wage budget', icon: '' },
+    facility: { label: 'Fund a facility upgrade', icon: '' },
+    stadium: { label: 'Expand the stadium', icon: '' },
+    youth: { label: 'Back a youth-first project', icon: '' },
+    marquee: { label: 'Back a marquee signing', icon: '' },
+    lower: { label: 'Lower the league target', icon: '' },
+    patience: { label: 'Ask for patience', icon: '…' },
+    camp: { label: 'Pay for a pre-season training camp', icon: '' },
+    none: { label: 'Nothing to ask today', icon: '' },
   };
   const options = function (club, m) {
     const s = S(),
@@ -401,8 +401,8 @@
       club.boardConf = U.clamp(club.boardConf + (done ? 5 : -6), 0, 100);
       lines.push(
         done
-          ? `✅ You delivered on our request: ${a.text.toLowerCase()}`
-          : `❌ Our request was ignored: ${a.text.toLowerCase()}`,
+          ? `✓ You delivered on our request: ${a.text.toLowerCase()}`
+          : `✕ Our request was ignored: ${a.text.toLowerCase()}`,
       );
       b.agenda = null;
     }
@@ -412,7 +412,7 @@
       b.agenda = a;
       lines.push(`The board's demand: ${a.text}.`);
     }
-    if (conf < 30) lines.push('⚠️ Results must improve. The board are watching every game.');
+    if (conf < 30) lines.push('Results must improve. The board are watching every game.');
     b.lastConf = conf;
     return lines.join('\n');
   };
@@ -543,17 +543,17 @@
         if (md >= 0.55 && club.balance > club.budget * 1.1) {
           const add = U.roundMoney(Math.min(club.balance * 0.2, R * 0.12 * rich) * (md >= 0.75 ? 1.3 : 1));
           club.budget += add;
-          return say(`✅ Approved: an extra ${U.money(add)} for transfers.`);
+          return say(`✓ Approved: an extra ${U.money(add)} for transfers.`);
         }
         if (club.identity === 'oil' && md >= 0.45) {
           const add = U.roundMoney(R * 0.1);
           club.budget += add;
           club.balance += add;
-          return say(`✅ The owners inject ${U.money(add)} of fresh money.`);
+          return say(`✓ The owners inject ${U.money(add)} of fresh money.`);
         }
         if (md < 0.4) cost(3);
         return say(
-          `❌ Refused. "${club.balance < club.budget ? 'The money simply isn’t there.' : again ? 'You asked us that already.' : 'Earn our trust first.'}"`,
+          `✕ Refused. "${club.balance < club.budget ? 'The money simply isn’t there.' : again ? 'You asked us that already.' : 'Earn our trust first.'}"`,
         );
       }
       case 'wages': {
@@ -565,12 +565,12 @@
         if (ratio < 0.85 && club.balance > 0 && md >= 0.5 && !fp.boost) {
           fp.boost = 0.1;
           return say(
-            `✅ The board will stretch to wages of ${Math.round((FM.Finance.LIMIT.cut + 0.1) * 100)}% of revenue this season before stepping in.`,
+            `✓ The board will stretch to wages of ${Math.round((FM.Finance.LIMIT.cut + 0.1) * 100)}% of revenue this season before stepping in.`,
           );
         }
         cost(ratio > 0.75 ? 4 : 1);
         return say(
-          `❌ "Wages are already ${Math.round(ratio * 100)}% of what we bring in.${club.balance < 0 ? ' And we are in debt.' : ''} Not a penny more."`,
+          `✕ "Wages are already ${Math.round(ratio * 100)}% of what we bring in.${club.balance < 0 ? ' And we are in debt.' : ''} Not a penny more."`,
         );
       }
       case 'facility': {
@@ -578,22 +578,22 @@
             (a, b2) => club.facilities[a] - club.facilities[b2],
           ),
           f = order.find((x) => club.facilities[x] < 5);
-        if (!f) return say('❌ "Our facilities are already world-class."');
+        if (!f) return say('✕ "Our facilities are already world-class."');
         if (md >= 0.6 && (rich >= 1 || md >= 0.8)) {
           club.building = { k: f, weeks: Sea().facWeeks(f, club.facilities[f]) };
           return say(
-            `✅ The owners will pay for the ${Sea().FAC[f].name} upgrade (${U.money(Sea().facCost(f, club.facilities[f]))}). Work starts now.`,
+            `✓ The owners will pay for the ${Sea().FAC[f].name} upgrade (${U.money(Sea().facCost(f, club.facilities[f]))}). Work starts now.`,
           );
         }
-        return say(`❌ "We can't justify that spending ${md < 0.6 ? 'with results as they are' : 'right now'}."`);
+        return say(`✕ "We can't justify that spending ${md < 0.6 ? 'with results as they are' : 'right now'}."`);
       }
       case 'stadium': {
         const lvl = club.facilities.stadium;
         if (md >= 0.55 && club.balance > Sea().facCost('stadium', lvl) * 0.5) {
           club.building = { k: 'stadium', weeks: Sea().facWeeks('stadium', lvl) };
-          return say(`✅ Sold out every week? The board agree: the stadium will be expanded. Work starts now.`);
+          return say(`✓ Sold out every week? The board agree: the stadium will be expanded. Work starts now.`);
         }
-        return say('❌ "An expansion is a big commitment. Show us it will pay for itself."');
+        return say('✕ "An expansion is a big commitment. Show us it will pay for itself."');
       }
       case 'youth': {
         b.youthAsked = true;
@@ -603,11 +603,11 @@
           club.fanMood = Math.min(100, club.fanMood + 3);
           if (club.facilities.academy < 5 && !club.building && md >= 0.55) {
             club.building = { k: 'academy', weeks: Sea().facWeeks('academy', club.facilities.academy) };
-            return say('✅ The board love it, and will fund an academy upgrade.');
+            return say('✓ The board love it, and will fund an academy upgrade.');
           }
-          return say('✅ The board love the vision. Confidence up.');
+          return say('✓ The board love the vision. Confidence up.');
         }
-        return say('🤨 "A nice idea. But this club needs results now."');
+        return say('"A nice idea. But this club needs results now."');
       }
       case 'marquee': {
         if (md >= 0.7 && club.balance > 0) {
@@ -624,35 +624,35 @@
             d.text = d.target === 1 ? 'Win the league' : `${d.base} — now top ${d.target}`;
           }
           return say(
-            `✅ The board back a statement signing: ${U.money(add)} more to spend. They will expect more in return.`,
+            `✓ The board back a statement signing: ${U.money(add)} more to spend. They will expect more in return.`,
           );
         }
-        return say('❌ "One big name won’t fix this. Build the team first."');
+        return say('✕ "One big name won’t fix this. Build the team first."');
       }
       case 'lower': {
         const d = b.demands.list.find((o) => o.id === 'pos');
-        if (!d || d.target === d.min) return say('🤨 "That is already the least we expect."');
+        if (!d || d.target === d.min) return say('"That is already the least we expect."');
         if (md >= 0.35) {
           d.target = d.min;
           d.text = `Revised target: ${d.minText}`;
           cost(6);
-          return say(`✅ The board accept a revised target (${d.minText}), but it costs you some of their faith.`);
+          return say(`✓ The board accept a revised target (${d.minText}), but it costs you some of their faith.`);
         }
         cost(4);
-        return say('❌ "The target stands. Meet it."');
+        return say('✕ "The target stands. Meet it."');
       }
       case 'patience': {
         if (conf < 45 && s.user.rep >= 55 && !b.patience) {
           club.boardConf = Math.min(100, conf + 10);
           b.patience = true;
-          return say('✅ "We believe in the project. You have our backing, for now."');
+          return say('✓ "We believe in the project. You have our backing, for now."');
         }
         if (conf >= 45) {
           cost(2);
-          return say('🤨 "Patience? Nobody is questioning you. Yet."');
+          return say('"Patience? Nobody is questioning you. Yet."');
         }
         cost(4);
-        return say('❌ "Results will decide your future, not speeches."');
+        return say('✕ "Results will decide your future, not speeches."');
       }
       case 'camp': {
         // a pre-season day still to come with no friendly booked (the plan is keyed by pre-season day)
@@ -663,9 +663,9 @@
         if (md >= 0.45 && i >= 0) {
           const idx = s.calendar[i].idx;
           plan[idx] = { type: 'camp', key: club.facilities.training <= 2 ? 'fitness' : 'tactical', paid: true };
-          return say(`✅ The board pay for ${U.a(plan[idx].key)} camp on pre-season day ${idx + 1}.`);
+          return say(`✓ The board pay for ${U.a(plan[idx].key)} camp on pre-season day ${idx + 1}.`);
         }
-        return say('❌ "Pre-season is already planned and paid for."');
+        return say('✕ "Pre-season is already planned and paid for."');
       }
     }
     return { msg: '' };

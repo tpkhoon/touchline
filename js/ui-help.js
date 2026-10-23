@@ -98,10 +98,10 @@
       'What happened, and what were you doing?',
       UI.INBOX_URL
         ? [
-            ['sendReport', '⬆️ Send the report', true],
-            ['shareReport', '📎 Keep it as a file instead'],
+            ['sendReport', '▲ Send the report', true],
+            ['shareReport', 'Keep it as a file instead'],
           ]
-        : [['shareReport', '⬆️ Share the report', true]],
+        : [['shareReport', '▲ Share the report', true]],
     );
   // The report is the save with a "report" section: the note, the tag and the details, so the file says what it is about
   UI.makeReport = async (kind) => {
@@ -119,7 +119,7 @@
       UI.toast('Report sent. Thank you', 3500);
     } catch (e) {
       console.warn(e);
-      UI.toast('⚠️ Could not send it: use “Keep it as a file instead”', 4500);
+      UI.toast('Could not send it: use “Keep it as a file instead”', 4500);
     }
   };
   UI.acts.shareReport = async () => {
@@ -138,7 +138,7 @@
         UI.toast(r === 'saved' ? 'Report saved: send the file to us' : 'Report ready to send', 3500);
     } catch (e) {
       console.warn(e);
-      UI.toast('⚠️ ' + (e.message || 'Could not make the report'), 4000);
+      UI.toast('' + (e.message || 'Could not make the report'), 4000);
     }
   };
   UI.FEEDBACK_URL = 'https://github.com/tpkhoon/touchline/issues/new';
@@ -149,7 +149,7 @@
         ? 'An idea, something confusing, something you loved? It is sent privately to the developer with the version details attached; no save is sent and no account is needed.'
         : 'An idea, something confusing, something you loved? It opens a new note on the project page with the version details attached; no save is sent.',
       'What would make the game better?',
-      [['sendFeedbackGo', UI.INBOX_URL ? '💬 Send the feedback' : '💬 Open the feedback page', true]],
+      [['sendFeedbackGo', UI.INBOX_URL ? 'Send the feedback' : 'Open the feedback page', true]],
       { contact: !!UI.INBOX_URL },
     );
   UI.acts.sendFeedbackGo = async () => {
@@ -168,7 +168,7 @@
         return UI.toast('Thank you: your feedback was sent', 3500);
       } catch (e) {
         console.warn(e);
-        UI.toast('⚠️ Could not send it just now. Try again later', 4000);
+        UI.toast('Could not send it just now. Try again later', 4000);
         return;
       }
     }
@@ -213,7 +213,7 @@
         );
     } catch (e) {
       console.warn(e);
-      UI.toast('⚠️ ' + (e.message || 'Export failed'), 4000);
+      UI.toast('' + (e.message || 'Export failed'), 4000);
     }
   };
   UI.acts.exportSave = async () => {
@@ -240,7 +240,7 @@
       }
     } catch (e) {
       console.warn(e);
-      UI.toast('⚠️ ' + (e.message || 'Export failed'), 4000);
+      UI.toast('' + (e.message || 'Export failed'), 4000);
     }
   };
   UI.acts.importSave = async () => {
@@ -250,7 +250,7 @@
     try {
       res = await FM.Save.importBytes(bytes);
     } catch (e) {
-      return UI.toast('⚠️ ' + e.message, 4500);
+      return UI.toast('' + e.message, 4500);
     }
     UI._import = res.state;
     const st = res.state,
@@ -287,7 +287,7 @@
       UI.finishPendingDay();
     } catch (e) {
       console.warn(e);
-      UI.toast('⚠️ Could not import: ' + (e.message || 'storage error'), 4500);
+      UI.toast('Could not import: ' + (e.message || 'storage error'), 4500);
     }
   };
   UI.acts.toTitle = () => {
@@ -328,15 +328,15 @@
       shown = Object.entries(e.comps).filter(([id]) => fol.has(id)),
       cupsShown = Object.entries(e.cups || {}).filter(([id, x]) => fol.has(id) || FM.W.isUser(x.winner));
     UI.sheet(
-      `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="tag">Season review · ${esc(e.label)}</div><div class="h1" style="margin:10px 0">${!e.user ? 'A season out of the dugout' : sm.trophies.length ? '🏆 ' + esc(sm.trophies.join(' & ')) : `Finished ${U.ordinal(sm.userPos)}`}</div><div class="small" style="opacity:.9">${sm.promoted ? `⬆️ Promoted to the ${esc(S().comps[c.comp].name)}!` : sm.relegated ? '⬇️ Relegated. The rebuild starts now.' : esc(c.name)}</div></div>
+      `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="tag">Season review · ${esc(e.label)}</div><div class="h1" style="margin:10px 0">${!e.user ? 'A season out of the dugout' : sm.trophies.length ? '' + esc(sm.trophies.join(' & ')) : `Finished ${U.ordinal(sm.userPos)}`}</div><div class="small" style="opacity:.9">${sm.promoted ? `▲ Promoted to the ${esc(S().comps[c.comp].name)}!` : sm.relegated ? '▼ Relegated. The rebuild starts now.' : esc(c.name)}</div></div>
       ${!e.user ? '<div class="small muted" style="margin:4px 2px 12px">The football world carried on without you. Your offers are on the Home tab.</div>' : ''}
-      ${e.user ? `<div class="card"><div class="h3">Board verdict</div>${sm.objs.map((o) => `<div class="row small" style="margin-top:8px"><span>${o.ok || (o.promo && sm.promoted) ? '✅' : '❌'}</span><span class="grow">${esc(o.text)}</span></div>`).join('')}<div class="small muted" style="margin-top:10px">${sm.sacked ? 'The board have seen enough.' : 'Board confidence: ' + Math.round(c.boardConf) + '%'}</div></div>` : ''}
+      ${e.user ? `<div class="card"><div class="h3">Board verdict</div>${sm.objs.map((o) => `<div class="row small" style="margin-top:8px"><span>${o.ok || (o.promo && sm.promoted) ? '✓' : '✕'}</span><span class="grow">${esc(o.text)}</span></div>`).join('')}<div class="small muted" style="margin-top:10px">${sm.sacked ? 'The board have seen enough.' : 'Board confidence: ' + Math.round(c.boardConf) + '%'}</div></div>` : ''}
       ${shown
         .map(([, x]) => x)
         .filter(W.homeLeague)
         .map(
           (x) =>
-            `<div class="card flat"><div class="small b dim">${esc(x.name.toUpperCase())}</div><div class="row small" style="margin-top:6px">🏆 ${C.crest(CL(x.champion), 18)}<b class="grow">${esc(CL(x.champion).name)}</b></div>${x.topScorer ? `<div class="small" style="margin-top:4px">👟 ${esc(x.topScorer.name)} (${x.topScorer.goals})</div>` : ''}${x.poty ? `<div class="small" style="margin-top:4px">⭐ ${esc(x.poty.name)}</div>` : ''}</div>`,
+            `<div class="card flat"><div class="small b dim">${esc(x.name.toUpperCase())}</div><div class="row small" style="margin-top:6px">${C.crest(CL(x.champion), 18)}<b class="grow">${esc(CL(x.champion).name)}</b></div>${x.topScorer ? `<div class="small" style="margin-top:4px">${esc(x.topScorer.name)} (${x.topScorer.goals})</div>` : ''}${x.poty ? `<div class="small" style="margin-top:4px">${esc(x.poty.name)}</div>` : ''}</div>`,
         )
         .join('')}
       <div class="card flat"><div class="small b dim">LEAGUES YOU FOLLOW</div>${
@@ -357,13 +357,13 @@
               .map(([, x]) => x)
               .map(
                 (x) =>
-                  `<div class="row small" style="margin-top:6px">🏆 <span class="grow">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).short)}</b></div>`,
+                  `<div class="row small" style="margin-top:6px"><span class="grow">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).short)}</b></div>`,
               )
               .join('')}</div>`
           : ''
       }
-      ${e.intl && e.intl.length ? `<div class="card flat"><div class="small b dim">THIS SUMMER</div>${e.intl.map((x) => `<div class="row small" style="margin-top:6px">🌍 <span class="grow">${esc(x.name)}</span><b>${C.flag(FM.S.nteams[x.winner].code)} ${esc(FM.S.nteams[x.winner].name)}</b></div>`).join('')}</div>` : ''}
-      ${UI.backupDue() ? `<div class="warnline row" id="backupNudge" style="gap:10px"><span class="grow">💾 A good moment to export a backup of your career — one small file, safe anywhere.</span><button class="btn sm" data-act="exportSave">Export</button></div>` : ''}
+      ${e.intl && e.intl.length ? `<div class="card flat"><div class="small b dim">THIS SUMMER</div>${e.intl.map((x) => `<div class="row small" style="margin-top:6px"><span class="grow">${esc(x.name)}</span><b>${C.flag(FM.S.nteams[x.winner].code)} ${esc(FM.S.nteams[x.winner].name)}</b></div>`).join('')}</div>` : ''}
+      ${UI.backupDue() ? `<div class="warnline row" id="backupNudge" style="gap:10px"><span class="grow">A good moment to export a backup of your career — one small file, safe anywhere.</span><button class="btn sm" data-act="exportSave">Export</button></div>` : ''}
       <div class="small muted center" style="margin:10px 0">Everything has been written into the Football Archive.<br>Players have aged, contracts expired, veterans retired, and the world moved on — check the feed.</div>
       <button class="btn pri block" data-act="closeSheet">Start ${FM.Season.seasonLabel()} →</button>`,
       { title: 'End of season' },
