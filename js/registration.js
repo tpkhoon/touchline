@@ -323,6 +323,11 @@
   R.PERMIT_NEED = 15;
   // A club's signing policy (Basque-only, Catalan-only): who it will not take
   R.policy = function (c, p) {
+    if (FM.Failure && FM.Failure.embargoed(c))
+      return {
+        ok: false,
+        why: `${c.name} are under a transfer embargo this season (administration): they cannot sign players.`,
+      };
     const pol = c && c.policy;
     if (pol && pol.military)
       return p.service && p.clubId === c.id // (conscripts are called up by FM.Asia; nobody can sign for the army's club)

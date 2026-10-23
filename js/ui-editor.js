@@ -759,6 +759,7 @@
     changes: 'world',
     balance: 'world',
     csv: 'world',
+    failure: 'world',
   };
   UI.acts.edTab = (d) => {
     ED.tab = d.v;
@@ -888,6 +889,7 @@
           '📜 History',
           `${ED.def.history.seasons.length} past season${ED.def.history.seasons.length === 1 ? '' : 's'}`,
         ],
+        ['failure', '💸 When clubs fail', failureSummary()],
         ['csv', '📄 CSV files', 'download, edit in a spreadsheet, upload'],
         ['balance', '⚖️ Balance check', `${U.plural(balanceIssues().length, 'thing')} to look at`],
         ['changes', '📝 Changes made', changeSummary()],
@@ -3636,6 +3638,61 @@
   };
   const C_flag = (code) => UI.C.flag(code);
 
+  // ---------- When clubs fail ----------
+  // What happens to a club with debts it cannot pay (FM.Failure, js/failure.js): administration (a points deduction and a transfer
+  // embargo for the season), liquidation when it fails again within four years, and a phoenix club in its place lower down the
+  // pyramid. The game's own is administration alone. A club can be made proof, and a rich owner's club can be too.
+  const failRules = () => ({ ...FM.Failure.DEFAULT, ...(ED.def.failure || {}) });
+  const failureSummary = () => {
+    const r = failRules();
+    if (!r.admin) return 'no club ever fails';
+    return `${r.deduct ? `${r.deduct}-point deduction` : 'administration'}${r.embargo ? ', embargo' : ''}${r.liquidate ? `, liquidation${r.phoenix ? ' and phoenix clubs' : ''}` : ''}`;
+  };
+  const failureView = () => {
+    const r = failRules(),
+      proof = r.proof || [];
+    const sw = (k, label, note) =>
+      `<div class="row" style="gap:8px;margin-top:10px;align-items:center"><div class="grow"><div class="small b">${label}</div><div class="tiny dim">${note}</div></div><div class="seg" style="width:110px"><button class="${r[k] ? 'on' : ''}" data-act="edFailure" data-k="${k}" data-v="1">On</button><button class="${!r[k] ? 'on' : ''}" data-act="edFailure" data-k="${k}" data-v="0">Off</button></div></div>`;
+    return `<div class="h1" style="margin-top:2vh">When clubs fail</div><div class="tag">A club whose debts pass the limit at the start of a season goes into administration. Here you decide what that means, whether a club that fails again can be wound up, and whether supporters form a new club in its place.</div>
+      ${errBox()}
+      ${sw('admin', 'Clubs can fail', 'Off: no club ever goes into administration')}
+      ${sw('embargo', 'A transfer embargo', 'A club in administration cannot sign players for the season')}
+      ${sw('liquidate', 'Liquidation', 'A club that fails again within four years is wound up: its players go, and the divisions below each promote their best club to fill the place (not a club you manage, nor one in a closed league or with a B team)')}
+      ${sw('phoenix', 'A phoenix club', 'Supporters form a new club (AFC and the old name) with the same ground and colours, at the bottom of the chain, so no league loses a place')}
+      ${sw('richSafe', 'Rich owners never fail', 'Oil-Backed and army clubs cannot go into administration')}
+      <div class="ng-label">Points taken for administration</div>
+      <input type="number" id="ed-fdeduct" min="0" max="15" value="${r.deduct}" inputmode="numeric" style="width:120px" data-input="edFailureDeduct">
+      <div class="ng-label">Clubs that can never fail</div>
+      ${proof.length ? proof.map((id, i) => `<div class="card" style="margin:4px 0;padding:8px 12px"><div class="row"><div class="grow small">${esc((ED.def.clubs.find((c) => c.id === id) || { name: id }).name)}</div><button class="btn sm" data-act="edDelProof" data-i="${i}">Remove</button></div></div>`).join('') : '<div class="tiny dim">None.</div>'}
+      <input type="text" id="ed-fproof" list="ed-fproofs" placeholder="Add a club: start typing its name" style="margin-top:8px" autocomplete="off"><datalist id="ed-fproofs">${ED.def.clubs.map((c) => `<option value="${esc(c.name)}"></option>`).join('')}</datalist>
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edAddProof">＋ Make it proof</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edFailure = (d) => {
+    const r = WD.editor(ED.def, null).setFailure({ [d.k]: d.v === '1' });
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  UI.acts.edFailureDeduct = (d, el) => {
+    const n = Math.max(0, Math.min(15, Math.round(+el.value || 0)));
+    WD.editor(ED.def, null).setFailure({ deduct: n });
+  };
+  UI.acts.edAddProof = () => {
+    const name = (($('#ed-fproof') || {}).value || '').trim().toLowerCase();
+    const c = ED.def.clubs.find((x) => x.name.toLowerCase() === name);
+    if (!c) {
+      ED.err = ['Pick a club by its full name from the list'];
+      return UI.worldEditor();
+    }
+    const r = WD.editor(ED.def, null).setFailure({ proof: [...new Set([...(failRules().proof || []), c.id])] });
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  UI.acts.edDelProof = (d) => {
+    WD.editor(ED.def, null).setFailure({ proof: (failRules().proof || []).filter((_, i) => i !== +d.i) });
+    UI.worldEditor();
+  };
+
   // ---------- CSV files ----------
   // The world's leagues, clubs and players as three CSV files to edit in a spreadsheet and upload again, with templates to fill in
   // (FM.CsvWorld, js/csvworld.js). Rows are matched to a club by its id or its name, a column left empty changes nothing, and every
@@ -4454,6 +4511,7 @@
       bans: bansView,
       balance: balanceView,
       csv: csvView,
+      failure: failureView,
       nation: nationView,
       newnation: newNationView,
       history: historyView,

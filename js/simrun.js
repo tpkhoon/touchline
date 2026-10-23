@@ -29,6 +29,7 @@
     'csvworld',
     'engine',
     'season',
+    'failure',
     'careers',
     'cups',
     'regional',

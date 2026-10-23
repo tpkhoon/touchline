@@ -332,6 +332,9 @@ check(
   E.addBan({ kind: 'nation', id: 'TOG', from: 2040, to: 2041, why: 'test' }).ok,
   'a sanction on a nation was refused',
 );
+check(!E.setFailure({ deduct: 99 }).ok, 'a points deduction of 99 was accepted');
+check(!E.setFailure({ proof: ['c_NOPE'] }).ok, 'a club that does not exist was made proof against failing');
+check(E.setFailure({ liquidate: true, phoenix: true, deduct: 8 }).ok, 'the failure rule was refused');
 const bra0 = { name: FM.D.NATIONS.BRA.name, flag: FM.D.NATIONS.BRA.flag, mix: FM.D.NAT_MIX.D1 && FM.D.NAT_MIX.D1.BRA };
 check(!E.setNationEdit('BRA', { abroad: 9 }).ok, 'a nation edit with players abroad x9 was accepted');
 check(
@@ -885,6 +888,10 @@ console.log(`D1 has ${n1} clubs`);
   check(
     tn && tn.name === 'Albion' && tn.short === 'ALB' && tn.coef === 88 && tn.colors[0] === '#112233',
     'the national team edit did not reach the world',
+  );
+  check(
+    S.failure && S.failure.liquidate === true && S.failure.deduct === 8 && FM.Failure.rules().phoenix === true,
+    'the failure rule set in the editor did not reach the world',
   );
   check(S.youthRate && S.youthRate.ENG === 82, 'the youth rating set in the editor did not reach the world');
   check(

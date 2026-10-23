@@ -55,6 +55,7 @@
     nations: [], // national teams: { code, name, short, colors, coef, youth (the nation's youth rating, 15 to 95) }
     nationEdits: {}, // changes to a nation of the game: { code: { name, flag, region, style, abroad } } (abroad: a multiplier on how common its players are in leagues abroad)
     newNations: [], // nations the world adds: { code, name, flag, region, pool, style, colors, weight }
+    failure: {}, // when clubs fail: { admin, embargo, liquidate, phoenix, deduct (points), richSafe, proof: [club ids who cannot fail] } (empty: the game's own: administration only)
     bans: [], // sanctions: { kind: 'nation' | 'club', id, from, to, why } (out of international competition for the seasons from to to)
     confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
     history: { seasons: [] },
@@ -99,6 +100,7 @@
         });
     }
     def.bans = JSON.parse(JSON.stringify(S.bans || []));
+    def.failure = JSON.parse(JSON.stringify(S.failure || {}));
     for (const t of Object.values(S.nteams || {}))
       def.nations.push({
         code: t.code,
@@ -1846,6 +1848,16 @@
         errors.push(`${at}: the short name is 1–4 characters`);
     }
     errors.push(...WD.validateNationEdits(def));
+    {
+      const f = def.failure || {};
+      for (const k of ['admin', 'embargo', 'liquidate', 'phoenix', 'richSafe'])
+        if (f[k] != null && typeof f[k] !== 'boolean') errors.push(`when clubs fail: ${k} is true or false`);
+      if (f.deduct != null && !(isInt(f.deduct) && f.deduct >= 0 && f.deduct <= 15))
+        errors.push('when clubs fail: the points deduction is a whole number from 0 to 15');
+      for (const id of f.proof || [])
+        if (!(def.clubs || []).some((c) => c.id === id) && !D.allClubRows().some((r) => 'c_' + r[1] === id))
+          errors.push(`when clubs fail: the game has no club ${id}`);
+    }
     // sanctions: a nation or a club kept out of international competition for some seasons
     for (const [i, b] of (def.bans || []).entries()) {
       const at = `sanction ${i + 1}`;
@@ -2135,6 +2147,8 @@
     }
     // sanctions: kept in the world (FM.Intl.banned and FM.Season.clubBanned read them)
     S.bans = (def.bans || []).map((b) => ({ ...b }));
+    // when clubs fail: the world's rule (FM.Failure.rules; none set: the game's own)
+    S.failure = def.failure && Object.keys(def.failure).length ? JSON.parse(JSON.stringify(def.failure)) : null;
     // staff: kept with the world and handed over when the career begins (WD.seedStaff)
     if ((def.staff || []).length) {
       S.defStaff = { list: JSON.parse(JSON.stringify(def.staff)), pooled: false };
@@ -2712,6 +2726,16 @@
       },
       clearNationEdit(code) {
         if (def.nationEdits) delete def.nationEdits[code];
+        return result([]);
+      },
+      // when clubs fail: administration, a transfer embargo, liquidation, a phoenix club; clubs that cannot fail
+      setFailure(patch) {
+        const next = { ...(def.failure || {}), ...patch };
+        for (const k of Object.keys(next)) if (next[k] == null) delete next[k];
+        const test = { ...def, failure: next };
+        const errs = WD.validate(test, S).errors.filter((e) => e.startsWith('when clubs fail'));
+        if (errs.length) return result(errs);
+        def.failure = next;
         return result([]);
       },
       // a sanction: a nation or a club out of international competition from one season to another (inclusive)

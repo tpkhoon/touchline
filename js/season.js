@@ -2481,18 +2481,7 @@
         // the biggest clubs put more of their wealth into the squad (stars only move when someone can pay)
         c.budget = Math.max(5e5, FM.Finance.budgetFor(c));
         c.fin = null;
-        if (c.balance < FM.Finance.adminThreshold(c) && !c.admin) {
-          c.admin = true;
-          S.comps[c.comp].deductions = { ...(S.comps[c.comp].deductions || {}), [c.id]: 6 };
-          FM.News.add({
-            type: 'world',
-            title: `${c.name} enter administration`,
-            body: `Debts of ${U.money(-c.balance)} leave the club facing a 6-point deduction and a fire sale.`,
-            clubId: c.id,
-            big: true,
-          });
-          c.balance = 0;
-        }
+        if (c.balance < FM.Finance.adminThreshold(c)) FM.Failure.trouble(c); // administration, or the end of the club (FM.Failure)
       }
     });
     const uc = W.userClub();
@@ -2500,6 +2489,7 @@
       uc.budget = Math.max(5e5, FM.Finance.budgetFor(uc));
       uc.warned = false;
     }
+    FM.Failure.settle(); // liquidations, and the phoenix clubs that rise from them
     Sea.runExpansions(); // clubs that join a closed league, before the contracts, youth sides and fixtures are made
     Sea.sanctionNews();
     FM.Stories.worldEvents(entry);

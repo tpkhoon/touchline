@@ -481,7 +481,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-212 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+211 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority: the real database and the accuracy of the ratings it is made with** (the three Ratings rows at the top of the table; eight more are done and listed above). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -576,7 +576,6 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Match | (Parked: the pitch view is switched off) Classic view benches: a dugout strip beside the pitch with the substitutes' tokens, which move in and out as changes are made | Beta |
 | Match | (Parked: the pitch view is switched off) Classic view officials and medical staff: the referee and assistants follow play and the touchline, and medical tokens run on when a player is injured | Beta |
 | Match | (Parked: the pitch view is switched off) Classic view pressure shading: a soft tint over the penalty areas showing which side is attacking, from the momentum figures | Beta |
-| Editor | Phoenix clubs, administration and liquidation in the world editor: a club can enter administration (a points deduction and a transfer embargo), be liquidated, and a phoenix club can rise in its place lower down the pyramid; the editor sets who can fail and what follows | Alpha 2 |
 | Tooling | Real-life rules checker in the developer tools: checks the world against the real rules (squad and foreign-player limits, tiebreakers, promotion and relegation, cup formats, calendars) and lists where a league or competition departs from them | Alpha 2 |
 | Match | Past match reports show who scored, who assisted and who was booked or sent off, with the minute | Beta |
 | Match | (Parked: the pitch view is switched off) The visual engine draws no lines between players (the formation and marking lines come out of the match view) | Beta |
