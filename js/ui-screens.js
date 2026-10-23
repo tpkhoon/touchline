@@ -365,7 +365,7 @@
     const results = `<div class="dsec"><div class="tiny b dim">RESULTS</div><div class="res">${d.results
       .map(([h, a, hg, ag]) => {
         const m = h === me || a === me ? 'me' : '';
-        return `<span class="ellip ${m}" style="text-align:right">${esc(TM(h).short)}</span><b class="${m}">${hg}–${ag}</b><span class="ellip ${m}">${esc(TM(a).short)}</span>`;
+        return `<span class="ellip ${m}" style="text-align:right">${esc(TM(h).name)}</span><b class="${m}">${hg}–${ag}</b><span class="ellip ${m}">${esc(TM(a).name)}</span>`;
       })
       .join('')}</div></div>`;
     const P2 = (id) => S().players[id];
@@ -2280,31 +2280,46 @@
   // Every league in the world, grouped by continent, with its simulation tier
   function worldView() {
     const s = S(),
-      cont = { EUR: 'Europe', ENG: 'Europe', SAM: 'South America', NAM: 'North America', ASIA: 'Asia', AFR: 'Africa' };
+      names = FM.Intl.CONFEDS;
+    // leagues by confederation (Oceania's own, though New Zealand's region is Asia); your own part of the world is open, the rest folded
     const by = {};
     W.leagues().forEach((l) => {
-      const k = cont[D.NATIONS[l.nat].region];
+      const k = names[FM.Intl.baseConfed(l.nat)];
       (by[k] = by[k] || []).push(l);
     });
+    const mine = club() && names[FM.Intl.baseConfed(club().nat)];
+    const folded = (k) => (UI.sub.wvFold && UI.sub.wvFold[k] != null ? UI.sub.wvFold[k] : k !== mine);
     const tierPill = (sim) =>
       `<span class="pill ${sim === 'full' ? 'acc' : ''}" title="${FM.Tiers.LABEL[sim]}" style="font-size:10px">${FM.Tiers.ICON[sim]} ${sim}</span>`;
     return (
       `<div class="small muted" style="margin:0 2px 10px;line-height:1.5">${U.plural(W.leagues().length, 'league')} in three simulation tiers. <b>Full</b>: every match in the engine. <b>Light</b>: every fixture played by a fast statistical model. <b>Minimal</b>: scores only — squads exist for scouting. Tap a league for its table.</div>` +
-      ['Europe', 'South America', 'North America', 'Asia', 'Africa']
+      Object.values(names)
         .filter((k) => by[k])
         .map(
           (k) =>
-            `<div class="sec"><div class="h3">${k}</div></div><div class="card flat" style="padding:2px 12px">${by[k]
-              .sort((a, b) => (a.nat + a.tier).localeCompare(b.nat + b.tier))
-              .map((l) => {
-                const t = W.sortedTable(l)[0];
-                return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="sub" data-k="league" data-v="${l.id}"><span style="font-size:18px">${C.flag(l.nat)}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(l.name)}${club() && l.id === club().comp ? ' <span class="pill acc">You</span>' : ''}</div><div class="tiny dim ellip">Tier ${l.tier} · ${U.plural(l.clubs.length, 'club')}${l.rules.qualify ? ` · top ${l.rules.qualify.n} → ${esc(s.comps[l.rules.qualify.to].short)}` : ''} · leader ${t && t.p ? esc(CL(t.id).short) : '—'}</div></div>${tierPill(l.sim || 'full')}</div>`;
-              })
-              .join('')}</div>`,
+            `<button class="sec" style="width:100%;text-align:left;min-height:44px" data-act="wvFold" data-k="${k}" aria-expanded="${!folded(k)}"><div class="h3 grow">${k}</div><span class="dim small">${U.plural(by[k].length, 'league')} ${folded(k) ? '▸' : '▾'}</span></button>${
+              folded(k)
+                ? ''
+                : `<div class="card flat" style="padding:2px 12px">${by[k]
+                    .sort((a, b) => (a.nat + a.tier).localeCompare(b.nat + b.tier))
+                    .map((l) => {
+                      const t = W.sortedTable(l)[0];
+                      return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="sub" data-k="league" data-v="${l.id}"><span style="font-size:18px">${C.flag(l.nat)}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(l.name)}${club() && l.id === club().comp ? ' <span class="pill acc">You</span>' : ''}</div><div class="tiny dim">Tier ${l.tier} · ${U.plural(l.clubs.length, 'club')}${l.rules.qualify ? ` · top ${l.rules.qualify.n} → ${esc(s.comps[l.rules.qualify.to].name)}` : ''} · leader ${t && t.p ? esc(CL(t.id).name) : '—'}</div></div>${tierPill(l.sim || 'full')}</div>`;
+                    })
+                    .join('')}</div>`
+            }`,
         )
         .join('')
     );
   }
+  UI.acts.wvFold = (d) => {
+    const names = FM.Intl.CONFEDS,
+      mine = club() && names[FM.Intl.baseConfed(club().nat)];
+    UI.sub.wvFold = UI.sub.wvFold || {};
+    const cur = UI.sub.wvFold[d.k] != null ? UI.sub.wvFold[d.k] : d.k !== mine;
+    UI.sub.wvFold[d.k] = !cur;
+    UI.render();
+  };
   function tableView(cid) {
     const s = S(),
       comp = s.comps[cid],
@@ -2448,7 +2463,7 @@
     const seeds = Object.entries(M.seeds)
       .map(
         ([cn, ids]) =>
-          `<div class="tiny dim" style="margin-top:4px">${cn === 'all' ? '' : `<b>${esc(cn)}</b>: `}${ids.map((id, i) => `${i + 1} ${esc(CL(id).short)}`).join(' · ')}</div>`,
+          `<div class="tiny dim" style="margin-top:4px">${cn === 'all' ? '' : `<b>${esc(cn)}</b>: `}${ids.map((id, i) => `${i + 1} ${esc(CL(id).name)}`).join(' · ')}</div>`,
       )
       .join('');
     return `<div class="card"><div class="h3">Playoffs</div>${seeds}${rows.join('')}</div>`;
@@ -2576,9 +2591,7 @@
               : ['D', 'dim']
         : null;
       const where =
-        r.comp.type === 'league'
-          ? ''
-          : `${esc(r.comp.short || r.comp.name)}${f.po ? ' · ' + esc(f.po) : f.group ? ' · Group' : ''} · `;
+        r.comp.type === 'league' ? '' : `${esc(r.comp.name)}${f.po ? ' · ' + esc(f.po) : f.group ? ' · Group' : ''} · `;
       return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line);gap:8px" ${res ? `data-act="matchReport" data-id="${f.id}"` : `data-act="clubView" data-id="${opp.id}"`}>${left}${C.crest(opp, 22)}<div class="grow" style="min-width:0"><div class="b ellip">${home ? 'v' : 'at'} ${esc(opp.name)}${c.rival === opp.id ? '' : ''}</div><div class="tiny dim ellip">${where}${home ? 'Home' : f.neutral ? 'Neutral' : 'Away'}${r.load >= 4 ? ` · <span style="color:var(--warn)">${U.plural(r.load, 'game')} in 14 days</span>` : ''}</div></div>${res ? `<span class="b" style="color:var(--${out[1]})">${out[0]} ${home ? res.hg : res.ag}–${home ? res.ag : res.hg}</span>` : restPill(r)}</div>`;
     };
     let month = '';
@@ -2626,7 +2639,7 @@
                   const pl = P(x.id),
                     own = pl && W.ownPlayer(pl),
                     cl = CL(x.c);
-                  return `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${x.id}"><span class="pos ${D.POS_GROUP[x.pos]}" style="min-width:34px;text-align:center">${x.lab}</span><span class="grow ellip" style="margin-left:8px">${own ? '' : ''}${esc(x.n)} <span class="dim">· ${cl ? esc(cl.short) : '?'}</span></span><b>${x.r.toFixed(1)}</b></div>`;
+                  return `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${x.id}"><span class="pos ${D.POS_GROUP[x.pos]}" style="min-width:34px;text-align:center">${x.lab}</span><span class="grow ellip" style="margin-left:8px">${own ? '' : ''}${esc(x.n)} <span class="dim">· ${cl ? esc(cl.name) : '?'}</span></span><b>${x.r.toFixed(1)}</b></div>`;
                 })
                 .join('')}`
             : '';
@@ -2661,7 +2674,7 @@
               .map((x) => {
                 const pl = P(x.id),
                   cl = CL(x.c);
-                return `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${x.id}"><span class="pos ${D.POS_GROUP[x.pos]}" style="min-width:34px;text-align:center">${x.lab}</span><span class="grow ellip" style="margin-left:8px">${pl && W.ownPlayer(pl) ? '' : ''}${esc(x.n)} <span class="dim">· ${cl ? (cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.short)) : '?'}</span></span><b>${x.r.toFixed(1)}</b></div>`;
+                return `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${x.id}"><span class="pos ${D.POS_GROUP[x.pos]}" style="min-width:34px;text-align:center">${x.lab}</span><span class="grow ellip" style="margin-left:8px">${pl && W.ownPlayer(pl) ? '' : ''}${esc(x.n)} <span class="dim">· ${cl ? (cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.name)) : '?'}</span></span><b>${x.r.toFixed(1)}</b></div>`;
               })
               .join('')}`
           : '';
@@ -2672,7 +2685,7 @@
     const side = (id) => {
       const cl = id && CL(id);
       return cl
-        ? ` <span class="dim">· ${cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.short)}</span>`
+        ? ` <span class="dim">· ${cl.sim === 'nation' ? C.flag(cl.code) + ' ' + esc(cl.name) : esc(cl.name)}</span>`
         : '';
     };
     const row = (icon, label, a, tail = '') =>

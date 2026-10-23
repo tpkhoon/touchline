@@ -297,4 +297,117 @@
   };
   // Administration: debts beyond half a season's revenue (and at least £8M)
   F.adminThreshold = (c) => -Math.max(8e6, 0.5 * F.revenue(c));
+  // Title sponsors. The top leagues and the domestic cups carry a sponsor's name ("Corvid Energy English Premier Division") for a
+  // few seasons at a time; when a deal ends there is a new sponsor, or for a season none. A competition keeps the name it was
+  // given as baseName; comp.name is the name with the sponsor, so everything that shows a competition shows the deal. The brands
+  // are invented (a place, a trade); no two competitions of a nation share one. A name the world already gave a sponsor (a
+  // database's, or one a manager typed in the world editor) is taken as the base and left as it is.
+  const PLACES =
+    `Halden Corvid Meridian Vantage Norland Ashgrove Kestrel Bluewater Larkspur Ironbridge Solano Tamarind Brightwell Eastmoor
+    Fenwick Granite Harlow Istria Juniper Kingsley Lumen Marlowe Northgate Oakhurst Pennant Quillon Redfern Sable Thornbury Verity
+    Westerley Yarrow Zephyr Alder Beacon Cobalt Everest Foxglove Glenmore Hartwell Keystone Lyric Monarch Nimbus Orchid Prism Rowan Sterling
+    Talbot Upland Valmont Winslow Aurelia Brookfield Castell Dunmore Elmstead Falconer Garnet Highmoor Ingleby Jarrow Kelmscott Lowther`.split(
+      /\s+/,
+    );
+  const TRADES = [
+    'Bank',
+    'Energy',
+    'Telecom',
+    'Airlines',
+    'Insurance',
+    'Motors',
+    'Brewing',
+    'Mobile',
+    'Foods',
+    'Logistics',
+    'Steel',
+    'Pharma',
+    'Stores',
+    'Travel',
+    'Securities',
+    'Water',
+    'Media',
+    'Homes',
+  ];
+  const HAS_SPONSOR =
+    /\b(bank|energ|energy|telecom|insurance|kredit|credit|mobile|airlines?|motors|brewing|securities)\b/i;
+  F.sponsorBrand = (taken) => {
+    for (let i = 0; i < 40; i++) {
+      const b = `${U.pick(PLACES)} ${U.pick(TRADES)}`;
+      if (!taken.has(b)) return b;
+    }
+    return `${U.pick(PLACES)} ${U.pick(TRADES)}`;
+  };
+  const eligible = (c) =>
+    c.nat &&
+    ((c.type === 'league' && c.tier <= 3) || c.type === 'cup') &&
+    c.clubs !== undefined &&
+    c.type !== 'friendly';
+  // a deal's chance of there being one: the top league nearly always, the cups and lower leagues less
+  const hasDeal = (c) => Math.random() < (c.type === 'cup' ? 0.55 : c.tier === 1 ? 0.92 : c.tier === 2 ? 0.7 : 0.4);
+  const dealLength = (c) => (c.type === 'cup' ? U.randi(2, 4) : U.randi(3, 5));
+  const setName = (c, brand) => {
+    c.name = brand ? `${brand} ${c.baseName}` : c.baseName;
+    c.sponsorShown = c.name;
+  };
+  F.sponsorsTick = function (first) {
+    const s = S();
+    if (s.noSponsors) return;
+    const takenBy = {};
+    Object.values(s.comps).forEach((c) => {
+      if (c.sponsor && c.nat) (takenBy[c.nat] = takenBy[c.nat] || new Set()).add(c.sponsor.brand);
+    });
+    for (const c of Object.values(s.comps)) {
+      if (!eligible(c)) continue;
+      // a name changed by hand since the last tick (the world editor) is the new base
+      if (c.baseName && c.sponsorShown && c.name !== c.sponsorShown) {
+        c.baseName = c.name;
+        c.sponsor = undefined;
+      }
+      if (!c.baseName) {
+        c.baseName = c.name;
+        if (HAS_SPONSOR.test(c.name)) {
+          c.sponsorShown = c.name;
+          c.sponsor = { brand: '', from: s.year, until: s.year + 99, own: true }; // (the name already has one: left alone)
+          continue;
+        }
+      }
+      if (c.sponsor && c.sponsor.own) continue;
+      const taken = (takenBy[c.nat] = takenBy[c.nat] || new Set());
+      if (first && !c.sponsor && c.sponsorChecked == null) {
+        // a new world starts part-way through deals
+        c.sponsorChecked = s.year;
+        if (hasDeal(c)) {
+          const len = dealLength(c),
+            brand = F.sponsorBrand(taken);
+          taken.add(brand);
+          c.sponsor = { brand, from: s.year - U.randi(0, len - 1), until: s.year + U.randi(0, len - 1) };
+          setName(c, brand);
+        } else setName(c, '');
+        continue;
+      }
+      if (c.sponsor && c.sponsor.until >= s.year) continue;
+      // the deal has run out (or there was none): a new sponsor, or none for a season
+      const old = c.sponsor && c.sponsor.brand;
+      if (old) taken.delete(old);
+      c.sponsor = undefined;
+      c.sponsorChecked = s.year;
+      if (!hasDeal(c)) {
+        setName(c, '');
+        continue;
+      }
+      const brand = F.sponsorBrand(taken);
+      taken.add(brand);
+      c.sponsor = { brand, from: s.year, until: s.year + dealLength(c) - 1 };
+      setName(c, brand);
+      if (!first && FM.News && (c.type === 'cup' || c.tier === 1))
+        FM.News.add({
+          type: 'world',
+          title: `${brand} take over the title sponsorship`,
+          body: `The ${c.baseName} is now the ${c.name}${old ? `, after ${old}'s deal ended` : ''}.`,
+          cat: 'competitions',
+        });
+    }
+  };
+  F.sponsorsInit = () => F.sponsorsTick(true);
 })();

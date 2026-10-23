@@ -2300,6 +2300,7 @@
     FM.Records.captainSeason(); // who wore the armband this season (before the year turns)
     FM.Injury.expireDecisions(true); // last season's medical questions are settled before the year turns
     S.year++;
+    FM.Finance.sponsorsTick(); // (a title sponsor's deal may have run out)
     FM.Analytics.newSeason();
     Object.values(S.clubs).forEach((cl) => ((cl.forms = undefined), (cl.lastDn = undefined))); // (the formations used are counted afresh; a new calendar has no last match)
     FM.Transfers.endLoans();
@@ -2545,5 +2546,6 @@
 
   Sea.init = function () {
     FM.S.seasonLog = { upsets: [], transfers: [], net: {}, spend: {} };
+    FM.Finance.sponsorsInit(); // (the leagues and cups that carry a sponsor's name)
   };
 })();
