@@ -701,7 +701,7 @@
         : md;
     const nt = !club && S.user.nation && S.nteams && S.nteams[S.user.nation];
     $('#topbar').innerHTML = club
-      ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><div class="money">${U.money(club.balance)}</div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
+      ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><button class="money" data-act="goFinances" aria-label="Finances: balance ${esc(U.money(club.balance))}">${U.money(club.balance)}</button><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
       : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${md} · <span style="color:var(--warn)">Out of work</span>${nt ? ` · ${esc(nt.name)}` : ''}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
     const html =
@@ -754,6 +754,12 @@
 
   UI.acts.tab = (d) => UI.go(d.tab);
   // Settings live under Club, but the top bar's gear reaches them from anywhere
+  // The balance in the top bar is a shortcut to the club's finances
+  UI.acts.goFinances = () => {
+    UI.closeAllSheets();
+    UI.sub.club = 'finances';
+    UI.go('club');
+  };
   UI.acts.openSettings = () => {
     UI.closeAllSheets();
     UI.sub.club = 'settings';

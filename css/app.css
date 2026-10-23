@@ -2680,3 +2680,13 @@ tr.tap {
   min-width: 44px;
   min-height: 44px;
 }
+
+/* a section heading keeps its words on one line; its counts and button wrap beneath when the row is full */
+.sec {
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.topbar .money {
+  min-height: 44px;
+  color: inherit;
+}

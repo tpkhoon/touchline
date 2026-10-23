@@ -1139,7 +1139,35 @@
               `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">Play-off</span><span class="grow ellip" style="text-align:right" data-act="nation" data-id="${f.h}">${esc(T(f.h).name)} ${C.flag(T(f.h).code)}</span><b style="min-width:44px;text-align:center">${f.res ? `${f.res.hg}–${f.res.ag}` : 'v'}</b><span class="grow ellip" data-act="nation" data-id="${f.a}">${C.flag(T(f.a).code)} ${esc(T(f.a).name)}</span></div>${f.res && f.res.pens ? `<div class="tiny dim center">pens ${f.res.pens[0]}–${f.res.pens[1]}</div>` : ''}`,
           )
           .join('')}
-        ${mineFirst.map((g) => nfold('q_' + g.name, `<div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>`, miniTable(g.table, g.teams, 1, u.nation), g.teams.includes(u.nation), 'card flat')).join('')}`;
+        ${[...new Set(mineFirst.map((g) => g.key))]
+          .map((key) => {
+            const gs = mineFirst.filter((g) => g.key === key),
+              mine = gs.some((g) => g.teams.includes(u.nation));
+            const pool = gs[0].name.replace(/\s+\S+$/, '').trim() || 'Pool';
+            const leader = (g) => {
+              const r = W.sortedTable({ table: g.table })[0];
+              return r && r.p
+                ? `${C.flag(T(r.id).code)} ${esc(T(r.id).name)} · ${r.pts}`
+                : U.plural(g.teams.length, 'team');
+            };
+            return nfold(
+              'qp_' + key,
+              `<div class="row small b" style="margin:4px 0"><span class="grow">${esc(pool)}</span><span class="tiny dim">${U.plural(gs.length, 'group')} · ${U.plural(gs[0].slots, 'place')}</span></div>`,
+              gs
+                .map((g) =>
+                  nfold(
+                    'q_' + g.name,
+                    `<div class="row small" style="margin:4px 0"><span class="grow b dim">${esc(g.name.trim())}</span><span class="tiny">${leader(g)}</span></div>`,
+                    miniTable(g.table, g.teams, 1, u.nation),
+                    g.teams.includes(u.nation),
+                    'card flat',
+                  ),
+                )
+                .join(''),
+              mine,
+            );
+          })
+          .join('')}`;
     }
     top += nationsLeagueSection(s, u);
     return W.employed() ? top + origIntl() + vac : vac + top + origIntl();

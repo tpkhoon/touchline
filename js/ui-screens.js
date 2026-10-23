@@ -116,7 +116,7 @@
       </div>
       ${cupPills(c)}
       <div class="card flat"><div class="row"><div class="h3 grow">Objectives</div>${C.form(row.form)}</div>${objs.map((o) => `<div class="row small" style="margin-top:8px"><span>${o.ok ? '✓' : '…'}</span><span class="grow">${esc(o.text)}</span><span class="dim">${esc(o.status)}</span></div>`).join('')}</div>
-      <div class="sec"><div class="h3">The Feed</div><span class="dim small">${s.news.filter((n) => !n.read).length ? `${s.news.filter((n) => !n.read).length} new · ` : ''}${s.news.length} stories</span>${s.news.some((n) => n.read && !UI.isOpenDecision(n)) ? `<button class="btn sm" style="margin-left:8px" data-act="clearRead">Remove read stories</button>` : ''}</div>
+      <div class="sec"><div class="h3">The Feed</div><span class="dim small">${s.news.filter((n) => !n.read).length ? `${s.news.filter((n) => !n.read).length} new · ` : ''}${s.news.length} stories</span>${s.news.some((n) => n.read && !UI.isOpenDecision(n)) ? `<button class="btn sm" style="margin-left:8px;flex:none" data-act="clearRead">Clear read</button>` : ''}</div>
       ${chips('feed', [
         ['club', 'My Club'],
         ['reply', waiting ? `Needs reply (${waiting})` : 'Needs reply'],
@@ -2611,7 +2611,7 @@
         mid = wd >= 2 && wd <= 4;
       const left = `<div style="width:70px"><div class="tiny b">${W.dateText(r.dn)}</div><div class="tiny dim">${mid ? 'Midweek' : 'Weekend'}</div></div>`;
       if (r.tbd)
-        return `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px">${left}<div class="grow"><div class="b ellip">${esc(r.comp.name)}</div><div class="tiny dim">${esc(r.text || 'Next round')} · opponent not yet drawn</div></div>${restPill(r)}</div>`;
+        return `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);gap:8px">${left}<div class="grow"><div class="b ellip">${esc(UI.cname(r.comp))}</div><div class="tiny dim">${esc(r.text || 'Next round')} · opponent not yet drawn</div></div>${restPill(r)}</div>`;
       const f = r.f,
         home = f.h === c.id,
         opp = CL(home ? f.a : f.h),
@@ -2628,7 +2628,9 @@
               : ['D', 'dim']
         : null;
       const where =
-        r.comp.type === 'league' ? '' : `${esc(r.comp.name)}${f.po ? ' · ' + esc(f.po) : f.group ? ' · Group' : ''} · `;
+        r.comp.type === 'league'
+          ? ''
+          : `${esc(UI.cname(r.comp))}${f.po ? ' · ' + esc(f.po) : f.group ? ' · Group' : ''} · `;
       return `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line);gap:8px" ${res ? `data-act="matchReport" data-id="${f.id}"` : `data-act="clubView" data-id="${opp.id}"`}>${left}${C.crest(opp, 22)}<div class="grow" style="min-width:0"><div class="b ellip">${home ? 'v' : 'at'} ${esc(opp.name)}${c.rival === opp.id ? '' : ''}</div><div class="tiny dim ellip">${where}${home ? 'Home' : f.neutral ? 'Neutral' : 'Away'}${r.load >= 4 ? ` · <span style="color:var(--warn)">${U.plural(r.load, 'game')} in 14 days</span>` : ''}</div></div>${res ? `<span class="b" style="color:var(--${out[1]})">${out[0]} ${home ? res.hg : res.ag}–${home ? res.ag : res.hg}</span>` : restPill(r)}</div>`;
     };
     let month = '';
