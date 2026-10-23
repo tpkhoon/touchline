@@ -3,7 +3,7 @@
 // disturbed and a world's lore is the same each time it is made:
 //   - geography: a place for every club (js/geo.js), distances, the wear and the cost of a long away trip, local derbies
 //   - older glory: league titles, top-flight seasons and the best decade before the generated seasons begin
-//   - club details: motto, anthem, mascot, ground nickname, record attendance, biggest win, most famous match, named eras
+//   - club details: anthem, ground nickname, record attendance, biggest win, most famous match
 //   - rivalries: where each began, and the record between the two clubs before the save
 //   - competitions: when each began, its trophy, its changes of format, its giant-killings
 //   - what kind of club it is (works, police, military, university, reserve side) and what that means
@@ -487,99 +487,6 @@
   };
 
   // ================================================================ club details
-  const MOTTOS = [
-    '{city} first, {city} always',
-    'Together, always',
-    'By hard work and good heart',
-    'Never yield, never fade',
-    'Strength in the shirt',
-    'For the town, for the badge',
-    'Stand tall, {nick}',
-    'One club, one community',
-    'Courage and constancy',
-    'Where we play, we belong',
-    'Through the dark, to the light',
-    'Earn it every day',
-    'Pride in the stripes',
-    'We rise together',
-    'Forward, ever forward',
-    'Loyalty is our colour',
-    'Not the biggest, but the proudest',
-    'Heart before glory',
-    'Play the game, keep the faith',
-    'Our ground, our people',
-    'Win with grace, lose with honour',
-    'The {nick} do not bow',
-    'Every Saturday, every season',
-    'From the terraces to the top',
-    'Built by the town, for the town',
-    'Hard to beat, harder to forget',
-    'The long way round is still the way',
-  ];
-  const LATIN = [
-    'Per ardua ad alta',
-    'Fortes fortuna adiuvat',
-    'Semper fidelis',
-    'Unitas fortior',
-    'Labore et honore',
-    'Virtute et labore',
-    'In unitate vires',
-    'Nunquam non paratus',
-    'Audentes fortuna iuvat',
-    'Pro patria et pila',
-    'Sic itur ad astra',
-    'Fide et fortitudine',
-  ];
-  const MASCOT_NAMES = [
-    'Rocky',
-    'Sparky',
-    'Bruno',
-    'Clive',
-    'Maisie',
-    'Duffy',
-    'Chester',
-    'Otto',
-    'Pip',
-    'Winston',
-    'Mabel',
-    'Biscuit',
-    'Hamish',
-    'Dougal',
-    'Gizmo',
-    'Bertie',
-    'Nugget',
-    'Ziggy',
-    'Tilly',
-    'Barnaby',
-    'Moxie',
-    'Gus',
-    'Fergus',
-    'Peggy',
-    'Rufus',
-    'Ludo',
-    'Noodle',
-    'Cosmo',
-    'Juniper',
-    'Basil',
-  ];
-  const ANIMALS = [
-    'Lion',
-    'Eagle',
-    'Wolf',
-    'Bear',
-    'Bull',
-    'Fox',
-    'Hawk',
-    'Stag',
-    'Badger',
-    'Otter',
-    'Falcon',
-    'Tiger',
-    'Heron',
-    'Owl',
-  ];
-  const COLOUR_NICKS =
-    /^(Reds?|Blues?|Whites?|Blacks?|Greens?|Yellows?|Oranges?|Maroons?|Navy|Sky Blues?|Canaries|Citizens|Gunners|Blades|Rojos|Azules|Blancos|Negros|Verdes|Amarillos|Celestes|Granates|Azulones|Naranjas|Rubro-Negros|Alvinegros|Grenás|Azuis|Brancos|Pretos|Verdões)$/i;
   const ANTHEMS = [
     'The {nick} Roar',
     '{city} Forever',
@@ -721,90 +628,6 @@
     if (!pool.length) return null;
     return r.wpick(pool, (x) => Math.exp(((strong ? x.rep : 100 - x.rep) - 50) / 14) + 0.05);
   };
-  const eraList = function (c, r, facts, early) {
-    const eras = [];
-    const titles = [...(early ? early.t : []), ...(facts.won[c.id] || []).map((x) => x.y)].sort((a, b) => a - b);
-    // clusters of titles: three or more within twelve years (two, for a club with few), best first, apart from one another
-    const need = titles.length >= 5 ? 3 : 2;
-    const wins = [];
-    for (let i = 0; i < titles.length; i++) {
-      let j = i;
-      while (j + 1 < titles.length && titles[j + 1] - titles[i] <= 12) j++;
-      if (j - i + 1 >= need) wins.push({ i, j, n: j - i + 1 });
-    }
-    const usedYears = [];
-    for (const w of wins.sort((a, b) => b.n - a.n || titles[a.i] - titles[b.i]).slice(0, 6)) {
-      const lo = titles[w.i],
-        hi = titles[w.j];
-      if (usedYears.some(([x, y]) => lo <= y + 3 && hi >= x - 3) || usedYears.length >= 2) continue;
-      usedYears.push([lo, hi]);
-      const lg = (c.legends || []).find((l) => {
-        const m = /^(\d+)[–-](\d+)$/.exec(l.era || '');
-        return m && +m[1] <= hi && +m[2] >= lo && l.nat === c.nat;
-      });
-      const sur = lg && lg.name.split(' ').slice(-1)[0];
-      eras.push({
-        name:
-          sur && r.chance(0.55)
-            ? `The ${sur} Years`
-            : r.pick([
-                'The Golden Years',
-                'The Glory Days',
-                'The Great Decade',
-                'The Long Summer',
-                'The Age of Silver',
-              ]),
-        from: Math.max(lo - r.int(1, 2), c.founded || lo),
-        to: hi + r.int(0, 2),
-        note: U.plural(w.n, 'league title'),
-      });
-    }
-    // cups
-    const cups = (facts.cupWon[c.id] || []).map((x) => x.y).sort((a, b) => a - b);
-    for (let a = 0; a + 1 < cups.length; a++)
-      if (cups[a + 1] - cups[a] <= 6 && !eras.some((e) => e.from <= cups[a] && e.to >= cups[a + 1])) {
-        eras.push({ name: 'The Cup Years', from: cups[a] - 1, to: cups[a + 1] + 1, note: 'two cups in a few seasons' });
-        break;
-      }
-    // slumps: two relegations within eight years
-    const downs = (facts.down[c.id] || []).slice().sort((a, b) => a - b);
-    for (let a = 0; a + 1 < downs.length; a++)
-      if (downs[a + 1] - downs[a] <= 8) {
-        eras.push({
-          name: r.pick(['The Wilderness Years', 'The Long Decline', 'The Lean Years', 'The Dark Years']),
-          from: downs[a] - 1,
-          to: downs[a + 1] + 2,
-          note: 'two relegations',
-        });
-        break;
-      }
-    if (c.founded && c.founded < 1950)
-      eras.push({
-        name: r.pick(['The Founding Years', 'The Early Years', 'The Pioneer Days']),
-        from: c.founded,
-        to: c.founded + r.int(12, 22),
-        note: 'from the first match',
-      });
-    // a big club with no cluster of titles or cups still has a period it remembers: its long run among the better clubs
-    if (!eras.length && c.rep >= 62) {
-      const from = Math.max(1950, (c.founded || 1900) + r.int(15, 40)),
-        to = Math.min(from + r.int(8, 15), S().year - 2);
-      if (to - from >= 5)
-        eras.push({
-          name: r.pick([
-            'The Steady Years',
-            'The Consolidation',
-            'The Modern Era',
-            'The Long Stay',
-            'The Settled Years',
-          ]),
-          from,
-          to,
-          note: 'a long run among the better clubs',
-        });
-    }
-    return eras.sort((a, b) => a.from - b.from).slice(0, 4);
-  };
   L.clubDetails = function (c, facts) {
     const st = S(),
       r = rngOf(`club|${c.id}`),
@@ -815,11 +638,6 @@
         .replace(/\{city\}/g, c.city || c.name)
         .replace(/\{nick\}/g, nick)
         .replace(/\{ground\}/g, (c.stadium && c.stadium.name) || 'the ground');
-    const old = (c.founded || 1950) < 1925;
-    const motto = old && r.chance(0.35) ? r.pick(LATIN) : fill(r.pick(MOTTOS));
-    // the mascot: an animal named in the nickname, else any animal
-    const sing = nick.replace(/ies$/, 'y').replace(/ves$/, 'f').replace(/s$/, '');
-    const mascot = `${r.pick(MASCOT_NAMES)} the ${COLOUR_NICKS.test(nick) || nick.length < 3 ? r.pick(ANIMALS) : sing}`;
     const yr = (lo, hi) => r.int(Math.max(lo, c.founded || lo), Math.max(hi, (c.founded || lo) + 1));
     const anthem = { title: fill(r.pick(ANTHEMS)), note: r.pick(ANTHEM_NOTES).replace('{y}', yr(1900, 1995)) };
     const cap = (c.stadium && (c.stadium.cap0 || c.stadium.cap)) || 10000;
@@ -888,15 +706,12 @@
       };
     }
     return {
-      motto,
-      mascot,
       anthem,
       ground: nickGround,
       att,
       bigWin,
       bigLoss,
       famous,
-      eras: eraList(c, r, facts, early),
     };
   };
 

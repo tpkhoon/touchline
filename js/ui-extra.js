@@ -2032,14 +2032,7 @@
   const esc = U.esc,
     S = () => FM.S;
   const T = (id) => FM.S.nteams[id];
-  const TNAME = {
-    WC: 'World Championship',
-    EC: 'European Nations Cup',
-    SA: 'South American Championship',
-    AF: 'Africa Nations Trophy',
-    AS: 'Asia-Pacific Nations Cup',
-    CT: 'Continental Champions Trophy',
-  };
+  const TNAME = FM.Intl.TNAME; // (the tournaments' names, as a world definition may have renamed them)
   const resultRow = (g, focus) => {
     const h = T(g.h),
       a = T(g.a),

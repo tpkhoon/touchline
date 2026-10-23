@@ -490,6 +490,8 @@
     ),
     invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool })),
   });
+  // (the places a tournament's pools fill: the rest are the play-off places, or the guests another part of the world sends)
+  const places = (tn) => tn.size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0);
   WD.validateIntl = function (x) {
     const e = [];
     if (!x || typeof x !== 'object') return e;
@@ -511,8 +513,8 @@
           !v.slots.every((n) => Number.isInteger(n) && n >= 0)
         )
           e.push(`tournament ${id}: one number of places for each part of the world`);
-        else if (tn.pools.length && v.slots.reduce((a, n) => a + n, 0) !== tn.size)
-          e.push(`tournament ${id}: the places add up to ${v.slots.reduce((a, n) => a + n, 0)}, not ${tn.size}`);
+        else if (tn.pools.length && v.slots.reduce((a, n) => a + n, 0) !== places(tn))
+          e.push(`tournament ${id}: the places add up to ${v.slots.reduce((a, n) => a + n, 0)}, not ${places(tn)}`);
       }
     }
     for (const v of x.invites || []) {

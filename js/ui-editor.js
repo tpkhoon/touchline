@@ -3503,7 +3503,7 @@
               const v = cur.tourns[tn.id] || { name: tn.name, slots: tn.pools.map(([, n]) => n) };
               return `<div class="tiny dim" style="margin:12px 0 4px">${kinds[kind]} · ${U.plural(tn.size, 'nation')}</div><input type="text" id="ed-iname-${tn.id}" maxlength="48" value="${esc(v.name)}">${
                 tn.pools.length > 1
-                  ? `<div class="tiny dim" style="margin:6px 0 4px">Places by part of the world (they add up to ${tn.size})</div><div class="ng-names" style="margin-top:0;flex-wrap:wrap">${tn.pools
+                  ? `<div class="tiny dim" style="margin:6px 0 4px">Places by part of the world (they add up to ${tn.size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0)}${tn.playoff ? `, and ${tn.playoff} more go to the best teams left over` : ''}${tn.guests ? `, and ${tn.guests.n} guests are invited` : ''})</div><div class="ng-names" style="margin-top:0;flex-wrap:wrap">${tn.pools
                       .map(
                         ([regions], i) =>
                           `<div style="flex:1;min-width:84px"><div class="tiny dim">${esc(regions.map((r) => REGION[r] || r).join(' + '))}</div><input type="number" id="ed-islot-${tn.id}-${i}" min="0" max="${tn.size}" inputmode="numeric" value="${v.slots[i]}"></div>`,

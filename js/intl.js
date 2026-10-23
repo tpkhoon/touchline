@@ -17,11 +17,19 @@
   // rename them, move nations between them and add confederations of its own (S.confeds: { names: { id: name }, members:
   // { nation code: id } }, from the world editor). Qualifying, the continental championships and the Nations League all go by
   // confederation.
-  I.CONFEDS = { EUR: 'Europe', SAM: 'South America', AFR: 'Africa', ASIA: 'Asia', NAM: 'North America' };
+  I.CONFEDS = {
+    EUR: 'Europe',
+    SAM: 'South America',
+    AFR: 'Africa',
+    ASIA: 'Asia',
+    NAM: 'North America',
+    OFC: 'Oceania',
+  };
   I.REGION_NAME = I.CONFEDS;
   I.baseConfed = (code) => {
-    const r = D.NATIONS[code].region;
-    return r === 'ENG' ? 'EUR' : r;
+    const n = D.NATIONS[code];
+    if (n.confed) return n.confed; // (New Zealand and the island nations: Oceania, though their region is Asia for scouting)
+    return n.region === 'ENG' ? 'EUR' : n.region;
   };
   I.region = (code) => {
     const c = S() && S().confeds,
@@ -35,28 +43,37 @@
     ...Object.keys((S() && S().confeds && S().confeds.names) || {}).filter((id) => !I.CONFEDS[id]),
   ];
 
-  // Tournament formats. pools: [[regions], slots]
+  // The tournaments are played at their real sizes. The World Championship has 48 teams (twelve groups of four; the winners, the
+  // runners-up and the eight best third-placed teams go into a round of 32), the European, African and Asian championships 24
+  // (six groups; a round of 16 of the winners, runners-up and four best third-placed teams), the South American and North American
+  // 16 (four groups, then the quarter-finals) and Oceania's 8 (two groups, then the semi-finals). Teams are drawn from pots by ranking.
+  // pools: [[regions], places]. playoff: places filled by the best-ranked teams of the rest of the world left over (the
+  // intercontinental play-offs). direct: no qualifying, the best-ranked nations of the pool go.
   I.TOURNS = {
     world: [
       {
         id: 'WC',
         name: 'World Championship',
-        size: 16,
+        size: 48,
+        playoff: 2,
         pools: [
-          [['EUR'], 9],
-          [['SAM'], 3],
-          [['AFR'], 2],
-          [['ASIA'], 1],
-          [['NAM'], 1],
+          [['EUR'], 16],
+          [['AFR'], 9],
+          [['ASIA'], 8],
+          [['SAM'], 6],
+          [['NAM'], 6],
+          [['OFC'], 1],
         ],
       },
     ],
     confed: [{ id: 'CT', name: 'Continental Champions Trophy', size: 8, pools: [], confed: true }],
     continental: [
-      { id: 'EC', name: 'European Nations Championship', size: 8, pools: [[['EUR'], 8]] },
-      { id: 'SA', name: 'South American Nations Cup', size: 4, pools: [[['SAM'], 4]] },
-      { id: 'AF', name: 'African Nations Cup', size: 4, pools: [[['AFR'], 4]] },
-      { id: 'AS', name: 'Asia-Pacific Nations Cup', size: 4, pools: [[['ASIA', 'NAM'], 4]] },
+      { id: 'EC', name: 'European Nations Championship', size: 24, pools: [[['EUR'], 24]] },
+      { id: 'SA', name: 'South American Nations Cup', size: 16, guests: { from: 'NAM', n: 6 }, pools: [[['SAM'], 10]] },
+      { id: 'AF', name: 'African Nations Cup', size: 24, pools: [[['AFR'], 24]] },
+      { id: 'AS', name: 'Asian Nations Cup', size: 24, pools: [[['ASIA'], 24]] },
+      { id: 'NA', name: 'North American Nations Cup', size: 16, pools: [[['NAM'], 16]] },
+      { id: 'OF', name: 'Oceania Nations Cup', size: 8, direct: true, pools: [[['OFC'], 8]] },
     ],
   };
   // The tournaments of a kind in this world: a confederation of the world's own (four nations or more) gets a place at the World
@@ -92,10 +109,12 @@
     EC: 'European Nations Championship',
     SA: 'South American Nations Cup',
     AF: 'African Nations Cup',
-    AS: 'Asia-Pacific Nations Cup',
+    AS: 'Asian Nations Cup',
+    NA: 'North American Nations Cup',
+    OF: 'Oceania Nations Cup',
     CT: 'Continental Champions Trophy',
     NL: 'Nations League',
-  }; // Asia and North America share one tournament here, so it keeps its own name
+  };
 
   // Invitational tournaments in the international windows: a host and three invited nations play semi-finals on the first day
   // of the second window and a final and third-place match on the second, like Japan's Cherry Blossom Cup. One a season, in turn, if
@@ -185,6 +204,7 @@
         s.players[p.id] = p;
       }
     }
+    W.rosterVer++; // (the nations' pools are worked out again: a nation with no players had none cached)
   };
   // Everyone in a national squad (the top 23 of each nation's pool), whether or not he has a club: unattached
   // internationals are not cleared out with the other free agents
@@ -354,8 +374,14 @@
     }
     return null;
   };
+  // (a tournament with fewer teams has no day for the rounds it starts after: the 16-team ones begin at the quarter-finals,
+  // Oceania's at the semi-finals)
   I.tournamentStages = (year) =>
-    I.tournamentFor(year) === 'world' ? ['G1', 'G2', 'G3', 'QF', 'SF', 'F'] : ['G1', 'G2', 'G3', 'SF', 'F'];
+    I.tournamentFor(year) === 'world'
+      ? ['G1', 'G2', 'G3', 'R32', 'R16', 'QF', 'SF', 'F']
+      : I.tournamentFor(year) === 'continental'
+        ? ['G1', 'G2', 'G3', 'R16', 'QF', 'SF', 'F']
+        : ['G1', 'G2', 'G3', 'SF', 'F'];
   const MD = { I1a: 0, I1b: 1, I2a: 2, I2b: 3 };
 
   // ---------- Season setup: qualifying groups for the coming summer ----------
@@ -368,13 +394,24 @@
     s.intlBreak = [];
     const kind = I.tournamentFor(s.year);
     if (kind && kind !== 'confed') {
-      const q = { kind, year: s.year, groups: [], direct: {} };
+      const q = { kind, year: s.year, groups: [], direct: {}, hosts: {} };
+      I.tournsFor(kind).forEach((tn) => {
+        // the host qualifies for nothing: it is in, and takes one of its part of the world's places
+        const hostPool = tn.pools[0];
+        if (hostPool) {
+          const cands = I.openRanked().filter((t) => hostPool[0].includes(I.region(t.code)));
+          const top = cands.slice(0, Math.max(4, Math.ceil(cands.length * 0.6)));
+          if (top.length) q.hosts[tn.id] = [U.pick(top).id];
+        }
+      });
       I.tournsFor(kind).forEach((tn) =>
-        tn.pools.forEach(([regions, slots], pi) => {
-          const teams = I.openRanked().filter((t) => regions.includes(I.region(t.code)));
+        tn.pools.forEach(([regions, places], pi) => {
+          const hosts = q.hosts[tn.id] || [];
+          const teams = I.openRanked().filter((t) => regions.includes(I.region(t.code)) && !hosts.includes(t.id));
+          const slots = Math.max(0, places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length);
           const key = `${tn.id}:${pi}`;
-          if (teams.length <= slots) {
-            q.direct[key] = teams.map((t) => t.id);
+          if (teams.length <= slots || tn.direct) {
+            q.direct[key] = teams.slice(0, slots).map((t) => t.id);
             return;
           }
           const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || 4)));
@@ -544,7 +581,7 @@
   // The Continental Champions Trophy's invitations: the champions of the last continental championships, the world champions and
   // a host from the better nations (the rest of the eight are filled by ranking). A continent without a champion yet sends its
   // best-ranked nation.
-  I.CONFED_FROM = { EC: ['EUR'], SA: ['SAM'], AF: ['AFR'], AS: ['ASIA', 'NAM'] };
+  I.CONFED_FROM = { EC: ['EUR'], SA: ['SAM'], AF: ['AFR'], AS: ['ASIA'], NA: ['NAM'], OF: ['OFC'] };
   I.confedTeams = function () {
     const s = S(),
       won = {},
@@ -737,7 +774,9 @@
   };
   I.qualifiedFor = (tnId) => {
     const tn = I.tournsFor(S().quals ? S().quals.kind : 'world').find((x) => x.id === tnId);
-    return tn ? tn.pools.flatMap((_, pi) => I.poolQualifiers(`${tnId}:${pi}`)) : [];
+    return tn
+      ? [...((S().quals.hosts || {})[tnId] || []), ...tn.pools.flatMap((_, pi) => I.poolQualifiers(`${tnId}:${pi}`))]
+      : [];
   };
 
   // ---------- Fixtures for an international or tournament day (built once per day) ----------
@@ -759,7 +798,7 @@
       // (otherwise results land on the copies and the bracket never learns who went through)
       if (cal.type === 'tourn' && s.tourns) {
         const byId = new Map();
-        s.tourns.forEach((t) => [...t.ko.qf, ...t.ko.sf, t.ko.final].filter(Boolean).forEach((f) => byId.set(f.id, f)));
+        s.tourns.forEach((t) => I.tournKo(t).forEach((f) => byId.set(f.id, f)));
         s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
       }
       if (cal.type !== 'tourn' && invitesOf(s).length) {
@@ -807,39 +846,104 @@
   };
 
   // ---------- Summer tournaments ----------
+  // ---------- The draw: pots ----------
+  // The teams are ranked (the hosts first, who take the head of the first groups), cut into four pots of as many teams as there are
+  // groups, and every group gets one team from each pot. At the World Championship no two teams from one confederation meet in
+  // a group (Europe, with so many, may have two); the continental championships have no such rule. Returns the pots and the groups.
+  I.draw = function (teams, hosts, byConfed) {
+    const G = Math.max(1, Math.floor(teams.length / 4));
+    if (teams.length < 8) return { pots: [teams.map((t) => t.id)], groups: [teams.map((t) => t.id)] };
+    const rank = teams.slice().sort((a, b) => b.coef - a.coef);
+    const order = [...rank.filter((t) => hosts.includes(t.id)), ...rank.filter((t) => !hosts.includes(t.id))];
+    const pots = [0, 1, 2, 3].map((p) => order.slice(p * G, (p + 1) * G));
+    const limit = (t) => (I.region(t.code) === 'EUR' ? 2 : 1);
+    const tryDraw = (strict) => {
+      const groups = pots[0].map((t) => [t]);
+      for (let p = 1; p < 4; p++)
+        for (const t of U.shuffle(pots[p].slice())) {
+          const open = groups
+            .map((g, gi) => gi)
+            .filter(
+              (gi) =>
+                groups[gi].length === p &&
+                (!strict || groups[gi].filter((x) => I.region(x.code) === I.region(t.code)).length < limit(t)),
+            );
+          if (!open.length) return null;
+          groups[U.pick(open)].push(t);
+        }
+      return groups;
+    };
+    let groups = null;
+    if (byConfed) for (let i = 0; i < 300 && !groups; i++) groups = tryDraw(true);
+    while (!groups) groups = tryDraw(false);
+    return { pots: pots.map((p) => p.map((t) => t.id)), groups: groups.map((g) => g.map((t) => t.id)) };
+  };
+  // The first knockout round: the winners and runners-up of the groups and the best third-placed teams fill the biggest bracket
+  // they can (never more than three a group): 2 groups give the semi-finals, 4 the quarter-finals, 6 the round of 16 (four
+  // thirds), 12 the round of 32 (eight thirds)
+  const KO = ['R32', 'R16', 'QF', 'SF', 'F'];
+  const KO_KEY = { R32: 'r32', R16: 'r16', QF: 'qf', SF: 'sf' };
+  const KO_NAME = { R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', F: 'Final' };
+  const KO_SIZE = { F: 2, SF: 4, QF: 8, R16: 16, R32: 32 };
+  const firstKo = (G) => {
+    if (G <= 1) return 'F';
+    let n = 2;
+    while (n * 2 <= 3 * G) n *= 2;
+    return { 2: 'F', 4: 'SF', 8: 'QF', 16: 'R16', 32: 'R32' }[n] || 'R32';
+  };
+  // Every knockout tie of a tournament, in order
+  I.tournKo = (t) =>
+    [...(t.ko.r32 || []), ...(t.ko.r16 || []), ...(t.ko.qf || []), ...(t.ko.sf || []), t.ko.final].filter(Boolean);
   I.setupTournaments = function () {
     const s = S(),
-      kind = I.tournamentFor(s.year);
-    s.tourns = I.tournsFor(kind).map((tn) => {
-      let teams = (tn.confed ? I.confedTeams() : I.qualifiedFor(tn.id)).map(T);
-      if (teams.length < tn.size)
-        teams = teams
-          .concat(
-            I.openRanked().filter(
-              (t) => !teams.includes(t) && (tn.confed || tn.pools.some(([r]) => r.includes(I.region(t.code)))),
-            ),
-          )
-          .slice(0, tn.size);
+      kind = I.tournamentFor(s.year),
+      tns = I.tournsFor(kind);
+    const hostsOf = (tn) => ((s.quals && s.quals.hosts) || {})[tn.id] || [];
+    // The South American championship invites the best of North America (they would otherwise be in their own)
+    const guestSpec = (tns.find((x) => x.guests) || {}).guests;
+    const naTn = guestSpec && tns.find((x) => x.pools.some(([r]) => r.includes(guestSpec.from)));
+    const guests = guestSpec
+      ? I.openRanked()
+          .filter((t) => I.region(t.code) === guestSpec.from && !(naTn && hostsOf(naTn).includes(t.id)))
+          .slice(0, guestSpec.n)
+      : [];
+    s.tourns = tns.map((tn) => {
+      let teams = (tn.confed ? I.confedTeams() : I.qualifiedFor(tn.id)).map(T).filter(Boolean);
+      const gids = guests.map((t) => t.id);
+      if (tn.guests) teams = teams.concat(guests.filter((g) => !teams.includes(g)));
+      else if (naTn === tn) teams = teams.filter((t) => !gids.includes(t.id));
+      if (teams.length < tn.size) {
+        const used = new Set(teams.map((t) => t.id));
+        const inPools = (t) => tn.pools.some(([r]) => r.includes(I.region(t.code)));
+        // the intercontinental play-offs: the best of the rest of the world who did not qualify
+        const extra = I.openRanked().filter(
+          (t) =>
+            !used.has(t.id) &&
+            (tn.confed || (tn.playoff ? I.region(t.code) !== 'EUR' && inPools(t) : inPools(t))) &&
+            !(naTn === tn && gids.includes(t.id)),
+        );
+        teams = teams.concat(extra.slice(0, tn.size - teams.length));
+      }
       teams = teams.sort((a, b) => b.coef - a.coef).slice(0, tn.size);
-      const G = Math.max(1, teams.length / 4);
-      const groups = [...Array(G)].map(() => []);
-      teams.forEach((t, i) => {
-        const row = Math.floor(i / G),
-          col = i % G;
-        groups[row % 2 ? G - 1 - col : col].push(t.id);
-      });
+      teams = teams.slice(0, Math.max(4, Math.floor(teams.length / 4) * 4)); // (groups of four)
+      const hosts = hostsOf(tn).filter((h) => teams.some((t) => t.id === h));
+      const drawn = I.draw(teams, hosts, tn.id === 'WC');
+      const G = drawn.groups.length;
       return {
         id: tn.id,
         name: tn.name,
         teams: teams.map((t) => t.id),
+        hosts,
+        pots: drawn.pots,
+        first: firstKo(G),
         games: [],
-        groups: groups.map((ids, gi) => ({
+        groups: drawn.groups.map((ids, gi) => ({
           name: String.fromCharCode(65 + gi),
           teams: ids,
           table: Object.fromEntries(ids.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }])),
           rounds: W.roundRobin(ids).slice(0, 3),
         })),
-        ko: { qf: [], sf: [], final: null },
+        ko: { r32: [], r16: [], qf: [], sf: [], final: null },
         winner: null,
         runnerUp: null,
       };
@@ -849,13 +953,59 @@
     const u = s.user;
     if (u && u.nation && kind !== 'confed' && !s.tourns.some((t) => t.teams.includes(u.nation)))
       I.sackNational(`${T(u.nation).name} failed to qualify for the ${s.tourns.map((t) => t.name).join(' / ')}.`);
-    if (s.tourns.length)
+    if (s.tourns.length) {
+      const flag = (id) => D.NATIONS[T(id).code].flag;
       FM.News.add({
         type: 'world',
         title: `${s.tourns.map((t) => t.name).join(' · ')}: the finals begin`,
-        body: s.tourns.map((t) => `${t.name}: ${t.teams.map((id) => D.NATIONS[T(id).code].flag).join(' ')}`).join('\n'),
+        body: s.tourns.map((t) => `${t.name}: ${t.teams.map(flag).join(' ')}`).join('\n'),
         big: true,
       });
+      // the draw, for the World Championship, the European championship and any tournament your nation is in
+      s.tourns
+        .filter(
+          (t) =>
+            t.pots.length === 4 && (t.id === 'WC' || t.id === 'EC' || (u && u.nation && t.teams.includes(u.nation))),
+        )
+        .forEach((t) =>
+          FM.News.add({
+            type: 'world',
+            title: `${t.name}: the draw`,
+            body: `${t.hosts.length ? `${t.hosts.map((h) => T(h).name).join(', ')} host${t.hosts.length === 1 ? 's' : ''}. ` : ''}${t.pots
+              .map((p, i) => `Pot ${i + 1}: ${p.map((id) => `${flag(id)} ${T(id).name}`).join(', ')}`)
+              .join('\n')}`,
+            keep: true,
+          }),
+        );
+    }
+  };
+  // The knockout bracket from the groups: the group winners, then the runners-up, then the third-placed teams, ranked by points,
+  // goal difference and goals scored; the best fill the bracket by seed (first plays last, and so on) so the best teams meet late,
+  // and a group's teams do not meet again in the first round if it can be helped
+  I.bracket = function (t) {
+    const adv = KO_SIZE[t.first] || 8;
+    const tabs = t.groups.map((g) => W.sortedTable({ table: g.table }));
+    const cmp = (a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || T(b.id).coef - T(a.id).coef;
+    const at = (pos) =>
+      tabs
+        .map((tab, gi) => tab[pos] && { ...tab[pos], g: gi })
+        .filter(Boolean)
+        .sort(cmp);
+    const ranked = [...at(0), ...at(1), ...at(2)].slice(0, adv);
+    if (ranked.length < adv) return [];
+    let order = [1];
+    while (order.length < adv) {
+      const n = order.length * 2;
+      order = order.flatMap((x) => [x, n + 1 - x]);
+    }
+    const pairs = [];
+    for (let i = 0; i < order.length; i += 2) pairs.push([ranked[order[i] - 1], ranked[order[i + 1] - 1]]);
+    pairs.forEach((p, i) => {
+      if (p[0].g !== p[1].g) return;
+      const j = pairs.findIndex((q, k) => k !== i && q[1].g !== p[0].g && p[1].g !== q[0].g);
+      if (j >= 0) [p[1], pairs[j][1]] = [pairs[j][1], p[1]];
+    });
+    return pairs.map(([a, b]) => [a.id, b.id]);
   };
   I.tournamentDay = function (stage) {
     const s = S();
@@ -870,52 +1020,44 @@
             out.push(mkFx(h, a, lbl(`Group ${g.name}`), { kind: 'tourn', tid: t.id, group: g.name, neutral: true })),
           ),
         );
-      } else if (stage === 'QF') {
-        if (t.groups.length !== 4) continue;
-        if (!t.ko.qf.length) {
-          const [A, B, Cc, Dd] = t.groups.map((g) => W.sortedTable({ table: g.table }));
-          t.ko.qf = [
-            [A[0].id, B[1].id],
-            [B[0].id, A[1].id],
-            [Cc[0].id, Dd[1].id],
-            [Dd[0].id, Cc[1].id],
-          ].map(([h, a]) => mkFx(h, a, lbl('Quarter-final'), { kind: 'tourn', tid: t.id, ko: true, neutral: true }));
-        }
-        out.push(...t.ko.qf);
-      } else if (stage === 'SF') {
-        if (t.groups.length < 2) continue;
-        if (!t.ko.sf.length) {
-          let pairs;
-          if (t.groups.length === 4) {
-            const w = t.ko.qf.map((f) => FM.Season.winnerOf(f));
-            pairs = [
-              [w[0], w[2]],
-              [w[1], w[3]],
-            ];
-          } else {
-            const [A, B] = t.groups.map((g) => W.sortedTable({ table: g.table }));
-            pairs = [
-              [A[0].id, B[1].id],
-              [B[0].id, A[1].id],
-            ];
-          }
-          t.ko.sf = pairs.map(([h, a]) =>
-            mkFx(h, a, lbl('Semi-final'), { kind: 'tourn', tid: t.id, ko: true, neutral: true }),
-          );
-        }
-        out.push(...t.ko.sf);
-      } else if (stage === 'F') {
-        if (!t.ko.final) {
-          const [h, a] =
-            t.groups.length === 1
-              ? W.sortedTable({ table: t.groups[0].table })
-                  .slice(0, 2)
-                  .map((r) => r.id)
-              : t.ko.sf.map((f) => FM.Season.winnerOf(f));
-          t.ko.final = mkFx(h, a, lbl('Final'), { kind: 'tourn', tid: t.id, ko: true, neutral: true, final: true });
-        }
-        out.push(t.ko.final);
+        continue;
       }
+      // (a save from before the 24- and 48-team tournaments has no t.first: four groups began at the quarter-finals, two at the semi-finals)
+      const first = t.first || (t.groups.length === 4 ? 'QF' : t.groups.length === 2 ? 'SF' : 'F');
+      if (KO.indexOf(stage) < KO.indexOf(first)) continue;
+      const key = KO_KEY[stage];
+      const have = stage === 'F' ? (t.ko.final ? [t.ko.final] : []) : t.ko[key] || (t.ko[key] = []);
+      if (!have.length) {
+        let pairs;
+        if (stage === first)
+          pairs =
+            t.groups.length === 1
+              ? [
+                  W.sortedTable({ table: t.groups[0].table })
+                    .slice(0, 2)
+                    .map((r) => r.id),
+                ]
+              : (t.first = first) && I.bracket(t);
+        else {
+          const prev = KO[KO.indexOf(stage) - 1];
+          const before = prev === 'F' ? [] : t.ko[KO_KEY[prev]] || [];
+          const w = before.map((f) => FM.Season.winnerOf(f));
+          pairs = [];
+          for (let i = 0; i + 1 < w.length; i += 2) pairs.push([w[i], w[i + 1]]);
+        }
+        const made = pairs.map(([h, a]) =>
+          mkFx(h, a, lbl(KO_NAME[stage]), {
+            kind: 'tourn',
+            tid: t.id,
+            ko: true,
+            neutral: true,
+            ...(stage === 'F' ? { final: true } : {}),
+          }),
+        );
+        if (stage === 'F') t.ko.final = made[0] || null;
+        else t.ko[key] = made;
+        out.push(...made);
+      } else out.push(...have);
     }
     return out;
   };
@@ -1070,14 +1212,17 @@
   };
   I.findFixture = function (id) {
     const s = S();
-    return (s.tourns || []).flatMap((t) => [...t.ko.qf, ...t.ko.sf, t.ko.final]).find((f) => f && f.id === id) || null;
+    return (s.tourns || []).flatMap((t) => I.tournKo(t)).find((f) => f.id === id) || null;
   };
   // A tournament team's progress, for the national team screen
   I.stageReached = function (t, id) {
     if (t.winner === id) return 'Winners';
     if (t.ko.final && [t.ko.final.h, t.ko.final.a].includes(id)) return 'Final';
-    if (t.ko.sf.some((f) => f.h === id || f.a === id)) return 'Semi-finals';
-    if (t.ko.qf.some((f) => f.h === id || f.a === id)) return 'Quarter-finals';
+    const into = (k) => (t.ko[k] || []).some((f) => f.h === id || f.a === id);
+    if (into('sf')) return 'Semi-finals';
+    if (into('qf')) return 'Quarter-finals';
+    if (into('r16')) return 'Round of 16';
+    if (into('r32')) return 'Round of 32';
     return 'Group stage';
   };
 

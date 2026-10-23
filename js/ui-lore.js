@@ -65,23 +65,14 @@
     const o = (id) => (id && S().clubs[id] ? ` v ${cname(id)}` : '');
     const kind = L().kind(c);
     const rv = c.rival && S().clubs[c.rival] ? L().rival(c.id, c.rival) : null;
-    const eras = d.eras
-      .map(
-        (e) =>
-          `<div class="tiny" style="margin-top:3px"><b>${esc(e.name)}</b>, ${e.from}–${e.to}${e.note ? ` <span class="dim">· ${esc(e.note)}</span>` : ''}</div>`,
-      )
-      .join('');
     return `<div class="card"><div class="h3">The club</div>
       ${kind ? `<div class="phrase"><span>${kind.icon}</span><span><b>${esc(kind.label)}.</b> ${esc(kind.text)}</span></div>` : ''}
-      ${row('Motto', `<i>“${esc(d.motto)}”</i>`)}
       ${row('Anthem', `${esc(d.anthem.title)}<div class="tiny dim">${esc(d.anthem.note)}</div>`)}
-      ${row('Mascot', esc(d.mascot))}
       ${row('Ground', `${esc(d.ground)}${c.stadium ? `<div class="tiny dim">${esc(c.stadium.name)}</div>` : ''}`)}
       ${row('Record crowd', `${d.att.n.toLocaleString()}<div class="tiny dim">${d.att.year}, ${esc(d.att.what)}${o(d.att.vs)}</div>`)}
       ${d.bigWin ? row('Record win', `${d.bigWin.gf}–${d.bigWin.ga}${o(d.bigWin.vs)}<div class="tiny dim">${d.bigWin.year}</div>`) : ''}
       ${d.bigLoss ? row('Heaviest defeat', `${d.bigLoss.gf}–${d.bigLoss.ga}${o(d.bigLoss.vs)}<div class="tiny dim">${d.bigLoss.year}</div>`) : ''}
       ${row('Famous match', `${esc(d.famous.text)}`)}
-      ${eras ? row('Eras', eras) : ''}
       ${peopleRows(c)}
       ${
         rv && c.rival

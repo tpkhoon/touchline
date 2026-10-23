@@ -568,7 +568,7 @@ check(
   E.setIntl({
     cycle: 0,
     tourns: {
-      WC: { name: 'Global Cup', slots: [8, 4, 2, 1, 1], qual: 3 },
+      WC: { name: 'Global Cup', slots: [8, 10, 10, 8, 9, 1], qual: 3 },
       EC: { ...WD.intlNow().tourns.EC, name: 'Euro Test Cup', qual: 3 },
       SA: { ...WD.intlNow().tourns.SA, qual: 2 },
     },
@@ -1036,7 +1036,7 @@ check(
 check(
   FM.Intl.CYCLE === 2 &&
     FM.Intl.TOURNS.world[0].name === 'World Championship' &&
-    FM.Intl.TOURNS.world[0].pools[0][1] === 9 &&
+    FM.Intl.TOURNS.world[0].pools[0][1] === 16 &&
     FM.Intl.TNAME.WC === 'World Championship' &&
     FM.Intl.INVITES[0].host === 'JPN',
   'clearing the database left the international settings changed',
