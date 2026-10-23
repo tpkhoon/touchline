@@ -45,11 +45,11 @@
       else ((aim = { t: half, text: 'Finish in the top half' }), (min = { t: safe, text: 'stay up' }));
     } else {
       const places = R.qualify ? R.qualify.n : 0,
-        seconds = D.CONTINENTALS.filter((x) => x.feeders && x.feeders[ctx.id] && (x.tier || 1) < 4).sort(
+        seconds = D.CONTINENTALS.filter((x) => x.feeders && FM.Cups.feedersOf(x)[ctx.id] && (x.tier || 1) < 4).sort(
           (a, b) => (a.tier || 1) - (b.tier || 1),
         ),
         second = seconds[0],
-        europe = places + seconds.reduce((t, x) => t + x.feeders[ctx.id], 0);
+        europe = places + seconds.reduce((t, x) => t + FM.Cups.feedersOf(x)[ctx.id], 0);
       if (exp === 1)
         ((aim = { t: 1, text: `Win ${ctx.name}` }),
           (min = places ? { t: places, text: `${ctx.ccName} qualification` } : { t: 2, text: 'second place' }));

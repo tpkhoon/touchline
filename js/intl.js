@@ -394,7 +394,7 @@
     s.intlBreak = [];
     const kind = I.tournamentFor(s.year);
     if (kind && kind !== 'confed') {
-      const q = { kind, year: s.year, groups: [], direct: {}, hosts: {} };
+      const q = { kind, year: s.year, groups: [], direct: {}, hosts: {}, pos: {} };
       I.tournsFor(kind).forEach((tn) => {
         // the host qualifies for nothing: it is in, and takes one of its part of the world's places
         const hostPool = tn.pools[0];
@@ -433,6 +433,12 @@
               key,
               tn: tn.id,
               slots,
+              // the last places are played for: the best teams that missed the direct places meet in single matches on the last
+              // matchday (the play-offs), as at the European championship
+              po:
+                g >= 2 * Math.round(slots * (kind === 'world' ? 0.12 : 0.13))
+                  ? Math.round(slots * (kind === 'world' ? 0.12 : 0.13))
+                  : 0,
               name,
               teams: ids,
               table: Object.fromEntries(
@@ -750,14 +756,10 @@
     });
   };
 
-  // Teams through from a pool, ranked group winners first, then runners-up, and so on
-  I.poolQualifiers = function (key) {
-    const q = S().quals;
-    if (!q) return [];
-    if (q.direct[key]) return q.direct[key];
-    const groups = q.groups.filter((g) => g.key === key);
-    if (!groups.length) return [];
-    const slots = groups[0].slots;
+  // A pool's teams ranked after the groups: group winners first, then runners-up, and so on (points per game, goal difference)
+  const rankPool = (key) => {
+    const q = S().quals,
+      groups = q.groups.filter((g) => g.key === key);
     const rows = groups.flatMap((g) =>
       W.sortedTable({ table: g.table }).map((r, pos) => ({
         ...r,
@@ -770,7 +772,47 @@
     rows.sort(
       (a, b) => a.pos - b.pos || b.ppg - a.ppg || b.gdg - a.gdg || b.gfg - a.gfg || T(b.id).coef - T(a.id).coef,
     );
-    return rows.slice(0, slots).map((r) => r.id);
+    return { rows, groups };
+  };
+  // Teams through from a pool: the direct places by the ranking, the last ones by play-off (before the play-offs are played, the
+  // ranking stands in)
+  I.poolQualifiers = function (key) {
+    const q = S().quals;
+    if (!q) return [];
+    if (q.direct[key]) return q.direct[key];
+    if (!q.groups.some((g) => g.key === key)) return [];
+    const { rows, groups } = rankPool(key);
+    const slots = groups[0].slots,
+      P = groups[0].po || 0;
+    const direct = rows.slice(0, slots - P).map((r) => r.id),
+      po = (q.pos || {})[key];
+    if (!P) return direct;
+    const won = po && po.length && po.every((f) => f.res) ? po.map((f) => FM.Season.winnerOf(f)) : null;
+    return direct.concat(won || rows.slice(slots - P, slots).map((r) => r.id));
+  };
+  // The play-offs, drawn on the last matchday of the qualifying season: the 2P teams after the direct places, best against worst
+  I.playoffDay = function (busy) {
+    const q = S().quals,
+      out = [];
+    if (!q) return out;
+    q.pos = q.pos || {};
+    for (const key of [...new Set(q.groups.map((g) => g.key))]) {
+      const g0 = q.groups.find((g) => g.key === key),
+        P = g0.po || 0;
+      if (!P || q.pos[key]) continue;
+      const rows = rankPool(key).rows.slice(g0.slots - P, g0.slots + P);
+      if (rows.length < 2 * P) continue;
+      q.pos[key] = [...Array(P)].map((_, i) => {
+        const h = rows[i].id,
+          a = rows[2 * P - 1 - i].id;
+        busy.add(h);
+        busy.add(a);
+        const f = mkFx(h, a, `${I.TNAME[g0.tn]} qualifying play-off`, { kind: 'qual', group: 'PO ' + key, ko: true });
+        out.push(f);
+        return f;
+      });
+    }
+    return out;
   };
   I.qualifiedFor = (tnId) => {
     const tn = I.tournsFor(S().quals ? S().quals.kind : 'world').find((x) => x.id === tnId);
@@ -831,6 +873,8 @@
         });
       });
     }
+    // the qualifying play-offs, on the last matchday
+    if (s.quals && tag === 'I2b') fx.push(...I.playoffDay(busy));
     // The season's invitational, in the second window
     fx.push(...I.inviteDay(tag, busy));
     // The Nations League (no friendlies: a nation with nothing to play in a window rests)

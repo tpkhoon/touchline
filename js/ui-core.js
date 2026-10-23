@@ -1052,7 +1052,7 @@
       if (cc) europe.push(`The top ${r.qualify.n} qualify for the ${cc.name}.`);
     }
     for (const cc of D.CONTINENTALS) {
-      const k = cc.feeders && cc.feeders[l.id];
+      const k = cc.feeders && FM.Cups.feedersOf(cc)[l.id];
       if (k)
         europe.push(
           k === 1 ? `The next place goes to the ${cc.name}.` : `The next ${U.plural(k, 'place')} go to the ${cc.name}.`,

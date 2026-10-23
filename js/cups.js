@@ -64,7 +64,8 @@
     }
     // second-tier cups go second, so the main cups' entrants are taken first
     for (const c of W.continentals().sort((a, b) => (a.tier || 1) - (b.tier || 1))) {
-      const def = D.CONTINENTALS.find((x) => x.id === c.id) || {};
+      const def0 = D.CONTINENTALS.find((x) => x.id === c.id) || {};
+      const def = def0.feeders ? { ...def0, feeders: Cu.feedersOf(def0) } : def0; // (the places as they stand, by coefficient)
       // [league, how many, skipping the first k] for each feeder league
       const feeders = def.feeders
         ? Object.entries(def.feeders)
@@ -319,7 +320,7 @@
 
   // How many of a league's clubs go to its main continental cup (the second-tier cup takes the next places)
   Cu.mainPlaces = (compId) => {
-    const l = D.LEAGUES.find((x) => x.id === compId);
+    const l = (S() && S().comps && S().comps[compId]) || D.LEAGUES.find((x) => x.id === compId);
     return (l && l.rules && l.rules.qualify && l.rules.qualify.n) || 0;
   };
   // Saves made before a competition existed get it (empty until the next season's draw)
@@ -399,7 +400,7 @@
   Cu.skipFor = (compId, cc) => {
     let skip = Cu.mainPlaces(compId);
     for (const x of D.CONTINENTALS)
-      if (x.feeders && x.region === cc.region && (x.tier || 1) < (cc.tier || 1)) skip += x.feeders[compId] || 0;
+      if (x.feeders && x.region === cc.region && (x.tier || 1) < (cc.tier || 1)) skip += Cu.feedersOf(x)[compId] || 0;
     return skip;
   };
   // ---------- The two world competitions ----------
@@ -1104,6 +1105,7 @@
   Cu.onResult = function (fx) {
     const c = S().comps[fx.comp],
       r = fx.res;
+    Cu.note(c, fx); // (the nation's coefficient)
     if (fx.group) {
       const g = c.groups.find((x) => x.name === fx.group);
       FM.Season.updTable(g.table, fx, r);
@@ -1289,5 +1291,130 @@
       });
     }
     return out;
+  };
+  // ---------- Places in the continental cups by nation coefficient ----------
+  // A nation's places in its part of the world's cups depend on how its clubs have done there. Every match in a continental cup
+  // earns its club's nation points (2 for a win, 1 for a draw); a nation's coefficient is the last five seasons' points divided by
+  // the clubs that took part each season (the UEFA method), and a new world starts with five seasons' worth made from its places.
+  // At the end of each season the nations are ranked by it and the places (the same set the world began with: the main cup's,
+  // the second and third cups') are handed out again in that order, so a nation that does well climbs and one that fails slips.
+  // (S.fixedSpots keeps the places a world was given.) Each nation's tuple is [main cup, second cup, third cup...].
+  const REGION_OF = {
+    EUR: 'Europe',
+    SAM: 'South America',
+    ASIA: 'Asia',
+    AFR: 'Africa',
+    NAM: 'North America',
+    OFC: 'Asia',
+  };
+  Cu.regionName = (nat) => REGION_OF[FM.Intl.baseConfed(nat)];
+  // the cups of each part of the world, the main cup first
+  Cu.spotFamilies = () => {
+    const out = {};
+    D.CONTINENTALS.filter((cc) => (cc.tier || 1) <= 3).forEach((cc) =>
+      (out[cc.region] = out[cc.region] || []).push(cc),
+    ); // (the main cup and the next two: the lower cups keep their own places)
+    Object.values(out).forEach((a) => a.sort((x, y) => (x.tier || 1) - (y.tier || 1)));
+    return out;
+  };
+  // the places a second or third cup gives each league (a world's own copy once the places have moved)
+  Cu.feedersOf = (cc) => {
+    const comp = S() && S().comps && S().comps[cc.id];
+    return (comp && comp.feeders) || cc.feeders;
+  };
+  const ccStore = () => (S().cc = S().cc || { pts: {}, clubs: {}, seed: {} });
+  // a continental match: its clubs' nations earn points
+  Cu.note = function (c, fx) {
+    if (c.type !== 'continental') return;
+    const r = fx.res,
+      cc = ccStore(),
+      y = S().year;
+    for (const [id, pts] of [
+      [fx.h, r.hg > r.ag ? 2 : r.hg === r.ag ? 1 : 0],
+      [fx.a, r.ag > r.hg ? 2 : r.hg === r.ag ? 1 : 0],
+    ]) {
+      const club = S().clubs[id];
+      if (!club || !club.nat) continue;
+      const p = (cc.pts[club.nat] = cc.pts[club.nat] || {}),
+        k = (cc.clubs[club.nat] = cc.clubs[club.nat] || {});
+      p[y] = (p[y] || 0) + pts;
+      const list = (k[y] = k[y] || []);
+      if (!list.includes(id)) list.push(id);
+    }
+  };
+  // a nation's coefficient: the last five seasons (a season not yet played counts as the nation's starting level)
+  Cu.coef = function (nat, year = S().year) {
+    const cc = ccStore();
+    let sum = 0;
+    for (let y = year - 4; y <= year; y++) {
+      const pts = cc.pts[nat] && cc.pts[nat][y];
+      sum += pts != null ? pts / Math.max(1, cc.clubs[nat][y].length) : cc.seed[nat] != null ? cc.seed[nat] : 3;
+    }
+    return Math.round(sum * 100) / 100;
+  };
+  // the leagues that share a part of the world's cups: the top tiers of its nations
+  const spotLeagues = (region, main) =>
+    W.leagues().filter(
+      (l) => l.tier === 1 && Cu.regionName(l.nat) === region && (!l.rules.qualify || l.rules.qualify.to === main.id),
+    );
+  const tupleOf = (l, cups) =>
+    cups.map((cc, i) => (i === 0 ? (l.rules.qualify && l.rules.qualify.n) || 0 : Cu.feedersOf(cc)[l.id] || 0));
+  // every league's places now, by part of the world (the first time it is asked, they are the places the world began with)
+  Cu.spots = function () {
+    const s = S();
+    s.spots = s.spots || {};
+    const fam = Cu.spotFamilies();
+    for (const [region, cups] of Object.entries(fam)) {
+      const leagues = spotLeagues(region, cups[0]);
+      if (!leagues.length || s.spots[region]) continue;
+      const base = leagues.map((l) => tupleOf(l, cups));
+      s.spots[region] = base;
+      const weight = (t) => t[0] * 3 + (t[1] || 0) * 1.5 + (t[2] || 0) * 0.8;
+      const top = Math.max(1, ...base.map(weight));
+      leagues.forEach((l, i) => (ccStore().seed[l.nat] = Math.round((3 + (9 * weight(base[i])) / top) * 100) / 100));
+    }
+    return fam;
+  };
+  // Hand the places out again by coefficient. Returns what changed: [{ league, region, from, to }]
+  Cu.reallocate = function () {
+    const s = S();
+    if (s.fixedSpots) return [];
+    const fam = Cu.spots(),
+      changes = [];
+    for (const [region, cups] of Object.entries(fam)) {
+      const leagues = spotLeagues(region, cups[0]),
+        base = s.spots[region];
+      if (!base || leagues.length < 2 || base.length !== leagues.length) continue; // (leagues added or taken out since: left as they are)
+      const templates = base.map((t) => t.slice());
+      templates.sort((a, b) => b[0] - a[0] || (b[1] || 0) - (a[1] || 0) || (b[2] || 0) - (a[2] || 0));
+      const ranked = leagues
+        .map((l, i) => ({ l, i, c: Cu.coef(l.nat) }))
+        .sort((a, b) => b.c - a.c || a.i - b.i)
+        .map((x) => x.l);
+      ranked.forEach((l, i) => {
+        const before = tupleOf(l, cups),
+          t = templates[i];
+        if (t[0] > 0) l.rules.qualify = { to: cups[0].id, n: t[0] };
+        else delete l.rules.qualify;
+        cups.slice(1).forEach((cc, k) => {
+          const comp = s.comps[cc.id];
+          if (!comp) return;
+          if (!comp.feeders || comp.feeders === cc.feeders) comp.feeders = { ...cc.feeders };
+          if (t[k + 1] > 0) comp.feeders[l.id] = t[k + 1];
+          else delete comp.feeders[l.id];
+        });
+        if (before.join() !== t.join()) changes.push({ league: l, region, from: before, to: t.slice(0, cups.length) });
+      });
+    }
+    return changes;
+  };
+  // The ranking for a part of the world, best first: [{ league, nat, coef, places: [main, second, third...] }]
+  Cu.spotTable = function (region) {
+    const fam = Cu.spots(),
+      cups = fam[region];
+    if (!cups) return [];
+    return spotLeagues(region, cups[0])
+      .map((l) => ({ league: l, nat: l.nat, coef: Cu.coef(l.nat), places: tupleOf(l, cups) }))
+      .sort((a, b) => b.coef - a.coef);
   };
 })();

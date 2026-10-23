@@ -2278,6 +2278,42 @@
     )}${row('openSettings', '', 'Settings', 'Saves, text size, theme, match view and help')}`;
   };
   // Every league in the world, grouped by continent, with its simulation tier
+  // Each nation's places in the continental cups, by coefficient (they move with the clubs' results)
+  const spotsCard = () => {
+    const Cu = FM.Cups,
+      fam = Cu.spots();
+    const region = UI.sub.spotsRegion || (club() && Cu.regionName(club().nat)) || 'Europe';
+    const cups = fam[region];
+    if (!cups) return '';
+    const rows = Cu.spotTable(region);
+    const mine = club() && club().nat;
+    const shown = rows
+      .filter((r, i) => i < 12 || r.nat === mine)
+      .filter((r) => r.places.some((n) => n > 0) || r.nat === mine);
+    const open = UI.sub.spotsOpen != null ? UI.sub.spotsOpen : false;
+    const head = `<button class="sec" style="width:100%;text-align:left;min-height:44px" data-act="spotsFold" aria-expanded="${open}"><div class="h3 grow">Places in the continental cups</div><span class="dim small">by nation coefficient ${open ? '▾' : '▸'}</span></button>`;
+    if (!open) return head;
+    return `${head}<div class="card flat" style="padding:8px 12px"><div class="chips" style="margin-bottom:6px">${Object.keys(
+      fam,
+    )
+      .map((r) => `<button class="chip ${r === region ? 'on' : ''}" data-act="spotsRegion" data-v="${r}">${r}</button>`)
+      .join(
+        '',
+      )}</div><div class="tiny dim" style="margin-bottom:6px;line-height:1.5">A nation's coefficient is its clubs' points in these cups over the last five seasons (2 for a win, 1 for a draw) per club. At the end of every season the places are handed out again in that order.</div><table class="t"><tr><th>#</th><th class="l">Nation</th><th>Coef.</th>${cups.map((c) => `<th title="${esc(c.name)}">${esc(c.short)}</th>`).join('')}</tr>${shown
+      .map(
+        (r) =>
+          `<tr class="${r.nat === mine ? 'me' : ''}"><td>${rows.indexOf(r) + 1}</td><td class="l">${C.flag(r.nat)} ${esc(D.NATIONS[r.nat].name)}</td><td>${r.coef.toFixed(1)}</td>${r.places.map((n) => `<td>${n || ''}</td>`).join('')}</tr>`,
+      )
+      .join('')}</table></div>`;
+  };
+  UI.acts.spotsFold = () => {
+    UI.sub.spotsOpen = !UI.sub.spotsOpen;
+    UI.render();
+  };
+  UI.acts.spotsRegion = (d) => {
+    UI.sub.spotsRegion = d.v;
+    UI.render();
+  };
   function worldView() {
     const s = S(),
       names = FM.Intl.CONFEDS;
@@ -2292,6 +2328,7 @@
     const tierPill = (sim) =>
       `<span class="pill ${sim === 'full' ? 'acc' : ''}" title="${FM.Tiers.LABEL[sim]}" style="font-size:10px">${FM.Tiers.ICON[sim]} ${sim}</span>`;
     return (
+      spotsCard() +
       `<div class="small muted" style="margin:0 2px 10px;line-height:1.5">${U.plural(W.leagues().length, 'league')} in three simulation tiers. <b>Full</b>: every match in the engine. <b>Light</b>: every fixture played by a fast statistical model. <b>Minimal</b>: scores only — squads exist for scouting. Tap a league for its table.</div>` +
       Object.values(names)
         .filter((k) => by[k])

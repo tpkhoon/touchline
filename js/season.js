@@ -1729,6 +1729,7 @@
   // ---------- Season end ----------
   Sea.endSeason = function () {
     Sea.testimonials();
+    Sea.moveSpots(); // (the places in the continental cups, by coefficient, before they are handed out)
     Sea.updateYouthRatings();
     const S = FM.S,
       log = S.seasonLog,
@@ -1874,7 +1875,7 @@
       if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(open.slice(0, R.qualify.n));
       // second-tier continental cups: the next places down (in that order, so a playoff champion is never in two cups)
       for (const cc of D.CONTINENTALS) {
-        const k = cc.feeders && cc.feeders[comp.id];
+        const k = cc.feeders && FM.Cups.feedersOf(cc)[comp.id];
         if (!k) continue;
         const from = FM.Cups.skipFor(comp.id, cc);
         qualified[cc.id] = (qualified[cc.id] || []).concat(open.slice(from, from + k));
@@ -2293,6 +2294,29 @@
     S.expansionNoDraft = {};
     S.expansionCustom = {};
     S.expansionPick = {};
+  };
+  // The continental places move with the nations' coefficients; a change is in the news
+  Sea.moveSpots = function () {
+    const changes = FM.Cups.reallocate();
+    const mine = FM.W.userClub();
+    changes
+      .filter((c) => c.from[0] !== c.to[0])
+      .sort((a, b) => Math.abs(b.to[0] - b.from[0]) - Math.abs(a.to[0] - a.from[0]))
+      .slice(0, 5)
+      .forEach((c) => {
+        const cup = FM.D.CONTINENTALS.find((x) => x.region === c.region && !(x.tier > 1)),
+          nat = FM.D.NATIONS[c.league.nat].name,
+          d = c.to[0] - c.from[0];
+        FM.News.add({
+          type: 'world',
+          title: `${nat} ${d > 0 ? 'gain' : 'lose'} a ${cup.name} place${Math.abs(d) > 1 ? 's' : ''}`,
+          body: `After the season's results in the continental cups, ${nat} ${d > 0 ? 'climb' : 'slip'} in the coefficient ranking: ${c.to[0]} ${cup.name} ${c.to[0] === 1 ? 'place' : 'places'} next season (${c.from[0]} before).`,
+          cat: 'competitions',
+          clubId: mine && mine.nat === c.league.nat ? mine.id : undefined,
+          keep: !!(mine && mine.nat === c.league.nat),
+        });
+      });
+    return changes;
   };
   Sea.newSeason = function (entry) {
     const S = FM.S;

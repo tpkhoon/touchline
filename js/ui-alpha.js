@@ -1121,7 +1121,7 @@
           .slice()
           .sort((a, b) => (b.teams.includes(u.nation) ? 1 : 0) - (a.teams.includes(u.nation) ? 1 : 0));
       top += `<div class="sec"><div class="h3">Qualifying · ${q.kind === 'world' ? 'World Championship' : 'continental championships'} ${q.year + 1}</div></div>
-        <div class="small muted" style="margin:0 2px 8px">Group winners go through first, then the best runners-up by points per game. ${
+        <div class="small muted" style="margin:0 2px 8px">Group winners go through first, then the best runners-up by points per game; the last places are played for in single-match play-offs between the next best teams on the last matchday. ${
           Object.keys(q.direct).length
             ? `Qualified automatically: ${Object.values(q.direct)
                 .flat()
@@ -1129,6 +1129,13 @@
                 .join(' ')}`
             : ''
         }</div>
+        ${Object.values(q.pos || {})
+          .flat()
+          .map(
+            (f) =>
+              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">Play-off</span><span class="grow ellip" style="text-align:right" data-act="nation" data-id="${f.h}">${esc(T(f.h).name)} ${C.flag(T(f.h).code)}</span><b style="min-width:44px;text-align:center">${f.res ? `${f.res.hg}–${f.res.ag}` : 'v'}</b><span class="grow ellip" data-act="nation" data-id="${f.a}">${C.flag(T(f.a).code)} ${esc(T(f.a).name)}</span></div>${f.res && f.res.pens ? `<div class="tiny dim center">pens ${f.res.pens[0]}–${f.res.pens[1]}</div>` : ''}`,
+          )
+          .join('')}
         ${mineFirst.map((g) => nfold('q_' + g.name, `<div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>`, miniTable(g.table, g.teams, 1, u.nation), g.teams.includes(u.nation), 'card flat')).join('')}`;
     }
     top += nationsLeagueSection(s, u);
