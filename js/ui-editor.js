@@ -758,6 +758,7 @@
     history: 'history',
     changes: 'world',
     balance: 'world',
+    csv: 'world',
   };
   UI.acts.edTab = (d) => {
     ED.tab = d.v;
@@ -887,6 +888,7 @@
           '📜 History',
           `${ED.def.history.seasons.length} past season${ED.def.history.seasons.length === 1 ? '' : 's'}`,
         ],
+        ['csv', '📄 CSV files', 'download, edit in a spreadsheet, upload'],
         ['balance', '⚖️ Balance check', `${U.plural(balanceIssues().length, 'thing')} to look at`],
         ['changes', '📝 Changes made', changeSummary()],
       ]
@@ -2453,34 +2455,7 @@
   const yearOf = () => ED.def.meta.startYear || D.SEASON_START;
   const abilityOf = (attrs, pos) => FM.W.calcCA({ attrs }, pos);
   // Attributes for a position at an ability: the ones the position's rating weighs most come out highest
-  const suggest = (pos, ca) => {
-    const w = D.RATE_W[pos] || D.RATE_W.CM,
-      max = Math.max(...Object.values(w));
-    const avg = (ca - (D.RATE_OFF[pos] || 0)) / 5;
-    const attrs = {};
-    for (const k of D.ATTRS) attrs[k] = Math.max(1, Math.min(20, Math.round(avg + ((w[k] || 0) / max - 0.45) * 5)));
-    // nudge the attributes one step at a time, the ones that matter most for the position first, until the rating matches
-    const keys = D.ATTRS.filter((k) => (w[k] || 0) > 0.2).sort((x, y) => w[y] - w[x]),
-      start = { ...attrs };
-    for (let i = 0; i < 400; i++) {
-      const diff = ca - abilityOf(attrs, pos);
-      if (!diff) break;
-      const up = diff > 0;
-      // the attribute that has moved least from its starting value (in the direction wanted), heavier weights first
-      const k = keys
-        .filter((x) => (up ? attrs[x] < 20 : attrs[x] > 1))
-        .sort((x, y) =>
-          up ? attrs[x] - start[x] - (attrs[y] - start[y]) : attrs[y] - start[y] - (attrs[x] - start[x]),
-        )[0];
-      if (!k) break;
-      attrs[k] += up ? 1 : -1;
-      if (Math.abs(ca - abilityOf(attrs, pos)) > Math.abs(diff)) {
-        attrs[k] -= up ? 1 : -1;
-        break;
-      }
-    }
-    return attrs;
-  };
+  const suggest = (pos, ca) => WD.suggestAttrs(pos, ca);
   UI.acts.edSquad = (d) => {
     ED.view = 'squad';
     if (d.cid !== undefined) ED.cid = d.cid;
@@ -3661,6 +3636,63 @@
   };
   const C_flag = (code) => UI.C.flag(code);
 
+  // ---------- CSV files ----------
+  // The world's leagues, clubs and players as three CSV files to edit in a spreadsheet and upload again, with templates to fill in
+  // (FM.CsvWorld, js/csvworld.js). Rows are matched to a club by its id or its name, a column left empty changes nothing, and every
+  // problem is named by file, row and column; a row with a problem is left out and the rest go in.
+  const csvView = () => {
+    const r = ED.csv || null;
+    return `<div class="h1" style="margin-top:2vh">CSV files</div><div class="tag">Take the world out as spreadsheets, change it there, and put it back. Three files: leagues.csv, clubs.csv and players.csv. A club is matched by its id or its name; a new name makes a new club, a column left empty changes nothing, and a club with remove set to yes is taken out.</div>
+      ${errBox()}
+      <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:8px"><button class="btn sm" data-act="edCsvDown" data-k="world">⬇️ This world as CSV</button><button class="btn sm" data-act="edCsvDown" data-k="template">⬇️ Templates to fill in</button><button class="btn sm pri" data-act="edCsvUp">⬆️ Upload CSV files</button></div>
+      ${
+        r
+          ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${r.errors.length ? U.plural(r.errors.length, 'problem') : 'No problems'}${r.notes.length ? ` · ${esc(r.notes.join(' · '))}` : ''}</div>${
+              r.errors.length
+                ? `<div class="tiny dim" style="margin-top:4px">A row with a problem was left out; every other row went in.</div>${r.errors
+                    .slice(0, 60)
+                    .map((e) => `<div class="small" style="margin-top:6px;line-height:1.4">${esc(e)}</div>`)
+                    .join(
+                      '',
+                    )}${r.errors.length > 60 ? `<div class="tiny dim" style="margin-top:6px">… and ${r.errors.length - 60} more</div>` : ''}`
+                : ''
+            }</div>`
+          : ''
+      }
+      <div class="ng-label">The columns</div>
+      <div class="tiny dim" style="line-height:1.6"><b>leagues.csv</b>: ${FM.CsvWorld.COLUMNS.leagues.join(', ')}<br><b>clubs.csv</b>: ${FM.CsvWorld.COLUMNS.clubs.join(', ')}<br><b>players.csv</b>: ${FM.CsvWorld.COLUMNS.players.join(', ')}<br>Nations are their three-letter codes (ENG), colours are #rrggbb, a player's club is its name or id (empty: a free agent), ability is 20 to 95 and his attributes are made from it and his position. Comma, semicolon and tab all work as the separator.</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edCsvDown = async (d) => {
+    const files = d.k === 'template' ? FM.CsvWorld.template() : FM.CsvWorld.export(ED.def);
+    try {
+      for (const k of ['leagues', 'clubs', 'players'])
+        await FM.Native.shareFile({
+          bytes: new TextEncoder().encode('\uFEFF' + files[k]),
+          name: `${k}.csv`,
+          type: 'text/csv',
+          title: `Touchline ${k}.csv`,
+          preferShare: false,
+        });
+      UI.toast('leagues.csv, clubs.csv and players.csv ready', 3000);
+    } catch (e) {
+      UI.toast('⚠️ ' + (e.message || 'Download failed'), 4000);
+    }
+  };
+  UI.acts.edCsvUp = async () => {
+    const picked = await FM.Native.pickFiles('.csv,text/csv');
+    if (!picked.length) return;
+    const files = picked.map((x) => ({ name: x.name, text: FM.DbImport.decode(x.bytes) }));
+    ED.csv = FM.CsvWorld.apply(ED.def, files);
+    ED.err = [];
+    ED.view = 'csv';
+    UI.toast(
+      ED.csv.errors.length ? `${U.plural(ED.csv.errors.length, 'problem')}: see the list` : 'The files went in',
+      3000,
+    );
+    UI.worldEditor();
+  };
+
   // ---------- Balance check ----------
   // A look at the world before you play it (without playing it): a club far ahead of the rest of its league, a league with no spread
   // or far too much, a lower division with clubs that outrank the division above. Each row opens the league it is about.
@@ -4421,6 +4453,7 @@
       confeds: confedsView,
       bans: bansView,
       balance: balanceView,
+      csv: csvView,
       nation: nationView,
       newnation: newNationView,
       history: historyView,

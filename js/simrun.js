@@ -26,6 +26,7 @@
     'worlddef',
     'dbimport',
     'histimport',
+    'csvworld',
     'engine',
     'season',
     'careers',

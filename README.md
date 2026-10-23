@@ -379,7 +379,7 @@ js/carries.js, movement.js, passes.js, setpieces.js, shapes.js, shots.js, layout
 World data and the editor
 js/worlddef.js    the world as data: definitions, validation, patches to the game's clubs and leagues
 js/dbimport.js    database import: adapters, staging, building a world from a file, export
-js/histimport.js  the historical CSV tables adapter; js/realstats.js: real statistics to attributes
+js/histimport.js  the historical CSV tables adapter; js/csvworld.js: a world as leagues.csv, clubs.csv and players.csv; js/realstats.js: real statistics to attributes
 js/ui-editor.js   the world editor (from the new-career screen); js/ui-live.js: editing the world you play (Settings)
 
 Interface and platform

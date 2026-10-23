@@ -803,6 +803,37 @@
       p.calendar
     );
 
+  // Attributes for a position at an ability (the ones the position's rating weighs most come out highest): what the editor's
+  // "fill in" and the CSV import use for a player given only a position and an ability
+  WD.suggestAttrs = (pos, ca) => {
+    const abilityOf = (attrs) => W.calcCA({ attrs }, pos);
+    const w = D.RATE_W[pos] || D.RATE_W.CM,
+      max = Math.max(...Object.values(w));
+    const avg = (ca - (D.RATE_OFF[pos] || 0)) / 5;
+    const attrs = {};
+    for (const k of D.ATTRS) attrs[k] = Math.max(1, Math.min(20, Math.round(avg + ((w[k] || 0) / max - 0.45) * 5)));
+    // nudge the attributes one step at a time, the ones that matter most for the position first, until the rating matches
+    const keys = D.ATTRS.filter((k) => (w[k] || 0) > 0.2).sort((x, y) => w[y] - w[x]),
+      start = { ...attrs };
+    for (let i = 0; i < 400; i++) {
+      const diff = ca - abilityOf(attrs);
+      if (!diff) break;
+      const up = diff > 0;
+      const k = keys
+        .filter((x) => (up ? attrs[x] < 20 : attrs[x] > 1))
+        .sort((x, y) =>
+          up ? attrs[x] - start[x] - (attrs[y] - start[y]) : attrs[y] - start[y] - (attrs[x] - start[x]),
+        )[0];
+      if (!k) break;
+      attrs[k] += up ? 1 : -1;
+      if (Math.abs(ca - abilityOf(attrs)) > Math.abs(diff)) {
+        attrs[k] -= up ? 1 : -1;
+        break;
+      }
+    }
+    return attrs;
+  };
+
   // ---------- Nations a world adds ----------
   // A nation of its own: a name, a flag (an emoji), a part of the world, the culture its players' names come from, how it plays,
   // its colours, and how common its players are in leagues abroad (weight, in per cent of a league's players). Its players turn

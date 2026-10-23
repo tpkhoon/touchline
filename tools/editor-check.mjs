@@ -343,6 +343,45 @@ check(
   E.setNationEdit('BRA', { name: 'Brasilia', flag: '🏁', style: 'physical', abroad: 2 }).ok,
   'a nation edit was refused',
 );
+// CSV files: a world taken out as CSV and put back changes nothing; the templates make a league, six clubs and a player; a bad row is
+// named by file, row and column and left out while the others go in
+{
+  const CS = FM.CsvWorld;
+  const d0 = WD.fromStatic({ name: 'csv' });
+  const ex = CS.export(d0);
+  const back = CS.apply(d0, [
+    { name: 'leagues.csv', text: ex.leagues },
+    { name: 'clubs.csv', text: ex.clubs },
+  ]);
+  check(
+    back.errors.length === 0,
+    `a world put back from its own CSV had problems: ${back.errors.slice(0, 2).join('; ')}`,
+  );
+  check(WD.patchIsEmpty(WD.patchOf(d0)), 'a world taken out as CSV and put back is not the same world');
+  const tp = CS.template();
+  const d1 = WD.fromStatic({ name: 'csv2' });
+  const tr = CS.apply(d1, [
+    { name: 'leagues.csv', text: tp.leagues },
+    { name: 'clubs.csv', text: tp.clubs },
+    { name: 'players.csv', text: tp.players },
+  ]);
+  check(
+    tr.errors.length === 0 && d1.clubs.filter((c) => c.league === 'XL1').length === 6 && d1.players.length === 1,
+    `the CSV templates did not make a league, six clubs and a player: ${tr.errors.slice(0, 2).join('; ')}`,
+  );
+  check(WD.validate(d1, null).errors.length === 0, 'a world made from the CSV templates does not validate');
+  const d2 = WD.fromStatic({ name: 'csv3' });
+  const n0 = d2.clubs.length;
+  const br = CS.apply(d2, [
+    { name: 'clubs.csv', text: 'name,league,colour1,rep\r\nAlpha FC,D1,#12,50\r\nGood FC,D1,#aabbcc,60\r\n' },
+  ]);
+  check(
+    br.errors.length === 1 &&
+      /clubs\.csv, row 2 \(Alpha FC\), colour1/.test(br.errors[0]) &&
+      d2.clubs.length === n0 + 1,
+    `a bad CSV row was not named by row and column, or the good row did not go in: ${br.errors.join('; ')}`,
+  );
+}
 // competitions: league formats, a play-off pair, a cup of the definition's own
 const lg = (id) => def.leagues.find((l) => l.id === id);
 check(!E.setLeague('D3', { rules: { ...lg('D3').rules, legs: 3 } }).ok, 'a league played three times was accepted');
