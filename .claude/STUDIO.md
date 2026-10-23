@@ -12,7 +12,7 @@ Also: `/tech-debt`, `/estimate`, `/release-checklist` (agents use them).
 
 ## Agents (roles)
 
-creative-director, game-designer, systems-designer, economy-designer, world-builder, ux-designer, accessibility-specialist, localization-lead, ai-programmer, lead-programmer, technical-director, performance-analyst, producer, qa-lead, qa-tester. Ask for them by name ("have the economy designer look at the finance model") or let a skill call them.
+creative-director, game-designer, systems-designer, economy-designer, world-builder, ux-designer, accessibility-specialist, localization-lead, lead-programmer, technical-director, performance-analyst, producer, qa-lead, qa-tester. Ask for them by name ("have the economy designer look at the finance model") or let a skill call them.
 
 ## Templates
 

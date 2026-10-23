@@ -226,7 +226,7 @@ Using the GDD **already loaded in Phase 1** — do not re-read it — identify e
 |------------------------|-------------------|
 | Costs, prices, drops, rewards, economy | `economy-designer` |
 | Combat stats, damage, health, DPS | `game-designer`, `systems-designer` |
-| AI behaviour, pathfinding, targeting | `ai-programmer` |
+| AI behaviour (managers, transfers, matches) | `lead-programmer` |
 | Level layout, spawning, wave structure | `level-designer` |
 | Player progression, XP, unlocks | `economy-designer`, `game-designer` |
 | UI, HUD, menus, player-facing displays | `ux-designer`, `ui-programmer` |
