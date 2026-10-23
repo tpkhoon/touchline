@@ -225,6 +225,7 @@
     I.topUp(true);
     for (const code in D.NATIONS) {
       if (!D.nationOn(code)) continue;
+      if ((s.noTeams || []).includes(code)) continue; // (the world gave it no national team)
       const N = D.NATIONS[code];
       // a nation too thin in players to field a squad has no national team in this world (its players still play)
       if (I.pool(code).length < 16) continue;
@@ -843,16 +844,18 @@
         runnerUp: null,
       };
     });
+    s.tourns = s.tourns.filter((tn) => tn.teams.length >= 4); // (a world with few national teams: a continent left with fewer than four plays no championship)
     // National team job: failing to qualify ends it
     const u = s.user;
     if (u && u.nation && kind !== 'confed' && !s.tourns.some((t) => t.teams.includes(u.nation)))
       I.sackNational(`${T(u.nation).name} failed to qualify for the ${s.tourns.map((t) => t.name).join(' / ')}.`);
-    FM.News.add({
-      type: 'world',
-      title: `${s.tourns.map((t) => t.name).join(' · ')}: the finals begin`,
-      body: s.tourns.map((t) => `${t.name}: ${t.teams.map((id) => D.NATIONS[T(id).code].flag).join(' ')}`).join('\n'),
-      big: true,
-    });
+    if (s.tourns.length)
+      FM.News.add({
+        type: 'world',
+        title: `${s.tourns.map((t) => t.name).join(' · ')}: the finals begin`,
+        body: s.tourns.map((t) => `${t.name}: ${t.teams.map((id) => D.NATIONS[T(id).code].flag).join(' ')}`).join('\n'),
+        big: true,
+      });
   };
   I.tournamentDay = function (stage) {
     const s = S();

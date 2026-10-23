@@ -481,7 +481,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-211 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+210 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority: the real database and the accuracy of the ratings it is made with** (the three Ratings rows at the top of the table; eight more are done and listed above). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -582,7 +582,6 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Match | (Parked: the pitch view is switched off) Real-time positioning and movement in the visual engine: players hold shape and move with the play, passes travel along believable paths and speeds, and shots are struck and placed like the real thing | Beta |
 | Match | Highlights only: a viewing mode that shows just the chances, goals and key moments and skips the rest of the match | Beta |
 | Match | (Parked: the pitch view is switched off) Set pieces shown properly: corners, free kicks, penalties, throw-ins and goal kicks are set up on the pitch with the taker, the wall and the runs into the box before the ball is played | Beta |
-| Editor | Replacing national teams and cups: a world can bring its own set of national teams (nations, squads, colours, rankings) and its own cups in place of the game's, not only rename or take them out | Alpha 2 |
 | Editor | Adapters for other games' database formats: ready-made readers for the formats of other football management games, on the pluggable adapter framework, so their worlds load into the editor and the new-career screen | Alpha 2 |
 | Tactics | An evolving tactical meta: the world's tactics change over the years in each save, so every game develops metas of its own (formations, build-ups and pressing that rise and fall as clubs copy winners and counters appear), including shifts in the best tempo; what works for you changes with the era | Living world |
 | Transfers | Club strategy for the AI: each club follows a plan when signing players (a plan such as youth, veterans, stars or home-grown players, fitted to its identity, budget and ambition), so its signings make sense over the years. A new owner brings preferences and objectives of their own (a sporting-project owner backs youth, an oil-backed one buys stars, a cautious one cuts the wage bill), so a takeover changes who the club signs and why | Living world |

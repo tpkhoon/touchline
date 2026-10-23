@@ -332,6 +332,10 @@ check(
   E.addBan({ kind: 'nation', id: 'TOG', from: 2040, to: 2041, why: 'test' }).ok,
   'a sanction on a nation was refused',
 );
+check(!E.setNoTeams(['NOPE']).ok, 'a national team taken from a nation that does not exist was accepted');
+check(!E.setNoTeams(Object.keys(FM.D.NATIONS)).ok, 'a world with no national teams at all was accepted');
+const ofcAfc = Object.keys(FM.D.NATIONS).filter((c) => ['AFR', 'ASIA'].includes(FM.Intl.baseConfed(c)));
+check(E.setNoTeams(ofcAfc).ok, 'taking the national teams of Africa and Asia away was refused');
 check(!E.setFailure({ deduct: 99 }).ok, 'a points deduction of 99 was accepted');
 check(!E.setFailure({ proof: ['c_NOPE'] }).ok, 'a club that does not exist was made proof against failing');
 check(E.setFailure({ liquidate: true, phoenix: true, deduct: 8 }).ok, 'the failure rule was refused');
@@ -892,6 +896,10 @@ console.log(`D1 has ${n1} clubs`);
   check(
     S.failure && S.failure.liquidate === true && S.failure.deduct === 8 && FM.Failure.rules().phoenix === true,
     'the failure rule set in the editor did not reach the world',
+  );
+  check(
+    ofcAfc.length > 0 && !Object.values(S.nteams).some((n) => ofcAfc.includes(n.code)) && S.nteams.n_ENG,
+    'a nation the world gave no national team still has one',
   );
   check(S.youthRate && S.youthRate.ENG === 82, 'the youth rating set in the editor did not reach the world');
   check(

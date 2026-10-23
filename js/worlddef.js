@@ -55,6 +55,7 @@
     nations: [], // national teams: { code, name, short, colors, coef, youth (the nation's youth rating, 15 to 95) }
     nationEdits: {}, // changes to a nation of the game: { code: { name, flag, region, style, abroad } } (abroad: a multiplier on how common its players are in leagues abroad)
     newNations: [], // nations the world adds: { code, name, flag, region, pool, style, colors, weight }
+    noTeams: [], // nations the world gives no national team (their players still play; a world needs at least 16 teams)
     failure: {}, // when clubs fail: { admin, embargo, liquidate, phoenix, deduct (points), richSafe, proof: [club ids who cannot fail] } (empty: the game's own: administration only)
     bans: [], // sanctions: { kind: 'nation' | 'club', id, from, to, why } (out of international competition for the seasons from to to)
     confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
@@ -101,6 +102,7 @@
     }
     def.bans = JSON.parse(JSON.stringify(S.bans || []));
     def.failure = JSON.parse(JSON.stringify(S.failure || {}));
+    def.noTeams = (S.noTeams || []).slice();
     for (const t of Object.values(S.nteams || {}))
       def.nations.push({
         code: t.code,
@@ -1849,6 +1851,17 @@
     }
     errors.push(...WD.validateNationEdits(def));
     {
+      const out = def.noTeams || [];
+      for (const c of out)
+        if (!D.NATIONS[c] && !(def.newNations || []).some((n) => n.code === c))
+          errors.push(`no national team: the game has no nation ${c}`);
+      const left =
+        D.nationCodes().filter((c) => !out.includes(c)).length +
+        (def.newNations || []).filter((n) => !out.includes(n.code)).length;
+      if (out.length && left < 16)
+        errors.push(`no national team: a world needs at least 16 national teams (${left} left)`);
+    }
+    {
       const f = def.failure || {};
       for (const k of ['admin', 'embargo', 'liquidate', 'phoenix', 'richSafe'])
         if (f[k] != null && typeof f[k] !== 'boolean') errors.push(`when clubs fail: ${k} is true or false`);
@@ -2307,7 +2320,13 @@
     const patch = WD.patchOf(def);
     try {
       WD.useStatic(patch);
-      W.newWorld({ ...def.rules, ...rules, startYear: def.meta.startYear || undefined, confeds: def.confeds });
+      W.newWorld({
+        ...def.rules,
+        ...rules,
+        startYear: def.meta.startYear || undefined,
+        confeds: def.confeds,
+        noTeams: def.noTeams,
+      });
       const rep = WD.apply(def);
       rep.patch = patch;
       return rep;
@@ -2726,6 +2745,14 @@
       },
       clearNationEdit(code) {
         if (def.nationEdits) delete def.nationEdits[code];
+        return result([]);
+      },
+      // the nations that have no national team in this world (the rest keep theirs): the whole list at once
+      setNoTeams(list) {
+        const next = [...new Set(list || [])];
+        const errs = WD.validate({ ...def, noTeams: next }, S).errors.filter((e) => e.startsWith('no national team'));
+        if (errs.length) return result(errs);
+        def.noTeams = next;
         return result([]);
       },
       // when clubs fail: administration, a transfer embargo, liquidation, a phoenix club; clubs that cannot fail

@@ -2749,6 +2749,17 @@
     ED.def.competitions = (ED.def.competitions || []).filter((x) => x.id !== ED.cup);
     UI.worldEditor();
   };
+  UI.acts.edCupsAllOut = () => {
+    ED.def.removeCups = D.DOMESTIC_CUPS.map((c) => c[0]);
+    ED.def.competitions = (ED.def.competitions || []).filter(
+      (x) => x.isNew || !D.DOMESTIC_CUPS.some((c) => c[0] === x.id),
+    );
+    UI.worldEditor();
+  };
+  UI.acts.edCupsAllBack = () => {
+    ED.def.removeCups = [];
+    UI.worldEditor();
+  };
   UI.acts.edCupBack = () => {
     ED.def.removeCups = (ED.def.removeCups || []).filter((id) => id !== ED.cup);
     UI.worldEditor();
@@ -2796,6 +2807,7 @@
           return `${head}<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edCup" data-cup="${c.id}"><div class="row"><div class="grow"><div class="small b">${esc(o.name)}</div><div class="tiny dim">${c.removed ? 'Taken out of the world' : esc(fmtLine(c.id))}</div></div><span class="dim">›</span></div></div>`;
         })
         .join('')}
+      <div class="card" style="margin:10px 0;padding:10px 12px"><div class="small b">All the game's own domestic cups</div><div class="tiny dim" style="margin-top:4px;line-height:1.5">${outCups().size ? `${U.plural(outCups().size, 'cup')} taken out.` : 'None taken out.'} Take them all out to build a world of cups of your own (Create a cup), or bring them all back.</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edCupsAllOut">Take them all out</button>${outCups().size ? '<button class="btn sm" data-act="edCupsAllBack">Bring them all back</button>' : ''}</div></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edNewCup">＋ Add a cup</button></div>`;
   };
   const seg = (act, cur, opts, extra = '', key = 'v') =>
@@ -3964,10 +3976,46 @@
     ED.view = 'nations';
     UI.worldEditor();
   };
+  // Which nations have a national team in the world: all of them by default; a world can keep only some (at least 16)
+  const noTeams = () => new Set(ED.def.noTeams || []);
+  const teamsCard = () => {
+    const out = noTeams(),
+      all = natEntries().length,
+      conf = I_().CONFEDS;
+    return `<div class="card" style="margin:8px 0;padding:10px 12px"><div class="small b">Which nations have a national team</div><div class="tiny dim" style="margin-top:4px;line-height:1.5">${out.size ? `${all - out.size} of ${U.plural(all, 'nation')} have one; ${U.plural(out.size, 'nation')} ${out.size === 1 ? 'has' : 'have'} none (their players still play for their clubs).` : `All ${U.plural(all, 'nation')} have one.`} A world needs at least 16. Each nation's own screen turns its team on or off.</div>
+      <div class="row" style="gap:8px;margin-top:8px"><select id="ed-keepconf" class="grow">${Object.entries(conf)
+        .map(([k, n]) => `<option value="${k}">Only ${esc(n)}</option>`)
+        .join(
+          '',
+        )}</select><button class="btn sm" data-act="edKeepTeams">Keep only these</button>${out.size ? '<button class="btn sm" data-act="edAllTeams">All back</button>' : ''}</div></div>`;
+  };
+  UI.acts.edKeepTeams = () => {
+    const keep = ($('#ed-keepconf') || {}).value;
+    const out = natEntries()
+      .map(([code]) => code)
+      .filter((code) => I_().baseConfed(code) !== keep);
+    const r = WD.editor(ED.def, null).setNoTeams(out);
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  UI.acts.edAllTeams = () => {
+    WD.editor(ED.def, null).setNoTeams([]);
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edTeamToggle = (d) => {
+    const out = noTeams();
+    if (d.v === '1') out.delete(ED.code);
+    else out.add(ED.code);
+    const r = WD.editor(ED.def, null).setNoTeams([...out]);
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
   const nationsView = () => {
     const by = {};
     for (const [code, n] of natEntries()) (by[n.region] = by[n.region] || []).push([code, n]);
     return `<div class="h1" style="margin-top:2vh">National teams</div><div class="tag">Name, colours and ranking points of each national team. Tap one. A nation with too few players to field a squad has no team in the world.</div>
+      ${teamsCard()}
       <div class="card tap" style="margin:8px 0;padding:10px 12px;border-style:dashed" data-act="edNewNation"><div class="row"><div class="grow"><div class="small b">＋ Create a nation</div><div class="tiny dim">A nation of your own, with its flag, names and players</div></div><span class="dim">›</span></div></div>
       ${(ED.def.newNations || []).length ? `<div class="ng-label">Nations of your own</div>${ED.def.newNations.map((n) => `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edEditNewNation" data-code="${esc(n.code)}"><div class="row"><div class="grow"><div class="small b">${esc(n.flag)} ${esc(n.name)}</div><div class="tiny dim">${esc(n.code)} · ${esc(WD.NATION_REGIONS[n.region] || n.region)} · ${esc(n.pool)} names</div></div><span class="dim">edit ›</span></div></div>`).join('')}` : ''}
       ${Object.entries(by)
@@ -3977,7 +4025,7 @@
               .sort((a, b) => a[1].name.localeCompare(b[1].name))
               .map(([code, n]) => {
                 const o = ntOf(code);
-                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${nEdit(code).flag || n.flag} ${esc((o && o.name) || nEdit(code).name || n.name)}${Object.keys(nEdit(code)).length ? ' <span class="tiny dim">· nation changed</span>' : ''}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}${o && o.youth != null ? ` · youth ${o.youth}` : ''}</div></div><span class="dim">›</span></div></div>`;
+                return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edNation" data-code="${code}"><div class="row"><div class="grow"><div class="small b">${nEdit(code).flag || n.flag} ${esc((o && o.name) || nEdit(code).name || n.name)}${Object.keys(nEdit(code)).length ? ' <span class="tiny dim">· nation changed</span>' : ''}${noTeams().has(code) ? ' <span class="tiny dim">· no national team</span>' : ''}</div><div class="tiny dim">${o ? 'Changed' : 'As the game has it'}${o && o.coef != null ? ` · ${o.coef} ranking points` : ''}${o && o.youth != null ? ` · youth ${o.youth}` : ''}</div></div><span class="dim">›</span></div></div>`;
               })
               .join('')}`,
         )
@@ -4111,6 +4159,7 @@
       <div class="ng-label">The national team</div>`;
     return `<div class="h1" style="margin-top:2vh">${esc(ne.flag || N.flag)} ${esc(o.name || ne.name || N.name)}</div><div class="tag">The national team of ${esc(ne.name || N.name)}.</div>
       ${errBox()}
+      <div class="row" style="gap:8px;margin:10px 0;align-items:center"><div class="grow"><div class="small b">Has a national team</div><div class="tiny dim">Off: the nation's players still play for their clubs, but it plays no qualifiers or tournaments</div></div><div class="seg" style="width:110px"><button class="${!noTeams().has(ED.code) ? 'on' : ''}" data-act="edTeamToggle" data-v="1">On</button><button class="${noTeams().has(ED.code) ? 'on' : ''}" data-act="edTeamToggle" data-v="0">Off</button></div></div>
       ${nationCard}
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Name</div><input type="text" id="ed-nname" maxlength="32" value="${esc(o.name || N.name)}"></div><div style="flex:1;max-width:100px"><div class="ng-label" style="margin-top:0">Short</div><input type="text" id="ed-nshort" maxlength="4" value="${esc(o.short || ED.code)}"></div></div>
       <div class="ng-label">Colours</div>

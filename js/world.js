@@ -2496,6 +2496,8 @@
         opts.confeds && (Object.keys(opts.confeds.names || {}).length || Object.keys(opts.confeds.members || {}).length)
           ? JSON.parse(JSON.stringify({ names: opts.confeds.names || {}, members: opts.confeds.members || {} }))
           : null,
+      // nations the world gives no national team (a world with its own set: the others still have players and leagues)
+      noTeams: Array.isArray(opts.noTeams) && opts.noTeams.length ? opts.noTeams.slice() : null,
       settings: FM.S?.settings || { theme: 'dark', speed: 1 },
       // how much of the world each league is simulated in (full, light, minimal) where the player chose it before the
       // save began; a league not listed runs at its default tier from the data
