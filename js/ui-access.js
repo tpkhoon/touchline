@@ -280,13 +280,14 @@
       if (seen.includes(k) || tab !== UI.tab) continue;
       const el = document.querySelector(sel);
       if (!el || !app) continue;
-      const r = el.getBoundingClientRect(),
-        a = app.getBoundingClientRect();
-      const below = r.top < a.top + a.height * 0.55;
+      // (the home tip names the button that is on screen: Continue on a day with no match, MATCHDAY on a match day)
+      const said =
+        k === 'home' && /matchday/i.test(el.textContent || '')
+          ? '<b>MATCHDAY</b> opens the match: watch it live or take the result. <b>Skip days</b> moves on without playing it.'
+          : text;
       const b = document.createElement('div');
       b.className = 'tipbubble';
-      b.style.cssText = `left:${Math.round(Math.max(8, Math.min(a.width - 268, r.left - a.left + r.width / 2 - 130)))}px;${below ? `top:${Math.round(r.bottom - a.top + 8)}px` : `bottom:${Math.round(a.bottom - r.top + 8)}px`}`;
-      b.innerHTML = `<div>${text}</div><button class="btn sm pri" data-act="tipOk" data-k="${k}">Got it</button>`;
+      b.innerHTML = `<div>${said}</div><button class="btn sm pri" data-act="tipOk" data-k="${k}">Got it</button>`;
       app.appendChild(b);
       return;
     }

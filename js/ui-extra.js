@@ -90,7 +90,7 @@
       ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">${esc(v.moneyball)}</div>` : ''}
       ${UI.pricesBlock(p, v, isFree)}
       ${loanT && loanT.available ? `<div class="row small" style="margin-top:4px"><span class="grow muted">Loan possible</span><b>~${Math.round(Math.min(1, loanT.share) * 100)}% of wages</b></div>` : ''}
-      <div class="row" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}">Compare</button>${UI.trialButton(p)}${p.loan ? '' : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div></div>`;
+      <div class="row btnrow" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}" style="flex:1 1 auto;padding:11px 10px;white-space:nowrap">Compare</button>${UI.trialButton(p)}${p.loan ? '' : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div></div>`;
   };
 
   UI.ownActions = function (p) {
@@ -643,7 +643,7 @@
   const reportRow = (p, v, extra = '', dismiss = false) => {
     const c = p.clubId && CL(p.clubId);
     const clause = p.clubId && v.k >= 40 && p.deal && p.deal.release ? ` · ${U.money(p.deal.release)}` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:10px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="btn sm" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">Compare</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:10px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="btn sm" style="flex:none;padding:11px 8px" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">Compare</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
   };
   function hubView() {
     const s = S();
@@ -1566,9 +1566,11 @@
     }
   };
   const colOf = (sd) =>
-    sd.club.colors[0] === '#FFFFFF' || sd.club.colors[0].toUpperCase() === '#FFFFFF'
-      ? sd.club.colors[1]
-      : sd.club.colors[0];
+    U.onDark(
+      sd.club.colors[0] === '#FFFFFF' || sd.club.colors[0].toUpperCase() === '#FFFFFF'
+        ? sd.club.colors[1]
+        : sd.club.colors[0],
+    );
   MV.shotMap = function (m) {
     const w = 340,
       h = 220,
@@ -2064,7 +2066,7 @@
               .join('')
           : '<div class="empty">None of your players have been capped yet.</div>'
       }</div>
-      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row"><div class="h3 grow">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient · youth rating</span></div></summary>
+      <details class="card flat cupfold" data-cup="wrank" ${(UI._cupsOpen || {}).wrank ? 'open' : ''} style="padding:6px 10px"><summary><div class="row" style="flex-wrap:wrap"><div class="h3 grow" style="flex:none">World ranking</div><span class="dim small">${U.plural(ranked.length, 'nation')} · coefficient · youth rating</span></div></summary>
       <select data-input="intlRegion" style="margin:8px 0" aria-label="Part of the world"><option value="all">The whole world</option>${FM.Guide.CONTINENTS.map(([k, n]) => `<option value="${k}" ${UI._intlReg === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
       <table class="t">${ranked
         .map((t, i) => [t, i])

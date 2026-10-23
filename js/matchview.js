@@ -147,7 +147,7 @@
       ${MV.oppCard(fx)}
       ${MV.talkCard(fx)}
       <div class="sh-foot"><button class="btn pri block" data-act="kickoff">▶ Watch live</button><button class="btn block" data-act="instant">Instant</button></div>`,
-      { title: fx.po || (FM.S.comps[fx.comp] ? FM.S.comps[fx.comp].name : 'International') },
+      { title: fx.po || (FM.S.comps[fx.comp] ? UI.cname(FM.S.comps[fx.comp]) : 'International') },
     );
   };
   // Things to check before kick-off: bans one card away, tired starters, contracts, lineup gaps

@@ -37,7 +37,7 @@
       const us = str(me),
         them = str(opp);
       const pw = FM.Season.matchOdds(me, opp, home, us, them, fx.neutral, derby);
-      const compName = fx.intl ? 'International' : s.comps[fx.comp].name;
+      const compName = fx.intl ? 'International' : UI.cname(s.comps[fx.comp]);
       const f1 = fx.first && FM.Cups.findFixture(fx.first);
       const aggNote =
         f1 && f1.res
@@ -58,7 +58,7 @@
           );
         }
         const r = opp.lastResult;
-        return r && r.year === s.year && { ...r, label: s.comps[r.comp] ? s.comps[r.comp].name : '' };
+        return r && r.year === s.year && { ...r, label: s.comps[r.comp] ? UI.cname(s.comps[r.comp]) : '' };
       })();
       const lastLine = lr
         ? `Their last: ${lr.gf > lr.ga || (lr.pens && lr.pens[0] > lr.pens[1]) ? 'W' : lr.gf < lr.ga || (lr.pens && lr.pens[0] < lr.pens[1]) ? 'L' : 'D'} ${lr.gf}–${lr.ga}${lr.pens ? ` (${lr.pens[0]}–${lr.pens[1]} pens)` : ''} v ${TM(lr.opp) ? TM(lr.opp).name : '?'}${lr.label ? ` · ${lr.label}` : ''}`
@@ -73,7 +73,7 @@
         <div class="vs"><div class="side">${UI.C.crest(TM(fx.h), 54)}<span>${esc(TM(fx.h).name)}</span></div><div class="mid">VS<div class="tiny" style="font-family:var(--font);font-weight:700;opacity:.8">${fx.neutral ? 'NEUTRAL' : home ? 'HOME' : 'AWAY'}</div></div><div class="side">${UI.C.crest(TM(fx.a), 54)}<span>${esc(TM(fx.a).name)}</span></div></div>
         ${aggNote ? `<div class="small center b" style="margin:-4px 0 10px;opacity:.9">${esc(aggNote)}</div>` : ''}
         <div class="row small" style="margin-bottom:${lastLine ? 4 : 12}px;opacity:.9"><span>Win chance ${Math.round(pw * 100)}%</span><span class="grow"></span><span>Their form</span>${C.form(oppForm)}</div>
-        ${lastLine ? `<div class="tiny ellip" style="margin-bottom:12px;opacity:.8;text-align:right">${esc(lastLine)}</div>` : ''}
+        ${lastLine ? `<div class="tiny" style="margin-bottom:12px;opacity:.8;text-align:right">${esc(lastLine)}</div>` : ''}
         <div class="row" style="gap:8px"><button class="play grow" data-act="preview">▶ MATCHDAY</button><button class="play sec" style="flex:none;width:auto;padding:14px 16px" data-act="simDaysAsk">Skip days</button></div></div>`;
     } else if (cal) {
       const others = FM.Season.dayFixtures();
@@ -110,7 +110,7 @@
     const waiting = s.news.filter(UI.isOpenDecision).length;
     return `${hero}
       <div class="kpis">
-        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${esc(s.comps[c.comp].name)} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l">${esc(s.comps[c.comp].name)} · season starts soon</div>`}</div>
+        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${esc(UI.cname(s.comps[c.comp]))} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l">${esc(UI.cname(s.comps[c.comp]))} · season starts soon</div>`}</div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.boardConf)}">${Math.round(c.boardConf)}%</div><div class="l">Board</div></div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.fanMood)}">${Math.round(c.fanMood)}%</div><div class="l">Fans</div></div>
       </div>
@@ -131,7 +131,7 @@
   function cupPills(c) {
     const st = FM.Cups.status(c.id);
     if (!st.length) return '';
-    return `<div class="chips noswipe" style="margin-top:-2px">${st.map((x) => `<button class="chip" data-act="goCups" style="${x.text === 'Winners' ? 'border-color:var(--gold);color:var(--gold)' : x.alive === false ? 'opacity:.55' : ''}">${x.c.type === 'continental' ? '' : ''} ${esc(x.c.name)} · ${esc(x.text)}</button>`).join('')}</div>`;
+    return `<div class="chips noswipe" style="margin-top:-2px">${st.map((x) => `<button class="chip" data-act="goCups" style="${x.text === 'Winners' ? 'border-color:var(--gold);color:var(--gold)' : x.alive === false ? 'opacity:.55' : ''}">${x.c.type === 'continental' ? '' : ''} ${esc(UI.cname(x.c))} · ${esc(x.text)}</button>`).join('')}</div>`;
   }
   UI.acts.goCups = () => {
     UI.sub.league = 'cups';
@@ -2341,7 +2341,7 @@
                     .sort((a, b) => (a.nat + a.tier).localeCompare(b.nat + b.tier))
                     .map((l) => {
                       const t = W.sortedTable(l)[0];
-                      return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="sub" data-k="league" data-v="${l.id}"><span style="font-size:18px">${C.flag(l.nat)}</span><div class="grow" style="min-width:0"><div class="b ellip">${esc(l.name)}${club() && l.id === club().comp ? ' <span class="pill acc">You</span>' : ''}</div><div class="tiny dim">Tier ${l.tier} · ${U.plural(l.clubs.length, 'club')}${l.rules.qualify ? ` · top ${l.rules.qualify.n} → ${esc(s.comps[l.rules.qualify.to].name)}` : ''} · leader ${t && t.p ? esc(CL(t.id).name) : '—'}</div></div>${tierPill(l.sim || 'full')}</div>`;
+                      return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="sub" data-k="league" data-v="${l.id}"><span style="font-size:18px">${C.flag(l.nat)}</span><div class="grow" style="min-width:0"><div class="b">${esc(l.name)}${club() && l.id === club().comp ? ' <span class="pill acc" style="flex:none">You</span>' : ''}</div><div class="tiny dim">Tier ${l.tier} · ${U.plural(l.clubs.length, 'club')}${l.rules.qualify ? ` · top ${l.rules.qualify.n} → ${esc(s.comps[l.rules.qualify.to].name)}` : ''} · leader ${t && t.p ? esc(CL(t.id).name) : '—'}</div></div>${tierPill(l.sim || 'full')}</div>`;
                     })
                     .join('')}</div>`
             }`,

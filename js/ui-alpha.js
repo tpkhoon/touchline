@@ -514,7 +514,7 @@
           const live = x.id && S().players[x.id] && S().players[x.id].clubId === id;
           const chase =
             live && i > 0 ? ` · ${val(top[i - 1]) - val(x) + 1} to pass ${esc(top[i - 1].name.split(' ').pop())}` : '';
-          return `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:18px">${i + 1}</span><div class="grow" style="min-width:0"><div class="b ellip ${x.id && S().players[x.id] ? 'tap' : ''}" ${x.id && S().players[x.id] ? `data-act="player" data-id="${x.id}"` : ''}>${esc(x.name)}${live ? ' <span class="pill acc">Squad</span>' : ''}</div><div class="tiny dim">${esc(x.pos || '')}${x.era ? ' · ' + esc(x.era) : ''}${chase}</div></div><b>${val(x)} ${unit}</b></div>`;
+          return `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:18px">${i + 1}</span><div class="grow" style="min-width:0"><div class="b row ${x.id && S().players[x.id] ? 'tap' : ''}" style="gap:6px;min-width:0" ${x.id && S().players[x.id] ? `data-act="player" data-id="${x.id}"` : ''}><span class="ellip">${esc(x.name)}</span>${live ? '<span class="pill acc" style="flex:none">Squad</span>' : ''}</div><div class="tiny dim">${esc(x.pos || '')}${x.era ? ' · ' + esc(x.era) : ''}${chase}</div></div><b>${val(x)} ${unit}</b></div>`;
         })
         .join('')}`;
     };
@@ -1071,7 +1071,8 @@
     const s = S(),
       u = s.user,
       t = u.nation && T(u.nation);
-    let top = '';
+    let top = '',
+      vac = ''; // (the job vacancies: first when you have no club, after the tournaments when you do)
     if (t) {
       const rank = FM.Intl.ranked().indexOf(t) + 1;
       const next = s.calendar.slice(s.day).findIndex((d) => d.type === 'intl' || d.type === 'tourn');
@@ -1079,7 +1080,7 @@
         <div class="small" style="margin-top:8px;opacity:.9">${next >= 0 ? `Next international match in ${next} day${next === 1 ? '' : 's'}.` : 'No more internationals this season.'} ${t.picks ? `${U.plural(t.picks.length, 'player')} hand-picked.` : 'Squad auto-picked (best available).'}</div>
         <div class="row" style="gap:8px;margin-top:12px"><button class="btn sm grow" data-act="ntSquad">Squad & tactics</button><button class="btn sm grow danger" data-act="ntResign">Resign</button></div></div>${ntOverview(t)}`;
     } else {
-      top += `<div class="card"><div class="row"><div class="h3 grow">National team vacancies</div><span class="tiny dim">refreshed each season</span></div>${
+      vac = `<div class="card"><div class="row"><div class="h3 grow">National team vacancies</div><span class="tiny dim">refreshed each season</span></div>${
         (s.ntJobs || [])
           .map((id) => {
             const n = T(id),
@@ -1139,7 +1140,7 @@
         ${mineFirst.map((g) => nfold('q_' + g.name, `<div class="row small b dim" style="margin:4px 0"><span class="grow">${esc(g.name.trim())}</span><span class="tiny">${g.slots} place${g.slots === 1 ? '' : 's'} in pool</span></div>`, miniTable(g.table, g.teams, 1, u.nation), g.teams.includes(u.nation), 'card flat')).join('')}`;
     }
     top += nationsLeagueSection(s, u);
-    return top + origIntl();
+    return W.employed() ? top + origIntl() + vac : vac + top + origIntl();
   };
   // The Nations League: a fold for each confederation (yours first), its leagues and their groups
   const nationsLeagueSection = (s, u) => {

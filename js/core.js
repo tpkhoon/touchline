@@ -246,6 +246,23 @@
     },
     // A banner colour white text can sit on: a light kit colour (white, gold, sky blue) is darkened toward navy,
     // keeping its hue, until white text reads clearly on it; dark colours are left as they are
+    // A team colour that can be read as text on the dark screens: a dark colour is lightened toward white until it has the
+    // contrast of normal text against the panel behind it (4.5 to 1), keeping its hue
+    onDark(hex) {
+      const c = String(hex || '#ffffff').replace('#', '');
+      if (c.length < 6) return hex;
+      const v = [0, 2, 4].map((i) => parseInt(c.substr(i, 2), 16));
+      const lin = (x) => ((x /= 255) <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4));
+      const L = (a) => 0.2126 * lin(a[0]) + 0.7152 * lin(a[1]) + 0.0722 * lin(a[2]);
+      const bg = L([20, 27, 38]);
+      let f = 0,
+        out = v;
+      while (f < 1 && (L(out) + 0.05) / (bg + 0.05) < 4.5) {
+        f += 0.05;
+        out = v.map((x) => Math.round(x + (255 - x) * f));
+      }
+      return '#' + out.map((x) => x.toString(16).padStart(2, '0')).join('');
+    },
     heroShade(hex) {
       const c = String(hex || '#1b2533').replace('#', '');
       if (c.length < 6) return hex;

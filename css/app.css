@@ -2566,25 +2566,27 @@ details.cupfold:not([open]) > summary > .row::after {
   min-height: 44px;
 }
 
-/* first-time tips: a bubble beside the real button, never a cover over the screen */
+/* first-time tips: a strip above the tab bar, never a cover over the content */
 .tipbubble {
   position: absolute;
   z-index: 30;
-  width: 260px;
-  padding: 12px 14px;
+  left: 10px;
+  right: 10px;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  padding: 10px 12px;
   border-radius: 14px;
   background: var(--ink);
   color: var(--bg);
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.4;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
 }
 .tipbubble > div {
-  align-self: stretch;
+  flex: 1;
 }
 
 .buildbar {
@@ -2620,4 +2622,26 @@ details.cupfold:not([open]) > summary > .row::after {
 .kpi .l {
   white-space: normal;
   line-height: 1.25;
+}
+
+/* small targets made finger-sized */
+.icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+.seg button {
+  min-height: 44px;
+}
+.swatch {
+  min-width: 40px;
+  min-height: 40px;
+}
+select {
+  min-height: 44px;
+}
+
+/* a row of buttons that wraps to a second line instead of squeezing each button */
+.btnrow > .btn {
+  flex: 1 1 auto;
+  white-space: nowrap;
 }

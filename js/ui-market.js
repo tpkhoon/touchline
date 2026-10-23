@@ -19,7 +19,7 @@
 
   // ======================= The Transfers tab =======================
   // One place for the market: the window, offers waiting for your answer, your transfer list, loans, payments to come, your
-  // deals this season and the biggest deals elsewhere, with a way into search, free agents, the shortlist and the Transfer Centre
+  // deals this season and the biggest deals elsewhere, with a way into search and the shortlist (free agents and the Transfer Centre are the tabs above)
   UI.screens.transfers = function () {
     const s = S(),
       c = W.userClub(),
@@ -28,9 +28,7 @@
     const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px"><span style="color:var(--${win ? 'good' : 'bad'})">●</span></span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14. Until then only free agents can sign.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
     const links = `<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">${[
       ['search', 'Search players'],
-      ['free', 'Free agents'],
       ['shortlist', 'Shortlist'],
-      ['market', 'Transfer Centre'],
       ...(c &&
       (s.comps[c.comp].rules.mls || s.comps[c.comp].rules.uni) &&
       (FM.Draft.current() || (s.draftLog || []).length)

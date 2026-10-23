@@ -579,6 +579,8 @@
   // Five tabs on a phone; Scout, Nations and Club sit behind More (they are still screens of their own, UI.tab 'scout' ...)
   const svg = (d) =>
     `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  // a competition's own name, without its title sponsor (for tight places: cards, pills, objectives, titles)
+  UI.cname = (c) => (c && (c.baseName || c.name)) || '';
   UI.icon = {
     home: svg('<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>'),
     squad: svg('<path d="M8 4l-5 3 2 4 3-1v10h8V10l3 1 2-4-5-3a4 4 0 0 1-8 0z"/>'),
@@ -649,6 +651,7 @@
     $('#main').scrollTop = 0;
   };
   UI.render = function (anim) {
+    if (UI.hideTip) UI.hideTip(); // (a tip belongs to the screen it was shown on)
     // (the game's screen is not up, say the title screen after a day's simulation finished behind it: nothing to draw)
     if (!document.getElementById('nav-home') || !FM.S || !FM.S.user) return;
     const S = FM.S,

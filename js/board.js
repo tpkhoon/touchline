@@ -51,7 +51,7 @@
         second = seconds[0],
         europe = places + seconds.reduce((t, x) => t + FM.Cups.feedersOf(x)[ctx.id], 0);
       if (exp === 1)
-        ((aim = { t: 1, text: `Win ${ctx.name}` }),
+        ((aim = { t: 1, text: `Win ${ctx.baseName || ctx.name}` }),
           (min = places ? { t: places, text: `${ctx.ccName} qualification` } : { t: 2, text: 'second place' }));
       else if (places && exp <= places)
         ((aim = { t: places, text: `Qualify for the ${ctx.ccName} (top ${places})` }),
@@ -106,12 +106,37 @@
     const cup = W.cups().find((c) => c.clubs.includes(club.id));
     if (cup) {
       if (top && exp <= 2)
-        out.push({ id: 'cup', cup: cup.id, stage: 2, text: `Reach the ${cup.name} final`, weight: 'important' });
+        out.push({
+          id: 'cup',
+          cup: cup.id,
+          stage: 2,
+          text: `Reach the ${cup.baseName || cup.name} final`,
+          weight: 'important',
+        });
       else if (top && exp <= 5)
-        out.push({ id: 'cup', cup: cup.id, stage: 4, text: `Reach the ${cup.name} semi-finals`, weight: 'important' });
+        out.push({
+          id: 'cup',
+          cup: cup.id,
+          stage: 4,
+          text: `Reach the ${cup.baseName || cup.name} semi-finals`,
+          weight: 'important',
+        });
       else if (top)
-        out.push({ id: 'cup', cup: cup.id, stage: 8, text: `Reach the ${cup.name} quarter-finals`, weight: 'bonus' });
-      else out.push({ id: 'cup', cup: cup.id, wins: 1, text: `Win a tie in the ${cup.name}`, weight: 'bonus' });
+        out.push({
+          id: 'cup',
+          cup: cup.id,
+          stage: 8,
+          text: `Reach the ${cup.baseName || cup.name} quarter-finals`,
+          weight: 'bonus',
+        });
+      else
+        out.push({
+          id: 'cup',
+          cup: cup.id,
+          wins: 1,
+          text: `Win a tie in the ${cup.baseName || cup.name}`,
+          weight: 'bonus',
+        });
     }
     const cc = W.continentals().find((c) => c.clubs.includes(club.id));
     if (cc) {
