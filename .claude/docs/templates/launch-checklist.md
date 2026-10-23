@@ -75,7 +75,7 @@ Generated: [Date]
 - [ ] All critical user paths tested on every platform
 - [ ] Edge cases tested (full storage, no network, suspend/resume)
 
-[Certification: the one block for this project's `platform.cert_tier`, copied from `certification-none.md`, `certification-itch.md`, `certification-steam.md` or `certification-console.md`; `certification-unknown.md` when the tier cannot be determined]
+Certification: not used. Touchline ships as a web app and through the Android and iOS stores; follow each store's own review rules instead.
 
 **Every tier**, because these are not certification-gated:
 - [ ] Accessibility: minimum standards met (remapping, text scaling, colorblind)

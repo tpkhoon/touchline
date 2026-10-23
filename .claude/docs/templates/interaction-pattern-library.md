@@ -1,13 +1,12 @@
 # Interaction Pattern Library
 
-> Authoring guidance: .claude/docs/templates/guidance/interaction-pattern-library-guide.md (load per-section as you author — do not read entirely).
 
 > **Status**: [In Design | Stable | Under Revision]
 > **Author**: [user + ux-designer]
 > **Last Updated**: [today's date]
 > **Version**: [1.0]
-> **Engine**: [Godot 4.7 / Unity 6 / Unreal Engine 5]
-> **UI Framework**: [Godot Control nodes / Unity UI Toolkit / Unreal UMG]
+> **Stack**: Plain JavaScript in the browser (scripts share `window.FM`), wrapped with Capacitor for Android and iOS
+> **UI Framework**: DOM elements styled in `css/app.css`; screens are `js/ui-*.js`, actions are `data-act` handlers (`UI.acts`)
 > **Related Documents**:
 > - `design/art/art-bible.md` — visual standards (colors, typography, iconography)
 > - `design/accessibility-requirements.md` — accessibility commitments per feature
@@ -122,10 +121,6 @@ update this document before or simultaneously with any implementation change.
 
 ### Standard Control Patterns
 
-> Full reference specifications for every pattern in this section (state tables
-> with timing/audio values, accessibility requirements, implementation notes)
-> are in `.claude/docs/templates/guidance/interaction-pattern-library-guide-standard-controls.md` —
-> load only the pattern(s) currently being specified.
 
 ---
 
@@ -445,9 +440,6 @@ update this document before or simultaneously with any implementation change.
 
 ### Game-Specific UI Patterns
 
-> Full reference specifications for every pattern in this section are in
-> `.claude/docs/templates/guidance/interaction-pattern-library-guide-game-specific.md` — load only the
-> pattern(s) currently being specified.
 
 ---
 
@@ -565,9 +557,6 @@ update this document before or simultaneously with any implementation change.
 
 ### Navigation Patterns
 
-> Full reference specifications for this section and the next are in
-> `.claude/docs/templates/guidance/interaction-pattern-library-guide-navigation-feedback.md` — load
-> only the pattern(s) currently being specified.
 
 ---
 
@@ -746,7 +735,7 @@ These three patterns define how screens enter and exit the navigation stack.
 
 | Question | Owner | Deadline | Resolution |
 |----------|-------|----------|-----------|
-| [Does the engine's accessibility node system support screen reader announcements for toast notifications without requiring focus? Verify against engine-reference/godot/ for Godot 4.7.] | [ux-designer] | [Before first menu implementation] | [Unresolved] |
+| [Do toast notifications reach screen readers without taking focus? Check with `aria-live` and the labels added in `js/ui-access.js`.] | [ux-designer] | [Before first menu implementation] | [Unresolved] |
 | [What is the platform-correct confirm/cancel button mapping for Nintendo Switch release? Nintendo first-party convention differs from Xbox/PlayStation.] | [producer] | [Before platform certification submission] | [Unresolved] |
 | [Should damage numbers be pooled as Label3D nodes or rendered in a SubViewport? Verify performance budget in coordination with technical-director.] | [lead-programmer, ux-designer] | [Before combat HUD implementation] | [Unresolved] |
 | [What is the maximum number of simultaneous toast notifications before the queue becomes visually overwhelming? Needs playtesting.] | [ux-designer] | [First playtesting session] | [Unresolved] |

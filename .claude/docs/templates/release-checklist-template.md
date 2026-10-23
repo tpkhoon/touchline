@@ -43,7 +43,7 @@ Generated: [Date]
 
 [Platform Requirements: one block per device the platform argument names (`pc`, `console`, `mobile`; `all` is all three), copied from `release-platform-requirements.md`]
 
-[Certification: the one block for this project's `platform.cert_tier`, copied from `certification-none.md`, `certification-itch.md`, `certification-steam.md` or `certification-console.md`; `certification-unknown.md` when the tier cannot be determined]
+Certification: not used. Touchline ships as a web app and through the Android and iOS stores; follow each store's own review rules instead.
 
 ### Store / Distribution
 - [ ] Store page metadata complete and proofread

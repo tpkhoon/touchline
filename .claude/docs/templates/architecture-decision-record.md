@@ -41,11 +41,11 @@ chosen approach.]
 
 | Field | Value |
 |-------|-------|
-| **Engine** | [e.g. Godot 4.7] |
+| **Platform / stack** | Plain JavaScript in the browser (scripts share `window.FM`), wrapped with Capacitor for Android and iOS |
 | **Domain** | [Physics / Rendering / UI / Audio / Navigation / Animation / Networking / Core / Input] |
 | **Layer** | [Foundation / Core / Feature / Presentation] |
 | **Knowledge Risk** | [LOW / MEDIUM / HIGH — from VERSION.md] |
-| **References Consulted** | [List engine-reference docs read, e.g. `docs/engine-reference/godot/modules/physics.md`] |
+| **References Consulted** | [documents and code read, e.g. `docs/ROADMAP.md`, `js/intl.js`] |
 | **Post-Cutoff APIs Used** | [Any APIs from post-LLM-cutoff versions this decision depends on, or "None"] |
 | **Verification Required** | [Specific behaviours to test before shipping, or "None"] |
 

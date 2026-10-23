@@ -6,7 +6,7 @@
 ## Document Status
 
 - **Last Updated**: [YYYY-MM-DD]
-- **Engine**: [e.g. Godot 4.7]
+- **Platform / stack**: Plain JavaScript in the browser (scripts share `window.FM`), wrapped with Capacitor for Android and iOS
 - **GDDs Indexed**: [N]
 - **ADRs Indexed**: [M]
 - **Last Review**: [link to docs/architecture/architecture-review-[date].md]

@@ -12,9 +12,9 @@
 
 | Field | Value |
 |-------|-------|
-| **Engine** | [e.g. Godot 4.7 / Unity 6 / Unreal Engine 5.8] |
-| **APIs Depended On** | [Specific classes/methods/nodes used, version-pinned — e.g. `CharacterBody3D.move_and_slide() (Godot 4.x)`] |
-| **References Consulted** | [engine-reference docs read before writing this — e.g. `docs/engine-reference/godot/modules/physics.md`] |
+| **Platform / stack** | Plain JavaScript in the browser (scripts share `window.FM`), wrapped with Capacitor for Android and iOS |
+| **APIs Depended On** | [Functions and data used, e.g. `FM.Intl.setupTournaments()`, `S.nteams`; browser APIs if any] |
+| **References Consulted** | [documents and code read before writing this, e.g. `docs/ROADMAP.md`, `js/cups.js`] |
 | **Post-Cutoff Features Used** | [Features from engine versions beyond LLM training cutoff, or "None"] |
 | **Unverified Assumptions** | [API behaviours assumed but not yet tested against the target version, or "None"] |
 | **Engine Upgrade Risk** | [LOW / MEDIUM / HIGH — how fragile is this design if the engine version changes?] |

@@ -16,7 +16,7 @@ creative-director, game-designer, systems-designer, economy-designer, world-buil
 
 ## Templates
 
-`.claude/docs/templates/` has about 60: game design document, economy model, test plan, test evidence, bug report, playtest and post-mortem, sprint plan, UX spec, HUD design, difficulty curve, game pillars, systems index, release checklist, patch notes and more. Skills write their output to `design/`, `production/` and `production/qa/`; those folders are created on first use.
+`.claude/docs/templates/` has about 50: game design document, economy model, test plan, test evidence, bug report, post-mortem, sprint plan, UX spec, HUD design, game pillars, systems index, release checklist, patch notes and more. The ones that did not fit (console, Steam and itch certification, art and sound bibles, level and faction design, boss-style difficulty curves, soak tests, the pitch deck and the player journey) were removed, and the engine examples in the architecture, technical design and interaction pattern templates now describe Touchline's stack. The interaction pattern library's section for inventory and health-bar patterns is left as it came. Skills write their output to `design/`, `production/` and `production/qa/`; those folders are created on first use.
 
 ## Settings
 
