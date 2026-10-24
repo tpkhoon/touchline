@@ -2320,6 +2320,7 @@
   };
   Sea.newSeason = function (entry) {
     const S = FM.S;
+    if (S.pendingEdit && FM.WorldDef) FM.WorldDef.applyPending(S); // league formats, cups and the calendar changed in the editor take hold with the new season
     Sea.settleEra();
     FM.Records.captainSeason(); // who wore the armband this season (before the year turns)
     FM.Injury.expireDecisions(true); // last season's medical questions are settled before the year turns

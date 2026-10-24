@@ -1655,6 +1655,7 @@
       ${persuadeCard(p)}
       ${bioCard(p)}
       ${UI.seasonsCard(p, history)}
+      ${UI.careerCard(p, history)}
       ${injuryCard(p)}`;
   }
   // A keeper's clean sheets are counted only in the seasons the game has a record of: said so when his career is longer
@@ -1777,6 +1778,71 @@
         .map(extraRow)
         .join('')}
       <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}<td></td><td>${tot.motm || ''}</td><td>${tot.yc || ''}</td><td>${tot.rc || ''}</td></tr></table></div></div>`;
+  };
+  // Every move he has made (fee, loan or free) and every trophy and award the archive holds for him: league and cup titles in
+  // the seasons he played for the winner, and the individual awards of each league and cup
+  UI.careerCard = function (p, history) {
+    const S_ = S(),
+      name = (id) => (CL(id) ? CL(id).name : '—');
+    const sp = p.career.spells.filter((x) => CL(x.c));
+    const moves = sp
+      .map((x, i) => {
+        const prev = sp[i - 1];
+        const how = x.loan ? 'Loan' : x.fee != null ? (x.fee ? U.money(x.fee) : 'Free') : i === 0 ? 'Start' : 'Move';
+        return { y: x.from, text: `${prev ? `${name(prev.c)} → ` : ''}${name(x.c)}`, how };
+      })
+      .reverse();
+    const played = new Set(history.filter((h) => h.apps > 0).map((h) => `${h.y}|${h.c}`));
+    const titles = [],
+      awards = [];
+    for (const e of S_.archive || []) {
+      const mine = (c) => c && played.has(`${e.year}|${c}`);
+      for (const c of Object.values(e.comps || {})) {
+        const won = c.champions ? c.champions.some(mine) : mine(c.champion);
+        if (won) titles.push([e.year, c.name]);
+        const a = c.awards;
+        if (!a) continue;
+        if (a.player && a.player.pid === p.id) awards.push([e.year, `${c.name}: best player`]);
+        if (a.boot && a.boot.pid === p.id) awards.push([e.year, `${c.name}: top scorer (${a.boot.goals})`]);
+        if (a.assists && a.assists.pid === p.id)
+          awards.push([e.year, `${c.name}: most assists (${a.assists.assists})`]);
+        if (a.young && a.young.pid === p.id) awards.push([e.year, `${c.name}: best young player`]);
+        if (a.keeper && a.keeper.pid === p.id) awards.push([e.year, `${c.name}: best goalkeeper`]);
+        if ((a.xi || []).some((x) => x.id === p.id)) awards.push([e.year, `${c.name}: team of the season`]);
+      }
+      for (const c of Object.values(e.cups || {})) {
+        if (mine(c.winner)) titles.push([e.year, c.name]);
+        const a = c.awards;
+        if (a && a.player && a.player.pid === p.id) awards.push([e.year, `${c.name}: best player`]);
+        if (a && a.boot && a.boot.pid === p.id) awards.push([e.year, `${c.name}: top scorer (${a.boot.goals})`]);
+      }
+      const w = e.worldXI;
+      if (w && w.best && w.best.pid === p.id) awards.push([e.year, 'World player of the year']);
+      else if (w && (w.xi || []).some((x) => x.id === p.id)) awards.push([e.year, 'World best XI']);
+    }
+    for (const h of p.honours || [])
+      if (h[1] === 'potm') awards.push([h[0], `Player of the Month (${String(h[3]).slice(0, 3)})`]);
+    const label = (y) => `${y}/${String((y + 1) % 100).padStart(2, '0')}`;
+    const list = (rows) =>
+      rows
+        .slice()
+        .sort((a, b) => b[0] - a[0])
+        .map(
+          ([y, t]) =>
+            `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:64px">${label(y)}</span><span class="grow">${esc(t)}</span></div>`,
+        )
+        .join('');
+    if (!moves.length && !titles.length && !awards.length) return '';
+    return `${
+      moves.length > 1 || moves.some((m) => m.how !== 'Start')
+        ? `<div class="card"><div class="h3">Transfers</div>${moves
+            .map(
+              (m) =>
+                `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:64px">${m.y}</span><span class="grow">${esc(m.text)}</span><b>${esc(m.how)}</b></div>`,
+            )
+            .join('')}</div>`
+        : ''
+    }${titles.length ? `<div class="card"><div class="h3">Trophies</div>${list(titles)}</div>` : ''}${awards.length ? `<div class="card"><div class="h3">Awards</div>${list(awards)}</div>` : ''}`;
   };
   // Where he counts as trained and for whom he is homegrown (the registration rules read the same record)
   const trainedRows = (p) => {

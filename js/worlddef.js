@@ -2344,6 +2344,19 @@
     }
   };
 
+  // The editor, opened on a career in progress, leaves its league formats and its patch of the game's data (cups, calendar,
+  // tournaments) to wait until the new season: the fixtures and cups of this one are already made
+  WD.applyPending = function (S) {
+    const p = S.pendingEdit;
+    delete S.pendingEdit;
+    if (!p) return;
+    for (const [id, rules] of Object.entries(p.rules || {})) if (S.comps[id]) S.comps[id].rules = rules;
+    if (p.patch) {
+      S.database = { ...(S.database || {}), name: (S.database && S.database.name) || 'Edited career', patch: p.patch };
+      WD.useStatic(p.patch);
+    }
+  };
+
   // ---------- Staff the definition made ----------
   // Called when a career begins (W.takeCharge) and when the staff pool is first filled (W.refreshStaffPool). Staff made for
   // the club you take charge of become your assistant, coach, analyst, physio, director and scouts (replacing the ones a new

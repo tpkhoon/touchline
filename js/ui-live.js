@@ -29,6 +29,7 @@
     const sh = UI.sheet(
       `<div class="tiny dim" style="line-height:1.5">Fix a name or a rating in the world you are playing. A change takes effect at once and nothing marks the save.</div>
       <button class="btn sm block" style="margin-top:10px" data-act="liveBulk">Bulk edit: many players, clubs or prizes at once</button>
+      <button class="btn sm block" style="margin-top:8px" data-act="edOpenLive">Full world editor: leagues, cups, rules, nations, staff and more</button>
       <div class="row" style="gap:8px;margin-top:8px"><button class="btn sm grow" data-act="liveNewPlayer">Add a player</button><button class="btn sm grow" data-act="liveRules">World rules</button></div>
       <div class="ng-find" style="margin-top:10px"><input type="search" id="le-q" placeholder="A player, club or competition" autocomplete="off"></div>
       <div id="le-res"></div>`,

@@ -64,7 +64,7 @@
   };
   const saveDraft = async (quiet) => {
     const ed = ED;
-    if (!ed) return false;
+    if (!ed || ed.live) return false;
     const text = JSON.stringify({ v: 1, def: ed.def, start: ed.start, tab: ed.tab });
     if (text === ed.lastDraft) {
       if (!quiet) UI.toast('Draft saved', 1500);
@@ -88,7 +88,7 @@
   };
   // (only when something has changed since the editor opened: an untouched editor leaves no draft)
   const draftSoon = () => {
-    if (!ED) return;
+    if (!ED || ED.live) return;
     clearTimeout(ED.dt);
     ED.dt = setTimeout(() => {
       if (ED && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true);
@@ -151,6 +151,7 @@
     if (ED) ED.fromTitle = true;
   };
   UI.acts.edClose = () => {
+    if (ED && ED.live) return liveLeave();
     const toTitle = ED && ED.fromTitle;
     if (ED && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true); // (going back keeps what you have made)
     dropNations();
@@ -162,6 +163,7 @@
   };
   // Hand the edited world back: the new-career screen now builds the world from it
   UI.acts.edUse = () => {
+    if (ED.live) return liveApply();
     const s = status();
     if (!s.chk.ok) {
       ED.err = s.chk.errors;
@@ -175,6 +177,144 @@
     UI._ngDataChanged();
     ED = null;
     UI.newCareer();
+  };
+  // ---------- Opened on a career in progress ----------
+  // The same editor, on the world you are playing (Settings → Edit the world → Full world editor). Names, colours, grounds,
+  // ratings, finances, managers, national teams, sanctions, derbies and the players it makes are changed at once; league
+  // formats, cups, the calendar and the tournaments wait for the new season (the fixtures and cups of this one are made).
+  // What would need a new world (clubs and leagues added or taken out, a club moved to another league) is refused.
+  const liveLeave = () => {
+    dropNations();
+    ED = null;
+    UI.mount(); // (the editor replaced the whole page: the game's bars come back with it)
+  };
+  UI.acts.edOpenLive = () => {
+    if (!FM.S || !FM.S.user || UI.simBusy) return;
+    UI.closeAllSheets();
+    const def = WD.fromState(FM.S, { players: false, name: 'My career' });
+    def.meta.name = 'My career';
+    ED = {
+      live: true,
+      base: null,
+      def,
+      start: clone(def),
+      hq: '',
+      tab: 'world',
+      view: 'home',
+      lid: null,
+      cid: null,
+      q: '',
+      err: [],
+      draftSeen: true,
+    };
+    UI.worldEditor();
+  };
+  const changedOf = (now, was, key) => {
+    const old = new Map((was || []).map((x) => [key(x), JSON.stringify(x)]));
+    return (now || []).filter((x) => old.get(key(x)) !== JSON.stringify(x));
+  };
+  const liveApply = () => {
+    const S = FM.S,
+      def = ED.def,
+      st = ED.start;
+    const s = status();
+    if (!s.chk.ok) {
+      ED.err = s.chk.errors;
+      return UI.worldEditor();
+    }
+    const hasDb = !!(S.database && S.database.patch);
+    const patch = hasDb ? null : WD.patchOf(def);
+    const no = [];
+    if (def.meta.players === 'replace') no.push('replacing every squad');
+    if (patch) {
+      if (patch.clubs.some((c) => c.isNew && !S.clubs['c_' + c.code])) no.push('a club added to a league');
+      if (patch.removed.length) no.push('a club taken out of the world');
+      if (patch.clubs.some((c) => !c.isNew && S.clubs['c_' + c.code] && S.clubs['c_' + c.code].comp !== c.league))
+        no.push('a club moved to another league');
+      if (patch.leagues.some((l) => l.isNew)) no.push('a league added');
+      if (patch.newCups.length || patch.newConts.length) no.push('a competition added');
+      if (patch.newNations.length) no.push('a nation added');
+    }
+    if (no.length) {
+      ED.err = [
+        `That needs a new career: ${[...new Set(no)].join(', ')}. Undo it here, or start a new career from the world editor.`,
+      ];
+      return UI.worldEditor();
+    }
+    const def2 = clone(def);
+    def2.meta.players = 'overlay';
+    def2.meta.fillHistory = !!S.histFill;
+    def2.leagues = changedOf(def.leagues, st.leagues, (x) => x.id);
+    def2.competitions = changedOf(def.competitions, st.competitions, (x) => x.id);
+    def2.clubs = changedOf(def.clubs, st.clubs, (x) => x.id);
+    def2.managers = changedOf(def.managers, st.managers, (x) => x.club).filter((m) => !FM.W.isUser(m.club));
+    def2.nations = changedOf(def.nations, st.nations, (x) => x.code);
+    def2.staff = [];
+    def2.expansion = {};
+    const haveYears = new Set((S.archive || []).map((e) => e.year));
+    def2.history = { seasons: def.history.seasons.filter((x) => !haveYears.has(x.year)) };
+    let rep;
+    try {
+      rep = WD.apply(def2, S);
+    } catch (e) {
+      ED.err = String(e.message || e)
+        .split('\n')
+        .slice(0, 8);
+      return UI.worldEditor();
+    }
+    // derbies
+    const pairKey = (r) => [r[0], r[1]].sort().join('|');
+    const was = new Map((st.rivals || []).map((r) => [pairKey(r), r[2]]));
+    for (const r of def.rivals || [])
+      if (was.get(pairKey(r)) !== r[2] && S.clubs[r[0]] && S.clubs[r[1]]) {
+        S.clubs[r[0]].rival = r[1];
+        S.clubs[r[1]].rival = r[0];
+        S.clubs[r[0]].derby = S.clubs[r[1]].derby = r[2] || 'Derby';
+      }
+    const kept = new Set((def.rivals || []).map(pairKey));
+    for (const k of [...was.keys()].filter((k) => !kept.has(k)))
+      for (const id of k.split('|')) if (S.clubs[id]) S.clubs[id].rival = S.clubs[id].derby = null;
+    // the rules that apply at once
+    for (const k of ['win', 'subs', 'twoLegs', 'awayGoals', 'foreignLimit'])
+      if (def.rules[k] != null) S.rules[k] = def.rules[k];
+    // formats, cups, the calendar: from the new season
+    const pending = { rules: {} };
+    for (const l of def.leagues) {
+      const r = JSON.parse(JSON.stringify(l.rules || {}));
+      if (def.rules && def.rules.proRel === false) {
+        delete r.promote;
+        delete r.relegate;
+      }
+      const c = S.comps[l.id];
+      if (c && JSON.stringify(r) !== JSON.stringify(c.rules || {})) pending.rules[l.id] = r;
+    }
+    if (patch) {
+      const dyn = {
+        leagues: [],
+        clubs: [],
+        rivals: [],
+        removeRivals: [],
+        removed: [],
+        cups: patch.cups,
+        newCups: [],
+        removeCups: patch.removeCups,
+        newConts: [],
+        newNations: [],
+        nationEdits: patch.nationEdits,
+        intl: patch.intl,
+        agents: patch.agents,
+        calendar: patch.calendar,
+      };
+      if (!WD.patchIsEmpty(dyn)) pending.patch = dyn;
+    }
+    if (Object.keys(pending.rules).length || pending.patch) S.pendingEdit = pending;
+    FM.W.rosterVer++;
+    UI.save();
+    liveLeave();
+    UI.toast(
+      `Applied: ${U.plural(rep.clubs, 'club')}, ${U.plural(rep.leagues, 'league')}${S.pendingEdit ? '; formats and the calendar from next season' : ''}${hasDb ? '. This world came from a database, so its formats, cups and calendar stay as they are' : ''}`,
+      5000,
+    );
   };
   UI.acts.edExport = async () => {
     try {
@@ -4649,6 +4789,17 @@
       ? '<div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm" data-act="edSaveDraft">Save draft</button></div>'
       : '';
     app.innerHTML = `<div class="title ed-wide">${bar}${body}</div>`;
+    if (ED.live) {
+      app
+        .querySelectorAll('[data-act="edSaveDraft"],[data-act="edExport"],[data-act="edReset"]')
+        .forEach((b) => b.remove());
+      const use = app.querySelector('[data-act="edUse"]');
+      if (use) use.textContent = 'Apply to my career';
+      const tag = views[ED.view] ? null : app.querySelector('.tag');
+      if (tag)
+        tag.textContent =
+          'Change the world you are playing. Names, clubs, ratings, money, managers and the players you make change at once; league formats, cups and the calendar from next season. Nothing changes until you apply.';
+    }
     draftSoon();
     // a long list to pick from (the 90 nations) gets a box to type in
     document.querySelectorAll('.title select').forEach((sel) => {
