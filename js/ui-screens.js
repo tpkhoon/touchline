@@ -1713,12 +1713,14 @@
   // This season so far and every season he has played, a row per club (a mid-season move gets two)
   UI.seasonsCard = function (p, history) {
     const gk = p.pos === 'GK';
-    const head = gk ? ['Apps', 'CS', 'Conc', 'Rtg'] : ['Apps', 'G', 'A', 'Rtg'];
+    const head = gk
+      ? ['Apps', 'CS', 'Conc', 'Rtg', 'Mins', 'MotM', 'YC', 'RC']
+      : ['Apps', 'G', 'A', 'Rtg', 'Mins', 'MotM', 'YC', 'RC'];
     const row = (h) => {
       const c = CL(h.c);
       const v = gk
-        ? [h.apps, h.cs || 0, h.ga || 0, h.r ? h.r.toFixed(2) : '—']
-        : [h.apps, h.g, h.a || 0, h.r ? h.r.toFixed(2) : '—'];
+        ? [h.apps, h.cs || 0, h.ga || 0, h.r ? h.r.toFixed(2) : '—', h.mins || '—', h.motm || 0, h.yc || 0, h.rc || 0]
+        : [h.apps, h.g, h.a || 0, h.r ? h.r.toFixed(2) : '—', h.mins || '—', h.motm || 0, h.yc || 0, h.rc || 0];
       return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.short) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
     };
     // The rows only go back as far as the game has a record: what the Career panel counts beyond them (earlier
@@ -1738,7 +1740,7 @@
       extra.push({ apps: p.career.apps - shownApps, g: Math.max(0, p.career.goals - shownG), before: true });
     const extraRow = (h) => {
       const c = h.c && CL(h.c);
-      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.short) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td></tr>`;
+      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.short) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
     };
     if (!history.length && !extra.length) return '';
     const tot = history.concat(extra).reduce(
@@ -1748,11 +1750,14 @@
         a: t.a + (h.a || 0),
         cs: t.cs + (h.cs || 0),
         ga: t.ga + (h.ga || 0),
+        motm: t.motm + (h.motm || 0),
+        yc: t.yc + (h.yc || 0),
+        rc: t.rc + (h.rc || 0),
       }),
-      { apps: 0, g: 0, a: 0, cs: 0, ga: 0 },
+      { apps: 0, g: 0, a: 0, cs: 0, ga: 0, motm: 0, yc: 0, rc: 0 },
     );
     return `<div class="card"><div class="h3">Season by season</div>
-      <table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${head.map((h) => `<th>${h}</th>`).join('')}</tr>
+      <div style="overflow-x:auto"><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${head.map((h) => `<th>${h}</th>`).join('')}</tr>
       ${history
         .map((h, i) => {
           // the seasons at a club the rows do not go back to come right after its last row, not at the foot of the table
@@ -1771,7 +1776,7 @@
         .filter((x) => !x.earlier || !history.some((h) => h.c === x.c))
         .map(extraRow)
         .join('')}
-      <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}</tr></table></div>`;
+      <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}<td></td><td>${tot.motm || ''}</td><td>${tot.yc || ''}</td><td>${tot.rc || ''}</td></tr></table></div></div>`;
   };
   // Where he counts as trained and for whom he is homegrown (the registration rules read the same record)
   const trainedRows = (p) => {

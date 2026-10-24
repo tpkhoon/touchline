@@ -258,7 +258,7 @@
       goal: t.goal || 0,
       rise: t.rise || 0,
       status: t.status,
-      relegCut: !!t.relegCut,
+      relegCut: !!t.relegCut && !FM.Season.isClosed(club.comp),
       signed: s.year,
       bonus: t.bonus || 0,
     };

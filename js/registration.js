@@ -391,6 +391,20 @@
       };
     return { ok: true };
   };
+  // A line for the contract screen: would this wage make him a Designated Player, and how many places are left
+  R.mlsNote = function (c, p, annual, renew) {
+    const m = R.mls(c);
+    if (!m) return '';
+    const st = R.mlsStatus(c, renew ? p : null);
+    const left = m.dp - st.dps;
+    if (annual > m.maxCharge)
+      return left > 0
+        ? `Designated Player: counts for ${U.money(m.maxCharge)} against the budget (${st.dps} of ${U.plural(m.dp, 'place')} used).`
+        : `All ${m.dp} Designated Player places are taken: he must earn ${U.money(m.maxCharge)} a year or less.`;
+    return left > 0
+      ? `Earn over ${U.money(m.maxCharge)} a year and he becomes a Designated Player (${left} of ${U.plural(m.dp, 'place')} free).`
+      : '';
+  };
   // An AI club's squad brought within the rules: anyone above the maximum who is not a Designated Player is cut to it, and if the
   // budget is still over, the rest are trimmed in proportion
   R.mlsComply = function (c) {
@@ -444,7 +458,11 @@
       return { ok: false, why: `Too many foreign players for the ${r.matchday}-a-matchday rule.` };
     if (r.nonEUSign && !R.isEU(p) && p.clubId && FM.S.clubs[p.clubId].nat !== c.nat && st.nonEUSigned >= r.nonEUSign)
       return { ok: false, why: `The ${r.nonEUSign} non-EU signings from abroad allowed this season have been made.` };
-    if (r.mls) return R.mlsCheck(c, p, W.wageFor(p) * WKS(), false);
+    // the wage is still to be negotiated: with no Designated Player place left he can be signed on up to the maximum charge
+    if (r.mls) {
+      const w = W.wageFor(p) * WKS();
+      return R.mlsCheck(c, p, R.mlsStatus(c).dps < r.mls.dp ? w : Math.min(w, r.mls.maxCharge), false);
+    }
     return { ok: true };
   };
   // World generation: a nationality for a new squad member that keeps the club within its league's rules.
