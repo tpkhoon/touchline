@@ -3896,7 +3896,7 @@
     clubs: FM.D.LEAGUES.reduce((n, l) => n + FM.D[l.clubs].length, 0),
     leagues: FM.D.LEAGUES.length,
     nations: new Set(FM.D.LEAGUES.map((l) => l.nat)).size,
-    nationalTeams: Object.values(FM.D.NATIONS).filter((n) => !n.optional).length, // (Catalonia and the Basque Country are optional)
+    nationalTeams: Object.values(FM.D.NATIONS).length,
     domesticCups: FM.D.DOMESTIC_CUPS.length,
     continentalCups: FM.D.CONTINENTALS.length,
   });

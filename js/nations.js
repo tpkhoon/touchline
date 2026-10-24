@@ -1982,53 +1982,8 @@
   }
   D.NEW_NATIONS = LIST.map((n) => n.code);
 
-  // ---------- Catalonia and the Basque Country (optional nations) ----------
-  // Two nations a world can add (the world rule regionNations: the world editor, the new-career screen). They have no league
-  // of their own: their clubs stay in Spain. A player of Catalan or Basque family (p.heritage, already given to a share of
-  // Spain's players) can be eligible for the region as a second nationality, and the regions field a team of the players who
-  // choose it, like the regional sides that play friendlies in real life. A world without the rule never uses them: no player
-  // has the nationality and no team is made (D.optionalNation, FM.Intl.setup).
-  D.OPTIONAL_NATIONS = {
-    CAT: {
-      name: 'Catalonia',
-      flag: '🏴',
-      region: 'EUR',
-      style: 'Possession and technique',
-      bias: { technique: 1.5, passing: 1, dribbling: 1 },
-      pool: 'catalan',
-      colors: ['#FCDD09', '#DA121A'],
-      heritage: 'catalan',
-    },
-    EUS: {
-      name: 'Basque Country',
-      flag: '🏴',
-      region: 'EUR',
-      style: 'Physical and committed',
-      bias: { strength: 1.5, stamina: 1, workRate: 1 },
-      pool: 'basque',
-      colors: ['#D52B1E', '#009B48'],
-      heritage: 'basque',
-    },
-  };
-  for (const [code, n] of Object.entries(D.OPTIONAL_NATIONS)) {
-    D.NATIONS[code] = {
-      name: n.name,
-      flag: n.flag,
-      region: n.region,
-      style: n.style,
-      bias: n.bias,
-      fn: [],
-      ln: [],
-      optional: true,
-    };
-    D.NATIVE_POOL[code] = n.pool;
-    D.NT_COLORS[code] = n.colors;
-    D.POOL_NATS[n.heritage] = [...(D.POOL_NATS[n.heritage] || []), code];
-  }
-  D.widenNames();
-  // Is this nation in the game? (an optional one only in a world that added it)
-  D.nationOn = (code) =>
-    !!D.NATIONS[code] && (!D.NATIONS[code].optional || !!(FM.S && FM.S.rules && FM.S.rules.regionNations));
+  // Is this nation in the game?
+  D.nationOn = (code) => !!D.NATIONS[code];
   // The nationalities a random pick may choose from
   D.nationCodes = () => Object.keys(D.NATIONS).filter(D.nationOn);
 })();

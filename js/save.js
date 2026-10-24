@@ -215,6 +215,28 @@
         const c = s.comps[l.id];
         if (c && /^D\d$/.test(c.short) && l.short !== c.short) c.short = l.short;
       }
+    // Catalonia and the Basque Country were once nations a world could add: they are part of Spain again (a nation of that
+    // name can be made in the world editor). Players who had chosen one go back to their own nation, and its national team and
+    // games are taken out.
+    if (s.rules && s.rules.regionNations !== undefined) delete s.rules.regionNations;
+    {
+      const gone = ['CAT', 'EUS'].filter((c) => !(FM.D.NATIONS && FM.D.NATIONS[c]));
+      if (s.players && gone.length)
+        for (const p of Object.values(s.players)) {
+          if (gone.includes(p.nat2)) p.nat2 = null;
+          if (gone.includes(p.alleg)) p.alleg = undefined;
+          if (gone.includes(p.nat)) p.nat = 'ESP';
+        }
+      if (gone.length) {
+        for (const c of gone) {
+          if (s.nteams) delete s.nteams['n_' + c];
+          if (s.intlGames) delete s.intlGames[c];
+        }
+        const dead = (id) => gone.some((c) => id === 'n_' + c);
+        if (s.intlLog) s.intlLog = s.intlLog.filter((g) => !dead(g.h) && !dead(g.a));
+        if (s.user && dead(s.user.nation)) s.user.nation = null;
+      }
+    }
     // second nationalities (through family heritage) for players made before they existed
     if (s.players && FM.W && FM.D.POOL_NATS)
       for (const p of Object.values(s.players))

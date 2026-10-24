@@ -20,9 +20,8 @@
   let ED = null;
 
   const clone = (o) => JSON.parse(JSON.stringify(o));
-  // The nations of the game (Catalonia and the Basque Country only when the world adds them)
-  const natEntries = () =>
-    Object.entries(D.NATIONS).filter(([, n]) => !n.optional || (ED && ED.def.rules.regionNations));
+  // The nations of the game
+  const natEntries = () => Object.entries(D.NATIONS);
   // The nations the world adds are in the static data while the editor is open (so its lists, flags and checks know them)
   const syncNations = () => {
     if (ED.natUndo) ED.natUndo();
@@ -858,16 +857,6 @@
               .join('')}</div>`,
         )
         .join('')}
-      <div class="ng-label">Catalonia and the Basque Country <span class="tiny dim">· as nations of their own: players of Catalan or Basque family can choose them, and they field national teams</span></div>
-      <div class="seg" style="margin:0">${[
-        [false, 'Part of Spain'],
-        [true, 'Nations'],
-      ]
-        .map(
-          ([v, t]) =>
-            `<button class="${!!ED.def.rules.regionNations === v ? 'on' : ''}" data-act="edRule" data-k="regionNations" data-v="${v}">${t}</button>`,
-        )
-        .join('')}</div>
       <div class="ng-label">Promotion and relegation <span class="tiny dim">· for every league; each pair of leagues has its own switch too</span></div>
       ${segV('edWorldProRel', ED.def.rules.proRel === false ? 'off' : 'on', [
         ['on', 'On'],
@@ -4038,8 +4027,11 @@
   const poolLabel = (k) => k.replace(/^./, (c) => c.toUpperCase());
   // Territories and small members of the confederations the game does not have: a starting point for Create a nation (the fields
   // are filled in and can be changed): code, name, ISO flag letters, part of the world, name culture, colours
-  const FLAG = (iso) => [...iso].map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65)).join('');
+  const FLAG = (iso) =>
+    iso.length > 2 ? iso : [...iso].map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65)).join('');
   const NATION_PRESETS = [
+    ['CAT', 'Catalonia', '🏴', 'EUR', 'catalan', ['#FCDD09', '#DA121A']],
+    ['EUS', 'Basque Country', '🏴', 'EUR', 'basque', ['#D52B1E', '#009B48']],
     ['MON', 'Monaco', 'MC', 'EUR', 'french', ['#CE1126', '#FFFFFF']],
     ['VAT', 'Vatican City', 'VA', 'EUR', 'italian', ['#FFE000', '#FFFFFF']],
     ['JEY', 'Jersey', 'JE', 'EUR', 'english', ['#DF1F26', '#FFFFFF']],

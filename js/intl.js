@@ -217,31 +217,10 @@
       ),
     );
 
-  // The regions that are nations (Catalonia, the Basque Country) start with the players of their families who are not in their
-  // own country's squad: a player eligible through family (p.nat2) and uncapped chooses the region when his country has no
-  // use for him. The rest choose later (I.allegianceTick), as with any second nationality.
-  I.regionAllegiance = function () {
-    const s = S();
-    for (const code in D.NATIONS) {
-      if (!D.NATIONS[code].optional || !D.nationOn(code)) continue;
-      const top = {};
-      for (const p of Object.values(s.players)) {
-        if (p.nat2 !== code || p.retired || W.age(p) < 17 || !I.uncapped(p) || I.nationOf(p) !== p.nat) continue;
-        if (!top[p.nat])
-          top[p.nat] = new Set(
-            I.pool(p.nat)
-              .slice(0, 23)
-              .map((x) => x.id),
-          );
-        if (!top[p.nat].has(p.id)) ((p.alleg = code), I.natVer++);
-      }
-    }
-  };
   I.setup = function () {
     const s = S();
     s.nteams = {};
     s.intlLog = [];
-    I.regionAllegiance();
     I.topUp(true);
     for (const code in D.NATIONS) {
       if (!D.nationOn(code)) continue;

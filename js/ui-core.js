@@ -889,7 +889,6 @@
     recs: [],
     db: null, // an imported database (FM.DbImport.import result) the world is built from, or null for the built-in world
     slot: 1,
-    regionNations: false, // Catalonia and the Basque Country as nations of the world
     liveEdit: true, // the in-game editor (Settings → Edit the world) is on: it can be switched off for a purist career
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
@@ -1086,24 +1085,12 @@
     const app = $('#app');
     let body = '';
     if (NG.step === 0) {
-      const nations = Object.entries(D.NATIONS)
-        .filter(([, n]) => !n.optional || NG.regionNations)
-        .sort((a, b) => a[1].name.localeCompare(b[1].name));
+      const nations = Object.entries(D.NATIONS).sort((a, b) => a[1].name.localeCompare(b[1].name));
       body = `<div class="h1" style="margin-top:4vh">Who are you?</div><div class="tag">Every legend starts somewhere.</div>
         <div class="row" style="gap:14px;margin-top:18px;align-items:center">${C.avatar({ avatar: NG.avatar }, 64)}<div class="grow"><div class="b" id="ng-preview" style="font-size:18px">${esc(`${esc(NG.fn)} ${esc(NG.ln)}`.trim() || 'Your name')}</div><div class="small" style="color:#9fb0c5">${C.flag(NG.nat)} ${esc(D.NATIONS[NG.nat].name)}</div></div></div>
         <div class="ng-names"><input type="text" id="ng-fn" placeholder="First name" maxlength="16" value="${esc(NG.fn)}" autocomplete="given-name"><input type="text" id="ng-ln" placeholder="Last name" maxlength="20" value="${esc(NG.ln)}" autocomplete="family-name"></div><div class="ng-err" id="ng-err" role="alert" hidden></div>
         <div class="ng-label">Country <span style="color:#6f7f96">· your own national team will know your name</span></div>
         <select id="ng-nat">${nations.map(([k, n]) => `<option value="${k}" ${NG.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
-        <div class="ng-label">Catalonia and the Basque Country <span style="color:#6f7f96">· as nations of their own, with national teams</span></div>
-        <div class="seg">${[
-          [false, 'Part of Spain'],
-          [true, 'Nations'],
-        ]
-          .map(
-            ([v, t]) =>
-              `<button class="${!!NG.regionNations === v ? 'on' : ''}" data-act="ngRegions" data-v="${v}">${t}</button>`,
-          )
-          .join('')}</div>
         <div class="ng-label">Editing the world in game <span style="color:#6f7f96">· fix a name or rating, or change many at once, while you play</span></div>
         <div class="seg">${[
           [true, 'On'],
@@ -1368,11 +1355,6 @@
         UI.newCareer();
       });
   };
-  UI.acts.ngRegions = (d) => {
-    NG.regionNations = d.v === 'true';
-    if (!NG.regionNations && D.NATIONS[NG.nat].optional) NG.nat = 'ESP';
-    UI.newCareer();
-  };
   UI.acts.ngLiveEdit = (d) => {
     NG.liveEdit = d.v === 'true';
     UI.newCareer();
@@ -1448,7 +1430,7 @@
   UI._dbRules = (def) => {
     const r = (def && def.rules) || {};
     return Object.fromEntries(
-      ['win', 'subs', 'twoLegs', 'awayGoals', 'regionNations'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
+      ['win', 'subs', 'twoLegs', 'awayGoals'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
     );
   };
   UI._ng = () => NG;
@@ -1548,7 +1530,6 @@
           FM.DbImport.build(NG.db.def, {
             ...W.REAL_RULES,
             ...UI._dbRules(NG.db.def),
-            ...(NG.regionNations ? { regionNations: true } : {}),
             sims,
           });
           built = true;
@@ -1557,7 +1538,7 @@
           UI.toast('The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
         }
       }
-      if (!built) W.newWorld({ ...W.REAL_RULES, regionNations: NG.regionNations, sims });
+      if (!built) W.newWorld({ ...W.REAL_RULES, sims });
       FM.S.settings = { ...theme, noLiveEdit: !NG.liveEdit };
       FM.Season.init();
       if (NG.club === 'none') {

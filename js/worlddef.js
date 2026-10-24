@@ -37,7 +37,7 @@
       startYear: null,
       players: 'overlay',
     },
-    rules: { win: 3, subs: 5, reg: 'real', foreignLimit: 99, twoLegs: true, awayGoals: false, regionNations: false },
+    rules: { win: 3, subs: 5, reg: 'real', foreignLimit: 99, twoLegs: true, awayGoals: false },
     leagues: [],
     clubs: [],
     players: [],
@@ -76,7 +76,6 @@
       foreignLimit: S.rules.foreignLimit,
       twoLegs: S.rules.twoLegs,
       awayGoals: S.rules.awayGoals,
-      regionNations: !!S.rules.regionNations,
     };
     for (const c of Object.values(S.comps)) {
       if (c.type === 'league')

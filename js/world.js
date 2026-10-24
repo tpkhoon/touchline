@@ -2488,7 +2488,6 @@
         reg: opts.reg === undefined ? 'real' : opts.reg, // 'real': each league's own registration rules (FM.Reg)
         twoLegs: opts.twoLegs ?? true,
         awayGoals: !!opts.awayGoals,
-        regionNations: !!opts.regionNations, // Catalonia and the Basque Country as nations (D.OPTIONAL_NATIONS)
         v: 2, // rules version: older saves move to the real rules on load (Sv.repair)
       },
       user: null,
