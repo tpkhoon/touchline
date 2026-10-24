@@ -10,6 +10,8 @@ QA: `/qa-plan` (a test plan for a piece of work), `/team-qa` (the whole QA pass,
 
 Also: `/tech-debt`, `/estimate`, `/release-checklist` (agents use them).
 
+UI and UX: `/ui-ux-pro-max` (from https://github.com/nextlevelbuilder/ui-ux-pro-max-skill, MIT, licence in the skill folder): a search over 119 UX guidelines, colour, type, chart and motion guidance, run with `python .claude/skills/ui-ux-pro-max/scripts/search.py "<query>" --domain ux`. Meant for web and app interfaces; for Touchline use the `ux`, `chart`, `color`, `typography` and `motion` domains, not its landing-page design systems (see the note at the top of its SKILL.md).
+
 ## Agents (roles)
 
 creative-director, game-designer, systems-designer, economy-designer, world-builder (the lore module only), ux-designer, accessibility-specialist, localization-lead, lead-programmer, technical-director, performance-analyst, producer, qa-lead, qa-tester. Ask for them by name ("have the economy designer look at the finance model") or let a skill call them.
