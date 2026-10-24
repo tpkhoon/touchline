@@ -2234,7 +2234,11 @@
       if (d.club && S.clubs[d.club]) W.startSpell(p, d.club);
       rep.playersAdded++;
     }
-    for (const id of covered) W.genSquad(S.clubs[id], W.squad(id)); // the gaps in a squad the file left short
+    // the gaps in a squad the file left short are made up, unless the file says its squads are all of the players ("fillSquads":
+    // false: real squads only, no generated fill-ins and no academy prospects; the shirts are still numbered)
+    for (const id of covered)
+      if (def.meta.fillSquads === false) W.numberSquad(W.squad(id));
+      else W.genSquad(S.clubs[id], W.squad(id));
     rep.drafted = 0;
     for (const [lid, spec] of Object.entries(def.expansion || {})) rep.drafted += WD.expansionDraft(S, lid, spec);
     // past seasons go to the archive, oldest first, before anything the new world has played

@@ -57,6 +57,7 @@ const S = FM.S;
 // ---------- the club, league, cup and derby names ----------
 const def = WD.fromState(S, { name: 'Real world', players: false });
 def.meta.players = 'replace';
+def.meta.fillSquads = false; // (a club with a real squad keeps exactly those players: the game adds no generated ones)
 def.meta.base = 'touchline';
 def.meta.startYear = S.year;
 let renamed = 0;
@@ -208,6 +209,7 @@ const NAT_FIX = {
   REU: 'FRA',
 };
 const NAT_ALIAS = {
+  CHL: 'CHI',
   SPAIN: 'ESP',
   SPA: 'ESP',
   FRANCE: 'FRA',
@@ -248,8 +250,10 @@ const NAT_ALIAS = {
   CUR: 'JAM',
 };
 const unknownNat = {};
+// (some squads give a country's full name, BRAZIL or JAPAN, where most give its code)
+const NAT_BY_NAME = Object.fromEntries(Object.entries(D.NATIONS).map(([k, n]) => [String(n.name).toUpperCase(), k]));
 const natOf = (code, club) => {
-  const c = NAT_ALIAS[code] || code;
+  const c = NAT_ALIAS[code] || NAT_BY_NAME[code] || code;
   if (D.NATIONS[c]) return c;
   if (NAT_FIX[c] && D.NATIONS[NAT_FIX[c]]) {
     unknownNat[c] = (unknownNat[c] || 0) + 1;
