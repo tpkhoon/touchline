@@ -481,7 +481,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## Yet to be added
 
-223 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+222 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority: the real database and the accuracy of the ratings it is made with** (the three Ratings rows at the top of the table; eight more are done and listed above). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -708,7 +708,6 @@ Design principle from here: don't make the game deeper by adding more screens â€
 | Editor | Dock points in the editor: take points off a club in a chosen season (a number of points, with a reason that shows in the table and the news), and give them back, beside the deduction that administration brings by itself | Alpha 2 |
 | Matchday | Change formation in the live match: choose a new formation from the in-game tactics sheet (the players are moved into it, with a short settling-in cost for those out of position) beside the style controls and Plan B | Alpha 2 |
 | Tooling | Real-life format checker in the developer tools: lists each league, cup and international tournament in the world against its real format (clubs, rounds, promotion, relegation, qualification, tiebreakers, number of teams and groups) and flags what differs, to find where the game departs from real football | Alpha 2 |
-| Settings | An Editor tab under More when the editor is on for the save, so the world editor is one tap away instead of inside Settings | Alpha 2 |
 | Settings | Tab customisation: choose and order the tabs of the bottom bar (and what sits under More), with a sensible default for a new career, remembered per save | Beta |
 | Players | A relook at the histories of mid-tier players: more realistic games played, goals, assists and ratings per season for the players of the middle leagues and clubs (a career that fits the player's level, role and age, with spells at clubs of a fitting size), so a journeyman's record reads like a real one | Alpha 2 |
 | World | Localised, realistic sponsor names: league, cup, shirt and stadium sponsors from the nation's own brands and naming (banks, energy firms, telecoms, brewers, airlines of that country, invented but plausible), using the name generator that already makes sponsor names by nation | Alpha 2 |

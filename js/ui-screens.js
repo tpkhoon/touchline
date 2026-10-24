@@ -2275,7 +2275,16 @@
       'data-tab="club"',
       club ? 'Club' : 'Manager',
       club ? 'Staff, facilities, finances, press, history and your manager profile' : 'Your profile',
-    )}${row('openSettings', '', 'Settings', 'Saves, text size, theme, match view and help')}`;
+    )}${
+      FM.S.settings && FM.S.settings.noLiveEdit
+        ? ''
+        : row(
+            'liveEdit',
+            '',
+            'Editor',
+            'Fix a name, a rating or a colour in the world you are playing, one at a time or in bulk',
+          )
+    }${row('openSettings', '', 'Settings', 'Saves, text size, theme, match view and help')}`;
   };
   // Every league in the world, grouped by continent, with its simulation tier
   // Each nation's places in the continental cups, by coefficient (they move with the clubs' results)
