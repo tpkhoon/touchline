@@ -67,18 +67,16 @@
     const rv = c.rival && S().clubs[c.rival] ? L().rival(c.id, c.rival) : null;
     return `<div class="card"><div class="h3">The club</div>
       ${kind ? `<div class="phrase"><span>${kind.icon}</span><span><b>${esc(kind.label)}.</b> ${esc(kind.text)}</span></div>` : ''}
-      ${row('Anthem', `${esc(d.anthem.title)}<div class="tiny dim">${esc(d.anthem.note)}</div>`)}
-      ${row('Ground', `${esc(d.ground)}${c.stadium ? `<div class="tiny dim">${esc(c.stadium.name)}</div>` : ''}`)}
-      ${row('Record crowd', `${d.att.n.toLocaleString()}<div class="tiny dim">${d.att.year}, ${esc(d.att.what)}${o(d.att.vs)}</div>`)}
+      ${c.stadium ? row('Ground', esc(c.stadium.name)) : ''}
+      ${row('Record crowd', `${d.att.n.toLocaleString()}${o(d.att.vs)}`)}
       ${d.bigWin ? row('Record win', `${d.bigWin.gf}–${d.bigWin.ga}${o(d.bigWin.vs)}<div class="tiny dim">${d.bigWin.year}</div>`) : ''}
       ${d.bigLoss ? row('Heaviest defeat', `${d.bigLoss.gf}–${d.bigLoss.ga}${o(d.bigLoss.vs)}<div class="tiny dim">${d.bigLoss.year}</div>`) : ''}
-      ${row('Famous match', `${esc(d.famous.text)}`)}
       ${peopleRows(c)}
       ${
         rv && c.rival
           ? row(
               'Rivalry',
-              `<b>${esc(c.derby || 'The derby')}</b> v ${cname(c.rival)}<div class="tiny dim" style="margin-top:2px">${esc(rv.origin)}.</div>${
+              `<b>${esc(c.derby || 'The derby')}</b> v ${cname(c.rival)}${
                 rv.h2h.p
                   ? `<div class="tiny dim" style="margin-top:2px">Before the save: P${rv.h2h.p} · ${rv.h2h.w}W ${rv.h2h.d}D ${rv.h2h.l}L · ${rv.h2h.gf}–${rv.h2h.ga}</div>`
                   : ''

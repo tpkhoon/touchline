@@ -572,7 +572,9 @@
   };
   // The in-game reduced-motion switch (the system's own setting is honoured by the stylesheet)
   UI.applyMotion = function () {
-    document.documentElement.classList.toggle('reduce-motion', !!(FM.S && FM.S.settings && FM.S.settings.reduceMotion));
+    // (the in-game reduced motion switch is gone: the device's own setting is honoured by the stylesheet)
+    if (FM.S && FM.S.settings) delete FM.S.settings.reduceMotion;
+    document.documentElement.classList.remove('reduce-motion');
   };
 
   // ---------------- Shell ----------------
