@@ -844,7 +844,14 @@
   // A nation of its own: a name, a flag (an emoji), a part of the world, the culture its players' names come from, how it plays,
   // its colours, and how common its players are in leagues abroad (weight, in per cent of a league's players). Its players turn
   // up in every league by that weight and fill the clubs of its own leagues; with 16 players it has a national team.
-  WD.NATION_REGIONS = { EUR: 'Europe', SAM: 'South America', NAM: 'North America', ASIA: 'Asia', AFR: 'Africa' };
+  WD.NATION_REGIONS = {
+    EUR: 'Europe',
+    SAM: 'South America',
+    NAM: 'North America',
+    ASIA: 'Asia',
+    AFR: 'Africa',
+    OFC: 'Oceania',
+  };
   WD.NATION_STYLES = {
     flair: ['Flair and technique', { dribbling: 2, technique: 1.5, finishing: 1 }],
     physical: ['Hard-working and physical', { workRate: 2, strength: 1.5, stamina: 1 }],

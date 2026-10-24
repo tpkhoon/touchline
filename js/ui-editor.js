@@ -4036,6 +4036,83 @@
   // A name, a flag, a part of the world, the culture its players' names come from, how it plays, colours, and how common its
   // players are abroad. Leagues, clubs and players can then belong to it, and with 16 players it fields a national team.
   const poolLabel = (k) => k.replace(/^./, (c) => c.toUpperCase());
+  // Territories and small members of the confederations the game does not have: a starting point for Create a nation (the fields
+  // are filled in and can be changed): code, name, ISO flag letters, part of the world, name culture, colours
+  const FLAG = (iso) => [...iso].map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65)).join('');
+  const NATION_PRESETS = [
+    ['MON', 'Monaco', 'MC', 'EUR', 'french', ['#CE1126', '#FFFFFF']],
+    ['VAT', 'Vatican City', 'VA', 'EUR', 'italian', ['#FFE000', '#FFFFFF']],
+    ['JEY', 'Jersey', 'JE', 'EUR', 'english', ['#DF1F26', '#FFFFFF']],
+    ['GGY', 'Guernsey', 'GG', 'EUR', 'english', ['#FFFFFF', '#E8112D']],
+    ['IMN', 'Isle of Man', 'IM', 'EUR', 'english', ['#CF142B', '#FFFFFF']],
+    ['ALA', 'Åland', 'AX', 'EUR', 'swedish', ['#0053A5', '#FFD500']],
+    ['GRL', 'Greenland', 'GL', 'NAM', 'nordic', ['#D00C33', '#FFFFFF']],
+    ['ARU', 'Aruba', 'AW', 'NAM', 'surinamese', ['#418FDE', '#FBE122']],
+    ['BOE', 'Bonaire', 'BQ', 'NAM', 'surinamese', ['#012A87', '#F9D90F']],
+    ['SXM', 'Sint Maarten', 'SX', 'NAM', 'caribbean', ['#C8102E', '#012169']],
+    ['CAY', 'Cayman Islands', 'KY', 'NAM', 'caribbean', ['#012169', '#FFFFFF']],
+    ['TCA', 'Turks and Caicos Islands', 'TC', 'NAM', 'caribbean', ['#012169', '#FFFFFF']],
+    ['VGB', 'British Virgin Islands', 'VG', 'NAM', 'caribbean', ['#012169', '#FFFFFF']],
+    ['VIR', 'US Virgin Islands', 'VI', 'NAM', 'caribbean', ['#FFFFFF', '#0A3161']],
+    ['AIA', 'Anguilla', 'AI', 'NAM', 'caribbean', ['#012169', '#FFFFFF']],
+    ['MSR', 'Montserrat', 'MS', 'NAM', 'caribbean', ['#012169', '#009543']],
+    ['MTQ', 'Martinique', 'MQ', 'NAM', 'french', ['#000000', '#E8112D']],
+    ['GPE', 'Guadeloupe', 'GP', 'NAM', 'french', ['#003F87', '#E8112D']],
+    ['GUF', 'French Guiana', 'GF', 'NAM', 'french', ['#009739', '#FCD116']],
+    ['COK', 'Cook Islands', 'CK', 'OFC', 'pacific', ['#012169', '#FFFFFF']],
+    ['ASA', 'American Samoa', 'AS', 'OFC', 'pacific', ['#00205B', '#FFFFFF']],
+    ['TUV', 'Tuvalu', 'TV', 'OFC', 'pacific', ['#5B97D2', '#FFD100']],
+    ['KIR', 'Kiribati', 'KI', 'OFC', 'pacific', ['#CE1126', '#FFD100']],
+    ['NIU', 'Niue', 'NU', 'OFC', 'pacific', ['#FFE000', '#FFFFFF']],
+    ['MAC', 'Macau', 'MO', 'ASIA', 'chinese', ['#00785E', '#FFFFFF']],
+    ['GUM', 'Guam', 'GU', 'ASIA', 'pacific', ['#00247D', '#FFFFFF']],
+    ['NMI', 'Northern Mariana Islands', 'MP', 'ASIA', 'pacific', ['#0071BC', '#FFFFFF']],
+    ['BRU', 'Brunei', 'BN', 'ASIA', 'malay', ['#F7E017', '#000000']],
+    ['BHU', 'Bhutan', 'BT', 'ASIA', 'southasian', ['#FF8000', '#FFD520']],
+    ['MGL', 'Mongolia', 'MN', 'ASIA', 'centralasian', ['#C4272F', '#015197']],
+    ['TLS', 'Timor-Leste', 'TL', 'ASIA', 'indonesian', ['#DC241F', '#000000']],
+    ['SEY', 'Seychelles', 'SC', 'AFR', 'french', ['#003F87', '#D62828']],
+    ['MRI', 'Mauritius', 'MU', 'AFR', 'french', ['#EA2839', '#00A551']],
+    ['COM', 'Comoros', 'KM', 'AFR', 'french', ['#3D8E33', '#FFC61E']],
+    ['STP', 'São Tomé and Príncipe', 'ST', 'AFR', 'portuguese', ['#12AD2B', '#FFCE00']],
+    ['DJI', 'Djibouti', 'DJ', 'AFR', 'eastafrican', ['#6AB2E7', '#12AD2B']],
+    ['ERI', 'Eritrea', 'ER', 'AFR', 'eastafrican', ['#4189DD', '#EA0437']],
+    ['SOM', 'Somalia', 'SO', 'AFR', 'eastafrican', ['#4189DD', '#FFFFFF']],
+    ['SSD', 'South Sudan', 'SS', 'AFR', 'eastafrican', ['#078930', '#DA121A']],
+    ['CTA', 'Central African Republic', 'CF', 'AFR', 'centralafrican', ['#003082', '#FFCE00']],
+    ['REU', 'Réunion', 'RE', 'AFR', 'french', ['#003F87', '#E8112D']],
+  ];
+  const presetPicker = () => {
+    const taken = new Set([...Object.keys(D.NATIONS), ...(ED.def.newNations || []).map((x) => x.code)]);
+    const by = {};
+    for (const p of NATION_PRESETS) if (!taken.has(p[0])) (by[p[3]] = by[p[3]] || []).push(p);
+    const groups = Object.entries(by)
+      .map(
+        ([r, list]) =>
+          `<optgroup label="${esc(D.REGIONS[r] || r)}">${list.map((p) => `<option value="${p[0]}">${esc(FLAG(p[2]))} ${esc(p[1])}</option>`).join('')}</optgroup>`,
+      )
+      .join('');
+    return groups
+      ? `<div class="ng-label" style="margin-top:0">Start from a territory <span class="tiny dim">· fills in the fields below; change anything</span></div><select id="ed-nnpreset" data-input="edNnPreset"><option value="">A nation of my own</option>${groups}</select>`
+      : '';
+  };
+  UI.acts.edNnPreset = (d, el) => {
+    const p = NATION_PRESETS.find((x) => x[0] === el.value);
+    if (!p) return;
+    const set = (id, v) => {
+      const e = $('#ed-' + id);
+      if (e) e.value = v;
+    };
+    set('nnname', p[1]);
+    set('nncode', p[0]);
+    const code = $('#ed-nncode');
+    if (code) code.dataset.typed = '1';
+    set('nnflag', FLAG(p[2]));
+    set('nnregion', p[3]);
+    set('nnpool', p[4]);
+    set('nnc1', p[5][0].toLowerCase());
+    set('nnc2', p[5][1].toLowerCase());
+  };
   const newNationView = () => {
     const cur = (ED.def.newNations || []).find((n) => n.code === ED.ncode),
       n = cur || {
@@ -4061,7 +4138,8 @@
       .join('');
     return `<div class="h1" style="margin-top:2vh">${cur ? `${esc(n.flag)} ${esc(n.name)}` : 'Create a nation'}</div><div class="tag">A nation of your own: its players, leagues and clubs. Add a league for it afterwards (Add a league, then pick it as the nation), and its players turn up in every league too.</div>
       ${errBox()}
-      <div class="ng-names"><div style="flex:3"><div class="ng-label" style="margin-top:0">Name</div><input type="text" id="ed-nnname" maxlength="30" value="${esc(n.name)}" data-input="edNnAuto" autocomplete="off"></div><div style="flex:1;min-width:84px"><div class="ng-label" style="margin-top:0">Code</div><input type="text" id="ed-nncode" maxlength="3" value="${esc(n.code)}" ${cur ? 'readonly' : ''} style="text-transform:uppercase" placeholder="ABC"></div></div>
+      ${cur ? '' : presetPicker()}
+      <div class="ng-names"><div style="flex:3"><div class="ng-label" style="margin-top:${cur ? 0 : 12}px">Name</div><input type="text" id="ed-nnname" maxlength="30" value="${esc(n.name)}" data-input="edNnAuto" autocomplete="off"></div><div style="flex:1;min-width:84px"><div class="ng-label" style="margin-top:0">Code</div><input type="text" id="ed-nncode" maxlength="3" value="${esc(n.code)}" ${cur ? 'readonly' : ''} style="text-transform:uppercase" placeholder="ABC"></div></div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label">Flag <span class="tiny dim">· any emoji</span></div><input type="text" id="ed-nnflag" maxlength="12" value="${esc(n.flag)}"></div><div style="flex:2"><div class="ng-label">Part of the world</div><select id="ed-nnregion">${opts(WD.NATION_REGIONS, n.region)}</select></div></div>
       <div class="ng-label">Players' names come from <span class="tiny dim">· the culture of their first names and surnames</span></div>
       <select id="ed-nnpool">${pools}</select>
