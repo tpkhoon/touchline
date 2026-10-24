@@ -283,7 +283,7 @@
     const labels = keys
       .map((k, i) => {
         const [x, y] = pt(i, 1.22);
-        return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink2)">${k}</text>`;
+        return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink2)">${k}</text>`;
       })
       .join('');
     return `<svg viewBox="-36 0 ${size + 72} ${size}" width="100%" style="max-width:${size + 72}px;display:block;margin:auto">${g}<polygon points="${poly}" fill="color-mix(in srgb, var(--acc) 30%, transparent)" stroke="var(--acc)" stroke-width="2" ${approx ? 'stroke-dasharray="4 3" style="filter:blur(1.2px)"' : ''}/>${labels}</svg>`;
@@ -387,14 +387,80 @@
   UI.sheet = function (html, opts = {}) {
     const wrap = document.createElement('div');
     wrap.className = 'sheet-wrap';
-    wrap.innerHTML = `<div class="sheet ${opts.full ? 'full' : ''}">${opts.full ? '' : '<div class="grab"></div>'}<div class="sh-head"><div class="grow h2 ellip">${esc(opts.title || '')}</div><button class="icon-btn" data-act="closeSheet">✕</button></div><div class="sh-body">${html}</div></div>`;
+    const tid = 'sh-t' + ++sheetN;
+    wrap.innerHTML = `<div class="sheet ${opts.full ? 'full' : ''}" role="dialog" aria-modal="true" aria-labelledby="${tid}" tabindex="-1">${opts.full ? '' : '<div class="grab"></div>'}<div class="sh-head"><div class="grow h2 ellip" id="${tid}">${esc(opts.title || '')}</div><button class="icon-btn" data-act="closeSheet" aria-label="Close">✕</button></div><div class="sh-body">${html}</div></div>`;
     wrap.addEventListener('click', (e) => {
       if (e.target === wrap) UI.closeSheet();
     });
+    wrap._opener = document.activeElement;
     $('#app').appendChild(wrap);
     wrap._opts = opts;
+    // keyboard and screen reader users are taken into the sheet (focus returns to where it was when the sheet closes)
+    const box = wrap.querySelector('.sheet');
+    if (box) box.focus({ preventScroll: true });
+    // drag the handle or the title bar down to close it
+    let y0 = null,
+      dy = 0,
+      t0 = 0;
+    const move = (e) => {
+      if (y0 == null) return;
+      dy = Math.max(0, e.clientY - y0);
+      box.style.transition = 'none';
+      box.style.transform = `translateY(${dy}px)`;
+    };
+    const end = () => {
+      if (y0 == null) return;
+      const fast = dy / Math.max(1, performance.now() - t0) > 0.6;
+      y0 = null;
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      box.style.transition = '';
+      if (dy > 90 || (fast && dy > 30)) UI.closeSheet();
+      box.style.transform = '';
+    };
+    wrap.querySelectorAll('.grab, .sh-head').forEach((h) =>
+      h.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('button') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        y0 = e.clientY;
+        dy = 0;
+        t0 = performance.now();
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', end);
+        window.addEventListener('pointercancel', end);
+      }),
+    );
     return wrap;
   };
+  let sheetN = 0;
+  // Escape closes the top sheet; Tab stays inside it
+  document.addEventListener('keydown', (e) => {
+    const all = document.querySelectorAll('.sheet-wrap');
+    const top = all[all.length - 1];
+    if (!top) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      return UI.closeSheet();
+    }
+    if (e.key !== 'Tab') return;
+    const f = [...top.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(
+      (x) => !x.disabled && x.offsetParent !== null,
+    );
+    if (!f.length) return;
+    const first = f[0],
+      last = f[f.length - 1],
+      at = document.activeElement;
+    if (!top.contains(at)) {
+      e.preventDefault();
+      first.focus();
+    } else if (e.shiftKey && (at === first || at === top.querySelector('.sheet'))) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && at === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
   UI.closeSheet = function () {
     const all = document.querySelectorAll('.sheet-wrap');
     const last = all[all.length - 1];
@@ -402,6 +468,8 @@
       if (last._opts && last._opts.onClose) last._opts.onClose();
       // it slides away; meanwhile it no longer counts as an open sheet
       last.classList.replace('sheet-wrap', 'sheet-closing');
+      const back = last._opener;
+      if (back && back.isConnected && typeof back.focus === 'function') back.focus({ preventScroll: true });
       setTimeout(() => last.remove(), 220);
     }
   };
@@ -535,7 +603,9 @@
     let pick = reading[0] || pool.sort((a, b) => sat(b) - sat(a))[0];
     // a colourless kit (white, black, grey): the end of the scale that reads on this page
     if (sat(pick) < 40) pick = theme === 'light' ? '#111827' : '#f4f6fa';
-    for (let t = 0.1; contrast(pick, bg) < 4.5 && t <= 1; t += 0.1) pick = mixTo(pick, toward, 0.1);
+    // (4.5:1 on the palest card of the theme, not only on the page behind it)
+    const card = theme === 'light' ? bg : '#1a2331';
+    for (let t = 0.1; contrast(pick, card) < 4.5 && t <= 1; t += 0.1) pick = mixTo(pick, toward, 0.1);
     return pick;
   };
   UI.applyClubTheme = function () {
@@ -748,6 +818,37 @@
       FM.Native.haptic('light');
       fn(el.dataset, el, e);
     }
+  });
+  // ---------------- Keyboard and screen reader support ----------------
+  // A card, row or link that does something is a button to the keyboard and to a screen reader: it can be focused, Enter or
+  // Space presses it, and the tab, filter or switch that is on says so. (One sweep after the page changes keeps every screen's markup
+  // free of it.)
+  const NATIVE = /^(BUTTON|A|INPUT|SELECT|TEXTAREA|SUMMARY)$/;
+  UI.a11ySweep = function () {
+    document.querySelectorAll('#app [data-act]:not([role]):not([tabindex])').forEach((el) => {
+      if (NATIVE.test(el.tagName) || el.closest('svg')) return;
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+    });
+    document.querySelectorAll('#app .chip[data-act], #app .seg > button, #app .chips > button').forEach((el) => {
+      el.setAttribute('aria-pressed', el.classList.contains('on') ? 'true' : 'false');
+    });
+    document.querySelectorAll('#nav button').forEach((el) => {
+      if (el.classList.contains('on')) el.setAttribute('aria-current', 'page');
+      else el.removeAttribute('aria-current');
+    });
+  };
+  let sweepT = 0;
+  new MutationObserver(() => {
+    clearTimeout(sweepT);
+    sweepT = setTimeout(UI.a11ySweep, 40);
+  }).observe(document.body, { childList: true, subtree: true });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const el = e.target;
+    if (!el || !el.matches || !el.matches('[data-act][role="button"]')) return;
+    e.preventDefault();
+    el.click();
   });
   document.addEventListener('input', (e) => {
     const el = e.target.closest('[data-input]');

@@ -209,7 +209,7 @@
     const labels = keys
       .map((k, i) => {
         const [x, y] = pt(i, 1.2);
-        return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink2)">${k}</text>`;
+        return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink2)">${k}</text>`;
       })
       .join('');
     return `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:${size}px;display:block;margin:auto">${g}${poly(a, 'var(--acc2)')}${poly(b, 'var(--acc)', true)}${labels}</svg>`;

@@ -76,9 +76,31 @@ button {
   padding: 0;
 }
 input,
-select {
+select,
+textarea {
   font: inherit;
+  font-size: 16px; /* (below 16px iOS zooms the page in when a field is focused) */
   color: inherit;
+}
+/* taps do not wait for a double-tap zoom; keyboard focus is always visible */
+button,
+.chip,
+[data-act] {
+  touch-action: manipulation;
+}
+:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
+/* the handle and the title bar can be dragged down to close a sheet */
+.sheet .grab,
+.sheet .sh-head {
+  touch-action: none;
+}
+/* fields in sheets are as tall as a tap target */
+.sheet input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.sheet textarea {
+  min-height: 44px;
 }
 /* (a menu with no background of its own is drawn white by the browser: pale text on it cannot be read; found by the screen crawler) */
 select,
@@ -190,7 +212,7 @@ main::-webkit-scrollbar {
   gap: 3px;
   padding: 6px 0 4px;
   color: var(--ink3);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 14px;
   font-weight: 600;
   border-radius: 12px;
@@ -240,7 +262,7 @@ main::-webkit-scrollbar {
   margin-left: 5px;
   background: var(--bad);
   color: var(--bad-ink, #fff);
-  font-size: 11px;
+  font-size: 12px;
   min-width: 16px;
   height: 16px;
   border-radius: 8px;
@@ -538,7 +560,7 @@ main::-webkit-scrollbar {
   display: none;
 }
 .chip {
-  padding: 11px 14px;
+  padding: 11px 15px;
   min-height: 44px;
   border-radius: 999px;
   background: var(--card);
@@ -721,7 +743,7 @@ main::-webkit-scrollbar {
   height: 20px;
   border-radius: 5px;
   font-style: normal;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   display: grid;
   place-items: center;
@@ -1013,7 +1035,7 @@ main::-webkit-scrollbar {
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
@@ -1419,7 +1441,7 @@ main::-webkit-scrollbar {
 }
 .ev-team {
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.4px;
   line-height: 14px;
@@ -1920,7 +1942,7 @@ table.t tr.zone-down td:first-child {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
 }
 .slot-dot .n {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -1930,7 +1952,7 @@ table.t tr.zone-down td:first-child {
   text-overflow: ellipsis;
 }
 .slot-dot .r {
-  font-size: 10px;
+  font-size: 12px;
   color: #d9ffe0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
@@ -1947,7 +1969,7 @@ table.t tr.zone-down td:first-child {
   border-radius: 3px;
   background: var(--gold);
   color: #1a1300;
-  font-size: 9.5px;
+  font-size: 12px;
   font-weight: 900;
   text-shadow: none;
   vertical-align: 1px;
@@ -2208,7 +2230,7 @@ main {
   border-radius: 4px;
   background: var(--gold);
   color: #1a1300;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   vertical-align: 1px;
 }
@@ -2391,7 +2413,7 @@ details.cupfold:not([open]) > summary > .row::after {
 
 /* the second flag of a dual national: smaller, tucked against the first */
 .flag2 {
-  font-size: 0.72em;
+  font-size: 0.86em;
   margin-left: -2px;
   opacity: 0.9;
   vertical-align: 0.1em;
@@ -2470,7 +2492,7 @@ details.cupfold:not([open]) > summary > .row::after {
   top: 50%;
   left: 0;
   transform: translateY(-50%);
-  font-size: 11px;
+  font-size: 12px;
   color: #8ea0b7;
   z-index: 1;
 }
@@ -2697,7 +2719,7 @@ tr.tap {
   margin-left: 4px;
   padding: 0 4px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 16px;
   vertical-align: 1px;
