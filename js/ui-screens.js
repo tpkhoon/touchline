@@ -498,6 +498,7 @@
       <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${until}</div>
       <div class="row" style="gap:8px;margin-bottom:12px"><input type="number" id="sim-days" min="1" max="120" value="${sel.u ? '' : +sel.n || 7}" placeholder="days" inputmode="numeric" style="width:90px" data-input="simType"><span class="dim small grow">days (1 to 120)</span></div>
       <div class="card flat" id="simPlan" style="margin-bottom:10px"><div class="small b">${simPlan()}</div><div class="tiny dim" style="margin-top:4px">Nothing happens until you press Start.</div></div>
+      <div class="row" style="margin-bottom:12px;gap:10px"><div class="grow"><div class="small b">Sim without stopping</div><div class="tiny dim" style="line-height:1.5">Your staff answer offers for players, press questions and meetings, and the sim does not stop for transfer windows or deadline day. It still stops for a sacking, a job offer or the end.</div></div><button class="btn sm ${S().settings && S().settings.simAuto ? 'pri' : ''}" data-act="simAuto">${S().settings && S().settings.simAuto ? 'On' : 'Off'}</button></div>
       <button class="btn pri block" data-act="simGo">▶ Start simming</button>`;
   };
   UI.acts.simDaysAsk = () => {
@@ -521,21 +522,37 @@
   };
   UI.acts.simGo = () => {
     const sel = UI._simSel || { n: 7 };
+    const auto = !!(S().settings && S().settings.simAuto);
     if (S().settings)
       S().settings.simLast = sel.u ? { u: sel.u } : { n: Math.max(1, Math.min(120, Math.floor(+sel.n) || 7)) };
-    UI.acts.simDays(sel.u ? { n: 400, until: sel.u } : { n: sel.n });
+    UI.acts.simDays(sel.u ? { n: 400, until: sel.u, auto } : { n: sel.n, auto });
+  };
+  // Sim without stopping: the staff answer offers, press questions and meetings, and the sim runs through windows and deadline day
+  UI.acts.simAuto = () => {
+    if (!S().settings) return;
+    S().settings.simAuto = !S().settings.simAuto;
+    const body = [...document.querySelectorAll('.sheet-wrap')].pop()?.querySelector('.sh-body');
+    if (body) body.innerHTML = simSheetHtml();
   };
   UI.acts.simStop = () => FM.SimRunner.stop();
   UI.acts.simDays = async (d) => {
     const until = d.until === 'match' || d.until === 'season' || d.until === 'window' ? d.until : null;
     const n = until ? 400 : Math.max(1, Math.min(120, Math.floor(+d.n) || 7));
     UI.closeAllSheets();
-    const r = await FM.SimRunner.run('days', until ? { days: n, until } : n);
+    const auto = !!(d.auto && W.employed());
+    const r = await FM.SimRunner.run('days', until || auto ? { days: n, ...(until ? { until } : {}), auto } : n);
     if (!r) return;
     if (!r.summary && r.pending && W.employed()) UI.sub.feed = 'reply';
     UI.afterDay(r.summary);
     const days = `${r.n} day${r.n === 1 ? '' : 's'}`;
-    if (!r.summary)
+    const h = r.handled,
+      hn = h ? h.bids + h.press + h.meetings + h.desk : 0;
+    if (!r.summary && hn)
+      UI.toast(
+        `${days} simulated. Your staff dealt with ${U.plural(hn, 'decision')}${h.sold ? `, selling ${U.plural(h.sold, 'player')}` : ''}: see the inbox for what they decided`,
+        5000,
+      );
+    else if (!r.summary)
       UI.toast(
         r.stopped
           ? `Stopped after ${days}, as you asked`
@@ -566,7 +583,7 @@
   // A closed league can take new clubs at the start of the next season, with an expansion draft (FM.Season.runExpansions)
   UI.expansionCard = function (comp) {
     const Sea = FM.Season;
-    if (!comp || !Sea.isClosed(comp.id)) return '';
+    if (!comp || !Sea.isClosed(comp.id) || (FM.S.settings && FM.S.settings.noLiveEdit)) return '';
     const max = Sea.expansionMax(comp.id),
       q = Sea.expansionQueued(comp.id);
     const draft = Sea.expansionDraft(comp.id);

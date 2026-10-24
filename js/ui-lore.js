@@ -68,7 +68,7 @@
     return `<div class="card"><div class="h3">The club</div>
       ${kind ? `<div class="phrase"><span>${kind.icon}</span><span><b>${esc(kind.label)}.</b> ${esc(kind.text)}</span></div>` : ''}
       ${c.stadium ? row('Ground', esc(c.stadium.name)) : ''}
-      ${row('Record crowd', `${d.att.n.toLocaleString()}${o(d.att.vs)}`)}
+      ${row('Record crowd', `${d.att.n.toLocaleString()}${o(d.att.vs)}${d.att.year ? `<div class="tiny dim">${d.att.year}</div>` : ''}`)}
       ${d.bigWin ? row('Record win', `${d.bigWin.gf}–${d.bigWin.ga}${o(d.bigWin.vs)}<div class="tiny dim">${d.bigWin.year}</div>`) : ''}
       ${d.bigLoss ? row('Heaviest defeat', `${d.bigLoss.gf}–${d.bigLoss.ga}${o(d.bigLoss.vs)}<div class="tiny dim">${d.bigLoss.year}</div>`) : ''}
       ${peopleRows(c)}

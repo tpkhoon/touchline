@@ -1023,6 +1023,51 @@
     const total = Object.values(c).reduce((t, n) => t + n, 0);
     return `${parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts.at(-1) : parts[0]} ${total > 1 ? 'need' : 'needs'} a reply`;
   };
+  // Sim without stopping: the staff answer what would have stopped the sim. Offers for players are accepted when they meet his value and
+  // he is not one of the best fourteen (and the squad stays at 21 or more), loan offers only for players outside the best fourteen;
+  // press questions get the answer that helps the board and the dressing room most; a player who wants a meeting is told he is part
+  // of the plans (never a promise); a desk decision takes its default. Returns the counts of what was dealt with.
+  Sea.staffHandle = function () {
+    const S = FM.S,
+      uc = W.userClub(),
+      done = { bids: 0, sold: 0, press: 0, meetings: 0, desk: 0 };
+    if (!uc) return done;
+    for (const n of S.news.slice()) {
+      if (n.type === 'bid' && n.data && n.data.status === 'open') {
+        const p = S.players[n.data.pid],
+          sq = W.squad(uc.id)
+            .slice()
+            .sort((a, b) => b.ca - a.ca),
+          key = p && sq.indexOf(p) < 14 && sq.indexOf(p) >= 0;
+        const ok = p && !key && (n.data.loan ? true : n.data.fee >= p.value * 0.95 && sq.length > 21);
+        n.reply = FM.Transfers.respondBid(n, !!ok);
+        n.handledBy = 'staff';
+        done.bids++;
+        if (ok && !n.data.loan && n.data.status === 'accepted') done.sold++;
+      } else if (n.type === 'press' && !n.resolved && n.choices && n.choices.length) {
+        const score = (c) =>
+          ((c.fx && c.fx.board) || 0) + ((c.fx && c.fx.morale) || 0) + ((c.fx && c.fx.fans) || 0) * 0.5;
+        let best = 0;
+        n.choices.forEach((c, i) => {
+          if (score(c) > score(n.choices[best])) best = i;
+        });
+        FM.Stories.applyPress(n, best);
+        n.handledBy = 'staff';
+        done.press++;
+      } else if (n.type === 'meeting' && !n.resolved && n.choices && n.choices.length) {
+        const order = ['capLeave', 'plans', 'fight', 'later'];
+        const i = n.choices.findIndex((c) => order.includes(c.k));
+        FM.People.resolveMeeting(n, Math.max(0, i));
+        n.handledBy = 'staff';
+        done.meetings++;
+      } else if (n.type === 'desk' && !n.resolved) {
+        FM.Market.resolve(n, n.def || 0);
+        n.handledBy = 'staff';
+        done.desk++;
+      }
+    }
+    return done;
+  };
   // What the day about to be played is called (progress indicator)
   Sea.dayLabel = function () {
     const S = FM.S,
@@ -1111,20 +1156,29 @@
       n = 0,
       winChange = false,
       deadline = false;
+    const handled = { bids: 0, sold: 0, press: 0, meetings: 0, desk: 0 };
     const win0 = Sea.windowOpen(),
       dd0 = FM.Market.isDeadline(),
       seen = new Set((S.user.offers || []).map((o) => o.id)),
       employed0 = W.employed();
     const newOffer = () => !W.employed() && (S.user.offers || []).some((o) => !seen.has(o.id));
     Sea.stopRequested = false; // (set from outside, by the Stop button, between two days)
+    // opt.auto: the staff handle every decision, and the sim goes on through windows and deadline day
+    const hand = () => {
+      if (!opt.auto || !employed0 || !W.employed()) return;
+      const d = Sea.staffHandle();
+      for (const k in d) handled[k] += d[k];
+    };
+    hand();
     do {
       yield [n, Sea.dayLabel()];
       const fx = employed0 && Sea.userFixture();
       if (fx) Sea.applyUserMatch(FM.quickSim(fx, !!fx.ko));
       summary = Sea.advance(null);
       n++;
-      winChange = !summary && employed0 && opt.until !== 'season' && Sea.windowOpen() !== win0;
-      deadline = !summary && employed0 && opt.until !== 'season' && !dd0 && FM.Market.isDeadline();
+      if (!summary) hand();
+      winChange = !summary && employed0 && !opt.auto && opt.until !== 'season' && Sea.windowOpen() !== win0;
+      deadline = !summary && employed0 && !opt.auto && opt.until !== 'season' && !dd0 && FM.Market.isDeadline();
     } while (
       !summary &&
       !Sea.stopRequested &&
@@ -1136,7 +1190,7 @@
       W.employed() === employed0 &&
       !newOffer() &&
       Sea.today() &&
-      !Sea.pendingDecision()
+      (opt.auto || !Sea.pendingDecision())
     );
     return {
       summary,
@@ -1145,6 +1199,7 @@
       winChange,
       win0,
       deadline,
+      handled: opt.auto ? handled : null,
       pending: !summary && Sea.pendingDecision(),
       pendingText: !summary && Sea.pendingText(),
       done: !summary && n >= days,
@@ -2197,7 +2252,7 @@
   // How many clubs a closed league can take: up to three, as many as the pool and the draft can supply (11 players a club at least)
   Sea.expansionMax = function (id) {
     const c = FM.S.comps[id];
-    if (!Sea.isClosed(id)) return 0;
+    if (!Sea.isClosed(id) || (FM.S.settings && FM.S.settings.noLiveEdit)) return 0; // (a career with the editor off has no expansion)
     const rest = c.clubs.length;
     let n = Math.min(3, Sea.expansionPool(id).length);
     while (n > 0 && (rest < 6 || Sea.expansionSpec(rest, n).size < 11)) n--;
