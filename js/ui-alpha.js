@@ -1244,10 +1244,53 @@
     const sel = (k, label, cur) =>
       `<div class="row small" style="margin-top:6px;gap:8px"><span class="dim" style="width:84px">${label}</span><select data-input="ntRole" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><option value="">Automatic</option>${squad.map((p) => `<option value="${p.id}" ${cur === p.id ? 'selected' : ''}>${esc(W.short(p))} (${p.pos})</option>`).join('')}</select></div>`;
     const form = (p) => (p.form && p.form.length ? U.avg(p.form.slice(-5)).toFixed(1) : '—');
-    const row = (p, click, extra = '') =>
-      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps · form ${form(p)}${!W.available(p) ? ' · unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
+    // What a manager looks at before a call-up: is he fit, in form, playing at his club, new to the side
+    const tags = (p) => {
+      const out = [];
+      if (p.inj) out.push(`<span class="pill bad">Out ${FM.Injury.weeksLeft(p)}w</span>`);
+      else if (p.susp) out.push('<span class="pill warn">Suspended</span>');
+      else if (p.service && !(p.loan && p.loan.military)) out.push('<span class="pill warn">Military service</span>');
+      else {
+        if (p.fitness < 70) out.push(`<span class="pill warn">Tired ${Math.round(p.fitness)}%</span>`);
+        if (p.form && p.form.length >= 3 && U.avg(p.form.slice(-5)) < 6)
+          out.push('<span class="pill warn">Poor form</span>');
+      }
+      const g = p.clubId ? FM.Season.gamesPlayed(p.clubId) : 0;
+      if (p.clubId && g >= 5 && p.season.apps < g * 0.3) out.push('<span class="pill warn">Rarely plays</span>');
+      else if (!p.clubId) out.push('<span class="pill warn">No club</span>');
+      if (!(p.intl && p.intl.caps)) out.push('<span class="pill">Uncapped</span>');
+      return out.length ? `<div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">${out.join('')}</div>` : '';
+    };
+    // Why a player of the nation is not in the squad
+    const whyNot = (p) => {
+      if (p.inj) return `Injured: back in ${FM.Injury.range(FM.Injury.weeksLeft(p))}.`;
+      if (p.susp) return 'Suspended.';
+      if (p.service && !(p.loan && p.loan.military)) return 'On military service.';
+      if (t.picks) return 'You left him out of your call-ups.';
+      const rank = pool.indexOf(p) + 1;
+      return rank > 23
+        ? `Ranked ${rank} of the nation's players: just outside the 23.`
+        : 'Not in the best 23 for the balance of the squad.';
+    };
+    const row = (p, click, extra = '', why = '') =>
+      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${U.plural(p.intl ? p.intl.caps : 0, 'cap')} · ${U.plural(p.season.apps, 'game')} this season · form ${form(p)}</div>${tags(p)}${why ? `<div class="tiny" style="margin-top:3px">${esc(why)}</div>` : ''}</div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
     let body;
-    if (tab === 'eligible') {
+    if (tab === 'leftout') {
+      const out = pool.filter((p) => !picked.has(p.id));
+      body = `<div class="tiny dim" style="margin:4px 0 6px">The best players of ${esc(D.NATIONS[t.code].name)} who are not in the squad, and why. Explaining the decision to a player who is fit keeps him on side; call him up if you have changed your mind.</div>
+        <div class="list">${
+          out
+            .map((p) =>
+              row(
+                p,
+                'player',
+                `<div style="display:flex;flex-direction:column;gap:4px;margin-left:6px">${W.available(p) ? `<button class="btn sm" data-act="ntPick" data-id="${p.id}">Call up</button><button class="btn sm" data-act="ntTalk" data-id="${p.id}" ${p.ntTalked === s.day ? 'disabled' : ''}>Explain</button>` : ''}</div>`,
+                whyNot(p),
+              ),
+            )
+            .join('') || '<div class="empty">Everyone worth picking is in.</div>'
+        }</div>`;
+    } else if (tab === 'eligible') {
       const el = I.eligibleSwitch(t.code);
       body = `<div class="tiny dim" style="margin:4px 0 6px">Players eligible for ${esc(t.name)} through birth or family who have not yet played for a senior national team. Open one to ask him to commit. A player who has been capped is tied to that nation for good.</div>
         <div class="list">${
@@ -1257,6 +1300,9 @@
                 p,
                 'player',
                 `<span class="tiny dim" style="margin-left:6px">${Math.round(I.persuadeChance(p) * 100)}%</span>`,
+                I.persuadeFactors(p)
+                  .map(([l, d]) => `${d < 0 ? '−' : '+'}${Math.abs(d)} ${l}`)
+                  .join(' · '),
               ),
             )
             .join('') || '<div class="empty">Nobody eligible right now.</div>'
@@ -1281,7 +1327,7 @@
           })
           .join('')}`;
     }
-    const html = `<div class="chips" style="margin-bottom:6px">${sub('squad', 'Squad & tactics')}${sub('eligible', 'Eligible players')}</div>
+    const html = `<div class="chips" style="margin-bottom:6px">${sub('squad', 'Squad & tactics')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
       ${
         tab === 'squad'
           ? `<div class="h3">Formation</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${Object.keys(
@@ -1324,6 +1370,22 @@
       t.tactic.roles = W.defaultRoles(d.v);
     } else t.tactic[d.k] = d.v;
     UI.save();
+    UI.ntSquadSheet();
+  };
+  // Telling a player who has been left out why: a fit, senior player takes it better from a manager who explains
+  UI.acts.ntTalk = (d) => {
+    const p = P(d.id);
+    if (!p || p.ntTalked === S().day) return;
+    p.ntTalked = S().day;
+    const senior = p.intl && p.intl.caps >= 20;
+    p.morale = U.clamp(p.morale + (senior ? 3 : 5), 0, 100);
+    UI.save();
+    UI.toast(
+      senior
+        ? `${W.short(p)} is not happy to be left out, but he appreciates the call.`
+        : `${W.short(p)} takes it well: he knows where he stands.`,
+      3500,
+    );
     UI.ntSquadSheet();
   };
   UI.acts.ntAuto = () => {

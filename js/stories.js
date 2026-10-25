@@ -1097,7 +1097,7 @@
     if (called.length)
       FM.News.add({
         type: 'club',
-        title: `${called.length} ${U.plural(uc.short, 'player')} on international duty`,
+        title: `${U.plural(called.length, 'player')} on international duty`,
         body: called
           .map(
             (p) =>

@@ -1128,6 +1128,22 @@
           p.fitness = Math.max(45, Math.round(sd.st[pid] ?? p.fitness) - 6);
           if (sd.injured[pid]) FM.Injury.hurt(p, { where: 'intl' });
           p.morale = Math.min(100, p.morale + 3);
+          // your own player picked for your country: he plays for two masters, and the club notices when it costs
+          if (W.ownPlayer(p) && W.isUserNation(sd.club.id)) {
+            if ((p.intl.by[s.year] || 0) > 4) p.fitness = Math.max(40, p.fitness - 3);
+            if (sd.injured[pid]) {
+              const club = W.userClub();
+              club.fanMood = U.clamp(club.fanMood - 2, 0, 100);
+              club.boardConf = U.clamp(club.boardConf - 1.5, 0, 100);
+              FM.News.add({
+                type: 'club',
+                title: `${W.name(p)} hurt on your international duty`,
+                body: `The ${club.name} supporters are unhappy that a player picked for your country came back injured.`,
+                pid: p.id,
+                clubId: club.id,
+              });
+            }
+          }
         } else p.fitness = Math.max(50, Math.round(sd.st[pid] ?? p.fitness));
         if (first && (W.isUser(p.clubId) || W.age(p) <= 19 || W.isUserNation(sd.club.id)))
           FM.Stories.firstCap(p, sd.club, m.sides[1 - k].club);
@@ -1183,7 +1199,9 @@
     if (cal.type === 'intl' && /b$/.test(cal.tag)) {
       FM.Stories.intlWindow(s.intlBreak);
       s.intlBreak = [];
+      if (s.user && s.user.nation) I.clubBalance();
     }
+    if (cal.type === 'intl' && /a$/.test(cal.tag) && s.user && s.user.nation) I.eligibilityFinds();
     if (cal.type === 'intl' && cal.tag === 'I2a' && s.nl) I.nlFinish();
     if (cal.type === 'tourn' && cal.stage === 'F' && s.tourns)
       s.tourns.forEach((t) => t.ko.final && t.ko.final.res && !t.winner && I.finishTournament(t));
@@ -1474,24 +1492,80 @@
       .slice(0, 12);
   // The chance an eligible, uncapped player says yes: better if he is not in his own nation's squad, if we are the
   // stronger side, if we are a bigger name; an ambitious one goes where the better team is
-  I.persuadeChance = function (p) {
+  // What makes him more or less likely to say yes, in points: [reason, change]
+  I.persuadeFactors = function (p) {
     const s = S(),
       u = s.user,
       ours = u.nation && T(u.nation);
-    if (!ours) return 0;
+    if (!ours) return [];
     const cur = T('n_' + I.nationOf(p)),
       rank = I.pool(I.nationOf(p)).indexOf(p);
     const gap = ours.coef - (cur ? cur.coef : 40);
-    return U.clamp(
-      0.25 +
-        (rank < 0 || rank >= 23 ? 0.25 : 0) +
-        (rank < 0 ? 0.1 : 0) +
-        U.clamp(gap / 40, -0.2, 0.2) +
-        (u.rep - 50) / 250 +
-        (p.hid.amb >= 14 ? (gap > 0 ? 0.1 : -0.1) : 0),
-      0.05,
-      0.9,
+    const out = [['A fair hearing', 25]];
+    if (rank < 0 || rank >= 23)
+      out.push([
+        `He is not in ${D.NATIONS[I.nationOf(p)].name}'s squad: a place with us is a place`,
+        25 + (rank < 0 ? 10 : 0),
+      ]);
+    else out.push([`He is in ${D.NATIONS[I.nationOf(p)].name}'s squad already`, 0]);
+    const g = Math.round(U.clamp(gap / 40, -0.2, 0.2) * 100);
+    if (g) out.push([g > 0 ? 'We are the stronger side' : 'We are the weaker side', g]);
+    const r = Math.round(((u.rep - 50) / 250) * 100);
+    if (r) out.push([r > 0 ? 'Your reputation' : 'Your standing is low', r]);
+    if (p.hid.amb >= 14)
+      out.push([
+        gap > 0 ? 'He is ambitious and we are the better team' : 'He is ambitious and wants the better team',
+        gap > 0 ? 10 : -10,
+      ]);
+    return out;
+  };
+  I.persuadeChance = function (p) {
+    const f = I.persuadeFactors(p);
+    return f.length ? U.clamp(f.reduce((t, x) => t + x[1], 0) / 100, 0.05, 0.9) : 0;
+  };
+  // The finds of the federation's scouts: at the start of an international window, an uncapped player of the nation's blood who is
+  // good enough for the squad, whom nobody has yet told you about (a better scouting network finds him sooner)
+  I.eligibilityFinds = function () {
+    const s = S(),
+      u = s.user,
+      t = u.nation && T(u.nation);
+    if (!t) return;
+    const found = (u.ntFound = u.ntFound || {});
+    const pool = I.pool(t.code),
+      bar = pool[22] ? pool[22].ca - 2 : 0;
+    const scouts = (u.scouts || []).map((id) => s.staff[id]).filter(Boolean);
+    const skill = scouts.length ? U.avg(scouts, (x) => x.judge || x.ability) : 8;
+    const list = I.eligibleSwitch(t.code).filter(
+      (p) => !found[p.id] && p.ca >= bar && Math.random() < 0.3 + skill / 40,
     );
+    if (!list.length) return;
+    const p = list[0];
+    found[p.id] = s.year;
+    const pct = Math.round(I.persuadeChance(p) * 100);
+    FM.News.add({
+      type: 'report',
+      title: `Federation scouts: ${W.name(p)} could play for ${t.name}`,
+      body: `${D.NATIONS[p.nat].flag} ${W.name(p)} (${W.age(p)}, ${p.pos}) is eligible through ${p.nat === t.code ? 'birth' : 'his family'}, has not played for a senior side and is good enough for the squad. Our scouts rate the chance he commits at about ${Math.round(pct / 10) * 10}%.`,
+      pid: p.id,
+    });
+  };
+  // Running a club and a nation: a manager who picks his own club's players for the country, and sends them back tired or hurt,
+  // answers for it at the club; and one who fills the squad with them answers for it at the federation
+  I.clubBalance = function () {
+    const s = S(),
+      u = s.user,
+      t = u.nation && T(u.nation),
+      c = W.userClub();
+    if (!t || !c || !W.employed()) return;
+    const mine = I.squad(t.code).filter((p) => W.ownPlayer(p));
+    if (mine.length >= 7) {
+      u.ntConf = U.clamp((u.ntConf ?? 65) - 4, 0, 100);
+      FM.News.add({
+        type: 'board',
+        title: `${t.name}: questions about your selection`,
+        body: `${U.plural(mine.length, 'player')} from ${c.name} in the squad. The federation and the press ask whether the best players are being picked or your own.`,
+      });
+    }
   };
   I.persuade = function (pid) {
     const s = S(),
