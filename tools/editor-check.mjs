@@ -558,6 +558,24 @@ check(
   !E.setNation('ENG', { tactic: { formation: '9-9-9', buildup: 'Short', press: 'Mid Block', width: 'Balanced' } }).ok,
   'a formation of 9-9-9 was accepted',
 );
+// a tournament can grow or shrink, in groups of four, and its places must add up to the new size
+check(
+  !E.setIntl({ tourns: { EC: { ...WD.intlNow().tourns.EC, size: 30, slots: [28] } } }).ok,
+  'a tournament of 30 teams was accepted',
+);
+check(
+  !E.setIntl({ tourns: { EC: { ...WD.intlNow().tourns.EC, size: 32 } } }).ok,
+  'a tournament made bigger with its old places was accepted',
+);
+check(
+  E.setIntl({
+    tourns: {
+      EC: { ...WD.intlNow().tourns.EC, size: 32, slots: [32] },
+      WC: { ...WD.intlNow().tourns.WC, size: 32, slots: [10, 6, 6, 4, 4, 0] },
+    },
+  }).ok,
+  'a tournament made bigger or smaller was refused',
+);
 check(
   E.setIntl({
     cycle: 0,

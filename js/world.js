@@ -2441,7 +2441,6 @@
         .replace('{city}', city)
         .replace('{short}', short)
         .replace('{nick}', (info[1] || name.split(' ').pop()).replace(/^(The|Die|Les|Los|Los|Le|La|El|Il|De) /, '')),
-      tradition: D.TRADITIONS[U.hash(code) % D.TRADITIONS.length], // fixed by the club, so the picker can show it first
       rival: null,
       derby: null,
       titles: {},

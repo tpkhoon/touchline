@@ -2758,3 +2758,10 @@ tr.tap {
   flex: none;
   vertical-align: -0.2em;
 }
+
+/* a name in a line of text that opens its own screen */
+.lnk {
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}

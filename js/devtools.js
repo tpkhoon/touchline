@@ -175,7 +175,7 @@
         opened++;
         const t = el ? el.innerText || '' : '';
         if (!t.trim()) return problems.push(`${what}: nothing on screen`);
-        const m = what === 'sheet whatsNew' ? null : t.match(BROKEN); // (the changelog talks about bugs)
+        const m = t.match(BROKEN);
         if (m) {
           const at = t.indexOf(m[0]);
           problems.push(`${what}: shows "${m[0]}" (…${t.slice(Math.max(0, at - 30), at + 20).replace(/\s+/g, ' ')}…)`);
@@ -236,7 +236,7 @@
         });
         await tick();
       }
-      for (const act of ['whatsNew', 'reportProblem', 'sendFeedback'])
+      for (const act of ['reportProblem', 'sendFeedback'])
         attempt(`sheet ${act}`, () => {
           UI.acts[act]({});
           look(`sheet ${act}`, lastSheet());

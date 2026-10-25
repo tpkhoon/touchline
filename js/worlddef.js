@@ -483,13 +483,19 @@
     tourns: Object.fromEntries(
       tournList().map((tn) => [
         tn.id,
-        { name: tn.name, slots: tn.pools.map(([, n]) => n), ...(tn.pools.length ? { qual: tn.qualSize || 4 } : {}) },
+        {
+          name: tn.name,
+          size: tn.size,
+          slots: tn.pools.map(([, n]) => n),
+          ...(tn.pools.length ? { qual: tn.qualSize || 4 } : {}),
+        },
       ]),
     ),
     invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool })),
   });
   // (the places a tournament's pools fill: the rest are the play-off places, or the guests another part of the world sends)
-  const places = (tn) => tn.size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0);
+  const places = (tn, size = tn.size) => size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0);
+  WD.places = places;
   WD.validateIntl = function (x) {
     const e = [];
     if (!x || typeof x !== 'object') return e;
@@ -502,6 +508,11 @@
         continue;
       }
       if (v.name != null && !String(v.name).trim()) e.push(`tournament ${id}: needs a name`);
+      // (a tournament can grow or shrink: groups of four, so a number of teams that four divides into, from four to sixty-four)
+      if (v.size != null && !(Number.isInteger(v.size) && v.size % 4 === 0 && v.size >= 4 && v.size <= 64))
+        e.push(`tournament ${id}: the teams come in groups of four, from 4 to 64`);
+      else if (v.size != null && places(tn, v.size) < 0)
+        e.push(`tournament ${id}: ${U.plural(v.size, 'team')} leave no room for its play-off places and guests`);
       if (v.qual != null && (!tn.pools.length || ![2, 3, 4].includes(v.qual)))
         e.push(`tournament ${id}: qualifying groups have two, three or four nations`);
       if (v.slots) {
@@ -511,8 +522,10 @@
           !v.slots.every((n) => Number.isInteger(n) && n >= 0)
         )
           e.push(`tournament ${id}: one number of places for each part of the world`);
-        else if (tn.pools.length && v.slots.reduce((a, n) => a + n, 0) !== places(tn))
-          e.push(`tournament ${id}: the places add up to ${v.slots.reduce((a, n) => a + n, 0)}, not ${places(tn)}`);
+        else if (tn.pools.length && v.slots.reduce((a, n) => a + n, 0) !== places(tn, v.size || tn.size))
+          e.push(
+            `tournament ${id}: the places add up to ${v.slots.reduce((a, n) => a + n, 0)}, not ${places(tn, v.size || tn.size)}`,
+          );
       }
     }
     for (const v of x.invites || []) {
@@ -534,6 +547,7 @@
       const tn = tournList().find((t) => t.id === id);
       if (!tn) continue;
       if (v.name) ((tn.name = v.name), (I().TNAME[id] = v.name));
+      if (v.size) tn.size = v.size;
       if (v.slots) tn.pools.forEach((p, i) => (p[1] = v.slots[i]));
       if (v.qual) tn.qualSize = v.qual;
     }

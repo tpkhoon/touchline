@@ -156,7 +156,6 @@
     const i = D.CLUB_INFO[code] || [];
     return { nick: i[1] || '', founded: i[2] || 0 };
   };
-  G.tradition = (code) => D.TRADITIONS[U.hash(code) % D.TRADITIONS.length];
   G.rival = function (code) {
     const r = D.RIVALS.find((x) => x[0] === code || x[1] === code);
     if (!r) return null;

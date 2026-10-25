@@ -1552,14 +1552,6 @@
     '"Glory, glory {nick}!"',
     '"Stand up for the {nick}!"',
   ];
-  FM.D.TRADITIONS = [
-    'Players walk out to a brass band',
-    'Fans hold up scarves for the anthem before kick-off',
-    'The home end sings through the whole 12th minute',
-    "A minute's applause for every departing legend",
-    'Kids get in for next to nothing on derby day',
-  ];
-
   // Staff
   FM.D.STAFF_PERSONALITY = ['Pragmatic', 'Old-School', 'Innovative', 'Outspoken', 'Loyal', 'Cautious', 'Ambitious'];
 

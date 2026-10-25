@@ -25,7 +25,8 @@
     isClub: (n, clubId) => (clubId != null && n.clubId === clubId) || CLUB_TYPES.includes(n.type),
     isOpen: (n) =>
       (n.type === 'bid' && n.data && n.data.status === 'open') ||
-      ((n.type === 'press' || n.type === 'meeting' || n.type === 'medical' || n.type === 'desk') && !n.resolved),
+      ((n.type === 'press' || n.type === 'meeting' || n.type === 'medical' || n.type === 'desk') && !n.resolved) ||
+      (n.type === 'youth' && n.intake && !n.done),
     trim(S) {
       const cid = S.user && S.user.clubId;
       // open decisions take their club places first; the oldest other club items make room for them
@@ -1163,8 +1164,9 @@
           : "A modest group, but they'll work hard.";
     FM.News.add({
       type: 'youth',
-      title: `Youth intake: ${made.length} new academy players`,
-      body: `${asst.fn} ${asst.ln}: "${tone} Keep an eye on ${W.name(best)}."`,
+      title: `Youth intake day: ${made.length} new academy players`,
+      body: `${asst.fn} ${asst.ln}: "${tone} Keep an eye on ${W.name(best)}." They sign with the academy today; release any you do not want.`,
+      intake: true,
       pids: made.map((p) => p.id),
       pid: best.id,
       clubId: c.id,

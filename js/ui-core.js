@@ -768,7 +768,7 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|liveEdit|liveEditPlayer|liveEditClub|liveBulk|live[A-Z]\w*|edOpenLive|ed[A-Z]\w*|wvFold|spotsFold|spotsRegion|totwComp|totwRound|awardsComp|chartsKind|fxSet|closeSheet|player|clubView|takeJob|advance|skipToMatch|skipToMatchGo|simDaysAsk|simDays|simAuto|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|bulkUndo|expandReroll|reviewFollow|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|whatsNew|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|liveEdit|liveEditPlayer|liveEditClub|liveBulk|live[A-Z]\w*|edOpenLive|ed[A-Z]\w*|wvFold|lnkComp|spotsFold|spotsRegion|totwComp|totwRound|awardsComp|chartsKind|fxSet|closeSheet|player|clubView|takeJob|advance|skipToMatch|skipToMatchGo|simDaysAsk|simDays|simAuto|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|bulkUndo|expandReroll|reviewFollow|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
@@ -820,10 +820,110 @@
       else el.removeAttribute('aria-current');
     });
   };
+  // ---------------- Tappable names ----------------
+  // A club, a competition, a nation or a player named in a line of text (a headline, a result, a report) opens its own screen when
+  // tapped. One sweep over the text on the page finds the names (from the world's own lists) and wraps each in a link, so no
+  // screen needs to remember to do it; names already inside a button or a link, the match itself and the screen's own title are
+  // left alone.
+  let linkIndex = null,
+    linkKey = '';
+  const NAME_START = /\p{Lu}[\p{L}'’.-]*/gu;
+  const buildLinks = () => {
+    const S = FM.S;
+    const key = `${S.year}|${W.rosterVer}|${Object.keys(S.clubs).length}|${Object.keys(S.comps).length}`;
+    if (linkIndex && key === linkKey) return linkIndex;
+    const by = new Map();
+    const add = (name, act, id, cls) => {
+      if (!name || name.length < 4) return;
+      const first = name.match(/^\p{Lu}[\p{L}'’.-]*/u);
+      if (!first) return;
+      const list = by.get(first[0]) || [];
+      if (!list.some((x) => x.name === name)) list.push({ name, act, id });
+      by.set(first[0], list);
+    };
+    for (const c of Object.values(S.clubs)) if (c.comp) add(c.name, 'clubView', c.id);
+    for (const c of Object.values(S.comps)) {
+      add(c.name, 'lnkComp', c.id);
+      if (c.baseName && c.baseName !== c.name) add(c.baseName, 'lnkComp', c.id);
+    }
+    for (const t of Object.values(S.nteams || {})) add(t.name, 'nation', t.id);
+    for (const p of Object.values(S.players)) if (!p.retired) add(W.name(p), 'player', p.id);
+    for (const list of by.values()) list.sort((a, b) => b.name.length - a.name.length);
+    linkKey = key;
+    return (linkIndex = by);
+  };
+  const SKIP_LINK =
+    '[data-act],button,a,input,select,textarea,option,script,style,svg,.sh-head,.hero,.pcard-hero,#topbar,#matchOv,.nav,.tag,.h1,.h2,.t-title';
+  const seenText = new WeakSet();
+  UI.linkSweep = function () {
+    if (!FM.S || !FM.S.user || !FM.S.clubs) return;
+    const roots = [document.querySelector('#main'), ...document.querySelectorAll('.sheet-wrap .sh-body')].filter(
+      Boolean,
+    );
+    if (!roots.length) return;
+    const by = buildLinks();
+    for (const root of roots) {
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const todo = [];
+      for (let n = w.nextNode(); n; n = w.nextNode()) {
+        if (seenText.has(n) || n.textContent.trim().length < 4) continue;
+        seenText.add(n);
+        if (n.parentElement && !n.parentElement.closest(SKIP_LINK)) todo.push(n);
+      }
+      for (const node of todo) {
+        const text = node.textContent;
+        const hits = [];
+        NAME_START.lastIndex = 0;
+        let m;
+        let upto = 0;
+        while ((m = NAME_START.exec(text))) {
+          if (m.index < upto) continue;
+          const list = by.get(m[0]);
+          if (!list) continue;
+          const hit = list.find((x) => {
+            if (!text.startsWith(x.name, m.index)) return false;
+            const after = text[m.index + x.name.length];
+            return !after || !/[\p{L}\p{N}]/u.test(after);
+          });
+          if (!hit) continue;
+          hits.push([m.index, hit]);
+          upto = m.index + hit.name.length;
+          NAME_START.lastIndex = upto;
+        }
+        if (!hits.length) continue;
+        const frag = document.createDocumentFragment();
+        let at = 0;
+        for (const [i, hit] of hits) {
+          if (i > at) frag.appendChild(document.createTextNode(text.slice(at, i)));
+          const a = document.createElement('span');
+          a.className = 'tap lnk';
+          a.dataset.act = hit.act;
+          a.dataset.id = hit.id;
+          a.textContent = hit.name;
+          seenText.add(a.firstChild);
+          frag.appendChild(a);
+          at = i + hit.name.length;
+        }
+        if (at < text.length) frag.appendChild(document.createTextNode(text.slice(at)));
+        node.replaceWith(frag);
+      }
+    }
+  };
+  // a competition's name opens its table (a league) or the cups screen
+  UI.acts.lnkComp = (d) => {
+    const c = FM.S.comps[d.id];
+    if (!c) return;
+    UI.closeAllSheets();
+    UI.sub.league = c.type === 'league' ? c.id : 'cups';
+    UI.go('league');
+  };
   let sweepT = 0;
   new MutationObserver(() => {
     clearTimeout(sweepT);
-    sweepT = setTimeout(UI.a11ySweep, 40);
+    sweepT = setTimeout(() => {
+      UI.linkSweep();
+      UI.a11ySweep();
+    }, 40);
   }).observe(document.body, { childList: true, subtree: true });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -1224,7 +1324,6 @@
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(r[7] || `${r[2]} Stadium`)}, ${G.capOf(r).toLocaleString()} seats · ${money(I)}${inf.founded ? ` · founded ${inf.founded}` : ''}${inf.nick ? ` · "${esc(inf.nick)}"` : ''}</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(I.fans)}</div>
           ${rv ? `<div class="row tiny" style="gap:8px;align-items:center;color:#c9d4e3;margin-top:8px">${C.crest(rvFake, 22)}<span>The ${esc(rv.derby)} against ${esc(rv.name)}</span></div>` : ''}
-          <div class="tiny" style="color:#6f7f96;margin-top:6px">Tradition: ${esc(G.tradition(code))}.</div>
         </div>`;
       };
       const row = (r, div, note, where) => {

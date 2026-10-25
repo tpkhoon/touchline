@@ -3577,15 +3577,33 @@
     return (i.tourns[id] || i.invites.find((v) => v.id === id) || {}).name || '';
   };
   const REGION = { EUR: 'Europe', SAM: 'South America', AFR: 'Africa', ASIA: 'Asia', NAM: 'North America' };
+  // The places of a tournament shared out again for a new size: each part of the world keeps its proportion (largest remainders)
+  const fitSlots = (slots, total) => {
+    const sum = slots.reduce((a, n) => a + n, 0);
+    if (!sum) return slots.map((_, i) => (i === 0 ? total : 0));
+    const raw = slots.map((n) => (n * total) / sum),
+      out = raw.map(Math.floor);
+    let left = total - out.reduce((a, n) => a + n, 0);
+    raw
+      .map((x, i) => [x - Math.floor(x), i])
+      .sort((a, b) => b[0] - a[0])
+      .forEach(([, i]) => left-- > 0 && out[i]++);
+    return out;
+  };
   UI.acts.edSaveIntl = () => {
     const v = (id) => ($('#ed-' + id) || {}).value;
     const now = WD.intlNow(),
       tourns = {};
     for (const tn of Object.values(FM.Intl.TOURNS).flat()) {
-      const slots =
+      const size = Math.round(+v('isize-' + tn.id)) || tn.size,
+        total = WD.places(tn, size);
+      let slots =
         tn.pools.length > 1 ? tn.pools.map((_, i) => Math.round(+v(`islot-${tn.id}-${i}`))) : now.tourns[tn.id].slots;
+      // (a tournament made bigger or smaller: the places follow, in the same proportions, unless they were already set to fit)
+      if (tn.pools.length && slots.reduce((a, n) => a + n, 0) !== total) slots = fitSlots(slots, total);
       tourns[tn.id] = {
         name: (v('iname-' + tn.id) || '').trim(),
+        size,
         slots,
         ...(tn.pools.length ? { qual: Math.round(+v('iqual-' + tn.id)) || 4 } : {}),
       };
@@ -3624,12 +3642,15 @@
           list
             .map((tn) => {
               const v = cur.tourns[tn.id] || { name: tn.name, slots: tn.pools.map(([, n]) => n) };
-              return `<div class="tiny dim" style="margin:12px 0 4px">${kinds[kind]} · ${U.plural(tn.size, 'nation')}</div><input type="text" id="ed-iname-${tn.id}" maxlength="48" value="${esc(v.name)}">${
+              const size = v.size || tn.size,
+                sizes = [];
+              for (let n = 4; n <= 64; n += 4) if (WD.places(tn, n) >= 0) sizes.push(n);
+              return `<div class="tiny dim" style="margin:12px 0 4px">${kinds[kind]} · ${U.plural(size, 'nation')}</div><input type="text" id="ed-iname-${tn.id}" maxlength="48" value="${esc(v.name)}"><div class="tiny dim" style="margin:6px 0 4px">Teams in the finals (made bigger or smaller, its places are shared out in the same proportions)</div><select id="ed-isize-${tn.id}">${sizes.map((n) => `<option value="${n}" ${n === size ? 'selected' : ''}>${U.plural(n, 'team')}</option>`).join('')}</select>${
                 tn.pools.length > 1
-                  ? `<div class="tiny dim" style="margin:6px 0 4px">Places by part of the world (they add up to ${tn.size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0)}${tn.playoff ? `, and ${tn.playoff} more go to the best teams left over` : ''}${tn.guests ? `, and ${tn.guests.n} guests are invited` : ''})</div><div class="ng-names" style="margin-top:0;flex-wrap:wrap">${tn.pools
+                  ? `<div class="tiny dim" style="margin:6px 0 4px">Places by part of the world (they add up to ${size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0)}${tn.playoff ? `, and ${tn.playoff} more go to the best teams left over` : ''}${tn.guests ? `, and ${tn.guests.n} guests are invited` : ''})</div><div class="ng-names" style="margin-top:0;flex-wrap:wrap">${tn.pools
                       .map(
                         ([regions], i) =>
-                          `<div style="flex:1;min-width:84px"><div class="tiny dim">${esc(regions.map((r) => REGION[r] || r).join(' + '))}</div><input type="number" id="ed-islot-${tn.id}-${i}" min="0" max="${tn.size}" inputmode="numeric" value="${v.slots[i]}"></div>`,
+                          `<div style="flex:1;min-width:84px"><div class="tiny dim">${esc(regions.map((r) => REGION[r] || r).join(' + '))}</div><input type="number" id="ed-islot-${tn.id}-${i}" min="0" max="${size}" inputmode="numeric" value="${v.slots[i]}"></div>`,
                       )
                       .join('')}</div>`
                   : ''

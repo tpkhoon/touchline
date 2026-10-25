@@ -1,4 +1,4 @@
-// Writes js/changelog.js (the "What's new" list in Settings) and docs/CHANGELOG.md (every build, for reading and for Claude Docs)
+// Writes docs/CHANGELOG.md (every build, for reading and for Claude Docs)
 // from the Shipped list in docs/ROADMAP.md, newest first, so there is one place to write what changed. Run `npm run changelog` after adding a row there.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,27 +19,6 @@ for (const l of shipped.split('\n')) {
     if (c.length >= 2) entries.push({ build: c[0], cell: c.slice(1).join(' | ') });
   }
 }
-const plain = (t) =>
-  t
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links to plain text
-    .replace(/\*\*/g, '');
-// a build with bullets keeps them apart (`items`: a bold lead-in such as "**Scouting:**" becomes `lead`), so the screen can list them
-const rows = entries.slice(0, 10).map(({ build, bullets, cell }) => {
-  const row = { build, text: plain(cell ?? bullets.join(' ')) };
-  if (bullets && bullets.length)
-    row.items = bullets.map((b) => {
-      const m = /^\*\*([^*]+?):?\*\*:?\s*(.*)$/.exec(b);
-      return m ? { lead: m[1], text: plain(m[2]).replace(/^./, (c) => c.toUpperCase()) } : { text: plain(b) };
-    });
-  return row;
-});
-const out = `// Generated from docs/ROADMAP.md by tools/changelog.mjs (npm run changelog): the newest builds, for Settings → What's new.
-window.FM = window.FM || {};
-window.FM.CHANGELOG = ${JSON.stringify(rows, null, 2)};
-`;
-fs.writeFileSync(path.join(ROOT, 'js/changelog.js'), out);
-console.log(`js/changelog.js: ${rows.length} builds, newest "${rows[0].build}"`);
-
 // the whole history, for reading: a heading per build, its bullets (nested ones too) or its sentence
 const md = entries.map((e) => `## ${e.build}\n\n${e.raw ? e.raw.join('\n') : e.cell}\n`).join('\n');
 const stamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });

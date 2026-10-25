@@ -1973,12 +1973,91 @@
   for (const l of D.LEAGUES) {
     const mix = D.NAT_MIX[l.id];
     if (!mix) continue;
+    // (a nation the league's own mix already names keeps its weight: the home nation must not be overwritten by its newer entry)
+    const base = Object.values(mix).reduce((t, v) => t + v, 0),
+      added = {};
     for (const n of LIST) {
+      if (n.code in mix) continue;
       const same =
         regionOfLeagueNation(l.nat) === n.region || (n.region === 'ENG' && regionOfLeagueNation(l.nat) === 'EUR');
-      const w = n.weight * (n.ties.includes(l.nat) ? 4 : same ? 1.2 : 0.35);
-      mix[n.code] = Math.round(w * 100) / 100;
+      added[n.code] = n.weight * (n.ties.includes(l.nat) ? 4 : same ? 1.2 : 0.35);
     }
+    // the newer nations take about 7% of a league's squads between them, however many there are, so the league's own mix
+    // (home nation first) keeps its shape
+    const tot = Object.values(added).reduce((t, v) => t + v, 0),
+      k = tot ? (0.07 * base) / tot : 0;
+    for (const [code, w] of Object.entries(added)) mix[code] = Math.round(w * k * 100) / 100;
+  }
+  // How many of a league's players are from its own nation, about as it is in the real leagues (the squad rules then push a club's
+  // own share up a little): each mix is scaled so that the home nation takes this share of its picks, the rest keeping their
+  // proportions. A league not listed keeps the mix it was written with.
+  D.HOME_SHARE = {
+    D1: 0.34,
+    D2: 0.62,
+    ES1: 0.58,
+    ES2: 0.75,
+    DE1: 0.45,
+    DE2: 0.75,
+    FR1: 0.45,
+    FR2: 0.75,
+    IT1: 0.42,
+    IT2: 0.75,
+    PT1: 0.38,
+    NL1: 0.5,
+    BE1: 0.42,
+    TR1: 0.48,
+    GR1: 0.42,
+    SC1: 0.52,
+    AT1: 0.45,
+    CH1: 0.38,
+    DK1: 0.55,
+    NO1: 0.62,
+    SE1: 0.62,
+    PL1: 0.62,
+    CZ1: 0.62,
+    HR1: 0.55,
+    RS1: 0.6,
+    HU1: 0.62,
+    RO1: 0.58,
+    CY1: 0.4,
+    IE1: 0.75,
+    WA1: 0.55,
+    BR1: 0.88,
+    AR1: 0.88,
+    UY1: 0.7,
+    CO1: 0.85,
+    EC1: 0.75,
+    CL1: 0.72,
+    PE1: 0.78,
+    PY1: 0.78,
+    MX1: 0.7,
+    US1: 0.58,
+    CA1: 0.5,
+    JP1: 0.86,
+    KR1: 0.85,
+    CS1: 0.7,
+    TH1: 0.78,
+    SA1: 0.58,
+    AE1: 0.45,
+    QA1: 0.45,
+    IR1: 0.9,
+    IN1: 0.7,
+    AU1: 0.62,
+    EG1: 0.92,
+    TN1: 0.9,
+    DZ1: 0.92,
+    MA1: 0.85,
+    NG1: 0.92,
+    ZA1: 0.8,
+    TZ1: 0.85,
+    SN1: 0.78,
+  };
+  for (const l of D.LEAGUES) {
+    const mix = D.NAT_MIX[l.id],
+      t = D.HOME_SHARE[l.id];
+    if (!mix || !t || !(l.nat in mix)) continue;
+    const others = Object.entries(mix).reduce((sum, [k, v]) => (k === l.nat ? sum : sum + v), 0);
+    mix[l.nat] = Math.round(((others * t) / (1 - t)) * 100) / 100;
   }
   D.NEW_NATIONS = LIST.map((n) => n.code);
 

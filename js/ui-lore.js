@@ -4,7 +4,6 @@
   const FM = window.FM,
     U = FM.U,
     D = FM.D,
-    W = FM.W,
     UI = FM.UI,
     C = UI.C;
   const esc = U.esc,

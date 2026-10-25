@@ -160,7 +160,7 @@ for (const id of people.clubs)
   });
 
 // ---- the sheets that are not about a person ----
-for (const act of ['openSettings', 'whatsNew', 'reportProblem', 'sendFeedback'])
+for (const act of ['openSettings', 'reportProblem', 'sendFeedback'])
   await run(`sheet ${act}`, async () => {
     await evalIn((a) => FM.UI.acts[a]({}), act);
     await look(`sheet ${act}`, 'last:.sheet-wrap');

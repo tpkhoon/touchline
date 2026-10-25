@@ -345,6 +345,19 @@
     const ns = D.nationCodes().filter((k) => D.NATIONS[k].region === reg);
     return { r: ns.length ? U.avg(ns, Sea.youthRating) : 50, d: ns.length ? U.avg(ns, Sea.youthTrend) : 0 };
   };
+  // A youngster from an intake the manager does not want: he goes to the free agents (the academy's day of signings can be undone today)
+  Sea.releaseYouth = function (p) {
+    const S = FM.S;
+    if (!p || !p.clubId) return false;
+    const sp = W.spell(p);
+    if (sp) sp.to = S.year;
+    p.clubId = null;
+    p.team = undefined;
+    p.listed = false;
+    p.contract = S.year;
+    p.freeSince = Sea.dayIndex();
+    return true;
+  };
   Sea.youthIntake = function () {
     const Y = Sea.YOUTH;
     const S = FM.S;

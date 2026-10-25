@@ -1003,7 +1003,8 @@
     n.day === FM.S.day &&
     n.year === FM.S.year &&
     ((n.type === 'bid' && n.data.status === 'open') ||
-      ((n.type === 'press' || n.type === 'meeting' || n.type === 'desk') && !n.resolved));
+      ((n.type === 'press' || n.type === 'meeting' || n.type === 'desk') && !n.resolved) ||
+      (n.type === 'youth' && n.intake && !n.done));
   Sea.pendingDecision = () => FM.S.news.some(newDecision);
   // What stopped a skip, in words: "2 offers for your players and a press conference need a reply"
   Sea.pendingText = function () {
@@ -1017,6 +1018,7 @@
       press: ['a press conference', 'press conferences'],
       meeting: ['a player who wants a meeting', 'players who want a meeting'],
       desk: ['a transfer decision', 'transfer decisions'],
+      youth: ['the youth intake day', 'youth intake days'],
     };
     const parts = Object.entries(c).map(([k, n]) => (n === 1 ? NAME[k][0] : `${n} ${NAME[k][1]}`));
     if (!parts.length) return '';
@@ -1060,6 +1062,10 @@
         FM.People.resolveMeeting(n, Math.max(0, i));
         n.handledBy = 'staff';
         done.meetings++;
+      } else if (n.type === 'youth' && n.intake && !n.done) {
+        n.done = true; // (the staff sign the whole intake)
+        n.handledBy = 'staff';
+        done.desk++;
       } else if (n.type === 'desk' && !n.resolved) {
         FM.Market.resolve(n, n.def || 0);
         n.handledBy = 'staff';

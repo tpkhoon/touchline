@@ -1,4 +1,4 @@
-// Help, backups and the end of the season: report a problem, send feedback, What's new, exporting and importing a save, the
+// Help, backups and the end of the season: report a problem, send feedback, exporting and importing a save, the
 // database export, and the season review (with its league follow chips). Split from ui-screens.js.
 (function () {
   const FM = window.FM,
@@ -176,22 +176,6 @@
     window.open(url, '_blank', 'noopener');
     UI.closeSheet();
   };
-  UI.acts.whatsNew = () =>
-    UI.sheet(
-      `<div class="tiny dim" style="margin-bottom:8px">The latest builds, newest first.</div>${
-        (FM.CHANGELOG || [])
-          .map(
-            (b) =>
-              `<div class="card flat" style="margin-bottom:8px"><div class="b">${esc(b.build)}</div>${
-                b.items
-                  ? `<ul class="small dim" style="margin:6px 0 0;padding-left:18px;line-height:1.5">${b.items.map((i) => `<li style="margin-bottom:4px">${i.lead ? `<b style="color:var(--ink)">${esc(i.lead)}.</b> ` : ''}${esc(i.text)}</li>`).join('')}</ul>`
-                  : `<div class="small dim" style="margin-top:4px;line-height:1.5">${esc(b.text)}</div>`
-              }</div>`,
-          )
-          .join('') || '<div class="empty">Nothing recorded yet.</div>'
-      }`,
-      { title: "What's new", full: true },
-    );
   // ---------- Backups ----------
   // The world as a database file (a world definition: FM.DbImport reads it back)
   UI.acts.exportDb = async (d) => {

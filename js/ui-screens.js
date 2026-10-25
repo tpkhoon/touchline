@@ -307,7 +307,17 @@
             `<button class="chip ${P(id).contract > S().year ? 'on' : ''}" data-act="renew" data-id="${id}">${P(id).contract > S().year ? '✓' : ''} ${esc(W.short(P(id)))} · ${C.starText(P(id).ca, P(id).pos)}</button>`,
         )
         .join('')}</div>`;
-    if (n.type === 'youth' && n.pids)
+    if (n.type === 'youth' && n.intake && n.pids)
+      extra = `<div style="margin-top:10px">${n.pids
+        .filter((id) => P(id) && W.isUser(P(id).clubId))
+        .map(
+          (id) =>
+            `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line);gap:8px"><span class="grow tap" data-act="player" data-id="${id}">${C.flag(P(id).nat)} ${esc(W.name(P(id)))} <span class="dim">${W.posLabel(P(id))} · ${W.age(P(id))}</span></span>${C.starText(P(id).ca, P(id).pos)}${n.done ? '' : `<button class="btn sm" data-act="intakeRelease" data-id="${id}" data-nid="${n.id}">Release</button>`}</div>`,
+        )
+        .join(
+          '',
+        )}${n.done ? '' : `<button class="btn pri block" style="margin-top:10px" data-act="intakeDone" data-nid="${n.id}">Welcome them to the academy</button>`}</div>`;
+    else if (n.type === 'youth' && n.pids)
       extra = `<div class="chips" style="margin:10px 0 0">${n.pids
         .filter(P)
         .map(
@@ -2014,6 +2024,23 @@
     UI.render();
     if (document.querySelector('.sheet-wrap') && P(d.id)) UI.refreshSheet(playerHTML(p));
   };
+  UI.acts.intakeRelease = (d) => {
+    const n = S().news.find((x) => x.id === d.nid);
+    if (!n || n.done) return;
+    FM.Season.releaseYouth(P(d.id));
+    n.pids = n.pids.filter((id) => id !== d.id);
+    UI.save();
+    UI.render();
+    UI.toast('Released: he joins the free agents');
+  };
+  UI.acts.intakeDone = (d) => {
+    const n = S().news.find((x) => x.id === d.nid);
+    if (!n) return;
+    n.done = true;
+    n.read = true;
+    UI.save();
+    UI.render();
+  };
   UI.acts.renew = (d) => {
     const p = P(d.id),
       c = club();
@@ -3543,7 +3570,7 @@
       [s1, s2, s3] = deal(r.sign, 'in'),
       [o1, o2, o3] = deal(r.sale, 'out');
     const [t1, t2, t3] = person(top, `${top ? top.goals : 0} goals`),
-      [m1, m2, m3] = person(most, `${most ? most.apps : 0} games`);
+      [m1, , m3] = person(most, `${most ? most.apps : 0} games`);
     return `<div class="card"><div class="row"><div class="h3 grow">Club records</div><span class="tiny dim">matches & transfers since ${since}</span></div>
       ${row('Biggest win', w1, w2)}${row('Heaviest defeat', l1, l2)}${row('Record signing', s1, s2, s3)}${row('Record sale', o1, o2, o3)}${row('Top scorer', t1, t2, t3)}${row('Most appearances', m1, '', m3)}</div>`;
   };
@@ -3876,7 +3903,7 @@
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="exportDb" data-p="0">Export clubs</button><button class="btn sm grow" data-act="exportDb" data-p="1">Export with players</button></div></div>
       <div class="card"><div class="h3">Help</div><div class="small dim" style="margin-top:4px">Something wrong, or an idea? Tell us — a report carries your game's version and a copy of your save, nothing else.</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="reportProblem">Report a problem</button><button class="btn sm grow" data-act="sendFeedback">Send feedback</button></div>
-        <button class="btn sm block" style="margin-top:8px" data-act="whatsNew">What's new</button>${UI.helpExtras()}${FM.Dev ? '<button class="btn sm block" style="margin-top:8px" data-act="devPanel">Developer tools</button>' : ''}</div>
+        ${UI.helpExtras()}${FM.Dev ? '<button class="btn sm block" style="margin-top:8px" data-act="devPanel">Developer tools</button>' : ''}</div>
       <button class="btn block" data-act="toTitle" style="margin-bottom:10px">Main menu</button>
       <div class="tiny dim center" style="margin-top:14px;line-height:1.6">TOUCHLINE prototype · one-time purchase · no energy · no packs · no pay-to-win</div>`;
   }
