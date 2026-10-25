@@ -347,7 +347,6 @@ export const CLI_TOOLS = [
     'node tools/xg-check.mjs --data <folder>',
     'judge the shot model like an xG model on a league it has not seen (needs the Wyscout events)',
   ],
-  ['realplayers', 'npm run realplayers:fetch / :build', 'fetch and build the real-player data (network, large)'],
   ['refstats', 'npm run refstats', 'refresh the reference statistics tables from the events data'],
   [
     'shots / passes / carries / movement',
