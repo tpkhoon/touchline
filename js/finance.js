@@ -120,6 +120,16 @@
   // part of any cash well above a season's needs, plus the owner's money where there is some, less a repayment on debt. (Sales
   // during the season add to it as they happen: FM.Transfers.) A club in debt or over its wage limit has little to spend.
   F.RUNNING = 0.14;
+  // What a club really spends beyond its wages, as a share of its revenue: matchdays, the ground, the academy and youth teams,
+  // the commercial and medical staff, administration and the agents' and intermediaries' fees. A top flight keeps about a quarter,
+  // and a lower division, with less money coming in and the same ground and staff to run, a larger share, so that some clubs end the
+  // year in the red and the wage ceilings, the board's budget battles and the forced sales have something to answer to.
+  F.RUNNING_TIER = { 1: 0.38, 2: 0.46, 3: 0.5 };
+  F.runningRate = (c) => {
+    const comp = S().comps[c.comp],
+      tier = comp ? comp.tier : 1;
+    return F.RUNNING_TIER[tier] ?? 0.54;
+  };
   F.budgetFor = function (c) {
     const rev = F.revenue(c),
       idt = FM.D.IDENTITY[c.identity] || { budget: 1 };

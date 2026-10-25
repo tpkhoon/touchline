@@ -1707,15 +1707,19 @@
       }
       const staffW = W.isUser(c.id) ? U.sum(W.userStaff(), (st) => st.wage) * wk : 0;
       const wages = (wageBill[c.id] || 0) * wk + staffW;
+      // the rest of what it costs to run the club (FM.Finance.runningRate), a little every day
+      const run = ((a.tv + a.com + a.gate) * F.runningRate(c)) / days;
+      fin.run = (fin.run || 0) + run;
+      if (W.isUser(c.id)) Sea.spend('running', run);
       if (W.isUser(c.id)) {
         Sea.spend('wages', wages - staffW);
         Sea.spend('staff', staffW);
       }
-      c.balance += inc - wages - trip;
+      c.balance += inc - wages - trip - run;
       if (W.isUser(c.id)) {
         const bonuses = S.user.bonusesToday || 0; // appearance/goal bonuses were paid as matches finished
         S.user.bonusesToday = 0;
-        c.ledger.push({ day: S.day, inc: Math.round(inc), exp: Math.round(wages + bonuses + trip) });
+        c.ledger.push({ day: S.day, inc: Math.round(inc), exp: Math.round(wages + bonuses + trip + run) });
         c.ledger = c.ledger.slice(-40);
       }
     });

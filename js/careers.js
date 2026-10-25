@@ -9,22 +9,23 @@
   const Sea = FM.Season;
 
   // ---------- Development ----------
-  // Career shape: ability rises quickly in the teens, levels off in the mid-twenties, peaks around 27–29
+  // Career shape: ability rises quickly in the teens, levels off in the mid-twenties, peaks around 26–28
   // and falls away through the thirties. Keepers and centre-backs age more slowly; each player's clock
   // runs a little early or late (fixed per player), and professionals decline more gently.
   const CURVE = [
     [17, 4.8],
     [19, 4.3],
     [21, 3.6],
-    [23, 2.9],
-    [25, 2.0],
-    [27, 1.0],
-    [28, 0.3],
-    [29, 0],
-    [30, -1],
-    [31, -1.9],
-    [32, -2.8],
-    [33, -3.6],
+    [23, 2.7],
+    [25, 1.5],
+    [26, 0.9],
+    [27, 0.4],
+    [28, 0],
+    [29, -0.7],
+    [30, -1.4],
+    [31, -2.1],
+    [32, -2.9],
+    [33, -3.7],
     [34, -4.4],
     [36, -5.6],
   ];
@@ -40,11 +41,11 @@
   };
   Sea.CURVE = CURVE; // exposed for calibration (tools/calibrate.mjs --set Season.CURVE.8.1=-0.6)
   Sea.AGE_STRETCH = { GK: 0.75, CB: 0.92, DM: 0.96, CM: 0.97 };
-  // A player's own ageing clock: -1.2..+1.2 years, from his id so it never changes and needs no save field
+  // A player's own ageing clock: -1.6..+1.6 years, from his id so it never changes and needs no save field
   Sea.clock = (p) => {
     let h = 0;
     for (const ch of String(p.id)) h = (h * 31 + ch.charCodeAt(0)) | 0;
-    return ((Math.abs(h) % 1000) / 1000 - 0.5) * 2.4;
+    return ((Math.abs(h) % 1000) / 1000 - 0.5) * 3.2;
   };
   Sea.careerAge = function (p) {
     const a = W.age(p);

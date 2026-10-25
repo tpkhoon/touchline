@@ -3706,6 +3706,7 @@
       ['agent', 'Agent fees'],
       ['interest', 'Interest on debt'],
       ['travel', 'Away travel'],
+      ['running', 'Running costs'],
     ];
     const total = U.sum(rows, ([k]) => sp[k] || 0),
       mx = Math.max(1, ...rows.map(([k]) => sp[k] || 0));

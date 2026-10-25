@@ -37,6 +37,9 @@
     snow: 0.85, // chance rate in snow
     heat: 1.3, // fatigue in the heat
     pressShort: 1.25, // a high press on a short week (three days or fewer since the last match) costs this much more in legs
+    assistRate: 0.8, // share of open-play goals the scorer is credited with an assist for (with penalties and long shots that have none, about two goals in three have an assist, as in the real game)
+    assistSp: 0.9, // and of goals from corners and free kicks, where the taker is nearly always the last pass
+    assistSpread: 0.6, // how sharply the best passers collect the assists (1: in proportion to their passing; lower: shared more widely)
     targetGoals: 2.72, // tactical equilibrium: the league scoring rate the game settles back toward over long saves
   });
   const AW = { GK: 0, CB: 0.1, FB: 0.25, WB: 0.35, DM: 0.2, CM: 0.4, WM: 0.6, AM: 0.8, W: 0.85, ST: 1 };
@@ -1044,12 +1047,13 @@
             A = o.p.attrs,
             r = roleOf(o);
           if (type === 'cross')
-            return (
+            return Math.pow(
               ({ W: 1.2, WM: 1.1, FB: 0.9, WB: 1.1, AM: 0.4 }[t] || 0.1) *
-              A.passing *
-              (1 + (r.assist || 0) * 0.5 + (r.cross || 0) * 3)
+                A.passing *
+                (1 + (r.assist || 0) * 0.5 + (r.cross || 0) * 3),
+              CAL.assistSpread,
             );
-          return (MW[t] + AW[t] * 0.5) * (A.passing + A.vision) * (1 + (r.assist || 0));
+          return Math.pow((MW[t] + AW[t] * 0.5) * (A.passing + A.vision) * (1 + (r.assist || 0)), CAL.assistSpread);
         });
       }
       if (type !== 'penalty' && (sd.ins || od.ins)) xg = U.clamp(xg * Md.insXg(sd, od, type, shooter.p), 0.01, 0.8);
@@ -1157,7 +1161,9 @@
       if (outcome === 'goal') {
         sd.goals++;
         sd.rating[p.id] += type === 'penalty' ? 0.75 : 1.1;
-        if (assister) sd.rating[assister.p.id] += 0.6;
+        // the last pass is not always an assist: the scorer carried it, or it took a deflection
+        if (assister && Math.random() >= (sp ? CAL.assistSp : CAL.assistRate)) ev.noAst = true;
+        if (assister && !ev.noAst) sd.rating[assister.p.id] += 0.6;
         // conceding: the keeper by how saveable it was, the defence by role
         this.onPitch(od).forEach(({ p: q, i }) => {
           const t = od.slots[i].t;
@@ -1658,7 +1664,14 @@
         weather: this.weather[0],
         goals: this.events
           .filter((e) => e.k === 'goal')
-          .map((e) => ({ side: e.side, pid: e.pid, ast: e.ast, min: e.min, pen: e.type === 'penalty', type: e.type })),
+          .map((e) => ({
+            side: e.side,
+            pid: e.pid,
+            ast: e.noAst ? undefined : e.ast,
+            min: e.min,
+            pen: e.type === 'penalty',
+            type: e.type,
+          })),
         cards: this.events
           .filter((e) => e.k === 'yellow' || e.k === 'red')
           .map((e) => ({ side: e.side, pid: e.pid, k: e.k })),
