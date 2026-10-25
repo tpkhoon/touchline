@@ -155,16 +155,16 @@
     const out = [];
     // Bookings count across all club competitions
     xi.filter((p) => p.season.yc % 5 === 4 && !nt).forEach((p) =>
-      out.push(['', `${W.short(p)} is one booking from a one-match ban.`]),
+      out.push(['yellowCard', `${W.short(p)} is one booking from a one-match ban.`]),
     );
     const tired = xi.filter((p) => p.fitness < 70).sort((a, b) => a.fitness - b.fitness);
     if (tired.length)
       out.push([
-        '',
+        'battery',
         `${tired.map((p) => `${W.short(p)} (${Math.round(p.fitness)}%)`).join(', ')} ${tired.length === 1 ? 'is' : 'are'} short of match fitness — injury risk and a weaker second half.`,
       ]);
     // (players out of position have their own warning above the reminders)
-    if (xi.length < 11) out.push(['', `Only ${xi.length} fit players for the starting XI.`]);
+    if (xi.length < 11) out.push(['alert', `Only ${xi.length} fit players for the starting XI.`]);
     if (!nt) {
       const leaving = xi.filter((p) => !p.loan && p.contract <= FM.S.year);
       if (leaving.length)
@@ -174,7 +174,7 @@
         ]);
     }
     if (!out.length) return '';
-    return `<div class="card"><div class="h3">Before kick-off</div>${out.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${i}</span><span class="small">${esc(t)}</span></div>`).join('')}</div>`;
+    return `<div class="card"><div class="h3">Before kick-off</div>${out.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${UI.ico(i)}</span><span class="small">${esc(t)}</span></div>`).join('')}</div>`;
   };
   // Pre-match team talk: picked in the preview, delivered as the teams go out (live or instant)
   const TALK_SHORT = {
@@ -195,7 +195,7 @@
     const advice = Object.fromEntries(rep.advice.map((a) => [a.id, a]));
     const asst = FM.Staff.get('assistant');
     return `<div class="card"><div class="h3">Their weaknesses</div>
-      ${rep.lines.length ? rep.lines.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${i}</span><span class="small">${esc(t)}</span></div>`).join('') : '<div class="small muted" style="margin-top:6px">A balanced side with no obvious weakness.</div>'}
+      ${rep.lines.length ? rep.lines.map(([i, t]) => `<div class="phrase" style="padding:6px 0;border-top:1px solid var(--line)"><span>${UI.ico(i)}</span><span class="small">${esc(t)}</span></div>`).join('') : '<div class="small muted" style="margin-top:6px">A balanced side with no obvious weakness.</div>'}
       <div class="h3" style="margin-top:12px">Match instructions <span class="tiny dim">(up to two)</span></div>
       <div id="insList">${Object.entries(Md.INS)
         .map(([id, d]) => {
@@ -308,10 +308,10 @@
           : `Normal home advantage for ${esc(h.name)}`;
     const form = (c) => (c.sim === 'nation' ? '—' : `${FM.Season.confLabel(c)}`);
     return `<div class="card"><div class="h3">Conditions</div>
-      <div class="row small" style="margin-top:8px"><span class="grow dim">Weather</span><b>${wx[1]} ${wx[0]}</b></div>${note ? `<div class="tiny dim" style="text-align:right">${note}</div>` : ''}
+      <div class="row small" style="margin-top:8px"><span class="grow dim">Weather</span><b>${UI.ico(wx[1])} ${wx[0]}</b></div>${note ? `<div class="tiny dim" style="text-align:right">${note}</div>` : ''}
       <div class="row small" style="margin-top:6px"><span class="grow dim">Crowd</span><b style="text-align:right;max-width:70%">${crowd}</b></div>
       ${nt || !UI.tripLine ? '' : UI.tripLine(fx)}
-      ${nt ? '' : `<div class="row small" style="margin-top:6px"><span class="grow dim">Confidence</span><b>${esc(me.short)} ${form(me)} · ${esc(opp.short)} ${form(opp)}</b></div>`}</div>`;
+      ${nt ? '' : `<div class="small" style="margin-top:6px"><div class="dim">Confidence</div><b>${esc(me.name)} ${form(me)} · ${esc(opp.name)} ${form(opp)}</b></div>`}</div>`;
   };
   // ---------------- Live ----------------
   MV.start = function (fx, instant) {
@@ -353,8 +353,8 @@
     const ov = document.createElement('div');
     ov.className = 'match' + (text ? ' text' : '');
     ov.id = 'matchOv';
-    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(MV.teamName(H.club))}</span>${MV.shirt(m, 0)}</div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(MV.teamName(A.club))}</span>${MV.shirt(m, 1)}</div></div>
-      <div class="m-clock" id="mClock">KICK-OFF · ${m.weather[1]} ${m.weather[0]}${m.derby ? ' · DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
+    ov.innerHTML = `<div class="m-top"><div class="m-team">${C.crest(H.club, 30)}<span class="ellip" title="${esc(H.club.name)}">${esc(MV.teamName(H.club))}</span></div><div class="m-score" id="mScore">0–0</div><div class="m-team away">${C.crest(A.club, 30)}<span class="ellip" title="${esc(A.club.name)}">${esc(MV.teamName(A.club))}</span></div></div>
+      <div class="m-clock" id="mClock">KICK-OFF · ${UI.ico(m.weather[1])} ${m.weather[0]}${m.derby ? ' · DERBY' : ''}</div>${m.agg ? `<div class="m-clock" id="mAgg" style="margin-top:-6px;opacity:.8">Aggregate ${m.agg[0]}–${m.agg[1]}</div>` : ''}
       <div class="m-xg"><span id="mXgH">xG 0.00</span><span id="mPoss">Possession 50% – 50%</span><span id="mXgA">xG 0.00</span></div>
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
       <div class="m-mom${text ? ' big' : ''}"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>${text ? '<div class="m-panel" id="mPanel"></div>' : ''}
@@ -577,7 +577,7 @@
       MV.updateHUD();
       MV.banner(
         'FULL-TIME',
-        `${m.sides[0].club.short} ${m.sides[0].goals}–${m.sides[1].goals} ${m.sides[1].club.short}${m.pens ? ` (${m.pens[0]}–${m.pens[1]} pens)` : ''}`,
+        `${m.sides[0].club.name} ${m.sides[0].goals}–${m.sides[1].goals} ${m.sides[1].club.name}${m.pens ? ` (${m.pens[0]}–${m.pens[1]} pens)` : ''}`,
       );
       document.getElementById('mClock').textContent = 'FULL-TIME';
       setTimeout(() => MV.post(), 1800);
@@ -662,12 +662,12 @@
     const [H, A] = m.sides,
       n = Math.max(95, m.momentum.length);
     const pos = (e) => `left:${U.clamp(((e.mi || 0) / n) * 100, 0, 99)}%`;
-    const kitOf = (k) => MV.kit(m, k);
+    const sideOf = (k) => MV.sideColour(m, k);
     const marks = m.events
       .map((e) => {
         const up = e.side === MV.us ? 'top:0' : 'bottom:0';
         if (e.k === 'goal')
-          return `<i class="tl-goal" style="${pos(e)};${up};background:${kitOf(e.side)}" title="Goal ${esc(e.min || '')}"></i>`;
+          return `<i class="tl-goal" style="${pos(e)};${up};background:${sideOf(e.side)}" title="Goal ${esc(e.min || '')}"></i>`;
         if (e.k === 'yellow')
           return `<i class="tl-yc" style="${pos(e)};${up}" title="Yellow card ${esc(e.min || '')}"></i>`;
         if (e.k === 'red') return `<i class="tl-rc" style="${pos(e)};${up}" title="Red card ${esc(e.min || '')}"></i>`;
@@ -680,7 +680,7 @@
     const tot = (H.possAcc || 1) + (A.possAcc || 1);
     const row = (label, a, b, fmt = (x) => x) => {
       const s = a + b || 1;
-      return `<div class="pn-row"><b>${fmt(a)}</b><div class="pn-bar"><i style="width:${(a / s) * 100}%;background:${kitOf(0)}"></i><i style="width:${(b / s) * 100}%;background:${kitOf(1)}"></i></div><b>${fmt(b)}</b><span>${label}</span></div>`;
+      return `<div class="pn-row"><b>${fmt(a)}</b><div class="pn-bar"><i style="width:${(a / s) * 100}%;background:${sideOf(0)}"></i><i style="width:${(b / s) * 100}%;background:${sideOf(1)}"></i></div><b>${fmt(b)}</b><span>${label}</span></div>`;
     };
     const sd = m.sides[MV.us];
     const mine = sd.xi
@@ -828,7 +828,7 @@
     // players
     const r = Math.max(6, w * 0.022);
     m.sides.forEach((sd, k) => {
-      const c1 = MV.kit(m, k),
+      const c1 = MV.sideColour(m, k),
         green = MV.onGrass(c1),
         ring = green || U.ink(c1) === '#fff' || U.ink(c1) === '#ffffff' ? 'rgba(255,255,255,.95)' : 'rgba(0,0,0,.85)';
       sd.xi.forEach((p, i) => {
@@ -840,9 +840,7 @@
         x.fillStyle = 'rgba(0,0,0,.3)';
         x.fill();
         x.beginPath();
-        // (colour-blind kits: the away side's players are squares, the home side's circles, whatever the colours)
-        if (k && FM.S.settings && FM.S.settings.colourBlind) x.rect(cx - r * 0.9, cy - r * 0.9, r * 1.8, r * 1.8);
-        else x.arc(cx, cy, r, 0, Math.PI * 2);
+        x.arc(cx, cy, r, 0, Math.PI * 2);
         x.fillStyle = sd.slots[i].t === 'GK' ? (k ? '#f59e0b' : '#a3e635') : c1;
         x.fill();
         x.lineWidth = green && sd.slots[i].t !== 'GK' ? 3.5 : 2.5;
@@ -919,7 +917,7 @@
     wrap.querySelectorAll('.prompt').forEach((e) => e.remove());
     const el = document.createElement('div');
     el.className = 'prompt';
-    el.innerHTML = `<div class="row"><span class="pi">${p.icon}</span><div class="grow"><div class="tiny" style="color:#8ea0b7;font-weight:800;letter-spacing:1px">TACTICAL MOMENT · ${esc(MV.m.clock)}</div><div class="pt">${esc(p.title)}</div></div></div><div class="pb">${esc(p.body)}</div>${p.quote ? `<div class="q"><b>${esc(p.quote.who)} · ${esc(p.quote.role)}</b>“${esc(p.quote.text)}”</div>` : ''}${p.options.map((o, i) => `<button class="opt" data-act="mOpt" data-i="${i}"><b>${esc(o.label)}</b>${o.desc ? `<span>${esc(o.desc)}</span>` : ''}</button>`).join('')}`;
+    el.innerHTML = `<div class="row"><span class="pi">${UI.ico(p.icon)}</span><div class="grow"><div class="tiny" style="color:#8ea0b7;font-weight:800;letter-spacing:1px">TACTICAL MOMENT · ${esc(MV.m.clock)}</div><div class="pt">${esc(p.title)}</div></div></div><div class="pb">${esc(p.body)}</div>${p.quote ? `<div class="q"><b>${esc(p.quote.who)} · ${esc(p.quote.role)}</b>“${esc(p.quote.text)}”</div>` : ''}${p.options.map((o, i) => `<button class="opt" data-act="mOpt" data-i="${i}"><b>${esc(o.label)}</b>${o.desc ? `<span>${esc(o.desc)}</span>` : ''}</button>`).join('')}`;
     wrap.appendChild(el);
   };
   UI.acts.mOpt = (d) => {
@@ -970,7 +968,7 @@
       <div class="list">${Object.entries(FM.Match.SHOUTS)
         .map(
           ([k, x]) =>
-            `<div class="prow tap ${wait ? 'dim' : ''}" data-act="mShoutDo" data-k="${k}"><span style="font-size:22px;width:32px">${x.icon}</span><div class="grow"><div class="b">${esc(x.label)}</div><div class="small dim">${esc(x.tip)} · ${x.dur} min</div></div></div>`,
+            `<div class="prow tap ${wait ? 'dim' : ''}" data-act="mShoutDo" data-k="${k}"><span style="font-size:22px;width:32px">${UI.ico(x.icon)}</span><div class="grow"><div class="b">${esc(x.label)}</div><div class="small dim">${esc(x.tip)} · ${x.dur} min</div></div></div>`,
         )
         .join('')}</div>
       ${wait ? `<div class="tiny dim" style="margin-top:8px">The last call needs ${wait} more minute${wait === 1 ? '' : 's'} to sink in.</div>` : ''}
@@ -1047,7 +1045,7 @@
       const on = m.onPitch(sd);
       const bench = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id));
       return `<div class="small muted">Subs left: <b>${sd.subsLeft}</b> of ${W.rule(m.comp, 'subs')}</div>
-        <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? '' : ''}${sd.yc[p.id] ? '' : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
+        <div class="h3" style="margin-top:10px">1 · Take off</div><div class="list">${on.map(({ p, i }) => `<div class="prow tap" data-act="mSubOut" data-i="${i}" style="${MV._subOut === i ? 'background:color-mix(in srgb,var(--acc) 14%,transparent);border-radius:10px' : ''}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))} ${sd.injured[p.id] ? UI.ico('medical') : ''}${sd.yc[p.id] ? UI.ico('yellowCard') : ''}</div><div class="small dim">${sd.slots[i].t} · rating ${sd.rating[p.id].toFixed(1)}</div></div>${C.fit(Math.round(sd.st[p.id]))}<span class="small b" style="width:36px;text-align:right">${Math.round(sd.st[p.id])}%</span></div>`).join('')}</div>
         <div class="h3" style="margin-top:12px">2 · Bring on</div><div class="list">${bench.map((p) => `<div class="prow tap" data-act="mSubIn" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b">${esc(W.short(p))}</div><div class="small dim">${MV._subOut != null ? 'Fit at ' + sd.slots[MV._subOut].t + ': ' + C.starText(W.effAt(p, sd.slots[MV._subOut].t), sd.slots[MV._subOut].t) : 'Select a player to take off first'}</div></div>${C.playerStars(p)}</div>`).join('') || '<div class="dim small">No one left on the bench.</div>'}</div>
         <button class="btn block" style="margin-top:12px" data-act="mResume">Done</button>`;
     };
@@ -1086,46 +1084,17 @@
   const GRASS = [31, 122, 63];
   const rgb = (h) => (/^#[0-9a-f]{6}$/i.test(h) ? [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) : null);
   const dist = (a, b) => (a && b ? Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) : 999);
-  // (a club can carry shirt colours of its own, club.kit = { home, away }; the away shirt is worn unless it clashes)
-  // Colour-blind kits (Settings): the way a colour looks with red-green colour blindness (a standard simulation of the two common
-  // kinds), so that red against green, or two reds, are told apart by how they look to such an eye, not by their codes
-  const CVD = [
-    [0.367, 0.861, -0.228, 0.28, 0.673, 0.047, -0.012, 0.043, 0.969], // protanopia
-    [0.625, 0.375, 0, 0.7, 0.3, 0, 0, 0.3, 0.7], // deuteranopia
-  ];
-  const seen = (c, m) => {
-    const v = rgb(c);
-    return v ? [0, 3, 6].map((i) => m[i] * v[0] + m[i + 1] * v[1] + m[i + 2] * v[2]) : null;
-  };
-  // how far apart two colours look, to the worst of the two kinds of eye (and to a normal one)
-  MV.looksApart = (a, b) => Math.min(dist(rgb(a), rgb(b)), ...CVD.map((m) => dist(seen(a, m), seen(b, m))));
-  MV.kit = function (m, k) {
-    const shirt = (club) => (club.kit && club.kit.home) || club.colors[0];
-    const home = shirt(m.sides[0].club);
+  // The colour a side is shown in (event tags, the timeline, the momentum bars): its first club colour; the away side takes its
+  // second when the first would look like the home side's
+  MV.sideColour = function (m, k) {
+    const home = m.sides[0].club.colors[0];
     if (k === 0) return home;
-    const away = m.sides[1].club,
-      [, c2] = away.colors,
-      c1 = shirt(away);
-    if (FM.S.settings && FM.S.settings.colourBlind) {
-      // the away side wears the first of its own colours that looks different enough, else whichever of them and plain white,
-      // black or yellow looks most different from the home shirt
-      const own = [away.kit && away.kit.away, c1, c2].filter(Boolean);
-      const ok = own.find((c) => MV.looksApart(c, home) >= 110);
-      if (ok) return ok;
-      return [...own, '#ffffff', '#111111', '#ffd100'].sort(
-        (a, b) => MV.looksApart(b, home) - MV.looksApart(a, home),
-      )[0];
-    }
+    const [c1, c2] = m.sides[1].club.colors;
     const clash = (c) => dist(rgb(c), rgb(home)) < 80;
-    if (away.kit && away.kit.away && !clash(away.kit.away)) return away.kit.away;
     return clash(c1) && !clash(c2) ? c2 : c1;
   };
-  // A small shirt in the colour the side is wearing in this match (the away kit changes when the two would look alike), by its name
-  // both sides in the same style: the name (never the code), shortened by dropping its tail words
-  MV.teamName = (club) => {
-    const s = C.shortName(club, 18);
-    return s === club.short && club.name !== s ? club.name : s;
-  };
+  // a club is shown by its full name (never its code)
+  MV.teamName = (club) => club.name;
   // What a player did in the match, as small marks: player of the match, goals, assists and cards. Returns a function from a
   // player id to the marks.
   MV.markers = function (m) {
@@ -1148,17 +1117,12 @@
       return `${m.motm === pid ? '<span class="mk m" title="Player of the match">POTM</span>' : ''}${o.g ? `<span class="mk g" title="${o.g === 1 ? 'Goal' : o.g + ' goals'}">${o.g > 1 ? 'G' + o.g : 'G'}</span>` : ''}${o.a ? `<span class="mk a" title="${o.a === 1 ? 'Assist' : o.a + ' assists'}">${o.a > 1 ? 'A' + o.a : 'A'}</span>` : ''}${o.y ? '<span class="mk y" title="Yellow card"></span>' : ''}${o.r ? '<span class="mk r" title="Red card"></span>' : ''}`;
     };
   };
-  MV.shirt = function (m, k) {
-    const c = MV.kit(m, k),
-      edge = MV.onGrass(c) || dist(rgb(c), [8, 12, 18]) < 60 ? '#fff' : 'rgba(0,0,0,.35)';
-    return `<svg class="m-shirt" viewBox="0 0 24 22" width="22" height="20" role="img" aria-label="${esc(m.sides[k].club.short)} shirt"><path d="M8 1 L1 5 L3.5 11 L6 9.6 L6 21 L18 21 L18 9.6 L20.5 11 L23 5 L16 1 Q12 4.5 8 1 Z" fill="${c}" stroke="${edge}" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
-  };
-  MV.onGrass = (c) => dist(rgb(c), GRASS) < 90; // a kit that blends into the pitch
-  // A small pill in the side's kit colour, so every event says at a glance whose it is
+  MV.onGrass = (c) => dist(rgb(c), GRASS) < 90; // a colour that blends into the pitch
+  // A small pill in the side's colour, so every event says at a glance whose it is
   MV.teamTag = function (m, k) {
     if (!m || (k !== 0 && k !== 1)) return '';
-    const c = MV.kit(m, k);
-    return `<b class="ev-team" style="background:${c};color:${U.ink(c)}">${esc(m.sides[k].club.short)}</b>`;
+    const c = MV.sideColour(m, k);
+    return `<b class="ev-team" style="background:${c};color:${U.ink(c)}">${esc(m.sides[k].club.name)}</b>`;
   };
   MV.post = function () {
     const m = MV.m;
@@ -1224,7 +1188,7 @@
     return `<div class="card"><div class="h3">Why it went this way</div><div class="small b" style="margin:6px 0 2px;color:${col[w.tone]}">${esc(w.headline)}</div>${w.causes
       .map(
         (c) =>
-          `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span style="font-size:18px;width:24px">${c.icon}</span><div class="grow"><div class="b" style="color:${col[c.kind]}">${esc(c.title)}</div><div class="dim" style="line-height:1.4">${esc(c.text)}</div></div></div>`,
+          `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span style="font-size:18px;width:24px">${UI.ico(c.icon)}</span><div class="grow"><div class="b" style="color:${col[c.kind]}">${esc(c.title)}</div><div class="dim" style="line-height:1.4">${esc(c.text)}</div></div></div>`,
       )
       .join('')}${w.causes.length ? '' : '<div class="tiny dim">Nothing stood out: an ordinary match.</div>'}</div>`;
   };
@@ -1259,7 +1223,7 @@
       const spNote =
         spg[0].length + spg[1].length
           ? `<div class="tiny dim" style="margin-top:-2px">${[0, 1]
-              .map((k) => (spg[k].length ? `${esc(m.sides[k].club.short)}: ${spLine(spg[k])}` : ''))
+              .map((k) => (spg[k].length ? `${esc(m.sides[k].club.name)}: ${spLine(spg[k])}` : ''))
               .filter(Boolean)
               .join(' · ')}</div>`
           : '';
@@ -1285,11 +1249,11 @@
               `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}</span><span class="marks">${marks(pid)}</span><span class="dim tiny" style="margin-right:6px">${sd.mins[pid]}'</span>${C.rating(r)}</div>`,
           )
           .join('');
-      body.innerHTML = `<div class="row" style="align-items:flex-start;gap:12px"><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(H.club, 18)} ${esc(H.club.short)}</div>${list(H)}</div><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(A.club, 18)} ${esc(A.club.short)}</div>${list(A)}</div></div>`;
+      body.innerHTML = `<div class="row" style="align-items:flex-start;gap:12px"><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(H.club, 18)} ${esc(H.club.name)}</div>${list(H)}</div><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(A.club, 18)} ${esc(A.club.name)}</div>${list(A)}</div></div>`;
     } else {
       const sd = m.sides[MV.us];
       body.innerHTML = `<div class="card"><div class="h3">Momentum</div><svg viewBox="0 0 120 36" preserveAspectRatio="none" style="width:100%;height:70px;margin-top:8px;background:var(--card2);border-radius:8px">${MV.momSVG(m, 120, 36)}</svg><div class="row tiny dim" style="margin-top:4px"><span>0'</span><span class="grow"></span><span>45'</span><span class="grow"></span><span>90'</span></div></div>
-        <div class="card"><div class="h3">Your heat map</div><canvas id="postHeat" class="heat" width="480" height="320" style="margin-top:8px"></canvas><div class="tiny dim" style="margin-top:4px">Where ${esc(sd.club.short)} had the ball · attacking →</div></div>
+        <div class="card"><div class="h3">Your heat map</div><canvas id="postHeat" class="heat" width="480" height="320" style="margin-top:8px"></canvas><div class="tiny dim" style="margin-top:4px">Where ${esc(sd.club.name)} had the ball · attacking →</div></div>
         <div class="card"><div class="h3">Passing network</div><div class="small dim">Lines show passing combinations. Thicker = more passes.</div>${MV.networkSVG(sd)}</div>`;
       C.heat(document.getElementById('postHeat'), sd.heat);
     }

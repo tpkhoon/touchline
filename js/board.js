@@ -357,16 +357,16 @@
   };
   // The requests on the table at a meeting: what fits the club's situation now
   B.REQUESTS = {
-    funds: { label: 'More money for transfers', icon: '' },
-    wages: { label: 'A bigger wage budget', icon: '' },
-    facility: { label: 'Fund a facility upgrade', icon: '' },
-    stadium: { label: 'Expand the stadium', icon: '' },
-    youth: { label: 'Back a youth-first project', icon: '' },
-    marquee: { label: 'Back a marquee signing', icon: '' },
-    lower: { label: 'Lower the league target', icon: '' },
-    patience: { label: 'Ask for patience', icon: '…' },
-    camp: { label: 'Pay for a pre-season training camp', icon: '' },
-    none: { label: 'Nothing to ask today', icon: '' },
+    funds: { label: 'More money for transfers', icon: 'coins' },
+    wages: { label: 'A bigger wage budget', icon: 'receipt' },
+    facility: { label: 'Fund a facility upgrade', icon: 'crane' },
+    stadium: { label: 'Expand the stadium', icon: 'stadium' },
+    youth: { label: 'Back a youth-first project', icon: 'sprout' },
+    marquee: { label: 'Back a marquee signing', icon: 'star' },
+    lower: { label: 'Lower the league target', icon: 'trendDown' },
+    patience: { label: 'Ask for patience', icon: 'hourglass' },
+    camp: { label: 'Pay for a pre-season training camp', icon: 'mountain' },
+    none: { label: 'Nothing to ask today', icon: 'handshake' },
   };
   const options = function (club, m) {
     const s = S(),
@@ -474,7 +474,7 @@
       body: statement(club, m) + '\n\nWhat do you want to raise with the board?',
       def: opts.indexOf('none'),
       rec: opts.indexOf('none'),
-      choices: opts.map((k) => ({ k, label: `${B.REQUESTS[k].icon} ${B.REQUESTS[k].label}` })),
+      choices: opts.map((k) => ({ k, label: `${B.REQUESTS[k].label}` })),
     });
   };
 

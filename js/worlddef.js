@@ -135,7 +135,6 @@
         founded: c.founded || null,
         attr: c.attr ? { ...c.attr } : undefined, // market, support, catchment, owner and the ceiling (W.clubAttr)
         crest: c.crest ? c.crest.slice() : null,
-        kit: c.kit ? { ...c.kit } : null,
         finance: { balance: Math.round(c.balance), budget: Math.round(c.budget) },
         facilities: { ...c.facilities },
         policy: c.policy && !c.policy.military ? { ...c.policy } : undefined, // who the club may sign (null: anyone)
@@ -1514,10 +1513,6 @@
       ))
         e.push(`${at}: a crest is a shape, a pattern and an emblem (-1: the automatic one)`);
     }
-    if (c.kit) {
-      for (const k of ['home', 'away'])
-        if (c.kit[k] != null && !HEX.test(c.kit[k])) e.push(`${at}: the ${k} shirt must be a #rrggbb colour`);
-    }
     if (c.finance) {
       const f = c.finance;
       if (f.balance != null && !(f.balance >= -1e8 && f.balance <= 5e9))
@@ -1952,7 +1947,7 @@
   };
 
   // ---------- Club data packs ----------
-  // A pack is only the look and the names of a world: each club's name, short name, nickname, city, colours, crest, kit and ground,
+  // A pack is only the look and the names of a world: each club's name, short name, nickname, city, colours, crest and ground,
   // the names of the leagues and cups, and the names and colours of the national teams. No ratings, players or rules, so any pack
   // fits any world; clubs are matched by id. Real-name packs can be made and shared on top of the fictional default.
   WD.PACK_FORMAT = 'touchline-pack';
@@ -1979,7 +1974,6 @@
         city: c.city,
         colors: c.colors.slice(0, 2),
         crest: c.crest || null,
-        kit: c.kit || null,
         stadium: c.stadium ? c.stadium.name : undefined,
       })),
       nations: (def.nations || []).map((n) => ({ code: n.code, name: n.name, short: n.short, colors: n.colors })),
@@ -2011,7 +2005,6 @@
       for (const f of ['name', 'short', 'nick', 'city']) if (k[f] != null && k[f] !== '') patch[f] = k[f];
       if (k.colors) patch.colors = k.colors;
       if (k.crest) patch.crest = k.crest;
-      if (k.kit) patch.kit = k.kit;
       if (k.stadium) patch.stadium = { name: k.stadium };
       const r = E.setClub(c.id, patch);
       if (r.ok) rep.clubs++;
@@ -2107,7 +2100,6 @@
         a.floor = Math.max(20, c.rep - (6 + a.market * 0.8) * W.REP_SLACK);
       } else if (d.rep != null && c.attr) delete c.attr; // (a new reputation: its attributes are worked out afresh)
       if (d.crest) c.crest = d.crest.slice(0, 3);
-      if (d.kit && (d.kit.home || d.kit.away)) c.kit = { home: d.kit.home || null, away: d.kit.away || null };
       if (d.finance) {
         if (d.finance.balance != null) c.balance = d.finance.balance;
         if (d.finance.budget != null) c.budget = d.finance.budget;

@@ -1166,7 +1166,7 @@
               : 'CUP WINNERS',
       title: `${club.name} win the ${c.name}`,
       sub: `${S().clubs[l].name} beaten in the final. Title number ${club.titles[c.id]}.`,
-      big: c.type === 'world' ? '' : '',
+      big: c.type === 'world' ? 'globe' : 'trophy',
       clubId: w,
     });
   };

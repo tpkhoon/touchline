@@ -67,7 +67,6 @@ check(r.ok, 'a valid club edit was refused: ' + r.errors.join('; '));
 const X = d1[0].id;
 check(!E.setClub(X, { crest: [9, 0, 0] }).ok, 'a crest shape that does not exist was accepted');
 check(!E.setClub(X, { crest: [0, 0] }).ok, 'a crest of two numbers was accepted');
-check(!E.setClub(X, { kit: { home: 'red', away: '#ffffff' } }).ok, 'a shirt colour that is not #rrggbb was accepted');
 check(!E.setClub(X, { facilities: { training: 7 } }).ok, 'a facility of level 7 was accepted');
 check(!E.setClub(X, { facilities: { pool: 3 } }).ok, 'a facility the game does not have was accepted');
 check(!E.setClub(X, { finance: { budget: -5 } }).ok, 'a negative transfer budget was accepted');
@@ -76,7 +75,6 @@ check(!E.setClub(X, { attr: { own: 'aliens' } }).ok, 'an owner of aliens was acc
 check(
   E.setClub(X, {
     crest: [1, 4, 6],
-    kit: { home: '#123456', away: '#fedcba' },
     finance: { balance: 250e6, budget: 80e6 },
     facilities: { training: 5, academy: 5, medical: 4, analytics: 4, stadium: 3, fanzone: 2, museum: 1 },
     attr: { market: 9, support: 8.5, catchment: 7, own: 'sovereign' },
@@ -448,7 +446,6 @@ check(
       name: 'Packed United',
       nick: 'The Packers',
       crest: [2, 3, 4],
-      kit: { home: '#aa0000', away: '#0000aa' },
       rep: 77,
     }).ok,
     'the club for the pack was not edited',
@@ -463,10 +460,7 @@ check(
   const fc = fresh.clubs.find((c) => c.id === first),
     bc = base.clubs.find((c) => c.id === first);
   check(
-    fc.name === 'Packed United' &&
-      fc.nick === 'The Packers' &&
-      fc.crest.join() === '2,3,4' &&
-      fc.kit.home === '#aa0000',
+    fc.name === 'Packed United' && fc.nick === 'The Packers' && fc.crest.join() === '2,3,4',
     'the pack did not rename and redraw the club',
   );
   check(fc.rep === bc.rep && fc.league === bc.league, 'the pack changed a rating or a league');
@@ -689,7 +683,6 @@ check(
     x.crest && x.crest.join() === '1,4,6' && FM.D.CLUB_INFO[X.slice(2)][3].join() === '1,4,6',
     'the crest did not reach the world and the picker',
   );
-  check(x.kit && x.kit.home === '#123456' && x.kit.away === '#fedcba', 'the kit did not reach the club');
   check(x.balance === 250e6 && x.budget === 80e6, 'the money did not reach the club');
   check(
     x.facilities.training === 5 && x.facilities.academy === 5 && x.facilities.museum === 1,

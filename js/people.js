@@ -172,14 +172,14 @@
 
   // ---------- One-to-one talks ----------
   Pe.TALKS = {
-    praise: { label: 'Praise his form', icon: '' },
-    criticise: { label: 'Criticise his form', icon: '' },
-    minutes: { label: 'Promise more minutes', icon: '' },
-    contract: { label: 'Promise a new contract', icon: '' },
-    noSell: { label: "Promise he won't be sold", icon: '' },
-    letGo: { label: 'Tell him he can leave', icon: '' },
-    debut: { label: 'Promise a first-team debut', icon: '' },
-    plans: { label: "He's part of my plans", icon: '' },
+    praise: { label: 'Praise his form', icon: 'clap' },
+    criticise: { label: 'Criticise his form', icon: 'finger' },
+    minutes: { label: 'Promise more minutes', icon: 'stopwatch' },
+    contract: { label: 'Promise a new contract', icon: 'pen' },
+    noSell: { label: "Promise he won't be sold", icon: 'lock' },
+    letGo: { label: 'Tell him he can leave', icon: 'door' },
+    debut: { label: 'Promise a first-team debut', icon: 'sprout' },
+    plans: { label: "He's part of my plans", icon: 'puzzle' },
   };
   Pe.canTalk = (p) => {
     const t = (u().talks || {})[p.id];
@@ -534,7 +534,7 @@
         kicker: 'COACHING',
         title: `${u().name} earns the ${x.badge} licence`,
         sub: 'New doors open — bigger clubs and national teams now take notice.',
-        big: '',
+        big: 'cap',
         clubId: (W.userClub() || {}).id,
       });
     }

@@ -139,12 +139,12 @@
     return WD.stringify(def);
   };
 
-  // A club data pack (names, crests, kits): put onto the game's own world
+  // A club data pack (names, crests): put onto the game's own world
   DB.register({
     id: 'touchline-pack',
     name: 'Club data pack',
     accepts: '.json,application/json',
-    help: 'a .json pack of club names, crests and kits made in the world editor',
+    help: 'a .json pack of club names and crests made in the world editor',
     detect: (files) => files.length === 1 && /^\s*\{/.test(files[0].text) && files[0].text.includes(WD.PACK_FORMAT),
     parse(files) {
       const pack = WD.parsePack(files[0].text);

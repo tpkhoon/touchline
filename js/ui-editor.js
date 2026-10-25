@@ -871,7 +871,7 @@
     if (short && others.some((x) => (x.short || '').toUpperCase() === short))
       w.push(`Another club of this league is already "${short}".`);
     if (D.isRude(name) || D.isRude(short)) w.push('That name is one the game will not use: it contains a rude word.');
-    if (nick && FM.W.nickClash(nick, cols)) w.push(`The nickname "${nick}" names a colour the kit does not have.`);
+    if (nick && FM.W.nickClash(nick, cols)) w.push(`The nickname "${nick}" names a colour the club does not have.`);
     const [a, b] = [rgb(cols[0]), rgb(cols[1])];
     if (Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 60) w.push('The two colours are too alike to tell apart.');
     return w.length
@@ -2154,7 +2154,6 @@
     const finance = { balance: money('xbal'), budget: money('xbud') };
     const r = WD.editor(ED.def, null).setClub(ED.cid, {
       crest: crest.every((n) => n < 0) ? null : crest,
-      kit: $('#ed-xkiton').checked ? { home: v('xkh'), away: v('xka') } : null,
       finance: finance.balance == null && finance.budget == null ? null : finance,
       facilities: $('#ed-xfacon').checked
         ? Object.fromEntries(WD.FACILITIES.map((k) => [k, Math.round(+v('xf-' + k))]))
@@ -2180,14 +2179,12 @@
   UI.acts.edClearClubX = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     const base = builtIn().get(ED.cid);
-    for (const k of ['crest', 'kit', 'finance', 'facilities']) c[k] = null;
+    for (const k of ['crest', 'finance', 'facilities']) c[k] = null;
     if (base && base.attr) c.attr = base.attr;
     else delete c.attr;
     ED.view = 'club';
     UI.worldEditor();
   };
-  const shirtSvg = (col) =>
-    `<svg width="54" height="50" viewBox="0 0 54 50" aria-hidden="true"><path d="M17 3 L4 12 L10 22 L16 19 V47 H38 V19 L44 22 L50 12 L37 3 Q27 10 17 3Z" fill="${esc(col)}" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/></svg>`;
   const clubxView = () => {
     const c = ED.def.clubs.find((x) => x.id === ED.cid);
     if (!c) return leagueView();
@@ -2204,9 +2201,6 @@
       <div class="ng-label">Crest</div>
       <div class="row" style="gap:14px;align-items:center"><div id="ed-crestprev" style="flex:none">${UI.C.crest({ ...c, crest: cr }, 72)}</div><div class="grow">
         ${sel('xcs', CREST_NAMES.shape, cr[0])}<div style="height:6px"></div>${sel('xcp', CREST_NAMES.pattern, cr[1])}<div style="height:6px"></div>${sel('xce', CREST_NAMES.emblem, cr[2])}</div></div>
-      <div class="ng-label">Kit <span class="tiny dim">· the shirt colours worn in matches</span></div>
-      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ed-xkiton" ${c.kit ? 'checked' : ''}> My own shirts (otherwise the club's two colours, and the second when the first clashes)</label>
-      <div class="row" style="gap:14px;align-items:center;margin-top:8px"><div style="text-align:center"><div id="ed-kithome">${shirtSvg((c.kit || {}).home || c.colors[0])}</div><input type="color" id="ed-xkh" value="${esc((c.kit || {}).home || c.colors[0])}" style="width:56px;height:36px;padding:2px"><div class="tiny dim">Home</div></div><div style="text-align:center"><div id="ed-kitaway">${shirtSvg((c.kit || {}).away || c.colors[1])}</div><input type="color" id="ed-xka" value="${esc((c.kit || {}).away || c.colors[1])}" style="width:56px;height:36px;padding:2px"><div class="tiny dim">Away</div></div></div>
       <div class="ng-label">Money <span class="tiny dim">· millions; empty: the game's figure</span></div>
       <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">Cash in the bank</div><input type="number" id="ed-xbal" step="0.5" inputmode="decimal" value="${fin.balance != null ? fin.balance / 1e6 : ''}"></div><div style="flex:1"><div class="tiny dim">Transfer budget</div><input type="number" id="ed-xbud" step="0.5" min="0" inputmode="decimal" value="${fin.budget != null ? fin.budget / 1e6 : ''}"></div></div>
       <div class="ng-label">Facilities</div>
@@ -2222,7 +2216,7 @@
       <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edClearClubX">Back to the game's figures</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="club" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSaveClubX">Save</button></div>`;
   };
-  // Kit colour pairs to start from (home, trim): the colours clubs most often play in
+  // Colour pairs to start from (main, trim): the colours clubs most often wear
   const KIT_PRESETS = [
     ['#d71920', '#ffffff'],
     ['#1d4fa3', '#ffffff'],
@@ -2254,7 +2248,7 @@
     if (!c) return leagueView();
     const added = !builtIn().has(c.id);
     const idOpts = Object.entries(D.IDENTITY)
-      .map(([k, v]) => `<option value="${k}" ${c.identity === k ? 'selected' : ''}>${v.icon} ${esc(v.label)}</option>`)
+      .map(([k, v]) => `<option value="${k}" ${c.identity === k ? 'selected' : ''}>${esc(v.label)}</option>`)
       .join('');
     const sameNat = ED.def.leagues.filter((l) => l.nat === c.nat);
     const lgOpts = sameNat
@@ -2297,7 +2291,7 @@
 
   // ---------- Library, files and club data packs ----------
   // Worlds kept on this device (in the same storage as saves), a world opened from a file, and club data packs: only the names,
-  // crests, kits and grounds of a world, which fit any world and can be made and shared on their own.
+  // crests and grounds of a world, which fit any world and can be made and shared on their own.
   const LIB = 'dblib_';
   const libStore = () => FM.Save.store();
   const libIndex = async () => {
@@ -2501,7 +2495,7 @@
       ${packsList()}
       <div class="ng-label">Club data packs</div>
       <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edPackApply">Apply a pack…</button><button class="btn sm" data-act="edPackSave">Make a pack of this world</button></div>
-      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A pack holds only the names, short names, nicknames, cities, colours, crests, kits and grounds of the clubs, the names of the leagues and cups, and the national teams' names and colours. It fits any world: clubs are matched by id, and nothing about ratings, players or rules changes. A pack of real club names can be made once and shared.</div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A pack holds only the names, short names, nicknames, cities, colours, crests and grounds of the clubs, the names of the leagues and cups, and the national teams' names and colours. It fits any world: clubs are matched by id, and nothing about ratings, players or rules changes. A pack of real club names can be made once and shared.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
 
   // ---------- Importing players ----------
@@ -4391,7 +4385,7 @@
         madeFor(ED.code)
           .map(
             (p) =>
-              `<div class="row" style="gap:10px;margin:4px 0;align-items:center"><button class="btn sm" data-act="edToggleCall" data-pid="${esc(p.id)}" aria-label="Call up">${p.callup ? '' : '＋'}</button><div class="grow small"><b>${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</b> <span class="tiny dim">${esc(D.POS_NAME[p.pos] || p.pos)} · ability ${abilityOf(p.attrs, p.pos)}${p.callup ? ' · called up' : ''}</span></div></div>`,
+              `<div class="row" style="gap:10px;margin:4px 0;align-items:center"><button class="btn sm" data-act="edToggleCall" data-pid="${esc(p.id)}" aria-label="Call up">${p.callup ? UI.ico('globe') : '＋'}</button><div class="grow small"><b>${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</b> <span class="tiny dim">${esc(D.POS_NAME[p.pos] || p.pos)} · ability ${abilityOf(p.attrs, p.pos)}${p.callup ? ' · called up' : ''}</span></div></div>`,
           )
           .join('') ||
         '<div class="tiny dim" style="line-height:1.5">None yet. The squad is the nation\'s best twenty-three players. Players you make for this country (on a club\'s Players screen) can be called up here: they are picked ahead of better players for three years.</div>'
@@ -4868,8 +4862,6 @@
       });
     if (ED.view === 'clubx') {
       for (const id of ['xcs', 'xcp', 'xce']) bind('ed-' + id, () => ($('#ed-crestprev').innerHTML = draftCrest()));
-      bind('ed-xkh', (v) => (($('#ed-kithome').innerHTML = shirtSvg(v)), ($('#ed-xkiton').checked = true)));
-      bind('ed-xka', (v) => (($('#ed-kitaway').innerHTML = shirtSvg(v)), ($('#ed-xkiton').checked = true)));
       for (const k of WD.FACILITIES) bind('ed-xf-' + k, (v) => ($('#ed-xf-' + k + 'v').textContent = v));
       for (const k of ['market', 'support', 'catchment'])
         bind('ed-xa-' + k, (v) => ($('#ed-xa-' + k + 'v').textContent = v));

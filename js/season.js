@@ -801,7 +801,7 @@
       ga = m.sides[1 - side].goals;
     FM.News.add({
       type: 'club',
-      title: `Friendly: ${S.clubs[fx.h].short} ${fx.res.hg}–${fx.res.ag} ${S.clubs[fx.a].short}`,
+      title: `Friendly: ${S.clubs[fx.h].name} ${fx.res.hg}–${fx.res.ag} ${S.clubs[fx.a].name}`,
       body: `${gf > ga ? 'A confident win' : gf < ga ? 'A useful workout, if not the result we wanted' : 'An even contest'} against ${opp.name}. Tactical familiarity improved. Match income ${U.money(gate)}. Player of the match: ${W.name(S.players[fx.res.motm])}.`,
       clubId: club.id,
       fxId: fx.id,
@@ -868,7 +868,7 @@
     sq.forEach((p) => (p.morale = Math.min(100, p.morale + (key === 'tour' ? 1 : 3))));
     FM.News.add({
       type: 'club',
-      title: `${camp.icon} ${camp.name} complete`,
+      title: `${camp.name} complete`,
       body: `${camp.desc} ${camp.cost > 0 ? 'Cost ' + U.money(camp.cost) : 'Income ' + U.money(-camp.cost)}.`,
       clubId: c.id,
     });
@@ -1719,13 +1719,13 @@
 
   // ---------- Facilities ----------
   Sea.FAC = {
-    training: { name: 'Training Ground', icon: '', effect: 'Faster player development' },
-    academy: { name: 'Youth Academy', icon: '', effect: 'Better & more youth intake prospects' },
-    medical: { name: 'Medical Centre', icon: '', effect: 'Shorter injury layoffs' },
-    analytics: { name: 'Analytics Dept.', icon: '', effect: 'Moneyball insights in scout reports' },
-    stadium: { name: 'Stadium', icon: '', effect: '+6,000 capacity per level' },
-    fanzone: { name: 'Fan Zone', icon: '', effect: 'Commercial income & fan mood' },
-    museum: { name: 'Club Museum', icon: '', effect: 'Reputation & honours legends' },
+    training: { name: 'Training Ground', icon: 'dumbbell', effect: 'Faster player development' },
+    academy: { name: 'Youth Academy', icon: 'sprout', effect: 'Better & more youth intake prospects' },
+    medical: { name: 'Medical Centre', icon: 'cross', effect: 'Shorter injury layoffs' },
+    analytics: { name: 'Analytics Dept.', icon: 'chart', effect: 'Moneyball insights in scout reports' },
+    stadium: { name: 'Stadium', icon: 'stadium', effect: '+6,000 capacity per level' },
+    fanzone: { name: 'Fan Zone', icon: 'party', effect: 'Commercial income & fan mood' },
+    museum: { name: 'Club Museum', icon: 'columns', effect: 'Reputation & honours legends' },
   };
   Sea.facCost = (k, lvl) => Math.round(((k === 'stadium' ? 9e6 : 2.2e6) * Math.pow(lvl, 1.5)) / 1e5) * 1e5;
   Sea.facWeeks = (k, lvl) => (k === 'stadium' ? 8 : 3) + lvl * 2;
@@ -1750,7 +1750,7 @@
       FM.News.add({
         type: 'club',
         title: `${Sea.FAC[k].name} upgrade complete`,
-        body: `${Sea.FAC[k].icon} Now level ${c.facilities[k]}. ${Sea.FAC[k].effect}.`,
+        body: `Now level ${c.facilities[k]}. ${Sea.FAC[k].effect}.`,
         clubId: c.id,
       });
       delete c.building;

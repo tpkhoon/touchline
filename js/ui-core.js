@@ -176,26 +176,6 @@
       ? `<span class="tap pname" data-act="player" data-id="${p.id}">${esc(text != null ? text : W.short(p))}</span>`
       : '—';
   C.pos = (p) => `<span class="pos ${D.POS_GROUP[p.pos]}">${W.posLabel(p)}</span>`;
-  // The name without its trailing "United", "Town", "Victoria"... when the full one is too long for the room
-  const TAIL = new Set(
-    'fc cf afc united city town athletic rovers albion wanderers rangers county borough victoria alexandra harriers orient argyle wednesday villa balompié'.split(
-      ' ',
-    ),
-  );
-  const HEAD = new Set(
-    'little great new old north south east west upper lower real atletico atlético athletic club clube deportivo sporting associazione calcio'.split(
-      ' ',
-    ),
-  );
-  C.shortName = (club, max = 14) => {
-    const words = String(club.name).split(' ');
-    while (words.join(' ').length > max && words.length > 1 && TAIL.has(words[words.length - 1].toLowerCase()))
-      words.pop();
-    // still too long: the generic opening words go too (Little, West, Real, Athletic ...), and the abbreviation is the last resort
-    while (words.join(' ').length > max && words.length > 1 && HEAD.has(words[0].toLowerCase())) words.shift();
-    const out = words.join(' ');
-    return out.length > max + 3 && club.short ? club.short : out;
-  };
   // His flag, and a smaller one beside it for a second nationality he is eligible for
   C.flags = (p) => {
     const mine = (FM.Intl && FM.Intl.nationOf(p)) || p.nat,
@@ -299,7 +279,9 @@
       tags.push('<span class="capt-tag" title="Club captain">C</span>');
     if (p.inj) tags.push(`<span class="pill bad" title="${esc(p.inj.type)}">${FM.Injury.weeksLeft(p)}w</span>`);
     else if (own && p.injRisk)
-      tags.push('<span class="pill warn" title="Just back from injury: higher risk of a setback"></span>');
+      tags.push(
+        `<span class="pill warn" title="Just back from injury: higher risk of a setback">${UI.ico('bandage')}</span>`,
+      );
     if (p.susp) tags.push(`<span class="pill warn">${p.susp}</span>`);
     if (p.listed) tags.push(`<span class="pill acc" title="On the transfer list">Listed</span>`);
     if (p.loanListed) tags.push(`<span class="pill acc" title="On the loan list">Loan list</span>`);
@@ -489,7 +471,7 @@
       .sort((x, y) => x.min - y.min)
       .map(
         (e) =>
-          `<div class="row small" style="gap:8px;padding:3px 0"><span class="dim" style="width:34px">${String(e.min).replace(/'/g, '')}'</span><span class="grow">${esc(name(e.pid))}${e.pen ? ' (pen)' : ''}</span><span class="tiny dim">${esc((e.side === 0 ? H : A).club.short)}</span></div>`,
+          `<div class="row small" style="gap:8px;padding:3px 0"><span class="dim" style="width:34px">${String(e.min).replace(/'/g, '')}'</span><span class="grow">${esc(name(e.pid))}${e.pen ? ' (pen)' : ''}</span><span class="tiny dim">${esc((e.side === 0 ? H : A).club.name)}</span></div>`,
       )
       .join('');
     UI.sheet(
@@ -709,7 +691,7 @@
     );
   };
   UI.noClubView = (tab) =>
-    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? '' : tab === 'transfers' ? '' : ''}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
+    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? UI.ico('shirt') : tab === 'transfers' ? UI.ico('repeat') : UI.ico('telescope')}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
   // Going to a tab slides it in from the side of the tab you tapped; the same tab again just fades
   UI.go = function (tab, anim) {
     if (!anim) {
@@ -1251,7 +1233,7 @@
         const I = FM.Lore.identity(idt, { name }),
           d = G.diff(short),
           on = NG.club === fake.id;
-        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${I.icon} ${esc(I.label)} · <span style="color:${d.color}">● ${esc(d.label)}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
+        return `<button class="clubpick ${on ? 'on' : ''}" data-act="ngClub" data-id="${fake.id}">${C.crest(fake, 38)}<div class="grow"><div class="b">${esc(name)}</div>${where ? `<div class="small" style="color:#c9d4e3">${where}</div>` : ''}<div class="small" style="color:#9fb0c5">${UI.ico(I.icon)} ${esc(I.label)} · <span style="color:${d.color}">● ${esc(d.label)}</span></div><div class="tiny" style="color:#6f7f96;margin-top:2px">${esc(note || d.why)}</div>${on ? story(r) : ''}</div><div class="tiny" style="color:#9fb0c5">${div}</div></button>`;
       };
       const plain = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
       // The list, filtered by the search box (club or city, accents ignored), the league picker and difficulty; each
@@ -1332,7 +1314,7 @@
             .map((x) => {
               const l = G.entry(x.code).l,
                 n = D.NATIONS[l.nat];
-              return `<div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">${x.icon} <b style="color:#e6edf6">${esc(x.title)}</b> · ${esc(x.blurb)}</div>${row(rowOf(x.code), `Tier ${l.tier}`, G.hook(x.code), `${n.flag} ${esc(n.name)} · ${esc(l.name)}`)}<div class="tiny" style="margin:2px 0 0"><button class="btn sm" data-act="ngStoryAgain" data-id="${x.id}">Show another club like this</button></div>`;
+              return `<div class="tiny" style="color:#9fb0c5;margin:12px 0 4px">${UI.ico(x.icon)} <b style="color:#e6edf6">${esc(x.title)}</b> · ${esc(x.blurb)}</div>${row(rowOf(x.code), `Tier ${l.tier}`, G.hook(x.code), `${n.flag} ${esc(n.name)} · ${esc(l.name)}`)}<div class="tiny" style="margin:2px 0 0"><button class="btn sm" data-act="ngStoryAgain" data-id="${x.id}">Show another club like this</button></div>`;
             })
             .join('')}
           <div class="actions" style="margin-top:10px"><button class="btn sm" data-act="ngView" data-v="ask">Change answers</button><button class="btn sm" data-act="ngView" data-v="browse">Browse all</button></div>

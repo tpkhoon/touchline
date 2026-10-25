@@ -109,7 +109,7 @@
           type: mine.length ? 'club' : 'world',
           title: `Team of the week · ${comp.short} matchday ${round}`,
           body:
-            xi.map((x) => `${x.lab} ${x.n} (${(s.clubs[x.c] || {}).short || '?'}) ${x.r.toFixed(1)}`).join('\n') +
+            xi.map((x) => `${x.lab} ${x.n} (${(s.clubs[x.c] || {}).name || '?'}) ${x.r.toFixed(1)}`).join('\n') +
             (mgr && s.clubs[mgr] ? `\nManager of the week: ${s.clubs[mgr].name}` : '') +
             (mine.length ? `\n${mine.map((x) => x.n).join(', ')} ${mine.length > 1 ? 'are' : 'is'} yours.` : ''),
           clubId: mine.length ? user.id : undefined,
@@ -236,7 +236,7 @@
       if (res.win === 0 || res.win === 1) {
         add += 3;
         why.push(
-          `${club(res.win ? fx.a : fx.h).short} knocked ${club(res.win ? fx.h : fx.a).short} out of the ${compName(fx.comp)}`,
+          `${club(res.win ? fx.a : fx.h).name} knocked ${club(res.win ? fx.h : fx.a).name} out of the ${compName(fx.comp)}`,
         );
       }
       if (reds) why.push(reds === 1 ? 'a red card' : `${reds} red cards`);
@@ -265,7 +265,7 @@
         news({
           type: 'dressing',
           title: `A new rivalry is emerging with ${club(them).name}`,
-          body: `${why ? why[0].toUpperCase() + why.slice(1) + '. ' : ''}The fans have noticed — there's needle every time these two meet now. A chant about ${club(them).short} is already doing the rounds on the terraces.`,
+          body: `${why ? why[0].toUpperCase() + why.slice(1) + '. ' : ''}The fans have noticed — there's needle every time these two meet now. A chant about ${club(them).name} is already doing the rounds on the terraces.`,
           clubId: me,
         });
       else if (Math.random() < 0.3)

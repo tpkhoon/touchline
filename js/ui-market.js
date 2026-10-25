@@ -77,7 +77,7 @@
     const loansIn = W.squad(c.id).filter((p) => p.loan),
       loansOut = Object.values(s.players).filter((p) => p.loan && p.loan.from === c.id && p.clubId !== c.id);
     const loanRow = (p, out) =>
-      `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="grow ellip">${C.flags(p)} ${esc(W.name(p))}</span><span class="tiny dim">${out ? `at ${esc(CL(p.clubId).short)}` : `from ${esc(CL(p.loan.from).short)}`} · ${p.season.apps} apps</span></div>`;
+      `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="grow ellip">${C.flags(p)} ${esc(W.name(p))}</span><span class="tiny dim">${out ? `at ${esc(CL(p.clubId).name)}` : `from ${esc(CL(p.loan.from).name)}`} · ${p.season.apps} apps</span></div>`;
     const loans =
       loansIn.length || loansOut.length
         ? `<div class="sec"><div class="h3">Loans</div></div><div class="card flat" style="padding:2px 12px">${loansIn.map((p) => loanRow(p, false)).join('')}${loansOut.map((p) => loanRow(p, true)).join('')}</div>`
@@ -107,7 +107,7 @@
       ? `<div class="sec"><div class="h3">Biggest deals elsewhere</div><button class="btn sm" data-act="trGo" data-v="market">All deals</button></div><div class="card flat" style="padding:2px 12px">${big
           .map(
             (t) =>
-              `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)}</div><div class="tiny dim ellip">${t.from && CL(t.from) ? esc(CL(t.from).short) : '—'} → ${esc(CL(t.to).short)}</div></div><b>${U.money(t.fee)}</b></div>`,
+              `<div class="row small tap" style="padding:8px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)}</div><div class="tiny dim ellip">${t.from && CL(t.from) ? esc(CL(t.from).name) : '—'} → ${esc(CL(t.to).name)}</div></div><b>${U.money(t.fee)}</b></div>`,
           )
           .join('')}</div>`
       : '';
@@ -250,7 +250,7 @@
     const d = M.dd(),
       i = d ? d.i : 0,
       next = M.DD_HOURS[i];
-    return `<div class="card row tap" data-act="ddOpen" style="border:1px solid var(--warn)"><span style="font-size:28px"></span><div class="grow"><div class="h3">Deadline day${next ? ` · ${String(next).padStart(2, '0')}:00` : ' · window shut'}</div><div class="tiny dim">${next ? 'Follow it hour by hour: late bids, panic buys, deals collapsing.' : 'The window has shut. Advance to play the day.'}</div></div><span class="dim">›</span></div>`;
+    return `<div class="card row tap" data-act="ddOpen" style="border:1px solid var(--warn)"><span style="font-size:28px">${UI.ico('clock')}</span><div class="grow"><div class="h3">Deadline day${next ? ` · ${String(next).padStart(2, '0')}:00` : ' · window shut'}</div><div class="tiny dim">${next ? 'Follow it hour by hour: late bids, panic buys, deals collapsing.' : 'The window has shut. Advance to play the day.'}</div></div><span class="dim">›</span></div>`;
   };
   UI.acts.ddOpen = () => UI.deadlineSheet();
   UI.deadlineSheet = function () {
@@ -306,7 +306,7 @@
     const d = Dr && Dr.current();
     if (!d || !W.employed() || !Dr.userToPick()) return '';
     const left = d.order.slice(d.pick).filter((id) => W.isUser(id)).length;
-    return `<div class="card row tap" data-act="draftOpen" style="border:1px solid var(--acc)"><span style="font-size:28px"></span><div class="grow"><div class="h3">You're on the clock · pick ${d.pick + 1}</div><div class="tiny dim">${left} pick${left === 1 ? '' : 's'} left in the ${d.year} draft. Advancing the day lets your assistant pick for you.</div></div><span class="dim">›</span></div>`;
+    return `<div class="card row tap" data-act="draftOpen" style="border:1px solid var(--acc)"><span style="font-size:28px">${UI.ico('cap')}</span><div class="grow"><div class="h3">You're on the clock · pick ${d.pick + 1}</div><div class="tiny dim">${left} pick${left === 1 ? '' : 's'} left in the ${d.year} draft. Advancing the day lets your assistant pick for you.</div></div><span class="dim">›</span></div>`;
   };
   const prospectRow = (p, act) => {
     const star = (ca, pos) => W.stars(ca, pos);
@@ -322,7 +322,7 @@
       const mine = Dr.userToPick(),
         recent = d.picks.slice(-6).reverse();
       html = `<div class="card flat"><div class="b">${mine ? `You're on the clock — pick ${d.pick + 1} (round ${Math.floor(d.pick / d.size) + 1})` : `Pick ${d.pick + 1} of ${d.order.length}`}</div><div class="small dim" style="margin-top:4px">Clubs that missed the playoffs pick first; the champions pick last. Undrafted prospects leave the game.</div><div class="row" style="gap:8px;margin-top:8px"><button class="btn sm grow" data-act="draftAuto">Let the assistant finish the draft</button></div></div>
-      ${recent.length ? `<div class="sec"><div class="h3">Latest picks</div></div><div class="card flat" style="padding:2px 12px">${recent.map((x) => `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(S().players[x.pid]))} <span class="dim">${S().players[x.pid].pos}</span></span><span class="ellip" style="max-width:120px">${esc(FM.clubOf(x.club).short)}</span></div>`).join('')}</div>` : ''}
+      ${recent.length ? `<div class="sec"><div class="h3">Latest picks</div></div><div class="card flat" style="padding:2px 12px">${recent.map((x) => `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(S().players[x.pid]))} <span class="dim">${S().players[x.pid].pos}</span></span><span class="ellip" style="max-width:120px">${esc(FM.clubOf(x.club).name)}</span></div>`).join('')}</div>` : ''}
       <div class="sec"><div class="h3">Available prospects</div><span class="dim small">${d.pool.length}</span></div><div class="card flat list" style="padding:4px 12px">${d.pool
         .slice(0, 40)
         .map((p) =>
@@ -336,7 +336,7 @@
         .map((x) => {
           const p = S().players[x.pid];
           return p
-            ? `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(p))} <span class="dim">${p.pos}</span></span><span class="ellip" style="max-width:120px;${W.isUser(x.club) ? 'font-weight:800' : ''}">${esc(FM.clubOf(x.club).short)}</span></div>`
+            ? `<div class="row small tap" style="padding:6px 0;border-top:1px solid var(--line)" data-act="player" data-id="${p.id}"><span class="pill">#${x.n}</span><span class="grow ellip">${esc(W.name(p))} <span class="dim">${p.pos}</span></span><span class="ellip" style="max-width:120px;${W.isUser(x.club) ? 'font-weight:800' : ''}">${esc(FM.clubOf(x.club).name)}</span></div>`
             : '';
         })
         .join('')}${own.length ? '' : ''}`;
@@ -442,7 +442,7 @@
         x.why === 'addon'
           ? `after ${U.plural(x.apps, 'appearance')}`
           : `${Math.floor(x.due / 1000)}/${String((Math.floor(x.due / 1000) + 1) % 100).padStart(2, '0')}`;
-      return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '→' : '←'} ${C.pname(p)} <span class="tiny dim">${esc(x.why === 'addon' ? 'add-on' : 'instalment')} · ${other ? esc(other.short) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
+      return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${out ? '→' : '←'} ${C.pname(p)} <span class="tiny dim">${esc(x.why === 'addon' ? 'add-on' : 'instalment')} · ${other ? esc(other.name) : ''} · ${when}</span></span><b style="color:${out ? 'var(--bad)' : 'var(--good)'}">${out ? '−' : '+'}${U.money(x.amt)}</b></div>`;
     };
     const clauses = Object.values(s.players).filter(
       (p) => !p.retired && p.sellOn && p.sellOn.some((x) => x.c === c.id),

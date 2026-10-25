@@ -1268,9 +1268,6 @@ main::-webkit-scrollbar {
   flex-direction: row-reverse;
   text-align: right;
 }
-.m-shirt {
-  flex: none;
-}
 .m-score {
   font-family: var(--display);
   font-weight: 900;
@@ -2754,4 +2751,10 @@ tr.tap {
   flex: none;
   white-space: nowrap;
   margin-right: 6px;
+}
+
+/* the drawn icons (UI.ico): the size and colour of the text beside them */
+.ico {
+  flex: none;
+  vertical-align: -0.2em;
 }

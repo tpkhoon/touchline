@@ -41,7 +41,7 @@
       const f1 = fx.first && FM.Cups.findFixture(fx.first);
       const aggNote =
         f1 && f1.res
-          ? `First leg: ${TM(f1.h).short} ${f1.res.hg}–${f1.res.ag} ${TM(f1.a).short}${W.rule(f1.comp, 'awayGoals') ? ' · away goals count' : ''}`
+          ? `First leg: ${TM(f1.h).name} ${f1.res.hg}–${f1.res.ag} ${TM(f1.a).name}${W.rule(f1.comp, 'awayGoals') ? ' · away goals count' : ''}`
           : '';
       // Their last result: clubs keep one; national teams read the international log
       const lr = (() => {
@@ -131,7 +131,7 @@
   function cupPills(c) {
     const st = FM.Cups.status(c.id);
     if (!st.length) return '';
-    return `<div class="chips noswipe" style="margin-top:-2px">${st.map((x) => `<button class="chip" data-act="goCups" style="${x.text === 'Winners' ? 'border-color:var(--gold);color:var(--gold)' : x.alive === false ? 'opacity:.55' : ''}">${x.c.type === 'continental' ? '' : ''} ${esc(UI.cname(x.c))} · ${esc(x.text)}</button>`).join('')}</div>`;
+    return `<div class="chips noswipe" style="margin-top:-2px">${st.map((x) => `<button class="chip" data-act="goCups" style="${x.text === 'Winners' ? 'border-color:var(--gold);color:var(--gold)' : x.alive === false ? 'opacity:.55' : ''}">${x.c.type === 'continental' ? UI.ico('star') : ''} ${esc(UI.cname(x.c))} · ${esc(x.text)}</button>`).join('')}</div>`;
   }
   UI.acts.goCups = () => {
     UI.sub.league = 'cups';
@@ -224,33 +224,33 @@
   };
 
   const TYPE = {
-    roundup: ['', 'Transfer round-up'],
-    headline: ['', 'Headline'],
-    social: ['', 'Fans'],
+    roundup: [UI.ico('repeat'), 'Transfer round-up'],
+    headline: [UI.ico('newspaper'), 'Headline'],
+    social: [UI.ico('chat'), 'Fans'],
     story: ['', ''],
-    press: ['', 'Press Conference'],
-    bid: ['', 'Transfer Bid'],
-    report: ['', 'Scouting'],
-    youth: ['', 'Academy'],
-    board: ['', 'Board'],
-    dressing: ['', 'Dressing Room'],
-    world: ['', 'World'],
-    brief: ['', 'Around the league'],
-    transfer: ['', 'Transfer'],
-    rumour: ['', 'Rumour'],
-    award: ['', 'Awards'],
-    club: ['', 'Club'],
-    meeting: ['', 'Player meeting'],
-    medical: ['', 'Medical'],
-    contracts: ['', 'Contracts'],
-    desk: ['', 'Transfer desk'],
+    press: [UI.ico('mic'), 'Press Conference'],
+    bid: [UI.ico('briefcase'), 'Transfer Bid'],
+    report: [UI.ico('telescope'), 'Scouting'],
+    youth: [UI.ico('sprout'), 'Academy'],
+    board: [UI.ico('columns'), 'Board'],
+    dressing: [UI.ico('people'), 'Dressing Room'],
+    world: [UI.ico('globe'), 'World'],
+    brief: [UI.ico('bolt'), 'Around the league'],
+    transfer: [UI.ico('pen'), 'Transfer'],
+    rumour: [UI.ico('eyes'), 'Rumour'],
+    award: [UI.ico('medal'), 'Awards'],
+    club: [UI.ico('stadium'), 'Club'],
+    meeting: [UI.ico('speech'), 'Player meeting'],
+    medical: [UI.ico('stethoscope'), 'Medical'],
+    contracts: [UI.ico('note'), 'Contracts'],
+    desk: [UI.ico('handshake'), 'Transfer desk'],
   };
   UI.newsCard = function (n) {
     const s = S();
     const when = `${n.year !== s.year ? n.year + ' · ' : ''}MD ${n.day + 1}`;
     if (n.type === 'story') {
       const c = CL(n.clubId) || club() || NOCLUB;
-      return `<div class="story" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="bg"></div><button class="share" data-act="share" data-id="${n.id}" aria-label="Share"></button><div class="in"><span class="kick">${esc(n.kicker)}</span>${n.pid && P(n.pid) ? `<div class="tiny b" style="margin-top:10px;opacity:.85" data-act="player" data-id="${n.pid}">${C.flag(P(n.pid).nat)} ${esc(W.name(P(n.pid)))} ›</div>` : ''}<div class="big">${esc(n.big)}</div><div class="st">${esc(n.title)}</div><div class="ss">${esc(n.sub)}</div><div class="foot"><span>TOUCHLINE STORIES</span><span>${esc(c.short)} · ${n.year}</span></div></div></div>`;
+      return `<div class="story" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="bg"></div><button class="share" data-act="share" data-id="${n.id}" aria-label="Share"></button><div class="in"><span class="kick">${esc(n.kicker)}</span>${n.pid && P(n.pid) ? `<div class="tiny b" style="margin-top:10px;opacity:.85" data-act="player" data-id="${n.pid}">${C.flag(P(n.pid).nat)} ${esc(W.name(P(n.pid)))} ›</div>` : ''}<div class="big">${UI.ICONS[n.big] ? UI.ico(n.big, 96) : esc(n.big)}</div><div class="st">${esc(n.title)}</div><div class="ss">${esc(n.sub)}</div><div class="foot"><span>TOUCHLINE STORIES</span><span>${esc(c.name)} · ${n.year}</span></div></div></div>`;
     }
     if (n.type === 'digest' && n.data) return digestCard(n, when);
     if (n.type === 'roundup') {
@@ -376,9 +376,9 @@
       );
     if (d.scorer && P2(d.scorer[0]))
       lines.push(
-        `Top scorer: ${W.name(P2(d.scorer[0]))} (${TM(P2(d.scorer[0]).clubId) ? TM(P2(d.scorer[0]).clubId).short : '—'}) — ${d.scorer[1]} this season`,
+        `Top scorer: ${W.name(P2(d.scorer[0]))} (${TM(P2(d.scorer[0]).clubId) ? TM(P2(d.scorer[0]).clubId).name : '—'}) — ${d.scorer[1]} this season`,
       );
-    const clubShort = (p) => (TM(p.clubId) ? TM(p.clubId).short : '—');
+    const clubShort = (p) => (TM(p.clubId) ? TM(p.clubId).name : '—');
     if (d.hot && P2(d.hot[0]))
       lines.push(
         `In form: ${W.name(P2(d.hot[0]))} (${clubShort(P2(d.hot[0]))}) — ${d.hot[1].toFixed(1)} average over his last 3`,
@@ -577,7 +577,7 @@
     `<div style="margin-top:10px">${FM.Season.expansionClubs(id, q)
       .map(
         (r, i) =>
-          `<div class="row small tap" data-act="expandEdit" data-id="${id}" data-i="${i}" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,${esc(r[3])} 50%,${esc(r[4])} 50%);border:1px solid var(--line)"></span><span class="grow ellip"><b>${esc(r[0])}</b> <span class="dim">· ${esc(r[2])} · ${esc(r[7])}</span></span><span class="dim"></span></div>`,
+          `<div class="row small tap" data-act="expandEdit" data-id="${id}" data-i="${i}" style="padding:8px 0;border-top:1px solid var(--line);gap:8px"><span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,${esc(r[3])} 50%,${esc(r[4])} 50%);border:1px solid var(--line)"></span><span class="grow ellip"><b>${esc(r[0])}</b> <span class="dim">· ${esc(r[2])} · ${esc(r[7])}</span></span><span class="dim">${UI.ico('pen')}</span></div>`,
       )
       .join('')}</div>`;
   // A closed league can take new clubs at the start of the next season, with an expansion draft (FM.Season.runExpansions)
@@ -715,7 +715,7 @@
         comp = s.comps[c.comp],
         obj = FM.Season.objectives(c)[0],
         days = Math.max(1, o.until - now);
-      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${FM.Lore.identity(c.identity, c).icon} ${esc(FM.Lore.identity(c.identity, c).label)}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
+      return `<div class="card"><div class="row">${C.crest(c, 42)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="small dim ellip">${comp ? `${esc(comp.name)}${comp.table[c.id] && comp.table[c.id].p ? ` · ${U.ordinal(W.position(c.id))}` : ''}` : ''} · ${UI.ico(FM.Lore.identity(c.identity, c).icon)} ${esc(FM.Lore.identity(c.identity, c).label)}</div></div><span class="pill">Rep ${U.repText(c.rep)}</span></div>
         <div class="small muted" style="margin-top:8px;line-height:1.5">${esc(o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.')}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
         <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">Offer open for about ${days} day${days === 1 ? '' : 's'}</span><button class="btn sm" data-act="clubView" data-id="${c.id}">Look closer</button><button class="btn sm pri" data-act="takeJob" data-id="${c.id}">Accept</button></div></div>`;
     };
@@ -745,7 +745,7 @@
       kicker: 'NEW JOB',
       title: `${s.user.name} takes over at ${CL(d.id).name}`,
       sub: from ? `A fresh start after leaving ${from.name}.` : 'The first job of a new career.',
-      big: '',
+      big: 'handshake',
       clubId: d.id,
     });
     UI.closeAllSheets();
@@ -786,7 +786,8 @@
     x.fillText(n.kicker, 80, 105);
     x.fillStyle = '#fff';
     x.font = '900 260px "Barlow Condensed", Impact, sans-serif';
-    x.fillText(n.big, 60, 830);
+    if (UI.ICONS[n.big]) x.drawImage(await UI.icoImage(n.big, '#ffffff', 300), 60, 560, 300, 300);
+    else x.fillText(n.big, 60, 830);
     x.font = '800 84px "Barlow Condensed", Impact, sans-serif';
     const wrap = (t, maxW, lh, y) => {
       const words = t.toUpperCase().split(' ');
@@ -821,7 +822,7 @@
     x.font = '800 30px Inter, sans-serif';
     x.fillText('TOUCHLINE STORIES', 60, 1290);
     x.textAlign = 'right';
-    x.fillText(`${c.short} · ${n.year}`, 1020, 1290);
+    x.fillText(`${c.name} · ${n.year}`, 1020, 1290);
     cv.toBlob(async (blob) => {
       const r = await FM.Native.shareFile({ blob, name: 'touchline-story.png', type: 'image/png', title: n.title });
       if (r === 'saved') UI.toast('Story image saved');
@@ -1251,7 +1252,7 @@
             : t.chosen
               ? 'Your choice'
               : 'Auto — best on the pitch';
-        return row('spPick', k, d.icon, d.label, t.p, note, t.p ? spNum(Md.spScore(t.p, k)) : '');
+        return row('spPick', k, UI.ico(d.icon), d.label, t.p, note, t.p ? spNum(Md.spScore(t.p, k)) : '');
       })
       .join('');
     return `<div class="sec"><div class="h3">Captain & set pieces</div></div><div class="card flat list" style="padding:4px 12px">${row('captPick', '', '©', 'Captain', capt, captNote)}${sp}</div>
@@ -1542,7 +1543,7 @@
         const q = P(s.id),
           qc = q && q.clubId && CL(q.clubId);
         return q
-          ? `<div class="row small tap" data-act="player" data-id="${q.id}" style="padding:6px 0;border-top:1px solid var(--line);gap:8px">${qc ? C.crest(qc, 16) : ''}<span class="grow ellip">${esc(W.name(q))}</span><span class="dim">${esc(qc ? qc.short : '')} · ${W.age(q)}</span><b>${s.match}%</b></div>`
+          ? `<div class="row small tap" data-act="player" data-id="${q.id}" style="padding:6px 0;border-top:1px solid var(--line);gap:8px">${qc ? C.crest(qc, 16) : ''}<span class="grow ellip">${esc(W.name(q))}</span><span class="dim">${esc(qc ? qc.name : '')} · ${W.age(q)}</span><b>${s.match}%</b></div>`
           : '';
       })
       .join('');
@@ -1613,7 +1614,7 @@
     // what is driving his mood, each reason with its size
     const moodCard = () => {
       const fs = FM.People.moodFactors(p);
-      return `<div class="card"><div class="row"><div class="h3 grow">Mood</div><span class="small">${W.moraleLabel(p.morale)[1]} ${W.moraleLabel(p.morale)[0]}</span></div>${
+      return `<div class="card"><div class="row"><div class="h3 grow">Mood</div><span class="small">${UI.ico(W.moraleLabel(p.morale)[1])} ${W.moraleLabel(p.morale)[0]}</span></div>${
         fs.length
           ? fs
               .map(
@@ -1643,7 +1644,7 @@
       <div class="sp"></div>
       ${ownActions}
       ${FM.Season.isIcon(p) ? `<div style="margin-bottom:6px"><span class="trait" title="${esc(`${U.plural(p.career.spells.at(-1).apps, 'appearance')} for ${esc(CL(p.clubId).name)}`)}">Club icon</span></div>` : ''}
-      ${v.traits.length || own ? `<div style="margin-bottom:8px">${(own ? p.traits : v.traits).map((t) => `<span class="trait" title="${esc(D.TRAITS[t].desc)}">${D.TRAITS[t].icon} ${t}</span>`).join('')}${own ? `<span class="trait">${esc(p.personality)}</span>` : ''}</div>` : ''}
+      ${v.traits.length || own ? `<div style="margin-bottom:8px">${(own ? p.traits : v.traits).map((t) => `<span class="trait" title="${esc(D.TRAITS[t].desc)}">${UI.ico(D.TRAITS[t].icon)} ${t}</span>`).join('')}${own ? `<span class="trait">${esc(p.personality)}</span>` : ''}</div>` : ''}
       ${own && p.traits.length ? `<div class="small dim" style="margin:-2px 2px 12px">${p.traits.map((t) => D.TRAITS[t].desc).join(' ')}</div>` : ''}
       ${report}
       <div class="card"><div class="row"><div class="h3 grow">Profile</div>${!own && v.k < 70 ? '<span class="pill warn">Approximate</span>' : ''}</div>${own || v.k >= 40 ? C.radar(p, !own && v.k < 70) : '<div class="lock">Profile hidden</div>'}${attrs()}</div>
@@ -1739,7 +1740,7 @@
       const v = gk
         ? [h.apps, h.cs || 0, h.ga || 0, h.r ? h.r.toFixed(2) : '—', h.mins || '—', h.motm || 0, h.yc || 0, h.rc || 0]
         : [h.apps, h.g, h.a || 0, h.r ? h.r.toFixed(2) : '—', h.mins || '—', h.motm || 0, h.yc || 0, h.rc || 0];
-      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.short) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
+      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.name) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
     };
     // The rows only go back as far as the game has a record: what the Career panel counts beyond them (earlier
     // seasons at a club, and his career before that) comes as rows of its own, so the totals agree
@@ -1758,7 +1759,7 @@
       extra.push({ apps: p.career.apps - shownApps, g: Math.max(0, p.career.goals - shownG), before: true });
     const extraRow = (h) => {
       const c = h.c && CL(h.c);
-      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.short) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
+      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.name) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
     };
     if (!history.length && !extra.length) return '';
     const tot = history.concat(extra).reduce(
@@ -2160,7 +2161,7 @@
           .map((t) => {
             const from = t.from && CL(t.from),
               to = CL(t.to);
-            return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)} ${t.intl ? '<span class="pill acc">INTL</span>' : ''}</div><div class="tiny dim ellip">${from ? `${C.flag(from.nat)} ${esc(from.short)}` : 'Free agent'} → ${C.flag(to.nat)} ${esc(to.name)}${t.age ? ` · age ${t.age}` : ''}</div></div>${C.fee(t.fee, W.isUser(t.to) ? 'in' : W.isUser(t.from) ? 'out' : null)}</div>`;
+            return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)} ${t.intl ? '<span class="pill acc">INTL</span>' : ''}</div><div class="tiny dim ellip">${from ? `${C.flag(from.nat)} ${esc(from.name)}` : 'Free agent'} → ${C.flag(to.nat)} ${esc(to.name)}${t.age ? ` · age ${t.age}` : ''}</div></div>${C.fee(t.fee, W.isUser(t.to) ? 'in' : W.isUser(t.from) ? 'out' : null)}</div>`;
           })
           .join('') || '<div class="empty">No deals yet this season. The market moves when the window is open.</div>'
       }</div>`;
@@ -2797,7 +2798,7 @@
               .join('')}</div>`
           : ''
       }
-      ${sel ? `${lines(sel.xi)}${mgr ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span></span><span class="grow" style="margin-left:8px">Manager of the week: <b>${esc(((m) => (m ? `${m} (${esc(mgr.name)})` : mgr.name))(W.isUser(mgr.id) ? s.user.name : s.staff[mgr.manager] ? `${esc(s.staff[mgr.manager].fn)} ${esc(s.staff[mgr.manager].ln)}` : ''))}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:8px">The first team of the week is picked after the first league matchday.</div>'}</div>
+      ${sel ? `${lines(sel.xi)}${mgr ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>${UI.ico('mic')}</span><span class="grow" style="margin-left:8px">Manager of the week: <b>${esc(((m) => (m ? `${m} (${esc(mgr.name)})` : mgr.name))(W.isUser(mgr.id) ? s.user.name : s.staff[mgr.manager] ? `${esc(s.staff[mgr.manager].fn)} ${esc(s.staff[mgr.manager].ln)}` : ''))}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:8px">The first team of the week is picked after the first league matchday.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Team of the season so far</div></div>${toty ? `<div class="tiny dim">By average rating, for players with a fair share of the games.</div>${lines(toty)}` : '<div class="small dim" style="margin-top:8px">Not enough games played yet.</div>'}</div>`;
   }
   // ---- Awards: the world's best XI, a league's awards, and what a cup or tournament gave out ----
@@ -2828,7 +2829,7 @@
       a
         ? `<div class="row small tap" style="padding:7px 0;border-top:1px solid var(--line);gap:8px" data-act="player" data-id="${a.pid}"><span>${icon}</span><span class="grow ellip"><span class="dim">${label}</span> <b>${esc(a.name)}</b>${side(a.club)}</span><b>${tail}</b></div>`
         : '';
-    return `${row('', 'Golden Boot', aw.boot, aw.boot ? `${aw.boot.goals} goal${aw.boot.goals === 1 ? '' : 's'}` : '')}${row('', 'Best player', aw.player, aw.player ? aw.player.avg.toFixed(2) : '')}${row('', 'Best young player', aw.young, aw.young ? aw.young.avg.toFixed(2) : '')}${row('', 'Best goalkeeper', aw.keeper, aw.keeper ? aw.keeper.avg.toFixed(2) : '')}${row('', 'Most assists', aw.assists, aw.assists ? aw.assists.assists : '')}
+    return `${row(UI.ico('boot'), 'Golden Boot', aw.boot, aw.boot ? `${aw.boot.goals} goal${aw.boot.goals === 1 ? '' : 's'}` : '')}${row(UI.ico('star'), 'Best player', aw.player, aw.player ? aw.player.avg.toFixed(2) : '')}${row(UI.ico('sprout'), 'Best young player', aw.young, aw.young ? aw.young.avg.toFixed(2) : '')}${row(UI.ico('glove'), 'Best goalkeeper', aw.keeper, aw.keeper ? aw.keeper.avg.toFixed(2) : '')}${row(UI.ico('target'), 'Most assists', aw.assists, aw.assists ? aw.assists.assists : '')}
       ${aw.xi ? `<div class="small b dim" style="margin:12px 0 0">${xiLabel}</div>${UI.xiLines(aw.xi)}` : ''}`;
   };
   function awardsView() {
@@ -2848,7 +2849,7 @@
       .reverse();
     return `<div class="card"><div class="row"><div class="h3 grow">World best XI</div><span class="pill acc">${esc(FM.Season.seasonLabel())} so far</span></div>
       <div class="tiny dim">The best average ratings in every league played in full or light, with a little extra for the stronger leagues.</div>
-      ${world ? `${UI.xiLines(world.xi)}${world.best ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span></span><span class="grow" style="margin-left:8px">Player of the year so far: <b>${esc(world.best.name)}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:6px">Awards start once the league seasons are under way.</div>'}</div>
+      ${world ? `${UI.xiLines(world.xi)}${world.best ? `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span>${UI.ico('globe')}</span><span class="grow" style="margin-left:8px">Player of the year so far: <b>${esc(world.best.name)}</b></span></div>` : ''}` : '<div class="small dim" style="margin-top:6px">Awards start once the league seasons are under way.</div>'}</div>
       ${pick}
       <div class="card"><div class="row"><div class="h3 grow">${esc(S().comps[cur].name)} awards</div><span class="pill">so far</span></div>${UI.awardsHTML(la, 'TEAM OF THE SEASON')}</div>
       ${
@@ -3300,10 +3301,10 @@
                 .map(([k, n]) => `${k} ${n}`)
                 .join(', ')}`;
         const field = isIc
-          ? `<div class="chips" style="flex-wrap:wrap;margin-top:8px">${c.clubs.map((id) => `<span class="chip" style="${W.isUser(id) ? 'border-color:var(--acc)' : ''}">${C.flag(CL(id).nat)} ${esc(CL(id).short)}</span>`).join('')}</div>`
+          ? `<div class="chips" style="flex-wrap:wrap;margin-top:8px">${c.clubs.map((id) => `<span class="chip" style="${W.isUser(id) ? 'border-color:var(--acc)' : ''}">${C.flag(CL(id).nat)} ${esc(CL(id).name)}</span>`).join('')}</div>`
           : '';
         const empty = isIc ? 'The first round is drawn after matchday 10.' : c.on ? '' : 'Not this season.';
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px;line-height:1.5">${note}</div>${field}${groupsHtml(c)}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : empty ? `<div class="small dim" style="margin-top:8px">${empty}</div>` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px;line-height:1.5">${note}</div>${field}${groupsHtml(c)}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : empty ? `<div class="small dim" style="margin-top:8px">${empty}</div>` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     const cont = W.continentals()
@@ -3311,7 +3312,7 @@
       .map((c) => {
         const grp = groupsHtml(c);
         const ko = FM.Cups.koList(c);
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them
@@ -3352,7 +3353,7 @@
                     .map(fxLine)
                     .join('')
                 : '');
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${U.plural(c.clubs.length, 'club')} · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)} ${C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${U.plural(c.clubs.length, 'club')} · ${c.format === 'ko' ? 'knockout; the big clubs field reserve sides' : 'league phase, then a final'}</div>${table}${fx || '<div class="small dim" style="margin-top:8px">Not started yet.</div>'}</div>`;
       })
       .join('');
     // the super cups: one match at the start of a season (a nation's champions against its cup winners; the champions cup against its Shield)
@@ -3365,14 +3366,14 @@
       )
       .map(
         (c) =>
-          `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">One match at a neutral ground early in the season: ${c.nat ? 'the league champions against the cup winners' : 'the champions cup winner against the Shield winner'} of last season</div>${fxLine(c.fx)}</div>`,
+          `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">One match at a neutral ground early in the season: ${c.nat ? 'the league champions against the cup winners' : 'the champions cup winner against the Shield winner'} of last season</div>${fxLine(c.fx)}</div>`,
       )
       .join('');
     // (the European knockout cups, the Holders' and the Summer Cup, sit with the continental ones)
     const dom = W.cups()
       .filter((c) => (v === 'domestic' && !c.euro) || (v === 'continental' && c.euro) || (v === 'mine' && inIt(c)))
       .map((c) => {
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? '' : ''} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).short)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${U.plural(c.clubs.length, 'club')} · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties${c.prize ? ` · ${U.money(c.prize)} fund, paid down the rounds` : ''}</div>
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? UI.ico('star') : UI.ico('trophy')} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${U.plural(c.clubs.length, 'club')} · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties${c.prize ? ` · ${U.money(c.prize)} fund, paid down the rounds` : ''}</div>
         ${
           (c.rounds || [])
             .slice()
@@ -3408,7 +3409,7 @@
         .sort((a, b) => b[1] - a[1]);
     const tag = (k) => {
       const c = CL(k ? f.a : f.h);
-      return `<b class="ev-team" style="background:${c.colors[0]};color:${U.ink(c.colors[0])}">${esc(c.short)}</b>`;
+      return `<b class="ev-team" style="background:${c.colors[0]};color:${U.ink(c.colors[0])}">${esc(c.name)}</b>`;
     };
     UI.sheet(
       `<div class="row" style="justify-content:space-around;text-align:center"><div>${C.crest(CL(f.h), 48)}<div class="small b">${esc(CL(f.h).name)}</div></div><div class="h1">${r.hg}–${r.ag}</div><div>${C.crest(CL(f.a), 48)}<div class="small b">${esc(CL(f.a).name)}</div></div></div>
@@ -3449,7 +3450,7 @@
       const o = M.OUTLETS[id],
         v = st.att[id],
         n = latest(id);
-      return `<div class="card"><div class="row"><span style="font-size:20px">${o.icon}</span><div class="grow" style="margin-left:10px"><div class="h3">${esc(M.name(id, club()))}</div><div class="tiny dim">${esc(o.kind)} · ${esc(o.line)}</div></div><div style="text-align:right"><b style="color:${C.moodColor(50 + v / 2)}">${M.view(id)}</b></div></div>${C.bar(50 + v / 2, C.moodColor(50 + v / 2))}${n ? `<div class="small" style="margin-top:8px">“${esc(n.title)}”</div>` : '<div class="tiny dim" style="margin-top:8px">Nothing printed about you yet.</div>'}</div>`;
+      return `<div class="card"><div class="row"><span style="font-size:20px">${UI.ico(o.icon)}</span><div class="grow" style="margin-left:10px"><div class="h3">${esc(M.name(id, club()))}</div><div class="tiny dim">${esc(o.kind)} · ${esc(o.line)}</div></div><div style="text-align:right"><b style="color:${C.moodColor(50 + v / 2)}">${M.view(id)}</b></div></div>${C.bar(50 + v / 2, C.moodColor(50 + v / 2))}${n ? `<div class="small" style="margin-top:8px">“${esc(n.title)}”</div>` : '<div class="tiny dim" style="margin-top:8px">Nothing printed about you yet.</div>'}</div>`;
     };
     return `<div class="card"><div class="row"><div class="grow"><div class="h3">Press mood</div><div class="small dim">${esc(effect)}</div></div><div style="text-align:right"><div class="kpi"><div class="v" style="color:${C.moodColor(50 + mood / 2)}">${M.moodLabel(mood)}</div></div></div></div>${C.bar(50 + mood / 2, C.moodColor(50 + mood / 2))}<div class="tiny dim" style="margin-top:6px">Results move each outlet at its own speed. Press conferences, big signings and sales do too.</div></div>
       ${M.order.map(outlet).join('')}
@@ -3544,7 +3545,7 @@
     const [t1, t2, t3] = person(top, `${top ? top.goals : 0} goals`),
       [m1, m2, m3] = person(most, `${most ? most.apps : 0} games`);
     return `<div class="card"><div class="row"><div class="h3 grow">Club records</div><span class="tiny dim">matches & transfers since ${since}</span></div>
-      ${row('Biggest win', w1, w2)}${row('Heaviest defeat', l1, l2)}${row('Record signing', s1, s2, s3)}${row('Record sale', o1, o2, o3)}${row('Top scorer', t1, t2, t3)}${row('Most appearances', m1, m2, m3)}</div>`;
+      ${row('Biggest win', w1, w2)}${row('Heaviest defeat', l1, l2)}${row('Record signing', s1, s2, s3)}${row('Record sale', o1, o2, o3)}${row('Top scorer', t1, t2, t3)}${row('Most appearances', m1, '', m3)}</div>`;
   };
   // The ground's story: opened, capacity changes over the save
   UI.stadiumCard = function (c) {
@@ -3568,10 +3569,10 @@
     const staff = Object.values(D.STAFF_ROLES)
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
-    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''}</div></div></div></div>
-      <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${I.icon}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
-        ${c.policy ? `<div class="phrase"><span></span><span>A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club</span></div>` : ''}
-        ${c.rival ? `<div class="phrase"><span></span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
+    return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(I.icon)} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''}</div></div></div></div>
+      <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${UI.ico(I.icon)}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
+        ${c.policy ? `<div class="phrase"><span>${UI.ico('columns')}</span><span>A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club</span></div>` : ''}
+        ${c.rival ? `<div class="phrase"><span>${UI.ico('swords')}</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
         <div class="row small" style="margin-top:10px"><span style="width:90px" class="dim">Fan mood</span><div class="grow">${C.bar(c.fanMood, C.moodColor(c.fanMood))}</div></div>
         <div class="row small" style="margin-top:8px"><span style="width:90px" class="dim">Board</span><div class="grow">${C.bar(c.boardConf, C.moodColor(c.boardConf))}</div></div></div>
       ${UI.boardroomCard()}
@@ -3597,7 +3598,7 @@
         .map(([k, f]) => {
           const lvl = c.facilities[k],
             cost = FM.Season.facCost(k, lvl);
-          return `<div class="fac"><div class="ico">${f.icon}</div><div class="grow"><div class="b">${esc(f.name)}</div><div class="tiny dim">${f.effect}${k === 'training' ? ` · takes a player to about ${FM.Season.devCap(c)}` : ''}</div><div class="lvl">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</div></div>${lvl >= 5 ? '<span class="pill good">MAX</span>' : `<button class="btn sm" data-act="upgrade" data-k="${k}" ${c.building || c.balance < cost ? 'disabled' : ''}>${U.money(cost)}<br><span class="tiny dim">${FM.Season.facWeeks(k, lvl)}w</span></button>`}</div>`;
+          return `<div class="fac"><div class="ico">${UI.ico(f.icon)}</div><div class="grow"><div class="b">${esc(f.name)}</div><div class="tiny dim">${f.effect}${k === 'training' ? ` · takes a player to about ${FM.Season.devCap(c)}` : ''}</div><div class="lvl">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</div></div>${lvl >= 5 ? '<span class="pill good">MAX</span>' : `<button class="btn sm" data-act="upgrade" data-k="${k}" ${c.building || c.balance < cost ? 'disabled' : ''}>${U.money(cost)}<br><span class="tiny dim">${FM.Season.facWeeks(k, lvl)}w</span></button>`}</div>`;
         })
         .join('') +
       '</div>'
@@ -3693,8 +3694,7 @@
         'Most appearances',
         all.slice().sort((a, b) => b.apps - a.apps),
         (x) => x.apps,
-        (x) =>
-          `${x.pos}${x.era ? ' · ' + x.era : ''}${x.note ? ' · ' + x.note : ''}${x.hist && x.became ? ' · ' + x.became : ''}`,
+        () => '',
       )}
       ${sec(
         'Academy graduates',
@@ -3705,7 +3705,7 @@
       ${sec(
         'Cult heroes',
         withClub.filter((x) => x.cult > 0).sort((a, b) => b.cult - a.cult),
-        (x) => '' + x.cult,
+        (x) => UI.ico('star') + x.cult,
         (x) => `${x.derbyGoals} derby goals · ${x.apps} apps`,
       )}
       <div class="sec"><div class="h3">Biggest sales</div></div><div class="card flat" style="padding:2px 14px">${(c.bestSales || []).length ? c.bestSales.map((b, i) => `<div class="legend-row ${P(b.pid) ? 'tap' : ''}" ${P(b.pid) ? `data-act="player" data-id="${b.pid}"` : ''}><div class="rank">${i + 1}</div><div class="grow"><div class="b">${esc(b.name)}</div><div class="tiny dim">to ${esc(CL(b.to).name)} · ${b.year}</div></div><div class="era" style="color:var(--bad)">${U.money(b.fee)}</div></div>`).join('') : '<div class="empty">No big sales yet.</div>'}</div>`;
@@ -3720,14 +3720,14 @@
       .map(
         (
           e,
-        ) => `<div class="card"><div class="row"><div class="era grow">${esc(e.label)}</div>${e.user ? `<span class="pill ${e.user.trophies.length ? 'acc' : ''}">You: ${U.ordinal(e.user.pos)} with ${esc(CL(e.user.club).short)}</span>` : ''}</div>
+        ) => `<div class="card"><div class="row"><div class="era grow">${esc(e.label)}</div>${e.user ? `<span class="pill ${e.user.trophies.length ? 'acc' : ''}">You: ${U.ordinal(e.user.pos)} with ${esc(CL(e.user.club).name)}</span>` : ''}</div>
       ${Object.values(e.comps)
         .filter(W.homeLeague)
         .map(
           (
             x,
           ) => `<div style="margin-top:10px"><div class="small b dim" style="text-transform:uppercase;letter-spacing:.6px">${esc(x.name)}</div>
-        <div class="row small" style="margin-top:4px">${C.crest(CL(x.champion), 18)} <b class="grow">${esc(CL(x.champion).name)}</b><span class="dim">runner-up ${esc(CL(x.runnerUp).short)}</span></div>
+        <div class="row small" style="margin-top:4px">${C.crest(CL(x.champion), 18)} <b class="grow">${esc(CL(x.champion).name)}</b><span class="dim">runner-up ${esc(CL(x.runnerUp).name)}</span></div>
         ${x.topScorer ? `<div class="small" style="margin-top:3px">${esc(x.topScorer.name)} — ${U.plural(x.topScorer.goals, 'goal')}</div>` : ''}
         ${x.poty ? `<div class="small" style="margin-top:3px">Player of the Season: ${esc(x.poty.name)} (${x.poty.avg})</div>` : ''}
         ${x.playoffWinner ? `<div class="small" style="margin-top:3px">Playoff winners: ${esc(CL(x.playoffWinner).name)}</div>` : ''}</div>`,
@@ -3741,7 +3741,7 @@
               .filter((x) => !W.homeLeague(x))
               .map(
                 (x) =>
-                  `<div class="row small" style="margin-top:4px">${C.flag(x.nat)} <span class="dim grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).short)}</b></div>`,
+                  `<div class="row small" style="margin-top:4px">${C.flag(x.nat)} <span class="dim grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).name)}</b></div>`,
               )
               .join('')}</div>`
           : ''
@@ -3760,9 +3760,9 @@
           : ''
       }
       ${e.intl && e.intl.length ? `<div style="margin-top:10px"><div class="small b dim" style="text-transform:uppercase;letter-spacing:.6px">International</div>${e.intl.map((x) => `<div class="small" style="margin-top:4px">${esc(x.name)}: <b>${C.flag(FM.S.nteams[x.winner].code)} ${esc(FM.S.nteams[x.winner].name)}</b> <span class="dim">${esc(x.final)} v ${esc(FM.S.nteams[x.runnerUp].name)}</span></div>`).join('')}</div>` : ''}
-      <div class="small" style="margin-top:10px">▲ ${e.promoted.map((id) => esc(CL(id).short)).join(', ')} &nbsp; ▼ ${e.relegated.map((id) => esc(CL(id).short)).join(', ')}</div>
+      <div class="small" style="margin-top:10px">▲ ${e.promoted.map((id) => esc(CL(id).name)).join(', ')} &nbsp; ▼ ${e.relegated.map((id) => esc(CL(id).name)).join(', ')}</div>
       ${e.upsets.length ? `<div class="small" style="margin-top:6px">Upset of the season: ${esc(CL(e.upsets[0].w).name)} ${e.upsets[0].score.split('–').sort().reverse().join('–')} ${esc(CL(e.upsets[0].l).name)}</div>` : ''}
-      ${e.transfers.length ? `<div class="small" style="margin-top:6px">Record deal: ${esc(e.transfers[0].name)} to ${esc(CL(e.transfers[0].to).short)} for ${U.money(e.transfers[0].fee)}</div>` : ''}</div>`,
+      ${e.transfers.length ? `<div class="small" style="margin-top:6px">Record deal: ${esc(e.transfers[0].name)} to ${esc(CL(e.transfers[0].to).name)} for ${U.money(e.transfers[0].fee)}</div>` : ''}</div>`,
       )
       .join('');
   }
@@ -3783,12 +3783,13 @@
       u = s.user,
       st = u.stats;
     const tags = [];
-    if (st.youthDebuts >= 3) tags.push(['', 'Youth Developer']);
-    if (st.giantKills >= 2) tags.push(['', 'Giant Killer']);
-    if (st.promotions >= 1) tags.push(['', 'Promotion Specialist']);
-    if (st.trophies >= 2) tags.push(['', 'Serial Winner']);
-    if (u.tactic.buildup === 'Possession' && st.w > st.l && st.games >= 10) tags.push(['', 'Tactical Innovator']);
-    if (st.sold >= 3) tags.push(['', 'Wheeler-Dealer']);
+    if (st.youthDebuts >= 3) tags.push([UI.ico('sprout'), 'Youth Developer']);
+    if (st.giantKills >= 2) tags.push([UI.ico('dagger'), 'Giant Killer']);
+    if (st.promotions >= 1) tags.push([UI.ico('trendUp'), 'Promotion Specialist']);
+    if (st.trophies >= 2) tags.push([UI.ico('trophy'), 'Serial Winner']);
+    if (u.tactic.buildup === 'Possession' && st.w > st.l && st.games >= 10)
+      tags.push([UI.ico('brain'), 'Tactical Innovator']);
+    if (st.sold >= 3) tags.push([UI.ico('briefcase'), 'Wheeler-Dealer']);
     return `<div class="card"><div class="row" style="gap:12px">${C.avatar(u, 52)}<div class="grow"><div class="h2">${u.nat ? C.flag(u.nat) + ' ' : ''}${esc(u.name)}</div><div class="small dim">${esc(u.badges)} licence · ${club() ? `Manager of ${esc(club().name)}` : 'Out of work'}</div></div></div>
       <div class="row small" style="margin-top:12px"><span style="width:90px" class="dim">Reputation</span><div class="grow">${C.stars(U.repStars(u.rep))}</div></div>
       <div style="margin-top:12px">${tags.length ? tags.map(([i, t]) => `<span class="trait">${i} ${t}</span>`).join('') : '<span class="small dim">Your managerial identity will emerge from how you manage — youth, giant-killing, promotions, tactics.</span>'}</div></div>
@@ -3822,9 +3823,9 @@
     if (!entries.length && none)
       return `<div class="card"><div class="h3">Honours</div><div class="small dim" style="margin-top:6px">${none}</div></div>`;
     if (!entries.length) return '';
-    return `<div class="card"><div class="h3">Honours</div>${main.map((e) => line(e, '')).join('') || (none ? `<div class="small dim" style="margin-top:6px">${none}</div>` : '')}${
+    return `<div class="card"><div class="h3">Honours</div>${main.map((e) => line(e, UI.ico('trophy'))).join('') || (none ? `<div class="small dim" style="margin-top:6px">${none}</div>` : '')}${
       reg.length
-        ? `<div class="small b dim" style="margin-top:12px;text-transform:uppercase;letter-spacing:.6px">Regional</div>${reg.map((e) => line(e, '')).join('')}`
+        ? `<div class="small b dim" style="margin-top:12px;text-transform:uppercase;letter-spacing:.6px">Regional</div>${reg.map((e) => line(e, UI.ico('medal'))).join('')}`
         : ''
     }</div>`;
   };
@@ -3837,7 +3838,7 @@
       .sort((a, b) => (mine(b[1]) ? 1 : 0) - (mine(a[1]) ? 1 : 0))
       .map(
         ([, x]) =>
-          `<div class="row small" style="margin-top:6px"><span class="grow ${mine(x) ? 'b' : 'dim'}">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).short)}</b></div>`,
+          `<div class="row small" style="margin-top:6px"><span class="grow ${mine(x) ? 'b' : 'dim'}">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).name)}</b></div>`,
       )
       .join('');
     const head = `Regional competitions (${list.length})`;
@@ -3852,7 +3853,6 @@
       ${FM.MatchView.VISUAL ? `<div class="card"><div class="row"><div class="grow"><div class="h3">Match view</div><div class="small dim">The pitch with moving players, or commentary only: the same match, lighter on the battery</div></div><div class="seg" style="width:150px"><button class="${s.settings.matchView !== 'text' ? 'on' : ''}" data-act="setMatchView" data-v="pitch">Pitch</button><button class="${s.settings.matchView === 'text' ? 'on' : ''}" data-act="setMatchView" data-v="text">Text</button></div></div></div>` : ''}
       <div class="card"><div class="row"><div class="grow"><div class="h3">Default match speed</div></div><div class="seg" style="width:160px">${[1, 2, 4].map((v) => `<button class="${s.settings.speed === v ? 'on' : ''}" data-act="speedDef" data-v="${v}">${v}×</button>`).join('')}</div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Season preview popup</div><div class="small dim">Show it automatically in pre-season (it's always on the Home screen)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.skipPreview ? 'on' : ''}" data-act="setFlag" data-k="skipPreview" data-v="0">On</button><button class="${s.settings.skipPreview ? 'on' : ''}" data-act="setFlag" data-k="skipPreview" data-v="1">Off</button></div></div></div>
-      <div class="card"><div class="row"><div class="grow"><div class="h3">Colour-blind kits</div><div class="small dim">Picks the away shirt so the two sides look different to red-green colour blindness too, and draws the away side's players as squares</div></div><div class="seg" style="width:120px"><button class="${s.settings.colourBlind ? 'on' : ''}" data-act="setFlag" data-k="colourBlind" data-v="1">On</button><button class="${!s.settings.colourBlind ? 'on' : ''}" data-act="setFlag" data-k="colourBlind" data-v="0">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Confirm before skipping</div><div class="small dim">Ask first before Next match skips through the days (the sheet always asks)</div></div><div class="seg" style="width:120px"><button class="${s.settings.confirmSim ? 'on' : ''}" data-act="setFlag" data-k="confirmSim" data-v="1">On</button><button class="${!s.settings.confirmSim ? 'on' : ''}" data-act="setFlag" data-k="confirmSim" data-v="0">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Haptics</div><div class="small dim">A light tap on every button (phones that support it)</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="0">On</button><button class="${s.settings.noHaptics ? 'on' : ''}" data-act="setFlag" data-k="noHaptics" data-v="1">Off</button></div></div></div>
       <div class="card"><div class="row"><div class="grow"><div class="h3">Matchday digest</div><div class="small dim">A round-up card in the feed after every league matchday</div></div><div class="seg" style="width:120px"><button class="${!s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="0">On</button><button class="${s.settings.noDigest ? 'on' : ''}" data-act="setFlag" data-k="noDigest" data-v="1">Off</button></div></div></div>

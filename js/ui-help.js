@@ -345,7 +345,7 @@
           .filter((x) => !W.homeLeague(x))
           .map(
             (x) =>
-              `<div class="row small" style="margin-top:6px">${C.flag(x.nat)} <span class="grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).short)}</b></div>`,
+              `<div class="row small" style="margin-top:6px">${C.flag(x.nat)} <span class="grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).name)}</b></div>`,
           )
           .join('') ||
         '<div class="tiny dim" style="margin-top:6px">Follow a league (☆ on its screen) to see its champion here.</div>'
@@ -357,7 +357,7 @@
               .map(([, x]) => x)
               .map(
                 (x) =>
-                  `<div class="row small" style="margin-top:6px"><span class="grow">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).short)}</b></div>`,
+                  `<div class="row small" style="margin-top:6px"><span class="grow">${esc(x.name)}</span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).name)}</b></div>`,
               )
               .join('')}</div>`
           : ''

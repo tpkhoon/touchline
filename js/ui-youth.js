@@ -20,7 +20,7 @@
       opp = last && S().clubs[last.opp];
     return i < 0
       ? '<span class="tiny dim">Youth league starts with the season</span>'
-      : `<span class="tiny dim">${U.ordinal(i + 1)} of ${t.length} · ${U.pts(t[i].pts)}${last && opp ? ` · last: ${last.gf}–${last.ga} ${last.home ? 'v' : 'at'} ${esc(opp.short)}` : ''}</span>`;
+      : `<span class="tiny dim">${U.ordinal(i + 1)} of ${t.length} · ${U.pts(t[i].pts)}${last && opp ? ` · last: ${last.gf}–${last.ga} ${last.home ? 'v' : 'at'} ${esc(opp.name)}` : ''}</span>`;
   };
   UI.youthSides = function (c) {
     const out = [];
@@ -74,7 +74,7 @@
       const spare = W.squad(c.id).filter((p) => !p.loan && !p.team && W.age(p) <= 23);
       if (spare.length)
         out.push(
-          `<div class="tiny dim" style="margin:6px 2px">Send down to ${esc(b.short)}: ${spare
+          `<div class="tiny dim" style="margin:6px 2px">Send down to ${esc(b.name)}: ${spare
             .slice(0, 12)
             .map(
               (p) =>

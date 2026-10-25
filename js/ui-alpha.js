@@ -41,8 +41,8 @@
     const card = `<div class="card"><div class="row"><div class="h3 grow">Contract</div><span class="small dim">until ${p.contract}</span></div>
       <div class="row small" style="margin-top:6px"><span class="grow muted">Wage</span><b>${U.money(p.wage)}/wk</b></div>
       ${clauses.length ? `<div style="margin-top:6px">${clauses.map((x) => `<span class="trait">${esc(x)}</span>`).join('')}</div>` : '<div class="tiny dim" style="margin-top:6px">No clauses.</div>'}
-      <div class="row small" style="margin-top:8px"><span class="grow muted">Agent</span><b>${ag.icon} ${esc(ag.name)}</b></div><div class="tiny dim">${esc(ag.firm)} · ${esc(ag.style)} — ${esc(ag.desc)}</div>
-      ${open.length ? `<div class="h3" style="margin-top:10px">Promises</div>${open.map((x) => `<div class="row small" style="margin-top:4px"><span></span><span class="grow">${esc(Pe.PROMISE[x.type].label)}</span><span class="dim tiny">${esc(Pe.PROMISE[x.type].desc(x))}</span>${Pe.canRenegotiate(x) ? `<button class="btn sm" data-act="renegotiate" data-id="${x.id}" aria-label="New deadline">New deadline</button>` : ''}</div>`).join('')}` : ''}
+      <div class="row small" style="margin-top:8px"><span class="grow muted">Agent</span><b>${UI.ico(ag.icon)} ${esc(ag.name)}</b></div><div class="tiny dim">${esc(ag.firm)} · ${esc(ag.style)} — ${esc(ag.desc)}</div>
+      ${open.length ? `<div class="h3" style="margin-top:10px">Promises</div>${open.map((x) => `<div class="row small" style="margin-top:4px"><span>${UI.ico('handshake')}</span><span class="grow">${esc(Pe.PROMISE[x.type].label)}</span><span class="dim tiny">${esc(Pe.PROMISE[x.type].desc(x))}</span>${Pe.canRenegotiate(x) ? `<button class="btn sm" data-act="renegotiate" data-id="${x.id}" aria-label="New deadline">New deadline</button>` : ''}</div>`).join('')}` : ''}
       ${p.wantsOut ? '<div class="warnline" style="margin-top:8px">He wants to leave the club.</div>' : ''}</div>`;
     return (
       base.replace(
@@ -62,7 +62,7 @@
     if (v.k >= 30) {
       const ag = Co.agentInfo(p);
       bits.push(
-        `<div class="row small" style="margin-top:4px"><span class="grow muted">Agent</span><b>${ag.icon} ${esc(ag.style)}</b></div>`,
+        `<div class="row small" style="margin-top:4px"><span class="grow muted">Agent</span><b>${UI.ico(ag.icon)} ${esc(ag.style)}</b></div>`,
       );
     }
     if (bits.length)
@@ -81,7 +81,7 @@
     UI.sheet(
       `<div class="row">${C.pos(p)}<div class="grow"><div class="b">${esc(W.name(p))}</div><div class="tiny dim">${esc(p.personality)} · morale ${W.moraleLabel(p.morale).join(' ')} · recent form ${f}</div></div></div>
       <div class="small muted" style="margin:10px 0">Your word matters: kept promises lift morale and trust; broken ones cost both — and the whole dressing room notices. Squad trust <b>${Math.round(S().user.trust ?? 60)}%</b>.</div>
-      ${Pe.canTalk(p) ? opts.map((k) => `<button class="card row tap" style="width:100%;text-align:left" data-act="doTalk" data-id="${p.id}" data-k="${k}"><span style="font-size:22px">${Pe.TALKS[k].icon}</span><div class="grow"><div class="b small">${esc(Pe.TALKS[k].label)}</div>${Pe.PROMISE[k] ? `<div class="tiny dim">Promise: ${esc(Pe.PROMISE[k].desc({ ...{ target: p.season.apps + 4, base: p.season.apps, days: Pe.PROMISE[k].days, status: 'regular' } }))}</div>` : ''}</div></button>`).join('') : '<div class="empty">You spoke to him recently. Give it a few days.</div>'}`,
+      ${Pe.canTalk(p) ? opts.map((k) => `<button class="card row tap" style="width:100%;text-align:left" data-act="doTalk" data-id="${p.id}" data-k="${k}"><span style="font-size:22px">${UI.ico(Pe.TALKS[k].icon)}</span><div class="grow"><div class="b small">${esc(Pe.TALKS[k].label)}</div>${Pe.PROMISE[k] ? `<div class="tiny dim">Promise: ${esc(Pe.PROMISE[k].desc({ ...{ target: p.season.apps + 4, base: p.season.apps, days: Pe.PROMISE[k].days, status: 'regular' } }))}</div>` : ''}</div></button>`).join('') : '<div class="empty">You spoke to him recently. Give it a few days.</div>'}`,
       { title: 'Talk to player' },
     );
   };
@@ -239,7 +239,7 @@
         : '';
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)}</span></div>${p.clubId && !renew ? C.crest(CL(p.clubId), 26) : renew ? '<span class="pill acc">Renewal</span>' : '<span class="pill">Free agent</span>'}</div>
       <div class="small dim" style="margin-top:6px">${renew ? `Current: ${U.money(p.wage)}/wk until ${p.contract}` : `Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}`}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${U.staffText(dir.ability)})`}</div>
-      <div class="card flat row" style="margin-top:10px;padding:10px 12px"><span style="font-size:22px">${ag.icon}</span><div class="grow"><div class="small b">${esc(ag.name)} · ${esc(ag.firm)}</div><div class="tiny dim">${esc(ag.style)} — ${esc(ag.desc)} Agent fee ${Math.round(ag.fee * 100)}%.</div></div><div class="tiny dim" style="text-align:right">Patience<br>${Co.blocked(p) ? '<b style="color:var(--bad)">Walked out</b>' : dots(pat.left, ag.patience)}</div></div>
+      <div class="card flat row" style="margin-top:10px;padding:10px 12px"><span style="font-size:22px">${UI.ico(ag.icon)}</span><div class="grow"><div class="small b">${esc(ag.name)} · ${esc(ag.firm)}</div><div class="tiny dim">${esc(ag.style)} — ${esc(ag.desc)} Agent fee ${Math.round(ag.fee * 100)}%.</div></div><div class="tiny dim" style="text-align:right">Patience<br>${Co.blocked(p) ? '<b style="color:var(--bad)">Walked out</b>' : dots(pat.left, ag.patience)}</div></div>
       ${o.mode !== 'loan' ? talksLine(p) : ''}${extraLines}${tabs}${body}
       ${msg ? `<div class="reply" style="margin-top:12px">${esc(msg)}</div>` : ''}${agentBtn}
       <button class="btn pri block" style="margin-top:16px" data-act="submitOffer">${o.mode === 'loan' ? 'Propose loan' : o.mode === 'pre' ? 'Offer pre-contract' : renew ? 'Offer new contract' : p.clubId ? 'Submit offer' : 'Offer contract'}</button>`;
@@ -286,7 +286,7 @@
         d.addPct,
         [[0, 'None'], ...[0.1, 0.2].map((f) => [f, `+${U.money(U.roundMoney(o.fee * f))}`])],
       )}
-      <div class="h3" style="margin-top:12px">Sell-on for ${esc(seller.short)} <span class="tiny dim">(their share of his next fee)</span></div>${chipRow(
+      <div class="h3" style="margin-top:12px">Sell-on for ${esc(seller.name)} <span class="tiny dim">(their share of his next fee)</span></div>${chipRow(
         'ofDeal',
         'sellOn',
         d.sellOn,
@@ -510,14 +510,14 @@
   UI.clubLegendsCard = function (id) {
     const at = FM.Records.allTime(id);
     if (!at.all.length) return '';
-    const five = (title, list, val, unit) => {
+    const five = (title, list, val, unit, plain) => {
       const top = list.slice(0, 5);
       return `<div class="small b dim" style="margin:10px 0 2px">${title}</div>${top
         .map((x, i) => {
           const live = x.id && S().players[x.id] && S().players[x.id].clubId === id;
           const chase =
             live && i > 0 ? ` · ${val(top[i - 1]) - val(x) + 1} to pass ${esc(top[i - 1].name.split(' ').pop())}` : '';
-          return `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:18px">${i + 1}</span><div class="grow" style="min-width:0"><div class="b row ${x.id && S().players[x.id] ? 'tap' : ''}" style="gap:6px;min-width:0" ${x.id && S().players[x.id] ? `data-act="player" data-id="${x.id}"` : ''}><span class="ellip">${esc(x.name)}</span>${live ? '<span class="pill acc" style="flex:none">Squad</span>' : ''}</div><div class="tiny dim">${esc(x.pos || '')}${x.era ? ' · ' + esc(x.era) : ''}${chase}</div></div><b>${val(x)} ${unit}</b></div>`;
+          return `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:18px">${i + 1}</span><div class="grow" style="min-width:0"><div class="b row ${x.id && S().players[x.id] ? 'tap' : ''}" style="gap:6px;min-width:0" ${x.id && S().players[x.id] ? `data-act="player" data-id="${x.id}"` : ''}><span class="ellip">${esc(x.name)}</span>${live ? '<span class="pill acc" style="flex:none">Squad</span>' : ''}</div>${plain ? '' : `<div class="tiny dim">${esc(x.pos || '')}${x.era ? ' · ' + esc(x.era) : ''}${chase}</div>`}</div><b>${val(x)} ${unit}</b></div>`;
         })
         .join('')}`;
     };
@@ -530,7 +530,7 @@
           )
           .join('')}`
       : '';
-    return `<div class="card"><div class="h3">Club legends</div>${five('TOP SCORERS', at.scorers, (x) => x.goals, 'goals')}${five('MOST APPEARANCES', at.apps, (x) => x.apps, 'games')}${captains}</div>`;
+    return `<div class="card"><div class="h3">Club legends</div>${five('TOP SCORERS', at.scorers, (x) => x.goals, 'goals')}${five('MOST APPEARANCES', at.apps, (x) => x.apps, 'games', true)}${captains}</div>`;
   };
   UI.acts.clubHistory = (d) =>
     UI.sheet(UI.clubSeasonsCard(d.id, true) + UI.clubLegendsCard(d.id), {
@@ -752,7 +752,7 @@
             : '';
         })
         .join('')}`;
-    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${I.icon} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''} <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
+    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(I.icon)} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''} <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
       ${W.isUser(id) ? `<button class="btn block" style="margin-bottom:10px" data-act="clubGoMine">This is your club → Club tab</button>` : `<div class="row" style="margin-bottom:10px"><span class="grow"></span>${UI.followBtn('club', id)}</div>`}
       <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg ? C.starText(avg) : '—'}</div><div class="l">XI rating</div></div></div>
       <div class="card"><div class="row small"><span class="grow muted">Manager</span><b>${W.isUser(id) ? `${s.user.nat ? C.flag(s.user.nat) + ' ' : ''}${esc(s.user.name)}` : mgr ? `${C.flag(mgr.nat)} ${esc(mgr.fn + ' ' + mgr.ln)}` : '—'}</b></div>
@@ -1018,7 +1018,7 @@
     const t = u.nation && s.nteams[u.nation];
     const nt = t
       ? `<div class="card row tap" data-act="goNation"><span style="font-size:30px">${C.flag(t.code)}</span><div class="grow"><div class="h3">${esc(t.name)} manager</div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(t) + 1} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''} · tap to manage</div></div><span class="dim">›</span></div>`
-      : `<div class="card row tap" data-act="goNation"><span style="font-size:26px"></span><div class="grow"><div class="h3">National team jobs</div><div class="tiny dim">${(s.ntJobs || []).length} vacanc${(s.ntJobs || []).length === 1 ? 'y' : 'ies'} — manage a country alongside your club</div></div><span class="dim">›</span></div>`;
+      : `<div class="card row tap" data-act="goNation"><span style="font-size:26px">${UI.ico('globe')}</span><div class="grow"><div class="h3">National team jobs</div><div class="tiny dim">${(s.ntJobs || []).length} vacanc${(s.ntJobs || []).length === 1 ? 'y' : 'ies'} — manage a country alongside your club</div></div><span class="dim">›</span></div>`;
     return lic + nt;
   };
   UI.acts.course = () => {
@@ -1245,7 +1245,7 @@
       `<div class="row small" style="margin-top:6px;gap:8px"><span class="dim" style="width:84px">${label}</span><select data-input="ntRole" data-k="${k}" style="flex:1;min-width:0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><option value="">Automatic</option>${squad.map((p) => `<option value="${p.id}" ${cur === p.id ? 'selected' : ''}>${esc(W.short(p))} (${p.pos})</option>`).join('')}</select></div>`;
     const form = (p) => (p.form && p.form.length ? U.avg(p.form.slice(-5)).toFixed(1) : '—');
     const row = (p, click, extra = '') =>
-      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].short) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps · form ${form(p)}${!W.available(p) ? ' · unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
+      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps · form ${form(p)}${!W.available(p) ? ' · unavailable' : ''}</div></div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
     let body;
     if (tab === 'eligible') {
       const el = I.eligibleSwitch(t.code);

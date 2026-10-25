@@ -167,7 +167,7 @@
     const e = G.entry(code);
     if (!e) return [];
     const idt = D.IDENTITY[e.row[5]],
-      out = [`${idt.icon} ${idt.label}`];
+      out = [`${idt.label}`];
     const pol = D.CLUB_POLICY && D.CLUB_POLICY[code];
     if (pol) out.push(`Only ${pol.label} players`);
     if (G.rival(code)) out.push('Derby club');
@@ -205,7 +205,7 @@
   const STORIES = [
     {
       id: 'giant',
-      icon: '',
+      icon: 'crown',
       title: 'A giant awakens',
       blurb: 'A famous name that has lost its way. The fans remember the trophies; the squad does not.',
       // (a name that has lost its way: a fallen or declining giant, never a squad at full strength or a comfortable old club)
@@ -213,14 +213,14 @@
     },
     {
       id: 'promotion',
-      icon: '',
+      icon: 'ladder',
       title: 'Last chance at promotion',
       blurb: 'A strong squad in the second tier and an owner whose patience is running out: go up this year.',
       ok: (e) => e.l.tier === 2 && e.pct < 0.3 && !['oil'].includes(e.row[5]),
     },
     {
       id: 'odds',
-      icon: '',
+      icon: 'peak',
       title: 'Against the odds',
       blurb:
         'The weakest squad, the smallest budget, the lowest expectations. Stay up and the city will not forget it.',
@@ -228,7 +228,7 @@
     },
     {
       id: 'money',
-      icon: '',
+      icon: 'oil',
       title: 'New money, big promises',
       blurb: 'Rich owners, a thin squad and an impatient board. Spend it well.',
       // (the squad really is thin for the money, so the job is not rated Relaxed)
@@ -236,14 +236,14 @@
     },
     {
       id: 'academy',
-      icon: '',
+      icon: 'cap',
       title: 'The academy is the plan',
       blurb: 'A famous youth system and a first team that is mostly its graduates. Develop them and sell wisely.',
       ok: (e) => e.row[5] === 'youth' && e.l.tier <= 2,
     },
     {
       id: 'derby',
-      icon: '',
+      icon: 'swords',
       title: 'The derby decides your job',
       blurb: 'The rivals down the road are better this year. Your first season will be judged by two fixtures.',
       ok: (e) => {
@@ -254,7 +254,7 @@
     },
     {
       id: 'asia',
-      icon: '',
+      icon: 'globe',
       title: 'Football in Asia',
       blurb:
         'A different calendar, the AFC places, foreign-player limits and Gulf money. A job few managers know how to do.',

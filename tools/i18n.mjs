@@ -33,6 +33,7 @@ const UI_FILES = [
   'ui-alpha',
   'ui-market',
   'ui-follow',
+  'ui-icons',
   'ui-youth',
   'ui-editor',
   'ui-live',

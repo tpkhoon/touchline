@@ -19,7 +19,7 @@
   UI.kindPill = function (c) {
     const k = L() && L().kind(c);
     return k
-      ? `<span class="pill" title="${esc(k.text)}" style="background:rgba(0,0,0,.3);color:#fff;border:0">${k.icon} ${esc(k.label)}</span>`
+      ? `<span class="pill" title="${esc(k.text)}" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(k.icon)} ${esc(k.label)}</span>`
       : '';
   };
   const peopleRows = function (c) {
@@ -66,7 +66,7 @@
     const kind = L().kind(c);
     const rv = c.rival && S().clubs[c.rival] ? L().rival(c.id, c.rival) : null;
     return `<div class="card"><div class="h3">The club</div>
-      ${kind ? `<div class="phrase"><span>${kind.icon}</span><span><b>${esc(kind.label)}.</b> ${esc(kind.text)}</span></div>` : ''}
+      ${kind ? `<div class="phrase"><span>${UI.ico(kind.icon)}</span><span><b>${esc(kind.label)}.</b> ${esc(kind.text)}</span></div>` : ''}
       ${c.stadium ? row('Ground', esc(c.stadium.name)) : ''}
       ${row('Record crowd', `${d.att.n.toLocaleString()}${o(d.att.vs)}${d.att.year ? `<div class="tiny dim">${d.att.year}</div>` : ''}`)}
       ${d.bigWin ? row('Record win', `${d.bigWin.gf}–${d.bigWin.ga}${o(d.bigWin.vs)}<div class="tiny dim">${d.bigWin.year}</div>`) : ''}
@@ -175,7 +175,7 @@
           if (k > far) ((far = k), (pair = [a, b]));
         }
     return far >= 350
-      ? `<div class="tiny dim" style="margin:0 4px 10px">The longest trip in this league: ${esc(pair[0].short)} – ${esc(pair[1].short)}, ${km(far)} km${far >= 1000 ? ' — a day of travel, and tired legs' : ''}.</div>`
+      ? `<div class="tiny dim" style="margin:0 4px 10px">The longest trip in this league: ${esc(pair[0].name)} – ${esc(pair[1].name)}, ${km(far)} km${far >= 1000 ? ' — a day of travel, and tired legs' : ''}.</div>`
       : '';
   };
 })();

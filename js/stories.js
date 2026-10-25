@@ -190,14 +190,14 @@
     if (m.derby && won)
       h = U.pick([
         `${club.name} rule the ${club.city} streets`,
-        `Derby delight: ${club.short} silence their rivals`,
+        `Derby delight: ${club.name} silence their rivals`,
         `${club.name} claim ${m.derby ? C(club.rival).city : ''} bragging rights`,
       ]);
     else if (m.derby && lost) h = U.pick([`Derby misery for ${club.name}`, `Humiliation: ${opp.name} win the derby`]);
     else if (upset)
       h = U.pick([
         `${club.name} stun ${opp.name}`,
-        `Giant-killing! ${club.short} topple ${opp.name}`,
+        `Giant-killing! ${club.name} topple ${opp.name}`,
         `Shock result as ${opp.name} fall to ${club.name}`,
       ]);
     else if (hat) h = `${W.name(P(hat[0]))} hat-trick fires ${club.name} to victory`;
@@ -218,8 +218,8 @@
     else if (lost && ga - gf >= 3)
       h = U.pick([`Crisis talks? ${club.name} thrashed by ${opp.name}`, `${club.name} humbled ${score}`]);
     else if (lost)
-      h = U.pick([`${club.name} fall to ${opp.name}`, `Frustration for ${mgr} as ${club.short} lose again`]);
-    else h = U.pick([`Honours even between ${club.short} and ${opp.short}`, `${club.name} held by ${opp.name}`]);
+      h = U.pick([`${club.name} fall to ${opp.name}`, `Frustration for ${mgr} as ${club.name} lose again`]);
+    else h = U.pick([`Honours even between ${club.name} and ${opp.name}`, `${club.name} held by ${opp.name}`]);
     const xgLine = `xG ${me.xg.toFixed(2)}–${op.xg.toFixed(2)}`;
     FM.News.add({
       type: 'headline',
@@ -249,7 +249,7 @@
         .replace('{ticket}', U.money(50))
         .replace('{mgr}', mgr)
         .replace('{opp}', opp.name)
-        .replace('{rival}', opp.short);
+        .replace('{rival}', opp.name);
     const xiAvg = (sd) => U.avg(sd.xi.filter(Boolean), (p) => p.ca);
     const exp = FM.Season.expected(xiAvg(me), xiAvg(op), side === 0, !!fx.neutral),
       surprise = (won ? 1 : lost ? 0 : 0.5) - exp;
@@ -362,7 +362,7 @@
     }
     FM.News.add({
       type: 'social',
-      title: `Fans react: ${club.short} ${gf}–${ga} ${opp.short}`,
+      title: `Fans react: ${club.name} ${gf}–${ga} ${opp.name}`,
       posts,
       clubId: club.id,
       mood: surprise > 0.15 ? 'up' : surprise < -0.15 ? 'down' : 'flat',
@@ -379,7 +379,7 @@
           kicker: 'DEBUT',
           title: `${describe(p)} scores on debut`,
           sub: `${W.name(p)} marks his first game for ${club.name} with ${scored > 1 ? scored + ' goals' : 'a goal'}.`,
-          big: scored > 1 ? `${scored}` : '',
+          big: scored > 1 ? `${scored}` : 'ball',
           clubId: club.id,
           pid,
         });
@@ -434,7 +434,7 @@
       St.share({
         kicker: 'DERBY',
         title: `${club.name} win the ${club.derby}`,
-        sub: `${W.name(best)} the hero as ${club.short} beat ${opp.short} ${gf}–${ga}.`,
+        sub: `${W.name(best)} the hero as ${club.name} beat ${opp.name} ${gf}–${ga}.`,
         big: `${gf}–${ga}`,
         clubId: club.id,
       });
@@ -632,7 +632,7 @@
       mgr = opp.manager && s.staff[opp.manager];
     FM.News.add({
       type: 'club',
-      title: `Meet ${opp.name}: ${I.icon} ${I.label}`,
+      title: `Meet ${opp.name}: ${I.label}`,
       body: `${I.fans} They play at ${opp.stadium.name} (${opp.stadium.cap.toLocaleString()}), ${U.ordinal(W.position(opp.id))} in the table.${mgr ? ` ${mgr.fn} ${mgr.ln} is in charge.` : ''}`,
       clubId: opp.id,
     });
@@ -947,7 +947,7 @@
         kicker: 'HOMECOMING',
         title: `Club legend ${legend.fn} ${legend.ln} returns as ${c.name} manager`,
         sub: `${legend.spells.filter((s) => s.c === c.id).reduce((a, s) => a + s.apps, 0)} games as a player. Now he's in the dugout.`,
-        big: '',
+        big: 'house',
         clubId: c.id,
       });
     } else {
@@ -1174,7 +1174,7 @@
         kicker: 'ACADEMY',
         title: `${describe(best)} joins the academy`,
         sub: `Staff at ${c.name} believe ${W.name(best)} could be one of the best they've produced.`,
-        big: '',
+        big: 'sprout',
         clubId: c.id,
         pid: best.id,
       });
@@ -1226,7 +1226,7 @@
         kicker: 'CHAMPIONS',
         title: `${ch.name} are ${x.name} champions`,
         sub: `${e.label}. Title number ${ch.titles[cid]}.${x.topScorer ? ` Golden Boot: ${x.topScorer.name} (${x.topScorer.goals}).` : ''}`,
-        big: '',
+        big: 'trophy',
         clubId: ch.id,
       });
       if (x.poty)
@@ -1277,7 +1277,7 @@
         kicker: 'NEW CAREER',
         title: `${S.user.name} is looking for a first job`,
         sub: 'No club yet. The phone could ring any day.',
-        big: '',
+        big: 'suitcase',
       });
       return;
     }
@@ -1293,7 +1293,7 @@
     });
     FM.News.add({
       type: 'club',
-      title: `Know your club: ${I.icon} ${I.label}`,
+      title: `Know your club: ${I.label}`,
       body: `${I.fans}${c.rival ? `\n\nThe big one: the ${c.derby} against ${S.clubs[c.rival].name}.` : ''}`,
       clubId: c.id,
     });
@@ -1307,7 +1307,7 @@
       kicker: 'NEW ERA',
       title: `${S.user.name} appointed ${c.name} manager`,
       sub: `${I.label}. ${c.stadium.name}, ${c.stadium.cap.toLocaleString()} seats. The story starts now.`,
-      big: '',
+      big: 'pen',
       clubId: c.id,
     });
   };

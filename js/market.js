@@ -817,7 +817,7 @@
         lines.push({
           h: hour,
           pid: t.pid,
-          t: `${t.name} ${t.from && s.clubs[t.from] ? `${s.clubs[t.from].short} → ` : ''}${s.clubs[t.to].short}${t.fee ? ` · ${U.money(t.fee)}` : t.loan ? ' · loan' : ' · free'}`,
+          t: `${t.name} ${t.from && s.clubs[t.from] ? `${s.clubs[t.from].name} → ` : ''}${s.clubs[t.to].name}${t.fee ? ` · ${U.money(t.fee)}` : t.loan ? ' · loan' : ' · free'}`,
           k: mine(t) ? 'mine' : league(t) ? 'league' : 'world',
         }),
       );
@@ -1196,7 +1196,7 @@
       } else posts.push(`Welcome ${W.short(p)}! Solid addition.`, `Squad needed depth, this does the job.`);
       if (from && from.id === uc.rival) {
         mood += 3;
-        posts.push(`Taking ${W.short(p)} from ${from.short}. Love it`);
+        posts.push(`Taking ${W.short(p)} from ${from.name}. Love it`);
       }
       // the board: fee against the budget, wages, age
       if (fee > 0 && a >= 30 && fee >= 5e6) {
@@ -1218,7 +1218,7 @@
         fav = (p.form.length >= 4 && U.avg(p.form) >= 7) || (p.cult || 0) >= 10;
       if (to.id === uc.rival) {
         mood -= 8;
-        posts.push(`Selling ${W.short(p)} to ${to.short}?! Unforgivable.`, 'Board out. Today.');
+        posts.push(`Selling ${W.short(p)} to ${to.name}?! Unforgivable.`, 'Board out. Today.');
       } else if (a <= 21 && p.pa >= W.levelFor(uc.rep) + 2 && fee < 1000 * Math.pow(1.13, p.pa) * W.VALUE_SCALE * 0.6) {
         // a teenager with a future, gone for a fraction of what he could be worth
         mood -= 6;

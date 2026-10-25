@@ -49,8 +49,8 @@
     const need = v.need;
     const needLine = need
       ? need.helps
-        ? `<div class="phrase"><span></span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${esc(p.pos)} (${need.depth} of ${need.want})` : ''}</span></div>`
-        : `<div class="phrase"><span></span><span>Your <b>${p.pos}</b> spot is covered: he would not improve the eleven (${Math.round(need.delta)})</span></div>`
+        ? `<div class="phrase"><span>${UI.ico('wall')}</span><span>${need.replaces ? `He would push <b>${esc(W.short(need.replaces))}</b> for a place (${need.delta >= 0 ? '+' : ''}${Math.round(need.delta)})` : 'He fills a gap in the squad'}${need.short ? ` · you are short at ${esc(p.pos)} (${need.depth} of ${need.want})` : ''}</span></div>`
+        : `<div class="phrase"><span>${UI.ico('wall')}</span><span>Your <b>${p.pos}</b> spot is covered: he would not improve the eleven (${Math.round(need.delta)})</span></div>`
       : '';
     if (isFree || !pr || !p.clubId)
       return `${needLine}<div class="row small" style="margin-top:10px"><span class="grow muted">${isFree ? 'Free agent — wants' : 'Estimated fee'}</span><b>${isFree ? U.money(FM.Transfers.wageDemand(p, club())) + '/wk' : v.fee != null ? '~' + U.money(v.fee) : '?'}</b></div>`;
@@ -70,23 +70,23 @@
     const loanT = p.clubId && !p.loan ? FM.Transfers.loanTerms(p) : null;
     return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v.rec)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
       <div class="h2" style="margin:12px 0 4px">“${esc(v.verdict)}”</div>
-      ${v.expect ? `<div class="phrase"><span></span><span${v.expect[1] ? ` style="color:var(--${v.expect[1]})"` : ''}>${esc(v.expect[0])}</span></div>` : ''}
+      ${v.expect ? `<div class="phrase"><span>${UI.ico('shirt')}</span><span${v.expect[1] ? ` style="color:var(--${v.expect[1]})"` : ''}>${esc(v.expect[0])}</span></div>` : ''}
       ${UI.opinionsBlock(p, v)}
       ${v.strengths.map((t) => `<div class="phrase"><span>✓</span><span>${esc(t)}</span></div>`).join('')}
-      ${v.weaknesses.map((t) => `<div class="phrase"><span></span><span>${esc(t)}</span></div>`).join('')}
+      ${v.weaknesses.map((t) => `<div class="phrase"><span>${UI.ico('alert')}</span><span>${esc(t)}</span></div>`).join('')}
       ${v.k < 25 ? '<div class="lock">Strengths & weaknesses — needs more scouting</div>' : ''}
       <div class="hr"></div>
-      <div class="phrase"><span></span><span>${v.personality ? `Personality: <b>${esc(v.personality)}</b>` : '<span class="dim">Personality unknown (50%)</span>'}</span></div>
-      <div class="phrase"><span></span><span>${v.injury ? esc(v.injury) : '<span class="dim">Injury history unknown (55%)</span>'}</span></div>
-      ${v.hidden ? v.hidden.map((h) => `<div class="phrase"><span></span><span>${esc(h)}</span></div>`).join('') : '<div class="phrase"><span></span><span class="dim">Hidden attributes unlock at 75%</span></div>'}
-      ${v.foot ? `<div class="phrase"><span></span><span>${esc(v.foot)}-footed${v.alt && v.alt.length ? ` · can also play ${v.alt.join(', ')}` : ''}</span></div>` : ''}
-      ${v.role ? `<div class="phrase"><span></span><span>Best suited to <b>${esc(v.role)}</b></span></div>` : ''}
-      ${v.situation ? `<div class="phrase"><span></span><span>${esc(v.situation)}</span></div>` : ''}
-      ${v.mental ? v.mental.map((t) => `<div class="phrase"><span></span><span>${esc(t)}</span></div>`).join('') : ''}
-      ${v.agent ? `<div class="phrase"><span></span><span>${esc(v.agent.name)} (${esc(v.agent.style)}) · would want ~${U.money(v.wageAsk)}/wk from us</span></div>` : ''}
-      <div class="phrase"><span></span><span>Tactical fit: best as <b>${v.fit.slot}</b> (${esc(v.fit.role)}) in your ${s.user.tactic.formation}</span></div>
+      <div class="phrase"><span>${UI.ico('brain')}</span><span>${v.personality ? `Personality: <b>${esc(v.personality)}</b>` : '<span class="dim">Personality unknown (50%)</span>'}</span></div>
+      <div class="phrase"><span>${UI.ico('stethoscope')}</span><span>${v.injury ? esc(v.injury) : '<span class="dim">Injury history unknown (55%)</span>'}</span></div>
+      ${v.hidden ? v.hidden.map((h) => `<div class="phrase"><span>${UI.ico('search')}</span><span>${esc(h)}</span></div>`).join('') : `<div class="phrase"><span>${UI.ico('search')}</span><span class="dim">Hidden attributes unlock at 75%</span></div>`}
+      ${v.foot ? `<div class="phrase"><span>${UI.ico('foot')}</span><span>${esc(v.foot)}-footed${v.alt && v.alt.length ? ` · can also play ${v.alt.join(', ')}` : ''}</span></div>` : ''}
+      ${v.role ? `<div class="phrase"><span>${UI.ico('masks')}</span><span>Best suited to <b>${esc(v.role)}</b></span></div>` : ''}
+      ${v.situation ? `<div class="phrase"><span>${UI.ico('clipboard')}</span><span>${esc(v.situation)}</span></div>` : ''}
+      ${v.mental ? v.mental.map((t) => `<div class="phrase"><span>${UI.ico('compass')}</span><span>${esc(t)}</span></div>`).join('') : ''}
+      ${v.agent ? `<div class="phrase"><span>${UI.ico('briefcase')}</span><span>${esc(v.agent.name)} (${esc(v.agent.style)}) · would want ~${U.money(v.wageAsk)}/wk from us</span></div>` : ''}
+      <div class="phrase"><span>${UI.ico('puzzle')}</span><span>Tactical fit: best as <b>${v.fit.slot}</b> (${esc(v.fit.role)}) in your ${s.user.tactic.formation}</span></div>
       ${!v.own && FM.Scouting.nextRung(v.k) ? `<div class="tiny dim" style="margin-top:6px">${Math.round(v.k)}% known · at ${FM.Scouting.nextRung(v.k)[0]}%: ${esc(FM.Scouting.nextRung(v.k)[1])}</div>` : ''}
-      <div class="phrase"><span></span><span>Potential confidence: <b>${v.confidence}</b></span></div>
+      <div class="phrase"><span>${UI.ico('trendUp')}</span><span>Potential confidence: <b>${v.confidence}</b></span></div>
       ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">${esc(v.moneyball)}</div>` : ''}
       ${UI.pricesBlock(p, v, isFree)}
       ${loanT && loanT.available ? `<div class="row small" style="margin-top:4px"><span class="grow muted">Loan possible</span><b>~${Math.round(Math.min(1, loanT.share) * 100)}% of wages</b></div>` : ''}
@@ -371,7 +371,7 @@
         .slice(0, UI._notesAll ? 99 : 2)
         .map(
           (n) =>
-            `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${n.icon}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${esc(n.act.label)}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:40px;height:40px;font-size:14px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`,
+            `<div class="row small note" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${UI.ico(n.icon)}</span><span class="grow ${n.pid ? 'tap' : ''}" ${n.pid ? `data-act="player" data-id="${n.pid}"` : ''}>${esc(n.text)}</span>${n.act ? `<button class="btn sm" data-act="noteAct" data-key="${n.key}" data-a="${n.act.act}" ${n.act.id ? `data-id="${n.act.id}"` : ''}>${esc(n.act.label)}</button>` : ''}${n.key ? `<button class="icon-btn" style="width:40px;height:40px;font-size:14px" title="Done" data-act="noteDone" data-key="${n.key}">✓</button>` : ''}</div>`,
         )
         .join(
           '',
@@ -382,7 +382,7 @@
         ? notesFull
         : `<button class="card row tap" style="width:100%;text-align:left;min-height:44px" data-act="notesMore"><div class="grow small"><b>${U.plural(a.notes.length, 'note')}</b> from your assistant</div><span class="dim">›</span></button>`;
     const loans = out.length
-      ? `<div class="sec"><div class="h3">Out on loan</div><span class="dim small">${out.length}</span></div><div class="card flat list" style="padding:4px 12px">${out.map((p) => C.playerRow(p, ` · at ${esc(CL(p.clubId).short)} · ${p.season.apps} apps${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) : ''}`)).join('')}</div>`
+      ? `<div class="sec"><div class="h3">Out on loan</div><span class="dim small">${out.length}</span></div><div class="card flat list" style="padding:4px 12px">${out.map((p) => C.playerRow(p, ` · at ${esc(CL(p.clubId).name)} · ${p.season.apps} apps${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) : ''}`)).join('')}</div>`
       : '';
     const i = html.indexOf('<div class="row small dim"');
     return html.slice(0, i) + notes + html.slice(i) + loans;
@@ -438,7 +438,7 @@
     const roles = Object.entries(D.STAFF_ROLES).filter(([, r]) => r.key !== 'scout');
     const card = (st, role, key) => {
       const r = D.STAFF_ROLES[role];
-      return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? '' : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
+      return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? UI.ico('chair') : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
         <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
         ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div>` : ''}
         <div class="small" style="margin-top:6px">${esc(FM.Staff.IMPACT[key](st.ability).text)}</div>${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
@@ -527,7 +527,7 @@
           ? 'Rest'
           : 'Not booked'
         : x.type === 'camp'
-          ? `${D.CAMPS[x.key].icon} ${D.CAMPS[x.key].name}`
+          ? `${UI.ico(D.CAMPS[x.key].icon)} ${D.CAMPS[x.key].name}`
           : `${CL(x.fx.h === club().id ? x.fx.a : x.fx.h).name} (${x.fx.h === club().id ? 'H' : 'A'})${x.fx.res ? ` · ${x.fx.res.hg}–${x.fx.res.ag}` : ''}`;
       return `<div class="row small" style="padding:9px 0;border-top:1px solid var(--line)"><span class="pill ${cur ? 'acc' : ''}">Day ${i + 1}</span><span class="grow ellip ${done ? 'dim' : ''}">${esc(label)}</span>${!done ? `<button class="btn sm" data-act="plan" data-i="${i}">${x ? 'Change' : 'Book'}</button>` : ''}</div>`;
     };
@@ -556,7 +556,7 @@
       ${Object.entries(D.CAMPS)
         .map(
           ([k, x]) =>
-            `<div class="card row tap" data-act="bookC" data-i="${i}" data-k="${k}"><span style="font-size:24px">${x.icon}</span><div class="grow"><div class="b">${esc(x.name)}</div><div class="small dim">${esc(x.desc)}</div></div><b style="color:${x.cost > 0 ? 'var(--bad)' : 'var(--good)'}">${x.cost > 0 ? '−' : '+'}${U.money(Math.abs(x.cost))}</b></div>`,
+            `<div class="card row tap" data-act="bookC" data-i="${i}" data-k="${k}"><span style="font-size:24px">${UI.ico(x.icon)}</span><div class="grow"><div class="b">${esc(x.name)}</div><div class="small dim">${esc(x.desc)}</div></div><b style="color:${x.cost > 0 ? 'var(--bad)' : 'var(--good)'}">${x.cost > 0 ? '−' : '+'}${U.money(Math.abs(x.cost))}</b></div>`,
         )
         .join('')}
       <button class="btn block" data-act="bookClear" data-i="${i}">Rest day</button>`,
@@ -620,7 +620,7 @@
     // Transfers tab
     const nScouts = s.user.scouts.length,
       busy = s.user.assignments.length;
-    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px"></span><div class="grow"><div class="b small">Scouting network</div><div class="tiny dim">${nScouts} scout${nScouts === 1 ? '' : 's'} · ${busy} on assignment · ${newCount} new report${newCount === 1 ? '' : 's'}</div></div><button class="btn sm" data-act="tab" data-tab="transfers">Transfers</button></div>`;
+    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${UI.ico('telescope')}</span><div class="grow"><div class="b small">Scouting network</div><div class="tiny dim">${nScouts} scout${nScouts === 1 ? '' : 's'} · ${busy} on assignment · ${newCount} new report${newCount === 1 ? '' : 's'}</div></div><button class="btn sm" data-act="tab" data-tab="transfers">Transfers</button></div>`;
     const tabs = [
       ['hub', 'Hub'],
       ['reports', `Reports${newCount ? ` (${newCount})` : ''}`],
@@ -1506,7 +1506,7 @@
           .map((t) => {
             const from = t.from && CL(t.from),
               to = CL(t.to);
-            return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''} ${t.intl ? '<span class="pill acc">INTL</span>' : ''}</div><div class="tiny dim ellip">${from ? `${C.flag(from.nat)} ${esc(from.short)}` : 'Free agent'} → ${C.flag(to.nat)} ${esc(to.name)}${t.age ? ` · age ${t.age}` : ''}</div></div>${C.fee(t.fee, W.isUser(t.to) ? 'in' : W.isUser(t.from) ? 'out' : null, t.loan)}</div>`;
+            return `<div class="row small tap" style="padding:9px 0;border-top:1px solid var(--line)" data-act="player" data-id="${t.pid}"><div class="grow" style="min-width:0"><div class="b ellip">${C.flag(t.nat)} ${esc(t.name)} ${t.loan ? '<span class="pill">LOAN</span>' : ''} ${t.intl ? '<span class="pill acc">INTL</span>' : ''}</div><div class="tiny dim ellip">${from ? `${C.flag(from.nat)} ${esc(from.name)}` : 'Free agent'} → ${C.flag(to.nat)} ${esc(to.name)}${t.age ? ` · age ${t.age}` : ''}</div></div>${C.fee(t.fee, W.isUser(t.to) ? 'in' : W.isUser(t.from) ? 'out' : null, t.loan)}</div>`;
           })
           .join('') ||
         `<div class="empty">${all.length ? 'No deals match these filters.' : 'No deals yet this season.'}</div>`
@@ -1548,20 +1548,20 @@
       op = m.sides[1 - us];
     if (t === 'shots')
       body.innerHTML = `<div class="card"><div class="h3">The match in numbers</div>${MV.matchBars(m)}</div>
-      <div class="card"><div class="h3">Shot map</div><div class="tiny dim">Circle size = xG · filled = goal · ringed = on target · faded = off target / blocked</div>${MV.shotMap(m)}<div class="row tiny" style="justify-content:space-between;margin-top:6px"><span style="color:${colOf(op)}">◀ ${esc(op.club.short)} attack</span><span style="color:${colOf(me)}">${esc(me.club.short)} attack ▶</span></div></div>
+      <div class="card"><div class="h3">Shot map</div><div class="tiny dim">Circle size = xG · filled = goal · ringed = on target · faded = off target / blocked</div>${MV.shotMap(m)}<div class="row tiny" style="justify-content:space-between;margin-top:6px"><span style="color:${colOf(op)}">◀ ${esc(op.club.name)} attack</span><span style="color:${colOf(me)}">${esc(me.club.name)} attack ▶</span></div></div>
       <div class="card"><div class="h3">xG timeline</div><div class="tiny dim">Each step is a shot; a ring is a goal; a red mark a sending-off; ▾ a substitution</div>${MV.xgTimeline(m)}</div>
-      <div class="card"><div class="h3">Who was threatening</div><div class="tiny dim">${esc(m.sides[0].club.short)} above the line, ${esc(m.sides[1].club.short)} below: how dangerous each side was, minute by minute</div>${MV.momentumChart(m)}</div>
+      <div class="card"><div class="h3">Who was threatening</div><div class="tiny dim">${esc(m.sides[0].club.name)} above the line, ${esc(m.sides[1].club.name)} below: how dangerous each side was, minute by minute</div>${MV.momentumChart(m)}</div>
       <div class="card"><div class="h3">Shooters</div>${MV.shooters(m)}</div>
       <div class="card"><div class="h3">Chance types</div>${MV.typeTable(m)}</div>`;
     if (t === 'stats') body.innerHTML = MV.statTable(me) + MV.statTable(op, true);
     if (t === 'insights') {
       const a = FM.Staff.get('analyst');
-      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px"></span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${U.staffText(a.ability)}</div></div></div>${MV.insights(
+      body.innerHTML = `<div class="card"><div class="row"><span style="font-size:24px">${UI.ico('chart')}</span><div class="grow"><div class="h3">${esc(a.fn + ' ' + a.ln)}</div><div class="tiny dim">Head of Analytics · ${U.staffText(a.ability)}</div></div></div>${MV.insights(
         m,
       )
         .map(
           (x) =>
-            `<div class="phrase" style="border-top:1px solid var(--line);padding:9px 0"><span>${x[0]}</span><span>${esc(x[1])}</span></div>`,
+            `<div class="phrase" style="border-top:1px solid var(--line);padding:9px 0"><span>${UI.ico(x[0])}</span><span>${esc(x[1])}</span></div>`,
         )
         .join('')}</div>`;
     }
@@ -1613,7 +1613,7 @@
       const tot = a + b || 1;
       return `<div class="sbar"><div class="lbl"><b>${fmt(a)}</b><span>${l}</span><b>${fmt(b)}</b></div><div class="tr"><i style="width:${(a / tot) * 100}%;background:${cH};margin-left:auto"></i><i style="width:${(b / tot) * 100}%;background:${cA}"></i></div></div>`;
     };
-    return `<div class="row b small" style="justify-content:space-between;margin-bottom:6px"><span>${C.crest(H.club, 18)} ${esc(H.club.short)}</span><span>${esc(A.club.short)} ${C.crest(A.club, 18)}</span></div>${bar('Goals', r.hg, r.ag)}${bar('xG', +r.xg[0], +r.xg[1], (v) => v.toFixed(2))}${bar('Shots', r.shots[0], r.shots[1])}${bar('On target', r.sot[0], r.sot[1])}${bar('Possession', r.poss[0], r.poss[1], (v) => v + '%')}`;
+    return `<div class="row b small" style="justify-content:space-between;margin-bottom:6px"><span>${C.crest(H.club, 18)} ${esc(H.club.name)}</span><span>${esc(A.club.name)} ${C.crest(A.club, 18)}</span></div>${bar('Goals', r.hg, r.ag)}${bar('xG', +r.xg[0], +r.xg[1], (v) => v.toFixed(2))}${bar('Shots', r.shots[0], r.shots[1])}${bar('On target', r.sot[0], r.sot[1])}${bar('Possession', r.poss[0], r.poss[1], (v) => v + '%')}`;
   };
   MV.xgTimeline = function (m) {
     const w = 340,
@@ -1686,7 +1686,7 @@
       .join('');
     const [H, A] = m.sides;
     return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;margin-top:6px">${grid}<line x1="${X(halfTick(m))}" x2="${X(halfTick(m))}" y1="${pt - 14}" y2="${h - pb}" stroke="var(--ink3)" stroke-dasharray="3 3"/><text x="${X(halfTick(m)) + 3}" y="${pt - 6}" font-size="8" fill="var(--ink3)">HT</text><polyline points="${steps(0)}" fill="none" stroke="${sideCol(m, 0)}" stroke-width="2.4" stroke-linejoin="round"/><polyline points="${steps(1)}" fill="none" stroke="${sideCol(m, 1)}" stroke-width="2.4" stroke-linejoin="round"/>${goals}${reds}${axis}${subs}</svg>
-      <div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${sideCol(m, 0)}">■ ${esc(H.club.short)} ${H.xg.toFixed(2)} xG</span><span style="color:${sideCol(m, 1)}">■ ${esc(A.club.short)} ${A.xg.toFixed(2)} xG</span></div>`;
+      <div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${sideCol(m, 0)}">■ ${esc(H.club.name)} ${H.xg.toFixed(2)} xG</span><span style="color:${sideCol(m, 1)}">■ ${esc(A.club.name)} ${A.xg.toFixed(2)} xG</span></div>`;
   };
   // how dangerous each side was, minute by minute (the engine's own momentum, smoothed): the home side above the line, the away side below
   MV.momentumChart = function (m) {
@@ -1792,7 +1792,7 @@
       .join(
         '',
       )}<polyline points="${line(0)}" fill="none" stroke="${colOf(H)}" stroke-width="2.5" stroke-linejoin="round"/><polyline points="${line(1)}" fill="none" stroke="${colOf(A)}" stroke-width="2.5" stroke-linejoin="round" ${colOf(H) === colOf(A) ? 'stroke-dasharray="5 3"' : ''}/>${goals}<text x="${pad}" y="${h - 6}" font-size="9" fill="var(--ink3)">0'</text><text x="${w - 30}" y="${h - 6}" font-size="9" fill="var(--ink3)">90'</text></svg>
-      <div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${colOf(H)}">■ ${esc(H.club.short)} ${H.xg.toFixed(2)}</span><span style="color:${colOf(A)}">■ ${esc(A.club.short)} ${A.xg.toFixed(2)}</span><span class="dim">○ goal</span></div>`;
+      <div class="row tiny" style="gap:14px;justify-content:center"><span style="color:${colOf(H)}">■ ${esc(H.club.name)} ${H.xg.toFixed(2)}</span><span style="color:${colOf(A)}">■ ${esc(A.club.name)} ${A.xg.toFixed(2)}</span><span class="dim">○ goal</span></div>`;
   };
   const TYPE_NAME = {
     through: 'Through balls',
@@ -1820,7 +1820,7 @@
     const a = agg(0),
       b = agg(1);
     const types = Object.keys(TYPE_NAME).filter((t) => a[t] || b[t]);
-    return `<table class="t"><tr><th class="l">Type</th><th>${esc(H.club.short)}</th><th>xG</th><th>${esc(A.club.short)}</th><th>xG</th></tr>${types.map((t) => `<tr><td class="l">${TYPE_NAME[t]}</td><td>${a[t] ? `${a[t].n}${a[t].g ? ` (${a[t].g})` : ''}` : '–'}</td><td class="dim">${a[t] ? a[t].xg.toFixed(2) : '–'}</td><td>${b[t] ? `${b[t].n}${b[t].g ? ` (${b[t].g})` : ''}` : '–'}</td><td class="dim">${b[t] ? b[t].xg.toFixed(2) : '–'}</td></tr>`).join('')}</table>`;
+    return `<table class="t"><tr><th class="l">Type</th><th>${esc(H.club.name)}</th><th>xG</th><th>${esc(A.club.name)}</th><th>xG</th></tr>${types.map((t) => `<tr><td class="l">${TYPE_NAME[t]}</td><td>${a[t] ? `${a[t].n}${a[t].g ? ` (${a[t].g})` : ''}` : '–'}</td><td class="dim">${a[t] ? a[t].xg.toFixed(2) : '–'}</td><td>${b[t] ? `${b[t].n}${b[t].g ? ` (${b[t].g})` : ''}` : '–'}</td><td class="dim">${b[t] ? b[t].xg.toFixed(2) : '–'}</td></tr>`).join('')}</table>`;
   };
   MV.statTable = function (sd, compact) {
     // each player's share of the team's full passing total (the engine simulates only the passes that matter)
@@ -1843,15 +1843,16 @@
       xgd = me.xg - op.xg;
     if (xgd > 0.8 && gd <= 0)
       out.push([
-        '',
+        'clover',
         `We created ${me.xg.toFixed(2)} xG to their ${op.xg.toFixed(2)} and didn't win — on another day that's a comfortable victory. Keep doing the same things.`,
       ]);
     else if (xgd < -0.8 && gd >= 0)
       out.push([
-        '',
+        'worried',
         `We rode our luck: they generated ${op.xg.toFixed(2)} xG to our ${me.xg.toFixed(2)}. The result flatters us.`,
       ]);
-    else out.push(['', `On balance the result was fair — xG ${me.xg.toFixed(2)} vs ${op.xg.toFixed(2)}.`]);
+    else
+      out.push([UI.ico('scales'), `On balance the result was fair — xG ${me.xg.toFixed(2)} vs ${op.xg.toFixed(2)}.`]);
     const typ = (side) => {
       const o = {};
       m.shotLog
@@ -1865,12 +1866,12 @@
       ot = typ(1 - us)[0];
     if (mt)
       out.push([
-        '',
+        'target',
         `Most of our threat came from ${TYPE_NAME[mt[0]].toLowerCase()} (${mt[1].toFixed(2)} xG, ${Math.round((mt[1] / Math.max(0.01, me.xg)) * 100)}% of our total).`,
       ]);
     if (ot && ot[1] >= 0.4)
       out.push([
-        '',
+        'stop',
         `Their ${TYPE_NAME[ot[0]].toLowerCase()} hurt us (${ot[1].toFixed(2)} xG).${ot[0] === 'counter' ? ' A deeper line or less aggressive press would help.' : ot[0] === 'cross' ? ' We need to stop the crosses at source.' : ot[0] === 'longshot' ? ' Closing down shooters earlier would help.' : ''}`,
       ]);
     const half = (side, h2) =>
@@ -1879,7 +1880,7 @@
       h2 = half(us, true);
     if (Math.abs(h1 - h2) > 0.5)
       out.push([
-        '',
+        'stopwatch',
         `${h2 > h1 ? 'We were much better after the break' : 'We faded in the second half'}: ${h1.toFixed(2)} xG before half-time, ${h2.toFixed(2)} after.`,
       ]);
     if (m.changeAt != null && m.changeAt > 5 && m.changeAt < m.xgLine.length - 5) {
@@ -1893,7 +1894,7 @@
         bA = rate(mid[1 - us], at),
         aA = rate(end[1 - us] - mid[1 - us], L.length - at);
       out.push([
-        '',
+        'clipboard',
         `Your first tactical change came at ~${Math.min(90, at)}'. Before: ${bF.toFixed(1)} xG for / ${bA.toFixed(1)} against per 90. After: ${aF.toFixed(1)} / ${aA.toFixed(1)}. ${aF - aA > bF - bA ? 'It worked.' : "It didn't shift the balance."}`,
       ]);
     }
@@ -1904,7 +1905,7 @@
       .filter(Boolean);
     if (tired.length)
       out.push([
-        '',
+        'battery',
         `${tired
           .slice(0, 3)
           .map((p) => `${W.short(p)} (${Math.round(me.st[p.id])}%)`)
@@ -1914,12 +1915,12 @@
       ]);
     const tk = (sd) => U.sum(Object.values(sd.ps), (x) => x.tk || 0);
     out.push([
-      '',
+      'magnet',
       `We won possession back ${tk(me)} times to their ${tk(op)}${me.tactic.press === 'High Press' ? ' — the high press is doing its job' : ''}.`,
     ]);
     const creators = Object.entries(me.ps).sort((x, y) => (y[1].kp || 0) - (x[1].kp || 0))[0];
     if (creators && creators[1].kp >= 2)
-      out.push(['', `${W.short(P(creators[0]))} was our chief creator with ${creators[1].kp} key passes.`]);
+      out.push([UI.ico('key'), `${W.short(P(creators[0]))} was our chief creator with ${creators[1].kp} key passes.`]);
     const zone = (grid) => {
       let fin = 0,
         tot = 0;
@@ -1930,19 +1931,22 @@
       return tot ? Math.round((fin / tot) * 100) : 0;
     };
     out.push([
-      '',
+      'map',
       `${zone(me.heat)}% of our touches came in the final third${zone(me.heat) < 25 ? ' — we struggled to get into dangerous areas' : zone(me.heat) > 38 ? ' — we pinned them back' : ''}.`,
     ]);
     {
       const mp = m.passStats(us).total,
         op2 = m.passStats(1 - us).total;
       out.push([
-        '',
+        'repeat',
         `Passes: ${mp} vs ${op2}. ${mp > op2 * 1.3 ? 'We dominated the ball.' : op2 > mp * 1.3 ? 'They had far more of it.' : 'An even contest for control.'}`,
       ]);
     }
     if (a.vacant)
-      out.unshift(['', "No Head of Analytics — this is the caretaker's best effort. Hire one for deeper analysis."]);
+      out.unshift([
+        UI.ico('chair'),
+        "No Head of Analytics — this is the caretaker's best effort. Hire one for deeper analysis.",
+      ]);
     return out.slice(0, n + (a.vacant ? 1 : 0));
   };
   // ---------- Sim to half-time ----------
@@ -1991,7 +1995,7 @@
     m.events
       .filter((e) => e.k === 'goal')
       .slice(goalsBefore)
-      .forEach((e) => MV.ticker(`${e.min} ${W.short(P(e.pid))} (${m.sides[e.side].club.short})`));
+      .forEach((e) => MV.ticker(`${e.min} ${W.short(P(e.pid))} (${m.sides[e.side].club.name})`));
     st.ball = { x: 0.5, y: 0.5, side: 1, slot: m.kickoffSlot(m.sides[1]), h: 0 };
     MV.initDots();
     MV.updateHUD();
@@ -1999,7 +2003,7 @@
     document.getElementById('mHT')?.remove();
     MV.banner(
       'HALF-TIME',
-      `${m.sides[0].club.short} ${m.sides[0].goals}–${m.sides[1].goals} ${m.sides[1].club.short}. Time for the team talk.`,
+      `${m.sides[0].club.name} ${m.sides[0].goals}–${m.sides[1].goals} ${m.sides[1].club.name}. Time for the team talk.`,
     );
     MV.showPrompt(FM.Prompts.halftime(m));
   };
@@ -2055,7 +2059,7 @@
     const called = new Set(own.filter((p) => FM.Intl.squad(FM.Intl.nationOf(p)).includes(p)).map((p) => p.id));
     const ranked = FM.Intl.ranked();
     const history = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
-    return `<div class="card"><div class="row"><span style="font-size:26px"></span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
+    return `<div class="card"><div class="row"><span style="font-size:26px">${UI.ico('globe')}</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break in ${nextBreak} matchday${nextBreak === 1 ? '' : 's'}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
       <div class="sec"><div class="h3">Your internationals</div><span class="dim small">${called.size} in current squads</span></div>
       <div class="card flat list" style="padding:4px 12px">${
         mine.length
@@ -2077,7 +2081,7 @@
           ([t, i]) =>
             `<tr class="tap" data-act="nation" data-id="${t.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px"><span>${C.flag(t.code)}</span><span class="ellip" style="max-width:120px">${esc(t.name)}</span>${
               Object.keys(t.titles).length
-                ? `<span class="tiny">${''.repeat(
+                ? `<span class="tiny">${UI.ico('trophy').repeat(
                     Math.min(
                       3,
                       Object.values(t.titles).reduce((a, b) => a + b, 0),

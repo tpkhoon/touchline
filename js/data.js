@@ -636,38 +636,38 @@
 
   // ---------- Traits ----------
   FM.D.TRAITS = {
-    'Big Game Player': { icon: '', desc: 'Raises his level in derbies and against top sides.' },
-    'Injury Prone': { icon: '', desc: 'Picks up knocks more often than most.' },
-    'Late Bloomer': { icon: '', desc: 'Keeps improving well into his mid-twenties.' },
-    Loyal: { icon: '', desc: 'Committed to the club. Ignores outside interest.' },
-    Mercenary: { icon: '', desc: 'Follows the money. Unsettled by bigger offers.' },
-    Leader: { icon: '', desc: 'Organises and lifts teammates. Natural captain.' },
-    'Media Friendly': { icon: '', desc: 'Handles the press brilliantly. Fans love him.' },
-    Temperamental: { icon: '', desc: 'Volatile. More cards, bigger mood swings.' },
-    'Derby Specialist': { icon: '', desc: 'Lives for the derby.' },
-    'Fair-Weather': { icon: '', desc: 'Hates rainy matches. Noticeably worse in the wet.' },
-    Consistent: { icon: '', desc: 'Rarely has a bad game.' },
-    Flair: { icon: '', desc: 'Tries the unexpected. Moments of magic.' },
-    Engine: { icon: '', desc: 'Tireless: loses energy far more slowly in a match.' },
+    'Big Game Player': { icon: 'star', desc: 'Raises his level in derbies and against top sides.' },
+    'Injury Prone': { icon: 'bandage', desc: 'Picks up knocks more often than most.' },
+    'Late Bloomer': { icon: 'sprout', desc: 'Keeps improving well into his mid-twenties.' },
+    Loyal: { icon: 'heart', desc: 'Committed to the club. Ignores outside interest.' },
+    Mercenary: { icon: 'coins', desc: 'Follows the money. Unsettled by bigger offers.' },
+    Leader: { icon: 'medal', desc: 'Organises and lifts teammates. Natural captain.' },
+    'Media Friendly': { icon: 'mic', desc: 'Handles the press brilliantly. Fans love him.' },
+    Temperamental: { icon: 'flame', desc: 'Volatile. More cards, bigger mood swings.' },
+    'Derby Specialist': { icon: 'swords', desc: 'Lives for the derby.' },
+    'Fair-Weather': { icon: 'rain', desc: 'Hates rainy matches. Noticeably worse in the wet.' },
+    Consistent: { icon: 'trendUp', desc: 'Rarely has a bad game.' },
+    Flair: { icon: 'sparkles', desc: 'Tries the unexpected. Moments of magic.' },
+    Engine: { icon: 'gear', desc: 'Tireless: loses energy far more slowly in a match.' },
     'Set-Piece Expert': {
-      icon: '',
+      icon: 'target',
       desc: 'Better from the spot, on free kicks and on corners than his numbers say.',
     },
     Clutch: {
-      icon: '',
+      icon: 'snowflake',
       desc: 'Cool when it matters: finishes better after the 75th minute and from the penalty spot.',
     },
-    'Aerial Threat': { icon: '', desc: 'Dangerous from crosses and corners.' },
-    'Hatchet Man': { icon: '', desc: 'Hard in the tackle: booked and sent off more often.' },
-    'Slow Starter': { icon: '', desc: 'Takes time to get going: weaker in the first twenty minutes.' },
-    'Cup Specialist': { icon: '', desc: 'Raises his game in knockout matches.' },
-    'Big-Match Nerves': { icon: '', desc: 'Shrinks on the big occasion.' },
-    'Model Professional': { icon: '', desc: 'Lives right: develops faster and picks up fewer injuries.' },
-    'Low Work Ethic': { icon: '', desc: 'Trains half-heartedly: develops more slowly.' },
-    Versatile: { icon: '', desc: 'Learns new positions quickly.' },
-    Mentor: { icon: '', desc: 'Young teammates grow faster around him.' },
-    Homesick: { icon: '', desc: 'Unsettled at a club outside his own country.' },
-    'Needs Game Time': { icon: '', desc: 'Sulks quickly when left out of the side.' },
+    'Aerial Threat': { icon: 'bird', desc: 'Dangerous from crosses and corners.' },
+    'Hatchet Man': { icon: 'axe', desc: 'Hard in the tackle: booked and sent off more often.' },
+    'Slow Starter': { icon: 'turtle', desc: 'Takes time to get going: weaker in the first twenty minutes.' },
+    'Cup Specialist': { icon: 'trophy', desc: 'Raises his game in knockout matches.' },
+    'Big-Match Nerves': { icon: 'worried', desc: 'Shrinks on the big occasion.' },
+    'Model Professional': { icon: 'clipboard', desc: 'Lives right: develops faster and picks up fewer injuries.' },
+    'Low Work Ethic': { icon: 'sleep', desc: 'Trains half-heartedly: develops more slowly.' },
+    Versatile: { icon: 'shuffle', desc: 'Learns new positions quickly.' },
+    Mentor: { icon: 'mentor', desc: 'Young teammates grow faster around him.' },
+    Homesick: { icon: 'house', desc: 'Unsettled at a club outside his own country.' },
+    'Needs Game Time': { icon: 'chair', desc: 'Sulks quickly when left out of the side.' },
   };
 
   // ---------- Nations ----------
@@ -1409,25 +1409,25 @@
   FM.D.CAMPS = {
     fitness: {
       name: 'Alpine fitness camp',
-      icon: '',
+      icon: 'mountain',
       cost: 6e5,
       desc: 'Sharpens fitness and stamina. Everyone starts the season at 100%.',
     },
     tactical: {
       name: 'Tactical camp',
-      icon: '',
+      icon: 'brain',
       cost: 4e5,
       desc: 'Drills your system. Big boost to tactical familiarity.',
     },
     youth: {
       name: 'Youth development camp',
-      icon: '',
+      icon: 'sprout',
       cost: 3e5,
       desc: 'Intensive coaching for players aged 21 and under.',
     },
     tour: {
       name: 'Commercial tour of Asia',
-      icon: '',
+      icon: 'plane',
       cost: -2.5e6,
       desc: 'Earns money and new fans, but the travel tires the squad.',
     },
@@ -1447,7 +1447,7 @@
   FM.D.IDENTITY = {
     oil: {
       label: 'Oil-Backed',
-      icon: '',
+      icon: 'oil',
       fans: 'Trophies. Nothing else matters.',
       budget: 2.0,
       sell: 1.6,
@@ -1455,7 +1455,7 @@
     },
     giant: {
       label: 'Historic Giant',
-      icon: '',
+      icon: 'columns',
       fans: 'Expect to challenge for the title every season.',
       budget: 1.6,
       sell: 1.3,
@@ -1463,7 +1463,7 @@
     },
     historic: {
       label: 'Proud History',
-      icon: '',
+      icon: 'scroll',
       fans: 'Want European nights and a top-half finish.',
       budget: 1.1,
       sell: 1.1,
@@ -1471,7 +1471,7 @@
     },
     fan: {
       label: 'Fan-Owned',
-      icon: '',
+      icon: 'handshake',
       fans: 'Demand attacking football and a club that lives within its means.',
       budget: 0.8,
       sell: 1.0,
@@ -1479,7 +1479,7 @@
     },
     youth: {
       label: 'Youth-Focused',
-      icon: '',
+      icon: 'sprout',
       fans: 'Love seeing academy kids get their chance.',
       budget: 0.8,
       sell: 1.0,
@@ -1487,7 +1487,7 @@
     },
     selling: {
       label: 'Selling Club',
-      icon: '',
+      icon: 'briefcase',
       fans: 'Accept sales — if you find the next gem.',
       budget: 0.9,
       sell: 0.85,
@@ -1497,7 +1497,7 @@
     // by it, who go back when it ends; it lives on the army's money and keeps no one
     military: {
       label: 'Military Service Club',
-      icon: '',
+      icon: 'medal',
       fans: 'A conscript side: its players are on national service and go back to their own clubs. Nobody expects a title.',
       budget: 0.3,
       sell: 0,
@@ -1505,7 +1505,7 @@
     },
     fallen: {
       label: 'Fallen Giant',
-      icon: '',
+      icon: 'ruins',
       fans: 'Desperate for a return to former glory.',
       budget: 1.2,
       sell: 1.2,
@@ -1564,11 +1564,11 @@
   FM.D.STAFF_PERSONALITY = ['Pragmatic', 'Old-School', 'Innovative', 'Outspoken', 'Loyal', 'Cautious', 'Ambitious'];
 
   FM.D.WEATHER = [
-    ['Clear', '', 0.55],
-    ['Cloudy', '', 0.2],
-    ['Rain', '', 0.2],
-    ['Snow', '', 0.05],
-    ['Hot', '', 0],
+    ['Clear', 'sun', 0.55],
+    ['Cloudy', 'cloud', 0.2],
+    ['Rain', 'rain', 0.2],
+    ['Snow', 'snowflake', 0.05],
+    ['Hot', 'thermometer', 0],
   ];
   // Climate by nation: wet (more rain), cold (snow in midwinter), warm (hot at the start and end of the
   // season), tropical (often hot, never snow)
@@ -4419,16 +4419,23 @@
   // ---------- Alpha 1: contracts, agents, promises, badges ----------
   FM.D.AGENTS = {
     Shark: {
-      icon: '',
+      icon: 'shark',
       desc: 'Squeezes every dollar. Walks away quickly.',
       demand: 1.12,
       patience: 2,
       fee: 0.08,
       bonusW: 1,
     },
-    Pragmatic: { icon: '', desc: 'Reasonable, wants a fair deal.', demand: 1.0, patience: 4, fee: 0.05, bonusW: 1 },
+    Pragmatic: {
+      icon: 'handshake',
+      desc: 'Reasonable, wants a fair deal.',
+      demand: 1.0,
+      patience: 4,
+      fee: 0.05,
+      bonusW: 1,
+    },
     Family: {
-      icon: '',
+      icon: 'house',
       desc: 'A relative looking after him. Values security and long deals.',
       demand: 0.95,
       patience: 5,
@@ -4437,7 +4444,7 @@
       longDeal: true,
     },
     Showman: {
-      icon: '',
+      icon: 'mic',
       desc: 'Loves a headline number — big signing bonuses.',
       demand: 1.04,
       patience: 3,
@@ -4445,7 +4452,7 @@
       bonusW: 1.6,
     },
     Rookie: {
-      icon: '',
+      icon: 'cap',
       desc: 'New to the game. Easy to deal with.',
       demand: 0.92,
       patience: 5,

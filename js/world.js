@@ -308,14 +308,14 @@
   };
   W.moraleLabel = (m) =>
     m >= 85
-      ? ['Superb', '']
+      ? ['Superb', 'grin']
       : m >= 70
-        ? ['Good', '']
+        ? ['Good', 'smile']
         : m >= 50
-          ? ['Okay', '']
+          ? ['Okay', 'neutral']
           : m >= 30
-            ? ['Poor', '']
-            : ['Very Poor', ''];
+            ? ['Poor', 'unsure']
+            : ['Very Poor', 'angry'];
 
   function genAttrs(pos, nat, target) {
     const b = target / 5,
@@ -2025,7 +2025,7 @@
             (n, g) =>
               `${n}: ${c.groups[g]
                 .slice(0, 3)
-                .map((id) => FM.clubOf(id).short)
+                .map((id) => FM.clubOf(id).name)
                 .join(', ')}${c.groups[g].length > 3 ? '…' : ''}`,
           )
           .join(' · ')}.${sp.halve ? ' Points are halved.' : ' Points carry over.'}`,
@@ -2835,7 +2835,7 @@
     }
     const near = (c) => {
       const rivals = Object.values(S.clubs).filter((x) => x.comp === c.comp && x.id !== c.id && x.sim !== 'nation');
-      return rivals.length ? U.pick(rivals).short || U.pick(rivals).name : 'the old rivals';
+      return rivals.length ? U.pick(rivals).name : 'the old rivals';
     };
     // [needs, text]: a story with details from the club's real past
     const stories = {

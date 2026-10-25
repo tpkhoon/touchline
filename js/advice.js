@@ -43,7 +43,7 @@
           add(
             'oop:' + p.id,
             5,
-            '',
+            'puzzle',
             `${W.short(p)} is playing out of position at ${slots[i].t}. ${W.short(alt)} is a natural there and just as effective.`,
             p.id,
             { label: 'Swap', act: 'swapIn', id: `${i}:${alt.id}` },
@@ -52,7 +52,7 @@
           add(
             'cover:' + slots[i].t,
             3,
-            '',
+            'puzzle',
             `${W.short(p)} is filling in at ${slots[i].t}. We lack a natural ${D.POS_NAME[slots[i].t] ? D.POS_NAME[slots[i].t].toLowerCase() : slots[i].t} of his level — worth scouting.`,
             p.id,
           );
@@ -69,7 +69,7 @@
       add(
         'fit',
         tired.length >= 3 ? 4 : 3,
-        '',
+        'battery',
         tired.length === 1
           ? `${names} is short of fitness. Consider resting him.`
           : `${tired.length} starters are short of fitness: ${names}${tired.length > 3 ? '…' : ''}. Rotate if you can.`,
@@ -82,7 +82,7 @@
         add(
           'form:' + p.id,
           3,
-          '',
+          'flame',
           `${W.short(p)} is in great form (${U.avg(f).toFixed(1)} avg) but is on the bench.`,
           p.id,
         );
@@ -93,7 +93,7 @@
         add(
           'unhappy:' + p.id,
           4,
-          '',
+          'angry',
           `${W.short(p)} is unhappy (${W.moraleLabel(p.morale)[0].toLowerCase()} morale). ${p.hid.amb >= 14 ? 'He wants more minutes — or a move.' : 'A chat or some game time would help.'}`,
           p.id,
         ),
@@ -113,7 +113,7 @@
         add(
           'ready:' + p.id,
           3,
-          '',
+          'sprout',
           `${W.short(p)} (${W.age(p)}) is ready. He's as good as ${W.short(weakest)} already.`,
           p.id,
         );
@@ -131,7 +131,7 @@
         add(
           'loan:' + p.id,
           2,
-          '',
+          'plane',
           `${W.short(p)} (${W.age(p)}, ${p.pos}) needs games: ${p.season.apps} so far. ${dest.name}${comp ? ` (${comp.name})` : ''} would ${starts ? 'start him' : 'give him minutes'} at a level that stretches him.${open ? '' : ' Loans reopen with the window.'}`,
           p.id,
           open ? { label: 'Loan list', act: 'loanOut', id: p.id } : null,
@@ -151,7 +151,7 @@
       add(
         'weak:' + weak.g,
         4,
-        '',
+        'telescope',
         `Our weakest area is ${{ GK: 'goalkeeper', DEF: 'defence', MID: 'midfield', ATT: 'attack' }[weak.g]}. I'd send a scout to find an upgrade.`,
         null,
         { label: 'Scout it', act: 'scoutNeed', id: weak.g },
@@ -162,7 +162,7 @@
         add(
           'depth:' + x.g,
           3,
-          '',
+          'trendDown',
           `We're short of bodies in ${{ GK: 'goal', DEF: 'defence', MID: 'midfield', ATT: 'attack' }[x.g]} — only ${x.depth}. One injury and we're stretched.`,
           null,
           { label: 'Free agents', act: 'goFree', id: x.g },
@@ -175,7 +175,7 @@
         add(
           'contract:' + p.id,
           5,
-          '',
+          'note',
           `${W.short(p)}'s contract runs out this season. Renew him or he could leave for nothing.`,
           p.id,
           { label: 'Renew', act: 'renew', id: p.id },
@@ -203,7 +203,7 @@
         add(
           'dead:' + p.id,
           2,
-          '',
+          'briefcase',
           `${W.short(p)} earns ${U.money(p.wage)}/wk and barely plays. Selling would free up wages.`,
           p.id,
           { label: 'List him', act: 'listPlayer', id: p.id },
@@ -214,7 +214,7 @@
       add(
         'fam',
         3,
-        '',
+        'brain',
         `The players are still learning the ${T.formation}. Familiarity is ${Math.round(T.fam)}% — sticking with it will help.`,
       );
 
@@ -226,7 +226,8 @@
       (n) => done[n.key] === undefined || s.day - done[n.key] >= A.SNOOZE || done[n.key] > s.day,
     );
     const out = live.sort((a, b) => b.pri - a.pri).slice(0, Math.max(2, limit));
-    if (!out.length) out.push({ pri: 0, icon: '', text: 'The squad is in good shape. No concerns from me, boss.' });
+    if (!out.length)
+      out.push({ pri: 0, icon: 'check', text: 'The squad is in good shape. No concerns from me, boss.' });
     return { who: who(asst), role: 'Assistant Manager', personality: asst ? asst.personality : '', notes: out };
   };
 
