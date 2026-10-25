@@ -3107,7 +3107,38 @@
     UI._chart = d.v;
     UI.render();
   };
+  // How the goals of the season so far have come, in the fully simulated leagues: by chance type and by the scorer's position
+  const GOAL_TYPE_LABEL = {
+    through: 'Through balls',
+    cross: 'Crosses',
+    cutback: 'Cutbacks',
+    counter: 'Counters',
+    setpiece: 'Set pieces',
+    longshot: 'Long shots',
+    penalty: 'Penalties',
+    open: 'Open play',
+  };
+  const goalTypesCard = () => {
+    const t = ((S().goalTypes || {})[S().year] || {}).full;
+    if (!t || t.n < 20) return '';
+    const share = (v) => `${Math.round((v / t.n) * 100)}%`;
+    const line = (label, v) =>
+      `<div class="row small" style="padding:4px 0;border-top:1px solid var(--line)"><span class="grow">${label}</span><b>${share(v)}</b><span class="dim tiny" style="width:44px;text-align:right">${v}</span></div>`;
+    const types = Object.entries(t.types).sort((a, b) => b[1] - a[1]);
+    const grp = [
+      ['ATT', 'Forwards'],
+      ['MID', 'Midfielders'],
+      ['DEF', 'Defenders'],
+      ['GK', 'Goalkeepers'],
+    ].filter(([k]) => t.pos[k]);
+    return `<div class="card"><div class="h3">How the goals come</div><div class="tiny dim" style="margin-bottom:4px">${U.plural(t.n, 'goal')} this season in the fully simulated leagues</div>
+      ${types.map(([k, v]) => line(GOAL_TYPE_LABEL[k] || k, v)).join('')}
+      <div class="small b dim" style="margin:8px 0 2px">Scored by</div>${grp.map(([k, l]) => line(l, t.pos[k])).join('')}</div>`;
+  };
   function statsView() {
+    return goalTypesCard() + statsViewBase();
+  }
+  function statsViewBase() {
     const s = S(),
       cur = UI._statsComp || myComp();
     const pick = `<div class="chips" style="flex-wrap:wrap"><button class="chip ${cur === 'all' ? 'on' : ''}" data-act="statsComp" data-v="all">All leagues</button>${W.leagues()

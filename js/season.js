@@ -538,6 +538,24 @@
   };
 
   // ---------- Apply a finished match ----------
+  // How goals are scored, season by season and tier by tier: by chance type (through ball, cross, cutback, counter, set piece,
+  // long shot, penalty) and by the scorer's position group, so the shares can be checked against the real game
+  Sea.noteGoalType = function (g, tier) {
+    const S = FM.S,
+      p = S.players[g.pid];
+    const tally = (((S.goalTypes = S.goalTypes || {})[S.year] = S.goalTypes[S.year] || {})[tier] = S.goalTypes[S.year][
+      tier
+    ] || {
+      n: 0,
+      types: {},
+      pos: {},
+    });
+    tally.n++;
+    const ty = g.type || (g.pen ? 'penalty' : 'open');
+    tally.types[ty] = (tally.types[ty] || 0) + 1;
+    const grp = p ? D.POS_GROUP[p.pos] : null;
+    if (grp) tally.pos[grp] = (tally.pos[grp] || 0) + 1;
+  };
   Sea.apply = function (fx, m) {
     const S = FM.S,
       res = m.result();
@@ -628,6 +646,7 @@
       }
       if (g.ast) S.players[g.ast].season.ast++;
       FM.Records.noteGoal(fx, g);
+      Sea.noteGoalType(g, 'full');
     });
     res.cards.forEach((c) => {
       const p = S.players[c.pid];

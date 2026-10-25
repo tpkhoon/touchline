@@ -1142,8 +1142,17 @@
               `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">Play-off</span><span class="grow ellip" style="text-align:right" data-act="nation" data-id="${f.h}">${esc(T(f.h).name)} ${C.flag(T(f.h).code)}</span><b style="min-width:44px;text-align:center">${f.res ? `${f.res.hg}–${f.res.ag}` : 'v'}</b><span class="grow ellip" data-act="nation" data-id="${f.a}">${C.flag(T(f.a).code)} ${esc(T(f.a).name)}</span></div>${f.res && f.res.pens ? `<div class="tiny dim center">pens ${f.res.pens[0]}–${f.res.pens[1]}</div>` : ''}`,
           )
           .join('')}
-        ${[...new Set(mineFirst.map((g) => g.key))]
-          .map((key) => {
+        ${(() => {
+          // your own group first, then your confederation, then the rest of the world folded away
+          const focus = u.nation ? T(u.nation).code : FM.W.userClub() && FM.W.userClub().nat,
+            fid = focus && 'n_' + focus,
+            home = focus && D.NATIONS[focus] ? FM.Intl.region(focus) : null,
+            mineG = q.groups.find((g) => g.teams.includes(fid));
+          const keys = [...new Set(mineFirst.map((g) => g.key))];
+          const regionOf = (key) => FM.Intl.region(T(mineFirst.find((g) => g.key === key).teams[0]).code);
+          const near = keys.filter((k) => home && regionOf(k) === home),
+            far = keys.filter((k) => !near.includes(k));
+          const poolHtml = (key) => {
             const gs = mineFirst.filter((g) => g.key === key),
               mine = gs.some((g) => g.teams.includes(u.nation));
             const pool = gs[0].name.replace(/\s+\S+$/, '').trim() || 'Pool';
@@ -1169,8 +1178,14 @@
                 .join(''),
               mine,
             );
-          })
-          .join('')}`;
+          };
+          const pools = (list) => list.map(poolHtml).join('');
+          return `${
+            mineG
+              ? `<div class="sec"><div class="h3">Your group</div></div><div class="card flat"><div class="row small" style="margin-bottom:4px"><span class="grow b">${esc(mineG.name.trim())}</span><span class="tiny dim">${U.plural(mineG.slots, 'place')}</span></div>${miniTable(mineG.table, mineG.teams, 1, fid)}</div>`
+              : ''
+          }${near.length ? `<div class="sec"><div class="h3">Your confederation</div></div>${pools(near)}` : ''}${far.length ? nfold('q_rest', `<div class="row small b" style="margin:4px 0"><span class="grow">The rest of the world</span><span class="tiny dim">${U.plural(far.length, 'pool')}</span></div>`, pools(far), false) : ''}`;
+        })()}`;
     }
     top += nationsLeagueSection(s, u);
     return W.employed() ? top + origIntl() + vac : vac + top + origIntl();

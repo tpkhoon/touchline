@@ -1658,7 +1658,7 @@
         weather: this.weather[0],
         goals: this.events
           .filter((e) => e.k === 'goal')
-          .map((e) => ({ side: e.side, pid: e.pid, ast: e.ast, min: e.min, pen: e.type === 'penalty' })),
+          .map((e) => ({ side: e.side, pid: e.pid, ast: e.ast, min: e.min, pen: e.type === 'penalty', type: e.type })),
         cards: this.events
           .filter((e) => e.k === 'yellow' || e.k === 'red')
           .map((e) => ({ side: e.side, pid: e.pid, k: e.k })),

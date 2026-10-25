@@ -52,10 +52,55 @@
     return [U.clamp(1.42 * Math.exp(0.3 * d), 0.25, 4.2), U.clamp(1.12 * Math.exp(-0.3 * d), 0.2, 3.8)];
   };
 
+  // The kinds of chance a goal comes from, as the full engine has them in the long run (a penalty is decided on its own)
+  const GOAL_TYPE_W = { through: 20, cross: 24, cutback: 8, counter: 14, setpiece: 22, longshot: 12 };
+  // A goal's kind and whether it was a penalty (about one in ten), the same for every tier below the full engine
+  Ti.goalKind = (g) => {
+    g.pen = Math.random() < 0.095;
+    g.type = g.pen ? 'penalty' : U.wpick(Object.keys(GOAL_TYPE_W), (k) => GOAL_TYPE_W[k]);
+    return g;
+  };
+  // Shots for a side from what its strength says it should create (about twelve a game, more for the stronger side), spread over
+  // the players who would take them; a third are on target, and every goal was one
+  Ti.shotsFor = function (players, weight, lambda, goals, mins) {
+    if (!players.length) return { shots: 0, sot: 0 };
+    const shots = Math.max(goals, Math.round(U.clamp(U.gauss(8.5 + lambda * 2.4, 2.2), 4, 24)));
+    const sot = Math.min(shots, Math.max(goals, Math.round(shots * U.rand(0.28, 0.42))));
+    for (let i = 0; i < shots; i++) {
+      const p = U.wpick(players, weight);
+      p.season.sh = (p.season.sh || 0) + 1;
+      if (i < sot) p.season.sot = (p.season.sot || 0) + 1;
+    }
+    if (mins) for (const p of players) p.season.mins = (p.season.mins || 0) + (mins[p.id] || 90);
+    return { shots, sot };
+  };
+  // Cards for a side that the match did not record: about 1.4 yellows and one red in ten a game, defenders and midfielders most
+  const CARD_W = { DM: 1.5, CB: 1.3, CM: 1.1, FB: 1.1, WB: 1.1, WM: 0.9, AM: 0.8, W: 0.7, ST: 0.8, GK: 0.15 };
+  Ti.cardsFor = function (players, side, cards) {
+    if (!players.length) return;
+    const give = (k) => {
+      const p = U.wpick(players, (x) => (CARD_W[x.pos] || 1) * (W.hasTrait(x, 'Temperamental') ? 1.6 : 1));
+      cards.push({ side, pid: p.id, k });
+      if (k === 'yellow') {
+        p.season.yc++;
+        if (p.season.yc % 5 === 0) {
+          p.susp = 1;
+          p.suspNew = true;
+        }
+      } else {
+        p.season.rc++;
+        p.susp = 2;
+        p.suspNew = true;
+      }
+    };
+    for (let i = U.poisson(1.4); i > 0; i--) give('yellow');
+    if (Math.random() < 0.1) give('red');
+  };
   Ti.play = function (fx, sim) {
     const comp = S().comps[fx.comp];
     const res = sim === 'light' ? Ti.light(fx) : Ti.minimal(fx);
     fx.res = res;
+    (res.goals || []).forEach((g) => FM.Season.noteGoalType(g, sim));
     FM.Season.updTable(comp.table, fx, res);
     FM.Season.noteResult(fx, res);
     const hc = S().clubs[fx.h],
@@ -79,7 +124,10 @@
     const [lh, la] = Ti.lambdas(W.levelFor(hc.rep), W.levelFor(ac.rep));
     const hg = U.poisson(lh),
       ag = U.poisson(la);
-    const goals = [];
+    const goals = [],
+      cards = [],
+      shots = [0, 0],
+      sot = [0, 0];
     [
       [fx.h, hg, ag, 0],
       [fx.a, ag, hg, 1],
@@ -107,11 +155,20 @@
         sc.career.goals++;
         const sp = W.spell(sc);
         if (sp && sp.c === sc.clubId) sp.goals++;
-        goals.push({ side, pid: sc.id });
+        goals.push(Ti.goalKind({ side, pid: sc.id }));
         FM.Records.noteGoal(fx, { pid: sc.id });
       }
+      const sh = Ti.shotsFor(
+        sq,
+        (p) => (GOAL_W[p.pos] || 0.05) * (0.5 + p.attrs.finishing / 12),
+        id === fx.h ? lh : la,
+        gf,
+      );
+      shots[side] = sh.shots;
+      sot[side] = sh.sot;
+      Ti.cardsFor(sq, side, cards);
     });
-    return { hg, ag, goals, sim: 'minimal' };
+    return { hg, ag, goals, cards, shots, sot, sim: 'minimal' };
   };
 
   const GOAL_W = { ST: 1, W: 0.55, WM: 0.4, AM: 0.5, CM: 0.2, DM: 0.08, WB: 0.09, FB: 0.07, CB: 0.07, GK: 0 };
@@ -129,6 +186,8 @@
       poss: null,
       goals: [],
       cards: [],
+      shots: [0, 0],
+      sot: [0, 0],
       sim: 'light',
     };
     const share = U.clamp(50 + (H.r - A.r) * 1.2 + U.randi(-6, 6), 28, 72);
@@ -145,6 +204,9 @@
       const mins = {};
       played.forEach((p, i) => (mins[p.id] = i < T.xi.length ? 90 : U.randi(10, 35)));
       const scorerW = (p) => (GOAL_W[p.pos] || 0.05) * (0.5 + p.attrs.finishing / 12) * (mins[p.id] / 90);
+      const sh = Ti.shotsFor(played, (p) => scorerW(p) + 0.02, side ? la : lh, gf, mins);
+      res.shots[side] = sh.shots;
+      res.sot[side] = sh.sot;
       const r = {};
       played.forEach((p) => (r[p.id] = 6.3 + (gf - ga) * 0.18 + (p.ca - T.r) / 20 + U.gauss(0, 0.45)));
       const times = [...Array(gf)].map(() => U.randi(1, 90)).sort((a, b) => a - b);
@@ -153,7 +215,7 @@
         const astPool = played.filter((p) => p !== sc);
         const ast =
           Math.random() < 0.72 ? U.wpick(astPool, (p) => (AST_W[p.pos] || 0.1) * (0.5 + p.attrs.passing / 14)) : null;
-        res.goals.push({ side, pid: sc.id, ast: ast && ast.id, min: `${min}'` });
+        res.goals.push(Ti.goalKind({ side, pid: sc.id, ast: ast && ast.id, min: `${min}'` }));
         r[sc.id] += 0.9;
         if (ast) r[ast.id] += 0.45;
       });
@@ -177,14 +239,14 @@
         p.fitness = Math.max(55, p.fitness - (mins[p.id] >= 90 ? U.randi(18, 30) : 8));
         p.morale = U.clamp(p.morale + (gf > ga ? 3 : gf < ga ? -3 : 0), 0, 100);
         // Cards and knocks
-        if (Math.random() < 0.09 * (W.hasTrait(p, 'Temperamental') ? 1.6 : 1) * (mins[p.id] / 90)) {
+        if (Math.random() < 0.11 * (W.hasTrait(p, 'Temperamental') ? 1.6 : 1) * (mins[p.id] / 90)) {
           res.cards.push({ side, pid: p.id, k: 'yellow' });
           p.season.yc++;
           if (p.season.yc % 5 === 0) {
             p.susp = 1;
             p.suspNew = true;
           }
-        } else if (Math.random() < 0.004) {
+        } else if (Math.random() < 0.008) {
           res.cards.push({ side, pid: p.id, k: 'red' });
           p.season.rc++;
           p.susp = 2;
