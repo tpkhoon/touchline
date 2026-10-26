@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-440 features are playable in the web prototype today. Build = the build that added it.
+442 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -489,10 +489,12 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | The pre-game editor keeps your work: the draft saves by itself a moment after any change (typing too), every minute and straight after building the squads; leaving with unsaved changes warns first; "Saved · 2 minutes ago" beside the Save button; one Done button on the player form; Delete this player is red and asks for a second tap | Editor review |
 | Editor | Changes made, with undo, for the world you are playing: every edit (player, club, competition, rules, a new player, a bulk edit) is listed under Edit the world with an Undo that puts back what it replaced, and moving a player to another club or a big jump in a club's reputation asks first, saying what will follow; a mistyped club name no longer half-saves a player | Editor review |
 | Editor | The pre-game editor opens on tasks (change a club, edit players, rules, competitions and recently edited clubs); eight tabs on two rows (Start, Clubs, Players, Rules, Competitions, People, Files, History); the pack details are in Files under "Export or share this world"; clearer bottom-bar labels (Save, Import / export, Start a career with this world) that wrap instead of being cut off, with a backdrop behind the bar | Editor review |
+| Editor | One player form for both editors (the world editor and the in-game editor open the same one): names, nationality, second nationality and heritage, position, second positions, foot, age, contract, wage, squad number and traits, and in the game morale, club and healing an injury; only the attributes that matter for his position (a keeper's reflexes and handling are hidden on a striker, a keeper's outfield skills on a keeper), each a whole number with − and + buttons, with his ability, stars and (in a career) value updating as you change them; only the attributes you change are written back, so showing 7.8 as 8 never moves his ability. The definition format carries the new fields (second nationality, heritage, second positions, traits, number) and exports them | Editor review |
+| Editor | An empty club squad in the world editor offers to build every club's squad right there | Editor review |
 
 ## Yet to be added
 
-246 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
+243 features remain, grouped by the roadmap phase they belong to. The polish backlog and mobile readiness step 2 are done; device builds come before Beta.
 
 **Top priority, first: the editor review** (the Editor rows marked top priority at the head of the table: the in-game field styling, never losing work, one player form, changes with undo, a pre-game editor that opens on tasks, and the three to-do items raised in priority). **Then: the real database and the accuracy of the ratings it is made with** (the three Ratings rows at the top of the table; eight more are done and listed above). **Second priority: engineering** (the ten rows after them): the worker owning the game state, a smaller state, faster searches, fast tests in the deploy, shared text helpers, automatic escaping for imported packs, type checking and smaller files. Alpha 2 rows are listed in priority order: the editor architecture, historical seasons, youth, career histories, rivalries, world news, relationships, records, economics, then community infrastructure. **Living world** items deepen the simulated world after Alpha 2 and can be pulled forward one at a time.
 
@@ -502,10 +504,7 @@ Design principle from here: don't make the game deeper by adding more screens �
 
 | Area | Feature | Phase |
 | --- | --- | --- |
-| Editor | One player form for both editors (editor review, top priority): the pre-game and in-game forms differ (sliders with decimals against number boxes; age only against age and wage; club, national call-up and set-from-ability on one side each); a single shared form, with only the attributes that matter for the position (goalkeeping only for keepers), whole numbers with + and − buttons instead of sliders, and stars, value and ability updating live as attributes change | Alpha 2 |
-| Editor | Missing player fields (editor review): second positions, second nationality and heritage, personality and traits, squad number, and in-game morale and injury | Alpha 2 |
 | Editor | Edit from more places in game (editor review): national teams and competitions, club money (balance, budgets), managers and staff, and an edit button on a league table row, not only the club screen; edited saves marked, so that achievements can be switched off for them; commissioner mode to complete it (force a transfer, set a result, change rules mid-season) | Alpha 2 |
-| Editor | Build squads where you need them (editor review): when a club's player list is empty, offer the build right there ("Build every club's squad to edit them · about 30 seconds") instead of only under "Build the squads to edit them" on the Players tab | Alpha 2 |
 | Editor | Raise in priority (editor review, top priority): "Simulate 5 seasons" next to the balance check, the CSV editor (export to a spreadsheet and import back) and the guided league creator, each already listed on its own row | Alpha 2 |
 | Ratings | League strength measured from results, not reputation (Real database accuracy, top priority): how a league's clubs do against other leagues' clubs in continental competitions, and how much of their output players keep when they move between leagues (about 80% from league A to B is the strength gap), built into a table of league strengths that replaces the game's reputation bands when ratings are converted | Alpha 2 |
 | Ratings | A back-test against what really happened (Real database accuracy, top priority): build a whole league from last season's real statistics, simulate that season many times in Touchline and compare the average simulated table with the real final table (if the real champions finish fifth, the ratings or the engine undervalue something); also check that more expensive transfers go to higher-rated players, and fit the overall level and spread with the calibration dashboard of `realstats.js`. Ratings are never judged against Football Manager's or EA's numbers: those are other companies' creative work | Alpha 2 |

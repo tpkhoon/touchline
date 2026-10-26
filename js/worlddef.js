@@ -173,6 +173,11 @@
           attrs,
           pa: Math.max(p.pa, W.calcCA({ attrs }, p.pos)),
           ...(p.ntUntil >= S.year ? { callup: true } : {}),
+          ...(p.nat2 ? { nat2: p.nat2 } : {}),
+          ...(p.heritage ? { heritage: p.heritage } : {}),
+          ...(p.alt && Object.keys(p.alt).length ? { alt: { ...p.alt } } : {}),
+          ...(p.traits && p.traits.length ? { traits: [...p.traits] } : {}),
+          ...(p.no > 0 ? { no: p.no } : {}),
           club: p.clubId || null,
           contract: p.contract,
         });
@@ -1578,6 +1583,17 @@
       e.push(`${at}: born ${p.born} gives an age outside 15–45`);
     if (p.foot && !FEET.includes(p.foot)) e.push(`${at}: foot must be Left, Right or Both`);
     if (p.callup != null && typeof p.callup !== 'boolean') e.push(`${at}: callup is true or false`);
+    if (p.nat2 && !D.NATIONS[p.nat2]) e.push(`${at}: unknown second nation "${p.nat2}"`);
+    if (p.heritage != null && typeof p.heritage !== 'string') e.push(`${at}: heritage is a name`);
+    if (p.traits && !(Array.isArray(p.traits) && p.traits.every((t) => D.TRAITS && D.TRAITS[t])))
+      e.push(`${at}: traits must be names the game knows`);
+    if (
+      p.alt &&
+      !(typeof p.alt === 'object' && Object.entries(p.alt).every(([t, f]) => D.POS.includes(t) && f >= 0 && f <= 1))
+    )
+      e.push(`${at}: second positions must be positions with a fit from 0 to 1`);
+    if (p.no != null && !(isInt(p.no) && p.no >= 1 && p.no <= 99)) e.push(`${at}: the squad number is 1 to 99`);
+    if (p.wage != null && !(p.wage >= 0)) e.push(`${at}: the wage cannot be negative`);
     const a = p.attrs || {};
     for (const k of D.ATTRS)
       if (!(a[k] >= 1 && a[k] <= 20)) e.push(`${at}: attribute ${k} must be 1–20 (it is ${a[k]})`);
@@ -2228,7 +2244,12 @@
       p.pa = Math.round(U.clamp(d.pa ?? ca, ca, 96));
       delete p.alt;
       delete p.side;
-      W.genAlt(p);
+      if (d.alt) p.alt = { ...d.alt };
+      else W.genAlt(p);
+      if (d.nat2) p.nat2 = d.nat2;
+      if (d.heritage) p.heritage = d.heritage;
+      if (d.traits) p.traits = [...d.traits];
+      if (d.no) p.no = d.no; // (a number that is taken is given another when the squad is numbered)
       W.refresh(p);
       p.wage = d.wage || W.wageFor(p);
       if (d.contract) p.contract = d.contract;

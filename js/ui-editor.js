@@ -903,18 +903,10 @@
       ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `${esc(x)}`).join('<br>')}</div>`
       : '';
   };
-  const playerWarn = (p) => {
-    const v = (id, d) => ($('#ed-' + id) || {}).value ?? d;
-    const fn = String(v('fn', p.fn || '')).trim(),
-      ln = String(v('ln', p.ln || '')).trim();
+  const playerWarn = (f) => {
     const w = [];
-    if (D.isRude(fn) || D.isRude(ln)) w.push('That name is one the game will not use: it contains a rude word.');
-    const attrs = D.ATTRS.map((k) => +v('a-' + k, p.attrs[k]));
-    const pos = v('pos', p.pos);
-    const ca = abilityOf(Object.fromEntries(D.ATTRS.map((k, i) => [k, attrs[i]])), pos);
-    if (+v('pa', p.pa) < ca) w.push(`His potential is below his ability (${ca}): the game raises it to match.`);
-    const age = yearOf() - (+v('born', p.born) || p.born);
-    if (age < 15 || age > 44) w.push(`An age of ${age} is outside what the game plays (15 to 44).`);
+    if (D.isRude(f.fn) || D.isRude(f.ln)) w.push('That name is one the game will not use: it contains a rude word.');
+    if (f.age < 15 || f.age > 44) w.push(`An age of ${f.age} is outside what the game plays (15 to 44).`);
     return w.length
       ? `<div class="tiny" style="color:#fbbf24;margin:6px 0;line-height:1.5">${w.map((x) => `${esc(x)}`).join('<br>')}</div>`
       : '';
@@ -2735,41 +2727,25 @@
     ED.err = [];
     UI.worldEditor();
   };
-  // Fill the attribute sliders for the position and ability on screen (nothing is saved until Done)
-  UI.acts.edSuggest = () => {
-    const pos = $('#ed-pos').value,
-      ca = Math.round(+$('#ed-ca').value);
-    const a = suggest(pos, ca);
-    for (const k of D.ATTRS) {
-      $('#ed-a-' + k).value = a[k];
-      $('#ed-av-' + k).textContent = a[k];
-    }
-    showAbility();
-  };
-  const readAttrs = () => Object.fromEntries(D.ATTRS.map((k) => [k, Math.round(+$('#ed-a-' + k).value)]));
-  const showAbility = () => {
-    const ca = abilityOf(readAttrs(), $('#ed-pos').value),
-      pa = $('#ed-pa');
-    $('#ed-cav').textContent = ca;
-    if (+pa.value < ca) {
-      pa.value = ca;
-      $('#ed-pav').textContent = ca;
-    }
-    pa.min = ca;
-  };
   UI.acts.edSavePlayer = () => {
-    const v = (id) => ($('#ed-' + id) || {}).value;
+    const f = UI.PlayerForm.read();
     const r = WD.editor(ED.def, null).updatePlayer(ED.pid, {
-      fn: (v('fn') || '').trim(),
-      ln: (v('ln') || '').trim(),
-      nat: v('nat'),
-      pos: v('pos'),
-      born: yearOf() - Math.round(+v('age')),
-      foot: v('foot'),
-      contract: Math.round(+v('contract')) || null,
-      pa: Math.round(+v('pa')),
+      fn: f.fn,
+      ln: f.ln,
+      nat: f.nat,
+      nat2: f.nat2,
+      heritage: f.heritage,
+      pos: f.pos,
+      born: yearOf() - f.age,
+      foot: f.foot,
+      contract: f.contract,
+      wage: f.wage,
+      no: f.no,
+      alt: f.alt,
+      traits: f.traits,
+      pa: f.pa,
       callup: $('#ed-pcall').checked || undefined,
-      attrs: readAttrs(),
+      attrs: f.attrs,
     });
     if (!r.ok) {
       ED.err = r.errors;
@@ -4838,7 +4814,12 @@
             const ca = abilityOf(p.attrs, p.pos);
             return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edPlayer" data-pid="${esc(p.id)}"><div class="row"><div class="grow"><div class="small b">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim())}</div><div class="tiny dim">${p.callup ? '' : ''}${esc(D.POS_NAME[p.pos] || p.pos)} · ${year - p.born} · ability ${ca} · potential ${p.pa ?? ca}</div></div><span class="dim">›</span></div></div>`;
           })
-          .join('') || `<div class="empty">No players made ${free ? 'as free agents' : 'for this club'} yet.</div>`
+          .join('') ||
+        `<div class="empty">No players made ${free ? 'as free agents' : 'for this club'} yet.</div>${
+          free || (ED.def.meta.players === 'replace' && (ED.def.players || []).length > 2000)
+            ? ''
+            : `<div class="card tap" style="margin:0 0 8px;padding:10px 12px" data-act="edBuildSquads"><div class="row"><div class="grow"><div class="small b">Build every club's squad to edit them</div><div class="tiny dim">about 30 seconds; the squads are saved with the world</div></div><span class="dim">›</span></div></div>`
+        }`
       }
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm" data-act="edImportPlayers">▼ Import</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
   };
@@ -4847,25 +4828,34 @@
     const p = ED.def.players.find((x) => x.id === ED.pid);
     if (!p) return squadView();
     const year = yearOf(),
-      ca = abilityOf(p.attrs, p.pos),
-      nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
-    const sl = (k) =>
-      `<div class="row" style="gap:10px;align-items:center"><span class="small" style="width:96px;flex:none">${esc(D.ATTR_LABEL[k])}</span><input type="range" id="ed-a-${k}" min="1" max="20" step="1" value="${p.attrs[k]}" style="flex:1"><b id="ed-av-${k}" style="width:22px;text-align:right">${p.attrs[k]}</b></div>`;
-    return `<div class="h1" style="margin-top:2vh">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim() || 'New player')}</div><div class="tag">${ED.def.meta.players === 'replace' && (ED.def.players || []).length > 2000 ? 'A player in this world.' : 'A player of your own.'} The game builds the rest of him (wage, personality, second positions) when the world starts. Done keeps your changes and goes back to the squad.</div>
+      nations = natEntries()
+        .sort((x, y) => x[1].name.localeCompare(y[1].name))
+        .map(([k, n]) => [k, `${n.flag} ${n.name}`]);
+    const extra = `<label class="small" style="display:flex;gap:10px;align-items:center;margin-top:12px;min-height:44px"><input type="checkbox" id="ed-pcall" style="width:24px;height:24px;flex:none" ${p.callup ? 'checked' : ''}> Called up by ${esc((D.NATIONS[p.nat] || { name: 'his country' }).name)} <span class="tiny dim">(picked ahead of better players for three years)</span></label>
+      <div class="actions" style="margin-top:14px"><button class="btn sm danger" data-act="edDelPlayer">Delete this player</button></div>`;
+    const form = UI.PlayerForm.html(
+      {
+        fn: p.fn,
+        ln: p.ln,
+        nat: p.nat,
+        nat2: p.nat2,
+        heritage: p.heritage,
+        pos: p.pos,
+        alt: p.alt,
+        foot: p.foot,
+        age: year - p.born,
+        contract: p.contract || '',
+        wage: p.wage,
+        no: p.no,
+        pa: p.pa ?? abilityOf(p.attrs, p.pos),
+        attrs: p.attrs,
+        traits: p.traits,
+      },
+      { mode: 'pre', year, nations, paMax: 96, extra },
+    );
+    return `<div class="h1" style="margin-top:2vh">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim() || 'New player')}</div><div class="tag">${ED.def.meta.players === 'replace' && (ED.def.players || []).length > 2000 ? 'A player in this world.' : 'A player of your own.'} Anything left empty is made by the game when the world starts. Done keeps your changes and goes back to the squad.</div>
       ${errBox()}
-      <div id="ed-pwarn">${playerWarn(p)}</div>
-      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">First name</div><input type="text" id="ed-fn" maxlength="24" value="${esc(p.fn || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Last name</div><input type="text" id="ed-ln" maxlength="28" value="${esc(p.ln || '')}"></div></div>
-      <div class="ng-label">Nationality</div><select id="ed-nat">${nations.map(([k, n]) => `<option value="${k}" ${p.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
-      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Position</div><select id="ed-pos">${D.POS.map((k) => `<option value="${k}" ${p.pos === k ? 'selected' : ''}>${esc(D.POS_NAME[k])}</option>`).join('')}</select></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Foot</div><select id="ed-foot">${['Right', 'Left', 'Both'].map((k) => `<option ${p.foot === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div></div>
-      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Age at the start</div><input type="number" id="ed-age" min="15" max="45" inputmode="numeric" value="${year - p.born}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Contract ends</div><input type="number" id="ed-contract" min="${year}" max="${year + 8}" inputmode="numeric" value="${p.contract || ''}"></div></div>
-      <div class="ng-label">Attributes <span class="tiny dim">· ability <b id="ed-cav" style="color:#e6edf6">${ca}</b></span></div>
-      <div style="display:grid;gap:6px">${D.ATTRS.map(sl).join('')}</div>
-      <div class="ng-label">Or set them from an ability</div>
-      <div class="row" style="gap:10px;align-items:center"><input type="range" id="ed-ca" min="20" max="95" step="1" value="${ca}" style="flex:1"><b id="ed-cas" style="width:28px;text-align:right">${ca}</b><button class="btn sm" data-act="edSuggest">Fill in</button></div>
-      <label class="small" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="ed-pcall" style="width:24px;height:24px;flex:none" ${p.callup ? 'checked' : ''}> Called up by ${esc((D.NATIONS[p.nat] || { name: 'his country' }).name)} <span class="tiny dim">(picked ahead of better players for three years)</span></label>
-      <div class="ng-label">Potential <b id="ed-pav" style="color:#e6edf6">${p.pa ?? ca}</b> <span class="tiny dim">(never below his ability)</span></div>
-      <input type="range" id="ed-pa" min="${ca}" max="96" step="1" value="${Math.max(ca, p.pa ?? ca)}" style="width:100%">
-      <div class="actions" style="margin-top:14px"><button class="btn sm danger" data-act="edDelPlayer">Delete this player</button></div>
+      ${form}
       <div class="actions ng-foot"><button class="btn sm" data-act="edSquad" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSavePlayer">Done</button></div>`;
   };
 
@@ -5020,17 +5010,13 @@
     bind('ed-cupname', () => (saveCupNames(), showCupWarn()));
     bind('ed-cupshort', () => (saveCupNames(), showCupWarn()));
     if (ED.view === 'player') {
-      for (const k of D.ATTRS)
-        bind('ed-a-' + k, (v) => {
-          $('#ed-av-' + k).textContent = v;
-          showAbility();
-        });
-      const pcur = ED.def.players.find((x) => x.id === ED.pid);
-      for (const id of ['fn', 'ln', 'pos', 'pa', 'born', ...D.ATTRS.map((k) => 'a-' + k)])
-        bind('ed-' + id, () => pcur && $('#ed-pwarn') && ($('#ed-pwarn').innerHTML = playerWarn(pcur)));
-      bind('ed-pos', () => showAbility());
-      bind('ed-ca', (v) => ($('#ed-cas').textContent = v));
-      bind('ed-pa', (v) => ($('#ed-pav').textContent = v));
+      const PF = UI.PlayerForm;
+      PF.after = () => {
+        const w = $('#pf-warn');
+        if (w) w.innerHTML = playerWarn(PF.read());
+        draftSoon();
+      };
+      PF.refresh();
     }
   };
   // (the tap targets carry their league and club in data attributes: the act handler reads them as strings)

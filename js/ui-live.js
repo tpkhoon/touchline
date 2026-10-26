@@ -40,6 +40,211 @@
     for (const k of Object.keys(obj)) if (!(k in snap)) delete obj[k];
     Object.assign(obj, clone(snap));
   };
+  // ---------- One player form for both editors ----------
+  // The world editor (before a career) and the in-game editor open the same form: names, nations, position and second positions,
+  // foot, age, contract, wage, number, traits, and the attributes that matter for his position (a keeper's reflexes and handling are
+  // not shown on a striker), each a whole number with - and + buttons, with his ability, stars and value updating as you change them.
+  // The editors pass in what they have (PF.html) and read back what was set (PF.read); what differs is in the options.
+  const PF = (UI.PlayerForm = { st: null, after: null });
+  const W = () => FM.W;
+  const num1 = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+v || 0)));
+  const v$ = (id) => ($('#' + id) || {}).value;
+  PF.attrsFor = (pos) =>
+    D.ATTRS.filter((k) =>
+      pos === 'GK' ? !(D.GK_OUTFIELD && k in D.GK_OUTFIELD) : !['reflexes', 'handling'].includes(k),
+    );
+  PF.near = (pos) => Object.entries((D.FIT && D.FIT[pos]) || {}).filter(([t, f]) => t !== pos && f >= 0.7);
+  PF.ability = () => W().calcCA({ attrs: PF.st.attrs }, PF.st.pos);
+  const stepper = (id, label, v, k) =>
+    `<div class="row" style="gap:6px;align-items:center;min-height:44px"><span class="small grow">${label}</span><button class="btn sm" style="min-width:44px;min-height:44px" data-act="pfStep" data-k="${k}" data-d="-1" aria-label="Lower ${esc(label)}">−</button><b id="${id}" style="min-width:28px;text-align:center">${v}</b><button class="btn sm" style="min-width:44px;min-height:44px" data-act="pfStep" data-k="${k}" data-d="1" aria-label="Raise ${esc(label)}">+</button></div>`;
+  const attrBlock = () => {
+    const st = PF.st,
+      show = PF.attrsFor(st.pos);
+    return Object.entries(st.pos === 'GK' ? D.ATTR_GROUPS_GK : D.ATTR_GROUPS)
+      .map(([g, ks]) => [g, ks.filter((k) => show.includes(k))])
+      .filter(([, ks]) => ks.length)
+      .map(
+        ([g, ks]) =>
+          `<div class="tiny dim" style="margin-top:8px">${esc(g)}</div>${ks.map((k) => stepper('pf-av-' + k, esc((D.ATTR_LABEL || {})[k] || k), st.attrs[k], k)).join('')}`,
+      )
+      .join('');
+  };
+  const toggles = (items, on, act) =>
+    `<div class="row" style="gap:6px;flex-wrap:wrap">${items
+      .map(
+        ([t, label]) =>
+          `<button class="btn sm ${on(t) ? 'pri' : ''}" style="min-height:44px" data-act="${act}" data-t="${esc(t)}" aria-pressed="${on(t)}">${esc(label)}</button>`,
+      )
+      .join('')}</div>`;
+  const altBlock = () => {
+    const st = PF.st,
+      near = PF.near(st.pos);
+    return near.length
+      ? toggles(
+          near.map(([t]) => [t, D.POS_NAME[t] || t]),
+          (t) => st.alt[t] != null,
+          'pfAlt',
+        )
+      : '<div class="tiny dim">None: a keeper has no second position.</div>';
+  };
+  const traitBlock = () =>
+    toggles(
+      Object.keys(D.TRAITS || {}).map((t) => [t, t]),
+      (t) => PF.st.traits.includes(t),
+      'pfTrait',
+    );
+  const sel = (id, opts, cur, attr = '') =>
+    `<select id="${id}" ${attr}>${opts.map(([v, t]) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const lab = (t) => `<div class="ng-label" style="margin-top:8px">${t}</div>`;
+  const nrow = (...cells) =>
+    `<div class="row" style="gap:8px">${cells.map((c) => `<div style="flex:1;min-width:0">${c}</div>`).join('')}</div>`;
+  const nin = (id, t, v, min, max, extra = '') =>
+    `${lab(t)}<input type="number" id="${id}" min="${min}" max="${max}" inputmode="numeric" value="${v ?? ''}" data-input="pfChange" ${extra}>`;
+  // m: { fn, ln, nat, nat2, heritage, pos, alt, foot, age, contract, wage, no, pa, attrs, traits, morale, club, injured }
+  // o: { mode: 'pre' | 'live', year, nations: [[code, name]], paMax, base, extra }
+  PF.html = (m, o) => {
+    // (what each attribute was, so only those you changed are written back: showing 7.8 as 8 must not move his ability)
+    const shown = Object.fromEntries(D.ATTRS.map((k) => [k, num1(m.attrs[k], 1, 20)]));
+    PF.st = {
+      orig: { ...shown },
+      mode: o.mode,
+      pos: m.pos,
+      paMax: o.paMax || 96,
+      base: o.base || null,
+      attrs: Object.fromEntries(D.ATTRS.map((k) => [k, num1(m.attrs[k], 1, 20)])),
+      alt: { ...(m.alt || {}) },
+      traits: [...(m.traits || [])],
+      pa: num1(m.pa, 20, o.paMax || 96),
+    };
+    const live = o.mode === 'live';
+    const her = Object.entries(D.HERITAGE_LABEL || {});
+    const posOpts = D.POS.map((k) => [k, D.POS_NAME[k]]);
+    return `<div id="pf-warn"></div>
+      ${nrow(`${lab('First name')}<input type="text" id="pf-fn" maxlength="24" value="${esc(m.fn || '')}" data-input="pfChange">`, `${lab('Last name')}<input type="text" id="pf-ln" maxlength="32" value="${esc(m.ln || '')}" data-input="pfChange">`)}
+      ${nrow(`${lab('Nationality')}${sel('pf-nat', o.nations, m.nat)}`, `${lab('Second nationality')}${sel('pf-nat2', [['', 'None'], ...o.nations], m.nat2 || '')}`)}
+      ${lab('Family heritage <span class="tiny dim">· the background his name and second nationality come from</span>')}${sel('pf-her', [['', 'None'], ...her], m.heritage || '')}
+      ${nrow(
+        `${lab('Position')}${sel('pf-pos', posOpts, m.pos, 'data-input="pfChange"')}`,
+        `${lab('Foot')}${sel(
+          'pf-foot',
+          ['Right', 'Left', 'Both'].map((k) => [k, k]),
+          m.foot || 'Right',
+        )}`,
+      )}
+      ${lab('Second positions <span class="tiny dim">· where he can also play</span>')}<div id="pf-alt">${altBlock()}</div>
+      ${nrow(nin('pf-age', 'Age', m.age, 15, 45), nin('pf-contract', 'Contract ends', m.contract, o.year, o.year + 8), nin('pf-no', 'Squad number', m.no, 1, 99))}
+      ${nrow(nin('pf-wage', 'Wage a week <span class="tiny dim">· 0: the game sets it</span>', m.wage, 0, 1000000, 'step="50"'), live ? nin('pf-morale', 'Morale', m.morale, 0, 100) : '<div></div>')}
+      ${live ? `${lab('Club <span class="tiny dim">· type a club\'s name, or Free agent</span>')}<input type="text" id="pf-club" list="le-clubs" value="${esc(m.club || 'Free agent')}" autocomplete="off">${m.injured ? `<label class="row" style="gap:10px;margin-top:10px;min-height:44px"><input type="checkbox" id="pf-heal" style="width:24px;height:24px;flex:none"> <span class="small">Heal his injury (${esc(m.injured)})</span></label>` : ''}` : ''}
+      ${lab('Traits')}<div id="pf-traits">${traitBlock()}</div>
+      <div class="ng-label">Attributes <span class="tiny dim">· 1 to 20; only those that matter for his position</span></div>
+      <div id="pf-sum" class="card flat" style="margin:6px 0;padding:10px 12px"></div>
+      <div id="pf-attrs">${attrBlock()}</div>
+      ${live ? '' : `${lab('Or set them from an ability')}<div class="row" style="gap:10px;align-items:center"><input type="range" id="pf-ca" min="20" max="95" step="1" value="${PF.ability()}" style="flex:1" data-input="pfChange"><b id="pf-cas" style="min-width:28px;text-align:right">${PF.ability()}</b><button class="btn sm" style="min-height:44px" data-act="pfFill">Fill in</button></div>`}
+      ${stepper('pf-pav', 'Potential <span class="tiny dim">· never below his ability</span>', PF.st.pa, 'pa')}
+      ${o.extra || ''}`;
+  };
+  // His ability, stars and (in a career) value, for the numbers on screen
+  PF.refresh = () => {
+    const st = PF.st;
+    if (!st || !$('#pf-sum')) return;
+    const ca = PF.ability();
+    if (st.pa < ca) st.pa = ca;
+    const pav = $('#pf-pav');
+    if (pav) pav.textContent = st.pa;
+    let stars = '',
+      value = '';
+    try {
+      stars = ` · ${W().stars(ca, st.pos).toFixed(1)} stars`;
+    } catch (e) {}
+    if (st.mode === 'live' && st.base) {
+      try {
+        const q = { ...st.base, attrs: { ...st.attrs }, pos: st.pos, pa: st.pa };
+        q.ca = W().calcCA(q);
+        q.born = FM.S.year - num1(v$('pf-age'), 15, 45);
+        q.contract = num1(v$('pf-contract'), FM.S.year, FM.S.year + 8);
+        value = ` · worth ${U.money ? U.money(W().value(q)) : Math.round(W().value(q)).toLocaleString('en')}`;
+      } catch (e) {}
+    }
+    $('#pf-sum').innerHTML = `<div class="small">Ability <b>${ca}</b>${stars}${value}</div>`;
+  };
+  PF.read = () => {
+    const st = PF.st,
+      alt = Object.fromEntries(Object.entries(st.alt).filter(([t]) => t !== st.pos)); // (one he already had stays, even if the list does not offer it)
+    return {
+      fn: (v$('pf-fn') || '').trim(),
+      ln: (v$('pf-ln') || '').trim(),
+      nat: v$('pf-nat'),
+      nat2: v$('pf-nat2') || undefined,
+      heritage: v$('pf-her') || undefined,
+      pos: st.pos,
+      foot: v$('pf-foot') || 'Right',
+      age: num1(v$('pf-age'), 15, 45),
+      contract: Math.round(+v$('pf-contract')) || null,
+      no: Math.round(+v$('pf-no')) > 0 ? num1(v$('pf-no'), 1, 99) : undefined,
+      wage: Math.max(0, Math.round(+v$('pf-wage') || 0)) || undefined,
+      morale: $('#pf-morale') ? num1(v$('pf-morale'), 0, 100) : undefined,
+      club: v$('pf-club'),
+      heal: !!($('#pf-heal') || {}).checked,
+      pa: st.pa,
+      attrs: Object.fromEntries(Object.entries(st.attrs).filter(([k, v]) => v !== st.orig[k])),
+      alt: Object.keys(alt).length ? alt : undefined,
+      traits: [...st.traits],
+    };
+  };
+  const changed = () => {
+    PF.refresh();
+    if (PF.after) PF.after();
+  };
+  UI.acts.pfStep = (d) => {
+    const st = PF.st;
+    if (!st) return;
+    const dd = +d.d;
+    if (d.k === 'pa') st.pa = num1(st.pa + dd, Math.max(20, PF.ability()), st.paMax);
+    else {
+      st.attrs[d.k] = num1(st.attrs[d.k] + dd, 1, 20);
+      const b = $('#pf-av-' + d.k);
+      if (b) b.textContent = st.attrs[d.k];
+    }
+    changed();
+  };
+  UI.acts.pfAlt = (d) => {
+    const st = PF.st;
+    if (st.alt[d.t] != null) delete st.alt[d.t];
+    else st.alt[d.t] = Math.round(Math.min(0.96, ((D.FIT[st.pos] || {})[d.t] || 0.7) + 0.08) * 100) / 100;
+    $('#pf-alt').innerHTML = altBlock();
+    changed();
+  };
+  UI.acts.pfTrait = (d) => {
+    const st = PF.st,
+      i = st.traits.indexOf(d.t);
+    if (i >= 0) st.traits.splice(i, 1);
+    else st.traits.push(d.t);
+    $('#pf-traits').innerHTML = traitBlock();
+    changed();
+  };
+  UI.acts.pfFill = () => {
+    const st = PF.st,
+      a = FM.WorldDef.suggestAttrs(st.pos, num1(v$('pf-ca'), 20, 95));
+    for (const k of D.ATTRS) st.attrs[k] = num1(a[k], 1, 20);
+    $('#pf-attrs').innerHTML = attrBlock();
+    changed();
+  };
+  // any field: a new position changes the attributes shown and the second positions on offer
+  UI.acts.pfChange = (d, el) => {
+    const st = PF.st;
+    if (!st || !el) return;
+    if (el.id === 'pf-pos') {
+      st.pos = el.value;
+      delete st.alt[st.pos];
+      $('#pf-attrs').innerHTML = attrBlock();
+      $('#pf-alt').innerHTML = altBlock();
+    } else if (el.id === 'pf-ca') {
+      const c = $('#pf-cas');
+      if (c) c.textContent = el.value;
+    }
+    changed();
+  };
+
   const num = (id, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+($('#' + id) || {}).value || 0)));
   UI.acts.liveEdit = () => {
     if (!live() || busy()) return;
@@ -134,43 +339,51 @@
     const p = FM.S.players[d.id];
     if (!p || busy()) return;
     UI.closeSheet();
-    const attrs = D.ATTRS.map(
-      (k) =>
-        `<div style="flex:1 1 30%;min-width:96px"><div class="tiny dim">${esc((D.ATTR_LABEL || {})[k] || k)}</div><input type="number" id="le-a-${k}" min="1" max="20" inputmode="numeric" value="${Math.round(p.attrs[k])}"></div>`,
-    ).join('');
-    UI.sheet(
-      `<div class="row" style="gap:8px">${fld('le-fn', 'First name', esc(p.fn), 'maxlength="24"')}${fld('le-ln', 'Surname', esc(p.ln), 'maxlength="32"')}</div>
-      <div class="row" style="gap:8px;margin-top:4px">
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Foot</div><select id="le-foot">${['Right', 'Left', 'Both'].map((f) => `<option ${p.foot === f ? 'selected' : ''}>${f}</option>`).join('')}</select></div>
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Potential</div><input type="number" id="le-pa" min="20" max="99" inputmode="numeric" value="${p.pa}"></div>
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Contract to</div><input type="number" id="le-ct" inputmode="numeric" value="${p.contract || FM.S.year}"></div>
-      </div>
-      <div class="row" style="gap:8px;margin-top:4px">
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Nationality</div><select id="le-nat">${natOptions(p.nat)}</select></div>
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Position</div><select id="le-pos">${posOptions(p.pos)}</select></div>
-      </div>
-      <div class="row" style="gap:8px;margin-top:4px">
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Age</div><input type="number" id="le-age" min="15" max="45" inputmode="numeric" value="${FM.W.age(p)}"></div>
-        <div style="flex:1"><div class="ng-label" style="margin-top:8px">Wage a week</div><input type="number" id="le-wage" min="0" step="50" inputmode="numeric" value="${Math.round(p.wage)}"></div>
-      </div>
-      <div class="ng-label">Club <span class="tiny dim">· type a club's name, or Free agent</span></div>
-      <input type="text" id="le-club" list="le-clubs" value="${esc(p.clubId && FM.S.clubs[p.clubId] ? FM.S.clubs[p.clubId].name : 'Free agent')}" autocomplete="off">${clubList()}
-      <div class="ng-label">Attributes <span class="tiny dim">· 1 to 20; his ability follows from them</span></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap">${attrs}</div>
-      <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="liveSavePlayer" data-id="${esc(p.id)}">Save</button></div>`,
-      { title: esc(FM.W.name(p)), full: true },
+    const nations = D.nationCodes()
+      .slice()
+      .sort((x, y) => D.NATIONS[x].name.localeCompare(D.NATIONS[y].name))
+      .map((k) => [k, D.NATIONS[k].name]);
+    const inj = p.inj ? p.inj.type || p.inj.name || 'injured' : '';
+    const sh = UI.sheet(
+      `${PF.html(
+        {
+          fn: p.fn,
+          ln: p.ln,
+          nat: p.nat,
+          nat2: p.nat2,
+          heritage: p.heritage,
+          pos: p.pos,
+          alt: p.alt,
+          foot: p.foot,
+          age: FM.W.age(p),
+          contract: p.contract || FM.S.year,
+          wage: Math.round(p.wage),
+          no: p.no,
+          pa: p.pa,
+          attrs: p.attrs,
+          traits: p.traits,
+          morale: Math.round(p.morale ?? 70),
+          club: p.clubId && FM.S.clubs[p.clubId] ? FM.S.clubs[p.clubId].name : 'Free agent',
+          injured: inj,
+        },
+        { mode: 'live', year: FM.S.year, nations, paMax: 99, base: p },
+      )}${clubList()}
+      <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="liveSavePlayer" data-id="${esc(p.id)}">Done</button></div>`,
+      { title: FM.W.name(p), full: true },
     );
+    PF.after = null;
+    PF.refresh();
+    return sh;
   };
   UI.acts.liveSavePlayer = (d) => {
     const p = FM.S.players[d.id];
     if (!p || busy()) return;
-    const fn = (($('#le-fn') || {}).value || '').trim(),
-      ln = (($('#le-ln') || {}).value || '').trim();
-    if (!ln) return UI.toast('He needs a surname', 2500);
-    if (D.isRude && (D.isRude(fn) || D.isRude(ln)))
+    const f = PF.read();
+    if (!f.ln) return UI.toast('He needs a surname', 2500);
+    if (D.isRude && (D.isRude(f.fn) || D.isRude(f.ln)))
       return UI.toast('That name contains a word the game will not use', 3000);
     // (the club is checked before anything changes, so a mistyped name leaves him as he was)
-    const cn = (($('#le-club') || {}).value || '').trim(),
+    const cn = (f.club || '').trim(),
       to = cn && !/^free agent$/i.test(cn) ? clubByName(cn) : null;
     if (cn && !to && !/^free agent$/i.test(cn)) return UI.toast('No club by that name', 2500);
     const was = p.clubId && FM.S.clubs[p.clubId];
@@ -182,18 +395,26 @@
         d.id,
       );
     const before = clone(p);
-    p.fn = fn;
-    p.ln = ln;
-    p.foot = ($('#le-foot') || {}).value || p.foot;
-    for (const k of D.ATTRS) p.attrs[k] = num('le-a-' + k, 1, 20);
-    p.contract = num('le-ct', FM.S.year, FM.S.year + 8);
-    p.nat = ($('#le-nat') || {}).value || p.nat;
-    p.pos = ($('#le-pos') || {}).value || p.pos;
-    p.born = FM.S.year - num('le-age', 15, 45);
+    p.fn = f.fn;
+    p.ln = f.ln;
+    p.foot = f.foot;
+    p.nat = f.nat || p.nat;
+    p.nat2 = f.nat2;
+    p.heritage = f.heritage;
+    p.pos = f.pos;
+    p.born = FM.S.year - f.age;
+    p.attrs = { ...p.attrs, ...f.attrs };
+    p.contract = f.contract ? Math.max(FM.S.year, Math.min(FM.S.year + 8, f.contract)) : p.contract;
+    p.traits = f.traits;
+    if (f.alt) p.alt = f.alt;
+    else delete p.alt;
+    if (f.no) p.no = f.no;
+    if (f.morale != null) p.morale = f.morale;
+    if (f.heal) p.inj = null;
     if (cn) movePlayer(p, to);
     FM.W.refresh(p); // (his ability, and his value, follow from the attributes)
-    p.wage = Math.max(0, Math.round(+($('#le-wage') || {}).value || 0));
-    p.pa = Math.max(p.ca, num('le-pa', 20, 99));
+    if (f.wage) p.wage = f.wage;
+    p.pa = Math.max(p.ca, f.pa);
     logEdit('player', `Edited ${FM.W.name(before)}`, p.id, before);
     persist();
     UI.closeSheet();
