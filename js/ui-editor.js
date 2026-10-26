@@ -67,7 +67,9 @@
     if (!ed || ed.live) return false;
     const text = JSON.stringify({ v: 1, def: ed.def, start: ed.start, tab: ed.tab });
     if (text === ed.lastDraft) {
-      if (!quiet) UI.toast('Draft saved', 1500);
+      ed.unsaved = false;
+      if (!quiet) UI.toast('Saved', 1500);
+      savedNote();
       return true;
     }
     try {
@@ -79,21 +81,77 @@
         );
       } catch (e) {}
       ed.lastDraft = text;
-      if (!quiet) UI.toast('Draft saved', 1500);
+      ed.unsaved = false;
+      ed.changed = false;
+      ed.savedAt = Date.now();
+      ed.saveFailed = false;
+      if (!quiet) UI.toast('Saved', 1500);
+      savedNote();
       return true;
     } catch (e) {
-      if (!quiet) UI.toast('Could not save the draft', 3000);
+      // (a failed automatic save is said once, not every time it is tried)
+      if (!quiet || !ed.saveFailed) UI.toast('Could not save the draft: keep the editor open and export a file', 4000);
+      ed.saveFailed = true;
+      savedNote();
       return false;
     }
   };
+  // "Saved · 2 minutes ago" beside the Save button, so you know where you stand
+  const agoText = (t) => {
+    const m = Math.floor((Date.now() - t) / 60000);
+    return m < 1
+      ? 'just now'
+      : m === 1
+        ? '1 minute ago'
+        : m < 60
+          ? `${U.plural(m, 'minute')} ago`
+          : `${Math.floor(m / 60)} h ago`;
+  };
+  const savedNote = () => {
+    const el = document.getElementById('ed-saved');
+    if (!el || !ED || ED.live) return;
+    el.textContent = ED.saveFailed
+      ? 'Not saved · the draft could not be written'
+      : ED.unsaved && ED.changed
+        ? 'Unsaved changes'
+        : ED.savedAt
+          ? `Saved · ${agoText(ED.savedAt)}`
+          : 'No changes yet';
+  };
+  const savedHtml = () => '<span id="ed-saved" class="tiny dim"></span>';
   // (only when something has changed since the editor opened: an untouched editor leaves no draft)
   const draftSoon = () => {
     if (!ED || ED.live) return;
+    // (every screen drawn is a change made, or a look at one: the comparison below decides whether it needs saving)
+    ED.unsaved = true;
+    savedNote();
     clearTimeout(ED.dt);
     ED.dt = setTimeout(() => {
-      if (ED && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true);
+      if (!ED) return;
+      if (JSON.stringify(ED.def) !== JSON.stringify(ED.start)) {
+        ED.changed = true;
+        saveDraft(true);
+      } else {
+        ED.unsaved = false;
+        savedNote();
+      }
     }, 2500);
+    if (!ED.tick) {
+      // (every minute: save what changed, and keep the "ago" up to date)
+      ED.tick = setInterval(() => {
+        if (!ED || ED.live) return clearInterval(ED && ED.tick);
+        if (ED.unsaved && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true);
+        else savedNote();
+      }, 60000);
+    }
   };
+  // leaving the page with changes that are not saved yet
+  window.addEventListener('beforeunload', (e) => {
+    if (ED && !ED.live && ED.unsaved && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
   UI.acts.edSaveDraft = () => saveDraft(false);
   UI.acts.edLoadDraft = async () => {
     try {
@@ -101,7 +159,7 @@
       const d = JSON.parse(text);
       ED.def = d.def;
       ED.start = d.start || clone(d.def);
-      ED.tab = d.tab || 'world';
+      ED.tab = d.tab || 'start';
       ED.view = 'home';
       ED.base = null;
       ED.lastDraft = text;
@@ -133,7 +191,7 @@
       def: cur && cur.ok && cur.def ? clone(cur.def) : WD.fromStatic({ name: 'My world' }),
       start: null, // the world as it was when the editor opened: what the Changes screen compares with
       hq: '',
-      tab: 'world',
+      tab: 'start',
       view: 'home',
       lid: null,
       cid: null,
@@ -154,6 +212,10 @@
     if (ED && ED.live) return liveLeave();
     const toTitle = ED && ED.fromTitle;
     if (ED && JSON.stringify(ED.def) !== JSON.stringify(ED.start)) saveDraft(true); // (going back keeps what you have made)
+    if (ED) {
+      clearTimeout(ED.dt);
+      clearInterval(ED.tick);
+    }
     dropNations();
     ED = null;
     const cur = UI._ng().db;
@@ -350,6 +412,8 @@
     ED.err = [];
     if (d.lid !== undefined) ED.lid = d.lid;
     if (d.cid !== undefined) ED.cid = d.cid;
+    // (the clubs you opened last, for the Start tab)
+    if (d.v === 'club' && d.cid) ED.recent = [d.cid, ...(ED.recent || []).filter((x) => x !== d.cid)].slice(0, 4);
     if (d.v === 'league') ED.q = '';
     UI.worldEditor();
   };
@@ -881,23 +945,26 @@
 
   // The home screen in five tabs, so a world of 64 leagues is not one long page
   const TABS = [
-    ['world', 'World'],
+    ['start', 'Start'],
     ['clubs', 'Clubs'],
     ['players', 'Players'],
+    ['world', 'Rules'],
     ['comp', 'Competitions'],
+    ['people', 'People'],
+    ['files', 'Files'],
     ['history', 'History'],
   ];
   const hide = (k) => (ED.tab === k ? '' : 'display:none;');
   const BEYOND_TAB = {
     cups: 'comp',
     calendar: 'comp',
-    staffhub: 'comp',
+    staffhub: 'people',
     intl: 'comp',
-    library: 'history',
+    library: 'files',
     history: 'history',
     changes: 'world',
     balance: 'world',
-    csv: 'world',
+    csv: 'files',
     failure: 'world',
   };
   UI.acts.edTab = (d) => {
@@ -929,14 +996,38 @@
       dm && !ED.draftSeen
         ? `<div class="card" style="margin:10px 0 0;padding:10px 12px"><div class="small b">A draft is saved</div><div class="tiny dim" style="margin:2px 0 8px">“${esc(dm.name)}” · ${U.plural(dm.clubs, 'club')} · ${new Date(dm.at).toLocaleString()}</div><div class="row" style="gap:8px"><button class="btn sm pri" data-act="edLoadDraft">Continue the draft</button><button class="btn sm" data-act="edDeleteDraft">Discard it</button></div></div>`
         : '';
+    const recent = (ED.recent || [])
+      .map((id) => ED.def.clubs.find((c) => c.id === id))
+      .filter(Boolean)
+      .map(
+        (c) =>
+          `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edView" data-v="club" data-cid="${esc(c.id)}" data-lid="${esc(c.league)}"><div class="row">${crestDot(c)}<div class="grow"><div class="small b">${esc(c.name)}</div><div class="tiny dim">Edited recently</div></div><span class="dim">›</span></div></div>`,
+      )
+      .join('');
+    const task = (tab, t, sub) =>
+      `<div class="card tap" style="margin:6px 0;padding:12px" data-act="edTab" data-v="${tab}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${sub}</div></div><span class="dim">›</span></div></div>`;
+    const startTab = `<div style="${hide('start')}">
+      <div class="small" style="margin-top:14px;color:${bad ? '#f87171' : '#c8ff3d'}">${bad ? `${U.plural(bad, 'problem')} to fix` : '✓ Ready to use'} <span style="color:#9fb0c5">· ${U.plural(s.changed, 'club')} changed${s.added ? `, ${s.added} added` : ''}</span></div>
+      <div class="ng-label">What do you want to do?</div>
+      ${task('clubs', 'Change a club', 'names, colours, grounds, ratings, money and managers')}
+      ${task('players', 'Edit players', 'build the squads, change a player, add your own or import a file')}
+      ${task('world', 'Change the rules', 'points, substitutes, promotion and relegation, checks and balance')}
+      ${task('comp', 'Competitions', 'cups, the season calendar and international football')}
+      ${recent ? `<div class="ng-label">Recently edited</div>${recent}` : ''}
+    </div>`;
     return `<div class="h1" style="margin-top:3vh">World editor</div><div class="tag">Change the clubs and leagues your world starts from. Nothing changes in the game until you use the world.</div>${draft}
       <div class="seg ed-tabs" style="margin:10px 0 0">${TABS.map(([k, t]) => `<button class="${ED.tab === k ? 'on' : ''}" data-act="edTab" data-v="${k}">${t}</button>`).join('')}</div>
-      <div style="${hide('world')}">
+      ${startTab}
+      <div style="${hide('files')}">
+      <div class="ng-label">Export or share this world <span class="tiny dim">· these details go with the file</span></div>
       <div class="ng-label">Name of this world</div><input type="text" id="ed-wname" maxlength="40" value="${esc(m.name || '')}">
       <div class="ng-label">Author</div><input type="text" id="ed-wauthor" maxlength="40" value="${esc(m.author || '')}">
       <div class="ng-label">Description</div><input type="text" id="ed-wdesc" maxlength="120" value="${esc(m.description || '')}">
       <div class="ng-names"><div style="flex:1"><div class="ng-label">Version</div><input type="text" id="ed-wver" maxlength="12" placeholder="1.0" value="${esc(m.version || '')}"></div><div style="flex:2"><div class="ng-label">Licence</div><input type="text" id="ed-wlic" maxlength="60" placeholder="e.g. CC BY-SA 4.0" value="${esc(m.license || '')}"></div></div>
       <div class="ng-label">Credits and sources <span class="tiny dim">· who made it, where real data came from; who is responsible for what it says</span></div><input type="text" id="ed-wcred" maxlength="200" value="${esc(m.credits || '')}">
+      </div>
+      <div style="${hide('world')}">
+
       <div class="small" style="margin-top:14px;color:${bad ? '#f87171' : '#c8ff3d'}">${bad ? `${bad} problem${bad > 1 ? 's' : ''} to fix` : '✓ Ready to use'} <span style="color:#9fb0c5">· ${s.changed} club${s.changed === 1 ? '' : 's'} changed${s.added ? `, ${s.added} added` : ''}${s.leaguesAdded ? ` · ${s.leaguesAdded} league${s.leaguesAdded === 1 ? '' : 's'} added` : ''}${s.leaguesChanged ? ` · ${s.leaguesChanged} league${s.leaguesChanged === 1 ? '' : 's'} changed` : ''}${(ED.def.removeClubs || []).length ? ` · ${ED.def.removeClubs.length} taken out` : ''}</span></div>
       ${
         bad
@@ -1062,7 +1153,7 @@
         .join('')}
       <div class="actions" style="margin-top:16px"><button class="btn sm" data-act="edNewLeague">＋ Add a league</button><button class="btn sm" data-act="edReset">Start again from the built-in world</button></div>
       </div>
-      <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edSaveDraft" aria-label="Save a draft">Draft</button><button class="btn sm" data-act="edExport">▲ File</button><button class="btn sm pri grow" data-act="edUse">Use this world</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edClose" aria-label="Back">←</button><button class="btn sm" data-act="edSaveDraft" aria-label="Save your work">Save</button><button class="btn sm" data-act="edExport">Import / export</button><button class="btn sm pri grow" data-act="edUse">Start a career with this world</button></div>`;
   };
 
   // ---------- League rules and new leagues ----------
@@ -1943,10 +2034,17 @@
         WD.useStatic(null);
       }
       UI.worldEditor();
-      UI.toast(
-        ED.err.length ? 'The squads could not be built' : 'The squads are in the world: open a club, then Players',
-        4000,
-      );
+      if (ED.err.length) UI.toast('The squads could not be built', 4000);
+      else
+        // (a long build is saved at once, not left for the timer: it is the work that must not be lost)
+        saveDraft(true).then((ok) =>
+          UI.toast(
+            ok
+              ? 'The squads are in the world and saved: open a club, then Players'
+              : 'The squads are built but not saved',
+            4000,
+          ),
+        );
     }, 60);
   };
   UI.acts.edClearSquads = () => {
@@ -2467,7 +2565,7 @@
       ED.def = res.def;
       ED.start = clone(ED.def);
       ED.view = 'home';
-      ED.tab = 'world';
+      ED.tab = 'files';
       ED.err = [];
       UI.toast(`${x.name} ${x.version || ''} opened. Licence: ${x.license || 'not stated'}`, 4500);
     } catch (e) {
@@ -2618,13 +2716,26 @@
     ED.err = [];
     UI.worldEditor();
   };
-  UI.acts.edDelPlayer = () => {
+  UI.acts.edDelPlayer = (d, el) => {
+    // (two taps: the first asks, the second deletes)
+    const b = el || document.querySelector('[data-act="edDelPlayer"]');
+    if (b && !b.dataset.sure) {
+      b.dataset.sure = '1';
+      b.textContent = 'Tap again to delete him for good';
+      setTimeout(() => {
+        if (b.isConnected) {
+          delete b.dataset.sure;
+          b.textContent = 'Delete this player';
+        }
+      }, 4000);
+      return;
+    }
     WD.editor(ED.def, null).removePlayer(ED.pid);
     ED.view = 'squad';
     ED.err = [];
     UI.worldEditor();
   };
-  // Fill the attribute sliders for the position and ability on screen (nothing is saved until Save player)
+  // Fill the attribute sliders for the position and ability on screen (nothing is saved until Done)
   UI.acts.edSuggest = () => {
     const pos = $('#ed-pos').value,
       ca = Math.round(+$('#ed-ca').value);
@@ -2666,7 +2777,7 @@
     }
     ED.view = 'squad';
     ED.err = [];
-    UI.toast('Player saved', 1500);
+    UI.toast('Done', 1000);
     UI.worldEditor();
   };
   UI.acts.edRule = (d) => {
@@ -4740,7 +4851,7 @@
       nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const sl = (k) =>
       `<div class="row" style="gap:10px;align-items:center"><span class="small" style="width:96px;flex:none">${esc(D.ATTR_LABEL[k])}</span><input type="range" id="ed-a-${k}" min="1" max="20" step="1" value="${p.attrs[k]}" style="flex:1"><b id="ed-av-${k}" style="width:22px;text-align:right">${p.attrs[k]}</b></div>`;
-    return `<div class="h1" style="margin-top:2vh">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim() || 'New player')}</div><div class="tag">A player of your own. The game builds the rest of him (wage, personality, second positions) when the world starts.</div>
+    return `<div class="h1" style="margin-top:2vh">${esc(((p.fn || '') + ' ' + (p.ln || '')).trim() || 'New player')}</div><div class="tag">${ED.def.meta.players === 'replace' && (ED.def.players || []).length > 2000 ? 'A player in this world.' : 'A player of your own.'} The game builds the rest of him (wage, personality, second positions) when the world starts. Done keeps your changes and goes back to the squad.</div>
       ${errBox()}
       <div id="ed-pwarn">${playerWarn(p)}</div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">First name</div><input type="text" id="ed-fn" maxlength="24" value="${esc(p.fn || '')}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Last name</div><input type="text" id="ed-ln" maxlength="28" value="${esc(p.ln || '')}"></div></div>
@@ -4751,11 +4862,11 @@
       <div style="display:grid;gap:6px">${D.ATTRS.map(sl).join('')}</div>
       <div class="ng-label">Or set them from an ability</div>
       <div class="row" style="gap:10px;align-items:center"><input type="range" id="ed-ca" min="20" max="95" step="1" value="${ca}" style="flex:1"><b id="ed-cas" style="width:28px;text-align:right">${ca}</b><button class="btn sm" data-act="edSuggest">Fill in</button></div>
-      <label class="small" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="ed-pcall" ${p.callup ? 'checked' : ''}> Called up by ${esc((D.NATIONS[p.nat] || { name: 'his country' }).name)} <span class="tiny dim">(picked ahead of better players for three years)</span></label>
+      <label class="small" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="ed-pcall" style="width:24px;height:24px;flex:none" ${p.callup ? 'checked' : ''}> Called up by ${esc((D.NATIONS[p.nat] || { name: 'his country' }).name)} <span class="tiny dim">(picked ahead of better players for three years)</span></label>
       <div class="ng-label">Potential <b id="ed-pav" style="color:#e6edf6">${p.pa ?? ca}</b> <span class="tiny dim">(never below his ability)</span></div>
       <input type="range" id="ed-pa" min="${ca}" max="96" step="1" value="${Math.max(ca, p.pa ?? ca)}" style="width:100%">
-      <div class="actions" style="margin-top:14px"><button class="btn sm" data-act="edDelPlayer">Delete this player</button></div>
-      <div class="actions ng-foot"><button class="btn sm" data-act="edSquad" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSavePlayer">Save player</button></div>`;
+      <div class="actions" style="margin-top:14px"><button class="btn sm danger" data-act="edDelPlayer">Delete this player</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edSquad" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSavePlayer">Done</button></div>`;
   };
 
   UI.worldEditor = function () {
@@ -4800,10 +4911,17 @@
     };
     const body = (views[ED.view] || homeView)();
     // (every screen but the home one has the draft button at the top: the home one has it in its footer)
+    // (the player form has its own Done button, so only the note shows there: one button to save, not two)
     const bar = views[ED.view]
-      ? '<div class="row" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm" data-act="edSaveDraft">Save draft</button></div>'
+      ? `<div class="row" style="justify-content:flex-end;gap:10px;margin-bottom:-6px">${savedHtml()}${ED.view === 'player' ? '' : '<button class="btn sm" data-act="edSaveDraft">Save</button>'}</div>`
       : '';
     app.innerHTML = `<div class="title ed-wide">${bar}${body}</div>`;
+    if (!views[ED.view] && !ED.live) {
+      // (the home screen: the saved note sits above the footer buttons)
+      const foot = app.querySelector('.ng-foot');
+      if (foot)
+        foot.insertAdjacentHTML('beforebegin', `<div style="text-align:center;margin-top:8px">${savedHtml()}</div>`);
+    }
     if (ED.live) {
       app
         .querySelectorAll('[data-act="edSaveDraft"],[data-act="edExport"],[data-act="edReset"]')
@@ -4839,7 +4957,11 @@
     // fields that update the definition as you type
     const bind = (id, fn) => {
       const el = $('#' + id);
-      if (el) el.addEventListener('input', () => fn(el.value));
+      if (el)
+        el.addEventListener('input', () => {
+          fn(el.value);
+          draftSoon(); // (typing is a change too: it is saved a moment after you stop)
+        });
     };
     bind('ed-wname', (v) => (ED.def.meta.name = v));
     bind('ed-wauthor', (v) => (ED.def.meta.author = v));

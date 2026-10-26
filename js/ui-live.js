@@ -23,6 +23,23 @@
     UI.toast('Wait for the matchday to finish first', 2500);
     return true;
   };
+  // ---------- Changes made, with undo ----------
+  // Every edit keeps what it replaced (the player, club or competition as it was) in S.editLog, newest first, so the Changes list can put
+  // it back. A bulk edit that touched thousands of players keeps its copy for this session only (it would bloat the save).
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const logEdit = (type, label, ref, snap, big) => {
+    const S = FM.S;
+    const e = { id: Date.now() + '-' + Math.floor(Math.random() * 1e6), type, label, ref, y: S.year };
+    if (big) (UI._editSnaps = UI._editSnaps || {})[e.id] = snap;
+    else e.snap = snap;
+    S.editLog = [e, ...(S.editLog || [])].slice(0, 60);
+    return e;
+  };
+  // (puts an object back as it was, in place: other things hold the same object)
+  const restore = (obj, snap) => {
+    for (const k of Object.keys(obj)) if (!(k in snap)) delete obj[k];
+    Object.assign(obj, clone(snap));
+  };
   const num = (id, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+($('#' + id) || {}).value || 0)));
   UI.acts.liveEdit = () => {
     if (!live() || busy()) return;
@@ -31,6 +48,7 @@
       <button class="btn sm block" style="margin-top:10px" data-act="liveBulk">Bulk edit: many players, clubs or prizes at once</button>
       <button class="btn sm block" style="margin-top:8px" data-act="edOpenLive">Full world editor: leagues, cups, rules, nations, staff and more</button>
       <div class="row" style="gap:8px;margin-top:8px"><button class="btn sm grow" data-act="liveNewPlayer">Add a player</button><button class="btn sm grow" data-act="liveRules">World rules</button></div>
+      <button class="btn sm block" style="margin-top:8px" data-act="liveChanges">Changes made${(FM.S.editLog || []).length ? ' (' + FM.S.editLog.length + ')' : ''}, with undo</button>
       <div class="ng-find" style="margin-top:10px"><input type="search" id="le-q" placeholder="A player, club or competition" autocomplete="off"></div>
       <div id="le-res"></div>`,
       { title: 'Edit the world' },
@@ -151,6 +169,19 @@
     if (!ln) return UI.toast('He needs a surname', 2500);
     if (D.isRude && (D.isRude(fn) || D.isRude(ln)))
       return UI.toast('That name contains a word the game will not use', 3000);
+    // (the club is checked before anything changes, so a mistyped name leaves him as he was)
+    const cn = (($('#le-club') || {}).value || '').trim(),
+      to = cn && !/^free agent$/i.test(cn) ? clubByName(cn) : null;
+    if (cn && !to && !/^free agent$/i.test(cn)) return UI.toast('No club by that name', 2500);
+    const was = p.clubId && FM.S.clubs[p.clubId];
+    if (cn && (to ? to.id : null) !== (p.clubId || null) && !d.sure)
+      return sure(
+        `Move ${FM.W.name(p)} to ${to ? to.name : 'the free agents'}?`,
+        `${was ? esc(was.name) + ' lose' : 'He leaves the free agents and'} him at once and his contract stays as written. ${to && to.id === FM.S.user.clubId ? '' : 'The squad and line-up of the club he leaves are not re-picked until its next match.'}`,
+        'liveSavePlayer',
+        d.id,
+      );
+    const before = clone(p);
     p.fn = fn;
     p.ln = ln;
     p.foot = ($('#le-foot') || {}).value || p.foot;
@@ -159,16 +190,11 @@
     p.nat = ($('#le-nat') || {}).value || p.nat;
     p.pos = ($('#le-pos') || {}).value || p.pos;
     p.born = FM.S.year - num('le-age', 15, 45);
-    const cn = (($('#le-club') || {}).value || '').trim();
-    if (cn) {
-      const to = clubByName(cn);
-      if (to) movePlayer(p, to);
-      else if (/^free agent$/i.test(cn)) movePlayer(p, null);
-      else return UI.toast('No club by that name', 2500);
-    }
+    if (cn) movePlayer(p, to);
     FM.W.refresh(p); // (his ability, and his value, follow from the attributes)
     p.wage = Math.max(0, Math.round(+($('#le-wage') || {}).value || 0));
     p.pa = Math.max(p.ca, num('le-pa', 20, 99));
+    logEdit('player', `Edited ${FM.W.name(before)}`, p.id, before);
     persist();
     UI.closeSheet();
     UI.render();
@@ -208,6 +234,15 @@
     if (!name) return UI.toast('A club needs a name', 2500);
     if (D.isRude && (D.isRude(name) || D.isRude(short)))
       return UI.toast('That name contains a word the game will not use', 3000);
+    const rep = num('le-rep', 20, 99);
+    if (Math.abs(rep - c.rep) >= 8 && !d.sure)
+      return sure(
+        `Change ${c.name}'s reputation from ${c.rep} to ${rep}?`,
+        'Reputation sets what the club earns, what it can spend and which players want to join it, so a big change moves its budget and its signings from now on.',
+        'liveSaveClub',
+        d.id,
+      );
+    const before = clone(c);
     c.name = name;
     c.short = short || c.short;
     c.nick = v('le-nick');
@@ -215,10 +250,11 @@
     c.colors = [v('le-c1') || c.colors[0], v('le-c2') || c.colors[1]];
     c.stadium.name = v('le-ground') || c.stadium.name;
     c.stadium.cap = c.stadium.cap0 = num('le-cap', 1000, 120000);
-    c.rep = num('le-rep', 20, 99);
+    c.rep = rep;
     c.budget = Math.max(0, Math.round(+($('#le-bud') || {}).value || 0));
     c.balance = Math.round(+($('#le-bal') || {}).value || 0);
     for (const k of Object.keys(c.facilities || {})) c.facilities[k] = num('le-f-' + k, 1, 5);
+    logEdit('club', `Edited ${before.name}`, c.id, before);
     persist();
     UI.closeSheet();
     UI.render();
@@ -244,6 +280,11 @@
     const name = (($('#le-cname') || {}).value || '').trim();
     if (!name) return UI.toast('A competition needs a name', 2500);
     if (D.isRude && D.isRude(name)) return UI.toast('That name contains a word the game will not use', 3000);
+    logEdit('comp', `Edited ${c.name}`, c.id, {
+      name: c.name,
+      prize: c.prize,
+      rules: c.rules ? clone(c.rules) : undefined,
+    });
     c.name = name;
     const prize = $('#le-cprize');
     if (prize) {
@@ -278,6 +319,7 @@
     UI.acts.liveRules();
   };
   UI.acts.liveSaveRules = () => {
+    logEdit('rules', 'Changed the world rules', null, clone(FM.S.rules));
     FM.S.rules.win = num('le-rwin', 2, 4);
     FM.S.rules.subs = num('le-rsubs', 3, 9);
     persist();
@@ -317,6 +359,7 @@
     if (!to) p.freeSince = FM.Season.dayIndex();
     FM.S.players[p.id] = p;
     FM.W.rosterVer++;
+    logEdit('new', `Added ${FM.W.name(p)}`, p.id, null);
     persist();
     UI.closeSheet();
     UI.render();
@@ -454,10 +497,8 @@
     cap0: c.stadium.cap0,
     fac: { ...c.facilities },
   });
-  UI.acts.bulkUndo = () => {
-    const u = UI._bulkUndo,
-      S = FM.S;
-    if (!u || !live() || busy()) return;
+  const undoBulk = (u) => {
+    const S = FM.S;
     for (const [id, o] of Object.entries(u.players || {})) {
       const p = S.players[id];
       if (!p) continue;
@@ -481,8 +522,15 @@
       else c.prize = o;
     }
     for (const [k, o] of Object.entries(u.nations || {})) S.youthRate[k] = o;
+  };
+  UI.acts.bulkUndo = () => {
+    const u = UI._bulkUndo;
+    if (!u || !live() || busy()) return;
+    undoBulk(u);
     const label = u.label;
     UI._bulkUndo = null;
+    // (the entry in the Changes list goes with it)
+    FM.S.editLog = (FM.S.editLog || []).filter((e) => !(e.type === 'bulk' && e.label === `Bulk edit: ${label}`));
     persist();
     UI.render();
     const b = $('#bk-body');
@@ -588,12 +636,79 @@
     if (!n) return UI.toast('Nothing changed: fill in a change first', 2500);
     snap.label = `${U.plural(n, { p: 'player', c: 'club', z: 'competition', n: 'nation' }[bulkKind])} changed`;
     UI._bulkUndo = snap;
+    logEdit('bulk', `Bulk edit: ${snap.label}`, null, snap, Object.keys(snap.players).length > 1500);
     persist();
     UI.render();
     const bb = $('#bk-body');
     if (bb) bb.innerHTML = bulkForm();
     bulkCount();
     UI.toast(`${U.plural(n, 'row')} changed`, 2500);
+  };
+  // ---------- A confirmation for changes with knock-on effects ----------
+  const sure = (title, text, act, id) =>
+    UI.sheet(
+      `<div class="small" style="line-height:1.6">${text}</div>
+      <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="liveSure" data-a="${act}" data-id="${esc(id)}">Yes, make the change</button></div>
+      <div class="actions" style="margin-top:8px"><button class="btn block" data-act="closeSheet">No, go back</button></div>`,
+      { title },
+    );
+  UI.acts.liveSure = (d) => {
+    UI.closeSheet();
+    if (UI.acts[d.a]) UI.acts[d.a]({ id: d.id, sure: true });
+  };
+  // ---------- The Changes list ----------
+  const changesBody = () => {
+    const log = FM.S.editLog || [];
+    return log.length
+      ? log
+          .map((e) => {
+            const can = !!(e.snap || (UI._editSnaps && UI._editSnaps[e.id]));
+            return `<div class="card flat" style="margin:6px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(e.label)}</div><div class="tiny dim">Season ${esc(e.y)}${can ? '' : ' · too large to undo after a reload'}</div></div>${can ? `<button class="btn sm" data-act="liveUndo" data-eid="${esc(e.id)}">Undo</button>` : ''}</div></div>`;
+          })
+          .join('')
+      : '<div class="empty">Nothing has been changed yet.</div>';
+  };
+  UI.acts.liveChanges = () => {
+    UI.closeSheet();
+    UI.sheet(
+      `<div class="tiny dim" style="line-height:1.5;margin-bottom:6px">Edits made in this career, newest first. Undo puts back what that edit replaced; anything changed since by the game or by later edits of the same thing is overwritten.</div><div id="lc-body">${changesBody()}</div>`,
+      { title: 'Changes made', full: true },
+    );
+  };
+  UI.acts.liveUndo = (d) => {
+    const S = FM.S,
+      e = (S.editLog || []).find((x) => x.id === d.eid);
+    if (!e || !live() || busy()) return;
+    const snap = e.snap || (UI._editSnaps && UI._editSnaps[e.id]);
+    if (!snap && e.type !== 'new') return UI.toast('That change can no longer be undone', 2500);
+    if (e.type === 'player' && S.players[e.ref]) {
+      restore(S.players[e.ref], snap);
+      FM.W.rosterVer++;
+    } else if (e.type === 'club' && S.clubs[e.ref]) restore(S.clubs[e.ref], snap);
+    else if (e.type === 'comp' && S.comps[e.ref]) {
+      const c = S.comps[e.ref];
+      c.name = snap.name;
+      if (snap.prize !== undefined) c.prize = snap.prize;
+      if (snap.rules && c.rules) restore(c.rules, snap.rules);
+    } else if (e.type === 'rules') restore(S.rules, snap);
+    else if (e.type === 'new') {
+      const p = S.players[e.ref];
+      if (p) {
+        movePlayer(p, null);
+        delete S.players[e.ref];
+        FM.W.rosterVer++;
+      }
+    } else if (e.type === 'bulk') {
+      undoBulk(snap);
+      if (UI._bulkUndo && UI._bulkUndo.label + '' === (snap.label || '')) UI._bulkUndo = null;
+    }
+    S.editLog = S.editLog.filter((x) => x !== e);
+    if (UI._editSnaps) delete UI._editSnaps[e.id];
+    persist();
+    UI.render();
+    const b = $('#lc-body');
+    if (b) b.innerHTML = changesBody();
+    UI.toast('Undone', 1500);
   };
   // An Edit button at the foot of every player and club sheet
   const withEdit = (name, act) => {

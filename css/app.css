@@ -1860,14 +1860,15 @@ table.t tr.zone-down td:first-child {
   background: #c8ff3d;
   color: #0b0f14;
 }
+/* cards in the editor keep their height in the flex column (the sections below the tabs were squeezing them) */
+.title .card {
+  flex: none;
+}
 /* World editor tabs: never squashed by the flex column; scroll sideways when they do not fit */
 .title .seg.ed-tabs {
   flex: none;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.title .seg.ed-tabs::-webkit-scrollbar {
-  display: none;
+  flex-wrap: wrap; /* eight tabs: two rows on a phone, none cut off at the edge */
+  gap: 4px;
 }
 .title .seg.ed-tabs button {
   flex: 1 0 auto;
@@ -2316,6 +2317,7 @@ main {
   display: flex;
   flex-direction: row; /* one row, not the stacked .actions column */
   align-items: stretch;
+  flex-wrap: wrap; /* a long main button goes on its own line instead of being cut off */
   gap: 6px;
   padding: 22px 0 4px;
   margin-top: 8px;
@@ -2333,17 +2335,16 @@ main {
   backdrop-filter: blur(10px);
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
   mask-image: linear-gradient(to bottom, transparent, #000 55%);
+  /* (and a backdrop of the page's own colour, so a lime option scrolling under the bar does not show through it) */
+  background: linear-gradient(to bottom, transparent, var(--bg) 60%);
 }
 .title .ng-foot .btn {
   width: auto;
   flex: 0 0 auto;
 }
 .title .ng-foot .btn.grow {
-  flex: 1 1 auto;
+  flex: 1 1 12em;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .sqno {
