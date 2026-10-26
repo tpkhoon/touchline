@@ -693,6 +693,12 @@ Priority order. Principle: make what the game already has remember what happened
 - [ ] Club philosophy that drives the board, budgets, expectations and job offers
 - [ ] Deeper staff with personalities, specialisms and staff politics
 - [ ] Tactical evolution driven by successful managers
+- [ ] **Editor review, top priority (before the rest of Alpha 2):** in-game field styling fixed globally in `css/app.css`; draft autosave, a warning before leaving and a "Saved" time; one save button; one shared player form (position-relevant attributes, whole numbers with + and −, live stars and value); missing player fields; a Changes this season list with undo and confirmation of big changes; editing from national teams, competitions, money, staff and league table rows; a pre-game editor that opens on tasks with Files and People tabs and clearer bottom-bar labels; build squads from an empty Players list; then Simulate 5 seasons, the CSV editor and the guided league creator
+- [ ] Tactical metas that differ in every save, with the optimal tempo shifting over the years
+- [ ] Staff traits (motivator, youth developer, tactician and more)
+- [ ] More second divisions for nations that have only a top flight
+- [ ] AI clubs that plan their recruitment over the years; a regens rehaul
+- [ ] Registration rules modifier in the editor (Alpha 2)
 - [ ] National youth pathways (academies, schools, universities, drafts)
 - [ ] Agents as characters with client networks and relationships
 - [ ] Media ecosystem: biased papers, podcasts, journalists, unreliable rumours, fan forums

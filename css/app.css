@@ -102,6 +102,24 @@ button,
 .sheet textarea {
   min-height: 44px;
 }
+/* text and number fields look the same on every screen (the dark style used to apply only inside .title, so in-game sheets drew a white box with pale text, and long fields ran off the edge) */
+input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background-color: var(--card2);
+  color: var(--ink);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink);
+  opacity: 0.45;
+}
 /* (a menu with no background of its own is drawn white by the browser: pale text on it cannot be read; found by the screen crawler) */
 select,
 select option {
