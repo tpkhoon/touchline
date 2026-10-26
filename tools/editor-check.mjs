@@ -387,6 +387,61 @@ check(
     `a bad CSV row was not named by row and column, or the good row did not go in: ${br.errors.join('; ')}`,
   );
 }
+// CSV: club cash and facility levels and managers go in and out of the files, a bad value is named, a manager can be taken out, the
+// world's registration rules are 'real' or 'off'
+{
+  const CS = FM.CsvWorld;
+  const d = WD.fromStatic({ name: 'csv4' });
+  const club = d.clubs.find((c) => c.league === 'D1');
+  const csv = (...lines) => lines.join('\r\n') + '\r\n';
+  const r = CS.apply(d, [
+    {
+      name: 'clubs.csv',
+      text: csv('id,name,league,balance,budget,academy', `${club.id},${club.name},D1,12345678,2000000,5`),
+    },
+    {
+      name: 'managers.csv',
+      text: csv('club,first_name,surname,nat,age,ability,rep', `${club.id},Una,Test,ENG,50,15,70`),
+    },
+  ]);
+  const m = d.managers.find((x) => x.club === club.id);
+  check(
+    r.errors.length === 0 &&
+      club.finance.balance === 12345678 &&
+      club.finance.budget === 2000000 &&
+      club.facilities.academy === 5 &&
+      m &&
+      m.ln === 'Test' &&
+      m.ability === 15,
+    `club finances, facilities and a manager did not go in from CSV: ${r.errors.join('; ')}`,
+  );
+  const ex = CS.export(d);
+  check(
+    /12345678/.test(ex.clubs) && /Una/.test(ex.managers),
+    'the finances and the manager did not come back out in the CSV files',
+  );
+  const bad = CS.apply(d, [
+    { name: 'clubs.csv', text: csv('id,name,league,academy', `${club.id},${club.name},D1,9`) },
+    { name: 'managers.csv', text: csv('club,surname,ability,remove', 'No Such Club,Boss,12,') },
+  ]);
+  check(
+    bad.errors.length === 2 && /academy/.test(bad.errors[0]) && /managers\.csv, row 2.*club/.test(bad.errors[1]),
+    `a bad facility level or a manager of no club was not named: ${bad.errors.join('; ')}`,
+  );
+  CS.apply(d, [{ name: 'managers.csv', text: csv('club,surname,ability,remove', `${club.id},Test,12,1`) }]);
+  check(!d.managers.some((x) => x.club === club.id), 'a manager marked remove was not taken out');
+  d.rules.reg = 'sometimes';
+  check(
+    WD.validate(d, null).errors.some((e) => /rules\.reg/.test(e)),
+    'a registration rule other than real or off was accepted',
+  );
+  d.rules.reg = 'off';
+  d.rules.foreignLimit = 5;
+  check(
+    !WD.validate(d, null).errors.some((e) => /rules\./.test(e)),
+    'one foreign-player limit for every league was refused',
+  );
+}
 // competitions: league formats, a play-off pair, a cup of the definition's own
 const lg = (id) => def.leagues.find((l) => l.id === id);
 check(!E.setLeague('D3', { rules: { ...lg('D3').rules, legs: 3 } }).ok, 'a league played three times was accepted');

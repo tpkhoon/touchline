@@ -1612,7 +1612,7 @@
   UI._dbRules = (def) => {
     const r = (def && def.rules) || {};
     return Object.fromEntries(
-      ['win', 'subs', 'twoLegs', 'awayGoals'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
+      ['win', 'subs', 'twoLegs', 'awayGoals', 'reg', 'foreignLimit'].filter((k) => r[k] != null).map((k) => [k, r[k]]),
     );
   };
   UI._ng = () => NG;

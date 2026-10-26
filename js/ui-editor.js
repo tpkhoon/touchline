@@ -337,7 +337,7 @@
     for (const k of [...was.keys()].filter((k) => !kept.has(k)))
       for (const id of k.split('|')) if (S.clubs[id]) S.clubs[id].rival = S.clubs[id].derby = null;
     // the rules that apply at once
-    for (const k of ['win', 'subs', 'twoLegs', 'awayGoals', 'foreignLimit'])
+    for (const k of ['win', 'subs', 'twoLegs', 'awayGoals', 'foreignLimit', 'reg'])
       if (def.rules[k] != null) S.rules[k] = def.rules[k];
     // formats, cups, the calendar: from the new season
     const pending = { rules: {} };
@@ -957,6 +957,8 @@
     changes: 'world',
     balance: 'world',
     csv: 'files',
+    grid: 'files',
+    sim5: 'world',
     failure: 'world',
   };
   UI.acts.edTab = (d) => {
@@ -1057,6 +1059,30 @@
             [false, 'No'],
           ],
         ],
+        [
+          'reg',
+          'Registration rules',
+          [
+            ['real', "Each league's own"],
+            ['off', 'One limit for every league'],
+          ],
+        ],
+        ...(ED.def.rules.reg === 'off'
+          ? [
+              [
+                'foreignLimit',
+                'Foreign players in a squad',
+                [
+                  [99, 'No limit'],
+                  [3, '3'],
+                  [5, '5'],
+                  [6, '6'],
+                  [8, '8'],
+                  [10, '10'],
+                ],
+              ],
+            ]
+          : []),
         ...(ED.def.rules.twoLegs
           ? [
               [
@@ -1104,11 +1130,12 @@
         ['failure', 'When clubs fail', failureSummary()],
         ['csv', 'CSV files', 'download, edit in a spreadsheet, upload'],
         ['balance', 'Balance check', `${U.plural(balanceIssues().length, 'thing')} to look at`],
+        ['sim5', 'Simulate 5 seasons', 'five seasons of every league, played from the ratings of its clubs'],
         ['changes', 'Changes made', changeSummary()],
       ]
         .map(
           ([v, t, s]) =>
-            `<div class="card tap" style="margin:6px 0;padding:10px 12px;${hide(BEYOND_TAB[v])}" data-act="${v === 'library' ? 'edLibrary' : 'edView'}" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
+            `<div class="card tap" style="margin:6px 0;padding:10px 12px;${hide(BEYOND_TAB[v])}" data-act="${v === 'library' ? 'edLibrary' : v === 'sim5' ? 'edSim5' : 'edView'}" data-v="${v}"><div class="row"><div class="grow"><div class="small b">${t}</div><div class="tiny dim">${s}</div></div><span class="dim">›</span></div></div>`,
         )
         .join('')}
       <div style="${hide('players')}">
@@ -1124,6 +1151,7 @@
         .join('')}</div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">${(ED.def.players || []).length} player${(ED.def.players || []).length === 1 ? '' : 's'} made so far. Open a club, then Players.</div>
       ${squadsCard()}
+      ${namesCard()}
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edImportPlayers" data-from="home"><div class="row"><div class="grow"><div class="small b">▼ Import players from a file</div><div class="tiny dim">A spreadsheet of real players' numbers, turned into players of your world</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edSquad" data-cid="${FREE}"><div class="row"><div class="grow"><div class="small b">Free agents</div><div class="tiny dim">${playersOf(FREE).length} made</div></div><span class="dim">›</span></div></div>
       </div>
@@ -2039,6 +2067,46 @@
         );
     }, 60);
   };
+  // New names for every player of a nation (his nationality) in the world's squads: names from the nation's own pools, never a famous
+  // footballer's, a rude word, or a name already in this world. Changes names only: his ratings, age and club stay.
+  const namedHere = (nat) => (ED.def.players || []).filter((p) => p.nat === nat);
+  const namesCard = () => {
+    const have = [...new Set((ED.def.players || []).map((p) => p.nat))]
+      .filter((n) => D.NATIONS[n])
+      .sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name));
+    if (!have.length) return '';
+    const cur = ED.namesNat && have.includes(ED.namesNat) ? ED.namesNat : have[0];
+    return `<div class="card" style="margin:12px 0 0;padding:10px 12px"><div class="small b">New names for a nation</div><div class="tiny dim" style="margin:2px 0 8px;line-height:1.5">Gives every player of one nationality in these squads a new name from that nation's own names (his ability, age and club stay).</div>
+      <select id="ed-namesnat" data-input="edNamesPick">${have.map((n) => `<option value="${n}" ${n === cur ? 'selected' : ''}>${D.NATIONS[n].flag} ${esc(D.NATIONS[n].name)} (${namedHere(n).length})</option>`).join('')}</select>
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewNames">Give them new names</button></div></div>`;
+  };
+  UI.acts.edNamesPick = (d, el) => {
+    ED.namesNat = el.value;
+  };
+  UI.acts.edNewNames = () => {
+    const sel = $('#ed-namesnat');
+    const nat = (sel && sel.value) || ED.namesNat;
+    const list = namedHere(nat);
+    if (!list.length) return UI.toast('No players of that nation', 2000);
+    const used = new Set((ED.def.players || []).map((p) => `${p.fn || ''} ${p.ln || ''}`.trim().toLowerCase()));
+    let n = 0;
+    for (const p of list) {
+      used.delete(`${p.fn || ''} ${p.ln || ''}`.trim().toLowerCase());
+      for (let k = 0; k < 12; k++) {
+        const r = FM.W.rollName(nat, p.heritage, p.born);
+        const key = `${r.fn} ${r.ln}`.trim().toLowerCase();
+        if (!r.ln || D.isRude(r.fn) || D.isRude(r.ln) || FM.W.isRealName(key) || used.has(key)) continue;
+        p.fn = r.fn;
+        p.ln = r.ln;
+        used.add(key);
+        n++;
+        break;
+      }
+    }
+    ED.namesNat = nat;
+    UI.toast(`${U.plural(n, 'player')} renamed`, 2500);
+    UI.worldEditor();
+  };
   UI.acts.edClearSquads = () => {
     ED.def.players = [];
     ED.def.meta.players = 'overlay';
@@ -2757,7 +2825,7 @@
     UI.worldEditor();
   };
   UI.acts.edRule = (d) => {
-    const v = d.v === 'true' ? true : d.v === 'false' ? false : +d.v;
+    const v = d.v === 'true' ? true : d.v === 'false' ? false : /^-?\d+$/.test(d.v) ? +d.v : d.v;
     ED.def.rules[d.k] = v;
     UI.worldEditor();
   };
@@ -3942,9 +4010,9 @@
   // problem is named by file, row and column; a row with a problem is left out and the rest go in.
   const csvView = () => {
     const r = ED.csv || null;
-    return `<div class="h1" style="margin-top:2vh">CSV files</div><div class="tag">Take the world out as spreadsheets, change it there, and put it back. Three files: leagues.csv, clubs.csv and players.csv. A club is matched by its id or its name; a new name makes a new club, a column left empty changes nothing, and a club with remove set to yes is taken out.</div>
+    return `<div class="h1" style="margin-top:2vh">CSV files</div><div class="tag">Take the world out as spreadsheets, change it there, and put it back. Four files: leagues.csv, clubs.csv (with each club's cash, transfer budget and facility levels), managers.csv and players.csv. Or change the rows in a grid here in the game, checked as you type. A club is matched by its id or its name; a new name makes a new club, a column left empty changes nothing, and a club with remove set to yes is taken out.</div>
       ${errBox()}
-      <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:8px"><button class="btn sm" data-act="edCsvDown" data-k="world">▼ This world as CSV</button><button class="btn sm" data-act="edCsvDown" data-k="template">▼ Templates to fill in</button><button class="btn sm pri" data-act="edCsvUp">▲ Upload CSV files</button></div>
+      <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:8px"><button class="btn sm" data-act="edGrid" data-k="clubs">Edit in a grid</button><button class="btn sm" data-act="edCsvDown" data-k="world">▼ This world as CSV</button><button class="btn sm" data-act="edCsvDown" data-k="template">▼ Templates to fill in</button><button class="btn sm pri" data-act="edCsvUp">▲ Upload CSV files</button></div>
       ${
         r
           ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${r.errors.length ? U.plural(r.errors.length, 'problem') : 'No problems'}${r.notes.length ? ` · ${esc(r.notes.join(' · '))}` : ''}</div>${
@@ -3960,13 +4028,13 @@
           : ''
       }
       <div class="ng-label">The columns</div>
-      <div class="tiny dim" style="line-height:1.6"><b>leagues.csv</b>: ${FM.CsvWorld.COLUMNS.leagues.join(', ')}<br><b>clubs.csv</b>: ${FM.CsvWorld.COLUMNS.clubs.join(', ')}<br><b>players.csv</b>: ${FM.CsvWorld.COLUMNS.players.join(', ')}<br>Nations are their three-letter codes (ENG), colours are #rrggbb, a player's club is its name or id (empty: a free agent), ability is 20 to 95 and his attributes are made from it and his position. Comma, semicolon and tab all work as the separator.</div>
+      <div class="tiny dim" style="line-height:1.6"><b>leagues.csv</b>: ${FM.CsvWorld.COLUMNS.leagues.join(', ')}<br><b>clubs.csv</b>: ${FM.CsvWorld.COLUMNS.clubs.join(', ')}<br><b>managers.csv</b>: ${FM.CsvWorld.COLUMNS.managers.join(', ')}<br><b>players.csv</b>: ${FM.CsvWorld.COLUMNS.players.join(', ')}<br>Nations are their three-letter codes (ENG), colours are #rrggbb, a player's club is its name or id (empty: a free agent), ability is 20 to 95 and his attributes are made from it and his position. Comma, semicolon and tab all work as the separator.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
   };
   UI.acts.edCsvDown = async (d) => {
     const files = d.k === 'template' ? FM.CsvWorld.template() : FM.CsvWorld.export(ED.def);
     try {
-      for (const k of ['leagues', 'clubs', 'players'])
+      for (const k of ['leagues', 'clubs', 'managers', 'players'])
         await FM.Native.shareFile({
           bytes: new TextEncoder().encode('\uFEFF' + files[k]),
           name: `${k}.csv`,
@@ -3974,7 +4042,7 @@
           title: `Touchline ${k}.csv`,
           preferShare: false,
         });
-      UI.toast('leagues.csv, clubs.csv and players.csv ready', 3000);
+      UI.toast('leagues.csv, clubs.csv, managers.csv and players.csv ready', 3000);
     } catch (e) {
       UI.toast('' + (e.message || 'Download failed'), 4000);
     }
@@ -3991,6 +4059,368 @@
       3000,
     );
     UI.worldEditor();
+  };
+
+  // ---------- The CSV grid ----------
+  // The same files as a spreadsheet inside the game: leagues, clubs (a league at a time) and managers (a league at a time), one row
+  // each, to add, change and delete rows. The rows are checked as you type by the very code that reads the CSV files (FM.CsvWorld.apply,
+  // on a copy of the world), every problem named by row and column; Put it in works only when there is none.
+  const GRID_FILES = [
+    ['leagues', 'Leagues'],
+    ['clubs', 'Clubs'],
+    ['managers', 'Managers'],
+  ];
+  const gridLeague = () => {
+    if (ED.grid && ED.grid.lid && ED.def.leagues.some((l) => l.id === ED.grid.lid)) return ED.grid.lid;
+    return (ED.def.leagues[0] || {}).id || '';
+  };
+  // the rows to show, as they are in the world now
+  const gridRowsNow = (file, lid) => {
+    const all = FM.CsvWorld.rows(ED.def)[file] || [];
+    if (file === 'leagues') return all;
+    const inLeague = new Set(ED.def.clubs.filter((c) => c.league === lid).map((c) => c.name));
+    return all.filter((r) => (file === 'clubs' ? r.league === lid : inLeague.has(r.club)));
+  };
+  UI.acts.edGrid = (d) => {
+    const file = d.k || (ED.grid && ED.grid.file) || 'clubs';
+    ED.grid = { file, lid: d.lid || gridLeague(), rows: null, errors: [], q: '' };
+    ED.grid.rows = gridRowsNow(file, ED.grid.lid).map((r) => ({ ...r }));
+    ED.view = 'grid';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edGridLeague = (d, el) => {
+    ED.grid.lid = el.value;
+    ED.grid.rows = gridRowsNow(ED.grid.file, ED.grid.lid).map((r) => ({ ...r }));
+    UI.worldEditor();
+  };
+  // (a copy of the leagues, clubs and managers is enough to check rows against: the players are left out)
+  const scratchDef = () => ({
+    ...ED.def,
+    leagues: clone(ED.def.leagues),
+    clubs: clone(ED.def.clubs),
+    managers: clone(ED.def.managers || []),
+    removeClubs: [...(ED.def.removeClubs || [])],
+    players: [],
+  });
+  const gridText = () => FM.CsvWorld.toCsv(ED.grid.file, ED.grid.rows);
+  const gridCheck = () => {
+    const g = ED.grid;
+    if (!g) return;
+    const r = FM.CsvWorld.apply(scratchDef(), [{ name: g.file + '.csv', text: gridText() }]);
+    g.errors = r.errors;
+    gridPaint();
+  };
+  // the problems and the marked rows, drawn without redrawing the table (a field being typed in keeps its place)
+  const gridPaint = () => {
+    const g = ED.grid;
+    if (!g) return;
+    const bad = new Map();
+    for (const e of g.errors) {
+      const m = /row (\d+)/.exec(e);
+      if (m) bad.set(+m[1] - 2, true);
+    }
+    document.querySelectorAll('[data-gridrow]').forEach((tr) => {
+      tr.style.outline = bad.has(+tr.dataset.gridrow) ? '2px solid #f87171' : '';
+    });
+    const box = $('#ed-gridmsg');
+    if (box)
+      box.innerHTML = g.errors.length
+        ? `<div class="small b" style="color:#f87171">${U.plural(g.errors.length, 'problem')}</div>${g.errors
+            .slice(0, 30)
+            .map((e) => `<div class="small" style="margin-top:6px;line-height:1.4">${esc(e)}</div>`)
+            .join('')}`
+        : '<div class="small" style="color:#c8ff3d">✓ No problems</div>';
+    const put = $('#ed-gridput');
+    if (put) {
+      put.disabled = !!g.errors.length;
+      put.textContent = g.errors.length ? `Fix ${U.plural(g.errors.length, 'problem')} first` : 'Put it in the world';
+    }
+  };
+  UI.acts.edGridCell = (d, el) => {
+    const row = ED.grid.rows[+d.r];
+    if (!row) return;
+    row[d.c] = el.value;
+    clearTimeout(ED.grid.t);
+    ED.grid.t = setTimeout(gridCheck, 400);
+  };
+  UI.acts.edGridAdd = () => {
+    const g = ED.grid,
+      blank = Object.fromEntries(FM.CsvWorld.COLUMNS[g.file].map((c) => [c, '']));
+    if (g.file === 'clubs') blank.league = g.lid;
+    g.rows.push(blank);
+    UI.worldEditor();
+  };
+  UI.acts.edGridDel = (d) => {
+    const g = ED.grid,
+      row = g.rows[+d.r];
+    if (!row) return;
+    if (!('remove' in row)) return;
+    // a row that is in the world is marked for removal (and can be taken back); a new row just goes
+    if (row.id || row.club || row.name) {
+      row.remove = /^(1|yes)$/i.test(row.remove) ? '' : '1';
+    } else g.rows.splice(+d.r, 1);
+    UI.worldEditor();
+  };
+  UI.acts.edGridPut = () => {
+    const g = ED.grid;
+    if (!g) return;
+    const r = FM.CsvWorld.apply(ED.def, [{ name: g.file + '.csv', text: gridText() }]);
+    if (r.errors.length) {
+      g.errors = r.errors;
+      return gridPaint();
+    }
+    UI.toast(r.notes.length ? r.notes.join(' · ') : 'Nothing changed', 3000);
+    g.rows = gridRowsNow(g.file, g.lid).map((x) => ({ ...x }));
+    g.errors = [];
+    UI.worldEditor();
+  };
+  const gridView = () => {
+    const g = ED.grid || { file: 'clubs', rows: [], errors: [] };
+    const cols = FM.CsvWorld.COLUMNS[g.file].filter((c) => c !== 'remove');
+    const leagueSel =
+      g.file === 'leagues'
+        ? ''
+        : `<div class="ng-label">League</div><select data-input="edGridLeague">${ED.def.leagues
+            .map((l) => `<option value="${esc(l.id)}" ${l.id === g.lid ? 'selected' : ''}>${esc(l.name)}</option>`)
+            .join('')}</select>`;
+    const cell = (r, i, c) =>
+      `<td style="padding:2px"><input type="text" value="${esc(r[c])}" data-input="edGridCell" data-r="${i}" data-c="${c}" aria-label="${esc(c)}, row ${i + 1}" style="width:${['name', 'club', 'ground', 'nick', 'city', 'surname', 'first_name'].includes(c) ? 150 : 84}px;min-height:44px;padding:6px 8px;border-radius:8px"></td>`;
+    const removable = g.file !== 'leagues';
+    return `<div class="h1" style="margin-top:2vh">${esc((GRID_FILES.find((x) => x[0] === g.file) || [0, 'Grid'])[1])} in a grid</div><div class="tag">Every row is a line of the CSV file. Change a cell, add a row (leave the id empty for a new club or league) or mark one for removal. Each row is checked as you type; nothing reaches the world until you put it in.</div>
+      ${errBox()}
+      <div class="seg" style="margin:8px 0 0">${GRID_FILES.map(([k, t]) => `<button class="${g.file === k ? 'on' : ''}" data-act="edGrid" data-k="${k}">${t}</button>`).join('')}</div>
+      ${leagueSel}
+      <div style="overflow-x:auto;margin-top:10px"><table style="border-collapse:separate;border-spacing:0 2px"><tr><th></th>${cols.map((c) => `<th class="tiny dim" style="text-align:left;padding:2px 4px;white-space:nowrap">${esc(c)}</th>`).join('')}</tr>${g.rows
+        .map(
+          (r, i) =>
+            `<tr data-gridrow="${i}" style="${/^(1|yes)$/i.test(r.remove || '') ? 'opacity:.4;text-decoration:line-through' : ''}"><td>${removable ? `<button class="icon-btn" data-act="edGridDel" data-r="${i}" aria-label="${/^(1|yes)$/i.test(r.remove || '') ? 'Keep' : 'Remove'} row ${i + 1}">${/^(1|yes)$/i.test(r.remove || '') ? '↩' : '✕'}</button>` : ''}</td>${cols.map((c) => cell(r, i, c)).join('')}</tr>`,
+        )
+        .join('')}</table></div>
+      ${g.rows.length ? '' : '<div class="empty">No rows here yet.</div>'}
+      ${g.file === 'leagues' ? '' : '<div class="tiny dim" style="margin-top:6px">A club or manager marked for removal (struck through) goes out when you put the rows in; tap ↩ to keep it.</div>'}
+      <div class="actions" style="margin-top:10px"><button class="btn sm" data-act="edGridAdd">＋ Add a row</button></div>
+      <div id="ed-gridmsg" style="margin-top:10px"></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="csv" aria-label="Back">←</button><button class="btn sm pri grow" id="ed-gridput" data-act="edGridPut">Put it in the world</button></div>`;
+  };
+
+  // ---------- Simulate 5 seasons ----------
+  // A look at the world before you play it: five seasons of every league, played from the clubs' ratings with the game's own
+  // scoring model for the lighter tiers (the ratings set the goals, a Poisson draw makes the score) and each league's own promotion
+  // and relegation, repeated many times. It does not play the transfer market, the finances or the youth, and a league's play-offs,
+  // splits and cups are left out, so it shows what the ratings and the league structure alone make of the world: a club made far too
+  // strong, a league one club always wins, promotion and relegation that do not match. (The full game simulation takes many minutes
+  // for five seasons of the whole world, which is why this is a projection.)
+  const SIM5 = { runs: 30, seasons: 5 };
+  const sim5Run = () => {
+    const def = ED.def,
+      leagues = def.leagues.filter((l) => def.clubs.some((c) => c.league === l.id)),
+      clubOf = new Map(def.clubs.map((c) => [c.id, c])),
+      L = new Map(leagues.map((l) => [l.id, l]));
+    // who moves between which leagues: the relegating league's number wins where the two disagree
+    const links = [],
+      pair = new Set(),
+      flags = [];
+    // (the places that go up: the automatic ones, and one more when the play-off winner joins them)
+    const promoted = (p) => (p.auto != null ? p.auto : p.n) + (p.playoff ? 1 : 0);
+    const link = (u, lw, n, src) => {
+      const key = u + '>' + lw;
+      if (pair.has(key)) return;
+      if (!L.has(u) || !L.has(lw) || !(n > 0)) return;
+      pair.add(key);
+      links.push([u, lw, n, src]);
+    };
+    for (const l of leagues) {
+      const r = l.rules || {};
+      if (r.relegate && r.relegate.to) link(l.id, r.relegate.to, r.relegate.n, 'down');
+    }
+    for (const l of leagues) {
+      const r = l.rules || {};
+      if (r.promote && r.promote.to) link(r.promote.to, l.id, promoted(r.promote), 'up');
+    }
+    for (const [u, lw] of links) {
+      const up = L.get(u).rules || {},
+        low = L.get(lw).rules || {};
+      const down = up.relegate && up.relegate.to === lw ? up.relegate.n : null,
+        rise = low.promote && low.promote.to === u ? promoted(low.promote) : null;
+      if (down != null && rise != null && down !== rise)
+        flags.push({
+          lid: u,
+          text: `${L.get(u).name} relegates ${down} to ${L.get(lw).name}, which promotes ${rise}: the leagues would grow or shrink`,
+        });
+    }
+    const titles = new Map(), // league id → club id → titles over all runs and seasons
+      sample = new Map(); // league id → the first run's seasons
+    for (const l of leagues) {
+      titles.set(l.id, new Map());
+      sample.set(l.id, []);
+    }
+    for (let run = 0; run < SIM5.runs; run++) {
+      const members = new Map(leagues.map((l) => [l.id, def.clubs.filter((c) => c.league === l.id).map((c) => c.id)]));
+      for (let yr = 0; yr < SIM5.seasons; yr++) {
+        const order = new Map();
+        for (const l of leagues) {
+          const ids = members.get(l.id);
+          if (ids.length < 2) {
+            order.set(l.id, ids.slice());
+            continue;
+          }
+          const T = new Map(ids.map((id) => [id, { id, pts: 0, gf: 0, ga: 0, tb: Math.random() }]));
+          const lv = new Map(ids.map((id) => [id, FM.W.levelFor((clubOf.get(id) || { rep: 50 }).rep)]));
+          const win = ((l.rules || {}).play || {}).win || def.rules.win || 3;
+          for (const h of ids)
+            for (const a of ids) {
+              if (h === a) continue;
+              const [lh, la] = FM.Tiers.lambdas(lv.get(h), lv.get(a));
+              const hg = U.poisson(lh),
+                ag = U.poisson(la),
+                th = T.get(h),
+                ta = T.get(a);
+              th.gf += hg;
+              th.ga += ag;
+              ta.gf += ag;
+              ta.ga += hg;
+              if (hg > ag) th.pts += win;
+              else if (hg < ag) ta.pts += win;
+              else {
+                th.pts++;
+                ta.pts++;
+              }
+            }
+          order.set(
+            l.id,
+            [...T.values()]
+              .sort((x, y) => y.pts - x.pts || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || y.tb - x.tb)
+              .map((r) => r.id),
+          );
+          const champ = order.get(l.id)[0];
+          const t = titles.get(l.id);
+          t.set(champ, (t.get(champ) || 0) + 1);
+        }
+        const moved = new Map(leagues.map((l) => [l.id, { up: [], down: [] }]));
+        const next = new Map([...order].map(([k, v]) => [k, v.slice()]));
+        for (const [u, lw, n] of links) {
+          const hi = order.get(u),
+            lo = order.get(lw),
+            k = Math.min(n, hi.length - 1, lo.length);
+          if (k <= 0) continue;
+          const going = hi.slice(hi.length - k),
+            coming = lo.slice(0, k);
+          next.set(
+            u,
+            next
+              .get(u)
+              .filter((id) => !going.includes(id))
+              .concat(coming),
+          );
+          next.set(
+            lw,
+            next
+              .get(lw)
+              .filter((id) => !coming.includes(id))
+              .concat(going),
+          );
+          moved.get(u).down.push(...going);
+          moved.get(lw).up.push(...coming);
+        }
+        if (run === 0)
+          for (const l of leagues) {
+            const o = order.get(l.id);
+            sample
+              .get(l.id)
+              .push({ champion: o[0], runnerUp: o[1], up: moved.get(l.id).up, down: moved.get(l.id).down });
+          }
+        for (const [k, v] of next) members.set(k, v);
+      }
+    }
+    const rows = leagues.map((l) => {
+      const t = [...titles.get(l.id)].map(([id, n]) => [id, n / SIM5.runs]).sort((a, b) => b[1] - a[1]);
+      const clubs = def.clubs.filter((c) => c.league === l.id).length;
+      if (clubs >= 8 && t.length && t[0][1] >= SIM5.seasons * 0.7)
+        flags.push({
+          lid: l.id,
+          text: `${L.get(l.id).name}: ${(clubOf.get(t[0][0]) || { name: t[0][0] }).name} wins about ${t[0][1].toFixed(1)} of ${U.plural(SIM5.seasons, 'title')}`,
+        });
+      return {
+        id: l.id,
+        name: l.name,
+        nat: l.nat,
+        tier: l.tier,
+        clubs,
+        titles: t.slice(0, 5),
+        sample: sample.get(l.id),
+      };
+    });
+    return { rows, flags, runs: SIM5.runs, seasons: SIM5.seasons };
+  };
+  UI.acts.edSim5 = () => {
+    ED.view = 'sim5';
+    ED.err = [];
+    ED.sim5 = null;
+    UI.worldEditor();
+    UI.toast('Playing five seasons…', 1500);
+    setTimeout(() => {
+      try {
+        ED.sim5 = sim5Run();
+        ED.sim5.lid = ED.sim5.flags[0]
+          ? ED.sim5.flags[0].lid
+          : (ED.sim5.rows.find((r) => r.tier === 1) || ED.sim5.rows[0] || {}).id;
+      } catch (e) {
+        ED.err = ['The seasons could not be played: ' + String(e.message || e).split('\n')[0]];
+      }
+      if (ED && ED.view === 'sim5') UI.worldEditor();
+    }, 60);
+  };
+  UI.acts.edSim5League = (d, el) => {
+    ED.sim5.lid = (el && el.value) || d.lid;
+    UI.worldEditor();
+  };
+  UI.acts.edSim5Open = (d) => {
+    ED.sim5.lid = d.lid;
+    UI.worldEditor();
+  };
+  const sim5View = () => {
+    const r = ED.sim5;
+    const head = `<div class="h1" style="margin-top:2vh">Simulate 5 seasons</div><div class="tag">Five seasons of every league, played ${SIM5.runs} times over from the clubs' ratings and each league's promotion and relegation. A look at what the ratings and the structure alone make of this world; the transfer market, finances, play-offs and cups are not played.</div>${errBox()}`;
+    if (!r)
+      return `${head}<div class="empty">${ED.err.length ? '' : 'Playing the seasons…'}</div><div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+    const name = (id) => esc((ED.def.clubs.find((c) => c.id === id) || { name: id }).name);
+    const row = r.rows.find((x) => x.id === r.lid) || r.rows[0];
+    const sel = `<select data-input="edSim5League">${r.rows
+      .slice()
+      .sort((a, b) => a.nat.localeCompare(b.nat) || a.tier - b.tier)
+      .map(
+        (x) =>
+          `<option value="${esc(x.id)}" ${row && x.id === row.id ? 'selected' : ''}>${esc((D.NATIONS[x.nat] || {}).name || x.nat)}: ${esc(x.name)}</option>`,
+      )
+      .join('')}</select>`;
+    const flagList = r.flags.length
+      ? r.flags
+          .slice(0, 40)
+          .map(
+            (f) =>
+              `<div class="tap" data-act="edSim5Open" data-lid="${esc(f.lid)}" style="padding:6px 0;min-height:44px">• ${esc(f.text)} <span class="dim">›</span></div>`,
+          )
+          .join('')
+      : '<div class="small" style="color:#c8ff3d">✓ Nothing stands out: no club wins nearly every title and every promotion matches a relegation</div>';
+    return `${head}
+      <div class="ng-label">What stands out <span class="tiny dim">· ${U.plural(r.flags.length, 'thing')}</span></div>
+      <div class="small" style="line-height:1.5">${flagList}</div>
+      <div class="ng-label">A league</div>${sel}
+      ${
+        row
+          ? `<div class="ng-label">Who wins the title <span class="tiny dim">· titles in five seasons, on average over ${r.runs} runs</span></div>
+      <div class="card flat" style="padding:6px 12px">${row.titles.map(([id, n]) => `<div class="row" style="padding:6px 0;min-height:44px"><span class="grow small">${name(id)}</span><b>${n.toFixed(1)}</b></div>`).join('') || '<div class="tiny dim" style="padding:8px 0">No league of two clubs.</div>'}</div>
+      <div class="ng-label">One run, season by season</div>
+      <div class="card flat" style="padding:6px 12px">${row.sample
+        .map(
+          (s, i) =>
+            `<div style="padding:8px 0;border-top:${i ? '1px solid #243042' : '0'}"><div class="small b">Season ${i + 1}: ${name(s.champion)}</div><div class="tiny dim" style="line-height:1.5">${s.up.length ? `Up: ${s.up.map(name).join(', ')}. ` : ''}${s.down.length ? `Down: ${s.down.map(name).join(', ')}.` : ''}${!s.up.length && !s.down.length ? 'No promotion or relegation.' : ''}</div></div>`,
+        )
+        .join('')}</div>`
+          : ''
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSim5">Play them again</button></div>`;
   };
 
   // ---------- Balance check ----------
@@ -4886,6 +5316,8 @@
       bans: bansView,
       balance: balanceView,
       csv: csvView,
+      grid: gridView,
+      sim5: sim5View,
       failure: failureView,
       nation: nationView,
       newnation: newNationView,
@@ -4924,6 +5356,7 @@
           'Change the world you are playing. Names, clubs, ratings, money, managers and the players you make change at once; league formats, cups and the calendar from next season. Nothing changes until you apply.';
     }
     draftSoon();
+    if (ED.view === 'grid') gridCheck();
     // a long list to pick from (the 90 nations) gets a box to type in
     document.querySelectorAll('.title select').forEach((sel) => {
       if (sel.options.length < 40 || sel.dataset.found) return;

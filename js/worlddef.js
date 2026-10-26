@@ -1780,6 +1780,16 @@
     }
     if (def.rules && def.rules.proRel != null && typeof def.rules.proRel !== 'boolean')
       errors.push('rules.proRel: promotion and relegation are on or off');
+    if (def.rules && def.rules.reg != null && !['real', 'off'].includes(def.rules.reg))
+      errors.push(
+        'rules.reg: registration rules are "real" (each league\'s own) or "off" (one limit for every league)',
+      );
+    if (
+      def.rules &&
+      def.rules.foreignLimit != null &&
+      !(Number.isInteger(def.rules.foreignLimit) && def.rules.foreignLimit >= 1 && def.rules.foreignLimit <= 99)
+    )
+      errors.push('rules.foreignLimit: foreign players in a squad, 1 to 99 (99 is no limit)');
     if (def.calendar && Object.keys(def.calendar).length) errors.push(...WD.validateCalendar(def.calendar));
     for (const [lid, x] of Object.entries(def.expansion || {})) errors.push(...WD.validateExpansion(lid, x, def));
     for (const c of def.competitions || []) {

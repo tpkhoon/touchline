@@ -253,6 +253,7 @@
       <button class="btn sm block" style="margin-top:10px" data-act="liveBulk">Bulk edit: many players, clubs or prizes at once</button>
       <button class="btn sm block" style="margin-top:8px" data-act="edOpenLive">Full world editor: leagues, cups, rules, nations, staff and more</button>
       <div class="row" style="gap:8px;margin-top:8px"><button class="btn sm grow" data-act="liveNewPlayer">Add a player</button><button class="btn sm grow" data-act="liveRules">World rules</button></div>
+      <button class="btn sm block" style="margin-top:8px" data-act="liveCommish">Commissioner: force a transfer or a loan, correct a result</button>
       <button class="btn sm block" style="margin-top:8px" data-act="liveChanges">Changes made${(FM.S.editLog || []).length ? ' (' + FM.S.editLog.length + ')' : ''}, with undo</button>
       <div class="ng-find" style="margin-top:10px"><input type="search" id="le-q" placeholder="A player, club or competition" autocomplete="off"></div>
       <div id="le-res"></div>`,
@@ -865,6 +866,224 @@
     bulkCount();
     UI.toast(`${U.plural(n, 'row')} changed`, 2500);
   };
+  // ---------- Commissioner mode ----------
+  // Step outside your role: force a transfer or a loan whatever the clubs and the player think, and correct a result that was
+  // wrong. (Names, ratings, club details, money and the world's rules are in the edits above; this adds the things a commissioner
+  // does to the running season.) A forced transfer goes through the game's own transfer code, so the records, the news and the
+  // clubs' books follow; it cannot be undone from the Changes list. A corrected result moves the table; the goals, scorers and
+  // statistics of the match as it was played are left as they were.
+  UI.acts.liveCommish = () => {
+    if (!live() || busy()) return;
+    UI.closeSheet();
+    UI.sheet(
+      `<div class="tiny dim" style="line-height:1.5">The commissioner can change anything in the running career. A forced transfer or loan and a corrected result take effect at once.</div>
+      <button class="btn sm block" style="margin-top:10px" data-act="liveForce">Force a transfer or a loan</button>
+      <button class="btn sm block" style="margin-top:8px" data-act="liveResult">Correct a league result</button>
+      <button class="btn sm block" style="margin-top:8px" data-act="liveRules">Change the world's rules (points for a win, substitutes and more)</button>
+      <button class="btn sm block" style="margin-top:8px" data-act="liveBulk">Bulk edit: many players, clubs or prizes at once</button>`,
+      { title: 'Commissioner' },
+    );
+  };
+  // -- a forced transfer or loan --
+  const CM = (UI._commish = { pid: null, kind: 't' });
+  UI.acts.liveForce = () => {
+    if (!live() || busy()) return;
+    UI.closeSheet();
+    CM.pid = null;
+    const sh = UI.sheet(
+      `<div class="ng-find"><input type="search" id="cm-q" placeholder="Find the player" autocomplete="off"></div><div id="cm-body"></div>`,
+      { title: 'Force a transfer or a loan', full: true },
+    );
+    const q = sh.querySelector('#cm-q');
+    q.addEventListener('input', () => {
+      const t = q.value.trim().toLowerCase();
+      const body = sh.querySelector('#cm-body');
+      if (t.length < 2) {
+        body.innerHTML = '';
+        return;
+      }
+      const list = Object.values(FM.S.players)
+        .filter((p) => !p.retired && FM.W.name(p).toLowerCase().includes(t))
+        .sort((a, b) => b.ca - a.ca)
+        .slice(0, 12);
+      body.innerHTML =
+        list
+          .map((p) => {
+            const c = p.clubId && FM.S.clubs[p.clubId];
+            return `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="liveForcePick" data-id="${esc(p.id)}"><div class="small b">${esc(FM.W.name(p))}</div><div class="tiny dim">${esc(p.pos)} · ${FM.W.age(p)} · ${p.ca} · ${esc(c ? c.name : 'free agent')}</div></div>`;
+          })
+          .join('') || '<div class="empty">No one matches.</div>';
+    });
+    q.focus();
+  };
+  const forceForm = () => {
+    const p = FM.S.players[CM.pid];
+    if (!p) return '';
+    const c = p.clubId && FM.S.clubs[p.clubId];
+    const seg = [
+      ['t', 'A transfer'],
+      ['l', 'A loan until the summer'],
+    ]
+      .map(
+        ([k, t]) => `<button class="${CM.kind === k ? 'on' : ''}" data-act="liveForceKind" data-k="${k}">${t}</button>`,
+      )
+      .join('');
+    return `<div class="card flat" style="padding:10px 12px"><div class="small b">${esc(FM.W.name(p))}</div><div class="tiny dim">${esc(p.pos)} · ${FM.W.age(p)} · ${p.ca} · ${esc(c ? c.name : 'free agent')}</div></div>
+      <div class="seg" style="margin:10px 0 0">${seg}</div>
+      <div class="ng-label">To which club <span class="tiny dim">· type a club's name</span></div>
+      <input type="text" id="cm-club" list="le-clubs" placeholder="Club" autocomplete="off">${clubList()}
+      <div class="ng-label">${CM.kind === 'l' ? 'Loan fee' : 'Fee'} <span class="tiny dim">· paid by the new club to the old one; 0 for none</span></div>
+      <input type="number" id="cm-fee" min="0" inputmode="numeric" value="0">
+      <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="liveForceDo">${CM.kind === 'l' ? 'Send him on loan' : 'Make the transfer'}</button></div>`;
+  };
+  UI.acts.liveForcePick = (d) => {
+    CM.pid = d.id;
+    const b = $('#cm-body');
+    if (b) b.innerHTML = forceForm();
+    const q = $('#cm-q');
+    if (q) q.style.display = 'none';
+  };
+  UI.acts.liveForceKind = (d) => {
+    CM.kind = d.k;
+    const b = $('#cm-body');
+    if (b) b.innerHTML = forceForm();
+  };
+  UI.acts.liveForceDo = () => {
+    const S = FM.S,
+      p = S.players[CM.pid];
+    if (!p || busy()) return;
+    const to = clubByName((($('#cm-club') || {}).value || '').trim());
+    if (!to) return UI.toast('No club by that name', 2500);
+    if (to.id === p.clubId) return UI.toast('He is at that club already', 2500);
+    const fee = Math.max(0, Math.round(+($('#cm-fee') || {}).value || 0));
+    const name = FM.W.name(p),
+      from = p.clubId && S.clubs[p.clubId];
+    if (CM.kind === 'l') {
+      if (!from) return UI.toast('A free agent cannot go on loan: make it a transfer', 3000);
+      FM.Transfers.loan(p, to.id, 1, fee);
+    } else FM.Transfers.execute(p, to.id, fee, p.wage, {});
+    logEdit('force', `${CM.kind === 'l' ? 'Loaned' : 'Moved'} ${name} to ${to.name}`, p.id, null);
+    FM.W.rosterVer++;
+    persist();
+    UI.closeSheet();
+    UI.render();
+    UI.toast(`${name} ${CM.kind === 'l' ? 'is on loan at' : 'has joined'} ${to.name}`, 3000);
+  };
+  // -- a corrected result --
+  const played = (comp, id) => {
+    const out = [];
+    (comp.fixtures || []).forEach((round, r) =>
+      round.forEach((f, i) => {
+        if (f.res && !f.ko && !f.leg && (f.h === id || f.a === id)) out.push({ r, i, f });
+      }),
+    );
+    return out;
+  };
+  // the table moves by what the match changes: the old result comes out, the new one goes in
+  const tableMove = (table, fx, hg, ag, sign, win) => {
+    const th = table[fx.h],
+      ta = table[fx.a];
+    if (!th || !ta) return;
+    th.p += sign;
+    ta.p += sign;
+    th.gf += sign * hg;
+    th.ga += sign * ag;
+    ta.gf += sign * ag;
+    ta.ga += sign * hg;
+    if (hg > ag) {
+      th.w += sign;
+      ta.l += sign;
+      th.pts += sign * win;
+    } else if (hg < ag) {
+      ta.w += sign;
+      th.l += sign;
+      ta.pts += sign * win;
+    } else {
+      th.d += sign;
+      ta.d += sign;
+      th.pts += sign;
+      ta.pts += sign;
+    }
+  };
+  const setScore = (comp, fx, hg, ag) => {
+    const win = FM.W.rule(comp.id, 'win'),
+      old = fx.res;
+    const tables = [comp.table];
+    if (comp.torneos) tables.push(comp.torneos[fx.round >= comp.torneoHalf ? 1 : 0].table);
+    for (const t of tables) {
+      tableMove(t, fx, old.hg, old.ag, -1, win);
+      tableMove(t, fx, hg, ag, 1, win);
+    }
+    old.hg = hg;
+    old.ag = ag;
+  };
+  UI.acts.liveResult = () => {
+    if (!live() || busy()) return;
+    UI.closeSheet();
+    const sh = UI.sheet(
+      `<div class="tiny dim" style="line-height:1.5">Find a club's played league matches, pick one and give it the right score. The table follows; the goals, scorers and player statistics of the match stay as they were played.</div>
+      <div class="ng-label">Club <span class="tiny dim">· type a club's name</span></div>
+      <input type="text" id="cm-rclub" list="le-clubs" placeholder="Club" autocomplete="off">${clubList()}
+      <div class="actions" style="margin-top:10px"><button class="btn sm block" data-act="liveResultFind">Show its played matches</button></div>
+      <div id="cm-rbody"></div>`,
+      { title: 'Correct a league result', full: true },
+    );
+    return sh;
+  };
+  UI.acts.liveResultFind = () => {
+    const c = clubByName((($('#cm-rclub') || {}).value || '').trim());
+    if (!c) return UI.toast('No club by that name', 2500);
+    const comp = FM.S.comps[c.comp];
+    if (!comp || comp.type !== 'league') return UI.toast('That club has no league table', 2500);
+    CM.club = c.id;
+    const list = played(comp, c.id);
+    $('#cm-rbody').innerHTML =
+      list
+        .slice()
+        .reverse()
+        .map(
+          ({ r, i, f }) =>
+            `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="liveResultPick" data-r="${r}" data-i="${i}"><div class="small b">${esc(FM.clubOf(f.h).name)} ${f.res.hg} – ${f.res.ag} ${esc(FM.clubOf(f.a).name)}</div><div class="tiny dim">Round ${r + 1}</div></div>`,
+        )
+        .join('') || '<div class="empty">No league match played yet.</div>';
+  };
+  UI.acts.liveResultPick = (d) => {
+    const c = FM.S.clubs[CM.club],
+      comp = c && FM.S.comps[c.comp],
+      f = comp && comp.fixtures[+d.r] && comp.fixtures[+d.r][+d.i];
+    if (!f || !f.res) return;
+    $('#cm-rbody').innerHTML =
+      `<div class="card flat" style="padding:10px 12px;margin-top:10px"><div class="small b">${esc(FM.clubOf(f.h).name)} against ${esc(FM.clubOf(f.a).name)}</div><div class="tiny dim">Round ${+d.r + 1}, played ${f.res.hg} – ${f.res.ag}</div></div>
+      <div class="row" style="gap:8px;margin-top:8px"><div style="flex:1"><div class="ng-label" style="margin-top:0">${esc(FM.clubOf(f.h).short || 'Home')}</div><input type="number" id="cm-hg" min="0" max="30" inputmode="numeric" value="${f.res.hg}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">${esc(FM.clubOf(f.a).short || 'Away')}</div><input type="number" id="cm-ag" min="0" max="30" inputmode="numeric" value="${f.res.ag}"></div></div>
+      <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="liveResultSave" data-r="${d.r}" data-i="${d.i}">Set the result</button></div>`;
+  };
+  UI.acts.liveResultSave = (d) => {
+    const c = FM.S.clubs[CM.club],
+      comp = c && FM.S.comps[c.comp],
+      f = comp && comp.fixtures[+d.r] && comp.fixtures[+d.r][+d.i];
+    if (!f || !f.res || busy()) return;
+    const hg = num('cm-hg', 0, 30),
+      ag = num('cm-ag', 0, 30);
+    if (hg === f.res.hg && ag === f.res.ag) return UI.toast('That is the score already', 2000);
+    const was = { hg: f.res.hg, ag: f.res.ag };
+    setScore(comp, f, hg, ag);
+    logEdit(
+      'result',
+      `Result corrected: ${FM.clubOf(f.h).name} ${hg} – ${ag} ${FM.clubOf(f.a).name} (was ${was.hg} – ${was.ag})`,
+      comp.id,
+      { r: +d.r, i: +d.i, hg: was.hg, ag: was.ag },
+    );
+    persist();
+    UI.closeSheet();
+    UI.render();
+    UI.toast('Result set; the table is updated', 3000);
+  };
+  // putting a corrected result back as it was played
+  const undoResult = (e) => {
+    const comp = FM.S.comps[e.ref],
+      f = comp && comp.fixtures[e.snap.r] && comp.fixtures[e.snap.r][e.snap.i];
+    if (f && f.res) setScore(comp, f, e.snap.hg, e.snap.ag);
+  };
   // ---------- A confirmation for changes with knock-on effects ----------
   const sure = (title, text, act, id) =>
     UI.sheet(
@@ -883,8 +1102,8 @@
     return log.length
       ? log
           .map((e) => {
-            const can = !!(e.snap || (UI._editSnaps && UI._editSnaps[e.id]));
-            return `<div class="card flat" style="margin:6px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(e.label)}</div><div class="tiny dim">Season ${esc(e.y)}${can ? '' : ' · too large to undo after a reload'}</div></div>${can ? `<button class="btn sm" data-act="liveUndo" data-eid="${esc(e.id)}">Undo</button>` : ''}</div></div>`;
+            const can = !!(e.snap || (UI._editSnaps && UI._editSnaps[e.id])) || e.type === 'new';
+            return `<div class="card flat" style="margin:6px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(e.label)}</div><div class="tiny dim">Season ${esc(e.y)}${can || e.type === 'new' ? '' : e.type === 'force' ? ' · cannot be undone' : ' · too large to undo after a reload'}</div></div>${can ? `<button class="btn sm" data-act="liveUndo" data-eid="${esc(e.id)}">Undo</button>` : ''}</div></div>`;
           })
           .join('')
       : '<div class="empty">Nothing has been changed yet.</div>';
@@ -901,7 +1120,7 @@
       e = (S.editLog || []).find((x) => x.id === d.eid);
     if (!e || !live() || busy()) return;
     const snap = e.snap || (UI._editSnaps && UI._editSnaps[e.id]);
-    if (!snap && e.type !== 'new') return UI.toast('That change can no longer be undone', 2500);
+    if (!snap && !['new'].includes(e.type)) return UI.toast('That change can no longer be undone', 2500);
     if (e.type === 'player' && S.players[e.ref]) {
       restore(S.players[e.ref], snap);
       FM.W.rosterVer++;
@@ -919,6 +1138,8 @@
         delete S.players[e.ref];
         FM.W.rosterVer++;
       }
+    } else if (e.type === 'result') {
+      undoResult(e);
     } else if (e.type === 'bulk') {
       undoBulk(snap);
       if (UI._bulkUndo && UI._bulkUndo.label + '' === (snap.label || '')) UI._bulkUndo = null;

@@ -39,6 +39,8 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 
 ### Playtest feedback, round 24
 
+- **Editor review, the five rows:** the world editor's Rules has a registration switch (each league's own rules, or one foreign-player limit for all), the Players tab gives a whole nation new names in one tap, the CSV files carry club cash, budget and facility levels and a managers.csv, with a spreadsheet grid in the game checked as you type, Simulate 5 seasons projects every league from the clubs' ratings in seconds, and the in-game editor has Commissioner mode (force a transfer or a loan, correct a league result, with the table following). Still to come: editing from national teams, staff and table rows, and the guided league creator
+
 - **Editor review, second half:** one player form shared by the world editor and the in-game editor (second nationality, heritage, second positions, traits, squad number, wage, and in the game morale, club and healing an injury; only the attributes that matter for his position, as whole numbers with − and +, with ability, stars and value shown live; only changed attributes are written back); the definition format carries and exports the new player fields; an empty squad in the world editor offers to build every squad. Still to come: editing from national teams, managers and staff and table rows in the game, Simulate 5 seasons, and the guided league creator
 
 - **Editor review, first half:** fields in every sheet use one dark style (the in-game editor's white boxes and overflow are fixed); the pre-game editor saves its draft by itself (after changes, typing, every minute, right after building the squads), warns before leaving with unsaved changes and shows "Saved · 2 minutes ago"; the player form has one Done button and a delete that asks twice; the in-game editor has a Changes made list with undo for every edit and asks before moving a player to another club or changing a club's reputation by 8 or more; the pre-game editor opens on tasks, with Files and People tabs, two rows of tabs and bottom-bar labels that say what they do. Still to come: one shared player form, the missing player fields, building squads from an empty list, editing from more places, then Simulate 5 seasons, CSV and the league creator
@@ -702,7 +704,6 @@ Priority order. Principle: make what the game already has remember what happened
 - [ ] Staff traits (motivator, youth developer, tactician and more)
 - [ ] More second divisions for nations that have only a top flight
 - [ ] AI clubs that plan their recruitment over the years; a regens rehaul
-- [ ] Registration rules modifier in the editor (Alpha 2)
 - [ ] National youth pathways (academies, schools, universities, drafts)
 - [ ] Agents as characters with client networks and relationships
 - [ ] Media ecosystem: biased papers, podcasts, journalists, unreliable rumours, fan forums

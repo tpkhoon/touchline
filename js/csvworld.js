@@ -44,8 +44,14 @@
       'founded',
       'ground',
       'capacity',
+      'balance',
+      'budget',
+      'training',
+      'academy',
+      'medical',
       'remove',
     ],
+    managers: ['club', 'first_name', 'surname', 'nat', 'age', 'ability', 'rep', 'personality', 'remove'],
     players: [
       'first_name',
       'surname',
@@ -63,7 +69,7 @@
   CS.COLUMNS = COLS;
   // every column of every file, empty (a file that leaves a column out reads as having it empty)
   const BLANK = Object.fromEntries(
-    [...new Set([...COLS.leagues, ...COLS.clubs, ...COLS.players, 'age'])].map((c) => [c, '']),
+    [...new Set([...COLS.leagues, ...COLS.clubs, ...COLS.managers, ...COLS.players, 'age'])].map((c) => [c, '']),
   );
   const ALIAS = {
     color1: 'colour1',
@@ -99,6 +105,7 @@
     if (has('id', 'name', 'nat', 'tier')) return 'leagues';
     if (has('name', 'league') && !h.includes('season') && !h.includes('club')) return 'clubs';
     if (has('surname', 'position')) return 'players';
+    if (has('surname', 'club', 'ability') && !h.includes('position')) return 'managers';
     return null;
   };
 
@@ -156,7 +163,7 @@
   };
 
   // ---------- Out: a definition as three files ----------
-  CS.export = function (def) {
+  CS.rows = function (def) {
     const leagues = (def.leagues || []).map((l) => {
       const r = l.rules || {},
         band = l.repBand || [];
@@ -192,6 +199,11 @@
       founded: c.founded,
       ground: c.stadium && c.stadium.name,
       capacity: c.stadium && c.stadium.cap,
+      balance: c.finance && c.finance.balance,
+      budget: c.finance && c.finance.budget,
+      training: c.facilities && c.facilities.training,
+      academy: c.facilities && c.facilities.academy,
+      medical: c.facilities && c.facilities.medical,
       remove: '',
     }));
     const name = (id) => ((def.clubs || []).find((c) => c.id === id) || {}).name || '';
@@ -208,12 +220,25 @@
       contract: p.contract,
       id: p.id,
     }));
-    return {
-      leagues: toCsv(COLS.leagues, leagues),
-      clubs: toCsv(COLS.clubs, clubs),
-      players: toCsv(COLS.players, players),
-    };
+    const managers = (def.managers || []).map((m) => ({
+      club: name(m.club) || m.club,
+      first_name: m.fn,
+      surname: m.ln,
+      nat: m.nat,
+      age: m.age,
+      ability: m.ability,
+      rep: m.rep,
+      personality: m.personality,
+      remove: '',
+    }));
+    return { leagues, clubs, managers, players };
   };
+  CS.export = function (def) {
+    const r = CS.rows(def);
+    return Object.fromEntries(Object.keys(r).map((k) => [k, toCsv(COLS[k], r[k])]));
+  };
+  // a file's rows (objects keyed by column) as CSV text; the grid in the editor builds the text it checks and applies this way
+  CS.toCsv = (kind, rows) => toCsv(COLS[kind], rows);
   const W = () => FM.W;
 
   // ---------- Templates ----------
@@ -260,6 +285,18 @@
           capacity,
         })),
       ),
+      managers: toCsv(COLS.managers, [
+        {
+          club: 'Example Town FC',
+          first_name: 'Alex',
+          surname: 'Sample',
+          nat: 'ENG',
+          age: 48,
+          ability: 12,
+          rep: 55,
+          personality: '',
+        },
+      ]),
       players: toCsv(COLS.players, [
         {
           first_name: 'Sam',
@@ -295,13 +332,13 @@
       notes = [];
     const bad = (file, row, who, col, msg) =>
       errors.push(`${file}, row ${row}${who ? ` (${who})` : ''}${col ? `, ${col}` : ''}: ${msg}`);
-    const kinds = { leagues: null, clubs: null, players: null };
+    const kinds = { leagues: null, clubs: null, managers: null, players: null };
     for (const f of files) {
       const k = CS.kind(f.text);
       if (k) kinds[k] = f;
       else
         errors.push(
-          `${f.name}: not one of the three files (leagues.csv has id, name, nat, tier; clubs.csv has name and league; players.csv has surname and position)`,
+          `${f.name}: not one of the files (leagues.csv has id, name, nat, tier; clubs.csv has name and league; managers.csv has club, surname and ability; players.csv has surname and position)`,
         );
     }
     const year = (def.meta && def.meta.startYear) || D.SEASON_START;
@@ -454,6 +491,30 @@
           if (!(cap >= 1000 && cap <= 120000))
             bad(f, n, who, 'capacity', `"${v.capacity}" should be a whole number from 1,000 to 120,000`);
         }
+        let fin = null,
+          fac = null;
+        for (const [col, lo, hi] of [
+          ['balance', -1e8, 5e9],
+          ['budget', 0, 2e9],
+        ])
+          if (v[col] !== '') {
+            const x = intOf(v[col].replace(/[ ,]/g, ''));
+            if (!(x >= lo && x <= hi))
+              bad(
+                f,
+                n,
+                who,
+                col,
+                `"${v[col]}" should be a whole number from ${lo.toLocaleString('en')} to ${hi.toLocaleString('en')}`,
+              );
+            else (fin = fin || {})[col] = x;
+          }
+        for (const col of ['training', 'academy', 'medical'])
+          if (v[col] !== '') {
+            const x = intOf(v[col]);
+            if (!(x >= 1 && x <= 5)) bad(f, n, who, col, `"${v[col]}" should be a level from 1 to 5`);
+            else (fac = fac || {})[col] = x;
+          }
         if (v.id && !cur && !/^c_[A-Za-z0-9]{2,8}$/.test(v.id))
           bad(f, n, who, 'id', `"${v.id}" should be c_ and 2 to 8 letters or digits`);
         if (v.id && !cur && used.has(v.id)) bad(f, n, who, 'id', `${v.id} is already a club of the game`);
@@ -476,6 +537,8 @@
               cap,
             },
           });
+          if (fin) cur.finance = { ...(cur.finance || {}), ...fin };
+          if (fac) cur.facilities = { ...(cur.facilities || {}), ...fac };
           uc++;
           continue;
         }
@@ -506,8 +569,65 @@
           founded,
           crest: null,
           stadium: { name: v.ground || `${name.split(' ')[0]} Ground`, cap },
+          ...(fin ? { finance: fin } : {}),
+          ...(fac ? { facilities: fac } : {}),
         });
         nc++;
+      }
+    }
+
+    // managers: one a club; a row replaces the club's manager (his tactics stay), remove takes him out
+    let nm = 0;
+    if (kinds.managers) {
+      const f = kinds.managers.name || 'managers.csv';
+      const byName = new Map();
+      for (const c of def.clubs || []) byName.set(c.name.toLowerCase(), c.id);
+      for (const { n, v } of rowsOf(kinds.managers.text)) {
+        const who = `${v.first_name} ${v.surname}`.trim();
+        const e0 = errors.length;
+        const club = (def.clubs || []).some((c) => c.id === v.club) ? v.club : byName.get(String(v.club).toLowerCase());
+        if (!club) {
+          bad(f, n, who, 'club', `"${v.club}" is not a club of the game or of clubs.csv`);
+          continue;
+        }
+        const cur = (def.managers || []).find((m) => m.club === club);
+        if (/^(1|yes|y|true|x)$/i.test(v.remove)) {
+          if (cur) {
+            def.managers = def.managers.filter((m) => m !== cur);
+            nm++;
+          } else bad(f, n, who, 'remove', 'that club has no manager of its own in this world to take out');
+          continue;
+        }
+        if (!v.surname) bad(f, n, who, 'surname', 'a manager needs a surname');
+        const nat = (v.nat || (cur && cur.nat) || '').toUpperCase();
+        if (!natOk(nat)) bad(f, n, who, 'nat', `"${v.nat}" is not a nation of the game`);
+        const num = (col, lo, hi, was) => {
+          if (v[col] === '') return was;
+          const x = intOf(v[col]);
+          if (!(x >= lo && x <= hi)) bad(f, n, who, col, `"${v[col]}" should be a whole number from ${lo} to ${hi}`);
+          return x;
+        };
+        const age = num('age', 28, 80, cur ? cur.age : 48),
+          ability = num('ability', 1, 20, cur ? cur.ability : 10),
+          rep = num('rep', 20, 99, cur ? cur.rep : 50);
+        let personality = cur ? cur.personality : undefined;
+        if (v.personality !== '') {
+          personality = (D.STAFF_PERSONALITY || []).find((x) => x.toLowerCase() === v.personality.toLowerCase());
+          if (!personality)
+            bad(
+              f,
+              n,
+              who,
+              'personality',
+              `"${v.personality}" should be one of ${(D.STAFF_PERSONALITY || []).join(', ')}`,
+            );
+        }
+        if (errors.length > e0) continue;
+        const next = { ...(cur || {}), club, fn: v.first_name, ln: v.surname, nat, age, ability, rep };
+        if (personality) next.personality = personality;
+        if (cur) Object.assign(cur, next);
+        else (def.managers = def.managers || []).push(next);
+        nm++;
       }
     }
 
@@ -579,8 +699,9 @@
     }
     if (nl || ul) notes.push(`${U.plural(nl, 'new league')}, ${U.plural(ul, 'league')} changed`);
     if (nc || uc) notes.push(`${U.plural(nc, 'new club')}, ${U.plural(uc, 'club')} changed or taken out`);
+    if (nm) notes.push(`${U.plural(nm, 'manager')} set`);
     if (np) notes.push(`${U.plural(np, 'player')} added`);
-    return { errors, notes, counts: { nl, ul, nc, uc, np } };
+    return { errors, notes, counts: { nl, ul, nc, uc, nm, np } };
   };
 
   // ---------- The adapter: CSV files as a database ----------
