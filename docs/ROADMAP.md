@@ -39,6 +39,8 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 
 ### Playtest feedback, round 24
 
+- **Fixes after more playtesting:** mood faces and status marks draw as pictures (they were showing the drawing's name as text), the tactics pitch keeps its front line and its long role names inside the lines, a B team or youth-side player is no one to make an offer for, the staff and scouts a new job comes with follow the size of the club (a giant starts with six scouts watching the world, a small club has two or three from its own region and may lack an analyst or a director), and the regional club cups give out their places by coefficient
+
 - **Editor review, the five rows:** the world editor's Rules has a registration switch (each league's own rules, or one foreign-player limit for all), the Players tab gives a whole nation new names in one tap, the CSV files carry club cash, budget and facility levels and a managers.csv, with a spreadsheet grid in the game checked as you type, Simulate 5 seasons projects every league from the clubs' ratings in seconds, and the in-game editor has Commissioner mode (force a transfer or a loan, correct a league result, with the table following). Still to come: editing from national teams, staff and table rows, and the guided league creator
 
 - **Editor review, second half:** one player form shared by the world editor and the in-game editor (second nationality, heritage, second positions, traits, squad number, wage, and in the game morale, club and healing an injury; only the attributes that matter for his position, as whole numbers with − and +, with ability, stars and value shown live; only changed attributes are written back); the definition format carries and exports the new player fields; an empty squad in the world editor offers to build every squad. Still to come: editing from national teams, managers and staff and table rows in the game, Simulate 5 seasons, and the guided league creator
@@ -700,6 +702,8 @@ Priority order. Principle: make what the game already has remember what happened
 - [ ] Deeper staff with personalities, specialisms and staff politics
 - [ ] Tactical evolution driven by successful managers
 - [ ] **Editor review, top priority (before the rest of Alpha 2):** in-game field styling fixed globally in `css/app.css`; draft autosave, a warning before leaving and a "Saved" time; one save button; one shared player form (position-relevant attributes, whole numbers with + and −, live stars and value); missing player fields; a Changes this season list with undo and confirmation of big changes; editing from national teams, competitions, money, staff and league table rows; a pre-game editor that opens on tasks with Files and People tabs and clearer bottom-bar labels; build squads from an empty Players list; then Simulate 5 seasons, the CSV editor and the guided league creator
+- [ ] Split a region off as a nation in the editor (Transnistria, Sardinia, Ajaccio)
+- [ ] Combine nations or regions into one in the editor (the home nations into Great Britain)
 - [ ] Tactical metas that differ in every save, with the optimal tempo shifting over the years
 - [ ] Staff traits (motivator, youth developer, tactician and more)
 - [ ] More second divisions for nations that have only a top flight

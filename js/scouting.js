@@ -332,6 +332,7 @@
           (p) =>
             !p.retired &&
             p.clubId !== u.clubId &&
+            !W.ownPlayer(p) &&
             !dis[p.id] &&
             Sc.scoutable(p) &&
             (a.type === 'league' ? p.clubId && S.clubs[p.clubId].comp === a.comp : Sc.region(p) === a.region) &&

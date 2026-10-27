@@ -2776,6 +2776,52 @@
     u.contractRem = null;
     if (FM.Season.jobMarket) FM.Season.jobMarket(true);
   };
+  // The staff a new job comes with follow the size of the club. A big club has a bigger scouting network (up to six scouts, most of
+  // them watching other parts of the world, where the club's name opens doors), better people in every role and a full backroom
+  // team; a small club has two or three scouts, mostly from its own part of the world, and may not have an analyst or a sporting
+  // director at all (a vacant role is covered by a caretaker; hire one when there is money).
+  W.startingStaff = function (club) {
+    const S = FM.S,
+      u = S.user,
+      rep = club.rep,
+      home = D.NATIONS[club.nat] ? club.nat : 'ENG',
+      homeRegion = D.NATIONS[home].region;
+    const n = Math.min(rep >= 82 ? 6 : rep >= 70 ? 5 : rep >= 58 ? 4 : rep >= 45 ? 3 : 2, W.maxScouts());
+    const reach = U.clamp((rep - 50) / 35, 0, 1); // how far from home the network looks: nothing for a small club, the world for a giant
+    const base = U.clamp(Math.round(5 + rep * 0.1), 7, 16);
+    const ability = () => U.clamp(base + U.randi(-2, 2), 5, 18);
+    const natsOf = (r) => D.nationCodes().filter((x) => D.NATIONS[x].region === r);
+    const others = Object.keys(D.REGIONS).filter((r) => r !== homeRegion && natsOf(r).length);
+    (u.scouts || []).forEach((id) => delete S.staff[id]);
+    const seen = new Set(),
+      scouts = [];
+    for (let i = 0; i < n; i++) {
+      let nat;
+      if (i === 0) nat = home;
+      else if (Math.random() < reach) {
+        const fresh = others.filter((r) => !seen.has(r));
+        const r = U.pick(fresh.length ? fresh : others);
+        seen.add(r);
+        nat = U.pick(natsOf(r));
+      } else nat = U.pick(natsOf(homeRegion).concat([home]));
+      scouts.push(W.genStaff('Scout', nat, { ability: ability() }).id);
+    }
+    u.scouts = scouts;
+    // the backroom team: the better the club, the better each person; a small club may go without an analyst or a director
+    const roles = {
+      assistant: 'Assistant Manager',
+      coach: 'First-Team Coach',
+      analyst: 'Head of Analytics',
+      physio: 'Head Physio',
+      director: 'Sporting Director',
+    };
+    Object.values(u.staff || {}).forEach((id) => delete S.staff[id]);
+    u.staff = {};
+    for (const [key, role] of Object.entries(roles)) {
+      if ((key === 'analyst' && rep < 42) || (key === 'director' && rep < 50)) continue;
+      u.staff[key] = W.genStaff(role, home, { ability: ability() }).id;
+    }
+  };
   W.takeCharge = function (clubId, mgrName, isNew = true) {
     const S = FM.S,
       club = S.clubs[clubId];
@@ -2806,6 +2852,7 @@
     S.user.tactic = club.tactic;
     if (S.user.tactic.fam == null) S.user.tactic.fam = 55; // tactical familiarity 0–100
     S.user.preseason = S.user.preseason || {};
+    if (isNew) W.startingStaff(club); // the staff a new job comes with follow the size of the club
     if (!S.staffPool) W.refreshStaffPool();
     if (FM.WorldDef) FM.WorldDef.seedStaff(clubId, isNew); // the staff a world definition made for this club come with the job
     // Own-club and same-league players are partially known
@@ -3292,7 +3339,11 @@
   // network to speak of (two scouts at most) and pays what a community club can
   W.partTime = (c) =>
     !!c && c.sim !== 'nation' && D.partTime(c.nat, (FM.S.comps[c.comp] && FM.S.comps[c.comp].tier) || 1, c.rep);
-  W.maxScouts = () => (W.partTime(W.userClub()) ? 2 : 5);
+  // (the bigger the club, the bigger its scouting network: three scouts for a small club, six for a giant)
+  W.maxScouts = () => {
+    const c = W.userClub();
+    return W.partTime(c) ? 2 : c.rep >= 75 ? 6 : c.rep >= 62 ? 5 : c.rep >= 45 ? 4 : 3;
+  };
   W.isUser = (clubId) => FM.S.user && FM.S.user.clubId === clubId;
   W.isUserNation = (id) => !!(FM.S.user && FM.S.user.nation && FM.S.user.nation === id);
   W.isMine = (id) => W.isUser(id) || W.isUserNation(id);

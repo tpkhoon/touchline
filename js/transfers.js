@@ -80,6 +80,7 @@
     const S = FM.S,
       p = S.players[pid],
       club = W.userClub();
+    if (W.ownPlayer(p)) return { ok: false, msg: `${W.name(p)} is already your player.` };
     if (!FM.Season.windowOpen()) return { ok: false, msg: 'Loans can only be agreed while the window is open.' };
     if (!p.clubId) return { ok: false, msg: 'He is a free agent — just offer him a contract.' };
     if (p.loan) return { ok: false, msg: `He's already on loan at ${S.clubs[p.clubId].name}.` };
@@ -249,6 +250,8 @@
     const S = FM.S,
       p = S.players[pid],
       club = W.userClub();
+    // (a player of your B team or your youth sides is yours already: nothing to buy)
+    if (W.ownPlayer(p)) return { ok: false, msg: `${W.name(p)} is already your player.` };
     if (p.loan && W.isUser(p.loan.from))
       return { ok: false, msg: `${W.name(p)} is already your player, on loan at ${S.clubs[p.clubId].name}.` };
     if (p.loan)

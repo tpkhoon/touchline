@@ -1972,6 +1972,9 @@ table.t tr.zone-down td:first-child {
   color: #d9ffe0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
+  max-width: 74px; /* a long role (Advanced Playmaker) is cut with an ellipsis, not run into the next player's */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .slot-dot.sel .d {
   outline: 3px solid var(--acc);
@@ -2036,7 +2039,7 @@ table.t tr.zone-down td:first-child {
 .tpitch {
   position: relative;
   width: 100%;
-  aspect-ratio: 68 / 88;
+  aspect-ratio: 68 / 100; /* tall enough for five lines of players with their names, bars and roles */
   border-radius: 16px;
   overflow: hidden;
   background: repeating-linear-gradient(0deg, var(--pitch1) 0 10%, var(--pitch2) 10% 20%);

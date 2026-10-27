@@ -79,7 +79,7 @@
     const opts = Pe.talkOptions(p);
     const f = p.form.length ? U.avg(p.form.slice(-3)).toFixed(1) : '—';
     UI.sheet(
-      `<div class="row">${C.pos(p)}<div class="grow"><div class="b">${esc(W.name(p))}</div><div class="tiny dim">${esc(p.personality)} · morale ${W.moraleLabel(p.morale).join(' ')} · recent form ${f}</div></div></div>
+      `<div class="row">${C.pos(p)}<div class="grow"><div class="b">${esc(W.name(p))}</div><div class="tiny dim">${esc(p.personality)} · morale ${UI.ico(W.moraleLabel(p.morale)[1])} ${W.moraleLabel(p.morale)[0]} · recent form ${f}</div></div></div>
       <div class="small muted" style="margin:10px 0">Your word matters: kept promises lift morale and trust; broken ones cost both — and the whole dressing room notices. Squad trust <b>${Math.round(S().user.trust ?? 60)}%</b>.</div>
       ${Pe.canTalk(p) ? opts.map((k) => `<button class="card row tap" style="width:100%;text-align:left" data-act="doTalk" data-id="${p.id}" data-k="${k}"><span style="font-size:22px">${UI.ico(Pe.TALKS[k].icon)}</span><div class="grow"><div class="b small">${esc(Pe.TALKS[k].label)}</div>${Pe.PROMISE[k] ? `<div class="tiny dim">Promise: ${esc(Pe.PROMISE[k].desc({ ...{ target: p.season.apps + 4, base: p.season.apps, days: Pe.PROMISE[k].days, status: 'regular' } }))}</div>` : ''}</div></button>`).join('') : '<div class="empty">You spoke to him recently. Give it a few days.</div>'}`,
       { title: 'Talk to player' },

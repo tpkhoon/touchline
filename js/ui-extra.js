@@ -593,7 +593,7 @@
     const dots = slots
       .map((sl, i) => {
         const p = pv.xi[i];
-        return `<div class="slot-dot" style="left:${sl.y * 100}%;top:${6 + (1 - (sl.x - 0.04) / 0.76) * 80}%"><div class="d" style="background:${c.colors[0]};color:${U.ink(c.colors[0])}">${p ? W.stars(p.ca, p.pos) : '—'}</div><div class="n">${p ? esc(p.ln) : ''}</div></div>`;
+        return `<div class="slot-dot" style="left:${sl.y * 100}%;top:${13 + (1 - (sl.x - 0.04) / 0.76) * 70}%"><div class="d" style="background:${c.colors[0]};color:${U.ink(c.colors[0])}">${p ? W.stars(p.ca, p.pos) : '—'}</div><div class="n">${p ? esc(p.ln) : ''}</div></div>`;
       })
       .join('');
     const objs = FM.Season.objectives(c);
@@ -2126,4 +2126,14 @@
       { title: t.name },
     );
   };
+  // a player of your own B team or youth sides is yours already: there is no offer to make for him
+  ['offer', 'offerLoan', 'offerClubs'].forEach((k) => {
+    const f = UI.acts[k];
+    if (!f) return;
+    UI.acts[k] = (d, ...rest) => {
+      const p = d && FM.S.players[d.id];
+      if (p && W.ownPlayer(p)) return UI.toast(`${W.name(p)} is already your player.`, 2500);
+      return f(d, ...rest);
+    };
+  });
 })();

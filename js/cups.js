@@ -1406,7 +1406,36 @@
         if (before.join() !== t.join()) changes.push({ league: l, region, from: before, to: t.slice(0, cups.length) });
       });
     }
+    Cu.reallocateRegional();
     return changes;
+  };
+  // The regional club cups (the Carpathian Cup, the Southeast Asian Club Cup, the Gulf Club Cup and the rest, below the main
+  // continental cups) hand their places out by coefficient too: the same set of places the world began with, given in the order of
+  // the nations' coefficients, so a nation whose clubs do well in them (and in the big cups) climbs the ranking and one whose clubs
+  // fail slips. S.spotsRegional keeps the places each cup began with.
+  Cu.reallocateRegional = function () {
+    const s = S();
+    if (s.fixedSpots) return;
+    s.spotsRegional = s.spotsRegional || {};
+    for (const cc of D.CONTINENTALS) {
+      if (!((cc.tier || 1) >= 4 && cc.feeders)) continue;
+      const comp = s.comps[cc.id];
+      if (!comp) continue;
+      const ids = Object.keys(cc.feeders).filter((id) => s.comps[id] && s.comps[id].nat);
+      if (ids.length < 2) continue;
+      if (!s.spotsRegional[cc.id]) s.spotsRegional[cc.id] = ids.map((id) => cc.feeders[id]);
+      const base = s.spotsRegional[cc.id];
+      if (base.length !== ids.length) continue; // (leagues added or taken out since: left as they are)
+      const places = base.slice().sort((a, b) => b - a);
+      const next = {};
+      ids
+        .map((id, i) => ({ id, i, c: Cu.coef(s.comps[id].nat) }))
+        .sort((a, b) => b.c - a.c || a.i - b.i)
+        .forEach((x, k) => {
+          if (places[k] > 0) next[x.id] = places[k];
+        });
+      comp.feeders = next;
+    }
   };
   // The ranking for a part of the world, best first: [{ league, nat, coef, places: [main, second, third...] }]
   Cu.spotTable = function (region) {

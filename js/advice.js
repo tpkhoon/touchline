@@ -392,7 +392,7 @@
       if (s.user.scouts.length >= W.maxScouts())
         return {
           ok: false,
-          msg: `You already employ ${W.maxScouts()} scouts${W.maxScouts() < 5 ? ': a part-time club has no scouting network' : ''}. Release one first.`,
+          msg: `You already employ ${W.maxScouts()} scouts${W.maxScouts() < 6 ? ': a smaller club has a smaller scouting network' : ''}. Release one first.`,
         };
       s.user.scouts.push(id);
     } else {
