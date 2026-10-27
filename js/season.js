@@ -1111,7 +1111,9 @@
                 ? 'World Club Championship'
                 : 'Intercontinental Cup'
               : c.stage
-                ? 'Continental night'
+                ? /^Q[ABC]/.test(c.stage)
+                  ? 'Continental qualifying'
+                  : 'Continental night'
                 : 'Cup day'
         : c.type === 'pre'
           ? 'Pre-season'
@@ -1957,6 +1959,9 @@
       // (a club under sanction next season is passed over: the next one takes the place)
       const open = order.filter((id) => !Sea.clubBanned(id, S.year + 1));
       if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(open.slice(0, R.qualify.n));
+      // a nation with no place in its part of the world's main cup sends its champion to that cup's qualifying rounds
+      const qualCup = FM.Cups.qualCup(comp);
+      if (qualCup && open.length) (qualified[qualCup.id + 'Q'] = qualified[qualCup.id + 'Q'] || []).push(open[0]);
       // second-tier continental cups: the next places down (in that order, so a playoff champion is never in two cups)
       for (const cc of D.CONTINENTALS) {
         const k = cc.feeders && FM.Cups.feedersOf(cc)[comp.id];

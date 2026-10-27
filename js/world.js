@@ -2196,6 +2196,7 @@
       }
     }
     // Domestic cup days: enough rounds for the biggest cup (byes even out the first round), spread through the season
+    const legs = !!S.rules.twoLegs;
     const cupDays = Math.max(Object.keys(D.CUP_AFTER).length, ...W.domesticCups().map((c) => FM.Cups.daysNeeded(c)));
     const CUP = {},
       c0 = W.scaleRound(1),
@@ -2228,13 +2229,26 @@
         (EURO[r] = EURO[r] || []).push(id);
       }
     }
-    const legs = !!S.rules.twoLegs;
     const mid = W.leagues().filter((c) => W.koType(c) && c.torneos);
     const cal = [];
     for (let i = 0; i < D.PRESEASON_DAYS; i++) cal.push({ type: 'pre', idx: i });
     // The super cups, in one day before the first league round
     const sup = FM.Cups.supers();
     if (sup.length) cal.push({ type: 'cup', comps: sup.map((c) => c.id), stage: 'SUP', super: true });
+    // The qualifying rounds of the main continental cups, before the first league round (a round is two legs, one match when
+    // knockouts are single matches): days that come early in the summer, not squeezed between league rounds
+    {
+      const withQual = W.continentals().filter((c) => c.qual && c.qual.plan.length);
+      const rounds = Math.max(0, ...withQual.map((c) => c.qual.plan.length));
+      for (let k = 0; k < rounds; k++)
+        for (const st of legs ? [`Q${'ABC'[k]}1`, `Q${'ABC'[k]}2`] : [`Q${'ABC'[k]}`])
+          cal.push({
+            type: 'cup',
+            comps: withQual.filter((c) => c.qual.plan.length > k).map((c) => c.id),
+            stage: st,
+            early: true,
+          });
+    }
     for (let r = 0; r < rounds; r++) {
       cal.push({ type: 'league', round: r });
       // the first tournament's knockouts follow its last round
@@ -2301,7 +2315,7 @@
       queue = [];
     for (let i = 0; i <= last; i++) {
       const e = cal[i];
-      if (e.type === 'cup') {
+      if (e.type === 'cup' && !e.early) {
         queue.push(e);
         continue;
       }
@@ -2324,7 +2338,8 @@
   W.dateCalendar = function (cal, year = FM.S.year) {
     const kind = (e) => (e.type === 'league' ? 'L' : e.type === 'cup' ? 'C' : e.type === 'intl' ? 'I' : 'X');
     const pre = cal.filter((e) => e.type === 'pre');
-    const main = cal.filter((e) => e.type !== 'pre');
+    const early = cal.filter((e) => e.early); // (the qualifying rounds: after the pre-season, before the first league day)
+    const main = cal.filter((e) => e.type !== 'pre' && !e.early);
     const lastL = main.reduce((m, e, i) => (e.type === 'league' ? i : m), 0);
     const base = (d) => W.seasonDate(d, year).getUTCDay();
     const gaps = main.map((e, i) => {
@@ -2371,7 +2386,8 @@
       }
       e.dn = prev = best;
     });
-    pre.forEach((e, i) => (e.dn = -(pre.length - i) * 4));
+    early.forEach((e, i) => (e.dn = -(early.length - i) * 4));
+    pre.forEach((e, i) => (e.dn = -(pre.length + early.length - i) * 4));
     return cal;
   };
   // The date of a day number: the first Saturday on or after 1 August of the season's year

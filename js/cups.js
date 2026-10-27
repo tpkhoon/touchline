@@ -81,7 +81,7 @@
         const taken = new Set(
           W.continentals()
             .filter((x) => x !== c && x.clubs)
-            .flatMap((x) => x.clubs),
+            .flatMap((x) => x.clubs.concat((x.qual && x.qual.pool) || [])),
         );
         entrants = [];
         feeders.forEach(([l, n, skip]) =>
@@ -104,53 +104,60 @@
         0,
         G * GS,
       );
-      // Seeded draw: pots of G by reputation, one from each pot per group, avoiding same-nation clashes where possible
-      const seeded = c.clubs.slice().sort((a, b) => rep(b) - rep(a));
-      const groupsIds = [...Array(G)].map(() => []);
-      for (let p = 0; p < seeded.length; p += G) {
-        let pot = U.shuffle(seeded.slice(p, p + G)),
-          best = pot,
-          clashes = 99;
-        for (let tries = 0; tries < 30; tries++) {
-          const c2 = groupsIds.reduce(
-            (t, g, gi) => t + (pot[gi] && g.some((id) => S().clubs[id].nat === S().clubs[pot[gi]].nat) ? 1 : 0),
-            0,
-          );
-          if (c2 < clashes) {
-            clashes = c2;
-            best = pot;
-          }
-          if (!c2) break;
-          pot = U.shuffle(pot);
-        }
-        best.forEach((id, gi) => groupsIds[gi].push(id));
-      }
-      c.groups = groupsIds
-        .map((ids, gi) => [String.fromCharCode(65 + gi), ids])
-        .map(([name, ids]) => ({
-          name,
-          clubs: ids,
-          table: mkTable(ids),
-          fixtures: (GS >= 5 ? W.roundRobin(ids).slice(0, W.roundRobin(ids).length / 2) : W.roundRobin(ids)).map(
-            (rd, r) =>
-              rd.map(([h, a]) => ({
-                id: FM.nextId('f'),
-                comp: c.id,
-                group: name,
-                round: r,
-                h,
-                a,
-                res: null,
-                po: `Group ${name} · MD${r + 1}`,
-              })),
-          ),
-        }));
       c.ko = { po: [], qf: [], qf2: null, sf: [], sf2: null, final: null };
       c.dropped = [];
       c.winner = null;
       c.awards = null;
       c.runnerUp = null;
-      c.clubs.forEach((id) => pay(id, c.prize * 0.13, c, 'participation')); // participation fee
+      // The main cups also have a qualifying competition: the champions of the nations with no place of their own play two-legged
+      // rounds for the places left in the groups; the groups are drawn when the last round is over
+      c.qual = null;
+      const main = (c.tier || 1) === 1 && Cu.qualActive(c);
+      let pool = [];
+      if (main) {
+        pool = ((qualified && qualified[c.id + 'Q']) || [])
+          .filter((id) => S().clubs[id] && !c.clubs.includes(id))
+          .filter((id, i, a) => a.indexOf(id) === i);
+        if (pool.length < 8)
+          // (the first season of a world, or a pool the table did not fill: the best club of each such nation)
+          pool = Cu.qualLeagues(c)
+            .map((l) => l.clubs.slice().sort((a, b) => rep(b) - rep(a))[0])
+            .filter((id) => id && !c.clubs.includes(id));
+      }
+      const P = main ? Cu.qualPlaces(c.clubs.length, pool.length, GS) : 0;
+      if (P) {
+        // (no more than eight groups: the quarter-finals take the group winners and the best runners-up; if the direct places and the
+        // qualifiers would make more, the weakest direct entrants play the qualifying rounds too, among the strongest there)
+        const over = c.clubs.length + P - 8 * GS;
+        if (over > 0) {
+          const moved = c.clubs
+            .slice()
+            .sort((a, b) => rep(a) - rep(b))
+            .slice(0, over);
+          c.clubs = c.clubs.filter((id) => !moved.includes(id));
+          pool = pool.concat(moved);
+        }
+        pool.sort((a, b) => rep(b) - rep(a));
+        // the rounds: while there are more clubs than places, the weakest play each other (the strongest wait for a later round)
+        const plan = [];
+        for (let cnt = pool.length; cnt > P;) {
+          const ties = Math.min(Math.floor(cnt / 2), cnt - P);
+          plan.push(ties);
+          cnt -= ties;
+        }
+        c.qual = { pool, places: P, plan, byes: {}, drawn: false, GS };
+        c.ko.qa = [];
+        c.ko.qa2 = null;
+        c.ko.qb = [];
+        c.ko.qb2 = null;
+        c.ko.qc = [];
+        c.ko.qc2 = null;
+        c.groups = [];
+        c.clubs.forEach((id) => pay(id, c.prize * 0.13, c, 'participation')); // (the direct entrants; the others when they get through)
+      } else {
+        Cu.makeGroups(c, GS, G);
+        c.clubs.forEach((id) => pay(id, c.prize * 0.13, c, 'participation')); // participation fee
+      }
     }
     Cu.setupEuro(qualified);
     for (const c of W.worldCups()) Cu.setupWorld(c);
@@ -158,6 +165,148 @@
     Cu.setupSupers();
     FM.Regional.setupSeason(); // county cups and state championships
     Cu.licenceCheck();
+  };
+
+  // The groups of a continental cup: a seeded draw, pots of G by reputation, one from each pot per group, avoiding same-nation
+  // clashes where possible
+  Cu.makeGroups = function (c, GS, G) {
+    const seeded = c.clubs.slice().sort((a, b) => rep(b) - rep(a));
+    const groupsIds = [...Array(G)].map(() => []);
+    for (let p = 0; p < seeded.length; p += G) {
+      let pot = U.shuffle(seeded.slice(p, p + G)),
+        best = pot,
+        clashes = 99;
+      for (let tries = 0; tries < 30; tries++) {
+        const c2 = groupsIds.reduce(
+          (t, g, gi) => t + (pot[gi] && g.some((id) => S().clubs[id].nat === S().clubs[pot[gi]].nat) ? 1 : 0),
+          0,
+        );
+        if (c2 < clashes) {
+          clashes = c2;
+          best = pot;
+        }
+        if (!c2) break;
+        pot = U.shuffle(pot);
+      }
+      best.forEach((id, gi) => groupsIds[gi].push(id));
+    }
+    c.groups = groupsIds
+      .map((ids, gi) => [String.fromCharCode(65 + gi), ids])
+      .map(([name, ids]) => ({
+        name,
+        clubs: ids,
+        table: mkTable(ids),
+        fixtures: (GS >= 5 ? W.roundRobin(ids).slice(0, W.roundRobin(ids).length / 2) : W.roundRobin(ids)).map(
+          (rd, r) =>
+            rd.map(([h, a]) => ({
+              id: FM.nextId('f'),
+              comp: c.id,
+              group: name,
+              round: r,
+              h,
+              a,
+              res: null,
+              po: `Group ${name} · MD${r + 1}`,
+            })),
+        ),
+      }));
+  };
+
+  // ---------- Qualifying rounds ----------
+  // The main continental cups (the European, South American, Asian, African and North American champions' cups) hold a qualifying
+  // competition, as the Champions League does. The nations with no place of their own in the cup (the places go by coefficient)
+  // each send their champion; the champions play two-legged rounds, the strongest waiting for a later round, until as many are
+  // left as there are places in the group stage, and the groups are drawn with the clubs that had a direct place. A club that
+  // goes out is out of the cup (a nation with places in a lower cup sends its next clubs there instead).
+  Cu.mainOf = (region) => W.continentals().find((c) => c.region === region && !((c.tier || 1) > 1));
+  // the top flights whose champions play the qualifying rounds of a main cup
+  Cu.qualLeagues = (main) =>
+    W.leagues().filter(
+      (l) =>
+        l.tier === 1 &&
+        l.nat &&
+        Cu.regionName(l.nat) === main.region &&
+        !(l.rules.qualify && l.rules.qualify.to === main.id && l.rules.qualify.n > 0),
+    );
+  // (a part of the world with fewer than eight such nations has no qualifying: the cup is as it was)
+  Cu.qualActive = (main) => !!main && Cu.qualLeagues(main).length >= 8;
+  // the main cup whose qualifying a league's champion plays, or null
+  Cu.qualCup = (league) => {
+    if (!league || league.type !== 'league' || league.tier !== 1 || !league.nat) return null;
+    const main = Cu.mainOf(Cu.regionName(league.nat));
+    return main && (main.tier || 1) === 1 && Cu.qualActive(main) && Cu.qualLeagues(main).includes(league) ? main : null;
+  };
+  // how many of the places in the groups the qualifying rounds fill: one group's worth for a small field, two for a big one (never
+  // a number that makes three groups, which do not make a bracket), and never more than half the field
+  Cu.qualPlaces = (direct, poolN, GS) => {
+    let P = poolN >= 24 ? 2 * GS : poolN >= 8 ? GS : 0;
+    P = Math.min(P, Math.floor(poolN / 2 / GS) * GS);
+    if (P && (direct + P) / GS === 3) P = P + GS <= Math.floor(poolN / 2) ? P + GS : P - GS;
+    if (P <= 0) return 0;
+    // (at most three rounds)
+    const rounds = (n) => {
+      let k = 0;
+      for (let cnt = poolN; cnt > n; k++) cnt -= Math.min(Math.floor(cnt / 2), cnt - n);
+      return k;
+    };
+    while (rounds(P) > 3 && P + GS <= Math.floor(poolN / 2)) P += GS;
+    return P;
+  };
+  const Q_KEYS = ['qa', 'qb', 'qc'];
+  Cu.QUAL_LABEL = ['Qualifying round 1', 'Qualifying round 2', 'Qualifying round 3'];
+  // the clubs left in the qualifying competition before round k (null while the round before it is not played out)
+  Cu.qualField = function (c, k) {
+    if (!c.qual) return null;
+    if (k === 0) return c.qual.pool.slice();
+    const w = Cu.roundWinners(c, Q_KEYS[k - 1]);
+    return w ? w.concat(c.qual.byes[k - 1] || []) : null;
+  };
+  // the ties of round k: the weakest clubs play each other, a stronger half (seeds) against a weaker, one from the same nation
+  // only when there is no other; [seed, other] pairs
+  Cu.qualPairs = function (c, k) {
+    const field = Cu.qualField(c, k);
+    const ties = c.qual && c.qual.plan[k];
+    if (!field || !ties) return null;
+    field.sort((a, b) => rep(b) - rep(a));
+    const playing = field.slice(field.length - 2 * ties);
+    c.qual.byes[k] = field.slice(0, field.length - 2 * ties);
+    const seeds = playing.slice(0, ties),
+      others = U.shuffle(playing.slice(ties));
+    return seeds.map((id) => {
+      const i = others.findIndex((o) => S().clubs[o].nat !== S().clubs[id].nat);
+      return [id, others.splice(i < 0 ? 0 : i, 1)[0]];
+    });
+  };
+  // a qualifying day's fixtures: stage QA1 / QA2 (the legs of round 1; QA alone when knockouts are single matches), QB..., QC...
+  Cu.qualRound = function (c, stage) {
+    const k = 'ABC'.indexOf(stage[1]);
+    if (!c.qual || k < 0 || !c.qual.plan[k]) return [];
+    const list = koRound(c, Q_KEYS[k], stage, Cu.QUAL_LABEL[k], () => Cu.qualPairs(c, k));
+    list.forEach((f) => (f.q = true));
+    return list;
+  };
+  // every qualifying tie so far, round by round (for the screens)
+  Cu.qualList = (c) => (c.ko ? Q_KEYS.flatMap((k) => [...(c.ko[k] || []), ...(c.ko[k + '2'] || [])]) : []);
+  // The clubs that got through, in time for the group draw (a round that was never played is settled in favour of the stronger club)
+  Cu.drawGroups = function (c) {
+    if (!c.qual || c.qual.drawn) return;
+    const q = c.qual;
+    let field = null;
+    for (let k = q.plan.length; k >= 0 && !field; k--) field = Cu.qualField(c, k);
+    if (!field) field = q.pool.slice();
+    field = field.sort((a, b) => rep(b) - rep(a)).slice(0, q.places);
+    q.drawn = true;
+    q.through = field.slice();
+    c.clubs = c.clubs.concat(field.filter((id) => !c.clubs.includes(id)));
+    const GS = q.GS || 4;
+    Cu.makeGroups(c, GS, Math.max(1, Math.floor(c.clubs.length / GS)));
+    field.forEach((id) => pay(id, c.prize * 0.13, c, 'participation'));
+    FM.News.add({
+      type: 'world',
+      title: `${c.name}: the groups are drawn`,
+      body: `${U.plural(field.length, 'club')} came through the qualifying rounds to join the ${U.plural(c.clubs.length - field.length, 'club')} with a place already.`,
+      cat: 'competitions',
+    });
   };
 
   // ---------- Super cups ----------
@@ -399,6 +548,8 @@
   // one in the same region (the Conference League takes the places after the Europa League's)
   Cu.skipFor = (compId, cc) => {
     let skip = Cu.mainPlaces(compId);
+    // (the champion of a nation with no place in the main cup plays its qualifying rounds, and so is not one of this cup's clubs)
+    if ((cc.tier || 1) > 1 && Cu.qualCup(S().comps[compId])) skip += 1;
     for (const x of D.CONTINENTALS)
       if (x.feeders && x.region === cc.region && (x.tier || 1) < (cc.tier || 1)) skip += Cu.feedersOf(x)[compId] || 0;
     return skip;
@@ -759,7 +910,12 @@
       if (inR(ko.qf) || inR(ko.qf2)) return 'Quarter-finals';
       if (inR(ko.r16)) return 'Round of 16';
       if (inR(ko.po)) return 'Knockout play-off';
-      return c.clubs && c.clubs.includes(id) ? 'Group stage' : null;
+      if (c.clubs && c.clubs.includes(id)) return 'Group stage';
+      if (c.qual && c.qual.pool.includes(id)) {
+        const n = [...Cu.qualList(c)].reverse().find((f) => f.h === id || f.a === id);
+        return n ? n.po.replace(/ · .*$/, '') : 'Qualifying';
+      }
+      return null;
     }
     return null;
   };
@@ -853,7 +1009,9 @@
   };
   function continental(c, stage) {
     if (!stage || !c.groups) return [];
+    if (/^Q[ABC][12]?$/.test(stage)) return Cu.qualRound(c, stage);
     if (stage === 'PO') return Cu.dropRound(c);
+    if (stage[0] === 'G' && c.qual && !c.qual.drawn) Cu.drawGroups(c); // (the qualifying rounds are over: the groups are drawn)
     if (stage[0] === 'G') return c.groups.flatMap((g) => g.fixtures[+stage.slice(1) - 1] || []);
     const fmt = Cu.formatOf(c);
     const groupsDone = () => c.groups.every((g) => g.fixtures.flat().every((f) => f.res));
@@ -1118,6 +1276,11 @@
       }
       return;
     }
+    if (fx.q) {
+      // a qualifying tie: a small purse for the club that goes through
+      if (Cu.decides(fx)) pay(winnerOf(fx), (c.prize || 0) * 0.015, c, 'qualifying');
+      return;
+    }
     if (!Cu.decides(fx)) return; // a first leg: nothing yet
     const w = winnerOf(fx),
       l = w === fx.h ? fx.a : fx.h;
@@ -1198,7 +1361,7 @@
       if (c.type === 'regional') out.push(...FM.Regional.allFixtures(c));
       if (c.type === 'continental' || c.type === 'world')
         (c.groups || []).forEach((g) => out.push(...g.fixtures.flat()));
-      if (c.type === 'continental' || c.type === 'world') out.push(...Cu.koList(c));
+      if (c.type === 'continental' || c.type === 'world') out.push(...Cu.koList(c), ...Cu.qualList(c));
       if (c.type === 'super' && c.fx) out.push(c.fx);
     }
     return out.filter(Boolean);
@@ -1215,7 +1378,7 @@
         if (f) return f;
       }
       if (c.type === 'continental' || c.type === 'world') {
-        const f = Cu.koList(c).find((x) => x.id === id);
+        const f = [...Cu.koList(c), ...Cu.qualList(c)].find((x) => x.id === id);
         if (f) return f;
       }
     }
@@ -1246,6 +1409,18 @@
       if (st) out.push({ c, ...st });
     }
     for (const c of W.continentals().concat(W.worldCups())) {
+      // a club in the qualifying rounds (it is not in the cup until it is through)
+      if (c.qual && !c.clubs.includes(clubId) && c.qual.pool.includes(clubId)) {
+        const ties = Cu.qualList(c).filter(mine),
+          last = ties[ties.length - 1],
+          out1 = ties.some((f) => f.res && Cu.decides(f) && winnerOf(f) !== clubId);
+        out.push({
+          c,
+          text: out1 ? 'Out in qualifying' : last ? last.po.replace(/ · .*$/, '') : 'Awaiting the qualifying draw',
+          alive: !out1,
+        });
+        continue;
+      }
       if (!c.clubs.includes(clubId)) continue;
       if (c.winner === clubId) {
         out.push({ c, text: 'Winners' });
@@ -1264,6 +1439,11 @@
               : 'Round of 16';
       if (c.type === 'world' && !(c.groups && c.groups.length)) {
         out.push({ c, text: koOut ? 'Knocked out' : stageName, alive: !koOut });
+        continue;
+      }
+      if (!c.groups || !c.groups.length) {
+        // (the groups are not drawn yet: the qualifying rounds come first)
+        out.push({ c, text: 'Direct entry to the groups', alive: true });
         continue;
       }
       const g = c.groups.find((x) => x.clubs.includes(clubId));
@@ -1320,7 +1500,7 @@
   // the places a second or third cup gives each league (a world's own copy once the places have moved)
   Cu.feedersOf = (cc) => {
     const comp = S() && S().comps && S().comps[cc.id];
-    return (comp && comp.feeders) || cc.feeders;
+    return (comp && comp.feeders) || cc.feeders || {}; // (a cup the editor made may name its places by league rule, with no list)
   };
   const ccStore = () => (S().cc = S().cc || { pts: {}, clubs: {}, seed: {} });
   // a continental match: its clubs' nations earn points

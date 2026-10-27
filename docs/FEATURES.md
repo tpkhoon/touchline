@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-452 features are playable in the web prototype today. Build = the build that added it.
+453 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -501,6 +501,7 @@ Every feature from the game design document, with what is playable in the protot
 | Transfers | No offers for your own B team or youth-side players: an offer, a loan offer and a scouting assignment skip a player who is already yours, and the offer buttons say so | Playtest round 24 |
 | Staff | The staff a new job comes with follow the size of the club: a giant starts with six scouts, most of them watching other parts of the world, and better people in every role; a small club has two or three scouts from its own part of the world and may have no analyst or sporting director (a caretaker covers the role until you hire one); the most scouts you can employ grows with the club too (three, four, five or six) | Playtest round 24 |
 | Competitions | The regional club cups (Carpathian, Northern League, Adriatic and Aegean, Southeast Asian, Gulf, Arab and the West and East African, Caribbean and other regional cups) hand their places out by nation coefficient at the end of each season, as the continental cups already did: the same set of places the cup began with, given in the order of the nations' coefficients | Playtest round 24 |
+| Competitions | Qualifying rounds for the main continental cups, as the Champions League has them: the champion of each nation with no place of its own in the cup (38 in Europe, with the places going by coefficient) plays up to three two-legged rounds before the season's first league day, the strongest waiting for a later round and every tie a seeded club against an unseeded one from another nation where it can, until four or eight clubs are left; they join the clubs with a direct place in the group draw, and a club that goes out is out of the cup; a nation's champion in qualifying is not also one of its clubs in the lower cups; the rounds are in the Cups screen under Qualifying, on the calendar as continental qualifying days and in your cup chips (Qualifying round 2, Out in qualifying, Direct entry to the groups); the games count towards the nation's coefficient | Playtest round 24 |
 
 ## Yet to be added
 

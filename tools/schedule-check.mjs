@@ -194,7 +194,8 @@ const S = FM.S;
   let run = 0,
     worst = 0;
   for (let i = 0; i <= lastL; i++) {
-    run = cal[i].type === 'cup' ? run + 1 : 0;
+    // (the qualifying rounds of the main continental cups are early days before the first league round, a week apart)
+    run = cal[i].type === 'cup' && !cal[i].early ? run + 1 : 0;
     worst = Math.max(worst, run);
   }
   check(worst <= 1, `${worst} cup days in a row between league rounds`);

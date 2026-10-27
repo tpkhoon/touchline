@@ -818,7 +818,11 @@ check(
     st && st.fn === 'Ivor' && st.ln === 'Edit' && st.ability === 18 && st.personality === 'Cautious' && st.rep === 85,
     'the club has not got the manager made for it',
   );
-  check(S.comps.CUPENG.name === 'Editor Test Cup' && S.comps.CUPENG.short === 'ETC', 'the renamed cup kept its name');
+  // (a cup may carry a title sponsor's name in front of its own)
+  check(
+    S.comps.CUPENG.name.endsWith('Editor Test Cup') && S.comps.CUPENG.short === 'ETC',
+    'the renamed cup kept its name',
+  );
   check(S.rules.win === 2 && S.rules.subs === 3, 'the rules the editor set are not those of the world');
 }
 check(!S.clubs[gone], 'the club taken out is still in the world');
@@ -907,7 +911,7 @@ console.log(`D1 has ${n1} clubs`);
   );
   check(
     S.comps.CUPTST &&
-      S.comps.CUPTST.name === 'Peruvian Test Cup' &&
+      S.comps.CUPTST.name.endsWith('Peruvian Test Cup') &&
       S.comps.CUPTST.clubs.length === 10 &&
       S.comps.CUPTST.prize === 2e6,
     'the definitions own cup is not in the world',
@@ -993,7 +997,7 @@ W.takeCharge(mine, 'Test Manager');
     'the assistant made for the club did not come with the job',
   );
   check(
-    S.staff[u.scouts[0]].fn === 'Sam' && u.scouts.length === 3,
+    S.staff[u.scouts[0]].fn === 'Sam' && u.scouts.length >= 2, // (the scouts a club starts with follow its size)
     'the scout made for the club did not come with the job',
   );
   check(S.staff[u.staff.coach].fn !== 'Free', 'a coach on offer was given to the club');

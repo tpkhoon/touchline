@@ -3295,7 +3295,7 @@
     ]
       .map(([k, l]) => `<button class="chip ${v === k ? 'on' : ''}" data-act="cupsView" data-v="${k}">${l}</button>`)
       .join('')}</div>`;
-    const inIt = (c) => c.clubs.includes(uc);
+    const inIt = (c) => c.clubs.includes(uc) || !!(c.qual && c.qual.pool.includes(uc));
     // each tournament folds away: open by default for those you are in (and the lone World Club Championship), as you left the rest
     const isOpen = (id) => UI._cupsOpen[id] ?? (!!S().comps[id] && (S().comps[id].clubs.includes(uc) || v === 'world'));
     // a finished competition's awards and team of the tournament close its card
@@ -3343,6 +3343,24 @@
       (c.groups && c.groups.length
         ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
         : '');
+    // the qualifying rounds of a main continental cup: who plays, and the ties round by round
+    const qualHtml = (c) => {
+      if (!c.qual) return '';
+      const ties = FM.Cups.qualList(c),
+        rounds = [...new Set(ties.map((f) => f.po.replace(/ · .*$/, '')))];
+      const intro = c.qual.drawn
+        ? `${U.plural(c.qual.through.length, 'club')} came through the qualifying rounds into the groups.`
+        : `${U.plural(c.qual.pool.length, 'club')}, the champions of nations with no place of their own, play ${U.plural(c.qual.plan.length, 'qualifying round')} (two legs each) for ${U.plural(c.qual.places, 'place')} in the groups.`;
+      return `<div class="small b dim" style="margin:12px 0 2px">QUALIFYING</div><div class="tiny dim" style="margin-bottom:4px">${intro}</div>${rounds
+        .map(
+          (r) =>
+            `<div class="tiny dim" style="margin:8px 0 2px">${esc(r)}</div>${ties
+              .filter((f) => f.po.startsWith(r))
+              .map(fxLine)
+              .join('')}`,
+        )
+        .join('')}`;
+    };
     const wc = W.worldCups()
       .filter((c) => v === 'world' || (v === 'mine' && inIt(c)))
       .sort((x, y) => (x.fmt === 'ic' ? 0 : 1) - (y.fmt === 'ic' ? 0 : 1))
@@ -3370,7 +3388,7 @@
       .map((c) => {
         const grp = groupsHtml(c);
         const ko = FM.Cups.koList(c);
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${qualHtml(c)}${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them

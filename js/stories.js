@@ -1207,12 +1207,18 @@
 
   St.seasonEnd = function (e) {
     const S = FM.S;
-    for (const to in e.qualified || {})
+    for (const to in e.qualified || {}) {
+      // (a key ending in Q lists the champions that play a main cup's qualifying rounds)
+      const qual = !S.comps[to] && /Q$/.test(to) && S.comps[to.slice(0, -1)];
+      if (!S.comps[to] && !qual) continue;
       FM.News.add({
         type: 'world',
-        title: `Qualified for next season's ${S.comps[to].name}`,
+        title: qual
+          ? `Into the qualifying rounds of next season's ${qual.name}`
+          : `Qualified for next season's ${S.comps[to].name}`,
         body: e.qualified[to].map((id) => `${D.NATIONS[C(id).nat].flag} ${C(id).name}`).join('\n'),
       });
+    }
     const abroad = [];
     for (const cid in e.comps) {
       const x = e.comps[cid],

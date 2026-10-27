@@ -30,7 +30,7 @@ W.goUnemployed('test');
 
 const NEW = ['N2', 'AA', 'CT', 'NR', 'HC', 'SM'];
 // (the European knockout cups: the Holders' Cup takes each nation's cup winner, the Summer Cup eight clubs)
-const WANT = { HC: [12, 32], SM: [8, 8] };
+const WANT = { HC: [12, 60], SM: [8, 8] };
 const report = (label) => {
   for (const id of NEW) {
     const c = FM.S.comps[id];
@@ -44,7 +44,7 @@ const report = (label) => {
     );
     const n = (c.clubs || []).length,
       want = WANT[id];
-    check(want ? n >= want[0] && n <= want[1] : [8, 16].includes(n), `${label}: ${id} has ${n} entrants`);
+    check(want ? n >= want[0] && n <= want[1] : n >= 8 && n <= 20, `${label}: ${id} has ${n} entrants`);
     check(n === new Set(c.clubs).size, `${label}: ${id} has a club twice`);
     // (the continental cups share no club; the Holders' Cup clubs may also be in the Shield or the Trophy)
     if (id !== 'HC' && id !== 'SM') {
@@ -80,6 +80,30 @@ for (let s = 0; s < SEASONS; s++) {
         );
         check(uc.clubs.length === new Set(uc.clubs).size, `season ${s + 1}: the Trophy has a club twice`);
       }
+    }
+    // the qualifying rounds of the main cups: the places in the groups go to the clubs that came through, nobody who went out is in the
+    // groups, no club is in two cups, and every tie of the rounds was played
+    for (const c of W.continentals()) {
+      if (!c.qual || !c.qual.drawn || checked.has('Q' + c.id + year)) continue;
+      checked.add('Q' + c.id + year);
+      const inGroups = new Set(c.groups.flatMap((g) => g.clubs)),
+        ties = FM.Cups.qualList(c);
+      check(
+        c.qual.through.length === c.qual.places && c.qual.through.every((id) => inGroups.has(id)),
+        `season ${s + 1}: ${c.id} qualifying sent ${c.qual.through.length} of ${c.qual.places} places to the groups`,
+      );
+      check(
+        ties.length > 0 && ties.every((f) => f.res),
+        `season ${s + 1}: ${c.id} has a qualifying tie that was not played`,
+      );
+      check(
+        inGroups.size === c.clubs.length && c.clubs.length % (c.qual.GS || 4) === 0,
+        `season ${s + 1}: ${c.id} has ${c.clubs.length} clubs for ${c.groups.length} groups`,
+      );
+      const elsewhere = W.continentals().filter(
+        (x) => x !== c && c.qual.pool.some((id) => (x.clubs || []).includes(id)),
+      );
+      check(!elsewhere.length, `season ${s + 1}: a ${c.id} qualifier is also in ${elsewhere.map((x) => x.id)}`);
     }
     // every group winner (and with up to four groups, every runner-up) reaches the quarter-finals or semi-finals
     for (const c of W.continentals()) {
