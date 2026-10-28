@@ -2802,3 +2802,24 @@ tr.tap {
   grid-auto-rows: minmax(44px, auto);
   align-items: center;
 }
+
+/* the mood faces: green when happy, then through amber and orange to red */
+.mood {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.mood-grin {
+  color: var(--good);
+}
+.mood-smile {
+  color: color-mix(in srgb, var(--good) 65%, var(--warn));
+}
+.mood-neutral {
+  color: var(--warn);
+}
+.mood-unsure {
+  color: color-mix(in srgb, var(--warn) 55%, var(--bad));
+}
+.mood-angry {
+  color: var(--bad);
+}

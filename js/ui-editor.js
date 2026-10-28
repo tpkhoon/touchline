@@ -3766,7 +3766,8 @@
     const invites = FM.Intl.INVITES.filter((o) => ($('#ed-iinc-' + o.id) || {}).checked).map((o) => ({
       id: o.id,
       name: (v('iname-' + o.id) || '').trim(),
-      host: v('ihost-' + o.id),
+      // (a tournament with a pool of nations has no host of its own: it rotates through the pool)
+      ...(o.pool ? { pool: o.pool } : { host: v('ihost-' + o.id) }),
     }));
     const r = WD.editor(ED.def, null).setIntl({ cycle: Math.round(+v('icycle')), tourns, invites });
     ED.err = r.ok ? [] : r.errors;
@@ -3840,11 +3841,16 @@
       })
         .map(
           (v) =>
-            `<label class="tiny" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="ed-iinc-${v.id}" ${v.kept ? 'checked' : ''}> Played in this world</label><div class="ng-names" style="margin-top:4px"><input type="text" id="ed-iname-${v.id}" maxlength="40" value="${esc(v.name)}"><select id="ed-ihost-${v.id}" style="max-width:150px">${nations
-              .map(
-                ([k, n]) => `<option value="${k}" ${v.host === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`,
-              )
-              .join('')}</select></div>`,
+            `<label class="tiny" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="ed-iinc-${v.id}" ${v.kept ? 'checked' : ''}> Played in this world</label><div class="ng-names" style="margin-top:4px"><input type="text" id="ed-iname-${v.id}" maxlength="40" value="${esc(v.name)}">${
+              v.pool
+                ? `<span class="tiny dim" style="max-width:150px;line-height:1.3">host rotates: ${esc(v.pool.map((c) => (D.NATIONS[c] || { name: c }).name).join(', '))}</span>`
+                : `<select id="ed-ihost-${v.id}" style="max-width:150px">${nations
+                    .map(
+                      ([k, n]) =>
+                        `<option value="${k}" ${v.host === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`,
+                    )
+                    .join('')}</select>`
+            }</div>`,
         )
         .join('')}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveIntl">Save the tournaments</button></div>
@@ -3926,7 +3932,7 @@
         .map((id) => {
           const mem = cfMembers(id),
             custom = !I_().CONFEDS[id];
-          return `<details class="card" data-cf="${id}" style="margin:8px 0;padding:10px 12px" ${ED.cfOpen === id ? 'open' : ''}><summary class="small b">${esc(cfName(id))} <span class="tiny dim">· ${id} · ${mem.length} nation${mem.length === 1 ? '' : 's'}${custom && mem.length < 4 ? ' · needs 4 for a championship' : ''}</span></summary>
+          return `<details class="card" data-cf="${id}" style="margin:8px 0;padding:10px 12px" ${ED.cfOpen === id ? 'open' : ''}><summary class="small b">${esc(cfName(id))} <span class="tiny dim">· ${custom ? id + ' · ' : ''}${mem.length} nation${mem.length === 1 ? '' : 's'}${custom && mem.length < 4 ? ' · needs 4 for a championship' : ''}</span></summary>
             <div class="row" style="gap:6px;margin-top:10px"><input type="text" maxlength="40" value="${esc(cfName(id))}" data-input="edRenameConfed" data-id="${id}" style="flex:1;min-width:0">${custom ? `<button class="btn sm" data-act="edDelConfed" data-id="${id}">Remove</button>` : ''}</div>
             ${
               mem
@@ -3942,7 +3948,7 @@
         })
         .join('')}
       <div class="ng-label">A new confederation</div>
-      <div class="ng-names" style="margin-top:0"><div style="flex:1"><input type="text" id="ed-cfname" maxlength="40" placeholder="Name, for example Oceania"></div><div style="flex:1;max-width:110px"><input type="text" id="ed-cfid" maxlength="6" placeholder="Short, OFC" style="text-transform:uppercase"></div></div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><input type="text" id="ed-cfname" maxlength="40" placeholder="Name, for example Oceania"></div><div style="flex:1;max-width:110px"><input type="text" id="ed-cfid" maxlength="6" placeholder="Short code, for example OCE" style="text-transform:uppercase"></div></div>
       <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewConfed">＋ Add it</button>${Object.keys(c.names).length || Object.keys(c.members).length ? '<button class="btn sm" data-act="edResetConfeds">Put the game’s back</button>' : ''}</div>
       <div class="tiny dim" style="margin-top:8px;line-height:1.5">Open one, then use the lists to move a nation in or out. A confederation of four nations or more gets one place at the World Championship (taken from the biggest part of the world) and a championship of its own; a smaller one just plays its Nations League.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;

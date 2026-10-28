@@ -162,6 +162,8 @@
       img.onerror = () => res(img);
       img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${d || ''}</svg>`)}`;
     });
+  // A mood face (grin, smile, neutral, unsure, angry) in the colour of the mood: green for a happy player down to red for an angry one
+  UI.moodFace = (name, size) => `<span class="mood mood-${name}">${UI.ico(name, size)}</span>`;
   // The drawing for an icon name, at the size of the text around it unless a size is given; '' when there is none
   UI.ico = (name, size) => {
     if (typeof name === 'string' && name.startsWith('<svg')) return name; // (already drawn)

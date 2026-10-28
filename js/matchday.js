@@ -994,7 +994,7 @@
         scorer: scorer ? [scorer.id, scorer.season.goals] : null,
         hot: hot ? [hot.id, Math.round(last3(hot) * 10) / 10] : null,
         cold: cold ? [cold.id, Math.round(last3(cold) * 10) / 10] : null,
-        next: next && { h: next.h, a: next.a, round: next.round },
+        next: next && { h: next.h, a: next.a, round: next.round, comp: next.comp },
       },
     });
   };

@@ -69,7 +69,7 @@
           ? s.comps[opp.comp].table[opp.id].form
           : [];
       hero = `<div class="hero" style="--c1:${U.heroShade(me.colors[0])};--c2:${U.heroShade(derby ? '#7a0010' : opp.colors[0])}">
-        <div class="row"><span class="tag">${fx.po ? esc(fx.po) + ' · ' : cal.type === 'league' ? `${FM.Season.matchdayLabel(cal)} · ` : ''}${esc(compName)}</span><span class="grow"></span>${derby ? `<span class="pill" style="background:#fff;color:#b00020;border:0">${esc(me.derby)}</span>` : ''}</div>
+        <div class="row"><span class="tag">${cal.dn != null ? W.dateText(cal.dn) + ' · ' : ''}${fx.po ? esc(fx.po) + ' · ' : cal.type === 'league' ? `${FM.Season.matchdayLabel(cal)} · ` : ''}${esc(compName)}</span><span class="grow"></span>${derby ? `<span class="pill" style="background:#fff;color:#b00020;border:0">${esc(me.derby)}</span>` : ''}</div>
         <div class="vs"><div class="side">${UI.C.crest(TM(fx.h), 54)}<span>${esc(TM(fx.h).name)}</span></div><div class="mid">VS<div class="tiny" style="font-family:var(--font);font-weight:700;opacity:.8">${fx.neutral ? 'NEUTRAL' : home ? 'HOME' : 'AWAY'}</div></div><div class="side">${UI.C.crest(TM(fx.a), 54)}<span>${esc(TM(fx.a).name)}</span></div></div>
         ${aggNote ? `<div class="small center b" style="margin:-4px 0 10px;opacity:.9">${esc(aggNote)}</div>` : ''}
         <div class="row small" style="margin-bottom:${lastLine ? 4 : 12}px;opacity:.9"><span>Win chance ${Math.round(pw * 100)}%</span><span class="grow"></span><span>Their form</span>${C.form(oppForm)}</div>
@@ -77,6 +77,7 @@
         <div class="row" style="gap:8px"><button class="play grow" data-act="preview">▶ MATCHDAY</button><button class="play sec" style="flex:none;width:auto;padding:14px 16px" data-act="simDaysAsk">Skip days</button></div></div>`;
     } else if (cal) {
       const others = FM.Season.dayFixtures();
+      const isNear = (cp) => cp.type === 'continental' || cp.type === 'world' || cp.nat === c.nat;
       const away =
         cal.type === 'intl'
           ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(FM.Intl.nationOf(p)).includes(p))
@@ -94,7 +95,11 @@
           : cal.type === 'playoff'
             ? 'The playoffs are being contested.'
             : cal.type === 'cup'
-              ? `${others.length} ${cal.regional ? 'regional ' : ''}ties elsewhere: ${[...new Set(others.map((f) => s.comps[f.comp].name))].join(', ') || 'no games'}.`
+              ? ((near) =>
+                  // (the competitions named are your own nation's and the continental and world ones; the cups of every other country are only counted)
+                  `${others.length} ${cal.regional ? 'regional ' : ''}${others.length === 1 ? 'tie' : 'ties'} elsewhere${near.length ? `: ${near.join(', ')}` : ''}${near.length && others.some((f) => !isNear(s.comps[f.comp])) ? ', and others in other countries' : ''}.`)(
+                  [...new Set(others.filter((f) => isNear(s.comps[f.comp])).map((f) => s.comps[f.comp].name))],
+                )
               : '';
       const what2 =
         cal.type === 'tourn'
@@ -349,6 +354,12 @@
     return html;
   };
 
+  // The date a league fixture is played on (its matchday number when the calendar has no day for it)
+  const nextDate = (f) => {
+    const comp = f && S().comps[f.comp],
+      e = comp && S().calendar.find((x) => x.type === 'league' && W.roundOn(comp, x.round) === f.round);
+    return e && e.dn != null ? W.dateText(e.dn) : `matchday ${f.round + 1}`;
+  };
   // Weekly round-up of a league matchday: our result, table movement, the rest of the round
   const TM = (id) => FM.clubOf(id);
   const arrow = (mv) =>
@@ -399,7 +410,7 @@
       );
     if (d.next && TM(d.next.h) && TM(d.next.a)) {
       const home = d.next.h === me;
-      lines.push(`→ Next: ${TM(home ? d.next.a : d.next.h).name} (${home ? 'H' : 'A'}) · matchday ${d.next.round + 1}`);
+      lines.push(`→ Next: ${TM(home ? d.next.a : d.next.h).name} (${home ? 'H' : 'A'}) · ${nextDate(d.next)}`);
     }
     return `<div class="news digest" data-nid="${n.id}"><div class="nh">${n._new ? '<span class="dot" title="New"></span>' : ''}Matchday digest<span class="grow"></span><span>${when}</span></div><div class="nb"><div class="nt">${esc(n.title)}</div>${our}${table}${results}${lines.length ? `<div class="dsec">${lines.map((l) => `<div class="small" style="padding:2px 0">${esc(l)}</div>`).join('')}</div>` : ''}${comp ? `<div style="margin-top:10px"><button class="btn sm" data-act="digestTable" data-id="${d.comp}">Full table ›</button></div>` : ''}</div></div>`;
   }
@@ -1284,7 +1295,7 @@
       .slice(0, 22);
     UI.sheet(
       `<div class="small muted" style="margin-bottom:8px;line-height:1.5">The new captain gets a morale boost; the one who loses the armband may take it badly. Changing again within a few weeks unsettles the squad.</div>
-      <div class="list">${list.map((p) => `<div class="prow tap" data-act="setCapt" data-id="${p.id}">${C.pos(p)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(W.name(p))}${p === capt ? ' ©' : ''}</div><div class="small dim">${Md.leadWord(p)}${W.hasTrait(p, 'Leader') ? ' · Leader' : ''} · ${W.age(p)} yrs · ${(W.spell(p) && W.spell(p).apps) || 0} apps${regs.has(p) ? '' : ' · fringe'}</div></div><b style="margin-right:6px">${Math.round(p.ca)}</b><span title="Morale">${UI.ico(W.moraleLabel(p.morale)[1])}</span></div>`).join('')}</div>
+      <div class="list">${list.map((p) => `<div class="prow tap" data-act="setCapt" data-id="${p.id}">${C.pos(p)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(W.name(p))}${p === capt ? ' ©' : ''}</div><div class="small dim">${Md.leadWord(p)}${W.hasTrait(p, 'Leader') ? ' · Leader' : ''} · ${W.age(p)} yrs · ${(W.spell(p) && W.spell(p).apps) || 0} apps${regs.has(p) ? '' : ' · fringe'}</div></div><b style="margin-right:6px">${Math.round(p.ca)}</b><span title="Morale">${UI.moodFace(W.moraleLabel(p.morale)[1])}</span></div>`).join('')}</div>
       ${T.capt ? `<button class="btn block" style="margin-top:10px" data-act="setCapt" data-id="">Let the squad decide</button>` : ''}`,
       { title: 'Choose your captain' },
     );
@@ -1624,7 +1635,7 @@
     // what is driving his mood, each reason with its size
     const moodCard = () => {
       const fs = FM.People.moodFactors(p);
-      return `<div class="card"><div class="row"><div class="h3 grow">Mood</div><span class="small">${UI.ico(W.moraleLabel(p.morale)[1])} ${W.moraleLabel(p.morale)[0]}</span></div>${
+      return `<div class="card"><div class="row"><div class="h3 grow">Mood</div><span class="small">${UI.moodFace(W.moraleLabel(p.morale)[1])} ${W.moraleLabel(p.morale)[0]}</span></div>${
         fs.length
           ? fs
               .map(
@@ -1650,7 +1661,7 @@
         ? `<span class="tap" data-act="nation" data-id="${nt.id}" style="text-decoration:underline dotted">${html}</span>`
         : html;
     return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${esc(D.NATIONS[playsFor].name)}`)} · <b title="International appearances">${p.intl && p.intl.caps ? `${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'}` : 'Uncapped'}</b>${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : p.natur && p.natur.code === otherNat ? 'Naturalised in ' + p.natur.year : 'Eligible through family'}">${C.flag(otherNat)} ${esc(D.NATIONS[otherNat].name)} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}<br>${age} yrs${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''}${c ? ` · <span class="tap" data-act="clubView" data-id="${c.id}" style="text-decoration:underline dotted">${esc(c.name)}</span>` : ''}</div></div>${c ? `<span class="tap" data-act="clubView" data-id="${c.id}">${C.crest(c, 48)}</span>` : ''}</div>
-      <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].name)}${(own || v.k >= 40) && C.posOveralls(p) ? ` · ${C.posOveralls(p)}` : ''}${own && p.pa0 !== undefined && Math.abs(p.pa - p.pa0) >= 4 ? ` · <span title="His potential has ${p.pa > p.pa0 ? 'risen' : 'fallen'} since we first assessed him" style="color:${p.pa > p.pa0 ? '#9be37a' : '#ff9d9d'}">potential ${p.pa > p.pa0 ? '▲' : '▼'}</span>` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${UI.ico(me)} ${ml}</b></div>` : ''}</div></div>
+      <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].name)}${(own || v.k >= 40) && C.posOveralls(p) ? ` · ${C.posOveralls(p)}` : ''}${own && p.pa0 !== undefined && Math.abs(p.pa - p.pa0) >= 4 ? ` · <span title="His potential has ${p.pa > p.pa0 ? 'risen' : 'fallen'} since we first assessed him" style="color:${p.pa > p.pa0 ? '#9be37a' : '#ff9d9d'}">potential ${p.pa > p.pa0 ? '▲' : '▼'}</span>` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${UI.moodFace(me)} ${ml}</b></div>` : ''}</div></div>
       <div class="sp"></div>
       ${ownActions}
       ${FM.Season.isIcon(p) ? `<div style="margin-bottom:6px"><span class="trait" title="${esc(`${U.plural(p.career.spells.at(-1).apps, 'appearance')} for ${esc(CL(p.clubId).name)}`)}">Club icon</span></div>` : ''}
@@ -3393,7 +3404,11 @@
       .join('');
     // county cups and state championships: the ones you are in, or all of them
     const regional = FM.Regional.regionals()
-      .filter((c) => c.clubs.length > 1 && (v === 'regional' || (v === 'mine' && inIt(c))))
+      // (the county cups and state championships of your own nation only: the ties of another country's are not listed)
+      .filter(
+        (c) =>
+          c.clubs.length > 1 && ((v === 'regional' && (!club() || c.nat === club().nat)) || (v === 'mine' && inIt(c))),
+      )
       .sort((a, b) => (inIt(b) ? 1 : 0) - (inIt(a) ? 1 : 0) || a.nat.localeCompare(b.nat))
       .map((c) => {
         const g = c.groups && c.groups[0];
@@ -3451,17 +3466,25 @@
       .map((c) => {
         return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? UI.ico('star') : UI.ico('trophy')} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${U.plural(c.clubs.length, 'club')} · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · extra time & penalties${c.prize ? ` · ${U.money(c.prize)} fund, paid down the rounds` : ''}</div>
         ${
-          (c.rounds || [])
-            .slice()
-            .reverse()
-            .map(
-              (r) =>
-                `<div class="small b dim" style="margin:12px 0 2px">${esc(r.name.toUpperCase())}${r.byes.length ? ` · ${r.byes.length} byes` : ''}</div>${r.ties
-                  .concat(r.ties2 || [])
-                  .map(fxLine)
-                  .join('')}`,
-            )
-            .join('') || '<div class="small dim" style="margin-top:8px">The draw has not been made yet.</div>'
+          // (the ties of another nation's cup are not listed: you see its round and who won, the ties are yours to follow only at home)
+          !c.euro && club() && c.nat !== club().nat && !inIt(c)
+            ? ((r) =>
+                r
+                  ? `<div class="small dim" style="margin-top:8px">${esc(r.name)} · ${U.plural(r.ties.length, 'tie')}</div>`
+                  : '<div class="small dim" style="margin-top:8px">The draw has not been made yet.</div>')(
+                (c.rounds || [])[(c.rounds || []).length - 1],
+              )
+            : (c.rounds || [])
+                .slice()
+                .reverse()
+                .map(
+                  (r) =>
+                    `<div class="small b dim" style="margin:12px 0 2px">${esc(r.name.toUpperCase())}${r.byes.length ? ` · ${r.byes.length} byes` : ''}</div>${r.ties
+                      .concat(r.ties2 || [])
+                      .map(fxLine)
+                      .join('')}`,
+                )
+                .join('') || '<div class="small dim" style="margin-top:8px">The draw has not been made yet.</div>'
         }${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
