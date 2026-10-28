@@ -1412,8 +1412,12 @@
     const t = T(S().user.nation),
       p = P(d.id);
     let picks = FM.Intl.squad(t.code).map((q) => q.id);
-    if (picks.includes(d.id)) picks = picks.filter((x) => x !== d.id);
-    else {
+    if (picks.includes(d.id)) {
+      // (a squad keeps three goalkeepers)
+      if (p.pos === 'GK' && picks.filter((x) => P(x).pos === 'GK').length <= FM.Intl.MIN_KEEPERS)
+        return UI.toast(`A squad needs at least ${U.plural(FM.Intl.MIN_KEEPERS, 'goalkeeper')}.`);
+      picks = picks.filter((x) => x !== d.id);
+    } else {
       if (!W.available(p)) return UI.toast('He is unavailable.');
       if (picks.length >= 23) return UI.toast('Squad is full (23). Drop someone first.');
       picks.push(d.id);

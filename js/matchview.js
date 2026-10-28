@@ -1163,7 +1163,6 @@
           .join('<br>')}</div></div></div>
       <div style="padding:12px 16px 0"><div class="chips" id="postChips">${[
         ['summary', 'Summary'],
-        ['ratings', 'Ratings'],
         ['analysis', 'Analysis'],
       ]
         .map(

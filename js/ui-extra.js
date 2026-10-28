@@ -1528,7 +1528,6 @@
         ['insights', 'Insights'],
         ['shots', 'Shots & xG'],
         ['stats', 'Player stats'],
-        ['ratings', 'Ratings'],
         ['analysis', 'Shape'],
       ]
         .map(

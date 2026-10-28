@@ -2787,3 +2787,18 @@ tr.tap {
   text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
   text-underline-offset: 3px;
 }
+
+/* a link in a line of text has a finger-sized area around it, but the areas of the links of two lines must not cover each other:
+   in running text the area is the line itself, and the rows of a list of links (the matchday digest's results
+   and lines) are as tall as the area itself, so a tap lands on the link it is on */
+:is(.small, .tiny, .nt, .nx, .ss, .st, p) > .lnk {
+  padding: 1px 2px;
+  margin: -1px 0;
+}
+.digest .dr {
+  min-height: 44px;
+}
+.digest .res {
+  grid-auto-rows: minmax(44px, auto);
+  align-items: center;
+}

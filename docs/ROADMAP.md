@@ -39,6 +39,8 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 
 ### Playtest feedback, round 24
 
+- **More playtest fixes:** a national squad always has at least three goalkeepers; sponsors' names are in the language of the nation they sponsor; the full-time report of a live match has no Ratings tab; and the tap areas of links in text and in the matchday digest no longer cover each other
+
 - **Qualifying rounds for the continental cups:** the champions of the nations with no place of their own in a main continental cup play up to three two-legged qualifying rounds, before the league season starts, for four or eight places in the group stage (the groups are drawn when the last round ends; the Champions Cup in Europe now has 28 clubs in seven groups); the Cups screen, the calendar and your cup chips show them
 
 - **Fixes after more playtesting:** mood faces and status marks draw as pictures (they were showing the drawing's name as text), the tactics pitch keeps its front line and its long role names inside the lines, a B team or youth-side player is no one to make an offer for, the staff and scouts a new job comes with follow the size of the club (a giant starts with six scouts watching the world, a small club has two or three from its own region and may lack an analyst or a director), and the regional club cups give out their places by coefficient

@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-453 features are playable in the web prototype today. Build = the build that added it.
+457 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -502,6 +502,10 @@ Every feature from the game design document, with what is playable in the protot
 | Staff | The staff a new job comes with follow the size of the club: a giant starts with six scouts, most of them watching other parts of the world, and better people in every role; a small club has two or three scouts from its own part of the world and may have no analyst or sporting director (a caretaker covers the role until you hire one); the most scouts you can employ grows with the club too (three, four, five or six) | Playtest round 24 |
 | Competitions | The regional club cups (Carpathian, Northern League, Adriatic and Aegean, Southeast Asian, Gulf, Arab and the West and East African, Caribbean and other regional cups) hand their places out by nation coefficient at the end of each season, as the continental cups already did: the same set of places the cup began with, given in the order of the nations' coefficients | Playtest round 24 |
 | Competitions | Qualifying rounds for the main continental cups, as the Champions League has them: the champion of each nation with no place of its own in the cup (38 in Europe, with the places going by coefficient) plays up to three two-legged rounds before the season's first league day, the strongest waiting for a later round and every tie a seeded club against an unseeded one from another nation where it can, until four or eight clubs are left; they join the clubs with a direct place in the group draw, and a club that goes out is out of the cup; a nation's champion in qualifying is not also one of its clubs in the lower cups; the rounds are in the Cups screen under Qualifying, on the calendar as continental qualifying days and in your cup chips (Qualifying round 2, Out in qualifying, Direct entry to the groups); the games count towards the nation's coefficient | Playtest round 24 |
+| International | A national squad always has three goalkeepers at least: when the best 23 (or the 26 you picked) hold fewer, the best keepers available are added, each in the place of the weakest outfield player; in your call-ups a third keeper cannot be dropped; a small nation with fewer than three keepers makes the missing ones | Playtest round 24 |
+| Finance | Sponsors' names in the nation's own language: a Spanish, Portuguese, French or Italian league's sponsor is "Banco Halden", "Banque Halden" or "Banca Halden", a German, Dutch, Nordic, Turkish or Polish one's "Halden Bank", "Halden Energie" and so on (eighteen trades in nine languages, the place names invented), the English names kept for every other nation | Playtest round 24 |
+| Match | The full-time report of a live match has no Ratings tab: Summary, Insights, Shots & xG, Player stats and Shape | Playtest round 24 |
+| UI | Links in a line of text no longer cover each other's tap areas: the matchday digest's lines and results are 44px rows, and a link in running text has only its own line as its area, so a tap lands on the link it is on | Playtest round 24 |
 
 ## Yet to be added
 

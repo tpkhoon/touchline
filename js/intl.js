@@ -205,6 +205,22 @@
       }
     }
     W.rosterVer++; // (the nations' pools are worked out again: a nation with no players had none cached)
+    // (a nation with a national team has three goalkeepers at least: a small one with only one or two makes the others)
+    for (const code in D.NATIONS) {
+      if (!D.nationOn(code) || (!all && !(s.nteams && s.nteams['n_' + code]))) continue;
+      I.pool(code);
+      const gk = (poolIdx.by[code] || []).filter((p) => p.pos === 'GK' && !p.retired && W.age(p) >= 17).length;
+      if (gk >= I.MIN_KEEPERS || (poolIdx.by[code] || []).length < 4) continue;
+      for (let i = gk; i < I.MIN_KEEPERS; i++) {
+        const age = U.randi(20, 33),
+          ca = Math.round(U.clamp(U.gauss(48, 5), 36, 60)),
+          p = W.genPlayer({ nat: code, pos: 'GK', age, ca, pa: W.potentialFor(ca, age) });
+        p.contract = s.year;
+        p.freeSince = FM.Season.dayIndex();
+        s.players[p.id] = p;
+      }
+    }
+    W.rosterVer++;
   };
   // Everyone in a national squad (the top 23 of each nation's pool), whether or not he has a club: unattached
   // internationals are not cleared out with the other free agents
@@ -310,17 +326,47 @@
     const xi = I.pool(code).slice(0, 11);
     return xi.length ? U.avg(xi, (p) => p.ca) : 40;
   };
-  // The squad: the user's own call-ups when managing the nation, otherwise the best 23 available
+  // A squad always has at least three goalkeepers (as the tournaments require): when it has fewer, the best keepers of the nation who
+  // are available are added, each taking the place of the weakest outfield player when the squad is full
+  I.MIN_KEEPERS = 3;
+  I.withKeepers = function (list, code, size) {
+    const have = list.filter((p) => p.pos === 'GK').length;
+    if (have >= I.MIN_KEEPERS) return list;
+    // (the keepers of the whole nation, not only its best thirty players: the third keeper is rarely among them)
+    I.pool(code);
+    const extra = (poolIdx.by[code] || [])
+      .filter((p) => p.pos === 'GK' && !p.retired && W.age(p) >= 17 && W.available(p) && !list.includes(p))
+      .sort((a, b) => b.ca - a.ca)
+      .slice(0, I.MIN_KEEPERS - have);
+    const out = list.slice();
+    for (const g of extra) {
+      if (out.length >= size) {
+        let k = -1;
+        out.forEach((p, i) => {
+          if (p.pos !== 'GK' && (k < 0 || p.ca <= out[k].ca)) k = i;
+        });
+        if (k < 0) break;
+        out.splice(k, 1);
+      }
+      out.push(g);
+    }
+    return out;
+  };
+  // The squad: the user's own call-ups when managing the nation, otherwise the best 23 available (with three keepers at least)
   I.squad = function (code) {
     const t = S().nteams && S().nteams['n_' + code];
     if (t && t.picks && W.isUserNation(t.id)) {
       const picked = t.picks
         .map((id) => S().players[id])
         .filter((p) => p && !p.retired && I.nationOf(p) === code && W.available(p));
-      if (picked.length >= 16) return picked.slice(0, 26);
-      return picked.concat(I.pool(code).filter((p) => W.available(p) && !picked.includes(p))).slice(0, 23);
+      if (picked.length >= 16) return I.withKeepers(picked.slice(0, 26), code, 26);
+      return I.withKeepers(
+        picked.concat(I.pool(code).filter((p) => W.available(p) && !picked.includes(p))).slice(0, 23),
+        code,
+        23,
+      );
     }
-    return I.pool(code).filter(W.available).slice(0, 23);
+    return I.withKeepers(I.pool(code).filter(W.available).slice(0, 23), code, 23);
   };
   I.ranked = () => Object.values(S().nteams).sort((a, b) => b.coef - a.coef);
   // Sanctions (S.bans, set in the world editor): a nation out of international competition for some seasons. It keeps its place in

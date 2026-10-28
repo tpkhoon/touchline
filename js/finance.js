@@ -339,14 +339,238 @@
     'Media',
     'Homes',
   ];
-  const HAS_SPONSOR =
-    /\b(bank|energ|energy|telecom|insurance|kredit|credit|mobile|airlines?|motors|brewing|securities)\b/i;
-  F.sponsorBrand = (taken) => {
+  // The sponsor's trade in the language of the nation it sponsors (a Spanish league's sponsor is "Banco Halden", a German one's "Halden
+  // Bank", a French one's "Banque Halden"): the words for the 18 trades, in the same order as TRADES, and whether the trade comes
+  // before the place name (Spanish, Portuguese, French, Italian) or after it (the rest). The place names are invented and stay.
+  const TRADE_WORDS = {
+    es: [
+      'Banco',
+      'Energía',
+      'Telecom',
+      'Aerolíneas',
+      'Seguros',
+      'Motor',
+      'Cervecera',
+      'Móvil',
+      'Alimentos',
+      'Logística',
+      'Acero',
+      'Farma',
+      'Almacenes',
+      'Viajes',
+      'Valores',
+      'Aguas',
+      'Medios',
+      'Hogares',
+    ],
+    pt: [
+      'Banco',
+      'Energia',
+      'Telecom',
+      'Aerolinhas',
+      'Seguros',
+      'Motores',
+      'Cervejaria',
+      'Móvel',
+      'Alimentos',
+      'Logística',
+      'Aço',
+      'Farma',
+      'Lojas',
+      'Viagens',
+      'Valores',
+      'Águas',
+      'Media',
+      'Casas',
+    ],
+    fr: [
+      'Banque',
+      'Énergie',
+      'Télécom',
+      'Air',
+      'Assurances',
+      'Automobiles',
+      'Brasserie',
+      'Mobile',
+      'Aliments',
+      'Logistique',
+      'Acier',
+      'Pharma',
+      'Magasins',
+      'Voyages',
+      'Titres',
+      'Eaux',
+      'Médias',
+      'Habitat',
+    ],
+    it: [
+      'Banca',
+      'Energia',
+      'Telecom',
+      'Aerolinee',
+      'Assicurazioni',
+      'Motori',
+      'Birrificio',
+      'Mobile',
+      'Alimentari',
+      'Logistica',
+      'Acciaio',
+      'Farma',
+      'Magazzini',
+      'Viaggi',
+      'Titoli',
+      'Acque',
+      'Media',
+      'Case',
+    ],
+    de: [
+      'Bank',
+      'Energie',
+      'Telekom',
+      'Luftfahrt',
+      'Versicherung',
+      'Motoren',
+      'Brauerei',
+      'Mobil',
+      'Lebensmittel',
+      'Logistik',
+      'Stahl',
+      'Pharma',
+      'Kaufhaus',
+      'Reisen',
+      'Wertpapiere',
+      'Wasser',
+      'Medien',
+      'Immobilien',
+    ],
+    nl: [
+      'Bank',
+      'Energie',
+      'Telecom',
+      'Luchtvaart',
+      'Verzekeringen',
+      'Motors',
+      'Brouwerij',
+      'Mobiel',
+      'Voeding',
+      'Logistiek',
+      'Staal',
+      'Farma',
+      'Warenhuis',
+      'Reizen',
+      'Effecten',
+      'Water',
+      'Media',
+      'Wonen',
+    ],
+    nord: [
+      'Bank',
+      'Energi',
+      'Telecom',
+      'Fly',
+      'Forsikring',
+      'Motor',
+      'Bryggeri',
+      'Mobil',
+      'Mat',
+      'Logistikk',
+      'Stål',
+      'Farma',
+      'Varehus',
+      'Reiser',
+      'Verdipapirer',
+      'Vann',
+      'Media',
+      'Boliger',
+    ],
+    tr: [
+      'Banka',
+      'Enerji',
+      'Telekom',
+      'Havayolları',
+      'Sigorta',
+      'Motors',
+      'Bira',
+      'Mobil',
+      'Gıda',
+      'Lojistik',
+      'Çelik',
+      'İlaç',
+      'Mağazalar',
+      'Seyahat',
+      'Menkul',
+      'Su',
+      'Medya',
+      'Konut',
+    ],
+    pl: [
+      'Bank',
+      'Energia',
+      'Telekom',
+      'Linie Lotnicze',
+      'Ubezpieczenia',
+      'Motors',
+      'Browary',
+      'Mobile',
+      'Żywność',
+      'Logistyka',
+      'Stal',
+      'Farma',
+      'Domy Handlowe',
+      'Podróże',
+      'Papiery Wartościowe',
+      'Wody',
+      'Media',
+      'Domy',
+    ],
+  };
+  const TRADE_FIRST = ['es', 'pt', 'fr', 'it'];
+  const LANG_OF = {};
+  `es:ESP MEX ARG URU COL CHI PAR ECU PER VEN BOL CRC HON PAN GUA SLV CUB DOM NCA PUR EQG;pt:POR BRA ANG MOZ CPV GNB;fr:FRA SEN CIV MLI BFA GUI CMR ALG TUN MAR COD CGO GAB BEN TOG NIG CHA MAD HAI LUX NCL TAH;it:ITA SMR;de:GER AUT SUI LIE;nl:NED BEL SUR CUW;nord:DEN NOR SWE FRO;tr:TUR;pl:POL`
+    .split(';')
+    .forEach((x) =>
+      x
+        .split(':')[1]
+        .split(' ')
+        .forEach((n) => (LANG_OF[n] = x.split(':')[0])),
+    );
+  F.sponsorLang = (nat) => LANG_OF[nat] || 'en';
+  // a brand as the nation writes it (the English one for a nation with no words of its own here); an airline's word goes after the
+  // place in French ("Halden Air")
+  const brandOf = (place, k, nat) => {
+    const lang = F.sponsorLang(nat),
+      words = TRADE_WORDS[lang];
+    if (!words) return `${place} ${TRADES[k]}`;
+    return TRADE_FIRST.includes(lang) && !(lang === 'fr' && k === 3) ? `${words[k]} ${place}` : `${place} ${words[k]}`;
+  };
+  // (a name that already carries a sponsor, in English or in any of these languages, is taken as it is)
+  const SPONSOR_WORDS = [
+    'bank',
+    'energ',
+    'energy',
+    'telecom',
+    'insurance',
+    'kredit',
+    'credit',
+    'mobile',
+    'airlines?',
+    'motors',
+    'brewing',
+    'securities',
+    // (the same trades in the other languages: banks, energy, telecoms, airlines, insurers, motors, brewers, mobile, securities)
+    ...new Set(
+      Object.values(TRADE_WORDS).flatMap((w) =>
+        [0, 1, 2, 3, 4, 5, 6, 7, 16].map((k) => w[k]).filter((x) => x.length >= 4 && !/ /.test(x)),
+      ),
+    ),
+  ].map((w) => w.toLowerCase());
+  const HAS_SPONSOR = new RegExp('(^|[^\\p{L}])(' + SPONSOR_WORDS.join('|') + ')($|[^\\p{L}])', 'iu');
+  F.sponsorBrand = (taken, nat) => {
     for (let i = 0; i < 40; i++) {
-      const b = `${U.pick(PLACES)} ${U.pick(TRADES)}`;
+      const b = brandOf(U.pick(PLACES), U.randi(0, TRADES.length - 1), nat);
       if (!taken.has(b)) return b;
     }
-    return `${U.pick(PLACES)} ${U.pick(TRADES)}`;
+    return brandOf(U.pick(PLACES), U.randi(0, TRADES.length - 1), nat);
   };
   const eligible = (c) =>
     c.nat &&
@@ -393,7 +617,7 @@
         c.sponsorChecked = s.year;
         if (hasDeal(c)) {
           const len = dealLength(c),
-            brand = F.sponsorBrand(taken);
+            brand = F.sponsorBrand(taken, c.nat);
           taken.add(brand);
           c.sponsor = { brand, from: s.year - U.randi(0, len - 1), until: s.year + U.randi(0, len - 1) };
           setName(c, brand);
@@ -410,7 +634,7 @@
         setName(c, '');
         continue;
       }
-      const brand = F.sponsorBrand(taken);
+      const brand = F.sponsorBrand(taken, c.nat);
       taken.add(brand);
       c.sponsor = { brand, from: s.year, until: s.year + dealLength(c) - 1 };
       setName(c, brand);
