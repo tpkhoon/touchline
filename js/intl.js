@@ -123,32 +123,38 @@
   // ranked nations of the rest of it (the Southeast Asian, Gulf and East Asian tournaments, which give those nations a calendar of their own)
   I.INVITES = [
     { id: 'KIR', name: 'Cherry Blossom Cup', host: 'JPN' },
-    { id: 'SEA', name: 'Southeast Asian Nations Cup', pool: ['THA', 'VIE', 'IDN', 'MYS', 'PHI', 'SGP'] },
+    { id: 'SEA', feeds: 'AS', name: 'Southeast Asian Nations Cup', pool: ['THA', 'VIE', 'IDN', 'MYS', 'PHI', 'SGP'] },
     { id: 'KGC', name: 'Golden Elephant Cup', host: 'THA' },
-    { id: 'GLF', name: 'Gulf Nations Cup', pool: ['KSA', 'QAT', 'UAE', 'IRN', 'IRQ'] },
+    { id: 'GLF', feeds: 'AS', name: 'Gulf Nations Cup', pool: ['KSA', 'QAT', 'UAE', 'IRN', 'IRQ'] },
     { id: 'NEH', name: 'Monsoon Cup', host: 'IND' },
-    { id: 'EAS', name: 'East Asian Nations Cup', pool: ['JPN', 'KOR', 'CHN', 'AUS'] },
-    { id: 'CEA', name: 'East African Nations Cup', pool: ['KEN', 'UGA', 'TAN', 'ETH'] },
-    { id: 'SAF', name: 'Southern African Nations Cup', pool: ['RSA', 'ZAM', 'ZIM', 'MOZ', 'ANG'] },
+    { id: 'EAS', feeds: 'AS', name: 'East Asian Nations Cup', pool: ['JPN', 'KOR', 'CHN', 'AUS'] },
+    { id: 'CEA', feeds: 'AF', name: 'East African Nations Cup', pool: ['KEN', 'UGA', 'TAN', 'ETH'] },
+    { id: 'SAF', feeds: 'AF', name: 'Southern African Nations Cup', pool: ['RSA', 'ZAM', 'ZIM', 'MOZ', 'ANG'] },
     {
       id: 'WAF',
+      feeds: 'AF',
       name: 'West African Nations Cup',
       pool: ['NGA', 'GHA', 'SEN', 'CIV', 'MLI', 'BFA', 'GUI', 'TOG', 'CPV'],
     },
-    { id: 'NAF', name: 'North African Nations Cup', pool: ['EGY', 'MAR', 'TUN', 'ALG', 'LBY'] },
+    { id: 'NAF', feeds: 'AF', name: 'North African Nations Cup', pool: ['EGY', 'MAR', 'TUN', 'ALG', 'LBY'] },
     {
       id: 'ARB',
       name: 'Arab Nations Cup',
       pool: ['KSA', 'QAT', 'UAE', 'IRQ', 'JOR', 'EGY', 'MAR', 'TUN', 'ALG', 'KUW', 'OMA', 'BHR'],
     },
-    { id: 'CAS', name: 'Central Asian Nations Cup', pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'] },
+    { id: 'CAS', feeds: 'AS', name: 'Central Asian Nations Cup', pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'] },
     { id: 'BAL', name: 'Baltic Cup', pool: ['EST', 'LVA', 'LTU', 'FIN'] },
     { id: 'NOR', name: 'Nordic Nations Cup', pool: ['SWE', 'DEN', 'NOR', 'FIN', 'ISL'] },
     { id: 'BLK', name: 'Balkan Cup', pool: ['SRB', 'CRO', 'BIH', 'ALB', 'MKD', 'MNE', 'SVN', 'BUL', 'ROU', 'GRE'] },
     { id: 'CEU', name: 'Central European Cup', pool: ['CZE', 'SVK', 'HUN', 'POL', 'AUT', 'SVN'] },
     { id: 'CEL', name: 'Celtic Nations Cup', pool: ['SCO', 'WAL', 'IRL', 'NIR'] },
     { id: 'CAU', name: 'Caucasus Cup', pool: ['GEO', 'ARM', 'AZE', 'TUR'] },
-    { id: 'CCA', name: 'Central American and Caribbean Cup', pool: ['CRC', 'HON', 'PAN', 'GUA', 'SLV', 'JAM', 'TRI'] },
+    {
+      id: 'CCA',
+      feeds: 'NA',
+      name: 'Central American and Caribbean Cup',
+      pool: ['CRC', 'HON', 'PAN', 'GUA', 'SLV', 'JAM', 'TRI'],
+    },
     { id: 'AND', name: 'Andean Cup', pool: ['COL', 'ECU', 'PER', 'BOL', 'VEN', 'CHI'] },
     { id: 'PLA', name: 'River Plate Cup', pool: ['ARG', 'URU', 'PAR', 'BRA', 'CHI'] },
   ];
@@ -159,6 +165,27 @@
   I.TNAME.NEH = 'Monsoon Cup';
   I.TNAME.EAS = 'East Asian Nations Cup';
   for (const v of I.INVITES) I.TNAME[v.id] = v.name;
+  // An invitational with `feeds` sends its latest winner to that tournament without qualifying (the Gulf, Southeast Asian and
+  // East Asian cups to the Asian Nations Cup, for one). The world editor sets it. The latest winner is taken from the last eight
+  // seasons, and only when his nation belongs to a part of the world the tournament draws from.
+  I.INVITE_WINNER_YEARS = 8;
+  I.inviteWinner = function (id) {
+    const s = S();
+    for (let i = (s.archive || []).length - 1; i >= 0; i--) {
+      const e = s.archive[i];
+      if (e.year < s.year - I.INVITE_WINNER_YEARS) break;
+      const r = (e.intl || []).find((x) => x.id === id && x.winner);
+      if (r) return s.nteams[r.winner] && !I.banned(r.winner) ? r.winner : null;
+    }
+    return null;
+  };
+  I.autoQualifiers = (tnId, regions, host) => [
+    ...new Set(
+      I.INVITES.filter((v) => v.feeds === tnId)
+        .map((v) => I.inviteWinner(v.id))
+        .filter((id) => id && id !== host && regions.includes(I.region(T(id).code))),
+    ),
+  ];
   I.INVITE_IDS = I.INVITES.map((v) => v.id); // (what the game has: a world definition may play fewer, but its history still names them)
 
   // Every nation can field a team. A nation whose players the world didn't happen to give enough of (Malaysia, the
@@ -480,10 +507,20 @@
       I.tournsFor(kind).forEach((tn) =>
         tn.pools.forEach(([regions, places], pi) => {
           const hosts = q.hosts[tn.id] || [];
-          const teams = I.openRanked().filter((t) => regions.includes(I.region(t.code)) && !hosts.includes(t.id));
-          const slots = Math.max(0, places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length);
           const key = `${tn.id}:${pi}`;
-          if (teams.length <= slots || tn.direct) {
+          // the winners of the regional tournaments that feed this one are in without qualifying, and take places
+          const auto = I.autoQualifiers(tn.id, regions, hosts[0])
+            .filter((id) => !hosts.includes(id))
+            .slice(0, Math.max(0, places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length));
+          if (auto.length) (q.auto ||= {})[key] = auto;
+          const teams = I.openRanked().filter(
+            (t) => regions.includes(I.region(t.code)) && !hosts.includes(t.id) && !auto.includes(t.id),
+          );
+          const slots = Math.max(
+            0,
+            places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length - auto.length,
+          );
+          if (teams.length <= slots || tn.direct || slots === 0) {
             q.direct[key] = teams.slice(0, slots).map((t) => t.id);
             return;
           }
@@ -890,7 +927,13 @@
   I.qualifiedFor = (tnId) => {
     const tn = I.tournsFor(S().quals ? S().quals.kind : 'world').find((x) => x.id === tnId);
     return tn
-      ? [...((S().quals.hosts || {})[tnId] || []), ...tn.pools.flatMap((_, pi) => I.poolQualifiers(`${tnId}:${pi}`))]
+      ? [
+          ...((S().quals.hosts || {})[tnId] || []),
+          ...tn.pools.flatMap((_, pi) => [
+            ...((S().quals.auto || {})[`${tnId}:${pi}`] || []),
+            ...I.poolQualifiers(`${tnId}:${pi}`),
+          ]),
+        ]
       : [];
   };
 

@@ -3768,6 +3768,7 @@
       name: (v('iname-' + o.id) || '').trim(),
       // (a tournament with a pool of nations has no host of its own: it rotates through the pool)
       ...(o.pool ? { pool: o.pool } : { host: v('ihost-' + o.id) }),
+      feeds: v('ifeeds-' + o.id) || '',
     }));
     const r = WD.editor(ED.def, null).setIntl({ cycle: Math.round(+v('icycle')), tourns, invites });
     ED.err = r.ok ? [] : r.errors;
@@ -3850,9 +3851,19 @@
                         `<option value="${k}" ${v.host === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`,
                     )
                     .join('')}</select>`
-            }</div>`,
+            }</div><div class="ng-names" style="margin-top:4px;align-items:center"><span class="tiny dim grow">Its winner goes straight to</span><select id="ed-ifeeds-${v.id}" style="max-width:200px"><option value="">Nothing: no place of its own</option>${Object.values(
+              FM.Intl.TOURNS,
+            )
+              .flat()
+              .filter((tn) => tn.pools.length)
+              .map(
+                (tn) =>
+                  `<option value="${tn.id}" ${v.feeds === tn.id ? 'selected' : ''}>${esc((cur.tourns[tn.id] || tn).name)}</option>`,
+              )
+              .join('')}</select></div>`,
         )
         .join('')}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">The latest winner of an invitational with a place goes to that tournament without qualifying, if his nation is in a part of the world it draws from; it takes one of that part's places, and he is left out of the qualifying groups. The Gulf, Southeast Asian, East Asian and Central Asian cups send their winners to the Asian Nations Cup, for one.</div>
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveIntl">Save the tournaments</button></div>
       <div class="card tap" style="margin:16px 0 0;padding:10px 12px" data-act="edView" data-v="confeds"><div class="row"><div class="grow"><div class="small b">Confederations</div><div class="tiny dim">${confedSummary()}</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:8px 0 0;padding:10px 12px" data-act="edView" data-v="bans"><div class="row"><div class="grow"><div class="small b">Sanctions</div><div class="tiny dim">${(ED.def.bans || []).length ? U.plural((ED.def.bans || []).length, 'ban') : 'Keep a nation or a club out of international competition'}</div></div><span class="dim">›</span></div></div>

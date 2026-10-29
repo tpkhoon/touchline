@@ -496,7 +496,7 @@
         },
       ]),
     ),
-    invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool })),
+    invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool, feeds: v.feeds || '' })),
   });
   // (the places a tournament's pools fill: the rest are the play-off places, or the guests another part of the world sends)
   const places = (tn, size = tn.size) => size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0);
@@ -538,6 +538,9 @@
       if (!String(v.name || '').trim()) e.push(`invitational ${v.id}: needs a name`);
       // (a regional tournament has a pool of nations and no host of its own)
       if (!v.pool && !D.NATIONS[v.host]) e.push(`invitational ${v.id}: unknown host nation "${v.host}"`);
+      // (the tournament its winner goes to without qualifying: a continental championship, or none)
+      if (v.feeds && !tournList().some((t) => t.id === v.feeds && t.pools.length))
+        e.push(`invitational ${v.id}: its winner cannot go to "${v.feeds}"`);
     }
     return e;
   };
@@ -563,7 +566,12 @@
     }
     for (const v of x.invites || []) {
       const o = I().INVITES.find((i) => i.id === v.id);
-      if (o) ((o.name = v.name), v.pool ? 0 : (o.host = v.host), (I().TNAME[v.id] = v.name));
+      if (o) {
+        o.name = v.name;
+        if (!v.pool) o.host = v.host;
+        if (v.feeds != null) o.feeds = v.feeds;
+        I().TNAME[v.id] = v.name;
+      }
     }
   };
 

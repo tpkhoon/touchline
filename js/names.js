@@ -954,4 +954,173 @@
     chinese: ['CHN'],
     japanese: ['JPN'],
   };
+  // ---------- More heritages: the communities football's immigrant countries actually have ----------
+  // French Canadians (a fifth of Canada's players; the names of Quebec), and the Arab, Persian, Israeli, Vietnamese, Filipino,
+  // Armenian, Albanian, Romanian, Indonesian and eastern Slavic communities of the countries they settled in: Swedes of Iraqi or
+  // Somali family, Swiss of Kosovan family, Germans of Russian family, Australians of Lebanese or Vietnamese family, and so on.
+  D.NAME_POOLS.quebecois = P(
+    `Jean-François Marc-André Alexandre Olivier Maxime Samuel Félix Gabriel Mathieu Simon Philippe Étienne Vincent Nicolas Antoine Jonathan Dominic Yannick Sébastien Pierre-Luc Jean-Philippe Xavier Thomas Charles Louis Raphaël Émile William Justin Cédric Guillaume Francis Patrick Martin Mathis Jérémy Kevin Michaël Rémi Benoît Hugo Alexis Jacob Zachary Loïc Kéven Anthony Steven`,
+    `Tremblay Gagnon Roy Côté Bouchard Gauthier Morin Lavoie Fortin Gagné Ouellet Pelletier Bélanger Lévesque Bergeron Leblanc Paquette Girard Simard Boucher Caron Beaulieu Cloutier Dubé Poirier Fournier Lapointe Leclerc Lefebvre Poulin Thibault Desjardins Charbonneau Marchand Beauchamp Lemieux Duval Giroux Mercier Landry Michaud Savard Martel Rousseau Brassard Gosselin Perreault Vachon Ménard Racine Plourde`,
+  );
+  D.HERITAGE_POOL.frenchcanadian = ['quebecois'];
+  Object.assign(D.HERITAGE_LABEL, {
+    frenchcanadian: 'French Canadian',
+    mashriq: 'Arab',
+    persian: 'Persian',
+    hebrew: 'Israeli',
+    vietnamese: 'Vietnamese',
+    filipino: 'Filipino',
+    armenian: 'Armenian',
+    albanian: 'Albanian',
+    romanian: 'Romanian',
+    eastslavic: 'Russian and Ukrainian',
+    indonesian: 'Indonesian',
+    finnish: 'Finnish',
+  });
+  Object.assign(D.POOL_NATS, {
+    quebecois: [], // (a French Canadian has no second nation to choose)
+    persian: ['IRN'],
+    hebrew: ['ISR'],
+    vietnamese: ['VIE'],
+    filipino: ['PHI'],
+    armenian: ['ARM'],
+    albanian: ['ALB', 'KOS', 'MKD'],
+    romanian: ['ROU'],
+    indonesian: ['IDN'],
+    finnish: ['FIN'],
+    mashriq: ['KSA', 'IRQ', 'QAT', 'UAE', 'JOR', 'LBN', 'SYR', 'PLE', 'EGY'],
+  });
+  // [nation, [heritage, weight] ...] added to a nation's mix (a nation with none gets the whole list)
+  const demo = (nat, rows) => {
+    const have = (D.DEMOGRAPHICS[nat] = D.DEMOGRAPHICS[nat] || [['native', 100]]);
+    for (const [k, w] of rows) {
+      const row = have.find((x) => x[0] === k);
+      if (row) row[1] = Math.max(row[1], w);
+      else have.push([k, w]);
+    }
+  };
+  D.DEMOGRAPHICS.CAN = [
+    ['native', 38],
+    ['frenchcanadian', 22],
+    ['southasian', 8],
+    ['chinese', 6],
+    ['caribbean', 5],
+    ['italian', 3],
+    ['filipino', 3],
+    ['latin', 3],
+    ['westafrican', 3],
+    ['mashriq', 3],
+    ['eastafrican', 2],
+    ['polish', 1.5],
+    ['eastslavic', 1.5],
+    ['german', 1],
+    ['korean', 1],
+  ];
+  demo('SWE', [
+    ['mashriq', 6],
+    ['eastafrican', 4],
+    ['finnish', 3],
+    ['southslav', 3],
+    ['turkish', 1.5],
+    ['westafrican', 1.5],
+    ['persian', 1],
+    ['latin', 1],
+    ['albanian', 1],
+  ]);
+  demo('FIN', [
+    ['eastafrican', 3],
+    ['eastslavic', 2],
+    ['mashriq', 1.5],
+    ['westafrican', 1],
+  ]);
+  demo('ENG', [
+    ['mashriq', 0.8],
+    ['albanian', 0.3],
+    ['persian', 0.3],
+    ['romanian', 0.2],
+  ]);
+  demo('FRA', [
+    ['vietnamese', 0.8],
+    ['armenian', 1],
+    ['mashriq', 1],
+    ['romanian', 0.3],
+    ['frenchcanadian', 0.2],
+  ]);
+  demo('GER', [
+    ['mashriq', 2.5],
+    ['eastslavic', 3],
+    ['albanian', 2],
+    ['romanian', 1],
+    ['persian', 0.6],
+    ['vietnamese', 0.5],
+  ]);
+  demo('AUT', [
+    ['albanian', 2],
+    ['mashriq', 1],
+    ['romanian', 1],
+  ]);
+  demo('SUI', [
+    ['albanian', 8],
+    ['mashriq', 1.5],
+    ['persian', 0.5],
+  ]);
+  demo('BEL', [
+    ['albanian', 1.5],
+    ['mashriq', 1],
+  ]);
+  demo('NED', [
+    ['indonesian', 3],
+    ['mashriq', 2],
+    ['persian', 0.5],
+    ['eastslavic', 0.5],
+  ]);
+  demo('ITA', [
+    ['albanian', 2.5],
+    ['romanian', 2],
+    ['eastslavic', 1],
+    ['filipino', 0.3],
+    ['chinese', 0.5],
+  ]);
+  demo('ESP', [
+    ['romanian', 1.2],
+    ['mashriq', 0.5],
+    ['eastslavic', 0.5],
+  ]);
+  demo('GRE', [
+    ['albanian', 5],
+    ['eastslavic', 1],
+  ]);
+  demo('USA', [
+    ['vietnamese', 1.2],
+    ['filipino', 1.5],
+    ['mashriq', 1.5],
+    ['eastslavic', 1.5],
+    ['armenian', 0.6],
+    ['hebrew', 0.8],
+    ['persian', 0.6],
+    ['caribbean', 3],
+    ['frenchcanadian', 0.5],
+    ['polish', 1],
+  ]);
+  demo('AUS', [
+    ['vietnamese', 2.5],
+    ['filipino', 1.5],
+    ['mashriq', 3.5],
+    ['persian', 0.7],
+    ['armenian', 0.5],
+    ['indonesian', 1],
+    ['eastslavic', 1],
+    ['albanian', 0.7],
+  ]);
+  demo('BRA', [['mashriq', 1.5]]);
+  demo('ARG', [
+    ['mashriq', 1],
+    ['eastslavic', 0.5],
+  ]);
+  demo('ISR', [
+    ['eastslavic', 14],
+    ['mashriq', 18],
+    ['westafrican', 0.5],
+    ['eastafrican', 3],
+  ]);
 })();
