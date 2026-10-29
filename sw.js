@@ -27,6 +27,7 @@ const FILES = [
   './js/clubs.js',
   './js/expansion.js',
   './js/geo.js',
+  './js/regions.js',
   './js/clubguide.js',
   './js/world.js',
   './js/realstats.js',

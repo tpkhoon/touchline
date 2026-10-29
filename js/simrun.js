@@ -20,6 +20,7 @@
     'clubs',
     'expansion',
     'geo',
+    'regions',
     'world',
     'refstats',
     'realstats',
