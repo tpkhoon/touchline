@@ -84,6 +84,7 @@
           name: c.name,
           short: c.short,
           nat: c.nat,
+          ...(c.nats && c.nats.length ? { nats: c.nats.slice() } : {}),
           tier: c.tier,
           sim: c.sim,
           repBand: c.repBand,
@@ -117,6 +118,7 @@
         },
       });
     def.intl = WD.intlNow();
+    def.regionals = WD.regionalsNow();
     if (S.confeds) def.confeds = JSON.parse(JSON.stringify(S.confeds));
     def.calendar = WD.calendarNow();
     for (const c of Object.values(S.clubs)) {
@@ -498,6 +500,49 @@
     ),
     invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool, feeds: v.feeds || '' })),
   });
+  // ---------- Regional cups ----------
+  // The regional cups (D.AREAS): a name, a nation, a format ('rr' a league phase and a final, 'ko' a knockout) and the clubs by code.
+  // A definition that lists them (def.regionals) replaces the game's whole list, so a cup can be added, changed or taken out.
+  const areaRow = (a) => [a.id, a.nat, a.format, a.name, a.short, (a.clubs || []).join(' ')];
+  WD.regionalsNow = () =>
+    D.AREAS.map((r) => ({
+      id: r[0],
+      nat: r[1],
+      format: r[2],
+      name: r[3],
+      short: r[4],
+      clubs: r[5].split(' ').filter(Boolean),
+    }));
+  WD.validateRegionals = function (list, hasClub) {
+    const e = [],
+      ids = new Set(),
+      used = new Map();
+    if (list == null) return e;
+    if (!Array.isArray(list)) return ['regional cups: must be a list'];
+    for (const a of list) {
+      const at = `regional cup ${a.id || '?'}`;
+      if (!/^[A-Za-z0-9_]{2,10}$/.test(a.id || '')) e.push(`${at}: an id is 2–10 letters, digits or _`);
+      if (ids.has(a.id)) e.push(`${at}: the id is used twice`);
+      ids.add(a.id);
+      if (!String(a.name || '').trim()) e.push(`${at}: needs a name`);
+      if (!String(a.short || '').trim() || String(a.short).length > 6)
+        e.push(`${at}: the short name is 1–6 characters`);
+      if (!D.NATIONS[a.nat]) e.push(`${at}: unknown nation "${a.nat}"`);
+      if (!['rr', 'ko'].includes(a.format))
+        e.push(`${at}: the format is a league phase and final ("rr") or a knockout ("ko")`);
+      const clubs = a.clubs || [];
+      if (!Array.isArray(clubs) || clubs.length < 2 || clubs.length > 12)
+        e.push(`${at}: two to twelve clubs (it has ${Array.isArray(clubs) ? clubs.length : 0})`);
+      else
+        for (const code of clubs) {
+          if (hasClub && !hasClub('c_' + code)) e.push(`${at}: no club ${code}`);
+          if (used.has(code) && used.get(code) !== a.id)
+            e.push(`${at}: ${code} is also in ${used.get(code)} (a club plays one regional cup)`);
+          used.set(code, a.id);
+        }
+    }
+    return e;
+  };
   // (the places a tournament's pools fill: the rest are the play-off places, or the guests another part of the world sends)
   const places = (tn, size = tn.size) => size - (tn.playoff || 0) - ((tn.guests && tn.guests.n) || 0);
   WD.places = places;
@@ -625,6 +670,7 @@
       for (const r of D[l.clubs] || []) def.clubs.push(rowToClub(r, l));
     }
     def.intl = WD.intlNow();
+    def.regionals = WD.regionalsNow();
     def.calendar = WD.calendarNow();
     def.agents = D.AGENT_FIRMS.slice();
     const have = new Set(def.clubs.map((c) => c.id));
@@ -661,7 +707,14 @@
       intl: null,
       agents: null,
       calendar: null,
+      regionals: null,
     };
+    if (
+      Array.isArray(def.regionals) &&
+      !WD.validateRegionals(def.regionals).length &&
+      !same(def.regionals, WD.regionalsNow())
+    )
+      patch.regionals = JSON.parse(JSON.stringify(def.regionals));
     patch.calendar = calendarPatch(def.calendar);
     patch.removeCups = (def.removeCups || []).filter((id) => D.DOMESTIC_CUPS.some((c) => c[0] === id));
     {
@@ -684,6 +737,7 @@
           sim: l.sim || 'full',
           repBand: l.repBand ? l.repBand.slice() : [70, 45],
           rules: effRules(def, l),
+          ...(l.nats && l.nats.length ? { nats: l.nats.slice() } : {}),
           isNew: true,
         });
         continue;
@@ -693,10 +747,14 @@
         const v = k === 'rules' ? effRules(def, l) : l[k];
         if (v != null && !same(v, cur[k] || (k === 'rules' ? {} : undefined))) d[k] = v;
       }
+      // (the other nations a league is open to: a cross-nation league; an empty list takes them away again)
+      if (!same(l.nats || [], cur.nats || [])) d.nats = (l.nats || []).slice();
       if (Object.keys(d).length > 1) patch.leagues.push(d);
     }
     const leagueNat = (id) =>
       ((def.leagues || []).find((l) => l.id === id) || D.LEAGUES.find((l) => l.id === id) || {}).nat;
+    const leagueNats = (id) =>
+      ((def.leagues || []).find((l) => l.id === id) || D.LEAGUES.find((l) => l.id === id) || {}).nats || [];
     for (const c of def.clubs || []) {
       const code = codeOf(c.id),
         cur = known.get(code);
@@ -733,12 +791,15 @@
           cr: x.crest || null,
           sn: x.stadium.name,
           sc: x.stadium.cap,
+          nt: x.nat,
         });
         const cand = { ...m, short: info[0], city: row[2], identity: row[5], parent: m.parent || null };
         if (same(pick(base), pick(cand)) && cur.league.id === lg) continue;
       }
       if (!cur && !leagueIds.has(lg) && !patch.leagues.some((l) => l.id === lg)) continue; // (validation reports it)
-      patch.clubs.push({ code, league: lg, row, info, nat: leagueNat(lg), isNew: !cur });
+      // (a club of another nation in a cross-nation league keeps its own nationality)
+      const own = m.nat && m.nat !== leagueNat(lg) && leagueNats(lg).includes(m.nat) ? m.nat : null;
+      patch.clubs.push({ code, league: lg, row, info, nat: leagueNat(lg), ...(own ? { own } : {}), isNew: !cur });
     }
     // derbies: a pair the game has with another name is renamed, a new pair is added, a pair taken out is removed
     const pair = (x, y) => (r) => (r[0] === x && r[1] === y) || (r[0] === y && r[1] === x);
@@ -831,6 +892,7 @@
       Object.keys(p.nationEdits || {}).length ||
       p.agents ||
       p.intl ||
+      p.regionals ||
       p.calendar
     );
 
@@ -1040,10 +1102,12 @@
       })),
       rows: keys.map((k) => ({ k, rows: D[k].map((r) => r.slice()) })),
       info: { ...D.CLUB_INFO },
+      clubNat: { ...(D.CLUB_NAT || {}) },
       rivals: D.RIVALS.map((r) => r.slice()),
       mix: new Set(Object.keys(D.NAT_MIX)),
       cupRows: D.DOMESTIC_CUPS.map((c) => [c[0], c[1], c[2], c[3], JSON.stringify(c[4] || {})]),
       agents: D.AGENT_FIRMS.slice(),
+      areas: JSON.stringify(D.AREAS),
       euro: (D.EURO_CUPS || []).map((c) => JSON.stringify(c.opts || {})),
       conts: D.CONTINENTALS.map((c) => ({
         legs: c.legs && JSON.stringify(c.legs),
@@ -1077,6 +1141,10 @@
       }
       for (const k of ['name', 'short', 'tier', 'sim', 'repBand', 'rules', 'nat'])
         if (l[k] != null) cur[k] = JSON.parse(JSON.stringify(l[k]));
+      if (l.nats) {
+        if (l.nats.length) cur.nats = l.nats.slice();
+        else delete cur.nats;
+      }
     }
     const by = staticClubs();
     for (const code of patch.removed || []) {
@@ -1100,6 +1168,8 @@
         by.set(c.code, { row, league: target });
       }
       D.CLUB_INFO[c.code] = c.info.slice();
+      if (c.own) D.CLUB_NAT[c.code] = c.own;
+      else delete D.CLUB_NAT[c.code];
     }
     for (const [x, y] of patch.removeRivals || []) {
       const i = D.RIVALS.findIndex((r) => (r[0] === x && r[1] === y) || (r[0] === y && r[1] === x));
@@ -1124,6 +1194,7 @@
       if (c.intl) swap(D.INTL_AFTER, { [c.intl[0]]: ['I1a', 'I1b'], [c.intl[1]]: ['I2a', 'I2b'] });
     }
     if (patch.agents) D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...patch.agents);
+    if (patch.regionals) D.AREAS.splice(0, D.AREAS.length, ...patch.regionals.map(areaRow));
     for (const id of patch.removeCups || []) {
       const i = D.DOMESTIC_CUPS.findIndex((x) => x[0] === id);
       if (i >= 0) D.DOMESTIC_CUPS.splice(i, 1);
@@ -1168,6 +1239,8 @@
         if (/^CLUBS_/.test(k) && !snap.rows.some((x) => x.k === k) && k !== 'CLUBS_OVERSEAS') delete D[k];
       for (const k of Object.keys(D.CLUB_INFO)) if (!(k in snap.info)) delete D.CLUB_INFO[k];
       Object.assign(D.CLUB_INFO, snap.info);
+      for (const k of Object.keys(D.CLUB_NAT)) delete D.CLUB_NAT[k];
+      Object.assign(D.CLUB_NAT, snap.clubNat);
       D.RIVALS.splice(0, D.RIVALS.length, ...snap.rivals.map((r) => r.slice()));
       {
         const o = JSON.parse(snap.intl);
@@ -1186,6 +1259,7 @@
         I().CYCLE = o.c;
       }
       D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...snap.agents);
+      D.AREAS.splice(0, D.AREAS.length, ...JSON.parse(snap.areas));
       D.DOMESTIC_CUPS.splice(
         0,
         D.DOMESTIC_CUPS.length,
@@ -1649,6 +1723,13 @@
     const perLeague = {};
     for (const c of def.clubs) perLeague[c.league] = (perLeague[c.league] || 0) + 1;
     for (const l of def.leagues) {
+      // a league open to clubs of other nations (a cross-nation league): nations the game has, not its own, none twice
+      if (l.nats != null) {
+        if (!Array.isArray(l.nats) || !l.nats.every((n) => D.NATIONS[n]))
+          errors.push(`league ${l.id}: the nations it is open to must be nations the game has`);
+        else if (new Set(l.nats).size !== l.nats.length || l.nats.includes(l.nat))
+          errors.push(`league ${l.id}: each nation it is open to is listed once, and not the league's own`);
+      }
       if (!staticLeagues.has(l.id)) {
         // a league the game does not have: it needs everything the built-in ones have
         if (!/^[A-Za-z0-9]{2,6}$/.test(l.id)) errors.push(`league ${l.id}: a new league's id is 2–6 letters or digits`);
@@ -1757,7 +1838,10 @@
     const leagueInfo = (id) => def.leagues.find((l) => l.id === id) || D.LEAGUES.find((l) => l.id === id) || {};
     for (const c of def.clubs) {
       const lg = c.league || (where.get(c.id) || {}).league;
-      where.set(c.id, { league: lg, nat: leagueInfo(lg).nat || c.nat });
+      where.set(c.id, {
+        league: lg,
+        nat: (leagueInfo(lg).nats || []).includes(c.nat) ? c.nat : leagueInfo(lg).nat || c.nat,
+      });
     }
     for (const id of removed) where.delete(id);
     const tierOf = (id) => leagueInfo((where.get(id) || {}).league).tier;
@@ -1829,6 +1913,7 @@
     }
     for (const l of def.leagues) errors.push(...WD.validateLeagueRules(l, def));
     errors.push(...WD.validateIntl(def.intl));
+    errors.push(...WD.validateRegionals(def.regionals, (id) => clubs.has(id) && !removed.has(id)));
     for (const id of def.removeCups || [])
       if (!domIds().has(id)) errors.push(`cup ${id}: the game has no such domestic cup to take out`);
     const ROLES = [

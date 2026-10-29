@@ -247,6 +247,88 @@ if ('test' in args) {
       check(WD.validate(d4, FM.S).errors.length > 0, 'a signing rule with an unknown part of the world was accepted');
     }
   }
+  // regional cups in a definition: a club plays one, a list replaces the game's, and the game's own comes back
+  {
+    const D = FM.D,
+      before = D.AREAS.length;
+    const d6 = WD.fromStatic({ name: 'Regional test' });
+    check(d6.regionals.length === before, 'the static definition does not list the regional cups');
+    const d2 = d6.clubs
+      .filter((c) => c.league === 'D2')
+      .slice(0, 4)
+      .map((c) => c.id.replace(/^c_/, ''));
+    d6.regionals = d6.regionals.filter((a) => a.id !== 'BRA_NE');
+    d6.regionals.push({ id: 'ENG_X1', nat: 'ENG', format: 'ko', name: 'Test Cup', short: 'TST', clubs: d2 });
+    check(!WD.validate(d6, null).errors.length, 'a valid regional cup was refused');
+    const p6 = WD.patchOf(d6);
+    WD.useStatic(p6);
+    check(
+      D.AREAS.some((r) => r[0] === 'ENG_X1') && !D.AREAS.some((r) => r[0] === 'BRA_NE'),
+      'regional cups were not applied',
+    );
+    WD.useStatic(null);
+    check(D.AREAS.length === before && D.AREAS.some((r) => r[0] === 'BRA_NE'), 'the regional cups were not put back');
+    d6.regionals[0].clubs = [...d6.regionals[0].clubs, ...d2.slice(0, 1)];
+    check(
+      WD.validate(d6, null).errors.some((e) => /also in/.test(e)),
+      'a club in two regional cups was accepted',
+    );
+  }
+  // a cross-nation league: its clubs keep their own nation, their national cup, and their players
+  {
+    const D = FM.D,
+      d7 = WD.fromStatic({ name: 'Cross-nation test' });
+    d7.leagues.push({
+      id: 'NAF',
+      name: 'North African League',
+      short: 'NAF',
+      nat: 'MAR',
+      nats: ['ALG', 'TUN'],
+      tier: 1,
+      sim: 'light',
+      repBand: [60, 40],
+      rules: {},
+    });
+    const take = (nat, n) =>
+      d7.clubs
+        .filter((c) => c.nat === nat && !c.parent)
+        .sort((a, b) => b.rep - a.rep)
+        .slice(0, n);
+    const moved = [...take('MAR', 4), ...take('ALG', 3), ...take('TUN', 3)];
+    for (const c of moved) c.league = 'NAF';
+    d7.regionals = d7.regionals
+      .map((a) => ({ ...a, clubs: a.clubs.filter((code) => !moved.some((m) => m.id === 'c_' + code)) }))
+      .filter((a) => a.clubs.length >= 2);
+    check(
+      !WD.validate(d7, null).errors.length,
+      'a cross-nation league was refused: ' + WD.validate(d7, null).errors.slice(0, 2),
+    );
+    const bad = JSON.parse(JSON.stringify(d7));
+    bad.leagues.find((l) => l.id === 'NAF').nats = ['MAR'];
+    check(
+      WD.validate(bad, null).errors.some((e) => /listed once/.test(e)),
+      'a league open to its own nation was accepted',
+    );
+    WD.useStatic(WD.patchOf(d7));
+    W.newWorld(W.REAL_RULES);
+    FM.Season.init();
+    const naf = FM.S.comps.NAF,
+      nats = naf.clubs.map((id) => FM.S.clubs[id].nat);
+    check(
+      naf.nats && naf.nats.length === 2 && nats.includes('ALG') && nats.includes('TUN') && nats.includes('MAR'),
+      "the cross-nation league did not keep its clubs' nations",
+    );
+    const cup = Object.values(FM.S.comps).find((c) => c.type === 'cup' && c.nat === 'MAR');
+    check(
+      cup && FM.Cups.entrants(cup).filter((c) => c.comp === 'NAF').length === 4,
+      'the Moroccan clubs of the cross-nation league are not in the Moroccan cup',
+    );
+    WD.useStatic(null);
+    check(
+      !D.LEAGUES.some((l) => l.id === 'NAF') && !Object.keys(D.CLUB_NAT).length,
+      'the cross-nation league was not taken out again',
+    );
+  }
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'World definition: all checks passed.');
   process.exit(fails.length ? 1 : 0);
 }

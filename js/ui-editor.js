@@ -545,6 +545,13 @@
     ED.err = [];
     UI.worldEditor();
   };
+  // The nation a club plays as in a league: its own where the league is open to it (a cross-nation league), else the league's
+  const openTo = (l, nat) => !!l && (l.nat === nat || (l.nats || []).includes(nat));
+  const ownNat = (lgId, want) => {
+    const l = leagueOf(lgId) || {},
+      c = ED.def.clubs.find((x) => x.id === ED.cid) || {};
+    return [want, c.nat].find((n) => n && openTo(l, n)) || l.nat;
+  };
   UI.acts.edSaveClub = () => {
     const v = (id) => ($('#ed-' + id) || {}).value;
     const lg = v('league') || ED.lid;
@@ -559,7 +566,7 @@
       identity: v('identity'),
       rep: Math.round(+v('rep')),
       league: lg,
-      nat: (leagueOf(lg) || {}).nat,
+      nat: ownNat(lg, v('cnat')),
       founded: Math.round(+v('founded')) || null,
       stadium: { name: (v('stadium') || '').trim(), cap: Math.round(+v('cap')) },
     };
@@ -1965,6 +1972,42 @@
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Clubs (8–24)</div><input type="number" id="ed-nlcount" min="8" max="24" inputmode="numeric" value="12"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Simulation</div><select id="ed-nlsim"><option value="minimal">Minimal (fast)</option><option value="light">Light</option><option value="full">Full</option></select></div></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateLeague">Add the league</button></div>`;
   };
+  // A cross-nation league: open to clubs of other nations (a Gulf league, a North African league, Welsh clubs in England's pyramid)
+  const leagueNatsCard = (l) => {
+    const nats = l.nats || [],
+      options = natEntries()
+        .filter(([k]) => k !== l.nat && !nats.includes(k))
+        .sort((a, b) => a[1].name.localeCompare(b[1].name));
+    return `<div class="ng-label">Open to clubs of other nations <span class="tiny dim">· a cross-nation league</span></div>
+      ${nats.length ? `<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:6px">${nats.map((k) => `<button class="btn sm" data-act="edDropLeagueNat" data-n="${k}">${esc((D.NATIONS[k] || {}).flag || '')} ${esc((D.NATIONS[k] || { name: k }).name)} ✕</button>`).join('')}</div>` : ''}
+      <div class="ng-names" style="margin-top:0"><select id="ed-lnat"><option value="">Add a nation…</option>${options.map(([k, n]) => `<option value="${k}">${n.flag} ${esc(n.name)}</option>`).join('')}</select><button class="btn sm" data-act="edAddLeagueNat">Add</button></div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Open the league to other nations, then move clubs in from their own leagues (the club's League setting). A club keeps its own nation: its players, its national cup and its foreign-player rules. The league's own nation (${esc((D.NATIONS[l.nat] || { name: l.nat }).name)}) decides its rules, prize money and continental places. Each league a club leaves must keep at least 8 clubs.</div>`;
+  };
+  const setLeagueNats = (l, nats) => {
+    const r = WD.editor(ED.def, null).setLeague(l.id, { nats });
+    ED.err = r.ok ? [] : r.errors;
+    UI.worldEditor();
+  };
+  UI.acts.edAddLeagueNat = () => {
+    const l = leagueOf(ED.lid),
+      k = ($('#ed-lnat') || {}).value;
+    if (!k) return UI.toast('Choose a nation first', 2000);
+    setLeagueNats(l, [...(l.nats || []), k]);
+  };
+  UI.acts.edDropLeagueNat = (d) => {
+    const l = leagueOf(ED.lid);
+    const stay = ED.def.clubs.filter((c) => c.league === l.id && c.nat === d.n);
+    if (stay.length) {
+      ED.err = [
+        `${stay.length} club${stay.length === 1 ? '' : 's'} of that nation still play in this league: move them out first`,
+      ];
+      return UI.worldEditor();
+    }
+    setLeagueNats(
+      l,
+      (l.nats || []).filter((k) => k !== d.n),
+    );
+  };
   const leagueView = () => {
     const l = leagueOf(ED.lid),
       n = natOf(l);
@@ -1976,6 +2019,7 @@
       <div id="ed-lwarn">${leagueWarn(l)}</div>
       <div class="ng-label">League name</div><div class="ng-names" style="margin-top:0"><input type="text" id="ed-lname" maxlength="48" value="${esc(l.name)}"><input type="text" id="ed-lshort" maxlength="6" style="max-width:90px" value="${esc(l.short || l.id)}"></div>
       ${leagueRules(l)}
+      ${leagueNatsCard(l)}
       <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveLeague">Save the league</button></div>
       ${bulkTools()}
       ${removedHere(l.id)}
@@ -2408,7 +2452,8 @@
     const idOpts = Object.entries(D.IDENTITY)
       .map(([k, v]) => `<option value="${k}" ${c.identity === k ? 'selected' : ''}>${esc(v.label)}</option>`)
       .join('');
-    const sameNat = ED.def.leagues.filter((l) => l.nat === c.nat);
+    const sameNat = ED.def.leagues.filter((l) => openTo(l, c.nat));
+    const here = ED.def.leagues.find((l) => l.id === c.league) || {};
     const lgOpts = sameNat
       .map((l) => `<option value="${esc(l.id)}" ${c.league === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
       .join('');
@@ -2432,6 +2477,7 @@
       </details>
       <details class="edsec"><summary>League and signing rule</summary>
       ${sameNat.length > 1 ? `<div class="ng-label">League</div><select id="ed-league">${lgOpts}</select>` : ''}
+      ${here.nats && here.nats.length ? `<div class="ng-label">Plays as a club of</div><select id="ed-cnat">${[here.nat, ...here.nats].map((n) => `<option value="${n}" ${c.nat === n ? 'selected' : ''}>${esc((D.NATIONS[n] || {}).flag || '')} ${esc((D.NATIONS[n] || { name: n }).name)}</option>`).join('')}</select><div class="tiny dim" style="margin-top:4px">This league takes clubs of several nations: the club keeps its own, for its players, its national cup and the foreign-player rules.</div>` : ''}
       ${policyFields(c)}
       </details>
       <details class="edsec"><summary>Manager and rival</summary>
@@ -3074,6 +3120,146 @@
     if (!o && name === c.name && (!short || short === c.short)) return;
     WD.editor(ED.def, null).setCup(c.id, { name, short: short || c.short });
   };
+  // ---------- Regional cups ----------
+  // The regional cups (small early-season tournaments among the clubs of one area): add one, change its clubs and format, take
+  // the game's own out. A definition that lists them replaces the game's list.
+  const regs = () => ED.def.regionals || WD.regionalsNow();
+  const regFormat = { rr: 'League phase and a final', ko: 'Knockout' };
+  const hasClubId = (id) => ED.def.clubs.some((c) => c.id === id) && !(ED.def.removeClubs || []).includes(id);
+  const codeOfClub = (c) => String(c.id).replace(/^c_/, '');
+  const regionalsView = () => {
+    const list = regs(),
+      nats = [...new Set(list.map((a) => a.nat))].sort((a, b) =>
+        (D.NATIONS[a] || { name: a }).name.localeCompare((D.NATIONS[b] || { name: b }).name),
+      );
+    const withClubs = [...new Set(ED.def.clubs.map((c) => c.nat))]
+      .filter((k) => D.NATIONS[k] && ED.def.clubs.filter((c) => c.nat === k).length >= 2)
+      .sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name));
+    return `<div class="h1" style="margin-top:2vh">Regional cups</div><div class="tag">Small tournaments among the clubs of one area, played early in the season beside the league. ${U.plural(list.length, 'cup')}.</div>
+      ${errBox()}
+      ${
+        nats
+          .map(
+            (k) =>
+              `<div class="ng-label">${esc(D.NATIONS[k].flag)} ${esc(D.NATIONS[k].name)}</div>${list
+                .filter((a) => a.nat === k)
+                .map(
+                  (a) =>
+                    `<div class="card tap" style="margin:4px 0;padding:10px 12px" data-act="edRegional" data-rid="${esc(a.id)}"><div class="row"><div class="grow"><div class="small b">${esc(a.name)}</div><div class="tiny dim">${U.plural(a.clubs.length, 'club')} · ${regFormat[a.format]}</div></div><span class="dim">›</span></div></div>`,
+                )
+                .join('')}`,
+          )
+          .join('') || '<div class="empty">No regional cups.</div>'
+      }
+      <div class="ng-label">Add a regional cup</div>
+      <div class="ng-names" style="margin-top:0"><select id="ed-rgnat">${withClubs.map((k) => `<option value="${k}">${D.NATIONS[k].flag} ${esc(D.NATIONS[k].name)}</option>`).join('')}</select><button class="btn sm" data-act="edNewRegional">Add</button></div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A new cup starts with the nation's strongest clubs that are in no other regional cup; choose the clubs on its screen. A club plays one regional cup. Only clubs in fully or lightly simulated leagues play them.</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button><button class="btn sm" data-act="edResetRegionals">Back to the game's own</button></div>`;
+  };
+  UI.acts.edRegional = (d) => {
+    ED.rid = d.rid;
+    ED.view = 'regional';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edNewRegional = () => {
+    const nat = ($('#ed-rgnat') || {}).value,
+      list = regs();
+    if (!nat) return;
+    const taken = new Set(list.flatMap((a) => a.clubs));
+    const free = ED.def.clubs
+      .filter((c) => c.nat === nat && !c.parent && !taken.has(codeOfClub(c)))
+      .sort((a, b) => b.rep - a.rep)
+      .slice(0, 4);
+    if (free.length < 2) {
+      ED.err = [
+        `${D.NATIONS[nat].name} has fewer than two clubs that are in no regional cup: take some out of another first`,
+      ];
+      return UI.worldEditor();
+    }
+    let n = 1;
+    while (list.some((a) => a.id === `${nat}_X${n}`)) n++;
+    const a = {
+      id: `${nat}_X${n}`,
+      nat,
+      format: 'rr',
+      name: `${D.NATIONS[nat].name} Regional Cup${n > 1 ? ' ' + n : ''}`,
+      short: nat + 'X',
+      clubs: free.map(codeOfClub),
+    };
+    ED.def.regionals = [...list.map((x) => ({ ...x })), a];
+    ED.rid = a.id;
+    ED.view = 'regional';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edResetRegionals = () => {
+    delete ED.def.regionals;
+    ED.err = [];
+    UI.worldEditor();
+  };
+  const regionalView = () => {
+    const a = regs().find((x) => x.id === ED.rid);
+    if (!a) return regionalsView();
+    const others = new Map();
+    for (const x of regs()) if (x.id !== a.id) for (const code of x.clubs) others.set(code, x.name);
+    const rows = ED.def.clubs
+      .filter((c) => c.nat === a.nat && !c.parent)
+      .sort((p, q) => q.rep - p.rep)
+      .map((c) => {
+        const code = codeOfClub(c),
+          other = others.get(code),
+          where = [c.city || '', D.clubRegion ? D.clubRegion(c) || '' : ''].filter(Boolean).join(' · ');
+        return `<label class="row small" style="gap:10px;padding:8px 0;border-top:1px solid var(--line);min-height:44px"><input type="checkbox" id="ed-rgc-${esc(code)}" ${a.clubs.includes(code) ? 'checked' : ''}><span class="grow ellip">${esc(c.name)}</span><span class="tiny dim ellip" style="max-width:45%">${other ? 'in ' + esc(other) : esc(where)}</span></label>`;
+      })
+      .join('');
+    return `<div class="h1" style="margin-top:2vh">${esc(D.NATIONS[a.nat].flag)} ${esc(a.name)}</div><div class="tag">A regional cup of ${esc(D.NATIONS[a.nat].name)}. Tick its clubs (two to twelve).</div>
+      ${errBox()}
+      <div class="ng-label">Name</div><input type="text" id="ed-rgname" maxlength="48" value="${esc(a.name)}">
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name</div><input type="text" id="ed-rgshort" maxlength="6" value="${esc(a.short)}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Format</div><select id="ed-rgformat">${Object.entries(
+        regFormat,
+      )
+        .map(([k, t]) => `<option value="${k}" ${a.format === k ? 'selected' : ''}>${t}</option>`)
+        .join('')}</select></div></div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A league phase plays each club once and then the top two meet in a final; a knockout is drawn round by round, and the big clubs field reserve sides.</div>
+      <div class="ng-label">Clubs</div><div class="card flat" style="padding:2px 12px">${rows}</div>
+      <div class="actions" style="margin-top:12px"><button class="btn sm pri" data-act="edSaveRegional">Save the cup</button><button class="btn sm danger" data-act="edDropRegional">Take it out</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="regionals" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edSaveRegional = () => {
+    const list = regs().map((x) => ({ ...x })),
+      a = list.find((x) => x.id === ED.rid);
+    if (!a) return;
+    const v = (id) => ($('#ed-' + id) || {}).value;
+    const next = {
+      ...a,
+      name: (v('rgname') || '').trim(),
+      short: (v('rgshort') || '').trim().toUpperCase(),
+      format: v('rgformat') || a.format,
+      clubs: ED.def.clubs
+        .filter((c) => c.nat === a.nat && !c.parent)
+        .map(codeOfClub)
+        .filter((code) => ($('#ed-rgc-' + code) || {}).checked),
+    };
+    const out = list.map((x) => (x.id === a.id ? next : x));
+    const errs = WD.validateRegionals(out, hasClubId);
+    if (errs.length) {
+      ED.err = errs;
+      return UI.worldEditor();
+    }
+    ED.def.regionals = out;
+    ED.err = [];
+    UI.toast('Saved', 1500);
+    UI.worldEditor();
+  };
+  UI.acts.edDropRegional = () => {
+    ED.def.regionals = regs()
+      .filter((x) => x.id !== ED.rid)
+      .map((x) => ({ ...x }));
+    ED.view = 'regionals';
+    ED.err = [];
+    UI.worldEditor();
+  };
   const cupsView = () => {
     let last = '';
     return `<div class="h1" style="margin-top:2vh">Cups</div><div class="tag">Rename a cup or change how its knockouts are played. Tap one.</div>
@@ -3086,6 +3272,7 @@
         })
         .join('')}
       <div class="card" style="margin:10px 0;padding:10px 12px"><div class="small b">All the game's own domestic cups</div><div class="tiny dim" style="margin-top:4px;line-height:1.5">${outCups().size ? `${U.plural(outCups().size, 'cup')} taken out.` : 'None taken out.'} Take them all out to build a world of cups of your own (Create a cup), or bring them all back.</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edCupsAllOut">Take them all out</button>${outCups().size ? '<button class="btn sm" data-act="edCupsAllBack">Bring them all back</button>' : ''}</div></div>
+      <div class="card tap" style="margin:10px 0 0;padding:10px 12px" data-act="edView" data-v="regionals"><div class="row"><div class="grow"><div class="small b">Regional cups</div><div class="tiny dim">${U.plural(regs().length, 'cup')} · small tournaments among the clubs of one area</div></div><span class="dim">›</span></div></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edNewCup">＋ Add a cup</button></div>`;
   };
   const seg = (act, cur, opts, extra = '', key = 'v') =>
@@ -5319,6 +5506,8 @@
       squad: squadView,
       player: playerView,
       cups: cupsView,
+      regionals: regionalsView,
+      regional: regionalView,
       cup: cupView,
       calendar: calendarView,
       pins: pinsView,

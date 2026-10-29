@@ -42,7 +42,7 @@
   // (a cup's format can keep it to the top divisions: opts.tiers = the lowest division that enters; too few clubs and it is open to all)
   Cu.entrants = (c) => {
     const all = Object.values(S().clubs).filter(
-      (x) => x.nat === c.nat && x.comp && S().comps[x.comp] && S().comps[x.comp].nat === c.nat,
+      (x) => x.nat === c.nat && x.comp && S().comps[x.comp] && W.leagueOpen(S().comps[x.comp], c.nat),
     );
     const t = (Cu.optsOf(c) || {}).tiers;
     if (!t) return all;

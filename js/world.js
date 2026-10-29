@@ -1301,7 +1301,9 @@
   // Nationality for a new player at a club: league mix where one exists, mostly local elsewhere
   W.natFor = function (club) {
     const mix = club.comp && D.NAT_MIX[club.comp];
-    if (mix) return D.pickNat(mix);
+    // (a cross-nation league has no mix of its own: each club's players come from its own nation, as in a league with no mix)
+    const cross = club.comp && FM.S.comps[club.comp] && FM.S.comps[club.comp].nats;
+    if (mix && !cross) return D.pickNat(mix);
     return Math.random() < 0.88 ? club.nat : D.foreignPick ? D.foreignPick(club.nat) : U.pick(D.nationCodes());
   };
   W.youthNat = (club) =>
@@ -2412,8 +2414,17 @@
   // ---------------- New world ----------------
   // One club of the world from its row (name, code, city, colours, identity, reputation, ground, capacity): the club itself,
   // its manager, attributes and a squad. Used for every club of a new world and for the clubs an expansion adds
+  // A league open to clubs of other nations (a world definition's cross-nation league: l.nats): the club keeps its own nationality
+  // (D.CLUB_NAT, by club code), not the league's
+  D.CLUB_NAT = D.CLUB_NAT || {};
+  W.leagueOpen = (comp, nat) => !!comp && (comp.nat === nat || (comp.nats || []).includes(nat));
   W.mkClub = function (row, compId, nat, sim) {
     const S = FM.S;
+    {
+      const lg = D.LEAGUES.find((x) => x.id === compId),
+        own = D.CLUB_NAT[row[1]];
+      if (lg && lg.nats && own && lg.nats.includes(own)) nat = own;
+    }
     const [name, code, city, c1, c2, identity, rep] = row;
     const info = D.CLUB_INFO[code] || [],
       short = info[0] || code.replace(/([A-Z]{3,})\d$/, '$1'); // what the game shows: the club's real abbreviation
@@ -2535,6 +2546,7 @@
           id: l.id,
           type: 'league',
           nat: l.nat,
+          ...(l.nats && l.nats.length ? { nats: l.nats.slice() } : {}),
           name: l.name,
           short: l.short,
           tier: l.tier,
