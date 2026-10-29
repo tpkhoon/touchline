@@ -545,6 +545,79 @@
     ED.err = [];
     UI.worldEditor();
   };
+  // ---------- National development sides ----------
+  // A nation's Under-19, Under-21 or Under-23 side, or its B team, as a club of a league: it signs only players of its nation (and
+  // of its age group), its players move on when they grow too old for it, and it is never promoted out of its division.
+  const natSideKinds = [
+    [19, 'Under 19'],
+    [21, 'Under 21'],
+    [23, 'Under 23'],
+    [0, 'National B team (any age)'],
+  ];
+  const sideNations = (l) => [l.nat, ...(l.nats || [])].filter((k) => D.NATIONS[k]);
+  const newNatSideView = () => {
+    const l = leagueOf(ED.lid);
+    if (!l) return leagueView();
+    return `<div class="h1" style="margin-top:2vh">Add a national side</div><div class="tag">${esc(l.name)}. A nation's development side plays as a club of the league: its players are the nation's own, up to its age group.</div>
+      ${errBox()}
+      <div class="ng-label">Nation</div><select id="ed-nsnat">${sideNations(l)
+        .map((k) => `<option value="${k}">${esc(D.NATIONS[k].flag)} ${esc(D.NATIONS[k].name)}</option>`)
+        .join('')}</select>
+      <div class="ng-label">Side</div><select id="ed-nskind">${natSideKinds.map(([v, t]) => `<option value="${v}" ${v === 21 ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">It joins the league as a club of that nation, rated a little below the league's average. Its squad is made of that nation's players in the age group; each summer those who are too old leave it and the squad is topped up. A national side is never promoted. Open the club afterwards to change its name, rating or ground.${l.nats && l.nats.length ? '' : " Only the league's own nation can have a side here, unless the league is open to other nations."}</div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" data-lid="${esc(l.id)}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateNatSide">Add the side</button></div>`;
+  };
+  UI.acts.edNewNatSide = () => {
+    ED.view = 'newnat';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edCreateNatSide = () => {
+    const l = leagueOf(ED.lid),
+      v = (id) => ($('#ed-' + id) || {}).value,
+      nat = v('nsnat'),
+      age = +v('nskind') || 0;
+    if (!l || !D.NATIONS[nat]) return;
+    const rows = clubsOf(l.id),
+      mid = rows.length ? Math.round(rows.reduce((t, c) => t + c.rep, 0) / rows.length) : 50,
+      name = `${D.NATIONS[nat].name} ${age ? 'U' + age : 'B'}`,
+      code = newCode(name),
+      cols = (D.NT_COLORS && D.NT_COLORS[nat]) || ['#2a6fdb', '#ffffff'];
+    const taken = new Set(ED.def.clubs.filter((x) => x.league === l.id).map((x) => x.short));
+    let short = `${nat}${age || 'B'}`.slice(0, 5);
+    for (let i = 2; taken.has(short); i++) short = (short.slice(0, 4) + i).slice(0, 5);
+    const c = {
+      id: 'c_' + code,
+      name,
+      short,
+      nick: '',
+      city: D.NATIONS[nat].name,
+      nat,
+      colors: [cols[0] || '#2a6fdb', cols[1] || '#ffffff'],
+      identity: 'youth',
+      rep: Math.max(20, Math.min(99, mid - 4)),
+      league: l.id,
+      parent: null,
+      founded: 1990,
+      stadium: { name: `${D.NATIONS[nat].name} Development Centre`, cap: 3000 },
+      policy: {
+        nat,
+        label: `${D.NATIONS[nat].name} ${age ? 'Under-' + age : 'B team'}`,
+        ...(age ? { maxAge: age } : {}),
+      },
+    };
+    const r = WD.validateClub(c, {});
+    if (r.errors.length) {
+      ED.err = r.errors;
+      return UI.worldEditor();
+    }
+    ED.def.clubs.push(c);
+    ED.view = 'club';
+    ED.cid = c.id;
+    ED.err = [];
+    UI.toast(`${name} added to ${l.name}`, 2500);
+    UI.worldEditor();
+  };
   // The nation a club plays as in a league: its own where the league is open to it (a cross-nation league), else the league's
   const openTo = (l, nat) => !!l && (l.nat === nat || (l.nats || []).includes(nat));
   const ownNat = (lgId, want) => {
@@ -584,7 +657,7 @@
       patch.policy = !pn
         ? null
         : kind === 'nat'
-          ? { nat: key, label }
+          ? { nat: key, label, ...(+v('polage') ? { maxAge: +v('polage') } : {}) }
           : kind === 'region'
             ? { region: key, label }
             : { heritage: key, label };
@@ -2130,7 +2203,7 @@
       ${errBox()}
       <div class="ng-find"><input type="search" id="ed-q" placeholder="Search clubs" value="${esc(ED.q)}" autocomplete="off"></div>
       <div id="ed-list">${listRows(rows)}</div>
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edAddClub">＋ Add a club</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm" data-act="edNewNatSide">＋ National side</button><button class="btn sm pri grow" data-act="edAddClub">＋ Add a club</button></div>`;
   };
   const listRows = (rows) =>
     rows
@@ -2173,7 +2246,19 @@
       .join('')}</optgroup>`;
     return `<div class="ng-label">Signing rule <span class="tiny dim">· who the club may sign</span></div>
       <select id="ed-polnat"><option value="">Anyone</option>${opts}</select>
-      <input type="text" id="ed-pollabel" maxlength="30" placeholder="What to call them, e.g. Andorran" value="${esc(typed)}" style="margin-top:6px">`;
+      <input type="text" id="ed-pollabel" maxlength="30" placeholder="What to call them, e.g. Andorran" value="${esc(typed)}" style="margin-top:6px">
+      <div class="ng-label">Age limit <span class="tiny dim">· a national development side (only with a nation above)</span></div>
+      <select id="ed-polage">${[
+        ['', 'No age limit'],
+        [19, 'Under 19'],
+        [21, 'Under 21'],
+        [23, 'Under 23'],
+      ]
+        .map(
+          ([v, t]) =>
+            `<option value="${v}" ${String((p && p.maxAge) || '') === String(v) ? 'selected' : ''}>${t}</option>`,
+        )
+        .join('')}</select>`;
   };
   // ---------- The clubs' own squads ----------
   // The game makes every squad when the world is built, after editing ends, so the editor only ever saw the players you add. Building
@@ -5754,6 +5839,7 @@
       calendar: calendarView,
       pins: pinsView,
       schedule: scheduleView,
+      newnat: newNatSideView,
       newcup: newCupView,
       staff: staffView,
       staffhub: staffHubView,

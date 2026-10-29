@@ -372,6 +372,55 @@ if ('test' in args) {
     );
     WD.useStatic(null);
   }
+  // a national development side: a club of a league with its nation's players in an age group, who signs nobody older
+  {
+    const d9 = WD.fromStatic({ name: 'Development side test' });
+    const side = {
+      id: 'c_EU21',
+      name: 'England U21',
+      short: 'ENG21',
+      nick: '',
+      city: 'England',
+      nat: 'ENG',
+      colors: ['#FFFFFF', '#C8102E'],
+      identity: 'youth',
+      rep: 40,
+      league: 'D3',
+      parent: null,
+      founded: 1990,
+      stadium: { name: 'Development Centre', cap: 3000 },
+      policy: { nat: 'ENG', label: 'England Under-21', maxAge: 21 },
+    };
+    check(!WD.validateClub(side, {}).errors.length, 'a national development side was refused');
+    check(
+      WD.validateClub({ ...side, policy: { nat: 'ENG', label: 'x', maxAge: 12 } }, {}).errors.length > 0,
+      'an age limit of 12 was accepted',
+    );
+    check(
+      WD.validateClub({ ...side, policy: { region: 'EUR', label: 'x', maxAge: 21 } }, {}).errors.length > 0,
+      'an age limit with no nation was accepted',
+    );
+    d9.clubs.push(side);
+    WD.useStatic(WD.patchOf(d9));
+    W.newWorld(W.REAL_RULES);
+    FM.Season.init();
+    WD.apply(d9, FM.S);
+    const sq = W.squad('c_EU21');
+    check(sq.length >= 18 && sq.every((p) => W.age(p) <= 21), 'the development side has players over its age limit');
+    const old = Object.values(FM.S.players).find((p) => W.age(p) > 21 && p.nat === 'ENG' && p.clubId !== 'c_EU21');
+    check(!FM.Reg.policy(FM.S.clubs.c_EU21, old).ok, 'the development side may sign a player over its age limit');
+    check(!FM.Youth.canGoUp('c_EU21', 'D2'), 'a development side may be promoted');
+    WD.useStatic(null);
+  }
+  // Spain's Basque-only club plays in the first division; the Catalan-only club has no signing rule
+  check(
+    FM.D.CLUBS_ES1.some((r) => r[1] === 'ARK') && !FM.D.CLUBS_ES2.some((r) => r[1] === 'ARK'),
+    'the Basque club is not in the first division',
+  );
+  check(
+    !FM.D.CLUB_POLICY.CES && FM.D.CLUB_POLICY.ARK,
+    'the Catalan club has a signing rule, or the Basque club has none',
+  );
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'World definition: all checks passed.');
   process.exit(fails.length ? 1 : 0);
 }

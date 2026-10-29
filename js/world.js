@@ -1337,11 +1337,13 @@
       // a B team is a young side: mostly 18 to 23, with a few older heads
       const age = mil
         ? U.randi(24, 27)
-        : club.parent
-          ? Math.random() < 0.85
-            ? U.randi(18, 23)
-            : U.randi(24, 27)
-          : pickAge(pos);
+        : club.policy && club.policy.maxAge
+          ? U.randi(Math.min(18, club.policy.maxAge), club.policy.maxAge) // (a national development side: its age group)
+          : club.parent
+            ? Math.random() < 0.85
+              ? U.randi(18, 23)
+              : U.randi(24, 27)
+            : pickAge(pos);
       const starter = i % 2 === 0;
       let ca = Math.round(
         U.clamp(

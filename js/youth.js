@@ -22,7 +22,9 @@
   const tier = (compId) => (S().comps[compId] ? S().comps[compId].tier : 99);
   // Can this club go up into compId? Not a B team whose parent plays there or lower down.
   Y.canGoUp = (clubId, compId) => {
-    const p = Y.parentOf(S().clubs[clubId]);
+    const me = S().clubs[clubId];
+    if (me && me.policy && me.policy.maxAge) return false; // (a national development side stays where it is)
+    const p = Y.parentOf(me);
     return !p || !p.comp || tier(p.comp) < tier(compId);
   };
   // The league's table in order, with clubs that can't be promoted left out (auto promotion and play-off seeds)

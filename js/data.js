@@ -6,12 +6,12 @@
   FM.D = {};
 
   // ---------- Clubs with a signing policy ----------
-  // Like Athletic Club in real life: a club that fields only players of one regional heritage. By club code. Eibar sign
-  // only Basque players, Andorra only Catalan ones; neither can sign anyone else (transfer, loan, free agent or
-  // pre-contract) and their academies and squads are made of them.
+  // Like Athletic Club in real life: a club that fields only players of one regional heritage. By club code. Arrasti, in
+  // Spain's first division, sign only Basque players; they cannot sign anyone else (transfer, loan, free agent or
+  // pre-contract) and their academy and squad are made of them. (A club can also be a national development side, an Under-21 or
+  // Under-23 team: policy.nat with policy.maxAge, which the world editor sets.)
   FM.D.CLUB_POLICY = {
     ARK: { heritage: 'basque', label: 'Basque' },
-    CES: { heritage: 'catalan', label: 'Catalan' },
     // The army's club (Bujeong Garrison). Its squad is conscripts doing their national service, on loan from their own
     // clubs (js/asia.js); it signs nobody else.
     BUJ: { military: true, label: 'military-service' },

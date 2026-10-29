@@ -2551,6 +2551,29 @@
       p.freeSince = Sea.dayIndex();
       S.players[p.id] = p;
     }
+    // national development sides (Under-21, Under-23): the players who are now too old for them move on, unattached
+    for (const c of Object.values(S.clubs)) {
+      const lim = c.policy && c.policy.maxAge;
+      if (!lim) continue;
+      for (const p of W.squad(c.id).slice()) {
+        if (W.age(p) <= lim || p.loan) continue;
+        const sp = W.spell(p);
+        if (sp) sp.to = S.year - 1;
+        p.clubId = null;
+        p.team = undefined;
+        p.listed = false;
+        p.freeSince = Sea.dayIndex();
+        if (W.isUser(c.id))
+          FM.News.add({
+            type: 'club',
+            title: `${W.name(p)} is too old for ${c.name}`,
+            body: `At ${W.age(p)}, he has left the national development side.`,
+            pid: p.id,
+            clubId: c.id,
+          });
+      }
+      W.rosterVer++;
+    }
     Sea.ensureUserSquad(11, 18);
     // squads replenish (AI)
     Object.values(S.clubs).forEach((c) => {
@@ -2572,7 +2595,8 @@
           sq.push(fa);
           continue;
         }
-        const age = U.randi(19, 29),
+        const age =
+            c.policy && c.policy.maxAge ? U.randi(Math.min(18, c.policy.maxAge), c.policy.maxAge) : U.randi(19, 29),
           ca = Math.round(U.gauss(W.levelFor(c.rep) - 3, 4));
         const p = W.genPlayer({ nat: W.natFor(c), pos, age, ca, pa: W.potentialFor(ca, age), clubId: c.id });
         S.players[p.id] = p;

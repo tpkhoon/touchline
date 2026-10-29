@@ -93,7 +93,7 @@
     ['Juventud Villa Roblón', 'JUR', 'Villa Roblón', '#0761AF', '#FFFFFF', 'youth', 60, 'Campo de Villa Roblón', 19840],
     ['Deportivo Corvar', 'COR', 'Corvar', '#0033A0', '#FFFFFF', 'fan', 59, 'Nuevo Estadio Corvar', 30500],
     ['Racing Monte Fuentares', 'MNT', 'Monte Fuentares', '#B5123E', '#004F9F', 'fan', 59, 'Estadio Zamanes', 26354],
-    ['Sorar CF', 'SOR', 'Sorar', '#FFFFFF', '#05642C', 'fan', 58, 'Campo de Sorar', 31388],
+    ['Arrasti Kirol Elkartea', 'ARK', 'Arrasti', '#004F9F', '#A6192E', 'youth', 57, 'Aldapa Zelaia', 8164],
   ];
 
   // ---------- More leagues ----------
@@ -145,7 +145,7 @@
     ['Real Olmero', 'OLR', 'Olmero', '#E30613', '#FFFFFF', 'historic', 53, 'Estadio La Salama', 29371],
     ['Club Marbejo', 'MRB', 'Marbejo', '#FFFFFF', '#00843D', 'historic', 53, 'Campo de Marbejo', 22222],
     ['Club Pedera', 'PED', 'Pedera', '#FFE400', '#0045A7', 'fan', 53, 'Campo de Pedera', 20724],
-    ['Arrasti Kirol Elkartea', 'ARK', 'Arrasti', '#004F9F', '#A6192E', 'youth', 51, 'Aldapa Zelaia', 8164],
+    ['Sorar CF', 'SOR', 'Sorar', '#FFFFFF', '#05642C', 'fan', 58, 'Campo de Sorar', 31388],
     ['Deportivo Sorana', 'SOD', 'Sorana', '#FFFFFF', '#000000', 'oil', 51, 'Estadio Salamena', 15500],
     ['CE Serrallac', 'CES', 'Serrallac', '#0038A8', '#FEDD00', 'oil', 50, 'Estadi Camp de la Vall', 3306],
     ['Juventud Fuentena', 'JUF', 'Fuentena', '#003DA5', '#A6192E', 'youth', 49, 'Estadio Quintino', 9128],

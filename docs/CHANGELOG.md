@@ -1,6 +1,6 @@
 # Touchline — Changelog
 
-Oct 29, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.
+Oct 30, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.
 
 ## Playtest feedback, round 24
 
@@ -151,6 +151,8 @@ Oct 29, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e2
 - New leagues go into an existing pyramid from the world editor: Add a league → Place in the pyramid puts it at the top (the old top flight becomes the second division and takes the continental places off the new one) or below any league (the divisions from there move one tier lower, and the new league is linked to the league above and below it with the same numbers of clubs going up and down); six divisions at most.
 - Custom schedules in the world editor: a league's Custom schedule screen lays out the whole fixture list matchday by matchday (start from the standard schedule, add or remove matches, see who rests), or loads it from a CSV file (league, round, home, away; clubs by name, short name or id) or from schedule.csv with the other world CSV files. The schedule is played every season while its clubs stay in the league.
 - Every member of FIFA has a national team: the 29 that were missing (Bhutan, Brunei, Guam, Macau, Mongolia, Timor-Leste in Asia; the Central African Republic, Comoros, Djibouti, Eritrea, Eswatini, Mauritius, São Tomé and Príncipe, Seychelles, Somalia, South Sudan in Africa; Anguilla, Aruba, the Bahamas, Barbados, the Cayman Islands, Dominica, Montserrat, St Vincent and the Grenadines, the Turks and Caicos, and the British and US Virgin Islands in North America and the Caribbean; American Samoa and the Cook Islands in Oceania) bring the game to 211 nations. Each has a name culture (Mongolian and Bhutanese are new), a style, colours and the leagues its few emigrants go to, so its squad is made of players placed in those leagues, and it takes its place in qualifying, the Nations League and the continental championships (Oceania now has 11 nations for its 8 places).
+- National development sides in the world editor: a league screen has "＋ National side" (a nation's Under-19, Under-21 or Under-23 team, or its B team), and a club's Signing rule has an age limit. The side is a club of the league whose squad is its nation's players within the age group; each summer those who are too old leave it unattached and the squad is topped up from the age group, and it is never promoted out of its division.
+- Spain's Basque-only club (Arrasti) plays in the first division (Sorar go down in its place, rated 57 in the top flight), and the Catalan-only club (Serrallac) is an ordinary club with no signing rule, in new worlds.
 
 ## Playtest feedback, round 10
 

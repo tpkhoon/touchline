@@ -1629,6 +1629,10 @@
         p.ln = nm.ln;
       }
     }
+    // a national development side: everyone within its age group (an older player is made younger)
+    if (pol.maxAge)
+      for (const p of W.squad(c.id))
+        if (W.age(p) > pol.maxAge) p.born = FM.S.year - U.randi(Math.min(18, pol.maxAge), pol.maxAge);
   };
   WD.validateClub = function (c, ctx = {}) {
     const e = [],
@@ -1670,6 +1674,11 @@
         !D.NAME_POOLS[c.policy.heritage]
       )
         e.push(`${at}: the signing rule names an unknown heritage "${c.policy.heritage}"`);
+      if (c.policy.maxAge != null) {
+        if (!(Number.isInteger(c.policy.maxAge) && c.policy.maxAge >= 16 && c.policy.maxAge <= 30))
+          e.push(`${at}: the age limit of a national development side is a whole number from 16 to 30`);
+        if (!c.policy.nat) e.push(`${at}: an age limit needs a nation (a national development side)`);
+      }
       if (!c.policy.nat && !c.policy.region && !c.policy.heritage && !c.policy.military)
         e.push(`${at}: a signing rule needs a nation, a part of the world or a heritage`);
       if (c.policy.label && String(c.policy.label).length > 30)
@@ -2289,6 +2298,7 @@
             }
           : null;
         if (c.policy && (c.policy.nat || c.policy.region || c.policy.heritage)) WD.fitSquadToPolicy(c);
+        else if (c.policy && c.policy.maxAge) WD.fitSquadToPolicy(c);
       }
       if (d.stadium) {
         c.stadium.name = d.stadium.name || c.stadium.name;

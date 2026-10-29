@@ -329,6 +329,12 @@
         why: `${c.name} are under a transfer embargo this season (administration): they cannot sign players.`,
       };
     const pol = c && c.policy;
+    // a national development side (Under-21, Under-23): players of its nation up to its age, signed or kept
+    if (pol && pol.maxAge && p.clubId !== c.id && FM.W.age(p) > pol.maxAge)
+      return {
+        ok: false,
+        why: `${c.name} is a national development side: it only signs players aged ${pol.maxAge} or under.`,
+      };
     if (pol && pol.military)
       return p.service && p.clubId === c.id // (conscripts are called up by FM.Asia; nobody can sign for the army's club)
         ? { ok: true }
