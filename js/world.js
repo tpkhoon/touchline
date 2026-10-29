@@ -669,6 +669,10 @@
   W.dualNat = function (nat, heritage, poolKey) {
     if (!heritage || Math.random() > 0.7) return null;
     if (!poolKey) poolKey = D.HERITAGE_POOL[heritage] ? U.pick(D.HERITAGE_POOL[heritage]) : heritage;
+    // (by where he grew up, where that is known: the Caribbean diaspora in England is Jamaican, in France Haitian ...)
+    const dia = D.DIASPORA && D.DIASPORA[poolKey] && D.DIASPORA[poolKey][nat];
+    const weighted = dia ? dia.filter(([n]) => n !== nat && D.nationOn(n)) : [];
+    if (weighted.length) return U.wpick(weighted, (x) => x[1])[0];
     const list = (D.POOL_NATS[poolKey] || []).filter((n) => n !== nat && D.nationOn(n));
     return list.length ? U.pick(list) : null;
   };
@@ -1298,14 +1302,16 @@
   W.natFor = function (club) {
     const mix = club.comp && D.NAT_MIX[club.comp];
     if (mix) return D.pickNat(mix);
-    return Math.random() < 0.88 ? club.nat : U.pick(D.nationCodes());
+    return Math.random() < 0.88 ? club.nat : D.foreignPick ? D.foreignPick(club.nat) : U.pick(D.nationCodes());
   };
   W.youthNat = (club) =>
     D.YOUTH_MIX[club.nat]
       ? D.pickNat(D.YOUTH_MIX[club.nat])
       : Math.random() < 0.95
         ? club.nat
-        : U.pick(D.nationCodes());
+        : D.foreignPick
+          ? D.foreignPick(club.nat)
+          : U.pick(D.nationCodes());
 
   // A squad for a club. `have`: players it already has (a database that fixes some of them): only the gaps are filled
   function genSquad(club, have = []) {

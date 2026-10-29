@@ -1980,7 +1980,8 @@
       if (n.code in mix) continue;
       const same =
         regionOfLeagueNation(l.nat) === n.region || (n.region === 'ENG' && regionOfLeagueNation(l.nat) === 'EUR');
-      added[n.code] = n.weight * (n.ties.includes(l.nat) ? 4 : same ? 1.2 : 0.35);
+      // (a small nation's players hardly ever turn up in a league far from its emigrants' routes)
+      added[n.code] = n.weight * (n.ties.includes(l.nat) ? 4 : same ? 1.2 : n.weight < 0.5 ? 0.04 : 0.35);
     }
     // the newer nations take about 7% of a league's squads between them, however many there are, so the league's own mix
     // (home nation first) keeps its shape
@@ -2060,6 +2061,28 @@
     mix[l.nat] = Math.round(((others * t) / (1 - t)) * 100) / 100;
   }
   D.NEW_NATIONS = LIST.map((n) => n.code);
+  // The league nations a nation's players go to, in order of how many go (a small nation's players are placed by these)
+  D.NATION_TIES = Object.fromEntries(LIST.map((n) => [n.code, n.ties]));
+  // A foreign nationality for a new player at a club of this nation where the league has no mix of its own: the nations whose
+  // emigrants go there first (ties), then the same part of the world, the rest hardly ever; bigger football nations send more
+  const foreignCache = {};
+  D.foreignPick = (host) => {
+    const key = host + '|' + D.nationCodes().length;
+    if (!foreignCache[key]) {
+      const region = D.NATIONS[host] && D.NATIONS[host].region,
+        w = D.nationCodes()
+          .filter((c) => c !== host)
+          .map((c) => {
+            const n = LIST.find((x) => x.code === c);
+            const size = n ? n.weight : 2;
+            const tie = n && n.ties.includes(host) ? 4 : 0,
+              near = D.NATIONS[c].region === region ? 1.2 : 0.05;
+            return [c, size * (tie + near)];
+          });
+      foreignCache[key] = w;
+    }
+    return FM.U.wpick(foreignCache[key], (x) => x[1])[0];
+  };
 
   // Is this nation in the game?
   D.nationOn = (code) => !!D.NATIONS[code];

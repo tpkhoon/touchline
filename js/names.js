@@ -879,8 +879,54 @@
     return D.NAME_POOLS[D.lastPoolKey] || null;
   };
   // The nations a heritage can make a player eligible for (by his name's culture where that is known)
+  // Where a heritage's players are eligible to play, by the country they grew up in: [nation, weight]. A heritage that is not
+  // listed for a country takes any of its pool equally (D.POOL_NATS). The Caribbean diaspora in England is mostly Jamaican,
+  // Trinidadian and Guyanese; in France, Haitian; in the Netherlands, Surinamese and from Curaçao.
+  D.DIASPORA = {
+    caribbean: {
+      ENG: [
+        ['JAM', 6],
+        ['TRI', 2],
+        ['GUY', 1.5],
+        ['HAI', 0.3],
+      ],
+      SCO: [
+        ['JAM', 4],
+        ['TRI', 1],
+      ],
+      WAL: [
+        ['JAM', 4],
+        ['TRI', 1],
+      ],
+      FRA: [
+        ['HAI', 6],
+        ['JAM', 0.5],
+      ],
+      NED: [
+        ['SUR', 6],
+        ['CUW', 4],
+      ],
+      BEL: [
+        ['HAI', 3],
+        ['SUR', 2],
+        ['CUW', 1],
+      ],
+      USA: [
+        ['JAM', 4],
+        ['HAI', 4],
+        ['TRI', 1.5],
+        ['GUY', 1],
+      ],
+      CAN: [
+        ['JAM', 4],
+        ['HAI', 3],
+        ['TRI', 2],
+        ['GUY', 2],
+      ],
+    },
+  };
   D.POOL_NATS = {
-    caribbean: ['JAM'],
+    caribbean: ['JAM', 'TRI', 'GUY', 'HAI', 'SUR', 'CUW'],
     nigerian: ['NGA'],
     ghanaian: ['GHA'],
     senegalese: ['SEN'],

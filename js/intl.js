@@ -190,19 +190,67 @@
   ];
   I.topUp = function (all) {
     const s = S();
+    // A new world: a thin nation's squad is first the players eligible through their families (the diaspora), then players
+    // placed where its emigrants go (San Marino's in Italy and its neighbours, Haiti's in France, Canada and the United
+    // States), rather than anywhere. Later summers' top-ups are free agents, as before.
+    let diaspora = null;
+    const hosts = {},
+      moved = new Set();
+    const hostClubs = (nat) =>
+      (hosts[nat] ||= Object.values(s.clubs)
+        .filter((c) => c.nat === nat && c.sim !== 'nation' && c.comp && !c.parent && !W.isUser(c.id))
+        .sort((a, b) => a.rep - b.rep)
+        .slice(0, Math.max(4, Math.ceil(Object.values(s.clubs).filter((c) => c.nat === nat).length * 0.7))));
+    // a club to take him: the weakest player of his position there makes way and goes unattached
+    const place = (code, pos, ca) => {
+      const ties = ((D.NATION_TIES || {})[code] || []).filter((n) => hostClubs(n).length);
+      for (let k = 0; ties.length && k < 8; k++) {
+        const tie = U.wpick(ties, (n) => [5, 2.2, 1.5, 1, 0.8][ties.indexOf(n)] || 0.5),
+          club = U.pick(hostClubs(tie)),
+          sq = W.squad(club.id).filter(
+            (x) => x.pos === pos && !x.team && !x.loan && !moved.has(x.id) && x.nat !== code,
+          );
+        if (pos === 'GK' && W.squad(club.id).filter((x) => x.pos === 'GK').length < 4) continue;
+        const out = sq.sort((a, b) => a.ca - b.ca)[0];
+        if (!out || out.ca > ca + 8) continue;
+        moved.add(out.id);
+        const sp = W.spell(out);
+        if (sp) sp.to = s.year;
+        out.clubId = null;
+        out.listed = false;
+        out.freeSince = FM.Season.dayIndex();
+        return club.id;
+      }
+      return null;
+    };
     for (const code in D.NATIONS) {
       if (!D.nationOn(code)) continue;
       if (!all && !(s.nteams && s.nteams['n_' + code])) continue; // (a world's later summers: only nations that have a team)
-      const have = I.pool(code).length;
+      let have = I.pool(code).length;
       if (have >= I.MIN_POOL) continue;
+      if (all) {
+        diaspora ||= Object.values(s.players).filter((p) => p.nat2 && !p.retired && !p.alleg && p.clubId);
+        const kin = diaspora
+          .filter((p) => p.nat2 === code && I.uncapped(p) && W.age(p) >= 17)
+          .sort((a, b) => b.ca - a.ca)
+          .slice(0, Math.min(14, I.MIN_POOL - have));
+        kin.forEach((p) => (p.alleg = code));
+        if (kin.length) I.natVer++;
+        have += kin.length;
+      }
       for (let i = 0; i < I.MIN_POOL - have; i++) {
         const age = U.randi(20, 33),
           ca = Math.round(U.clamp(U.gauss(50, 5), 38, 62)),
-          p = W.genPlayer({ nat: code, pos: SLOTS[i % SLOTS.length], age, ca, pa: W.potentialFor(ca, age) });
-        p.contract = s.year;
-        p.freeSince = FM.Season.dayIndex();
+          pos = SLOTS[i % SLOTS.length],
+          clubId = all ? place(code, pos, ca) : null,
+          p = W.genPlayer({ nat: code, pos, age, ca, pa: W.potentialFor(ca, age), ...(clubId ? { clubId } : {}) });
+        if (!clubId) {
+          p.contract = s.year;
+          p.freeSince = FM.Season.dayIndex();
+        }
         s.players[p.id] = p;
       }
+      if (all) W.rosterVer++; // (the squads the next nation looks at include these moves)
     }
     W.rosterVer++; // (the nations' pools are worked out again: a nation with no players had none cached)
     // (a nation with a national team has three goalkeepers at least: a small one with only one or two makes the others)

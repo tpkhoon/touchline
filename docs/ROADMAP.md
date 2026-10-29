@@ -181,6 +181,7 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 - Fewer title sponsors: about half the top leagues, a fifth of second divisions, one in twenty third divisions and under a third of cups carry a sponsor's name at a time (smaller leagues less still); existing deals run out as before.
 - More regional competitions: regional cups for England, Spain, Germany, France, Italy, Portugal, the Netherlands, Argentina, the United States, Japan and Saudi Arabia, the top flight split by geography into areas of up to six clubs (a league phase and a final, in the Cups tab beside the Brazilian state championships).
 - A Resign button on Club > Manager: leave the club (after a confirmation) and look for another job; the club appoints a successor.
+- Realistic nationalities: the players of a small nation are placed where its emigrants go (San Marino's in Italy and its neighbours, Haiti's in France, Canada and the United States, Suriname's and Curaçao's in the Netherlands) instead of anywhere in the world, a league with no mix of its own draws its foreigners from the nations tied to it, and a small nation's players are rare in leagues far from those routes. The Caribbean diaspora is dual-national by where it grew up (English-born with Jamaican, Trinidadian or Guyanese families; French with Haitian; Dutch with Surinamese or Curaçaoan), and a thin national team starts with its eligible diaspora before any filler players.
 
 ### Playtest feedback, round 10
 
