@@ -2450,6 +2450,63 @@
     UI.sub.spotsRegion = d.v;
     UI.render();
   };
+  // The leagues ranked by strength: the world, or one confederation (yours first), top flights or every division
+  const rankingCard = () => {
+    const R = FM.Rank,
+      I = FM.Intl,
+      names = I.CONFEDS,
+      mine = club() && I.region(club().nat);
+    const all = !!UI.sub.lrankAll,
+      rows = R.table({ all });
+    const confeds = [...new Set(rows.map((r) => r.confed))].sort((a, b) => (b === mine ? 1 : 0) - (a === mine ? 1 : 0));
+    const view =
+      UI.sub.lrank === 'world' || (UI.sub.lrank && !confeds.includes(UI.sub.lrank)) ? 'world' : UI.sub.lrank || 'world';
+    const open = UI.sub.lrankOpen != null ? UI.sub.lrankOpen : false;
+    const head = `<button class="sec" style="width:100%;text-align:left;min-height:44px" data-act="lrankFold" aria-expanded="${open}"><div class="h3 grow">League ranking</div><span class="dim small">${view === 'world' ? 'the world' : esc(I.confedName(view))} ${open ? '▾' : '▸'}</span></button>`;
+    if (!open) return head;
+    const shown = (view === 'world' ? rows : rows.filter((r) => r.confed === view)).slice();
+    const limit = UI.sub.lrankMore ? shown.length : 20;
+    const list = shown.filter((r, i) => i < limit || (club() && r.nat === club().nat));
+    const arrow = (r) => {
+      const m = all ? null : R.movement(r.id, r.rank);
+      return m == null || m === 0
+        ? '<span class="dim">–</span>'
+        : m > 0
+          ? `<span style="color:var(--acc)">▲${m}</span>`
+          : `<span style="color:var(--bad)">▼${-m}</span>`;
+    };
+    const chip = (v, t) =>
+      `<button class="chip ${view === v ? 'on' : ''}" data-act="lrankView" data-v="${esc(v)}">${esc(t)}</button>`;
+    return `${head}<div class="card flat" style="padding:8px 12px"><div class="chips" style="margin-bottom:6px">${chip('world', 'World')}${confeds.map((c) => chip(c, names[c] || I.confedName(c))).join('')}</div>
+      <div class="row" style="gap:6px;margin-bottom:6px"><button class="chip ${all ? '' : 'on'}" data-act="lrankAll" data-v="0">Top flights</button><button class="chip ${all ? 'on' : ''}" data-act="lrankAll" data-v="1">Every division</button></div>
+      <div class="tiny dim" style="margin-bottom:6px;line-height:1.5">A league's rating is the average reputation of its best ${U.plural(R.TOP, 'club')}. Its continental points (its clubs' results in the continental cups over five seasons) add up to ${R.BONUS} more for a top flight. ${all ? 'Lower divisions are placed by their clubs alone, below the top flights.' : 'The arrows show places gained or lost since last season.'}</div>
+      <table class="t"><tr><th>#</th>${view === 'world' ? '<th title="Place within its confederation">Conf.</th>' : ''}<th class="l">League</th>${all ? '<th>Tier</th>' : ''}<th>Rating</th>${all ? '' : '<th>Cont.</th><th></th>'}</tr>${list
+        .map(
+          (r) =>
+            `<tr class="${club() && r.id === club().comp ? 'me' : ''} tap" data-act="sub" data-k="league" data-v="${esc(r.id)}"><td>${view === 'world' ? r.rank : shown.indexOf(r) + 1}</td>${view === 'world' ? `<td class="dim">${r.crank}</td>` : ''}<td class="l"><div class="row" style="gap:6px"><span>${C.flag(r.nat)}</span><span class="ellip" style="max-width:150px">${esc(r.name)}</span></div></td>${all ? `<td>${r.tier}</td>` : ''}<td class="b">${r.rating.toFixed(1)}</td>${all ? '' : `<td>${r.coef != null ? r.coef.toFixed(0) : ''}</td><td>${arrow(r)}</td>`}</tr>`,
+        )
+        .join(
+          '',
+        )}</table>${shown.length > 20 ? `<button class="btn sm" style="margin-top:8px" data-act="lrankMore">${UI.sub.lrankMore ? 'Show the top 20' : `Show all ${shown.length}`}</button>` : ''}</div>`;
+  };
+  UI.acts.lrankFold = () => {
+    UI.sub.lrankOpen = !UI.sub.lrankOpen;
+    UI.render();
+  };
+  UI.acts.lrankView = (d) => {
+    UI.sub.lrank = d.v;
+    UI.sub.lrankMore = false;
+    UI.render();
+  };
+  UI.acts.lrankAll = (d) => {
+    UI.sub.lrankAll = d.v === '1';
+    UI.sub.lrankMore = false;
+    UI.render();
+  };
+  UI.acts.lrankMore = () => {
+    UI.sub.lrankMore = !UI.sub.lrankMore;
+    UI.render();
+  };
   function worldView() {
     const s = S(),
       names = FM.Intl.CONFEDS;
@@ -2464,6 +2521,7 @@
     const tierPill = (sim) =>
       `<span class="pill ${sim === 'full' ? 'acc' : ''}" title="${FM.Tiers.LABEL[sim]}">${FM.Tiers.ICON[sim]} ${sim}</span>`;
     return (
+      rankingCard() +
       spotsCard() +
       `<div class="small muted" style="margin:0 2px 10px;line-height:1.5">${U.plural(W.leagues().length, 'league')} in three simulation tiers. <b>Full</b>: every match in the engine. <b>Light</b>: every fixture played by a fast statistical model. <b>Minimal</b>: scores only — squads exist for scouting. Tap a league for its table.</div>` +
       Object.values(names)

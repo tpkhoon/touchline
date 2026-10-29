@@ -1409,6 +1409,43 @@
     }
     return e;
   };
+  // A schedule made by hand (rules.schedule: [{ round, h, a }], round from 1, home side first): any league that plays a plain
+  // round-robin. Every match is between two clubs of the league and no club plays twice on a matchday; the league's rounds are the
+  // most it can have. (A club left out of a matchday rests.)
+  WD.validateSchedule = function (l, def) {
+    const r = l.rules || {},
+      at = `league ${l.id}`,
+      sch = r.schedule;
+    if (!Array.isArray(sch)) return [`${at}: a schedule is a list of matches`];
+    if (r.zones || r.conferences || r.torneos || r.split)
+      return [
+        `${at}: a schedule cannot be made by hand in a league with zones, conferences, two tournaments or a split`,
+      ];
+    const ids = def.clubs.filter((c) => c.league === l.id).map((c) => c.id),
+      nm = (id) => (def.clubs.find((c) => c.id === id) || { name: id }).name,
+      limit = WD.pinLimit(l, ids.length),
+      e = [],
+      seen = new Set(),
+      busy = new Set();
+    for (const p of sch) {
+      const tag = `${at}, ${p ? nm(p.h) : '?'} v ${p ? nm(p.a) : '?'}`;
+      if (!p || !Number.isInteger(p.round) || p.round < 1 || p.round > limit) {
+        e.push(`${tag}: the matchday is 1 to ${limit}`);
+        continue;
+      }
+      if (!ids.includes(p.h) || !ids.includes(p.a) || p.h === p.a) {
+        e.push(`${tag}: two different clubs of the league`);
+        continue;
+      }
+      if (seen.has(p.round + p.h + '>' + p.a)) e.push(`${tag}: twice on matchday ${p.round}`);
+      seen.add(p.round + p.h + '>' + p.a);
+      for (const id of [p.h, p.a]) {
+        if (busy.has(p.round + id)) e.push(`${tag}: ${nm(id)} plays twice on matchday ${p.round}`);
+        busy.add(p.round + id);
+      }
+    }
+    return e;
+  };
   WD.validateLeagueRules = function (l, def) {
     const e = [],
       r = l.rules || {},
@@ -1538,7 +1575,8 @@
           } else e.push(`${at}: no squad rule called "${k}"`);
         }
     }
-    if (r.pins != null) e.push(...WD.validatePins(l, def));
+    if (r.schedule != null) e.push(...WD.validateSchedule(l, def));
+    if (r.pins != null && r.schedule == null) e.push(...WD.validatePins(l, def));
     const p = r.promote;
     if (p) {
       if (p.playoff != null) {

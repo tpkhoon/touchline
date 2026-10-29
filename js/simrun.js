@@ -55,6 +55,7 @@
     'matchday',
     'records',
     'history',
+    'rankings',
     'lore',
     'injuries',
     'draft',

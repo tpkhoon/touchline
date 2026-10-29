@@ -42,6 +42,7 @@
 
   // called when the season is entered in the archive, before the competitions are cleared
   H.capture = function (entry) {
+    if (FM.Rank) FM.Rank.record(entry); // (the leagues' ranking this season, for their movement next season)
     const s = S(),
       userComp = entry.user && entry.user.comp,
       by = {};

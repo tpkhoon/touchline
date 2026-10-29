@@ -2,7 +2,7 @@
 // Strategy: network-first for the app's own files (so you always get the latest code when online,
 // with no version juggling), falling back to the cache when offline or slow. Everything the game
 // needs is precached on install. Bump CACHE when the file list changes.
-const CACHE = 'touchline-v57';
+const CACHE = 'touchline-v58';
 const FILES = [
   './',
   './index.html',
@@ -62,6 +62,7 @@ const FILES = [
   './js/matchday.js',
   './js/records.js',
   './js/history.js',
+  './js/rankings.js',
   './js/lore.js',
   './js/injuries.js',
   './js/draft.js',

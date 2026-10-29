@@ -1968,9 +1968,19 @@
       for (let i = W.splitRounds(R.split); i > 0; i--) rounds.push([]);
       comp.split = { done: false };
     }
+    // a schedule made by hand (rules.schedule: every match with its matchday): used as it is when every club it names is in the
+    // league and no match falls after the last matchday; otherwise the game's own schedule is made (with any fixed matches)
+    let custom = false;
+    if (R.schedule && R.schedule.length && !R.conferences && !R.zones && !R.torneos && !R.split) {
+      const ids = new Set(comp.clubs);
+      if (R.schedule.every((p) => ids.has(p.h) && ids.has(p.a) && p.round >= 1 && p.round <= rounds.length)) {
+        rounds = rounds.map((_, i) => R.schedule.filter((p) => p.round === i + 1).map((p) => [p.h, p.a]));
+        custom = true;
+      }
+    }
     // matches fixed by hand: those whose clubs are in the league and whose matchday exists (the rest of the pins give way
     // one at a time if no schedule can hold them all)
-    if (R.pins && R.pins.length && !R.conferences && !R.zones) {
+    if (!custom && R.pins && R.pins.length && !R.conferences && !R.zones) {
       const regular = R.split ? R.split.after : rounds.length;
       let pins = R.pins
         .filter((p) => comp.clubs.includes(p.h) && comp.clubs.includes(p.a) && p.round >= 1 && p.round <= regular)

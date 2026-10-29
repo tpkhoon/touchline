@@ -1470,6 +1470,7 @@
         <div class="tiny dim" style="margin-top:6px;line-height:1.5">Each club that takes part picks in turn, the best player it can take (keeping a balanced squad), until it has that many; a club that loses a player signs a younger one. What the new club's own squad had is replaced, and players you made for it stay.</div>`
           : `<div class="tiny dim" style="margin-top:6px;line-height:1.5">A club you add to the league can start with players taken from the clubs already in it, as expansion teams do.</div>`
       }
+      <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edView" data-v="schedule" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">Custom schedule</div><div class="tiny dim">${(r.schedule || []).length ? `${U.plural(r.schedule.length, 'match', 'matches')} over ${Math.max(...r.schedule.map((p) => p.round))} matchdays, made by hand` : 'Lay out the whole fixture list round by round, or load it from a CSV file'}</div></div><span class="dim">›</span></div></div>
       <div class="card tap" style="margin:12px 0 0;padding:10px 12px" data-act="edView" data-v="pins" data-lid="${esc(l.id)}"><div class="row"><div class="grow"><div class="small b">Fixed fixtures</div><div class="tiny dim">${(r.pins || []).length ? `${r.pins.length} match${r.pins.length === 1 ? '' : 'es'} put on a matchday` : 'Put a derby or the opening day where you want it'}</div></div><span class="dim">›</span></div></div>`;
   };
   // Two zones (Argentina's format: the clubs split into two zones by reputation, two tournaments a year, a play-off of the top
@@ -1902,21 +1903,89 @@
     ['#444444', '#c8102e'],
   ];
   UI.acts.edNewLeague = () => {
+    ED.nl = null;
     ED.view = 'newleague';
     ED.err = [];
     UI.worldEditor();
   };
-  UI.acts.edCreateLeague = () => {
+  // The league being added (kept when the screen is redrawn for another nation)
+  const NLF = () =>
+    ED.nl || (ED.nl = { nat: '', name: '', short: '', tier: 1, count: 12, sim: 'minimal', place: 'none' });
+  const readNl = () => {
     const v = (id) => ($('#ed-' + id) || {}).value;
-    const nat = v('nlnat'),
-      name = (v('nlname') || '').trim(),
-      tier = Math.max(1, Math.min(6, Math.round(+v('nltier')) || 1)),
-      count = Math.max(8, Math.min(24, Math.round(+v('nlcount')) || 12));
-    const short = (v('nlshort') || '').trim().toUpperCase();
+    const f = NLF();
+    if (!$('#ed-nlname')) return f;
+    Object.assign(f, {
+      nat: v('nlnat') || f.nat,
+      name: v('nlname') || '',
+      short: v('nlshort') || '',
+      tier: Math.round(+v('nltier')) || 1,
+      count: Math.round(+v('nlcount')) || 12,
+      sim: v('nlsim') || 'minimal',
+      place: v('nlplace') || 'none',
+    });
+    return f;
+  };
+  UI.acts.edNlNat = () => {
+    const f = readNl();
+    f.place = 'none';
+    UI.worldEditor();
+  };
+  // Put a new league into a nation's pyramid: at the top (the old top flight becomes the second division), or below a league
+  // (the leagues from there down move a division lower, and the new league is linked to the one above and the one below it, each
+  // keeping the number of clubs that went up and down)
+  const insertInPyramid = (nl, nat, place) => {
+    const same = ED.def.leagues.filter((l) => l.nat === nat).sort((a, b) => a.tier - b.tier);
+    const above = place === 'top' ? null : same.find((l) => l.id === place.replace(/^below:/, ''));
+    if (place !== 'top' && !above) return 'That league is not in the pyramid any more';
+    const tier = place === 'top' ? 1 : above.tier + 1;
+    // (a pyramid has six divisions at most: the leagues from there down each move one lower)
+    if (Math.max(tier, ...same.filter((l) => l.tier >= tier).map((l) => l.tier + 1)) > 6)
+      return 'A pyramid has six divisions at most: this would make a seventh';
+    const below = same.find((l) => l !== above && l.tier === (place === 'top' ? 1 : above.tier + 1));
+    const nOf = (x, k) => (x && x.rules && x.rules[k] && (x.rules[k].auto || x.rules[k].n)) || 2;
+    const link = (lo, up, n) => {
+      lo.rules = lo.rules || {};
+      up.rules = up.rules || {};
+      lo.rules.promote = { to: up.id, auto: n };
+      up.rules.relegate = { to: lo.id, n };
+    };
+    for (const l of same) if (l.tier >= tier) l.tier++;
+    nl.tier = tier;
+    if (place === 'top') {
+      const old = below;
+      const hi = old ? old.repBand[0] : 70;
+      nl.repBand = [Math.min(98, hi + 4), Math.max(40, hi - 8)];
+      nl.rules = {};
+      if (old && old.rules && old.rules.qualify) {
+        nl.rules.qualify = clone(old.rules.qualify);
+        delete old.rules.qualify;
+      }
+      if (old) link(old, nl, 3);
+    } else {
+      const hi = above.repBand[1];
+      nl.repBand = [hi, below ? Math.min(hi, Math.max(below.repBand[0], hi - 10)) : Math.max(30, hi - 14)];
+      nl.rules = {};
+      if (below) {
+        const n = nOf(below, 'promote') || 2;
+        link(below, nl, n);
+        link(nl, above, nOf(above, 'relegate'));
+      } else link(nl, above, nOf(above, 'relegate'));
+    }
+    return '';
+  };
+  UI.acts.edCreateLeague = () => {
+    const f = readNl();
+    const nat = f.nat,
+      name = (f.name || '').trim(),
+      count = Math.max(8, Math.min(24, f.count || 12));
+    const short = (f.short || '').trim().toUpperCase();
     if (!name) {
       ED.err = ['The league needs a name'];
       return UI.worldEditor();
     }
+    const snapLeagues = clone(ED.def.leagues),
+      nClubs = ED.def.clubs.length;
     const stem =
       (short || nat)
         .replace(/[^A-Z0-9]/gi, '')
@@ -1925,10 +1994,22 @@
     const taken = new Set([...ED.def.leagues.map((l) => l.id), ...D.LEAGUES.map((l) => l.id)]);
     let id = stem;
     for (let i = 1; taken.has(id); i++) id = stem.slice(0, 4) + i;
-    const band = tier === 1 ? [70, 45] : tier === 2 ? [52, 38] : [44, 32];
-    const league = { id, name, short: short || id, nat, tier, sim: v('nlsim') || 'minimal', repBand: band, rules: {} };
+    let tier = Math.max(1, Math.min(6, f.tier || 1));
+    let band = tier === 1 ? [70, 45] : tier === 2 ? [52, 38] : [44, 32];
+    const league = { id, name, short: short || id, nat, tier, sim: f.sim || 'minimal', repBand: band, rules: {} };
     const cont = CONT[(D.NATIONS[nat] || {}).region];
-    if (tier === 1 && cont) league.rules.qualify = { to: cont, n: 1 };
+    const placed = f.place && f.place !== 'none';
+    if (placed) {
+      const why = insertInPyramid(league, nat, f.place);
+      if (why) {
+        ED.def.leagues.splice(0, ED.def.leagues.length, ...snapLeagues);
+        ED.err = [why];
+        return UI.worldEditor();
+      }
+      tier = league.tier;
+      band = league.repBand;
+    }
+    if (tier === 1 && cont && !league.rules.qualify) league.rules.qualify = { to: cont, n: 1 };
     ED.def.leagues.push(league);
     const used = new Set(ED.def.clubs.map((c) => String(c.id).replace(/^c_/, '')));
     for (let i = 0; i < count; i++) {
@@ -1956,6 +2037,15 @@
         },
       });
     }
+    const errs = placed ? ED.def.leagues.flatMap((l) => WD.validateLeagueRules(l, ED.def)) : [];
+    if (errs.length) {
+      // (the pyramid would be left inconsistent: nothing is changed)
+      ED.def.leagues.splice(0, ED.def.leagues.length, ...snapLeagues);
+      ED.def.clubs.length = nClubs;
+      ED.err = errs;
+      return UI.worldEditor();
+    }
+    ED.nl = null;
     ED.lid = id;
     ED.view = 'league';
     ED.err = [];
@@ -1963,14 +2053,28 @@
   };
   const newLeagueView = () => {
     const nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const f = NLF();
+    if (!f.nat || !D.NATIONS[f.nat])
+      f.nat = (nations.find(([k]) => !ED.def.leagues.some((l) => l.nat === k)) || nations[0])[0];
     const has = new Set(ED.def.leagues.map((l) => l.nat));
+    const pyr = ED.def.leagues.filter((l) => l.nat === f.nat).sort((a, b) => a.tier - b.tier);
+    const place = f.place || 'none';
     return `<div class="h1" style="margin-top:2vh">Add a league</div><div class="tag">Its clubs are made for you with placeholder names: open each one to name it. A nation with no league yet gets its first.</div>
       ${errBox()}
-      <div class="ng-label">Nation</div><select id="ed-nlnat">${nations.map(([k, n]) => `<option value="${k}">${n.flag} ${esc(n.name)}${has.has(k) ? '' : ' · no league yet'}</option>`).join('')}</select>
-      <div class="ng-label">League name</div><input type="text" id="ed-nlname" maxlength="48" placeholder="e.g. Premier Division">
-      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name</div><input type="text" id="ed-nlshort" maxlength="6" placeholder="e.g. PD"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Tier</div><input type="number" id="ed-nltier" min="1" max="6" inputmode="numeric" value="1"></div></div>
-      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Clubs (8–24)</div><input type="number" id="ed-nlcount" min="8" max="24" inputmode="numeric" value="12"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Simulation</div><select id="ed-nlsim"><option value="minimal">Minimal (fast)</option><option value="light">Light</option><option value="full">Full</option></select></div></div>
+      <div class="ng-label">Nation</div><select id="ed-nlnat" data-input="edNlNat">${nations.map(([k, n]) => `<option value="${k}" ${k === f.nat ? 'selected' : ''}>${n.flag} ${esc(n.name)}${has.has(k) ? '' : ' · no league yet'}</option>`).join('')}</select>
+      <div class="ng-label">League name</div><input type="text" id="ed-nlname" maxlength="48" placeholder="e.g. Premier Division" value="${esc(f.name)}">
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name</div><input type="text" id="ed-nlshort" maxlength="6" placeholder="e.g. PD" value="${esc(f.short)}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Tier</div><input type="number" id="ed-nltier" min="1" max="6" inputmode="numeric" value="${f.tier}" ${place !== 'none' ? 'disabled' : ''}></div></div>
+      ${
+        pyr.length
+          ? `<div class="ng-label">Place in the ${esc(D.NATIONS[f.nat].name)} pyramid</div><select id="ed-nlplace" data-input="edNlPlace"><option value="none" ${place === 'none' ? 'selected' : ''}>Not linked: a league of its own, at the tier above</option><option value="top" ${place === 'top' ? 'selected' : ''}>At the top: above ${esc(pyr[0].name)}</option>${pyr.map((l) => `<option value="below:${esc(l.id)}" ${place === 'below:' + l.id ? 'selected' : ''}>Below ${esc(l.name)} (tier ${l.tier})</option>`).join('')}</select><div class="tiny dim" style="margin-top:6px;line-height:1.5">${place === 'none' ? 'Not part of the pyramid: no club goes up or down. Choose a place to join it.' : place === 'top' ? 'It becomes the top flight and takes the continental places; the old top flight is the second division and sends its top three up. Every division moves one tier down.' : "It takes the next tier down. The divisions from there move one lower, and it is linked to the league above it and the one below it, each keeping the number of clubs that go up and down (two where there was none). Change the numbers on a league's screen."}</div>`
+          : ''
+      }
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Clubs (8–24)</div><input type="number" id="ed-nlcount" min="8" max="24" inputmode="numeric" value="${f.count}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Simulation</div><select id="ed-nlsim">${['minimal', 'light', 'full'].map((k) => `<option value="${k}" ${f.sim === k ? 'selected' : ''}>${{ minimal: 'Minimal (fast)', light: 'Light', full: 'Full' }[k]}</option>`).join('')}</select></div></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateLeague">Add the league</button></div>`;
+  };
+  UI.acts.edNlPlace = () => {
+    readNl();
+    UI.worldEditor();
   };
   // A cross-nation league: open to clubs of other nations (a Gulf league, a North African league, Welsh clubs in England's pyramid)
   const leagueNatsCard = (l) => {
@@ -3558,6 +3662,144 @@
     UI.worldEditor();
   };
 
+  // ---------- Custom schedule ----------
+  // A league's whole fixture list made by hand (rules.schedule: [{ round, h, a }]), round by round, or loaded from a CSV file
+  // (league, round, home, away). It is the schedule of every season of the league while every club it names is in the league; a
+  // club that has left, or a match after the last matchday, and the game makes its own schedule again.
+  const schedOf = (l) => (l.rules && l.rules.schedule) || [];
+  const setSched = (l, list) => {
+    const was = l.rules && l.rules.schedule;
+    l.rules = l.rules || {};
+    if (list && list.length) l.rules.schedule = list;
+    else delete l.rules.schedule;
+    const bad = list && list.length ? WD.validateSchedule(l, ED.def) : [];
+    if (bad.length) {
+      if (was) l.rules.schedule = was;
+      else delete l.rules.schedule;
+    }
+    ED.err = bad;
+    return !bad.length;
+  };
+  const scheduleView = () => {
+    const l = leagueOf(ED.lid);
+    if (!l) return leagueView();
+    const r = l.rules || {},
+      sch = schedOf(l),
+      cl = clubsOf(l.id)
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name)),
+      limit = WD.pinLimit(l, cl.length),
+      round = Math.max(1, Math.min(limit, ED.sr || 1)),
+      blocked = r.zones || r.conferences || r.torneos || r.split;
+    const name = (id) => (cl.find((c) => c.id === id) || { name: id }).name;
+    const here = sch.filter((p) => p.round === round);
+    const busy = new Set(here.flatMap((p) => [p.h, p.a]));
+    const rest = cl.filter((c) => !busy.has(c.id));
+    const per = {};
+    for (const p of sch) for (const id of [p.h, p.a]) per[id] = (per[id] || 0) + 1;
+    const usual = (cl.length % 2 ? cl.length : cl.length - 1) * (r.legs === 1 ? 1 : 2);
+    const uneven = sch.length ? cl.filter((c) => (per[c.id] || 0) !== usual) : [];
+    const sel = (id, list, at = 0) =>
+      `<select id="${id}" style="flex:1;min-width:0">${list.map((c, i) => `<option value="${esc(c.id)}" ${i === at ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
+    return `<div class="h1" style="margin-top:2vh">Custom schedule</div><div class="tag">${esc(l.name)} · ${U.plural(cl.length, 'club')} · up to ${limit} matchdays</div>
+      ${errBox()}
+      ${
+        blocked
+          ? '<div class="tiny dim" style="line-height:1.5">This league has zones, conferences, two tournaments or a split, so its schedule is made by the game.</div>'
+          : `<div class="tiny dim" style="line-height:1.5;margin-top:6px">Lay out every match of the season, matchday by matchday, home side first. The same schedule is played every season while all its clubs are in the league. ${sch.length ? `<b>${U.plural(sch.length, 'match', 'matches')}</b> over ${Math.max(...sch.map((p) => p.round))} matchdays.` : 'None yet: the game makes the schedule.'}${
+              uneven.length
+                ? ` <span style="color:#fbbf24">${U.plural(uneven.length, 'club')} ${uneven.length === 1 ? 'does' : 'do'} not play the usual ${U.plural(usual, 'match', 'matches')} (${esc(
+                    uneven
+                      .slice(0, 3)
+                      .map((c) => c.name)
+                      .join(', '),
+                  )}${uneven.length > 3 ? '…' : ''}).</span>`
+                : ''
+            }</div>
+      <div class="actions" style="margin-top:8px;flex-wrap:wrap;gap:8px"><button class="btn sm" data-act="edSchedStart">${sch.length ? 'Start again from the standard schedule' : 'Start from the standard schedule'}</button>${sch.length ? '<button class="btn sm" data-act="edSchedDown">▼ CSV</button>' : ''}<button class="btn sm" data-act="edSchedUp">▲ Load a CSV</button>${sch.length ? '<button class="btn sm danger" data-act="edSchedClear">Clear it</button>' : ''}</div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A CSV has the columns league, round, home and away (the league may be left out here); a club is its name, short name or id. A file with a league column can hold several leagues' schedules: load it from CSV files on the start screen.</div>
+      <div class="ng-label">Matchday</div>
+      <div class="row" style="gap:6px"><button class="btn sm" data-act="edSchedRound" data-n="${round - 1}" ${round <= 1 ? 'disabled' : ''}>‹</button><select id="ed-sround" data-input="edSchedGo" style="flex:1">${Array.from({ length: limit }, (_, i) => `<option value="${i + 1}" ${i + 1 === round ? 'selected' : ''}>Matchday ${i + 1}${sch.filter((p) => p.round === i + 1).length ? ' · ' + sch.filter((p) => p.round === i + 1).length : ''}</option>`).join('')}</select><button class="btn sm" data-act="edSchedRound" data-n="${round + 1}" ${round >= limit ? 'disabled' : ''}>›</button></div>
+      ${here.length ? here.map((p, i) => `<div class="row small" style="gap:8px;padding:6px 0;border-top:${i ? '1px solid var(--line)' : '0'}"><span class="grow ellip">${esc(name(p.h))} v ${esc(name(p.a))}</span><button class="btn sm" data-act="edSchedDel" data-h="${esc(p.h)}" data-a="${esc(p.a)}" aria-label="Remove">✕</button></div>`).join('') : '<div class="tiny dim" style="margin-top:6px">No matches this matchday.</div>'}
+      ${rest.length >= 2 ? `<div class="ng-names" style="margin-top:8px"><div style="flex:1"><div class="tiny dim">Home</div>${sel('ed-sh', rest)}</div><div style="flex:1"><div class="tiny dim">Away</div>${sel('ed-sa', rest, 1)}</div></div><div class="actions" style="margin-top:8px"><button class="btn sm pri" data-act="edSchedAdd">Add the match</button></div>` : ''}
+      ${rest.length ? `<div class="tiny dim" style="margin-top:6px;line-height:1.5">Resting: ${esc(rest.map((c) => c.name).join(', '))}</div>` : ''}`
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" data-lid="${esc(l.id)}" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edSchedRound = (d) => {
+    ED.sr = +d.n;
+    UI.worldEditor();
+  };
+  UI.acts.edSchedGo = (d, el) => {
+    ED.sr = +el.value;
+    UI.worldEditor();
+  };
+  UI.acts.edSchedAdd = () => {
+    const l = leagueOf(ED.lid),
+      h = ($('#ed-sh') || {}).value,
+      a = ($('#ed-sa') || {}).value;
+    if (!h || !a || h === a) {
+      ED.err = ['Choose two different clubs'];
+      return UI.worldEditor();
+    }
+    setSched(l, [...schedOf(l), { round: ED.sr || 1, h, a }]);
+    UI.worldEditor();
+  };
+  UI.acts.edSchedDel = (d) => {
+    const l = leagueOf(ED.lid),
+      round = ED.sr || 1;
+    setSched(
+      l,
+      schedOf(l).filter((p) => !(p.round === round && p.h === d.h && p.a === d.a)),
+    );
+    UI.worldEditor();
+  };
+  UI.acts.edSchedClear = () => {
+    setSched(leagueOf(ED.lid), []);
+    ED.sr = 1;
+    UI.worldEditor();
+  };
+  // The game's own schedule for the league as the starting point: the rounds of its round-robin, once or home and away
+  UI.acts.edSchedStart = () => {
+    const l = leagueOf(ED.lid),
+      ids = clubsOf(l.id).map((c) => c.id);
+    if (ids.length < 2) return;
+    const rr = FM.W.roundRobin(ids),
+      limit = WD.pinLimit(l, ids.length),
+      rounds = (l.rules && l.rules.legs === 1 ? rr.slice(0, Math.ceil(rr.length / 2)) : rr).slice(0, limit);
+    setSched(
+      l,
+      rounds.flatMap((rd, i) => rd.map(([h, a]) => ({ round: i + 1, h, a }))),
+    );
+    ED.sr = 1;
+    UI.worldEditor();
+  };
+  UI.acts.edSchedDown = async () => {
+    const l = leagueOf(ED.lid);
+    try {
+      await FM.Native.shareFile({
+        bytes: new TextEncoder().encode('\uFEFF' + FM.CsvWorld.scheduleCsv(ED.def, l.id)),
+        name: `schedule-${l.id}.csv`,
+        type: 'text/csv',
+        title: `Touchline schedule ${l.name}`,
+        preferShare: false,
+      });
+      UI.toast('The schedule is ready as a CSV file', 3000);
+    } catch (e) {
+      UI.toast('' + (e.message || 'Download failed'), 4000);
+    }
+  };
+  UI.acts.edSchedUp = async () => {
+    const picked = await FM.Native.pickFiles('.csv,text/csv');
+    if (!picked.length) return;
+    const l = leagueOf(ED.lid),
+      r = FM.CsvWorld.applySchedule(ED.def, FM.DbImport.decode(picked[0].bytes), l.id, picked[0].name);
+    ED.err = r.errors;
+    UI.toast(r.errors.length ? `${U.plural(r.errors.length, 'problem')}: see the list` : 'The schedule went in', 3000);
+    ED.sr = 1;
+    UI.worldEditor();
+  };
+
   // ---------- Fixed fixtures ----------
   // Matches put on a matchday by hand (rules.pins), kept per league
   const pinsView = () => {
@@ -4238,7 +4480,7 @@
   UI.acts.edCsvDown = async (d) => {
     const files = d.k === 'template' ? FM.CsvWorld.template() : FM.CsvWorld.export(ED.def);
     try {
-      for (const k of ['leagues', 'clubs', 'managers', 'players'])
+      for (const k of ['leagues', 'clubs', 'managers', 'players', ...(files.schedule ? ['schedule'] : [])])
         await FM.Native.shareFile({
           bytes: new TextEncoder().encode('\uFEFF' + files[k]),
           name: `${k}.csv`,
@@ -5511,6 +5753,7 @@
       cup: cupView,
       calendar: calendarView,
       pins: pinsView,
+      schedule: scheduleView,
       newcup: newCupView,
       staff: staffView,
       staffhub: staffHubView,

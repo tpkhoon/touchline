@@ -329,6 +329,49 @@ if ('test' in args) {
       'the cross-nation league was not taken out again',
     );
   }
+  // a schedule made by hand: a CSV round trip, bad rows refused, the world played to it
+  {
+    const d8 = WD.fromStatic({ name: 'Schedule test' }),
+      lg = d8.leagues.find((x) => x.id === 'IE1'),
+      ids = d8.clubs.filter((c) => c.league === 'IE1').map((c) => c.id);
+    const rr = W.roundRobin(ids).slice().reverse();
+    lg.rules = lg.rules || {};
+    lg.rules.schedule = rr.flatMap((rd, i) => rd.map(([h, a]) => ({ round: i + 1, h, a })));
+    check(!WD.validateSchedule(lg, d8).length, 'a complete schedule was refused');
+    const csv = FM.CsvWorld.scheduleCsv(d8, 'IE1');
+    delete lg.rules.schedule;
+    const got = FM.CsvWorld.applySchedule(d8, csv, 'IE1');
+    check(
+      !got.errors.length && lg.rules.schedule.length === ids.length * (ids.length - 1),
+      'the schedule CSV did not come back whole',
+    );
+    const nm = (id) => d8.clubs.find((c) => c.id === id).name;
+    const keep = lg.rules.schedule;
+    const bad = FM.CsvWorld.applySchedule(
+      d8,
+      `league,round,home,away\nIE1,1,${nm(ids[0])},${nm(ids[1])}\nIE1,1,${nm(ids[0])},${nm(ids[2])}\n`,
+      'IE1',
+    );
+    check(
+      bad.errors.length && lg.rules.schedule === keep,
+      'a club twice on a matchday was accepted, or the old schedule was lost',
+    );
+    WD.useStatic(WD.patchOf(d8));
+    W.newWorld(W.REAL_RULES);
+    FM.Season.init();
+    const first = rr[0]
+      .map(([h, a]) => h + '>' + a)
+      .sort()
+      .join();
+    check(
+      FM.S.comps.IE1.fixtures[0]
+        .map((f) => f.h + '>' + f.a)
+        .sort()
+        .join() === first,
+      'the league did not play the schedule made by hand',
+    );
+    WD.useStatic(null);
+  }
   console.log(fails.length ? 'FAIL\n' + fails.join('\n') : 'World definition: all checks passed.');
   process.exit(fails.length ? 1 : 0);
 }

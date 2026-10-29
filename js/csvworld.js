@@ -106,6 +106,7 @@
     if (has('name', 'league') && !h.includes('season') && !h.includes('club')) return 'clubs';
     if (has('surname', 'position')) return 'players';
     if (has('surname', 'club', 'ability') && !h.includes('position')) return 'managers';
+    if (has('round', 'home', 'away')) return 'schedule';
     return null;
   };
 
@@ -231,15 +232,86 @@
       personality: m.personality,
       remove: '',
     }));
-    return { leagues, clubs, managers, players };
+    return { leagues, clubs, managers, players, schedule: CS.scheduleRows(def) };
   };
   CS.export = function (def) {
     const r = CS.rows(def);
-    return Object.fromEntries(Object.keys(r).map((k) => [k, toCsv(COLS[k], r[k])]));
+    return Object.fromEntries(
+      Object.keys(r)
+        .filter((k) => k !== 'schedule' || r[k].length)
+        .map((k) => [k, toCsv(COLS[k], r[k])]),
+    );
   };
   // a file's rows (objects keyed by column) as CSV text; the grid in the editor builds the text it checks and applies this way
   CS.toCsv = (kind, rows) => toCsv(COLS[kind], rows);
   const W = () => FM.W;
+
+  // ---------- A schedule as a CSV (schedule.csv: league, round, home, away) ----------
+  // One row a match, with its matchday. The league may be left out of a file for one league (the editor gives it); a club is its id, its
+  // code, its short name or its name. A league's rows replace its schedule; a league with a problem keeps the one it had.
+  COLS.schedule = ['league', 'round', 'home', 'away'];
+  CS.scheduleRows = function (def, lid) {
+    const name = (id) => ((def.clubs || []).find((c) => c.id === id) || {}).name || id;
+    return (def.leagues || [])
+      .filter((l) => (!lid || l.id === lid) && l.rules && Array.isArray(l.rules.schedule))
+      .flatMap((l) =>
+        l.rules.schedule
+          .slice()
+          .sort((a, b) => a.round - b.round)
+          .map((p) => ({ league: l.id, round: p.round, home: name(p.h), away: name(p.a) })),
+      );
+  };
+  CS.scheduleCsv = (def, lid) => toCsv(COLS.schedule, CS.scheduleRows(def, lid));
+  CS.applySchedule = function (def, text, lid, file = 'schedule.csv') {
+    const errors = [],
+      notes = [],
+      by = {};
+    const rows = rowsOf(text);
+    const leagueOf = (v) => {
+      const k = String(v).trim().toLowerCase();
+      return (def.leagues || []).find((l) => [l.id, l.short, l.name].some((x) => String(x || '').toLowerCase() === k));
+    };
+    for (const { n, v } of rows) {
+      const l = v.league ? leagueOf(v.league) : (def.leagues || []).find((x) => x.id === lid);
+      if (!l) {
+        errors.push(
+          `${file}, row ${n}: ${v.league ? `no league "${v.league}"` : 'no league given (name one in the league column)'}`,
+        );
+        continue;
+      }
+      const clubs = (def.clubs || []).filter((c) => c.league === l.id);
+      const find = (s) => {
+        const k = String(s).trim().toLowerCase();
+        const hit = (f) => clubs.filter((c) => String(f(c) || '').toLowerCase() === k);
+        const found = [(c) => c.id, (c) => String(c.id).replace(/^c_/, ''), (c) => c.name, (c) => c.short]
+          .map(hit)
+          .find((a) => a.length === 1);
+        return found && found[0];
+      };
+      const round = intOf(v.round),
+        h = find(v.home),
+        a = find(v.away);
+      if (!(round >= 1)) errors.push(`${file}, row ${n}: "${v.round}" should be a matchday number from 1`);
+      else if (!h) errors.push(`${file}, row ${n}, home: no club "${v.home}" in ${l.name}`);
+      else if (!a) errors.push(`${file}, row ${n}, away: no club "${v.away}" in ${l.name}`);
+      else (by[l.id] = by[l.id] || []).push({ round, h: h.id, a: a.id });
+    }
+    let done = 0;
+    for (const [id, list] of Object.entries(by)) {
+      const l = def.leagues.find((x) => x.id === id),
+        was = l.rules && l.rules.schedule;
+      l.rules = l.rules || {};
+      l.rules.schedule = list;
+      const bad = WD.validateSchedule(l, def);
+      if (bad.length) {
+        if (was) l.rules.schedule = was;
+        else delete l.rules.schedule;
+        errors.push(...bad.map((b) => `${file}: ${b} (the schedule of ${l.name} was not changed)`));
+      } else done++;
+    }
+    if (done) notes.push(`${U.plural(done, 'league')} given a schedule`);
+    return { errors, notes };
+  };
 
   // ---------- Templates ----------
   CS.template = function () {
@@ -332,7 +404,7 @@
       notes = [];
     const bad = (file, row, who, col, msg) =>
       errors.push(`${file}, row ${row}${who ? ` (${who})` : ''}${col ? `, ${col}` : ''}: ${msg}`);
-    const kinds = { leagues: null, clubs: null, managers: null, players: null };
+    const kinds = { leagues: null, clubs: null, managers: null, players: null, schedule: null };
     for (const f of files) {
       const k = CS.kind(f.text);
       if (k) kinds[k] = f;
@@ -701,6 +773,12 @@
     if (nc || uc) notes.push(`${U.plural(nc, 'new club')}, ${U.plural(uc, 'club')} changed or taken out`);
     if (nm) notes.push(`${U.plural(nm, 'manager')} set`);
     if (np) notes.push(`${U.plural(np, 'player')} added`);
+    // a schedule (read last: it names clubs the other files may have added)
+    if (kinds.schedule) {
+      const r = CS.applySchedule(def, kinds.schedule.text, null, kinds.schedule.name || 'schedule.csv');
+      errors.push(...r.errors);
+      notes.push(...r.notes);
+    }
     return { errors, notes, counts: { nl, ul, nc, uc, nm, np } };
   };
 
