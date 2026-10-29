@@ -19,59 +19,109 @@
     ['BRA_RS', 'BRA', 'rr', 'Campeonato Guina', 'GUIC', 'UNG GUI GRA'],
     ['BRA_MG', 'BRA', 'rr', 'Campeonato Pitangaçu', 'PITC', 'PIT PIA'],
     ['BRA_NE', 'BRA', 'rr', 'Campeonato Ubatia', 'UBAC', 'UBA UBE JAB JAC JAF'],
-    ['ENG_1', 'ENG', 'rr', 'Southern England Cup', 'ENGA', 'RED CAL TET QUA CHC'],
-    ['ENG_2', 'ENG', 'rr', 'South-Eastern England Cup', 'ENGB', 'CHE FIL BRA TAD EVE'],
-    ['ENG_3', 'ENG', 'rr', 'North-Western England Cup', 'ENGC', 'MER EPI CLI CLC BAA'],
-    ['ENG_4', 'ENG', 'rr', 'Northern England Cup', 'ENGD', 'BAY RYE SEL CAR ROD'],
-    ['ESP_1', 'ESP', 'rr', 'Copa Suroeste', 'ESPA', 'ALC ALB BEN OLC OLM'],
-    ['ESP_2', 'ESP', 'rr', 'Copa Noroeste', 'ESPB', 'OSU MOD JUR CUE COR'],
-    ['ESP_3', 'ESP', 'rr', 'Copa Sureste', 'ESPC', 'SOR MOF MNT JUC PLA'],
-    ['ESP_4', 'ESP', 'rr', 'Copa Noreste', 'ESPD', 'CRV CER JUV ARR LIO'],
-    ['GER_1', 'GER', 'rr', 'Südwestpokal', 'GERA', 'FOR BRU GER VID MUH'],
-    ['GER_2', 'GER', 'rr', 'Südpokal', 'GERB', 'VIB HAF GEB DIL'],
-    ['GER_3', 'GER', 'rr', 'Nordwestpokal', 'GERC', 'FSV UNT TEU BRF BER'],
-    ['GER_4', 'GER', 'rr', 'Nordostpokal', 'GERD', 'BRG PRE VIK SPB'],
-    ['FRA_1', 'FRA', 'rr', "Coupe de l'Ouest", 'FRAA', 'LAN LUR VEA LUO VAL'],
-    ['FRA_2', 'FRA', 'rr', 'Coupe du Nord-Ouest', 'FRAB', 'ESJ QUI QUR EST'],
-    ['FRA_3', 'FRA', 'rr', 'Coupe du Sud-Est', 'FRAC', 'LUN ESB AJC JOY ROC'],
-    ['FRA_4', 'FRA', 'rr', 'Coupe du Nord-Est', 'FRAD', 'THO VAR ETO USM'],
-    ['ITA_1', 'ITA', 'rr', "Coppa dell'Ovest", 'ITAA', 'FRS ORV PRF GUB VIR'],
-    ['ITA_2', 'ITA', 'rr', 'Coppa del Nordovest', 'ITAB', 'TRS PRO USP TRE FRA'],
-    ['ITA_3', 'ITA', 'rr', 'Coppa del Sudest', 'ITAC', 'VIC MON BEL USB AUM'],
-    ['ITA_4', 'ITA', 'rr', 'Coppa del Nordest', 'ITAD', 'USF AUD VIO AUV MIR'],
-    ['POR_1', 'POR', 'rr', 'Taça do Sudoeste', 'PORA', 'ALE ESO COV LEI TOM'],
-    ['POR_2', 'POR', 'rr', 'Taça do Centro', 'PORB', 'POA POR CVA MAR'],
-    ['POR_3', 'POR', 'rr', 'Taça do Nordeste', 'PORC', 'LEF ESP UNI GMR SES'],
-    ['POR_4', 'POR', 'rr', 'Taça do Nordeste 2', 'PORD', 'CAM GRP GOU SAN'],
-    ['NED_1', 'NED', 'rr', 'Zuidwestbeker', 'NEDA', 'RKH ZAA ADO ZAS NIE'],
-    ['NED_2', 'NED', 'rr', 'Zuidoostbeker', 'NEDB', 'KLE DVC VVG VIT'],
-    ['NED_3', 'NED', 'rr', 'Noordwestbeker', 'NEDC', 'VVZ RKC KVA LGD EXH'],
-    ['NED_4', 'NED', 'rr', 'Noordoostbeker', 'NEDD', 'MAA EXC KLF WAA'],
-    ['ARG_1', 'ARG', 'rr', 'Copa Sureste', 'ARGA', 'PUE VEL FRC SPO'],
-    ['ARG_2', 'ARG', 'rr', 'Copa Sureste 2', 'ARGB', 'ARC DEP BUS'],
-    ['ARG_3', 'ARG', 'rr', 'Copa Sureste 3', 'ARGC', 'IND NAO REQ DEF'],
-    ['ARG_4', 'ARG', 'rr', 'Copa Sureste 4', 'ARGD', 'NAD GIM LEZ'],
-    ['ARG_5', 'ARG', 'rr', 'Copa Oeste', 'ARGE', 'GAP COF REG QRZ'],
-    ['ARG_6', 'ARG', 'rr', 'Copa Sureste 5', 'ARGF', 'URQ PEC INF'],
-    ['ARG_7', 'ARG', 'rr', 'Copa Noroeste', 'ARGG', 'GAR CAS DOR DOM'],
-    ['ARG_8', 'ARG', 'rr', 'Copa Noroeste 2', 'ARGH', 'DFN TOR NCN'],
-    ['USA_1', 'USA', 'rr', 'Western United States Cup', 'USAA', 'CED SIL SIA PRA'],
-    ['USA_2', 'USA', 'rr', 'Western United States Cup 2', 'USAB', 'BEA BLU SUN EAG'],
-    ['USA_3', 'USA', 'rr', 'Southern United States Cup', 'USAC', 'ASE BLS PIN CAN'],
-    ['USA_4', 'USA', 'rr', 'North-Western United States Cup', 'USAD', 'GOP MAP HIC'],
-    ['USA_5', 'USA', 'rr', 'South-Eastern United States Cup', 'USAE', 'ASP SPR LAK WHI'],
-    ['USA_6', 'USA', 'rr', 'Eastern United States Cup', 'USAF', 'FOF PNF GOR MIL'],
-    ['USA_7', 'USA', 'rr', 'Eastern United States Cup 2', 'USAG', 'SUS CHM REN FOS'],
-    ['USA_8', 'USA', 'rr', 'Eastern United States Cup 3', 'USAH', 'FRT GRU SUM'],
-    ['JPN_1', 'JPN', 'rr', 'Western Japan Cup', 'JPNA', 'KIK SHI NAA NIS MAC'],
-    ['JPN_2', 'JPN', 'rr', 'Central Japan Cup', 'JPNB', 'MAT HOK FUJ MTS OKA'],
-    ['JPN_3', 'JPN', 'rr', 'Eastern Japan Cup', 'JPNC', 'MAS ASA SAK AKI AKM'],
-    ['JPN_4', 'JPN', 'rr', 'Eastern Japan Cup 2', 'JPND', 'SHF HIG HIS NAG KIT'],
-    ['KSA_1', 'KSA', 'rr', 'Southern Saudi Arabia Cup', 'KSAA', 'RIA SAQ YAS SAR WAF'],
-    ['KSA_2', 'KSA', 'rr', 'Eastern Saudi Arabia Cup', 'KSAB', 'JAN SAH TAQ IBD'],
-    ['KSA_3', 'KSA', 'rr', 'North-Western Saudi Arabia Cup', 'KSAC', 'UFU NAK RAY DHI SAA'],
-    ['KSA_4', 'KSA', 'rr', 'North-Eastern Saudi Arabia Cup', 'KSAD', 'HAD ASL HAQ FUR'],
   ];
+  // The regional cups of the countries beyond Brazil: a nation's top flight grouped by the real region of each club (js/regions.js).
+  // A region with three to six clubs is a cup of its own; a larger one is split in two or more along its longer side, and a region
+  // with fewer joins its nearest neighbour (up to six clubs), so a cup is named for the regions it covers: the Bavarian Cup, the
+  // Yorkshire and North East Cup, the Corsican clubs with Provence.
+  const REGIONAL_NATS = {
+    ENG: 'en',
+    ESP: 'es',
+    GER: 'de',
+    FRA: 'fr',
+    ITA: 'it',
+    POR: 'pt',
+    NED: 'nl',
+    ARG: 'es',
+    USA: 'en',
+    JPN: 'en',
+    KSA: 'en',
+  };
+  const CUP_NAME = {
+    en: (r) => `${r} Cup`,
+    es: (r) => `Copa ${r}`,
+    de: (r) => `${r} Pokal`,
+    fr: (r) => `Coupe ${r}`,
+    it: (r) => `Coppa ${r}`,
+    pt: (r) => `Taça ${r}`,
+    nl: (r) => `${r} Beker`,
+  };
+  const joinNames = (a) => (a.length < 2 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+  const centre = (g) => [
+    g.cs.reduce((t, c) => t + c.g[0], 0) / g.cs.length,
+    g.cs.reduce((t, c) => t + c.g[1], 0) / g.cs.length,
+  ];
+  const apart = (a, b) => {
+    const p = centre(a),
+      q = centre(b);
+    return Math.hypot(p[0] - q[0], (p[1] - q[1]) * 0.7);
+  };
+  const halve = (g) => {
+    if (g.cs.length <= 6) return [g];
+    const lat = g.cs.map((c) => c.g[0]),
+      lng = g.cs.map((c) => c.g[1]),
+      k = (Math.max(...lng) - Math.min(...lng)) * 0.7 >= Math.max(...lat) - Math.min(...lat) ? 1 : 0;
+    const sorted = g.cs.slice().sort((a, b) => a.g[k] - b.g[k]),
+      h = Math.ceil(sorted.length / 2);
+    return [...halve({ names: g.names, cs: sorted.slice(0, h) }), ...halve({ names: g.names, cs: sorted.slice(h) })];
+  };
+  const regionalAreas = () => {
+    const out = [];
+    for (const l of D.LEAGUES) {
+      const lang = REGIONAL_NATS[l.nat];
+      if (l.tier !== 1 || !lang || !D.clubRegion) continue;
+      const by = new Map();
+      for (const r of (D[l.clubs] || []).filter((x) => !x[9])) {
+        const g = D.GEO && D.GEO[r[1]],
+          region = D.clubRegion({ id: 'c_' + r[1], nat: l.nat });
+        if (g && region) by.set(region, (by.get(region) || []).concat([{ code: r[1], g }]));
+      }
+      let groups = [...by].flatMap(([name, cs]) => halve({ names: [name], cs }));
+      const stuck = new Set();
+      for (;;) {
+        const small = groups
+          .filter((g) => g.cs.length < 3 && !stuck.has(g))
+          .sort((a, b) => a.cs.length - b.cs.length)[0];
+        if (!small) break;
+        const near = groups
+          .filter(
+            (g) =>
+              g !== small &&
+              g.cs.length + small.cs.length <= 6 &&
+              new Set([...g.names, ...small.names]).size <= 3 &&
+              apart(small, g) <= 9, // (not across a country: Texas does not join Florida)
+          )
+          .sort((a, b) => apart(small, a) - apart(small, b))[0];
+        if (!near) {
+          stuck.add(small);
+          continue;
+        }
+        near.names = [...new Set([...near.names, ...small.names])];
+        near.cs = near.cs.concat(small.cs);
+        groups = groups.filter((g) => g !== small);
+      }
+      groups = groups.filter((g) => g.cs.length >= 2).sort((a, b) => a.names.join().localeCompare(b.names.join()));
+      // (the pieces of one large region are numbered: Buenos Aires I, II, III)
+      const key = (g) => g.names.join('|'),
+        pieces = {};
+      groups.forEach((g) => (pieces[key(g)] = (pieces[key(g)] || 0) + 1));
+      const at = {},
+        ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+      groups.forEach((g, i) => {
+        const n = (at[key(g)] = (at[key(g)] || 0) + 1);
+        out.push([
+          `${l.nat}_${i + 1}`,
+          l.nat,
+          'rr',
+          CUP_NAME[lang](joinNames(g.names) + (pieces[key(g)] > 1 ? ' ' + ROMAN[n - 1] : '')),
+          l.nat + 'ABCDEFGHIJ'[i],
+          g.cs.map((c) => c.code).join(' '),
+        ]);
+      });
+    }
+    return out;
+  };
+  D.AREAS.push(...regionalAreas());
   const compId = (r) => 'R_' + r[0];
   Rg.compId = compId;
 
@@ -83,6 +133,7 @@
     for (const d of s.calendar || []) if (d.regional && d.comps) d.comps = d.comps.filter((id) => s.comps[id]);
     for (const r of D.AREAS) {
       const id = compId(r);
+      if (s.comps[id]) Object.assign(s.comps[id], { name: r[3], short: r[4] }); // (a save from before the regions has the older names)
       if (!s.comps[id])
         s.comps[id] = {
           id,
