@@ -1,6 +1,7 @@
 // @ts-check
-// Regional competitions: the Brazilian state championships. Small early-season tournaments among the clubs of one
-// area, played on their own days. A state championship is a league phase among the area's clubs and then a final
+// Regional competitions: the Brazilian state championships and regional cups in England, Spain, Germany, France, Italy, Portugal,
+// the Netherlands, Argentina, the United States, Japan and Saudi Arabia (the top flight split by geography into areas of up to six).
+// Small early-season tournaments among the clubs of one area, played on their own days. A state championship is a league phase among the area's clubs and then a final
 // between the top two (an area can also be a knockout, 'ko', as the English county cups were: none is left). The clubs
 // are listed by code (the part of an id after c_). Where a state has too few clubs of its own in this world, neighbours play together.
 (function () {
@@ -18,6 +19,58 @@
     ['BRA_RS', 'BRA', 'rr', 'Campeonato Guina', 'GUIC', 'UNG GUI GRA'],
     ['BRA_MG', 'BRA', 'rr', 'Campeonato Pitangaçu', 'PITC', 'PIT PIA'],
     ['BRA_NE', 'BRA', 'rr', 'Campeonato Ubatia', 'UBAC', 'UBA UBE JAB JAC JAF'],
+    ['ENG_1', 'ENG', 'rr', 'Southern England Cup', 'ENGA', 'RED CAL TET QUA CHC'],
+    ['ENG_2', 'ENG', 'rr', 'South-Eastern England Cup', 'ENGB', 'CHE FIL BRA TAD EVE'],
+    ['ENG_3', 'ENG', 'rr', 'North-Western England Cup', 'ENGC', 'MER EPI CLI CLC BAA'],
+    ['ENG_4', 'ENG', 'rr', 'Northern England Cup', 'ENGD', 'BAY RYE SEL CAR ROD'],
+    ['ESP_1', 'ESP', 'rr', 'Copa Suroeste', 'ESPA', 'ALC ALB BEN OLC OLM'],
+    ['ESP_2', 'ESP', 'rr', 'Copa Noroeste', 'ESPB', 'OSU MOD JUR CUE COR'],
+    ['ESP_3', 'ESP', 'rr', 'Copa Sureste', 'ESPC', 'SOR MOF MNT JUC PLA'],
+    ['ESP_4', 'ESP', 'rr', 'Copa Noreste', 'ESPD', 'CRV CER JUV ARR LIO'],
+    ['GER_1', 'GER', 'rr', 'Südwestpokal', 'GERA', 'FOR BRU GER VID MUH'],
+    ['GER_2', 'GER', 'rr', 'Südpokal', 'GERB', 'VIB HAF GEB DIL'],
+    ['GER_3', 'GER', 'rr', 'Nordwestpokal', 'GERC', 'FSV UNT TEU BRF BER'],
+    ['GER_4', 'GER', 'rr', 'Nordostpokal', 'GERD', 'BRG PRE VIK SPB'],
+    ['FRA_1', 'FRA', 'rr', "Coupe de l'Ouest", 'FRAA', 'LAN LUR VEA LUO VAL'],
+    ['FRA_2', 'FRA', 'rr', 'Coupe du Nord-Ouest', 'FRAB', 'ESJ QUI QUR EST'],
+    ['FRA_3', 'FRA', 'rr', 'Coupe du Sud-Est', 'FRAC', 'LUN ESB AJC JOY ROC'],
+    ['FRA_4', 'FRA', 'rr', 'Coupe du Nord-Est', 'FRAD', 'THO VAR ETO USM'],
+    ['ITA_1', 'ITA', 'rr', "Coppa dell'Ovest", 'ITAA', 'FRS ORV PRF GUB VIR'],
+    ['ITA_2', 'ITA', 'rr', 'Coppa del Nordovest', 'ITAB', 'TRS PRO USP TRE FRA'],
+    ['ITA_3', 'ITA', 'rr', 'Coppa del Sudest', 'ITAC', 'VIC MON BEL USB AUM'],
+    ['ITA_4', 'ITA', 'rr', 'Coppa del Nordest', 'ITAD', 'USF AUD VIO AUV MIR'],
+    ['POR_1', 'POR', 'rr', 'Taça do Sudoeste', 'PORA', 'ALE ESO COV LEI TOM'],
+    ['POR_2', 'POR', 'rr', 'Taça do Centro', 'PORB', 'POA POR CVA MAR'],
+    ['POR_3', 'POR', 'rr', 'Taça do Nordeste', 'PORC', 'LEF ESP UNI GMR SES'],
+    ['POR_4', 'POR', 'rr', 'Taça do Nordeste 2', 'PORD', 'CAM GRP GOU SAN'],
+    ['NED_1', 'NED', 'rr', 'Zuidwestbeker', 'NEDA', 'RKH ZAA ADO ZAS NIE'],
+    ['NED_2', 'NED', 'rr', 'Zuidoostbeker', 'NEDB', 'KLE DVC VVG VIT'],
+    ['NED_3', 'NED', 'rr', 'Noordwestbeker', 'NEDC', 'VVZ RKC KVA LGD EXH'],
+    ['NED_4', 'NED', 'rr', 'Noordoostbeker', 'NEDD', 'MAA EXC KLF WAA'],
+    ['ARG_1', 'ARG', 'rr', 'Copa Sureste', 'ARGA', 'PUE VEL FRC SPO'],
+    ['ARG_2', 'ARG', 'rr', 'Copa Sureste 2', 'ARGB', 'ARC DEP BUS'],
+    ['ARG_3', 'ARG', 'rr', 'Copa Sureste 3', 'ARGC', 'IND NAO REQ DEF'],
+    ['ARG_4', 'ARG', 'rr', 'Copa Sureste 4', 'ARGD', 'NAD GIM LEZ'],
+    ['ARG_5', 'ARG', 'rr', 'Copa Oeste', 'ARGE', 'GAP COF REG QRZ'],
+    ['ARG_6', 'ARG', 'rr', 'Copa Sureste 5', 'ARGF', 'URQ PEC INF'],
+    ['ARG_7', 'ARG', 'rr', 'Copa Noroeste', 'ARGG', 'GAR CAS DOR DOM'],
+    ['ARG_8', 'ARG', 'rr', 'Copa Noroeste 2', 'ARGH', 'DFN TOR NCN'],
+    ['USA_1', 'USA', 'rr', 'Western United States Cup', 'USAA', 'CED SIL SIA PRA'],
+    ['USA_2', 'USA', 'rr', 'Western United States Cup 2', 'USAB', 'BEA BLU SUN EAG'],
+    ['USA_3', 'USA', 'rr', 'Southern United States Cup', 'USAC', 'ASE BLS PIN CAN'],
+    ['USA_4', 'USA', 'rr', 'North-Western United States Cup', 'USAD', 'GOP MAP HIC'],
+    ['USA_5', 'USA', 'rr', 'South-Eastern United States Cup', 'USAE', 'ASP SPR LAK WHI'],
+    ['USA_6', 'USA', 'rr', 'Eastern United States Cup', 'USAF', 'FOF PNF GOR MIL'],
+    ['USA_7', 'USA', 'rr', 'Eastern United States Cup 2', 'USAG', 'SUS CHM REN FOS'],
+    ['USA_8', 'USA', 'rr', 'Eastern United States Cup 3', 'USAH', 'FRT GRU SUM'],
+    ['JPN_1', 'JPN', 'rr', 'Western Japan Cup', 'JPNA', 'KIK SHI NAA NIS MAC'],
+    ['JPN_2', 'JPN', 'rr', 'Central Japan Cup', 'JPNB', 'MAT HOK FUJ MTS OKA'],
+    ['JPN_3', 'JPN', 'rr', 'Eastern Japan Cup', 'JPNC', 'MAS ASA SAK AKI AKM'],
+    ['JPN_4', 'JPN', 'rr', 'Eastern Japan Cup 2', 'JPND', 'SHF HIG HIS NAG KIT'],
+    ['KSA_1', 'KSA', 'rr', 'Southern Saudi Arabia Cup', 'KSAA', 'RIA SAQ YAS SAR WAF'],
+    ['KSA_2', 'KSA', 'rr', 'Eastern Saudi Arabia Cup', 'KSAB', 'JAN SAH TAQ IBD'],
+    ['KSA_3', 'KSA', 'rr', 'North-Western Saudi Arabia Cup', 'KSAC', 'UFU NAK RAY DHI SAA'],
+    ['KSA_4', 'KSA', 'rr', 'North-Eastern Saudi Arabia Cup', 'KSAD', 'HAD ASL HAQ FUR'],
   ];
   const compId = (r) => 'R_' + r[0];
   Rg.compId = compId;

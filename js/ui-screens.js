@@ -3911,8 +3911,28 @@
               )
               .join('')
           : '<div class="small dim">First season in progress.</div>'
-      }</div>`;
+      }</div>
+      ${W.employed() ? `<div class="card flat"><div class="row"><div class="grow"><div class="b">Resign</div><div class="tiny dim">Leave ${esc(club().name)} and look for another job. The club appoints a successor.</div></div><button class="btn sm danger" data-act="resign">Resign</button></div></div>` : ''}`;
   }
+  UI.acts.resign = () => {
+    const c = club();
+    if (!c) return;
+    UI.sheet(
+      `<div class="small" style="line-height:1.5">Resign as manager of <b>${esc(c.name)}</b>? Your squad, plans and promises stay with the club, and you will be out of work until you accept another offer.</div>
+      <div class="row" style="gap:8px;margin-top:14px"><button class="btn grow" data-act="closeSheet">Stay</button><button class="btn grow danger" data-act="resignDo">Resign</button></div>`,
+      { title: 'Resign?' },
+    );
+  };
+  UI.acts.resignDo = () => {
+    if (!W.employed()) return UI.closeAllSheets();
+    const name = club().name;
+    W.goUnemployed('resigned');
+    UI.closeAllSheets();
+    UI.toast(`You have resigned from ${name}.`);
+    UI.tab = 'home';
+    UI.save();
+    UI.render();
+  };
   // Honours of a club: national, continental and world trophies first; county cups and state championships are a
   // category of their own beneath them
   UI.honoursCard = function (c, none) {

@@ -75,6 +75,7 @@
         if (!r) {
           r = { id: FM.nextId('n'), day: S.day, year: S.year, read: false, type: 'roundup', deals: [] };
           S.news.unshift(r);
+          if (S.news.length > 2 * FM.News.CAP) FM.News.trim(S);
         }
         r.deals.push({ t: n.title, pid: n.pid, c: n.clubId });
         r.title = `Transfer round-up: ${r.deals.length} deal${r.deals.length === 1 ? '' : 's'}`;
