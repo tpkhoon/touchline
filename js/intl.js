@@ -229,7 +229,7 @@
         .sort((a, b) => a.rep - b.rep)
         .slice(0, Math.max(4, Math.ceil(Object.values(s.clubs).filter((c) => c.nat === nat).length * 0.7))));
     // a club to take him: the weakest player of his position there makes way and goes unattached
-    const place = (code, pos, ca) => {
+    const place = (code, pos, ca, age) => {
       const ties = ((D.NATION_TIES || {})[code] || []).filter((n) => hostClubs(n).length);
       for (let k = 0; ties.length && k < 8; k++) {
         const tie = U.wpick(ties, (n) => [5, 2.2, 1.5, 1, 0.8][ties.indexOf(n)] || 0.5),
@@ -240,6 +240,11 @@
         if (pos === 'GK' && W.squad(club.id).filter((x) => x.pos === 'GK').length < 4) continue;
         const out = sq.sort((a, b) => a.ca - b.ca)[0];
         if (!out || out.ca > ca + 8) continue;
+        // (the club's registration rules still hold with him in the squad: a club at its foreign-player limit takes no more)
+        const made = W.squad(club.id)
+          .filter((x) => x !== out)
+          .map((x) => ({ nat: x.nat, age: W.age(x) }));
+        if (FM.Reg && FM.Reg.genNat(club, made, age, () => code) !== code) continue;
         moved.add(out.id);
         const sp = W.spell(out);
         if (sp) sp.to = s.year;
@@ -269,7 +274,7 @@
         const age = U.randi(20, 33),
           ca = Math.round(U.clamp(U.gauss(50, 5), 38, 62)),
           pos = SLOTS[i % SLOTS.length],
-          clubId = all ? place(code, pos, ca) : null,
+          clubId = all ? place(code, pos, ca, age) : null,
           p = W.genPlayer({ nat: code, pos, age, ca, pa: W.potentialFor(ca, age), ...(clubId ? { clubId } : {}) });
         if (!clubId) {
           p.contract = s.year;

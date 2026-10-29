@@ -732,7 +732,11 @@ const bad = Object.values(S.players).filter(
     (!Number.isFinite(p.ca) || Object.values(p.attrs).some((v) => !Number.isFinite(v) || v < 1 || v > 20.5)),
 );
 check(bad.length === 0, `${bad.length} players with invalid attributes (e.g. ${bad[0] && bad[0].id})`);
-check(S.news.length > 0 && S.news.length <= 2 * FM.News.CAP, `feed has ${S.news.length} items`);
+// (open decisions and the rare stories marked keep take places of their own beyond the two hundred)
+check(
+  S.news.length > 0 && S.news.length <= 2 * FM.News.CAP + 60 + S.news.filter(FM.News.isOpen).length,
+  `feed has ${S.news.length} items`,
+);
 // The squad index is updated in place on every move: it must agree with a full recount of the players
 {
   const byClub = {};
