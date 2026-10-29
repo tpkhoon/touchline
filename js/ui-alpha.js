@@ -1127,14 +1127,24 @@
           .slice()
           .sort((a, b) => (b.teams.includes(u.nation) ? 1 : 0) - (a.teams.includes(u.nation) ? 1 : 0));
       top += `<div class="sec"><div class="h3">Qualifying · ${q.kind === 'world' ? 'World Championship' : 'continental championships'} ${q.year + 1}</div></div>
-        <div class="small muted" style="margin:0 2px 8px">Group winners go through first, then the best runners-up by points per game; the last places are played for in single-match play-offs between the next best teams on the last matchday. ${
-          Object.keys(q.direct).length
-            ? `Qualified automatically: ${Object.values(q.direct)
-                .flat()
-                .map((id) => C.flag(T(id).code))
-                .join(' ')}`
-            : ''
-        }</div>
+        <div class="small muted" style="margin:0 2px 8px">Group winners go through first, then the best runners-up by points per game; the last places are played for in single-match play-offs between the next best teams on the last matchday.</div>
+        ${(() => {
+          // nations in without playing: a part of the world with no more nations than places, a tournament with no qualifying, or
+          // the winner of a regional tournament that feeds it
+          const by = {};
+          for (const [key, ids] of Object.entries(q.direct))
+            if (ids.length) (by[key.split(':')[0]] ||= { direct: [], auto: [] }).direct.push(...ids);
+          for (const [key, ids] of Object.entries(q.auto || {}))
+            (by[key.split(':')[0]] ||= { direct: [], auto: [] }).auto.push(...ids);
+          const flags = (ids) => ids.map((id) => `${C.flag(T(id).code)} ${esc(T(id).name)}`).join(' · ');
+          const rows = Object.entries(by).map(
+            ([tid, x]) =>
+              `<div class="tiny" style="margin:4px 0;line-height:1.5"><b>${esc(FM.Intl.TNAME[tid] || tid)}</b>${x.direct.length ? ` · in without qualifying (its part of the world has no more nations than places, or it has no qualifying): ${flags(x.direct)}` : ''}${x.auto.length ? ` · winners of a regional tournament: ${flags(x.auto)}` : ''}</div>`,
+          );
+          return rows.length
+            ? `<div class="card flat" style="margin:0 0 8px;padding:6px 12px">${rows.join('')}</div>`
+            : '';
+        })()}
         ${Object.values(q.pos || {})
           .flat()
           .map(
@@ -1196,9 +1206,10 @@
       nl = s.nl;
     if (!nl) {
       const hist = (s.nlHistory || []).slice(0, 5);
-      return hist.length
-        ? `<div class="card"><div class="h3">Nations League</div><div class="small dim" style="margin-top:4px">No Nations League this season (a qualifying year). Last played:</div>${hist.map((h) => `<div class="row small" style="margin-top:6px"><span class="dim" style="width:48px">${h.year + 1}</span><span class="grow ellip">${esc(h.name)}</span><b>${C.flag(T(h.winner).code)} ${esc(T(h.winner).name)}</b></div>`).join('')}</div>`
-        : '';
+      let back = null;
+      for (let y = s.year + 1; y <= s.year + 4 && back == null; y++) if (I.nlYear(y)) back = y;
+      const kind = I.tournamentFor(s.year);
+      return `<div class="card"><div class="h3">Nations League</div><div class="small dim" style="margin-top:4px;line-height:1.5">No Nations League this season: the breaks are ${kind === 'world' ? 'World Championship' : 'continental championship'} qualifiers. The Nations League is played in the seasons with no qualifying${back != null ? `, next in ${back + 1}` : ''}.${hist.length ? ' Last played:' : ''}</div>${hist.map((h) => `<div class="row small" style="margin-top:6px"><span class="dim" style="width:48px">${h.year + 1}</span><span class="grow ellip">${esc(h.name)}</span><b>${C.flag(T(h.winner).code)} ${esc(T(h.winner).name)}</b></div>`).join('')}</div>`;
     }
     const club = FM.W.userClub && FM.W.userClub(),
       focus = u.nation ? T(u.nation).code : club && club.nat,
