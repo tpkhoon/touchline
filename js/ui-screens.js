@@ -3591,7 +3591,7 @@
         finances: financesView,
         press: pressView,
         hof: hofView,
-        archive: archiveView,
+        archive: () => (UI.archiveTabs ? UI.archiveTabs(archiveView) : archiveView()),
         manager: managerView,
         settings: settingsView,
       }[t]()
@@ -3821,12 +3821,13 @@
         (
           e,
         ) => `<div class="card"><div class="row"><div class="era grow">${esc(e.label)}</div>${e.user ? `<span class="pill ${e.user.trophies.length ? 'acc' : ''}">You: ${U.ordinal(e.user.pos)} with ${esc(CL(e.user.club).name)}</span>` : ''}</div>
-      ${Object.values(e.comps)
-        .filter(W.homeLeague)
+      ${Object.entries(e.comps)
+        .filter(([, x]) => W.homeLeague(x))
         .map(
-          (
+          ([
+            cid,
             x,
-          ) => `<div style="margin-top:10px"><div class="small b dim" style="text-transform:uppercase;letter-spacing:.6px">${esc(x.name)}</div>
+          ]) => `<div style="margin-top:10px"><div class="small b dim tap" style="text-transform:uppercase;letter-spacing:.6px;min-height:28px" data-act="histComp" data-y="${e.year}" data-id="${esc(cid)}">${esc(x.name)} ›</div>
         <div class="row small" style="margin-top:4px">${C.crest(CL(x.champion), 18)} <b class="grow">${esc(CL(x.champion).name)}</b><span class="dim">runner-up ${esc(CL(x.runnerUp).name)}</span></div>
         ${x.topScorer ? `<div class="small" style="margin-top:3px">${esc(x.topScorer.name)} — ${U.plural(x.topScorer.goals, 'goal')}</div>` : ''}
         ${x.poty ? `<div class="small" style="margin-top:3px">Player of the Season: ${esc(x.poty.name)} (${x.poty.avg})</div>` : ''}
@@ -3841,7 +3842,7 @@
               .filter((x) => !W.homeLeague(x))
               .map(
                 (x) =>
-                  `<div class="row small" style="margin-top:4px">${C.flag(x.nat)} <span class="dim grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).name)}</b></div>`,
+                  `<div class="row small tap" style="margin-top:4px;min-height:32px" data-act="histComp" data-y="${e.year}" data-id="${esc(Object.keys(e.comps).find((k) => e.comps[k] === x))}">${C.flag(x.nat)} <span class="dim grow ellip">${esc(x.name)}</span>${C.crest(CL(x.champion), 16)} <b>${esc(CL(x.champion).name)}</b></div>`,
               )
               .join('')}</div>`
           : ''
@@ -3854,12 +3855,12 @@
             )
               .map(
                 (x) =>
-                  `<div class="row small" style="margin-top:4px"><span class="dim">${esc(x.name)}</span><span class="grow"></span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).name)}</b></div>`,
+                  `<div class="row small tap" style="margin-top:4px;min-height:32px" data-act="histComp" data-y="${e.year}" data-id="${esc(Object.keys(e.cups).find((k) => e.cups[k] === x))}"><span class="dim">${esc(x.name)} ›</span><span class="grow"></span>${C.crest(CL(x.winner), 16)} <b>${esc(CL(x.winner).name)}</b></div>`,
               )
               .join('')}</div>`
           : ''
       }
-      ${e.intl && e.intl.length ? `<div style="margin-top:10px"><div class="small b dim" style="text-transform:uppercase;letter-spacing:.6px">International</div>${e.intl.map((x) => `<div class="small" style="margin-top:4px">${esc(x.name)}: <b>${C.flag(FM.S.nteams[x.winner].code)} ${esc(FM.S.nteams[x.winner].name)}</b> <span class="dim">${esc(x.final)} v ${esc(FM.S.nteams[x.runnerUp].name)}</span></div>`).join('')}</div>` : ''}
+      ${e.intl && e.intl.length ? `<div style="margin-top:10px"><div class="small b dim" style="text-transform:uppercase;letter-spacing:.6px">International</div>${e.intl.map((x) => `<div class="small ${(e.tourns || []).some((t) => t.id === x.id) ? 'tap' : ''}" style="margin-top:4px" ${(e.tourns || []).some((t) => t.id === x.id) ? `data-act="histComp" data-y="${e.year}" data-id="${esc(x.id)}"` : ''}>${esc(x.name)}${(e.tourns || []).some((t) => t.id === x.id) ? ' ›' : ''}: <b>${C.flag(FM.S.nteams[x.winner].code)} ${esc(FM.S.nteams[x.winner].name)}</b> <span class="dim">${esc(x.final)} v ${esc(FM.S.nteams[x.runnerUp].name)}</span></div>`).join('')}</div>` : ''}
       <div class="small" style="margin-top:10px">▲ ${e.promoted.map((id) => esc(CL(id).name)).join(', ')} &nbsp; ▼ ${e.relegated.map((id) => esc(CL(id).name)).join(', ')}</div>
       ${e.upsets.length ? `<div class="small" style="margin-top:6px">Upset of the season: ${esc(CL(e.upsets[0].w).name)} ${e.upsets[0].score.split('–').sort().reverse().join('–')} ${esc(CL(e.upsets[0].l).name)}</div>` : ''}
       ${e.transfers.length ? `<div class="small" style="margin-top:6px">Record deal: ${esc(e.transfers[0].name)} to ${esc(CL(e.transfers[0].to).name)} for ${U.money(e.transfers[0].fee)}</div>` : ''}</div>`,

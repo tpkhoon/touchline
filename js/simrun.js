@@ -53,6 +53,7 @@
     'advice',
     'matchday',
     'records',
+    'history',
     'lore',
     'injuries',
     'draft',

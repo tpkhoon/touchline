@@ -2069,6 +2069,7 @@
     // User evaluation (out of work: the season is recorded, but there is nothing to judge)
     if (!club) {
       S.archive.push(entry);
+      FM.History.capture(entry);
       const summary = {
         entry,
         userPos: null,
@@ -2142,6 +2143,7 @@
       objectives: objs.length,
     };
     S.archive.push(entry);
+    FM.History.capture(entry);
     const summary = {
       entry,
       userPos,
