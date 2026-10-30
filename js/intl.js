@@ -1601,6 +1601,25 @@
         });
     }
   };
+  // How much a nation appeals to a player who could play for it, in points: [reason, change]. His ties (where he grew up, his passport,
+  // his family), whether he would be in the squad, and how good the team is (an ambitious player weighs that more)
+  I.allegiancePull = function (p, code) {
+    const out = [],
+      via = W.canRepresent(p, code).via,
+      o = W.originsOf(p).find((x) => x[0] === code),
+      nt = T('n_' + code),
+      pool = I.pool(code),
+      c23 = pool[22] ? pool[22].ca : 0;
+    if (via === 'home') out.push(['He grew up there', 25]);
+    else if (via === 'birth') out.push(['He was born there', 12]);
+    if (o) out.push(['His family is from there', o[1] >= 1 ? 18 : o[1] >= 0.5 ? 10 : 3]);
+    if (via === 'passport' || via === 'naturalised') out.push(['He holds the passport', 6]);
+    out.push(['A place in the squad', Math.round(U.clamp((p.ca - c23) * 4, -20, 30))]);
+    const amb = p.hid && p.hid.amb >= 14 ? 1.5 : p.hid && p.hid.amb <= 7 ? 0.6 : 1;
+    out.push(['The strength of the side', Math.round(U.clamp(((nt ? nt.coef : 40) - 50) / 2, -12, 20) * amb)]);
+    return out;
+  };
+  I.allegianceScore = (p, code) => I.allegiancePull(p, code).reduce((t, x) => t + x[1], 0);
   I.allegianceTick = function () {
     I.naturalisationTick();
     const s = S(),
@@ -1614,22 +1633,24 @@
         })());
     for (const p of Object.values(s.players)) {
       if (!p.nat2 || p.retired || !I.uncapped(p) || W.age(p) < 18) continue;
-      const cur = I.nationOf(p),
-        other = cur === p.nat ? p.nat2 : p.nat;
-      if (!s.nteams['n_' + other] || !s.nteams['n_' + cur] || info(cur).ids.has(p.id)) continue;
-      if (p.ca >= info(other).c23 - 3 && Math.random() < 0.5) switchTo(p, other);
+      const cur = I.nationOf(p);
+      if (!s.nteams['n_' + cur] || info(cur).ids.has(p.id)) continue;
+      // every nation he could play for is weighed: the one that pulls most, if it clearly beats where he is now
+      let best = null,
+        top = I.allegianceScore(p, cur) + 15;
+      for (const c of W.eligibleFor(p)) {
+        if (c === cur || !s.nteams['n_' + c] || p.ca < info(c).c23 - 3) continue;
+        const sc = I.allegianceScore(p, c);
+        if (sc > top) ((best = c), (top = sc));
+      }
+      if (best && Math.random() < 0.5) switchTo(p, best);
     }
   };
   // Eligible for this nation through his family or birth, but playing for (or free to play for) another, uncapped
   I.eligibleSwitch = (code) =>
     Object.values(S().players)
       .filter(
-        (p) =>
-          !p.retired &&
-          W.age(p) >= 17 &&
-          (p.nat === code || p.nat2 === code) &&
-          I.nationOf(p) !== code &&
-          I.uncapped(p),
+        (p) => !p.retired && W.age(p) >= 17 && W.canRepresent(p, code).ok && I.nationOf(p) !== code && I.uncapped(p),
       )
       .sort((a, b) => b.ca - a.ca)
       .slice(0, 12);
@@ -1645,6 +1666,9 @@
       rank = I.pool(I.nationOf(p)).indexOf(p);
     const gap = ours.coef - (cur ? cur.coef : 40);
     const out = [['A fair hearing', 25]];
+    const kin = W.originsOf(p).find((x) => x[0] === ours.code);
+    if (kin) out.push(['His family is from there', kin[1] >= 1 ? 15 : kin[1] >= 0.5 ? 8 : 0]);
+    if (ours.code === p.nat) out.push(['He grew up there', 12]);
     if (rank < 0 || rank >= 23)
       out.push([
         `He is not in ${D.NATIONS[I.nationOf(p)].name}'s squad: a place with us is a place`,
@@ -1688,7 +1712,7 @@
     FM.News.add({
       type: 'report',
       title: `Federation scouts: ${W.name(p)} could play for ${t.name}`,
-      body: `${D.NATIONS[p.nat].flag} ${W.name(p)} (${W.age(p)}, ${p.pos}) is eligible through ${p.nat === t.code ? 'birth' : 'his family'}, has not played for a senior side and is good enough for the squad. Our scouts rate the chance he commits at about ${Math.round(pct / 10) * 10}%.`,
+      body: `${D.NATIONS[p.nat].flag} ${W.name(p)} (${W.age(p)}, ${p.pos}) is eligible (${W.eligibilityText(p, t.code)}), has not played for a senior side and is good enough for the squad. Our scouts rate the chance he commits at about ${Math.round(pct / 10) * 10}%.`,
       pid: p.id,
     });
   };
@@ -1716,8 +1740,7 @@
       p = s.players[pid],
       ours = u.nation && T(u.nation);
     if (!ours || !p) return { ok: false, msg: 'You are not managing a national team.' };
-    if (p.nat !== ours.code && p.nat2 !== ours.code)
-      return { ok: false, msg: `${W.name(p)} is not eligible for ${ours.name}.` };
+    if (!W.canRepresent(p, ours.code).ok) return { ok: false, msg: `${W.name(p)} is not eligible for ${ours.name}.` };
     if (I.nationOf(p) === ours.code) return { ok: false, msg: `${W.short(p)} already plays for ${ours.name}.` };
     if (!I.uncapped(p))
       return { ok: false, msg: `${W.short(p)} has played for ${D.NATIONS[I.nationOf(p)].name} and is tied to them.` };
