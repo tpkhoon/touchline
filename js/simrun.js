@@ -10,6 +10,7 @@
     'data',
     'names',
     'nations',
+    'archetypes',
     'names-more',
     'names-more2',
     'names-more3',

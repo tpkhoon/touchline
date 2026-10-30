@@ -31,7 +31,15 @@ const TIERS = [
     '1 · Core simulation',
     {
       'Match engine': ['engine.js', 'matchmotion.js'],
-      'World and players': ['world.js', 'names.js', 'nations.js', 'names-more.js', 'names-more2.js', 'names-more3.js'],
+      'World and players': [
+        'world.js',
+        'names.js',
+        'nations.js',
+        'archetypes.js',
+        'names-more.js',
+        'names-more2.js',
+        'names-more3.js',
+      ],
       'Season and calendar': ['season.js', 'tiers.js', 'regional.js'],
       'Development and youth': ['careers.js', 'youth.js', 'training.js'],
       'Transfers and contracts': ['transfers.js', 'market.js', 'contracts.js', 'registration.js', 'draft.js'],

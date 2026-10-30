@@ -933,8 +933,8 @@
       name: 'Serbia',
       flag: '🇷🇸',
       region: 'EUR',
-      style: 'Tough, uncompromising defenders',
-      bias: { tackling: 2.5, strength: 2, positioning: 1.5 },
+      style: 'Technical, uncompromising defenders',
+      bias: { tackling: 2, strength: 1.5, positioning: 1.2, technique: 1 },
       fn: [
         'Nikola',
         'Luka',

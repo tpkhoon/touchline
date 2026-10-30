@@ -321,13 +321,14 @@
     const b = target / 5,
       w = D.POS_W[pos],
       bias = D.NATIONS[nat].bias,
+      lean = D.archetypeLean ? D.archetypeLean(nat, pos) : {}, // (the nation's archetypes: how its forwards, midfielders, defenders and keepers differ)
       a = {};
     for (const k of D.ATTRS) {
       const wt = w[k] || 0;
       let mean = wt >= 1.5 ? b + 1.2 : wt > 0 ? b : b - 2.5;
       if ((k === 'reflexes' || k === 'handling') && pos !== 'GK') mean = U.rand(1, 4);
       if (pos === 'GK' && k === 'vision') mean = b - 4;
-      a[k] = U.clamp(U.gauss(mean, 1.8) + (bias[k] || 0) * (pos === 'GK' && !wt ? 0.3 : 1), 1, 20);
+      a[k] = U.clamp(U.gauss(mean, 1.8) + (bias[k] || 0) * (pos === 'GK' && !wt ? 0.3 : 1) + (lean[k] || 0), 1, 20);
       const lim = pos === 'GK' && D.GK_OUTFIELD[k];
       if (lim) a[k] = U.rand(lim[0], lim[1]); // a keeper's finishing, tackling, dribbling: a keeper's
     }
@@ -385,6 +386,9 @@
     if (U.chance(0.06)) t.push('Fair-Weather');
     if (p.attrs.dribbling >= 14 && U.chance(0.25)) t.push('Flair');
     W.rollNewTraits(p, t);
+    // what his nation's archetypes make likelier (Flair for a Brazilian, Aerial Threat for a Dane ...)
+    for (const [tr, chance, k, min] of D.archetypeTraits ? D.archetypeTraits(p.nat) : [])
+      if (!t.includes(tr) && (!k || p.attrs[k] >= min) && U.chance(chance)) t.push(tr);
     return U.shuffle(t).slice(0, 3);
   }
 

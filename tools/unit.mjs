@@ -241,6 +241,43 @@ try {
   fs.rmSync(dir, { recursive: true, force: true });
 }
 
+// ---- nationality archetypes: how a nation's players are made ----
+{
+  const lean = (nat, pos, k) => D.archetypeLean(nat, pos)[k] || 0;
+  ok(
+    lean('BRA', 'ST', 'dribbling') > 0.8 && lean('BRA', 'ST', 'technique') > 0.5,
+    'a Brazilian forward leans to dribbling and technique',
+  );
+  ok(lean('BRA', 'FB', 'dribbling') > 0.5 && lean('BRA', 'CB', 'tackling') < 0, 'a Brazilian defender is adventurous');
+  ok(
+    lean('SRB', 'CB', 'tackling') > 1 && lean('SRB', 'CB', 'passing') > 0.5,
+    'a Serbian defender tackles hard and plays the ball out',
+  );
+  ok(lean('SRB', 'CM', 'technique') > 0.5, 'a Serbian midfielder is technical');
+  ok(
+    lean('GER', 'GK', 'handling') > 0.5 && lean('THA', 'GK', 'handling') <= 0.3,
+    'Germany has a goalkeeping school, Thailand has none',
+  );
+  ok(lean('ITA', 'CB', 'positioning') > 1.2, 'an Italian centre-back reads the game');
+  ok(
+    D.archetypesOf('KOR').includes('engine') && D.archetypesOf('KOR').includes('orient'),
+    'Korea is in two archetypes',
+  );
+  ok(
+    D.archetypesOf('SOM').length > 0 && D.archetypeText('SOM').every((a) => a.label && a.desc),
+    "a nation outside the lists has its part of the world's archetype",
+  );
+  ok(
+    D.archetypeTraits('BRA').some(([t]) => t === 'Flair') &&
+      D.archetypeTraits('DEN').some(([t]) => t === 'Aerial Threat'),
+    'Flair for Brazil, Aerial Threat for Denmark',
+  );
+  const worst = Object.keys(D.NATIONS).filter(
+    (c) => Math.abs(Object.values(D.archetypeLean(c, 'CM')).reduce((t, v) => t + Math.abs(v), 0)) > 12,
+  );
+  ok(!worst.length, `an archetype leans too far: ${worst.slice(0, 3)}`);
+}
+
 console.log(
   fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
 );

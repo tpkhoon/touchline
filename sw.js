@@ -13,6 +13,7 @@ const FILES = [
   './js/data.js',
   './js/names.js',
   './js/nations.js',
+  './js/archetypes.js',
   './js/names-more.js',
   './js/names-more2.js',
   './js/names-more3.js',
