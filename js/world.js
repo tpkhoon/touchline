@@ -2426,8 +2426,8 @@
   // ---------------- New world ----------------
   // One club of the world from its row (name, code, city, colours, identity, reputation, ground, capacity): the club itself,
   // its manager, attributes and a squad. Used for every club of a new world and for the clubs an expansion adds
-  // A league open to clubs of other nations (a world definition's cross-nation league: l.nats): the club keeps its own nationality
-  // (D.CLUB_NAT, by club code), not the league's
+  // A league open to clubs of other nations (a world definition's cross-nation league: l.nats), or a national development side
+  // playing in another nation's league: the club keeps its own nationality (D.CLUB_NAT, by club code), not the league's
   D.CLUB_NAT = D.CLUB_NAT || {};
   W.leagueOpen = (comp, nat) => !!comp && (comp.nat === nat || (comp.nats || []).includes(nat));
   W.mkClub = function (row, compId, nat, sim) {
@@ -2435,7 +2435,7 @@
     {
       const lg = D.LEAGUES.find((x) => x.id === compId),
         own = D.CLUB_NAT[row[1]];
-      if (lg && lg.nats && own && lg.nats.includes(own)) nat = own;
+      if (lg && own) nat = own; // (a cross-nation league's club, or a national side playing overseas: set by the world definition)
     }
     const [name, code, city, c1, c2, identity, rep] = row;
     const info = D.CLUB_INFO[code] || [],

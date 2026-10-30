@@ -554,7 +554,17 @@
     [23, 'Under 23'],
     [0, 'National B team (any age)'],
   ];
-  const sideNations = (l) => [l.nat, ...(l.nats || [])].filter((k) => D.NATIONS[k]);
+  // (a national side can play in any nation's league: the league's own nations first)
+  const sideNations = (l) => {
+    const own = [l.nat, ...(l.nats || [])].filter((k) => D.NATIONS[k]);
+    return [
+      ...own,
+      ...Object.keys(D.NATIONS)
+        .filter((k) => !own.includes(k))
+        .sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name)),
+    ];
+  };
+  const isSide = (c) => !!(c && c.policy && c.policy.maxAge);
   const newNatSideView = () => {
     const l = leagueOf(ED.lid);
     if (!l) return leagueView();
@@ -564,7 +574,7 @@
         .map((k) => `<option value="${k}">${esc(D.NATIONS[k].flag)} ${esc(D.NATIONS[k].name)}</option>`)
         .join('')}</select>
       <div class="ng-label">Side</div><select id="ed-nskind">${natSideKinds.map(([v, t]) => `<option value="${v}" ${v === 21 ? 'selected' : ''}>${t}</option>`).join('')}</select>
-      <div class="tiny dim" style="margin-top:6px;line-height:1.5">It joins the league as a club of that nation, rated a little below the league's average. Its squad is made of that nation's players in the age group; each summer those who are too old leave it and the squad is topped up. A national side is never promoted. Open the club afterwards to change its name, rating or ground.${l.nats && l.nats.length ? '' : " Only the league's own nation can have a side here, unless the league is open to other nations."}</div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">It joins the league as a club of that nation, rated a little below the league's average. Its squad is made of that nation's players in the age group; each summer those who are too old leave it and the squad is topped up. A national side is never promoted. Open the club afterwards to change its name, rating or ground. A nation's side can play in another nation's league (England's Under-23s in the Welsh league): it stays a club of its own nation, takes no cup or continental place and is not counted as foreign in the players' limits.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="league" data-lid="${esc(l.id)}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateNatSide">Add the side</button></div>`;
   };
   UI.acts.edNewNatSide = () => {
@@ -612,6 +622,16 @@
       return UI.worldEditor();
     }
     ED.def.clubs.push(c);
+    // (a league that splits into groups has one more club to place: the side joins the last group)
+    const sp = l.rules && l.rules.split;
+    if (sp && Array.isArray(sp.groups) && sp.groups.length) sp.groups[sp.groups.length - 1]++;
+    const bad = WD.validateLeagueRules(l, ED.def);
+    if (bad.length) {
+      ED.def.clubs.pop();
+      if (sp && Array.isArray(sp.groups) && sp.groups.length) sp.groups[sp.groups.length - 1]--;
+      ED.err = bad;
+      return UI.worldEditor();
+    }
     ED.view = 'club';
     ED.cid = c.id;
     ED.err = [];
@@ -623,6 +643,7 @@
   const ownNat = (lgId, want) => {
     const l = leagueOf(lgId) || {},
       c = ED.def.clubs.find((x) => x.id === ED.cid) || {};
+    if (isSide(c)) return c.nat; // (a national side is a club of its nation, wherever it plays)
     return [want, c.nat].find((n) => n && openTo(l, n)) || l.nat;
   };
   UI.acts.edSaveClub = () => {
@@ -2641,10 +2662,13 @@
     const idOpts = Object.entries(D.IDENTITY)
       .map(([k, v]) => `<option value="${k}" ${c.identity === k ? 'selected' : ''}>${esc(v.label)}</option>`)
       .join('');
-    const sameNat = ED.def.leagues.filter((l) => openTo(l, c.nat));
+    const sameNat = ED.def.leagues.filter((l) => openTo(l, c.nat) || isSide(c));
     const here = ED.def.leagues.find((l) => l.id === c.league) || {};
     const lgOpts = sameNat
-      .map((l) => `<option value="${esc(l.id)}" ${c.league === l.id ? 'selected' : ''}>${esc(l.name)}</option>`)
+      .map(
+        (l) =>
+          `<option value="${esc(l.id)}" ${c.league === l.id ? 'selected' : ''}>${isSide(c) ? ((D.NATIONS[l.nat] || {}).flag || '') + ' ' : ''}${esc(l.name)}</option>`,
+      )
       .join('');
     return `<div class="h1" style="margin-top:2vh">${crestDot(c)} ${esc(c.name)}</div><div class="tag">${added ? 'A club you added.' : "One of the game's clubs: your changes replace what it has."}</div>
       ${errBox()}

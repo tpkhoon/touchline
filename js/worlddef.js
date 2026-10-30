@@ -798,7 +798,9 @@
       }
       if (!cur && !leagueIds.has(lg) && !patch.leagues.some((l) => l.id === lg)) continue; // (validation reports it)
       // (a club of another nation in a cross-nation league keeps its own nationality)
-      const own = m.nat && m.nat !== leagueNat(lg) && leagueNats(lg).includes(m.nat) ? m.nat : null;
+      // (so is a national development side playing in another nation's league)
+      const side = !!(m.policy && m.policy.maxAge && m.policy.nat === m.nat);
+      const own = m.nat && m.nat !== leagueNat(lg) && (side || leagueNats(lg).includes(m.nat)) ? m.nat : null;
       patch.clubs.push({ code, league: lg, row, info, nat: leagueNat(lg), ...(own ? { own } : {}), isNew: !cur });
     }
     // derbies: a pair the game has with another name is renamed, a new pair is added, a pair taken out is removed
@@ -1887,7 +1889,10 @@
       const lg = c.league || (where.get(c.id) || {}).league;
       where.set(c.id, {
         league: lg,
-        nat: (leagueInfo(lg).nats || []).includes(c.nat) ? c.nat : leagueInfo(lg).nat || c.nat,
+        nat:
+          (leagueInfo(lg).nats || []).includes(c.nat) || (c.policy && c.policy.maxAge)
+            ? c.nat
+            : leagueInfo(lg).nat || c.nat,
       });
     }
     for (const id of removed) where.delete(id);

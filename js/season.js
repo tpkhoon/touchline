@@ -1957,7 +1957,9 @@
         : [champId];
       const order = kt ? [...new Set([...champs, t[0].id, ...t.map((r) => r.id)])] : t.map((r) => r.id);
       // (a club under sanction next season is passed over: the next one takes the place)
-      const open = order.filter((id) => !Sea.clubBanned(id, S.year + 1));
+      const open = order.filter(
+        (id) => !Sea.clubBanned(id, S.year + 1) && !(S.clubs[id].policy && S.clubs[id].policy.maxAge),
+      ); // (nor is a national development side)
       if (R.qualify) qualified[R.qualify.to] = (qualified[R.qualify.to] || []).concat(open.slice(0, R.qualify.n));
       // a nation with no place in its part of the world's main cup sends its champion to that cup's qualifying rounds
       const qualCup = FM.Cups.qualCup(comp);

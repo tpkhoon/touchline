@@ -401,6 +401,19 @@ if ('test' in args) {
       'an age limit with no nation was accepted',
     );
     d9.clubs.push(side);
+    // ... and England's Under-23s as a guest in the Irish league: a club of England, not of Ireland
+    d9.clubs.push({
+      ...side,
+      id: 'c_EU23',
+      name: 'England U23',
+      short: 'ENG23',
+      league: 'IE1',
+      policy: { nat: 'ENG', label: 'England Under-23', maxAge: 23 },
+    });
+    check(
+      !WD.validate(d9, null).errors.length,
+      "a national side in another nation's league was refused: " + WD.validate(d9, null).errors.slice(0, 2),
+    );
     WD.useStatic(WD.patchOf(d9));
     W.newWorld(W.REAL_RULES);
     FM.Season.init();
@@ -410,6 +423,21 @@ if ('test' in args) {
     const old = Object.values(FM.S.players).find((p) => W.age(p) > 21 && p.nat === 'ENG' && p.clubId !== 'c_EU21');
     check(!FM.Reg.policy(FM.S.clubs.c_EU21, old).ok, 'the development side may sign a player over its age limit');
     check(!FM.Youth.canGoUp('c_EU21', 'D2'), 'a development side may be promoted');
+    const guest = FM.S.clubs.c_EU23;
+    check(
+      guest && guest.nat === 'ENG' && guest.comp === 'IE1',
+      'a national side overseas is not an English club in the Irish league',
+    );
+    check(
+      W.squad('c_EU23').length >= 11 &&
+        W.squad('c_EU23').every((p) => W.age(p) <= 23 && (p.nat === 'ENG' || p.nat2 === 'ENG')),
+      'the overseas side has players over its age limit or of another nation',
+    );
+    const irishCup = Object.values(FM.S.comps).find((c) => c.type === 'cup' && c.nat === 'IRL');
+    check(
+      !irishCup || !FM.Cups.entrants(irishCup).some((c) => c.id === 'c_EU23'),
+      "a national side overseas plays the host nation's cup",
+    );
     WD.useStatic(null);
   }
   // Spain's Basque-only club plays in the first division; the Catalan-only club has no signing rule
