@@ -358,6 +358,19 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // phase 4: a second passport changes how registration sees a player
+    const R = FM.Reg,
+      club = { nat: 'ESP' };
+    ok(R.isForeign({ id: 'x1', nat: 'ARG' }, club, null), 'an Argentine is foreign in Spain');
+    ok(!R.isForeign({ id: 'x2', nat: 'ARG', cit: ['ARG', 'ESP'] }, club, null), 'with a Spanish passport he is local');
+    ok(!R.isEU({ id: 'x3', nat: 'ARG' }), 'an Argentine is not an EU player');
+    ok(R.isEU({ id: 'x4', nat: 'ARG', cit: ['ARG', 'ITA'] }), 'with an Italian passport he is an EU player');
+    ok(
+      R.isForeign({ id: 'x5', nat: 'ARG', cit: ['ARG', 'ITA'] }, club, null),
+      'an EU passport does not make him Spanish',
+    );
+  }
+  {
     const rate = (nat, her) => {
       let e = 0,
         h = 0;

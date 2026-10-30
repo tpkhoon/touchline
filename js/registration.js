@@ -141,20 +141,26 @@
       out.push(
         `Salary budget: the 20 biggest wage charges add up to at most ${U.money(r.mls.cap)} a year. No player counts for more than ${U.money(r.mls.maxCharge)}, and up to ${r.mls.dp} Designated Players may earn above that and still count only that much; nobody else may earn more. A senior roster of at most ${r.mls.roster}.`,
       );
+    if (r.foreign || r.nonEU || r.matchday || r.permit)
+      out.push(
+        "A player who holds a passport of the league's nation counts as local, and one with an EU passport as an EU player.",
+      );
     if (r.exempt) out.push(`Players from ${r.exempt.map(nm).join(', ')} do not count as foreign.`);
     return out;
   };
   R.real = () => FM.S.rules.reg === 'real';
   R.rulesFor = (c) => (R.real() && c && c.comp && R.ruleOf(c.comp)) || null;
 
-  R.isEU = (p) => R.EU.has(p.nat);
+  // A second passport counts: a player holding a passport of an EU nation is an EU player, one holding the league's own nation's is local
+  // (the passports he holds: W.citizenships, js/citizenship.js)
+  R.isEU = (p) => W.citizenships(p).some((n) => R.EU.has(n));
   // Does he count against the non-EU limit at this club? (Spain and France exempt Cotonou and Euro-Med nationals)
   R.nonEUNat = (nat, club) => {
     if (R.EU.has(nat)) return false;
     const r = club && R.rulesFor(club);
     return !(r && r.quasi && (R.COTONOU.has(nat) || R.EUROMED.has(nat)));
   };
-  R.nonEU = (p, club) => R.nonEUNat(p.nat, club);
+  R.nonEU = (p, club) => W.citizenships(p).every((n) => R.nonEUNat(n, club));
   // Asia: the AFC's foreign-player places are "3 + 1": three of any nationality and one more that only an Asian player can fill; some
   // leagues add an ASEAN place on top. Modelled as nested groups: all foreigners, those who are not Asian, those who are not ASEAN.
   R.ASEAN = new Set(['THA', 'MYS', 'VIE', 'IDN', 'PHI', 'SGP', 'MYA', 'KHM']);
@@ -167,16 +173,22 @@
     const out = [
       { label: c.comp === 'US1' ? 'international players' : 'foreign players', f, cap: r.foreign + asian + asean },
     ];
-    if (asian) out.push({ label: 'non-Asian foreign players', f: (p) => f(p) && !R.isAsian(p.nat), cap: r.foreign });
+    if (asian)
+      out.push({
+        label: 'non-Asian foreign players',
+        f: (p) => f(p) && !W.citizenships(p).some(R.isAsian),
+        cap: r.foreign,
+      });
     if (asean)
       out.push({
         label: 'foreign players outside ASEAN',
-        f: (p) => f(p) && !R.ASEAN.has(p.nat),
+        f: (p) => f(p) && !W.citizenships(p).some((n) => R.ASEAN.has(n)),
         cap: r.foreign + asian,
       });
     return out;
   };
-  R.isForeign = (p, c, r) => p.nat !== c.nat && !(r && r.exempt && r.exempt.includes(p.nat));
+  R.isForeign = (p, c, r) =>
+    !W.holdsPassport(p, c.nat) && !(r && r.exempt && W.citizenships(p).some((n) => r.exempt.includes(n)));
   // Where a player grew up as a youth (his home nation) and the club that trained him: players made with the world have
   // no youth record, so each is given one when first needed (W.assignYouth): usually a club of his own nation, for a
   // young player often the club he is at now.
@@ -256,7 +268,12 @@
   // Non-EU players this club has brought in from abroad this season (transfers and loans)
   R.nonEUSigned = (c) =>
     ((FM.S.seasonLog && FM.S.seasonLog.transfers) || []).filter(
-      (t) => t.to === c.id && t.from && FM.S.clubs[t.from] && FM.S.clubs[t.from].nat !== c.nat && !R.EU.has(t.nat),
+      (t) =>
+        t.to === c.id &&
+        t.from &&
+        FM.S.clubs[t.from] &&
+        FM.S.clubs[t.from].nat !== c.nat &&
+        !(FM.S.players[t.pid] ? R.isEU(FM.S.players[t.pid]) : R.EU.has(t.nat)),
     ).length;
   // Could the club register this player? { ok, why }. st: a status from R.status, to check many candidates quickly
   // Work permits in Britain (the Governing Body Endorsement, as the Football Association applies it since Brexit): every
@@ -283,7 +300,7 @@
   R.permitNeeded = (p) => {
     const cl = FM.S.clubs;
     return (
-      !R.UK.has(p.nat) &&
+      !W.citizenships(p).some((n) => R.UK.has(n)) &&
       !(p.clubId && cl[p.clubId] && R.UK.has(cl[p.clubId].nat)) &&
       !p.career.spells.some((sp) => cl[sp.c] && R.UK.has(cl[sp.c].nat))
     );
