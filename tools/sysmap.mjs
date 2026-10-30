@@ -33,6 +33,7 @@ const TIERS = [
       'Match engine': ['engine.js', 'matchmotion.js'],
       'World and players': [
         'world.js',
+        'citizenship.js',
         'names.js',
         'nations.js',
         'archetypes.js',

@@ -1929,7 +1929,7 @@
       sp = p.career.spells.filter((x) => cn(x.c)),
       out = [];
     out.push(
-      `Born in ${p.born}, ${/^[aeiou]/i.test(D.POS_NAME[p.pos]) ? 'an' : 'a'} ${D.POS_NAME[p.pos].toLowerCase()}${nat ? ` from ${nat.name}` : ''}${p.nat2 && D.NATIONS[p.nat2] ? `, also eligible for ${D.NATIONS[p.nat2].name}` : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` of ${D.HERITAGE_LABEL[p.heritage]} heritage` : ''}.`,
+      `Born in ${p.born}, ${/^[aeiou]/i.test(D.POS_NAME[p.pos]) ? 'an' : 'a'} ${D.POS_NAME[p.pos].toLowerCase()}${nat ? ` from ${nat.name}` : ''}${W.birthOf(p) !== p.nat && D.NATIONS[W.birthOf(p)] ? `, born in ${D.NATIONS[W.birthOf(p)].name}` : ''}${p.nat2 && D.NATIONS[p.nat2] ? (W.holdsPassport(p, p.nat2) ? `, with a ${D.NATIONS[p.nat2].name} passport` : `, also eligible for ${D.NATIONS[p.nat2].name}`) : ''}${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` of ${D.HERITAGE_LABEL[p.heritage]} heritage${W.originsOf(p)[0] && D.NATIONS[W.originsOf(p)[0][0]] ? ` (${{ 1: 'both parents', 0.5: 'one parent', 0.25: 'a grandparent' }[W.originsOf(p)[0][1]] || 'family'} from ${D.NATIONS[W.originsOf(p)[0][0]].name})` : ''}` : ''}.`,
     );
     // players made with the world have games from before their recorded clubs
     const earlier = p.career.apps - p.career.spells.reduce((t, x) => t + x.apps, 0);

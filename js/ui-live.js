@@ -402,6 +402,7 @@
     p.nat = f.nat || p.nat;
     p.nat2 = f.nat2;
     p.heritage = f.heritage;
+    if (FM.W.resetNationality) FM.W.resetNationality(p); // (birthplace, origins and passports from the new nations)
     p.pos = f.pos;
     p.born = FM.S.year - f.age;
     p.attrs = { ...p.attrs, ...f.attrs };

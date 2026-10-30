@@ -1589,6 +1589,7 @@
       if (p.ca < bar(host) - 3 || Math.random() > rule.rate) continue;
       p.nat2 = host;
       p.natur = { code: host, year: s.year };
+      p.cit = [...new Set([...W.citizenships(p), host])]; // (he holds the new passport)
       done[host] = (done[host] || 0) + 1;
       if (W.isUser(p.clubId) || p.ca >= 68 || (s.user && s.user.nation === 'n_' + host))
         FM.News.add({

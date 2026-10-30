@@ -241,6 +241,9 @@
     if (s.players && FM.W && FM.D.POOL_NATS)
       for (const p of Object.values(s.players))
         if (p.heritage && p.nat2 === undefined) p.nat2 = FM.W.dualNat(p.nat, p.heritage, null);
+    // birthplace, heritage countries and passports (js/citizenship.js) for players made before they existed
+    if (s.players && FM.W && FM.W.migrateNationality)
+      for (const p of Object.values(s.players)) FM.W.migrateNationality(p);
     // scouts made while the county-cup data overwrote the scouting regions have numbered regions: new profiles, and
     // any assignment to a region that does not exist is cleared
     if (s.staff && FM.W && FM.D.REGIONS) {

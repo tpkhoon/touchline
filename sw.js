@@ -31,6 +31,7 @@ const FILES = [
   './js/regions.js',
   './js/clubguide.js',
   './js/world.js',
+  './js/citizenship.js',
   './js/realstats.js',
   './js/worlddef.js',
   './js/dbimport.js',

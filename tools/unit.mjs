@@ -13,6 +13,7 @@ const { FM } = loadSim(5);
 const U = FM.U,
   D = FM.D,
   W = FM.W;
+const WD_validatePlayer = (p) => FM.WorldDef.validatePlayer(p, { clubs: new Set(), year: 2026 }).errors;
 const fails = [];
 let n = 0;
 const eq = (got, want, what) => {
@@ -276,6 +277,68 @@ try {
     (c) => Math.abs(Object.values(D.archetypeLean(c, 'CM')).reduce((t, v) => t + Math.abs(v), 0)) > 12,
   );
   ok(!worst.length, `an archetype leans too far: ${worst.slice(0, 3)}`);
+}
+
+// ---- nationality in pieces: birth, heritage origins, passports (js/citizenship.js) ----
+{
+  const plain = { id: 'p1', nat: 'ENG' };
+  eq(W.birthOf(plain), 'ENG', 'a player with no birthplace was born where he grew up');
+  eq(W.citizenships(plain), ['ENG'], 'a player with no passports list holds the passport of his own nation');
+  eq(W.originsOf(plain), [], 'a player with no origins has none');
+  eq(W.eligibleFor(plain), ['ENG'], 'a home-grown player is eligible for his own nation only');
+  const dual = { id: 'p2', nat: 'FRA', birth: 'COD', cit: ['FRA', 'COD'], origins: [['COD', 1]], nat2: 'COD' };
+  eq(W.eligibleFor(dual), ['FRA', 'COD'], 'born in DR Congo, raised in France: eligible for both');
+  ok(W.holdsPassport(dual, 'COD') && !W.holdsPassport(dual, 'MAR'), 'a passport held, and one not');
+  // an older player: his heritage and second nation give his origin; a naturalised player holds the new passport
+  const old = { id: 'p3', nat: 'FRA', nat2: 'MAR', heritage: 'maghrebi' };
+  W.migrateNationality(old);
+  eq(old.origins, [['MAR', 0.5]], 'the heritage of an older player becomes an origin');
+  const before = JSON.stringify(old);
+  W.migrateNationality(old);
+  eq(JSON.stringify(old), before, 'migrating twice changes nothing');
+  const nat = { id: 'p4', nat: 'ENG', nat2: 'ESP', natur: { code: 'ESP', year: 2020 } };
+  W.migrateNationality(nat);
+  ok(W.holdsPassport(nat, 'ESP'), 'a naturalised player holds the new passport');
+  const plain2 = { id: 'p5', nat: 'ENG' };
+  W.migrateNationality(plain2);
+  eq(Object.keys(plain2), ['id', 'nat'], 'a home-grown player keeps no extra field');
+  // the draw for a player of heritage: about seven in ten of those with an origin country can play for it
+  let withOrigin = 0,
+    eligible = 0,
+    held = 0,
+    abroad = 0;
+  for (let i = 0; i < 4000; i++) {
+    const p = { id: 'q' + i, nat: 'FRA' };
+    W.rollOrigin(p, 'FRA', 'maghrebi', null);
+    if (p.origins) withOrigin++;
+    if (p.nat2) eligible++;
+    if (p.cit) held++;
+    if (p.birth) abroad++;
+    if (p.nat2) ok(W.eligibleFor(p).includes(p.nat2), 'a second nation is in his eligible list');
+    if (p.cit) ok(p.cit.includes('FRA') && p.nat2, 'a heritage passport comes with eligibility');
+  }
+  ok(withOrigin === 4000, 'a Maghrebi heritage always has an origin country');
+  ok(
+    eligible / withOrigin > 0.6 && eligible / withOrigin < 0.78,
+    `about 0.7 are eligible for the origin country (${(eligible / withOrigin).toFixed(2)})`,
+  );
+  ok(
+    held < eligible && held / eligible > 0.5,
+    `most of those eligible hold the passport, not all (${(held / eligible).toFixed(2)})`,
+  );
+  ok(
+    abroad / withOrigin > 0.04 && abroad / withOrigin < 0.1,
+    `some are born abroad (${(abroad / withOrigin).toFixed(2)})`,
+  );
+  ok(
+    WD_validatePlayer({ id: 'x', fn: 'A', ln: 'B', nat: 'ENG', pos: 'ST', born: 2000, birth: 'XXX' }).length > 0,
+    'an unknown birth country is refused',
+  );
+  ok(
+    WD_validatePlayer({ id: 'x', fn: 'A', ln: 'B', nat: 'ENG', pos: 'ST', born: 2000, origins: [['ENG', 1.5]] })
+      .length > 0,
+    'an origin share above 1 is refused',
+  );
 }
 
 console.log(

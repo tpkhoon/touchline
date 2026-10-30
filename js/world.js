@@ -672,6 +672,11 @@
   // name's culture belongs to, never his own. null when there is none.
   W.dualNat = function (nat, heritage, poolKey) {
     if (!heritage || Math.random() > 0.7) return null;
+    return W.originCountry(nat, heritage, poolKey);
+  };
+  // The country his heritage comes from (by where he grew up, where that is known), or null when his culture has no nation here
+  W.originCountry = function (nat, heritage, poolKey) {
+    if (!heritage) return null;
     if (!poolKey) poolKey = D.HERITAGE_POOL[heritage] ? U.pick(D.HERITAGE_POOL[heritage]) : heritage;
     // (by where he grew up, where that is known: the Caribbean diaspora in England is Jamaican, in France Haitian ...)
     const dia = D.DIASPORA && D.DIASPORA[poolKey] && D.DIASPORA[poolKey][nat];
@@ -823,7 +828,7 @@
     W.claimName(`${p.fn} ${p.ln}`);
     if (heritage) {
       p.heritage = heritage;
-      p.nat2 = W.dualNat(nat, heritage, D.lastPoolKey);
+      W.rollOrigin(p, nat, heritage, D.lastPoolKey); // (his family's country, birthplace, passports and second nation: js/citizenship.js)
     }
     p.traits = genTraits(p);
     p.personality = W.personality(hid);

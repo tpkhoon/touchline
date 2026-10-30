@@ -176,6 +176,9 @@
           pa: Math.max(p.pa, W.calcCA({ attrs }, p.pos)),
           ...(p.ntUntil >= S.year ? { callup: true } : {}),
           ...(p.nat2 ? { nat2: p.nat2 } : {}),
+          ...(p.birth && p.birth !== p.nat ? { birth: p.birth } : {}),
+          ...(p.origins && p.origins.length ? { origins: p.origins.map((o) => o.slice()) } : {}),
+          ...(p.cit && p.cit.length > 1 ? { cit: p.cit.slice() } : {}),
           ...(p.heritage ? { heritage: p.heritage } : {}),
           ...(p.alt && Object.keys(p.alt).length ? { alt: { ...p.alt } } : {}),
           ...(p.traits && p.traits.length ? { traits: [...p.traits] } : {}),
@@ -1614,6 +1617,7 @@
         const nm = W.rollName(pol.nat, null, p.born);
         Object.assign(p, { nat: pol.nat, nat2: null, fn: nm.fn, ln: nm.ln });
         delete p.heritage;
+        W.resetNationality(p);
       } else if (pol.region) {
         const inRegion = (n) => n && D.NATIONS[n] && D.NATIONS[n].region === pol.region;
         if (inRegion(p.nat) || inRegion(p.nat2)) continue;
@@ -1622,11 +1626,12 @@
         const nm = W.rollName(nat, null, p.born);
         Object.assign(p, { nat, nat2: null, fn: nm.fn, ln: nm.ln });
         delete p.heritage;
+        W.resetNationality(p);
       } else if (pol.heritage && p.heritage !== pol.heritage) {
         // (a family of that heritage settled in his country: a name from its culture, and its nation as a second one)
         const nm = W.rollName(p.nat, pol.heritage, p.born);
         p.heritage = pol.heritage;
-        p.nat2 = W.dualNat(p.nat, pol.heritage, D.lastPoolKey);
+        W.rollOrigin(p, p.nat, pol.heritage, D.lastPoolKey);
         p.fn = nm.fn;
         p.ln = nm.ln;
       }
@@ -1716,6 +1721,16 @@
     if (p.callup != null && typeof p.callup !== 'boolean') e.push(`${at}: callup is true or false`);
     if (p.nat2 && !D.NATIONS[p.nat2]) e.push(`${at}: unknown second nation "${p.nat2}"`);
     if (p.heritage != null && typeof p.heritage !== 'string') e.push(`${at}: heritage is a name`);
+    if (p.birth != null && !D.NATIONS[p.birth]) e.push(`${at}: unknown birth country "${p.birth}"`);
+    if (
+      p.origins != null &&
+      !(
+        Array.isArray(p.origins) && p.origins.every((o) => Array.isArray(o) && D.NATIONS[o[0]] && o[1] > 0 && o[1] <= 1)
+      )
+    )
+      e.push(`${at}: origins are [country, share] pairs, a share above 0 and up to 1`);
+    if (p.cit != null && !(Array.isArray(p.cit) && p.cit.every((c) => D.NATIONS[c])))
+      e.push(`${at}: citizenships are nations the game has`);
     if (p.traits && !(Array.isArray(p.traits) && p.traits.every((t) => D.TRAITS && D.TRAITS[t])))
       e.push(`${at}: traits must be names the game knows`);
     if (
@@ -2404,6 +2419,11 @@
       else W.genAlt(p);
       if (d.nat2) p.nat2 = d.nat2;
       if (d.heritage) p.heritage = d.heritage;
+      // birthplace, heritage countries and passports: the file's, or worked out from the nations he was given
+      W.resetNationality(p);
+      if (d.birth) p.birth = d.birth;
+      if (d.origins) p.origins = d.origins.map((o) => o.slice());
+      if (d.cit) p.cit = [...new Set([p.nat, ...d.cit])];
       if (d.traits) p.traits = [...d.traits];
       if (d.no) p.no = d.no; // (a number that is taken is given another when the squad is numbered)
       W.refresh(p);

@@ -23,6 +23,7 @@
     'geo',
     'regions',
     'world',
+    'citizenship',
     'refstats',
     'realstats',
     'worlddef',
