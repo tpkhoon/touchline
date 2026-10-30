@@ -859,6 +859,161 @@
         [4, { fn: SG_INDIAN_FN, ln: SG_INDIAN }],
       ];
     D.COMMUNITIES.JOR = [[100, jordan]];
+
+    // More communities: a nation's players of its different cultures take a first name and a surname of the same one (Flemish and
+    // Walloon Belgians, Yoruba, Igbo and Hausa Nigerians, Breton and Alsatian French, Berber Moroccans, Kurdish Turks ...). null is the
+    // nation's own list (its era names and surname weights). A community whose name pool is not there yet is left until it is.
+    const comm = (nat, rows) => {
+      if (!D.NATIONS[nat] || rows.some(([, k]) => k !== null && !D.NAME_POOLS[k])) return;
+      D.COMMUNITIES[nat] = rows.map(([w, k]) => [
+        w,
+        k === null ? null : { fn: D.NAME_POOLS[k].fn, ln: D.NAME_POOLS[k].ln },
+      ]);
+    };
+    comm('BEL', [
+      [57, 'dutch'],
+      [41, 'french'],
+      [2, 'german'],
+    ]);
+    comm('SUI', [
+      [66, 'german'],
+      [23, 'french'],
+      [11, 'italian'],
+    ]);
+    comm('FRA', [
+      [80, null],
+      [7, 'breton'],
+      [6, 'alsatian'],
+      [3, 'corsican'],
+      [3, 'basque'],
+      [1, 'catalan'],
+    ]);
+    comm('NED', [
+      [91, null],
+      [9, 'frisian'],
+    ]);
+    comm('ITA', [
+      [95, null],
+      [3, 'german'],
+      [2, 'albanian'],
+    ]);
+    comm('RSA', [
+      [22, 'afrikaner'],
+      [8, 'english'],
+      [52, 'nguni'],
+      [7, 'southasian'],
+      [11, null],
+    ]);
+    comm('NGA', [
+      [30, 'yoruba'],
+      [26, 'igbo'],
+      [30, 'hausa'],
+      [14, null],
+    ]);
+    comm('MAR', [
+      [62, null],
+      [38, 'berber'],
+    ]);
+    comm('ALG', [
+      [72, null],
+      [28, 'berber'],
+    ]);
+    comm('TUN', [
+      [96, null],
+      [4, 'berber'],
+    ]);
+    comm('TUR', [
+      [84, null],
+      [14, 'kurdish'],
+      [2, 'southslav'],
+    ]);
+    comm('IRN', [
+      [62, null],
+      [18, 'azeri'],
+      [10, 'kurdish'],
+      [5, 'mashriq'],
+      [5, 'persian'],
+    ]);
+    comm('IRQ', [
+      [74, null],
+      [20, 'kurdish'],
+      [6, 'turkish'],
+    ]);
+    comm('IDN', [
+      [40, 'javanese'],
+      [16, 'sundanese'],
+      [12, 'malay'],
+      [4, 'chinese'],
+      [28, null],
+    ]);
+    comm('RUS', [
+      [78, null],
+      [7, 'tatar'],
+      [8, 'caucasian'],
+      [4, 'kazakh'],
+      [3, 'armenian'],
+    ]);
+    comm('PER', [
+      [66, null],
+      [26, 'andean'],
+      [4, 'japanese'],
+      [4, 'chinese'],
+    ]);
+    comm('BOL', [
+      [52, null],
+      [46, 'andean'],
+      [2, 'german'],
+    ]);
+    comm('ECU', [
+      [72, null],
+      [22, 'andean'],
+      [6, 'caribbean'],
+    ]);
+    comm('GUA', [
+      [55, null],
+      [45, 'maya'],
+    ]);
+    comm('ISR', [
+      [70, null],
+      [19, 'mashriq'],
+      [8, 'eastslavic'],
+      [3, 'ethiopian'],
+    ]);
+    comm('EST', [
+      [75, null],
+      [25, 'eastslavic'],
+    ]);
+    comm('LVA', [
+      [64, null],
+      [34, 'eastslavic'],
+      [2, 'lithuanian'],
+    ]);
+    comm('LTU', [
+      [86, null],
+      [7, 'polish'],
+      [7, 'eastslavic'],
+    ]);
+    comm('KAZ', [
+      [65, null],
+      [26, 'eastslavic'],
+      [9, 'centralasian'],
+    ]);
+    comm('FIN', [
+      [93, null],
+      [6, 'swedish'],
+      [1, 'nordic'],
+    ]);
+    comm('THA', [
+      [84, null],
+      [11, 'chinese'],
+      [5, 'malay'],
+    ]);
+    comm('PHI', [
+      [90, null],
+      [4, 'chinese'],
+      [4, 'spanish'],
+      [2, 'southasian'],
+    ]);
   };
   D.widenNames = function () {
     for (const [nat, N] of Object.entries(D.NATIONS)) {

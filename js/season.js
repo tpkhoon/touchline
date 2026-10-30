@@ -1174,7 +1174,8 @@
   // Sim forward a number of days, our own matches included (played by the engine for us, as an instant result): stops early
   // for a decision in the feed, a transfer window opening or closing, deadline day, the season's end, a new job offer or a sacking
   // `arg` is a number of days, or { days, until }: until 'match' stops on the day of our next match (before it is played), until
-  // 'season' goes on through transfer windows and deadline day (it still stops for a decision, a job offer or a sacking)
+  // 'season' goes on through transfer windows and deadline day (it still stops for a decision, a job offer or a sacking). opt.auto, the
+  // sim without stopping, stops for neither a decision nor a job offer: only for a sacking or the end of the season
   Sea.simDaysSteps = function* (arg) {
     const S = FM.S,
       opt = typeof arg === 'object' ? arg : { days: arg },
@@ -1215,7 +1216,7 @@
       n < days &&
       !S.user.sacked &&
       W.employed() === employed0 &&
-      !newOffer() &&
+      (opt.auto || !newOffer()) && // (out of work, the sim without stopping does not stop for an offer either)
       Sea.today() &&
       (opt.auto || !Sea.pendingDecision())
     );

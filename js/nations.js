@@ -10,6 +10,75 @@
 
   // ---------- Name pools for the cultures the first set did not cover ----------
   Object.assign(D.NAME_POOLS, {
+    // Cultures within nations: the communities a nation's players come from (D.COMMUNITIES, js/names.js)
+    afrikaner: P(
+      `Pieter Johan Willem Hendrik Francois Gerhard Christiaan Jacques Riaan Werner Stefan Dewald Wian Ruan Hennie Danie Schalk Frikkie Louis Jandré Pierre Cobus Marius Deon Heinrich Ruben Armand Wikus Jaco Etienne`,
+      `van_der_Merwe Botha Pretorius du_Plessis Kruger Venter Steyn Joubert Coetzee Nel Fourie Viljoen Visser Marais Swanepoel Smit de_Wet Rossouw Bezuidenhout van_Zyl Naudé Lombard Meyer Jordaan Erasmus du_Toit Potgieter Oosthuizen Brink Strydom Louw Barnard`,
+    ),
+    nguni: P(
+      `Sipho Thabo Lwazi Sibusiso Mandla Themba Bongani Siyabonga Lungile Thulani Nkosinathi Mthunzi Sandile Vusi Khaya Luyanda Andile Sizwe Mlungisi Ayanda Lindani Zola Thembinkosi Lucky Tshepo Kagiso Teboho Katlego Siphiwe Njabulo Bheki`,
+      `Dlamini Nkosi Zulu Ndlovu Khumalo Mkhize Ngcobo Sithole Mabaso Mthembu Cele Mokoena Molefe Mahlangu Zungu Shabalala Radebe Nxumalo Mdluli Buthelezi Maseko Ntuli Hadebe Mazibuko Mthethwa Gumede Ngwenya Tshabalala Mbatha Nene Mkhwanazi Dube`,
+    ),
+    yoruba: P(
+      `Olumide Tunde Femi Kayode Segun Adewale Babatunde Oluwaseun Ayodele Kolawole Akinwale Taiwo Kehinde Damilola Temitope Oladipo Rotimi Gbenga Wale Bayo Sola Dapo Tope Yemi Niyi Folarin Seyi Kunle Lekan Adebayo Ayo`,
+      `Adeyemi Adebayo Ogunleye Balogun Oladipo Ajayi Akinola Olawale Fashola Adewale Ogunbanjo Oyelaran Salami Adeniyi Afolabi Ojo Olatunji Bamidele Alabi Ogundele Fasanya Ayinde Lawal Ogunsanya Adegoke Akintola Oyewole Ibrahim Olaniyan Awolowo Adesina`,
+    ),
+    igbo: P(
+      `Chukwuemeka Ikenna Obinna Chinedu Nnamdi Emeka Uchenna Ifeanyi Chibuike Kelechi Chidi Ugochukwu Nwankwo Okechukwu Onyeka Somto Ebuka Tochukwu Kenechukwu Chigozie Obiora Arinze Nonso Amaechi Ikechukwu Izuchukwu Chukwudi Obi Ogbonna`,
+      `Okafor Nwosu Eze Okonkwo Obi Nwachukwu Okeke Onyeama Chukwu Ugwu Anyanwu Nnadi Ibe Ezeh Ogbu Okoro Umeh Nwankwo Agu Madu Igwe Eneh Onwuka Aneke Udeh Ofoegbu Chidozie Nnaji Ezekwesili Obiora`,
+    ),
+    hausa: P(
+      `Musa Abubakar Ibrahim Sani Usman Aliyu Yusuf Bashir Kabiru Garba Nasiru Lawal Mustapha Suleiman Danjuma Yahaya Umar Shehu Salisu Idris Isah Bello Haruna Sadiq Auwal Ahmad Aminu Zakari Jamilu Mansur`,
+      `Abdullahi Mohammed Suleiman Bello Garba Danladi Aliyu Ibrahim Sani Abubakar Yakubu Lawal Usman Yusuf Danbaba Dantata Tukur Maikano Gambo Mahmud Hassan Shehu Kabir Jibril Umar Sabo Musa Zubairu Gwarzo Mai`,
+    ),
+    berber: P(
+      `Yanis Massinissa Lounes Amine Mourad Karim Idir Fares Sofiane Amazigh Syphax Yacine Djamel Nabil Rachid Brahim Hakim Ouali Lyès Younes Aghiles Anis Tarek Kamel Mouloud Said Lahcen Hassan Ayoub Zakaria`,
+      `Amrouche Ait_Ahmed Belkacem Mezouar Benali Haddad Boudjellal Azzouz Ouali Aissaoui Hamidouche Belaid Slimani Ait_Mokhtar Idrissi Amghar Bouzid Zerrouki Chaoui Lamari Oulahcene Ait_Said Mazouz Taleb Bensalah Boukhari Ouazani Zidane Ouahab Kaci Mebarki`,
+    ),
+    kurdish: P(
+      `Azad Rebwar Dilshad Karwan Shwan Ahmad Hawre Sirwan Kamaran Zana Bakhtiyar Dler Hiwa Ramyar Aram Barzan Soran Peshraw Haval Dyar Sherzad Rebin Awat Bahman Jamal Kawa Saman Arman Hogir Ali`,
+      `Barzani Talabani Hamadi Mohammed Ahmed Rasul Saeed Qadir Hussein Karim Salih Jaf Zebari Berwari Sorani Shekhani Baban Sheikh Rashid Baqi Omar Mustafa Aziz Barwari Khalid Ghafur Amin Resul Dizayee Ali`,
+    ),
+    javanese: P(
+      `Budi Agus Slamet Bambang Joko Sutrisno Wahyu Eko Heru Hendra Dwi Tri Catur Bagus Dimas Arif Rizky Fajar Yoga Aji Bayu Satria Danu Anjar Rangga Galih Raden Sigit Teguh Wawan`,
+      `Wijaya Santoso Susanto Setiawan Prasetyo Hidayat Saputra Purnomo Wibowo Kurniawan Utomo Nugroho Pratama Wahyudi Hartono Sutrisno Suharto Handoko Cahyono Priyanto Rahardjo Haryanto Suryanto Gunawan Pamungkas Widodo Mulyono Yulianto Sugiarto Maulana Anggoro`,
+    ),
+    sundanese: P(
+      `Asep Ujang Cecep Dadang Dede Encep Yayan Iwan Ade Agus Deni Rudi Yudi Dani Rizal Ridwan Rendi Gilang Tatang Usman Maman Dedi Aceng Eka Dian Jajang Nandang Opik Ruli Wawan`,
+      `Suryana Kusumah Permana Hermawan Gumilar Nurdin Sudrajat Rukmana Hidayat Sutisna Kurnia Ramdani Hamdani Mulyana Setiadi Nugraha Sopian Saepudin Rohman Wiguna Sukmana Ruhiyat Supriatna Abdullah Maulana Koswara Danuwijaya Munandar Taufik`,
+    ),
+    tatar: P(
+      `Rustam Ildar Marat Rinat Ravil Airat Rustem Ruslan Timur Albert Rafael Damir Ayrat Nail Farid Kamil Ildus Ramil Renat Fanis Azat Radik Almaz Danil Salavat Timerlan Emil Zufar Rishat`,
+      `Khabibullin Gimadeev Safin Yusupov Nurgaliev Galiev Sabirov Zakirov Gataullin Khasanov Valiev Mukhametov Salikhov Ibragimov Ahmetov Fatkullin Shaikhutdinov Gabdrakhmanov Minnikhanov Sharipov Minnullin Garipov Akhmetshin Bikmetov Kamalov Yarullin Zaripov Nigmatullin Saitov Latypov`,
+    ),
+    caucasian: P(
+      `Magomed Ramzan Akhmed Shamil Ruslan Zelimkhan Adam Khasan Said Umar Murad Islam Abdulla Khamzat Magomedrasul Zaur Alikhan Tamerlan Isa Movsar Rasul Aslan Arbi Musa Idris Salman Timur Abubakar Dzhabrail Imran Beslan`,
+      `Kadyrov Dzhabrailov Magomedov Gasanov Omarov Aliyev Khamzatov Isayev Idrisov Mutsalov Daudov Yandiev Tsoroev Bekov Kokov Gagiev Dzhioev Kasaev Abdulaev Ismailov Murtazaliev Saidov Aslanov Zakaev Bagaev Kurbanov Zubairov Taimaskhanov Dudaev`,
+    ),
+    andean: P(
+      `Wilber Edwin Yony Marcos Rolando Freddy Hilario Efraín Nilo Wilson Alex Juan Cesar Edgar Elmer Fredy Rony Percy Ruben Nelson Walter Abel Isaac Luis Ever Jhon Brayan Roger Gonzalo Willy`,
+      `Quispe Mamani Condori Huamán Flores Choque Apaza Ccori Sullca Callisaya Yupanqui Paucar Chambi Colque Cusi Ticona Villca Limachi Huanca Cruz Chura Pari Mayta Layme Yapura Tarqui Vargas Aguilar Torrez Mendoza`,
+    ),
+    maya: P(
+      `Wilmer Elmer Edwin Marvin Selvin Rudy Baltazar Domingo Pascual Santos Anselmo Cirilo Eusebio Gaspar Tomás Mateo Sebastián Juventino Lucio Nicolás Esteban Faustino Hilario Rolando Byron Erick Hugo Leonel Mynor Oscar`,
+      `Tzoc Xol Chub Cac Caal Pop Tiul Ixcoy Tzul Ajú Batz Choc Coy Ico Cuc Ixim Queh Ac Chen Tun Can Cutz Tuyuc Pocop Sam Yat Jolón Ajanel Chiroy Sicán`,
+    ),
+    breton: P(
+      `Yann Erwan Gwenaël Tanguy Ronan Maël Loïc Kévin Goulven Alan Gaël Brieuc Corentin Judikaël Mikaël Per Hervé Yves Jean-Yves Malo Gurvan Tudy Pol Riwal Erwann Titouan Mathurin Fañch Divi Youenn`,
+      `Le_Gall Le_Goff Le_Roux Kerjean Le_Bihan Le_Guen Cozic Le_Corre Morvan Kermarrec Le_Gouil Quéméner Tanguy Le_Floch Rivoal Nédélec Kervella Guillou Le_Du Jaouen Le_Bras Penven Menguy Lozach Gwennou Trévidic Kerdraon Kervran Corlay Rolland`,
+    ),
+    alsatian: P(
+      `Julien Mathieu Fabien Florian Jérémy Kevin Sébastien Christophe Gilles Lucas Hans Karl Jürgen Alexis Nicolas Etienne Rémy Thibaut Axel Frédéric Damien Yannick Raphaël Marc Eric Guillaume Quentin Patrick Michel Daniel Thierry`,
+      `Schmitt Weber Meyer Muller Fischer Schneider Wagner Hoffmann Klein Zimmermann Keller Burger Schwartz Bauer Walter Kieffer Haas Roth Becker Vogel Hirsch Kraemer Ehrhardt Lehmann Wolff Schaeffer Gross Bohn Sutter Fritsch`,
+    ),
+    corsican: P(
+      `Jean-Pierre Ange Dominique Pascal Toussaint Marc Paul Pierre Xavier Laurent Joseph Antoine François Sampiero Mathieu Vincent Lisandru Ghjuvan Petru Paulu Santu Ghjacumu Anto Marcu Jean-Baptiste Don-Jean Raphaël Thierry Jérôme`,
+      `Santoni Paoli Orsini Casanova Leandri Poli Luciani Ettori Giacomoni Peretti Franceschi Susini Colonna Giudicelli Ceccaldi Mattei Albertini Multedo Bartoli Pieri Filippi Costa Rossi Guidoni Gabrielli Vincenti Federici Acquaviva Bonelli Marchetti`,
+    ),
+    frisian: P(
+      `Sjoerd Douwe Fokke Jelle Pier Tjeerd Wietse Sybren Rienk Auke Geert Siebe Jurjen Hidde Klaas Gerrit Eelke Hessel Oene Tsjalling Durk Ype Ruurd Taeke Menno Wiebe Berend Jappie Albert Gosse`,
+      `de_Vries Bakker Jansma Hoekstra Postma Bouma Wijnia Dijkstra Zijlstra Kuipers Tjepkema Visser Algra Haitsma Veenstra Boersma van_der_Meer Wiersma Sikkema Terpstra Osinga Feenstra Kloosterman Hiemstra Sjoerdsma Hettinga Jongsma Reitsma Bangma Bijlsma`,
+    ),
     // Mongolia and Bhutan
     mongolian: P(
       `Batbayar Ganbold Enkhbat Munkhbat Bold Tuvshin Erdene Batsaikhan Dorj Naranbat Ganzorig Altan Bayar Tumur Sukhbat Davaa Bilguun Temuulen Zorig Amar Nyamdorj Otgon Tsogt Lkhagva Gantulga Narmandakh Orgil Chinbat Anand Mönkh Tsend Ganbaatar Boldbaatar`,

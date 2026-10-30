@@ -514,12 +514,12 @@
           `<button class="chip ${sel.u === k ? 'on' : ''}" data-act="simPick" data-u="${k}">${label.replace('until ', 'Until ')}</button>`,
       )
       .join('');
-    return `<div class="tiny dim" style="margin-bottom:8px;line-height:1.5">Sim forward through the days. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer, and you can stop it yourself while it runs.</div>
+    return `<div class="tiny dim" style="margin-bottom:8px;line-height:1.5">Sim forward through the days. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer (unless you sim without stopping), and you can stop it yourself while it runs.</div>
       <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
       <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${until}</div>
       <div class="row" style="gap:8px;margin-bottom:12px"><input type="number" id="sim-days" min="1" max="120" value="${sel.u ? '' : +sel.n || 7}" placeholder="days" inputmode="numeric" style="width:90px" data-input="simType"><span class="dim small grow">days (1 to 120)</span></div>
       <div class="card flat" id="simPlan" style="margin-bottom:10px"><div class="small b">${simPlan()}</div><div class="tiny dim" style="margin-top:4px">Nothing happens until you press Start.</div></div>
-      <div class="row" style="margin-bottom:12px;gap:10px"><div class="grow"><div class="small b">Sim without stopping</div><div class="tiny dim" style="line-height:1.5">Your staff answer offers for players, press questions and meetings, and the sim does not stop for transfer windows or deadline day. It still stops for a sacking, a job offer or the end.</div></div><button class="btn sm ${S().settings && S().settings.simAuto ? 'pri' : ''}" data-act="simAuto">${S().settings && S().settings.simAuto ? 'On' : 'Off'}</button></div>
+      <div class="row" style="margin-bottom:12px;gap:10px"><div class="grow"><div class="small b">Sim without stopping</div><div class="tiny dim" style="line-height:1.5">Your staff answer offers for players, press questions and meetings, and the sim does not stop for transfer windows or deadline day. It still stops for a sacking or the end. Out of work, it does not stop for job offers either: they wait in your inbox until they run out.</div></div><button class="btn sm ${S().settings && S().settings.simAuto ? 'pri' : ''}" data-act="simAuto">${S().settings && S().settings.simAuto ? 'On' : 'Off'}</button></div>
       <button class="btn pri block" data-act="simGo">▶ Start simming</button>`;
   };
   UI.acts.simDaysAsk = () => {
@@ -560,7 +560,7 @@
     const until = d.until === 'match' || d.until === 'season' || d.until === 'window' ? d.until : null;
     const n = until ? 400 : Math.max(1, Math.min(120, Math.floor(+d.n) || 7));
     UI.closeAllSheets();
-    const auto = !!(d.auto && W.employed());
+    const auto = !!d.auto; // (out of work too: the sim without stopping does not stop for new job offers)
     const r = await FM.SimRunner.run('days', until || auto ? { days: n, ...(until ? { until } : {}), auto } : n);
     if (!r) return;
     if (!r.summary && r.pending && W.employed()) UI.sub.feed = 'reply';

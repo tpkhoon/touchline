@@ -660,7 +660,7 @@
     if (com) {
       let r = Math.random() * com.reduce((s, c) => s + c[0], 0);
       const c = (com.find((x) => (r -= x[0]) < 0) || com[0])[1];
-      return { fn: U.pick(c.fn), ln: U.pick(c.ln) };
+      if (c) return { fn: U.pick(c.fn), ln: U.pick(c.ln) }; // (null: the nation's own names, below)
     }
     return { fn: W.pickGiven(nat, born), ln: W.pickSurname(nat) };
   };
