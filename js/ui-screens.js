@@ -1693,6 +1693,7 @@
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
       ${persuadeCard(p)}
       ${bioCard(p)}
+      ${UI.natCard(p)}
       ${UI.seasonsCard(p, history)}
       ${UI.careerCard(p, history)}
       ${injuryCard(p)}`;
@@ -1751,6 +1752,26 @@
       <div class="tiny dim" style="margin-top:6px">Shots, chances, tackles, minutes and keeper numbers come from fully simulated matches.</div></div>`;
   };
   // This season so far and every season he has played, a row per club (a mid-season move gets two)
+  // Where he grew up and was born, his family, his passports and the nations he could play for, and why (js/citizenship.js)
+  UI.natCard = function (p) {
+    const birth = W.birthOf(p),
+      cit = W.citizenships(p),
+      elig = W.eligibleFor(p).filter((c) => c !== p.nat),
+      kin = W.originsOf(p);
+    if (birth === p.nat && cit.length === 1 && !kin.length && !elig.length) return '';
+    const nm = (c) => (D.NATIONS[c] ? `${C.flag(c)} ${esc(D.NATIONS[c].name)}` : esc(c)),
+      row = (label, html) =>
+        `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span class="dim" style="width:104px;flex:none">${label}</span><div class="grow" style="min-width:0">${html}</div></div>`;
+    const plays = FM.Intl && FM.Intl.nationOf(p),
+      capped = p.intl && p.intl.caps > 0;
+    return `<div class="card"><div class="h3">Nationality</div>
+      ${row('Grew up in', nm(p.nat))}
+      ${birth !== p.nat ? row('Born in', nm(birth)) : ''}
+      ${kin.length ? row('Family', kin.map(([c, s]) => `${{ 1: 'both parents', 0.5: 'one parent', 0.25: 'a grandparent' }[s] || 'family'} from ${nm(c)}`).join(', ')) : ''}
+      ${cit.length > 1 ? row('Passports', cit.map(nm).join(', ')) : ''}
+      ${elig.length ? row('Could play for', elig.map((c) => `${nm(c)} <span class="dim">· ${esc(W.eligibilityText(p, c) || '')}</span>`).join('<br>')) : ''}
+      ${plays && (capped || p.alleg) ? row('Plays for', `${nm(plays)}${capped ? ` <span class="dim">· ${U.plural(p.intl.caps, 'cap')}: tied to this nation</span>` : ''}`) : ''}</div>`;
+  };
   UI.seasonsCard = function (p, history) {
     const gk = p.pos === 'GK';
     const head = gk

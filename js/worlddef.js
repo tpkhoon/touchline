@@ -1011,7 +1011,9 @@
         style: N.style,
         bias: N.bias,
         mix: Object.fromEntries(Object.entries(D.NAT_MIX).map(([l, m]) => [l, m[code]])),
+        law: D.CITIZENSHIP && D.CITIZENSHIP[code] ? { ...D.CITIZENSHIP[code] } : null,
       });
+      if (e.law && D.CITIZENSHIP) D.CITIZENSHIP[code] = { ...(D.CITIZENSHIP[code] || {}), ...e.law }; // (its citizenship law: js/citizenship.js)
       if (e.name) N.name = e.name;
       if (e.flag) N.flag = e.flag;
       if (e.region) N.region = e.region;
@@ -1031,6 +1033,10 @@
         if (!N) continue;
         Object.assign(N, { name: s.name, flag: s.flag, region: s.region, style: s.style, bias: s.bias });
         for (const [l, v] of Object.entries(s.mix)) if (D.NAT_MIX[l]) D.NAT_MIX[l][s.code] = v;
+        if (D.CITIZENSHIP) {
+          if (s.law) D.CITIZENSHIP[s.code] = s.law;
+          else delete D.CITIZENSHIP[s.code];
+        }
       }
     };
   };
@@ -1061,6 +1067,20 @@
         e.push(`${at}: the way they play is one of ${Object.keys(WD.NATION_STYLES).join(', ')}`);
       if (x.abroad != null && !(x.abroad >= 0.2 && x.abroad <= 3))
         e.push(`${at}: how common its players are abroad is between 0.2 and 3`);
+      if (x.law != null) {
+        const l = x.law;
+        if (typeof l !== 'object') e.push(`${at}: the citizenship law is a set of rules`);
+        else {
+          if (l.soli != null && !['none', 'cond', 'full'].includes(l.soli))
+            e.push(`${at}: citizenship by birth is none, cond (to parents who live there) or full`);
+          if (l.descent != null && !(Number.isInteger(l.descent) && l.descent >= 1 && l.descent <= 99))
+            e.push(
+              `${at}: citizenship by descent reaches back 1 (a parent), 2 (a grandparent) or 99 (any ancestor) generations`,
+            );
+          if (l.dual != null && !['yes', 'limited', 'no'].includes(l.dual))
+            e.push(`${at}: another passport is yes, limited or no`);
+        }
+      }
     }
     return e;
   };

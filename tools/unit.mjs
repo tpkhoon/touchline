@@ -319,17 +319,61 @@ try {
   }
   ok(withOrigin === 4000, 'a Maghrebi heritage always has an origin country');
   ok(
-    eligible / withOrigin > 0.6 && eligible / withOrigin < 0.78,
-    `about 0.7 are eligible for the origin country (${(eligible / withOrigin).toFixed(2)})`,
+    eligible / withOrigin > 0.95,
+    `Morocco's law reaches any ancestor, so every Maghrebi origin can play for it (${(eligible / withOrigin).toFixed(2)})`,
   );
   ok(
-    held < eligible && held / eligible > 0.5,
+    held < eligible && held / eligible > 0.5 && held / eligible < 0.85,
     `most of those eligible hold the passport, not all (${(held / eligible).toFixed(2)})`,
   );
   ok(
     abroad / withOrigin > 0.04 && abroad / withOrigin < 0.1,
     `some are born abroad (${(abroad / withOrigin).toFixed(2)})`,
   );
+  // the laws decide who can claim: a parent is enough nearly everywhere, a grandparent in some nations, and a nation that bans another passport makes holding both rare
+  ok(
+    W.canRepresent({ id: 'a', nat: 'ENG', origins: [['IND', 0.5]] }, 'IND').via === 'descent',
+    'one Indian parent: could claim Indian citizenship',
+  );
+  ok(
+    !W.canRepresent({ id: 'b', nat: 'ENG', origins: [['IND', 0.25]] }, 'IND').ok,
+    "an Indian grandparent is not enough: India's law reaches back one generation",
+  );
+  ok(
+    W.canRepresent({ id: 'c', nat: 'ENG', origins: [['ITA', 0.25]] }, 'ITA').via === 'descent',
+    'an Italian grandparent is enough',
+  );
+  ok(
+    W.canRepresent({ id: 'd', nat: 'FRA', cit: ['FRA', 'MAR'] }, 'MAR').via === 'passport',
+    'a Moroccan passport is held',
+  );
+  ok(
+    W.canRepresent({ id: 'e', nat: 'FRA', birth: 'COD' }, 'COD').via === 'birth',
+    'born in DR Congo: eligible through birth',
+  );
+  ok(
+    W.canRepresent({ id: 'f', nat: 'ENG', nat2: 'ESP' }, 'ESP').via === 'family',
+    "an older save's second nation is still eligible",
+  );
+  ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
+  eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
+  {
+    const rate = (nat, her) => {
+      let e = 0,
+        h = 0;
+      for (let i = 0; i < 3000; i++) {
+        const p = { id: 'r' + i, nat };
+        W.rollOrigin(p, nat, her, null);
+        if (p.nat2) e++;
+        if (p.cit) h++;
+      }
+      return h / e;
+    };
+    ok(
+      rate('AUS', 'southasian') < rate('ENG', 'caribbean') * 0.5,
+      'an Australian of Indian family rarely holds both passports: India bans another',
+    );
+  }
   ok(
     WD_validatePlayer({ id: 'x', fn: 'A', ln: 'B', nat: 'ENG', pos: 'ST', born: 2000, birth: 'XXX' }).length > 0,
     'an unknown birth country is refused',

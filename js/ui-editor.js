@@ -5112,6 +5112,9 @@
     const lab = (D.NATIONS[code] || {}).style;
     return Object.keys(WD.NATION_STYLES).find((k) => WD.NATION_STYLES[k][0] === lab) || '';
   };
+  // the law the game gives a nation, and the one this world has (the game's with the definition's edit)
+  const lawOf = (code) => ({ ...D.CITIZENSHIP_DEFAULT, ...((D.CITIZENSHIP_BASE || D.CITIZENSHIP)[code] || {}) });
+  const lawNow = (code) => ({ ...lawOf(code), ...(nEdit(code).law || {}) });
   const NT_TACTIC = { formation: '4-3-3', buildup: 'Short', press: 'Mid Block', width: 'Balanced' }; // (how the game sets a national team up)
   const sameColours = (a, b) =>
     a.length === b.length && a.every((x, i) => String(x).toLowerCase() === String(b[i]).toLowerCase());
@@ -5132,6 +5135,14 @@
       style: v('ed-ninfostyle') === styleKey(ED.code) ? null : v('ed-ninfostyle'),
       abroad: abroad === 1 ? null : abroad,
     };
+    {
+      // the citizenship law: only what differs from the game's own
+      const cur = { soli: v('ed-nlawsoli'), descent: +v('ed-nlawdescent'), dual: v('ed-nlawdual') },
+        orig = lawOf(ED.code),
+        diff = {};
+      for (const k of ['soli', 'descent', 'dual']) if (cur[k] && cur[k] !== orig[k]) diff[k] = cur[k];
+      patch.law = Object.keys(diff).length ? diff : null;
+    }
     const r = WD.editor(ED.def, null).setNationEdit(ED.code, patch);
     ED.err = r.ok ? [] : r.errors;
     UI.worldEditor();
@@ -5442,7 +5453,7 @@
         .map(([k, l]) => `<option value="${k}" ${(ne.region || N.region) === k ? 'selected' : ''}>${esc(l)}</option>`)
         .join(
           '',
-        )}</select></div><div style="flex:1"><div class="tiny dim">How they play</div><select id="ed-ninfostyle">${Object.entries(
+        )}</select></div><div style="flex:1"><div class="tiny dim">How they play</div><select id="ed-ninfostyle">${!(ne.style || styleKey(ED.code)) ? `<option value="" selected>${esc(N.style)} (as the game has it)</option>` : ''}${Object.entries(
         WD.NATION_STYLES,
       )
         .map(
@@ -5450,6 +5461,19 @@
             `<option value="${k}" ${(ne.style || styleKey(ED.code)) === k ? 'selected' : ''}>${esc(v[0])}</option>`,
         )
         .join('')}</select></div></div>
+      <div class="ng-label">Citizenship <span class="tiny dim">· what a family can claim: a player's passports and the nations he could play for follow these laws (a first pass from general knowledge; set them as you like)</span></div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">By birth</div><select id="ed-nlawsoli">${Object.entries(
+        D.LAW_TEXT.soli,
+      )
+        .map(([k, t]) => `<option value="${k}" ${lawNow(ED.code).soli === k ? 'selected' : ''}>${esc(t)}</option>`)
+        .join(
+          '',
+        )}</select></div><div style="flex:1"><div class="tiny dim">By descent</div><select id="ed-nlawdescent">${[1, 2, 99].map((k) => `<option value="${k}" ${lawNow(ED.code).descent === k ? 'selected' : ''}>${esc(D.LAW_TEXT.descent(k))}</option>`).join('')}</select></div></div>
+      <div class="tiny dim" style="margin-top:8px">Another passport</div><select id="ed-nlawdual">${Object.entries(
+        D.LAW_TEXT.dual,
+      )
+        .map(([k, t]) => `<option value="${k}" ${lawNow(ED.code).dual === k ? 'selected' : ''}>${esc(t)}</option>`)
+        .join('')}</select>
       <div class="tiny dim" style="margin-top:8px">Players abroad (a multiplier, 1 is as the game has it)</div><input type="number" id="ed-ninfoabroad" min="0.2" max="3" step="0.1" value="${ne.abroad != null ? ne.abroad : 1}" style="width:120px">
       <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edSaveNationInfo">Save the nation</button>${Object.keys(ne).length ? '<button class="btn sm" data-act="edResetNationInfo">Back to the default</button>' : ''}</div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">The part of the world sets who it qualifies with (until you move it in Confederations) and which scouts know its players. A new world built from this one takes the changes; the national team's own name, colours and ranking points are below.</div>

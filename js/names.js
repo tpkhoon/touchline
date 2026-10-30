@@ -1082,6 +1082,7 @@
   };
   D.POOL_NATS = {
     caribbean: ['JAM', 'TRI', 'GUY', 'HAI', 'SUR', 'CUW'],
+    surinamese: ['SUR', 'CUW'],
     nigerian: ['NGA'],
     ghanaian: ['GHA'],
     senegalese: ['SEN'],
