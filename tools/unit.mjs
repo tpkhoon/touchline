@@ -358,6 +358,21 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // surnames come up as often as they do in life where the game has the shares
+    for (const [c, w] of Object.entries(D.SURNAME_WEIGHTS))
+      ok(
+        Object.values(w).reduce((x, y) => x + y, 0) < 100,
+        c + ': the shares of the commonest surnames add up to less than all of them',
+      );
+    const n = { ESP: 0, tail: 0 };
+    for (let i = 0; i < 4000; i++) {
+      const s = W.pickSurname('ESP');
+      if (s === 'García') n.ESP++;
+      else if (!(s in D.SURNAME_WEIGHTS.ESP)) n.tail++;
+    }
+    ok(n.ESP > (n.tail / (D.NATIONS.ESP.ln.length - 20)) * 3, 'García is far commoner than a name in the tail');
+  }
+  {
     // phase 4: a second passport changes how registration sees a player
     const R = FM.Reg,
       club = { nat: 'ESP' };

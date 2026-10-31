@@ -817,7 +817,7 @@
     // no more than two of one surname in a squad, unless it is a very common one in the nation (Kim, Nguyễn)
     if (clubId && p.fn && !heritage) {
       const common = (D.SURNAME_WEIGHTS && D.SURNAME_WEIGHTS[nat]) || {};
-      for (let k = 0; k < 8 && !(p.ln in common) && W.squad(clubId).filter((q) => q.ln === p.ln).length >= 2; k++) {
+      for (let k = 0; k < 8 && !(common[p.ln] >= 4) && W.squad(clubId).filter((q) => q.ln === p.ln).length >= 2; k++) {
         const again = W.rollName(nat, heritage, FM.S.year - age);
         if (!isRealName(`${again.fn} ${again.ln}`) && !W.nameTaken(`${again.fn} ${again.ln}`)) {
           p.fn = again.fn;
