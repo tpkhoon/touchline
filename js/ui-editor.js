@@ -2161,19 +2161,69 @@
       f.nat = (nations.find(([k]) => !ED.def.leagues.some((l) => l.nat === k)) || nations[0])[0];
     const has = new Set(ED.def.leagues.map((l) => l.nat));
     const pyr = ED.def.leagues.filter((l) => l.nat === f.nat).sort((a, b) => a.tier - b.tier);
-    const place = f.place || 'none';
+    const place = f.place || 'none',
+      all = !!f.all,
+      step = Math.min(3, Math.max(1, f.step || 1)),
+      show = (n) => (all || step === n ? '' : 'style="display:none"');
+    const TIER_NAMES = [
+      'Premier Division',
+      'First Division',
+      'Second Division',
+      'Third Division',
+      'Fourth Division',
+      'Fifth Division',
+    ];
+    const sug =
+      place === 'top'
+        ? 0
+        : place.startsWith('below:')
+          ? (pyr.find((l) => 'below:' + l.id === place) || { tier: 0 }).tier
+          : pyr.length;
     return `<div class="h1" style="margin-top:2vh">Add a league</div><div class="tag">Its clubs are made for you with placeholder names: open each one to name it. A nation with no league yet gets its first.</div>
       ${errBox()}
+      ${all ? '' : `<div class="tiny dim" style="margin:6px 0">Step ${step} of 3 · ${['Where it plays', 'What it is called', 'How big it is'][step - 1]}</div>`}
+      <div data-nlstep="1" ${show(1)}>
       <div class="ng-label">Nation</div><select id="ed-nlnat" data-input="edNlNat">${nations.map(([k, n]) => `<option value="${k}" ${k === f.nat ? 'selected' : ''}>${n.flag} ${esc(n.name)}${has.has(k) ? '' : ' · no league yet'}</option>`).join('')}</select>
-      <div class="ng-label">League name</div><input type="text" id="ed-nlname" maxlength="48" placeholder="e.g. Premier Division" value="${esc(f.name)}">
-      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name</div><input type="text" id="ed-nlshort" maxlength="6" placeholder="e.g. PD" value="${esc(f.short)}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Tier</div><input type="number" id="ed-nltier" min="1" max="6" inputmode="numeric" value="${f.tier}" ${place !== 'none' ? 'disabled' : ''}></div></div>
       ${
         pyr.length
           ? `<div class="ng-label">Place in the ${esc(D.NATIONS[f.nat].name)} pyramid</div><select id="ed-nlplace" data-input="edNlPlace"><option value="none" ${place === 'none' ? 'selected' : ''}>Not linked: a league of its own, at the tier above</option><option value="top" ${place === 'top' ? 'selected' : ''}>At the top: above ${esc(pyr[0].name)}</option>${pyr.map((l) => `<option value="below:${esc(l.id)}" ${place === 'below:' + l.id ? 'selected' : ''}>Below ${esc(l.name)} (tier ${l.tier})</option>`).join('')}</select><div class="tiny dim" style="margin-top:6px;line-height:1.5">${place === 'none' ? 'Not part of the pyramid: no club goes up or down. Choose a place to join it.' : place === 'top' ? 'It becomes the top flight and takes the continental places; the old top flight is the second division and sends its top three up. Every division moves one tier down.' : "It takes the next tier down. The divisions from there move one lower, and it is linked to the league above it and the one below it, each keeping the number of clubs that go up and down (two where there was none). Change the numbers on a league's screen."}</div>`
           : ''
       }
+      </div>
+      <div data-nlstep="2" ${show(2)}>
+      <div class="ng-label">League name <span class="tiny dim">· or tap a suggestion</span></div><div class="row" style="gap:6px;flex-wrap:wrap;margin:6px 0">${TIER_NAMES.slice(
+        Math.max(0, Math.min(5, sug)),
+        Math.max(0, Math.min(5, sug)) + 3,
+      )
+        .map((t) => `<button type="button" class="btn sm" data-act="edNlSuggest" data-n="${esc(t)}">${esc(t)}</button>`)
+        .join('')}</div>
+      <input type="text" id="ed-nlname" maxlength="48" placeholder="e.g. Premier Division" value="${esc(f.name)}">
+      <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Short name</div><input type="text" id="ed-nlshort" maxlength="6" placeholder="e.g. PD" value="${esc(f.short)}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Tier</div><input type="number" id="ed-nltier" min="1" max="6" inputmode="numeric" value="${f.tier}" ${place !== 'none' ? 'disabled' : ''}></div></div>
+      </div>
+      <div data-nlstep="3" ${show(3)}>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Clubs (8–24)</div><input type="number" id="ed-nlcount" min="8" max="24" inputmode="numeric" value="${f.count}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Simulation</div><select id="ed-nlsim">${['minimal', 'light', 'full'].map((k) => `<option value="${k}" ${f.sim === k ? 'selected' : ''}>${{ minimal: 'Minimal (fast)', light: 'Light', full: 'Full' }[k]}</option>`).join('')}</select></div></div>
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateLeague">Add the league</button></div>`;
+      </div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="${!all && step > 1 ? 'edNlStep' : 'edView'}" ${!all && step > 1 ? `data-s="${step - 1}"` : 'data-v="home"'} aria-label="Back">←</button>${all || step === 3 ? '<button class="btn sm pri grow" data-act="edCreateLeague">Add the league</button>' : `<button class="btn sm pri grow" data-act="edNlStep" data-s="${step + 1}">Next</button>`}</div>
+      <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edNlAll">${all ? 'Step by step' : 'Everything on one screen'}</button></div>`;
+  };
+  UI.acts.edNlStep = (d) => {
+    const f = readNl();
+    f.step = Math.min(3, Math.max(1, +d.s || 1));
+    UI.worldEditor();
+  };
+  UI.acts.edNlAll = () => {
+    const f = readNl();
+    f.all = !f.all;
+    UI.worldEditor();
+  };
+  UI.acts.edNlSuggest = (d) => {
+    const f = readNl();
+    f.name = d.n;
+    f.short = d.n
+      .split(' ')
+      .map((w) => w[0])
+      .join('');
+    UI.worldEditor();
   };
   UI.acts.edNlPlace = () => {
     readNl();
@@ -2442,6 +2492,37 @@
     UI.worldEditor();
     UI.toast('A copy of the club (its players and manager are not copied)', 3000);
   };
+  // "Regenerate this": a new value for one generated field of the club form, put in the field (nothing is saved until Save club)
+  UI.acts.edRegen = (d) => {
+    const $v = (id) => $('#ed-' + id),
+      set = (id, val) => {
+        const el = $v(id);
+        if (el) {
+          el.value = val;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      };
+    if (d.k === 'colors') {
+      const now = [($v('c1') || {}).value, ($v('c2') || {}).value].join();
+      const pick = U.pick(PALETTE.filter((p) => p.join() !== now));
+      set('c1', pick[0]);
+      set('c2', pick[1]);
+    } else if (d.k === 'short') {
+      const taken = new Set(ED.def.clubs.filter((x) => x.id !== ED.cid).map((x) => x.short));
+      set('short', U.abbrev(($v('name') || {}).value || '', taken));
+    } else if (d.k === 'ground') {
+      const city = (($v('city') || {}).value || '').trim() || 'Town',
+        rep = +($v('rep') || {}).value || 50;
+      set('stadium', `${city} ${U.pick(['Park', 'Stadium', 'Ground', 'Road'])}`);
+      set('cap', Math.max(1500, Math.round((8000 + (rep - 40) * 900) / 500) * 500));
+    } else if (d.k === 'founded') {
+      set('founded', U.randi(1865, 1955));
+    } else if (d.k === 'manager') {
+      const nm = FM.W.rollName(($v('mnat') || {}).value || 'ENG', null, new Date().getFullYear() - 45);
+      set('mfn', nm.fn);
+      set('mln', nm.ln);
+    }
+  };
   UI.acts.edSwapClub = () => {
     const other = ED.def.clubs.find((x) => x.id === ($('#ed-swap') || {}).value),
       mine = ED.def.clubs.find((x) => x.id === ED.cid);
@@ -2466,6 +2547,7 @@
     const nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     return `<div class="ng-label">Manager <span class="tiny dim">· leave the names empty to keep the one the game gives the club</span></div>
       <div class="ng-names" style="margin-top:0"><input type="text" id="ed-mfn" maxlength="24" placeholder="First name" value="${esc(m.fn || '')}"><input type="text" id="ed-mln" maxlength="28" placeholder="Last name" value="${esc(m.ln || '')}"></div>
+      <div class="row" style="gap:6px;margin-top:6px"><button type="button" class="btn sm" data-act="edRegen" data-k="manager">Another name</button></div>
       <div class="ng-names"><select id="ed-mnat" style="flex:1">${nations.map(([k, n]) => `<option value="${k}" ${(m.nat || c.nat) === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select><input type="number" id="ed-mage" min="28" max="80" inputmode="numeric" style="max-width:84px" value="${m.age || 48}" aria-label="Age"></div>
       <div class="ng-label" style="margin-top:8px">Ability <b id="ed-mabv" style="color:#e6edf6">${m.ability || 12}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-mab" min="1" max="20" step="1" value="${m.ability || 12}" style="width:100%">
       <div class="ng-label" style="margin-top:8px">Reputation <b id="ed-mrepv" style="color:#e6edf6">${m.rep || c.rep}</b> <span class="tiny dim">(how the wider game rates them)</span></div><input type="range" id="ed-mrep" min="20" max="99" step="1" value="${m.rep || c.rep}" style="width:100%">
@@ -2689,11 +2771,13 @@
       <div class="ng-label">Colours <span class="tiny dim">· a preset, or pick your own</span></div>
       <div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px">${KIT_PRESETS.map(([a, b]) => `<button type="button" class="btn sm" style="padding:0;width:34px;height:34px;border-radius:50%;border:1px solid #243042;background:linear-gradient(135deg,${a} 50%,${b} 50%)" data-act="edPreset" data-a="${a}" data-b="${b}" aria-label="Colours ${a} and ${b}"></button>`).join('')}</div>
       <div class="row" style="gap:10px"><input type="color" id="ed-c1" value="${esc(c.colors[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="ed-c2" value="${esc(c.colors[1])}" style="width:64px;height:44px;padding:2px"><span class="tiny dim">home kit, and the second colour</span></div>
+      <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:10px"><button type="button" class="btn sm" data-act="edRegen" data-k="colors">Other colours</button><button type="button" class="btn sm" data-act="edRegen" data-k="short">Short name from the name</button></div>
       <div class="ng-label">Identity</div><select id="ed-identity">${idOpts}</select>
       <div class="ng-label">Reputation <b id="ed-repv" style="color:#e6edf6">${c.rep}</b> <span class="tiny dim">(${stars(c.rep)} — decides the squad and the money)</span></div>
       <input type="range" id="ed-rep" min="20" max="99" step="1" value="${c.rep}" style="width:100%">
       </details>
       <details class="edsec"><summary>Ground</summary>
+      <div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:6px"><button type="button" class="btn sm" data-act="edRegen" data-k="ground">Ground and capacity from the city and reputation</button><button type="button" class="btn sm" data-act="edRegen" data-k="founded">Other founding year</button></div>
       <div class="ng-label">Ground</div><input type="text" id="ed-stadium" maxlength="40" value="${esc(c.stadium.name)}">
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Capacity</div><input type="number" id="ed-cap" min="1000" max="120000" step="500" inputmode="numeric" value="${esc(c.stadium.cap)}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Founded</div><input type="number" id="ed-founded" min="1800" max="2030" inputmode="numeric" value="${c.founded || ''}"></div></div>
       </details>
