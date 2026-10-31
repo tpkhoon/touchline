@@ -1166,7 +1166,7 @@
     );
   // Nations whose full name carries the father's name between the given name and the family name (Abdullah Fahad Al-Otaibi); a share
   // of the players use the long form
-  D.FATHER_CHAIN = { KSA: 0.35, UAE: 0.35, QAT: 0.35 };
+  D.FATHER_CHAIN = { KSA: 0.35, UAE: 0.35, QAT: 0.35, KUW: 0.35, BHR: 0.35, OMA: 0.35 };
   // Nations whose names are written family name first (Kim Min-jae, Wu Lei, Nguyễn Quang Hải)
   D.FAMILY_FIRST = ['KOR', 'CHN', 'VIE'];
   // Vietnamese words with their accents (the lists are written without)
@@ -1203,6 +1203,15 @@
       ' ',
     ),
     UAE: 'Al-Mazrouei Al-Nuaimi Al-Shamsi Al-Ketbi Al-Mansoori Al-Kaabi Al-Dhaheri Al-Marri Al-Hammadi Al-Suwaidi Al-Zaabi Al-Ali Al-Blooshi Al-Hosani Al-Ahbabi Al-Muhairi Al-Falasi Al-Qubaisi Al-Rumaithi'.split(
+      ' ',
+    ),
+    KUW: 'Al-Mutairi Al-Azmi Al-Enezi Al-Rashidi Al-Otaibi Al-Ajmi Al-Dosari Al-Hajri Al-Kandari Al-Shammari Al-Anzi Al-Failakawi Al-Saqer Al-Khaldi Al-Harbi Al-Qallaf Al-Mulla Al-Ghanem Al-Shatti Al-Sayegh Al-Roumi Al-Tarrah Al-Awadhi Al-Salem'.split(
+      ' ',
+    ),
+    BHR: 'Al-Dosari Al-Aali Al-Binali Al-Hammadi Al-Mannai Al-Mahmood Al-Zayani Al-Kooheji Al-Jowder Al-Ansari Al-Sayed Al-Khaja Al-Madani Al-Shaikh Al-Mutawa Al-Alawi Al-Hawaj Al-Ghatam Al-Aradi Al-Ketbi Al-Marzooq Al-Sitrawi Al-Nuaimi Al-Mulla'.split(
+      ' ',
+    ),
+    OMA: 'Al-Balushi Al-Rawahi Al-Harthi Al-Hinai Al-Kindi Al-Siyabi Al-Ghafri Al-Riyami Al-Maamari Al-Shehhi Al-Mukhaini Al-Habsi Al-Jabri Al-Busaidi Al-Hosni Al-Lawati Al-Wahaibi Al-Saadi Al-Farsi Al-Mashani Al-Maskari Al-Amri Al-Kharusi Al-Abri'.split(
       ' ',
     ),
     QAT: 'Al-Marri Al-Kuwari Al-Thani Al-Sulaiti Al-Naimi Al-Hajri Al-Mohannadi Al-Kubaisi Al-Ansari Al-Muhannadi Al-Dosari Al-Mannai Al-Shammari Al-Obaidly Al-Haidos'.split(
@@ -1296,7 +1305,7 @@
       }
     }
     // The Gulf nations: their own names, written Al-X
-    for (const nat of ['KSA', 'UAE', 'QAT']) {
+    for (const nat of ['KSA', 'UAE', 'QAT', 'KUW', 'BHR', 'OMA']) {
       if (!N[nat]) continue;
       N[nat].fn = GULF_FN.slice();
       N[nat].ln = GULF_LN[nat].slice();
