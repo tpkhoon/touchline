@@ -1056,6 +1056,7 @@
   const hide = (k) => (ED.tab === k ? '' : 'display:none;');
   const BEYOND_TAB = {
     cups: 'comp',
+    pyramid: 'comp',
     calendar: 'comp',
     staffhub: 'people',
     intl: 'comp',
@@ -1222,6 +1223,7 @@
       </div>
       ${[
         ['cups', 'Cups', `${(ED.def.competitions || []).length} changed · names, formats and rules`],
+        ['pyramid', 'Pyramid', "a nation's leagues as divisions: move a club up or down, or swap two"],
         ['calendar', 'Season calendar', calendarSummary()],
         ['library', 'Library, files and packs', 'worlds kept on this device, files, and club data packs'],
         [
@@ -2824,6 +2826,97 @@
           .join('') || '<div class="empty">No differences.</div>'
       }
       <div class="actions ng-foot"><button class="btn sm" data-act="edLibrary" aria-label="Back">←</button></div>`;
+  };
+  // ---------- The pyramid ----------
+  // A nation's leagues as divisions, top to bottom, each with its clubs. Tap a club, then tap Move here on another division, or tap a
+  // club of another division to swap the two (the sizes stay as they are). The same edit as a club's League field, in two taps.
+  const natIn = (c, lg) => {
+    const l = leagueOf(lg) || {};
+    return isSide(c) ? c.nat : [c.nat].find((n) => n && openTo(l, n)) || l.nat;
+  };
+  const pyNations = () =>
+    [...new Set(ED.def.leagues.map((l) => l.nat))]
+      .filter((n) => D.NATIONS[n])
+      .sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name));
+  const pyramidView = () => {
+    const nats = pyNations();
+    if (!ED.pn || !nats.includes(ED.pn))
+      ED.pn = nats.includes((leagueOf(ED.lid) || {}).nat) ? leagueOf(ED.lid).nat : nats[0];
+    const lgs = ED.def.leagues
+        .filter((l) => l.nat === ED.pn)
+        .sort((a, b) => (a.tier || 9) - (b.tier || 9) || a.name.localeCompare(b.name)),
+      sel = ED.psel && ED.def.clubs.find((c) => c.id === ED.psel);
+    if (ED.psel && !sel) ED.psel = null;
+    const nm = (id) => (leagueOf(id) || { name: id }).name;
+    return `<div class="h1" style="margin-top:2vh">Pyramid</div><div class="tag">The divisions of a nation, top to bottom. Tap a club to pick it up, then tap Move here on another division, or a club of another division to swap them.</div>
+      ${errBox()}
+      <select id="ed-pn" data-input="edPyNat" style="margin:6px 0">${nats.map((n) => `<option value="${n}" ${n === ED.pn ? 'selected' : ''}>${D.NATIONS[n].flag} ${esc(D.NATIONS[n].name)}</option>`).join('')}</select>
+      ${sel ? `<div class="card" style="margin:8px 0;padding:10px 12px;border:1px solid var(--accent, #c8f03c)"><div class="small b">${crestDot(sel)} ${esc(sel.name)} picked up</div><div class="tiny dim" style="margin-top:4px">From ${esc(nm(sel.league))}. Tap Move here on a division, or a club of another division to swap.</div><div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edPyClear">Put it back</button></div></div>` : ''}
+      ${
+        lgs
+          .map((l) => {
+            const cl = clubsOf(l.id).sort((a, b) => a.name.localeCompare(b.name)),
+              r = l.rules || {},
+              links = [
+                r.promote ? `up: ${esc(nm(r.promote.to))}` : '',
+                r.relegate ? `down: ${esc(nm(r.relegate.to))}` : '',
+              ]
+                .filter(Boolean)
+                .join(' · ');
+            return `<div class="card" style="margin:8px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(l.name)}</div><div class="tiny dim">Division ${l.tier || '?'} · ${U.plural(cl.length, 'club')}${links ? ' · ' + links : ''}</div></div>${sel && sel.league !== l.id ? `<button class="btn sm pri" data-act="edPyMove" data-lid="${esc(l.id)}">Move here</button>` : ''}</div>
+            <div class="chips" style="margin-top:8px;flex-wrap:wrap;display:flex;gap:6px">${cl.map((c) => `<button class="chip ${c.id === ED.psel ? 'on' : ''}" style="min-height:44px" data-act="edPyPick" data-cid="${esc(c.id)}" aria-label="${esc(c.name)}" title="${esc(c.name)}">${esc(c.short || c.name)}</button>`).join('') || '<span class="tiny dim">No clubs.</span>'}</div></div>`;
+          })
+          .join('') || '<div class="empty">No leagues.</div>'
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="home" aria-label="Back">←</button></div>`;
+  };
+  UI.acts.edPyNat = (d, el) => {
+    ED.pn = el.value;
+    ED.psel = null;
+    UI.worldEditor();
+  };
+  UI.acts.edPyClear = () => {
+    ED.psel = null;
+    UI.worldEditor();
+  };
+  UI.acts.edPyPick = (d) => {
+    const c = ED.def.clubs.find((x) => x.id === d.cid);
+    if (!c) return;
+    const mine = ED.psel && ED.def.clubs.find((x) => x.id === ED.psel);
+    if (!mine || mine.id === c.id) ED.psel = mine && mine.id === c.id ? null : c.id;
+    else if (mine.league === c.league) ED.psel = c.id;
+    else {
+      // a swap: each takes the other's division
+      const E = WD.editor(ED.def, null),
+        a = { league: mine.league, nat: mine.nat },
+        b = { league: c.league, nat: c.nat };
+      const r1 = E.setClub(mine.id, { league: b.league, nat: natIn(mine, b.league) });
+      const r2 = r1.ok ? E.setClub(c.id, { league: a.league, nat: natIn(c, a.league) }) : r1;
+      if (!r2.ok) {
+        if (r1.ok) E.setClub(mine.id, a);
+        ED.err = r2.errors;
+      } else {
+        ED.err = [];
+        ED.psel = null;
+        UI.toast(`${mine.name} and ${c.name} swapped divisions`, 2500);
+      }
+    }
+    UI.worldEditor();
+  };
+  UI.acts.edPyMove = (d) => {
+    const c = ED.psel && ED.def.clubs.find((x) => x.id === ED.psel);
+    if (!c) return;
+    const was = { league: c.league, nat: c.nat },
+      r = WD.editor(ED.def, null).setClub(c.id, { league: d.lid, nat: natIn(c, d.lid) });
+    if (!r.ok) {
+      WD.editor(ED.def, null).setClub(c.id, was);
+      ED.err = r.errors;
+    } else {
+      ED.err = [];
+      ED.psel = null;
+      UI.toast(`${c.name} moved to ${(leagueOf(d.lid) || {}).name}`, 2500);
+    }
+    UI.worldEditor();
   };
   UI.acts.edLibDel = async (d) => {
     const idx = (await libIndex()).filter((x) => x.id !== d.id);
@@ -5919,6 +6012,7 @@
       club: clubView,
       importp: importView,
       library: libraryView,
+      pyramid: pyramidView,
       diff: diffView,
       clubx: clubxView,
       squad: squadView,

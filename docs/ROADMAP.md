@@ -210,6 +210,7 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 - Fix: the matchday digest in the news no longer breaks when a club it lists has left the world (an error in the news feed after resigning); the national-team vacancies no longer say "You keep your club job" when out of work.
 - Editor, dependency warnings on delete (`WD.dependents`, js/worlddef.js; `guardDelete` in js/ui-editor.js): deleting a league, cup, club or confederation lists what depends on it first and asks to confirm.
 - Editor, compare two worlds (`WD.diff`, js/worlddef.js; `edLibCompare` and `diffView` in js/ui-editor.js): a Compare button on each kept world and one for the game's own, listing what differs by section, with the changed fields named.
+- Editor, pyramid view (`pyramidView`, js/ui-editor.js; Competitions tab): a nation's leagues by division with their clubs; move a club to another division or swap two clubs in two taps, through the same club edit (and checks) as the League field.
 - Spain's Basque-only club (Arrasti) plays in the first division (Sorar go down in its place, rated 57 in the top flight), and the Catalan-only club (Serrallac) is an ordinary club with no signing rule, in new worlds.
 
 ### Playtest feedback, round 10
