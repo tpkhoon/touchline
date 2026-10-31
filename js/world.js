@@ -12,15 +12,53 @@
   // (Kim Min-jae, Wu Lei, Nguyễn Quang Hải), a Vietnamese player (Trần Văn Hiếu) is known by his given name, which his shirt carries too
   const famFirst = (p) => !!p.fn && !p.heritage && !!FM.D.FAMILY_FIRST && FM.D.FAMILY_FIRST.includes(p.nat);
   W.name = (p) => (famFirst(p) ? `${p.ln} ${p.fn}` : p.fn ? `${p.fn} ${p.ln}` : p.ln);
+  // Known by one name: about one player in eight in the nations with two surnames (Spain and Latin America; Brazil and Portugal have their
+  // own one-word names, below) goes by his first name or a nickname of it (Paco, Nacho, Rodri). Worked out from his name and his id, so it
+  // is the same every time and follows his name when it changes.
+  const NICK = {
+    Francisco: 'Paco',
+    José: 'Pepe',
+    Jesús: 'Chuy',
+    Fernando: 'Nando',
+    Rodrigo: 'Rodri',
+    Alejandro: 'Álex',
+    Ignacio: 'Nacho',
+    Joaquín: 'Quino',
+    Enrique: 'Quique',
+    Manuel: 'Manu',
+    Ricardo: 'Richi',
+    Sebastián: 'Seba',
+    Cristian: 'Cris',
+    Gonzalo: 'Gonza',
+    Federico: 'Fede',
+    Maximiliano: 'Maxi',
+    Nicolás: 'Nico',
+    Santiago: 'Santi',
+    Guillermo: 'Memo',
+    Eduardo: 'Lalo',
+    Antonio: 'Toni',
+    Miguel: 'Miki',
+    Roberto: 'Beto',
+    Luis: 'Luisito',
+  };
+  W.knownAs = (p) => {
+    const d = FM.D;
+    if (!p.fn || p.heritage || !d.TWO_SURNAMES || !d.TWO_SURNAMES.includes(p.nat) || p.nat === 'BRA' || p.nat === 'POR')
+      return '';
+    if (U.hash(p.id + 'k') % 100 >= 12) return '';
+    const first = p.fn.split(' ')[0];
+    return NICK[first] || first;
+  };
   W.short = (p) =>
-    famFirst(p)
+    W.knownAs(p) ||
+    (famFirst(p)
       ? p.nat === 'VIE'
         ? p.fn.split(' ').pop()
         : `${p.ln} ${p.fn[0]}.`
       : p.fn
         ? `${p.fn[0]}. ${p.ln}`
-        : p.ln;
-  W.shirt = (p) => (famFirst(p) && p.nat === 'VIE' ? p.fn.split(' ').pop() : p.ln);
+        : p.ln);
+  W.shirt = (p) => W.knownAs(p) || (famFirst(p) && p.nat === 'VIE' ? p.fn.split(' ').pop() : p.ln);
 
   W.calcCA = function (p, pos = p.pos) {
     // a natural wing-back is judged on wing-back weights; anyone else in a wing-back slot as a full-back (the slot

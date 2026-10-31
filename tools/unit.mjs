@@ -358,6 +358,26 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // known by one name
+    const mk = (nat, i, fn = 'Francisco') => ({ id: 'kn' + i, nat, fn, ln: 'García' });
+    const sp = Array.from({ length: 2000 }, (_, i) => mk('ESP', i)),
+      known = sp.filter((p) => W.knownAs(p));
+    ok(known.length > 150 && known.length < 330, 'about one Spaniard in eight goes by one name');
+    ok(
+      known.every((p) => W.knownAs(p) === 'Paco' && W.short(p) === 'Paco' && W.shirt(p) === 'Paco'),
+      'Francisco is Paco on the shirt',
+    );
+    ok(
+      known.every((p) => W.name(p) === 'Francisco García'),
+      'the full name stays',
+    );
+    ok(
+      !W.knownAs(mk('BRA', 1)) && !W.knownAs(mk('ENG', 1)) && !W.knownAs({ ...mk('ESP', 1), heritage: 'x' }),
+      'only the nations with two surnames, and not heritage players',
+    );
+    ok(W.knownAs(mk('ESP', 7)) === W.knownAs(mk('ESP', 7)), 'the same every time');
+  }
+  {
     // patronymics and fathers' names
     eq(
       ['Jón', 'Guðmundur', 'Árni', 'Magnús', 'Gunnar', 'Sigurður'].map(W.patronym),
