@@ -445,6 +445,7 @@ Every feature from the game design document, with what is playable in the protot
 | World | League ranking: every league ranked by strength worldwide and within each confederation, with continental points and movement since last season | Playtest round 17 |
 | Editor | Add a league into an existing pyramid (at the top or below any league, with promotion and relegation linked) | Playtest round 17 |
 | Editor | Custom schedule maker: a league's whole fixture list laid out matchday by matchday, or loaded from a CSV file (league, round, home, away) | Playtest round 17 |
+| Editor | Dependency warnings on delete: deleting a league, a cup, a club or a confederation in the world editor first lists what depends on it (clubs, players, derbies, regional cups, promotion links, qualification places, a custom schedule, past seasons) and asks Delete anyway or Keep it | Editor ideas |
 | International | All 211 FIFA members have a national team: 29 more small nations (Bhutan, Mongolia, Somalia, Barbados, the Cook Islands ...) with name cultures, colours and players placed where their emigrants go | Playtest round 17 |
 | Editor | National development sides (Under-19, Under-21, Under-23 or B team of a nation) as clubs of a league: players of the nation within the age group, moving on when too old, never promoted | Playtest round 17 |
 | Editor | A national development side can play in an overseas league (England's Under-23s in the Welsh league), staying a club of its own nation | Playtest round 17 |

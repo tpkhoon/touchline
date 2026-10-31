@@ -62,6 +62,70 @@
     history: { seasons: [] },
   });
 
+  // ---------- What depends on something ----------
+  // What would be lost or left dangling if a league, a cup, a club or a confederation were deleted, in words: a list of lines, empty
+  // when nothing depends on it. The editor shows it before it deletes.
+  WD.dependents = function (def, kind, id) {
+    const U = FM.U,
+      D = FM.D,
+      out = [],
+      many = (n, w, pl) => U.plural(n, w, pl);
+    const leagues = [
+      ...(def.leagues || []),
+      ...(D.LEAGUES || []).filter((l) => !(def.leagues || []).some((x) => x.id === l.id)),
+    ];
+    const lname = (x) => (leagues.find((l) => l.id === x) || { name: x }).name;
+    const seasonsWith = (key) =>
+      (def.history && def.history.seasons ? def.history.seasons : []).filter((s) => s[key] && s[key][id]).length;
+    const ofClubs = (ids) => {
+      const p = (def.players || []).filter((x) => ids.has(x.club)).length,
+        s = (def.staff || []).filter((x) => ids.has(x.club)).length,
+        m = (def.managers || []).filter((x) => ids.has(x.club)).length,
+        r = (def.rivals || []).filter((x) => ids.has(x[0]) || ids.has(x[1])).length,
+        rg = (def.regionals || []).filter((x) => (x.clubs || []).some((c) => ids.has(c))).length;
+      if (p) out.push(`${many(p, 'player')} you made for ${ids.size > 1 ? 'those clubs' : 'it'} go with it`);
+      if (s) out.push(`${many(s, 'coach or scout')} go with it`);
+      if (m) out.push(`${many(m, 'manager')} you set go with it`);
+      if (r) out.push(`${many(r, 'derby', 'derbies')} would end`);
+      if (rg) out.push(`${many(rg, 'regional cup')} lose ${ids.size > 1 ? 'clubs' : 'a club'}`);
+    };
+    if (kind === 'league') {
+      const cl = (def.clubs || []).filter((c) => c.league === id),
+        ids = new Set(cl.map((c) => c.id));
+      if (cl.length) out.push(`${many(cl.length, 'club')} in it would be deleted`);
+      ofClubs(ids);
+      for (const l of leagues) {
+        const r = l.rules || {};
+        if (l.id !== id && r.promote && r.promote.to === id) out.push(`${l.name} promotes clubs into it`);
+        if (l.id !== id && r.relegate && r.relegate.to === id) out.push(`${l.name} relegates clubs into it`);
+      }
+      const own = leagues.find((l) => l.id === id);
+      if (own && own.rules && own.rules.schedule) out.push('its custom schedule would be lost');
+      if (def.expansion && def.expansion[id]) out.push('its expansion draft would be lost');
+      const hs = seasonsWith('comps');
+      if (hs) out.push(`${many(hs, 'past season')} of history name it`);
+    } else if (kind === 'cup') {
+      for (const l of leagues) {
+        const q = l.rules && l.rules.qualify;
+        if (q && q.to === id) out.push(`${l.name} sends ${many(q.n || 0, 'club')} to it`);
+      }
+      const hs = seasonsWith('cups') + seasonsWith('comps');
+      if (hs) out.push(`${many(hs, 'past season')} of history name it`);
+    } else if (kind === 'club') {
+      ofClubs(new Set([id]));
+      const sch = (leagues.find((l) => l.id === ((def.clubs || []).find((c) => c.id === id) || {}).league) || {}).rules;
+      if (sch && sch.schedule && sch.schedule.length) out.push("its league's custom schedule would lose its matches");
+      for (const [lid, e] of Object.entries(def.expansion || {}))
+        if ((e.clubs || []).includes(id)) out.push(`the expansion draft of ${lname(lid)} lists it`);
+      if (def.failure && (def.failure.proof || []).includes(id)) out.push('it is listed as unable to fail');
+      if ((def.bans || []).some((b) => b.kind === 'club' && b.id === id)) out.push('a ban on it would end');
+    } else if (kind === 'confed') {
+      const members = Object.values((def.confeds && def.confeds.members) || {}).filter((x) => x === id).length;
+      if (members) out.push(`${many(members, 'nation')} are members and move back to their own`);
+    }
+    return out;
+  };
+
   // ---------- From a world to a definition ----------
   WD.fromState = function (S = FM.S, opts = {}) {
     const def = WD.blank(opts.name || 'Exported world');

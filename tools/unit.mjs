@@ -358,6 +358,47 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // what depends on a league, a cup, a club
+    const WD = FM.WorldDef,
+      def = {
+        leagues: [
+          { id: 'X1', name: 'Top', rules: { relegate: { to: 'X2' }, qualify: { to: 'CUPX', n: 2 } } },
+          { id: 'X2', name: 'Second', rules: { schedule: [{ round: 1, h: 'a', a: 'b' }] } },
+        ],
+        clubs: [
+          { id: 'a', league: 'X2' },
+          { id: 'b', league: 'X2' },
+          { id: 'c', league: 'X1' },
+        ],
+        players: [{ club: 'a' }, { club: 'a' }, { club: 'c' }],
+        rivals: [['a', 'b', 'Derby']],
+        regionals: [{ id: 'r', clubs: ['a'] }],
+        history: { seasons: [{ comps: { X2: {} } }] },
+        failure: { proof: ['a'] },
+      };
+    const l2 = WD.dependents(def, 'league', 'X2').join(' | ');
+    ok(
+      /2 clubs/.test(l2) &&
+        /2 players/.test(l2) &&
+        /Top relegates clubs into it/.test(l2) &&
+        /custom schedule/.test(l2) &&
+        /1 past season/.test(l2) &&
+        /1 derby/.test(l2) &&
+        /1 regional cup/.test(l2),
+      'a league lists its clubs, players, links, schedule, history and derbies',
+    );
+    ok(
+      WD.dependents(def, 'cup', 'CUPX').join(' ').includes('Top sends 2 clubs to it'),
+      'a cup lists the leagues that send clubs to it',
+    );
+    ok(
+      WD.dependents(def, 'club', 'a').join(' | ').includes('unable to fail'),
+      'a club listed as unable to fail says so',
+    );
+    eq(WD.dependents(def, 'club', 'zzz'), [], 'a club nothing refers to has no dependents');
+    eq(WD.dependents(def, 'league', 'nope'), [], 'a league nothing refers to has no dependents');
+  }
+  {
     // the way a competition is said, and what it was called before
     const lg = (name, extra = {}) => ({ type: 'league', name, ...extra });
     eq(W.compShort(lg('English Premier Division')), 'Premier Division', 'the league without its place');

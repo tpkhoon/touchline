@@ -752,13 +752,19 @@
   // ---------- Screens ----------
   const crestDot = (c) =>
     `<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,${esc(c.colors[0])} 50%,${esc(c.colors[1])} 50%);border:1px solid #243042;vertical-align:middle;flex:none"></span>`;
+  // Deleting something that others depend on asks first, with the list of what would be lost or left dangling (WD.dependents)
+  const warnBox = () =>
+    ED.warn && ED.warn.view === `${ED.view}|${ED.lid}|${ED.cup}|${ED.cid}`
+      ? `<div class="card" style="margin:10px 0;padding:10px 12px;border:1px solid var(--warn)"><div class="small b">This would also change:</div><div class="tiny" style="margin-top:6px;line-height:1.55">${ED.warn.lines.map((l) => `• ${esc(l)}`).join('<br>')}</div><div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="edDelKeep">Keep it</button><button class="btn sm grow danger" data-act="edDelSure">Delete anyway</button></div></div>`
+      : '';
   const errBox = () =>
-    ED.err && ED.err.length
+    warnBox() +
+    (ED.err && ED.err.length
       ? `<div class="tiny" style="color:#f87171;margin:10px 0;line-height:1.5">${ED.err
           .slice(0, 6)
           .map((e) => `• ${esc(e)}`)
           .join('<br>')}</div>`
-      : '';
+      : '');
 
   // ---------- Find, changes and checks as you type ----------
   // A search over the whole world from the home screen: clubs (name, short name, city, nickname), leagues and nations
@@ -6034,6 +6040,34 @@
       };
       PF.refresh();
     }
+  };
+  // Deleting a league, a cup, a club or a confederation first lists what depends on it (the second tap, Delete anyway, goes ahead)
+  const guardDelete = (name, kind, idOf) => {
+    const run = UI.acts[name];
+    UI.acts[name] = (d, el, e) => {
+      if (ED.warnOk === name) {
+        ED.warnOk = null;
+        ED.warn = null;
+        return run(d, el, e);
+      }
+      const lines = WD.dependents(ED.def, kind, idOf(d || {}));
+      if (!lines.length) return run(d, el, e);
+      ED.warn = { name, d: { ...d }, lines, view: `${ED.view}|${ED.lid}|${ED.cup}|${ED.cid}` };
+      UI.worldEditor();
+    };
+  };
+  guardDelete('edDelLeague', 'league', () => ED.lid);
+  guardDelete('edDelCup', 'cup', () => ED.cup);
+  guardDelete('edDelClub', 'club', () => ED.cid);
+  guardDelete('edDelConfed', 'confed', (d) => d.id);
+  UI.acts.edDelSure = () => {
+    if (!ED.warn) return;
+    ED.warnOk = ED.warn.name;
+    UI.acts[ED.warn.name](ED.warn.d);
+  };
+  UI.acts.edDelKeep = () => {
+    ED.warn = null;
+    UI.worldEditor();
   };
   // (the tap targets carry their league and club in data attributes: the act handler reads them as strings)
 })();
