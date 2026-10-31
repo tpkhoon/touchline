@@ -382,8 +382,17 @@
       our = `<div class="big"><span class="wdl" style="background:${r[1]}">${r[0]}</span><div class="grow" style="min-width:0"><div class="b ellip">${gf}–${ga} v ${opp ? esc(opp.name) : '?'} (${home ? 'H' : 'A'})</div><div class="small dim">Now ${U.ordinal(d.pos)} ${arrow(d.move)} · ${U.pts(d.pts)}${d.top ? ` · ${d.gap ? `${d.gap} clear` : 'top on goal difference'}` : ` · ${d.gap ? `${d.gap} behind the leaders` : 'level on points with the leaders'}`}${d.safety != null ? ` · ${d.inZone ? (d.safety < 0 ? `${U.pts(-d.safety)} from safety` : 'in the drop zone on goal difference') : d.safety > 0 ? `${U.pts(d.safety)} clear of the drop zone` : 'level on points with the drop zone'}` : ''}</div></div></div>`;
     } else
       our = `<div class="small dim" style="margin-top:6px">No league game for us this round. We're ${U.ordinal(d.pos)} ${arrow(d.move)} on ${U.pts(d.pts)}.</div>`;
-    const table = `<div class="dsec">${d.table.map(([id, pts, mv], i) => `<div class="dr ${id === me ? 'me' : ''}"><span style="width:18px" class="dim">${i + 1}</span>${C.crest(TM(id), 16)}<span class="grow ellip">${esc(TM(id).name)}</span>${arrow(mv)}<b style="width:28px;text-align:right">${pts}</b></div>`).join('')}${d.pos > d.table.length ? `<div class="dr me"><span style="width:18px">${d.pos}</span>${C.crest(TM(me), 16)}<span class="grow ellip">${esc(TM(me).name)}</span>${arrow(d.move)}<b style="width:28px;text-align:right">${d.pts}</b></div>` : ''}</div>`;
+    const table = `<div class="dsec">${d.table
+      .filter(([id]) => TM(id))
+      .map(
+        ([id, pts, mv], i) =>
+          `<div class="dr ${id === me ? 'me' : ''}"><span style="width:18px" class="dim">${i + 1}</span>${C.crest(TM(id), 16)}<span class="grow ellip">${esc(TM(id).name)}</span>${arrow(mv)}<b style="width:28px;text-align:right">${pts}</b></div>`,
+      )
+      .join(
+        '',
+      )}${d.pos > d.table.length ? `<div class="dr me"><span style="width:18px">${d.pos}</span>${C.crest(TM(me), 16)}<span class="grow ellip">${esc(TM(me).name)}</span>${arrow(d.move)}<b style="width:28px;text-align:right">${d.pts}</b></div>` : ''}</div>`;
     const results = `<div class="dsec"><div class="tiny b dim">RESULTS</div><div class="res">${d.results
+      .filter(([h, a]) => TM(h) && TM(a)) // (a club that has since left the world has no name to show)
       .map(([h, a, hg, ag]) => {
         const m = h === me || a === me ? 'me' : '';
         return `<span class="ellip ${m}" style="text-align:right">${esc(TM(h).name)}</span><b class="${m}">${hg}–${ag}</b><span class="ellip ${m}">${esc(TM(a).name)}</span>`;

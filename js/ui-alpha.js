@@ -1093,7 +1093,7 @@
             return `<div class="row small" style="padding:11px 0;min-height:44px;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(n.code)}</span><div class="grow"><div class="b tap" data-act="nation" data-id="${id}" style="padding:14px 0;margin:-14px 0">${esc(n.name)} <span class="small dim">· squad ›</span></div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(n) + 1} · needs ${FM.Intl.badgeNeeded(n)}${ok.ok ? '' : ' · ' + esc(ok.why)}</div></div><button class="btn sm ${ok.ok ? 'pri' : ''}" data-act="ntTake" data-id="${id}" ${ok.ok ? '' : 'disabled'}>Apply</button></div>`;
           })
           .join('') || '<div class="small dim" style="margin-top:6px">No vacancies right now.</div>'
-      }<div class="tiny dim" style="margin-top:8px">You keep your club job. National teams play in the international breaks and the summer finals; failing to qualify ends the job.</div></div>`;
+      }<div class="tiny dim" style="margin-top:8px">${W.employed() ? 'You keep your club job. ' : ''}National teams play in the international breaks and the summer finals; failing to qualify ends the job.</div></div>`;
     }
     if (s.tourns) {
       top += s.tourns
