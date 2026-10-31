@@ -309,16 +309,18 @@
   R.gbeShare = (rank) =>
     rank < 10 ? 0.3 : rank < 20 ? 0.4 : rank < 30 ? 0.5 : rank < 50 ? 0.6 : rank < 70 ? 0.7 : null;
   R.gbe = function (p, c) {
+    // judged on the national team he plays for (a second passport he has chosen), else on his own nation's
     const S = FM.S,
-      rank = natRank(p.nat),
+      nation = W.holdsPassport(p, FM.Intl.nationOf(p)) ? FM.Intl.nationOf(p) : p.nat,
+      rank = natRank(nation),
       need = R.gbeShare(rank);
     const by = (p.intl && p.intl.by) || {},
-      games = (S.intlGames && S.intlGames[p.nat]) || {};
+      games = (S.intlGames && S.intlGames[nation]) || {};
     const y = S.year;
     const recentCaps = (by[y] || 0) + (by[y - 1] || 0) || (p.intl && !p.intl.by ? Math.min(p.intl.caps || 0, 10) : 0);
     const teamGames = (games[y] || 0) + (games[y - 1] || 0) || 20; // (a new world has no record yet: a normal two years)
     const share = Math.min(1, recentCaps / teamGames);
-    const out = { rank, need, share, intl: 0, club: 0, points: 0, auto: false, exceptional: false };
+    const out = { nation, rank, need, share, intl: 0, club: 0, points: 0, auto: false, exceptional: false };
     out.intl = Math.min(8, Math.round((8 * share) / (need ?? 0.7))); // (a team outside the top 70 is judged against 70%)
     out.auto = need != null && share >= need;
     // minutes over two seasons at a share of the club's games, counted at the league's worth next to the top flight's
@@ -460,7 +462,7 @@
       if (!g.ok)
         return {
           ok: false,
-          why: `No work permit (Governing Body Endorsement): ${g.need == null ? `${D.NATIONS[p.nat].name} are outside the top 70, so there is no automatic route` : `he has played ${Math.round(g.share * 100)}% of ${D.NATIONS[p.nat].name}'s games in two years and ${Math.round(g.need * 100)}% would be automatic`}; on points he has ${g.points} of the ${R.PERMIT_NEED} needed (${g.intl} for international games, ${g.club} for his minutes).`,
+          why: `No work permit (Governing Body Endorsement): ${g.need == null ? `${D.NATIONS[g.nation].name} are outside the top 70, so there is no automatic route` : `he has played ${Math.round(g.share * 100)}% of ${D.NATIONS[g.nation].name}'s games in two years and ${Math.round(g.need * 100)}% would be automatic`}; on points he has ${g.points} of the ${R.PERMIT_NEED} needed (${g.intl} for international games, ${g.club} for his minutes).`,
         };
     }
     if (r.squad && senior(p) && !R.homegrown(p, c.nat) && st.nonHG >= r.squad - r.hg)

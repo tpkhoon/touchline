@@ -1614,13 +1614,37 @@
     else if (via === 'birth') out.push(['He was born there', 12]);
     if (o) out.push(['His family is from there', o[1] >= 1 ? 18 : o[1] >= 0.5 ? 10 : 3]);
     if (via === 'passport' || via === 'naturalised') out.push(['He holds the passport', 6]);
+    const yc = p.youthCaps && p.youthCaps[code];
+    if (yc) out.push(['He has played for their youth sides', Math.min(16, 4 + yc)]);
     out.push(['A place in the squad', Math.round(U.clamp((p.ca - c23) * 4, -20, 30))]);
     const amb = p.hid && p.hid.amb >= 14 ? 1.5 : p.hid && p.hid.amb <= 7 ? 0.6 : 1;
     out.push(['The strength of the side', Math.round(U.clamp(((nt ? nt.coef : 40) - 50) / 2, -12, 20) * amb)]);
     return out;
   };
   I.allegianceScore = (p, code) => I.allegiancePull(p, code).reduce((t, x) => t + x[1], 0);
+  // ---------- Youth caps ----------
+  // Each year the best young players of a nation are called up for its youth sides (an uncapped player under 22 who is among the 18
+  // best of his age for it). Youth caps do not tie him to a nation: only a senior cap does. A young player who could play for
+  // more than one nation is sometimes called up by the other (p.youthCaps: nation -> caps).
+  I.YOUTH_SQUAD = 18;
+  I.youthTick = function () {
+    const s = S(),
+      by = {};
+    for (const p of Object.values(s.players)) {
+      if (p.retired || !I.uncapped(p) || W.age(p) < 16 || W.age(p) > 21) continue;
+      let code = I.nationOf(p);
+      const el = p.nat2 ? W.eligibleFor(p) : null;
+      if (el && el.length > 1 && Math.random() < 0.25) code = U.pick(el);
+      if (s.nteams && s.nteams['n_' + code]) (by[code] ||= []).push(p);
+    }
+    for (const code in by)
+      for (const p of by[code].sort((a, b) => b.ca - a.ca).slice(0, I.YOUTH_SQUAD)) {
+        p.youthCaps = p.youthCaps || {};
+        p.youthCaps[code] = (p.youthCaps[code] || 0) + U.randi(3, 8);
+      }
+  };
   I.allegianceTick = function () {
+    I.youthTick();
     I.naturalisationTick();
     const s = S(),
       cut = {};
@@ -1669,6 +1693,10 @@
     const kin = W.originsOf(p).find((x) => x[0] === ours.code);
     if (kin) out.push(['His family is from there', kin[1] >= 1 ? 15 : kin[1] >= 0.5 ? 8 : 0]);
     if (ours.code === p.nat) out.push(['He grew up there', 12]);
+    if (p.youthCaps && p.youthCaps[ours.code]) out.push(['He has played for our youth sides', 10]);
+    const cy = p.youthCaps && p.youthCaps[I.nationOf(p)];
+    if (cy && I.nationOf(p) !== ours.code)
+      out.push([`He has played for ${D.NATIONS[I.nationOf(p)].name}'s youth sides`, -Math.min(15, 4 + cy)]);
     if (rank < 0 || rank >= 23)
       out.push([
         `He is not in ${D.NATIONS[I.nationOf(p)].name}'s squad: a place with us is a place`,

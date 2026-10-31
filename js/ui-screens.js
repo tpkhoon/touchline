@@ -1758,7 +1758,7 @@
       cit = W.citizenships(p),
       elig = W.eligibleFor(p).filter((c) => c !== p.nat),
       kin = W.originsOf(p);
-    if (birth === p.nat && cit.length === 1 && !kin.length && !elig.length) return '';
+    if (birth === p.nat && cit.length === 1 && !kin.length && !elig.length && !p.youthCaps) return '';
     const nm = (c) => (D.NATIONS[c] ? `${C.flag(c)} ${esc(D.NATIONS[c].name)}` : esc(c)),
       row = (label, html) =>
         `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start;gap:10px"><span class="dim" style="width:104px;flex:none">${label}</span><div class="grow" style="min-width:0">${html}</div></div>`;
@@ -1770,6 +1770,16 @@
       ${kin.length ? row('Family', kin.map(([c, s]) => `${{ 1: 'both parents', 0.5: 'one parent', 0.25: 'a grandparent' }[s] || 'family'} from ${nm(c)}`).join(', ')) : ''}
       ${cit.length > 1 ? row('Passports', cit.map(nm).join(', ')) : ''}
       ${elig.length ? row('Could play for', elig.map((c) => `${nm(c)} <span class="dim">· ${esc(W.eligibilityText(p, c) || '')}</span>`).join('<br>')) : ''}
+      ${
+        p.youthCaps
+          ? row(
+              'Youth caps',
+              Object.entries(p.youthCaps)
+                .map(([c, n]) => `${nm(c)} <span class="dim">· ${U.plural(n, 'cap')}</span>`)
+                .join('<br>'),
+            )
+          : ''
+      }
       ${plays && (capped || p.alleg) ? row('Plays for', `${nm(plays)}${capped ? ` <span class="dim">· ${U.plural(p.intl.caps, 'cap')}: tied to this nation</span>` : ''}`) : ''}</div>`;
   };
   UI.seasonsCard = function (p, history) {
