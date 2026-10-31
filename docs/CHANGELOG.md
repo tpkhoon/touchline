@@ -167,6 +167,7 @@ Oct 31, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e2
 - Competition names: `W.compShort` (the way a league is said: without its leading place, at most three words, or the competition's own `spoken`) used in the sponsorship news and the board's objective; `W.formerName` gives the history note of a renamed league its predecessor ("formerly the First Division"); a rename made in the editor is kept in `c.formerly` and listed on the league's history.
 - Fix: the matchday digest in the news no longer breaks when a club it lists has left the world (an error in the news feed after resigning); the national-team vacancies no longer say "You keep your club job" when out of work.
 - Editor, dependency warnings on delete (`WD.dependents`, js/worlddef.js; `guardDelete` in js/ui-editor.js): deleting a league, cup, club or confederation lists what depends on it first and asks to confirm.
+- Editor, compare two worlds (`WD.diff`, js/worlddef.js; `edLibCompare` and `diffView` in js/ui-editor.js): a Compare button on each kept world and one for the game's own, listing what differs by section, with the changed fields named.
 - Spain's Basque-only club (Arrasti) plays in the first division (Sorar go down in its place, rated 57 in the top flight), and the Catalan-only club (Serrallac) is an ordinary club with no signing rule, in new worlds.
 
 ## Playtest feedback, round 10

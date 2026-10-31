@@ -62,6 +62,135 @@
     history: { seasons: [] },
   });
 
+  // ---------- Comparing two worlds ----------
+  // What it takes to make world a into world b, by section: { sections: [{ title, lines }], total }. Leagues, clubs, cups and
+  // regional cups are matched by id (a change lists the fields that differ), players by name and birth year, the rest by what each
+  // holds. A line is plain words.
+  WD.diff = function (a, b) {
+    const U = FM.U,
+      sections = [];
+    const stable = (x) =>
+      JSON.stringify(x, (k, v) =>
+        v && typeof v === 'object' && !Array.isArray(v)
+          ? Object.fromEntries(
+              Object.keys(v)
+                .sort()
+                .map((key) => [key, v[key]]),
+            )
+          : v,
+      );
+    const same = (x, y) => stable(x) === stable(y);
+    const more = (names, cap = 6) =>
+      names.length > cap ? `${names.slice(0, cap).join(', ')} and ${names.length - cap} more` : names.join(', ');
+    const section = (title, lines) => lines.length && sections.push({ title, lines });
+    // lists of things with an id
+    const byId = (la, lb, key, label) => {
+      const ma = new Map((la || []).map((x) => [x[key], x])),
+        mb = new Map((lb || []).map((x) => [x[key], x]));
+      const added = [...mb.keys()].filter((k) => !ma.has(k)).map((k) => label(mb.get(k))),
+        removed = [...ma.keys()].filter((k) => !mb.has(k)).map((k) => label(ma.get(k))),
+        changed = [];
+      for (const [k, y] of mb) {
+        const x = ma.get(k);
+        if (!x || same(x, y)) continue;
+        const fields = [...new Set([...Object.keys(x), ...Object.keys(y)])].filter(
+          (f) => f !== key && !same(x[f], y[f]),
+        );
+        changed.push([label(y), fields]);
+      }
+      return { added, removed, changed };
+    };
+    const report = (title, d, one, many) => {
+      const lines = [];
+      if (d.added.length) lines.push(`${U.plural(d.added.length, one, many)} added: ${more(d.added)}`);
+      if (d.removed.length) lines.push(`${U.plural(d.removed.length, one, many)} removed: ${more(d.removed)}`);
+      if (d.changed.length)
+        lines.push(
+          `${U.plural(d.changed.length, one, many)} changed: ${more(d.changed.map(([n, f]) => `${n} (${more(f, 4)})`))}`,
+        );
+      section(title, lines);
+    };
+    // the world itself: its name and the rules
+    const ml = [];
+    for (const k of ['name', 'author', 'startYear']) {
+      const x = (a.meta || {})[k],
+        y = (b.meta || {})[k];
+      if (!same(x, y))
+        ml.push(
+          `${k === 'startYear' ? 'Start year' : k[0].toUpperCase() + k.slice(1)}: ${x ?? 'none'} to ${y ?? 'none'}`,
+        );
+    }
+    for (const k of new Set([...Object.keys(a.rules || {}), ...Object.keys(b.rules || {})]))
+      if (!same((a.rules || {})[k], (b.rules || {})[k]))
+        ml.push(`Rule ${k}: ${stable((a.rules || {})[k]) ?? 'none'} to ${stable((b.rules || {})[k]) ?? 'none'}`);
+    section('The world and its rules', ml);
+    report(
+      'Leagues',
+      byId(a.leagues, b.leagues, 'id', (l) => l.name || l.id),
+      'league',
+    );
+    report(
+      'Clubs',
+      byId(a.clubs, b.clubs, 'id', (c) => c.name || c.id),
+      'club',
+    );
+    report(
+      'Cups and competitions',
+      byId(a.competitions, b.competitions, 'id', (c) => c.name || c.id),
+      'competition',
+    );
+    report(
+      'Regional cups',
+      byId(a.regionals, b.regionals, 'id', (c) => c.name || c.id),
+      'regional cup',
+    );
+    report(
+      'Nations you added',
+      byId(a.newNations, b.newNations, 'code', (n) => n.name || n.code),
+      'nation',
+    );
+    // players: a list, matched by name and birth year
+    const pk = (p) => `${p.fn || ''} ${p.ln || ''} (${p.born ?? '?'})`;
+    const pa = new Map((a.players || []).map((p) => [pk(p), p])),
+      pb = new Map((b.players || []).map((p) => [pk(p), p]));
+    const pl = [],
+      pAdd = [...pb.keys()].filter((k) => !pa.has(k)),
+      pDel = [...pa.keys()].filter((k) => !pb.has(k)),
+      pChg = [...pb.keys()].filter((k) => pa.has(k) && !same(pa.get(k), pb.get(k)));
+    if (pAdd.length) pl.push(`${U.plural(pAdd.length, 'player')} added: ${more(pAdd)}`);
+    if (pDel.length) pl.push(`${U.plural(pDel.length, 'player')} removed: ${more(pDel)}`);
+    if (pChg.length) pl.push(`${U.plural(pChg.length, 'player')} changed: ${more(pChg)}`);
+    section('Players you made', pl);
+    // the rest: what each holds, said once when it differs
+    const rest = [
+      ['managers', 'Managers'],
+      ['staff', 'Coaches and scouts'],
+      ['rivals', 'Derbies'],
+      ['removeClubs', 'The games clubs left out'],
+      ['removeCups', 'The games cups left out'],
+      ['bans', 'Bans'],
+      ['noTeams', 'Nations without a national team'],
+      ['nationEdits', 'Changes to nations'],
+      ['confeds', 'Confederations'],
+      ['intl', 'International football'],
+      ['calendar', 'The season calendar'],
+      ['failure', 'When clubs fail'],
+      ['expansion', 'Expansion drafts'],
+      ['agents', 'Agent firms'],
+    ];
+    const rl = [];
+    for (const [k, label] of rest) {
+      if (same(a[k], b[k])) continue;
+      const n = (v) => (Array.isArray(v) ? v.length : v && typeof v === 'object' ? Object.keys(v).length : v ? 1 : 0);
+      rl.push(`${label}: ${n(a[k])} to ${n(b[k])}`);
+    }
+    const sa = ((a.history || {}).seasons || []).length,
+      sb = ((b.history || {}).seasons || []).length;
+    if (sa !== sb || !same(a.history, b.history)) rl.push(`Past seasons: ${sa} to ${sb}`);
+    section('Everything else', rl);
+    return { sections, total: sections.reduce((t, s) => t + s.lines.length, 0) };
+  };
+
   // ---------- What depends on something ----------
   // What would be lost or left dangling if a league, a cup, a club or a confederation were deleted, in words: a list of lines, empty
   // when nothing depends on it. The editor shows it before it deletes.

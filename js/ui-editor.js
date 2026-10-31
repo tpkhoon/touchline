@@ -1060,6 +1060,7 @@
     staffhub: 'people',
     intl: 'comp',
     library: 'files',
+    diff: 'files',
     history: 'history',
     changes: 'world',
     balance: 'world',
@@ -2789,6 +2790,41 @@
     }
     UI.worldEditor();
   };
+  // This world against another: one kept here, or the game's own. What it would take to turn the other into this one.
+  UI.acts.edLibCompare = async (d) => {
+    try {
+      let other, name;
+      if (d.id === 'game') {
+        other = WD.fromStatic({ name: "The game's own world" });
+        name = "the game's own world";
+      } else {
+        const text = await libStore().get(LIB + d.id);
+        if (!text) throw new Error('It is not there any more');
+        other = WD.parse(text);
+        name = (ED.lib || []).find((x) => x.id === d.id)?.name || 'the kept world';
+      }
+      ED.diff = { name, result: WD.diff(other, ED.def) };
+      ED.view = 'diff';
+      ED.err = [];
+    } catch (e) {
+      ED.err = ['Could not compare: ' + (e.message || e)];
+    }
+    UI.worldEditor();
+  };
+  const diffView = () => {
+    const r = (ED.diff && ED.diff.result) || { sections: [], total: 0 };
+    return `<div class="h1" style="margin-top:2vh">This world against ${esc((ED.diff || {}).name || 'another')}</div><div class="tag">What it would take to turn ${esc((ED.diff || {}).name || 'it')} into the world you are editing.</div>
+      ${errBox()}
+      ${
+        r.sections
+          .map(
+            (s) =>
+              `<div class="ng-label">${esc(s.title)}</div><div class="card" style="margin:4px 0;padding:10px 12px"><div class="tiny" style="line-height:1.6">${s.lines.map((l) => `• ${esc(l)}`).join('<br>')}</div></div>`,
+          )
+          .join('') || '<div class="empty">No differences.</div>'
+      }
+      <div class="actions ng-foot"><button class="btn sm" data-act="edLibrary" aria-label="Back">←</button></div>`;
+  };
   UI.acts.edLibDel = async (d) => {
     const idx = (await libIndex()).filter((x) => x.id !== d.id);
     await libStore().del(LIB + d.id);
@@ -2906,11 +2942,11 @@
         (ED.lib || [])
           .map(
             (x) =>
-              `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(x.name)}</div><div class="tiny dim">${U.plural(x.clubs, 'club')} · ${U.plural(x.players, 'player')} made · kept ${esc(x.saved)}${x.author ? ' · ' + esc(x.author) : ''}</div></div><button class="btn sm" data-act="edLibOpen" data-id="${esc(x.id)}">Open</button><button class="btn sm" data-act="edLibDel" data-id="${esc(x.id)}" aria-label="Delete">✕</button></div></div>`,
+              `<div class="card" style="margin:4px 0;padding:10px 12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(x.name)}</div><div class="tiny dim">${U.plural(x.clubs, 'club')} · ${U.plural(x.players, 'player')} made · kept ${esc(x.saved)}${x.author ? ' · ' + esc(x.author) : ''}</div></div><button class="btn sm" data-act="edLibOpen" data-id="${esc(x.id)}">Open</button><button class="btn sm" data-act="edLibCompare" data-id="${esc(x.id)}">Compare</button><button class="btn sm" data-act="edLibDel" data-id="${esc(x.id)}" aria-label="Delete">✕</button></div></div>`,
           )
           .join('') || '<div class="empty">Nothing kept yet.</div>'
       }
-      <div class="actions" style="margin-top:8px"><button class="btn sm pri" data-act="edLibSave">Keep this world here</button></div>
+      <div class="actions" style="margin-top:8px"><button class="btn sm pri" data-act="edLibSave">Keep this world here</button><button class="btn sm" data-act="edLibCompare" data-id="game">Compare with the game's own</button></div>
       <div class="ng-label">Files</div>
       <div class="actions" style="margin-top:0"><button class="btn sm" data-act="edOpenFile">Open a world from a file…</button><button class="btn sm" data-act="edExport">▲ Save this world as a file</button></div>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">A world file holds everything you made. Send it to a friend, who opens it here or on the new-career screen.</div>
@@ -5883,6 +5919,7 @@
       club: clubView,
       importp: importView,
       library: libraryView,
+      diff: diffView,
       clubx: clubxView,
       squad: squadView,
       player: playerView,

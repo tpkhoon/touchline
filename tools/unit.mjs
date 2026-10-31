@@ -358,6 +358,42 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // comparing two worlds
+    const WD = FM.WorldDef,
+      A = {
+        meta: { name: 'One' },
+        rules: { win: 3, subs: 5 },
+        leagues: [{ id: 'L1', name: 'Top', tier: 1 }],
+        clubs: [
+          { id: 'a', name: 'Alpha', league: 'L1', rep: 50 },
+          { id: 'b', name: 'Beta', league: 'L1', rep: 50 },
+        ],
+        players: [{ fn: 'Jo', ln: 'Bo', born: 2000, club: 'a' }],
+        rivals: [['a', 'b', 'Derby']],
+      },
+      B = JSON.parse(JSON.stringify(A));
+    eq(WD.diff(A, B).total, 0, 'a world against itself has no differences');
+    B.meta.name = 'Two';
+    B.rules.win = 2;
+    B.clubs[0].rep = 60;
+    B.clubs[0].name = 'Alpha Town';
+    B.clubs.push({ id: 'c', name: 'Gamma', league: 'L1' });
+    B.leagues[0].name = 'Premier';
+    B.players.push({ fn: 'Al', ln: 'Cy', born: 1999, club: 'c' });
+    B.rivals = [];
+    const t = WD.diff(A, B)
+      .sections.map((s) => s.title + ': ' + s.lines.join(' / '))
+      .join(' || ');
+    ok(/Name: One to Two/.test(t) && /Rule win: 3 to 2/.test(t), 'the name and the rules show');
+    ok(
+      /1 club added: Gamma/.test(t) && /1 club changed: Alpha Town \((name|rep)/.test(t),
+      'clubs added and changed show with their fields',
+    );
+    ok(/1 league changed: Premier \(name\)/.test(t), 'a league change names the field');
+    ok(/1 player added: Al Cy \(1999\)/.test(t), 'a player added shows by name and birth year');
+    ok(/Derbies: 1 to 0/.test(t), 'a list that differs says how many each holds');
+  }
+  {
     // what depends on a league, a cup, a club
     const WD = FM.WorldDef,
       def = {
