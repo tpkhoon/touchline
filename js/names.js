@@ -1157,6 +1157,16 @@
       Farkas: 1.6,
     },
   });
+  // Iceland and the Faroes: the surname is the father's first name with -son (Jónsson, Árnason), so it changes each generation. The
+  // father's name comes from the first names of the older generation and these, so the surnames are as many as the fathers' names.
+  D.PATRONYMIC = ['ISL', 'FRO'];
+  D.FATHER_NAMES =
+    'Jón Gunnar Sigurður Guðmundur Ólafur Kristján Einar Magnús Bjarni Árni Stefán Þórður Helgi Björn Pétur Páll Ragnar Haraldur Hjalti Hörður Ingólfur Jóhann Karl Kjartan Ólafur Rúnar Sveinn Sævar Valur Viðar Þorsteinn Þór Ágúst Arnar Atli Baldur Birgir Böðvar Elías Eiríkur Friðrik Garðar Geir Gísli Hafsteinn Halldór Hilmar Ingi Jakob Kári Leifur Lárus Njáll Níels Óskar Reynir Sigfús Snorri Tómas Valdimar Vilhjálmur Þröstur'.split(
+      ' ',
+    );
+  // Nations whose full name carries the father's name between the given name and the family name (Abdullah Fahad Al-Otaibi); a share
+  // of the players use the long form
+  D.FATHER_CHAIN = { KSA: 0.35, UAE: 0.35, QAT: 0.35 };
   // Nations whose names are written family name first (Kim Min-jae, Wu Lei, Nguyễn Quang Hải)
   D.FAMILY_FIRST = ['KOR', 'CHN', 'VIE'];
   // Vietnamese words with their accents (the lists are written without)

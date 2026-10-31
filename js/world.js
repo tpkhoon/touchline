@@ -666,7 +666,21 @@
       const c = (com.find((x) => (r -= x[0]) < 0) || com[0])[1];
       if (c) return { fn: U.pick(c.fn), ln: U.pick(c.ln) }; // (null: the nation's own names, below)
     }
-    return { fn: W.pickGiven(nat, born), ln: W.pickSurname(nat) };
+    const fn = W.pickGiven(nat, born);
+    if (D.PATRONYMIC && D.PATRONYMIC.includes(nat)) return { fn, ln: W.patronym(U.pick(D.FATHER_NAMES)) };
+    const ch = D.FATHER_CHAIN && D.FATHER_CHAIN[nat];
+    if (ch && Math.random() < ch) {
+      const father = U.pick(D.NATIONS[nat].fn.filter((x) => x !== fn));
+      return { fn: `${fn} ${father}`, ln: W.pickSurname(nat) };
+    }
+    return { fn, ln: W.pickSurname(nat) };
+  };
+  // The Icelandic surname from the father's name: Jón -> Jónsson, Guðmundur -> Guðmundsson, Árni -> Árnason, Magnús -> Magnússon
+  W.patronym = function (father) {
+    if (/ur$/.test(father)) return father.slice(0, -2) + 'sson';
+    if (/i$/.test(father)) return father.slice(0, -1) + 'ason';
+    if (/s$/.test(father)) return father + 'son';
+    return father + 'sson';
   };
   // A second nationality he is eligible for through his family (most players of a heritage have one): the nation his
   // name's culture belongs to, never his own. null when there is none.

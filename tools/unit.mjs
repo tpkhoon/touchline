@@ -358,6 +358,25 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // patronymics and fathers' names
+    eq(
+      ['Jón', 'Guðmundur', 'Árni', 'Magnús', 'Gunnar', 'Sigurður'].map(W.patronym),
+      ['Jónsson', 'Guðmundsson', 'Árnason', 'Magnússon', 'Gunnarsson', 'Sigurðsson'],
+      'Icelandic surnames come from the father',
+    );
+    const is = Array.from({ length: 300 }, () => W.rollName('ISL', null, 2000).ln);
+    ok(
+      is.every((x) => /(son|sson)$/.test(x)),
+      'every Icelandic surname is a patronymic',
+    );
+    ok(new Set(is).size > 40, 'the surnames vary with the fathers');
+    const ks = Array.from({ length: 600 }, () => W.rollName('KSA', null, 2000));
+    ok(
+      ks.some((x) => x.fn.includes(' ')) && ks.some((x) => !x.fn.includes(' ')),
+      'some Saudi players carry the father name',
+    );
+  }
+  {
     // surnames come up as often as they do in life where the game has the shares
     for (const [c, w] of Object.entries(D.SURNAME_WEIGHTS))
       ok(
