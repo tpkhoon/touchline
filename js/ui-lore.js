@@ -128,7 +128,11 @@
       }
     return `<details class="small" style="margin-top:10px"><summary class="b dim" style="cursor:pointer">History${d.oldest ? ' · the oldest cup in the world' : ''}</summary>
       <div class="tiny" style="margin-top:6px;line-height:1.55">Founded ${d.founded}.${d.trophy ? ` ${comp.type === 'league' ? 'The title is lifted with' : 'The winners lift'} ${esc(d.trophy.name)}${d.trophy.donor ? `, given by ${esc(d.trophy.donor)}` : ''}.` : ''}</div>
-      ${d.notes.map(([y, t]) => `<div class="tiny" style="margin-top:3px"><b>${y}</b> ${esc(t)}</div>`).join('')}
+      ${d.notes
+        .concat((comp.formerly || []).map((f) => [f.until, `Renamed from the ${f.name}`]))
+        .sort((a, b) => a[0] - b[0])
+        .map(([y, t]) => `<div class="tiny" style="margin-top:3px"><b>${y}</b> ${esc(t)}</div>`)
+        .join('')}
       ${d.best ? `<div class="tiny" style="margin-top:6px">Most titles: <b>${cname(d.best.id)}</b>, ${d.best.n}</div>` : ''}
       ${(d.kills || []).length ? `<div class="tiny" style="margin-top:6px">Giant-killings: ${d.kills.map((k) => `${cname(k.id)} won it in ${k.y}`).join('; ')}</div>` : ''}
       ${wins.length ? `<div class="tiny dim" style="margin-top:6px">Recent winners: ${esc(wins.join(' · '))}</div>` : ''}</details>`;

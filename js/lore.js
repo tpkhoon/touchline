@@ -978,7 +978,8 @@
         o.notes.push([r.int(Math.max(o.founded + 1, 1981), Math.max(o.founded + 2, 1995)), 'Three points for a win']);
       if (comp.playoff || (comp.rules && comp.rules.playoffs))
         o.notes.push([r.int(1980, Math.max(1981, win - 5)), 'Play-offs introduced']);
-      if (tier === 1 && comp.nat && r.chance(0.7)) o.notes.push([r.int(1992, 2006), `Renamed the ${comp.name}`]);
+      if (tier === 1 && comp.nat && r.chance(0.7))
+        o.notes.push([r.int(1992, 2006), `Renamed the ${comp.name} (formerly the ${W.formerName(comp)})`]);
       // the old champions and the record winners
       const champs = {};
       const early = lore.champs && lore.champs[comp.nat];

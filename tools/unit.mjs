@@ -358,6 +358,26 @@ try {
   ok(!W.canRepresent({ id: 'g', nat: 'ENG' }, 'ESP').ok, 'no link, no eligibility');
   eq(W.law('XXX'), { soli: 'none', descent: 1, dual: 'yes' }, 'a nation with no listed law has the default');
   {
+    // the way a competition is said, and what it was called before
+    const lg = (name, extra = {}) => ({ type: 'league', name, ...extra });
+    eq(W.compShort(lg('English Premier Division')), 'Premier Division', 'the league without its place');
+    eq(W.compShort(lg('Spanish Liga de Honor')), 'Liga de Honor', 'a three-word name keeps its words');
+    eq(W.compShort(lg('Fruška Gora Energo Prva Liga')), 'Prva Liga', 'a long name is cut to the last two words');
+    eq(W.compShort(lg('Portucale Superliga')), 'Superliga', 'a one-word rest is kept when it says something');
+    eq(W.compShort(lg('Welsh League')), 'Welsh League', 'a name that would become generic stays');
+    eq(W.compShort({ type: 'cup', name: 'Welsh Cup' }), 'Welsh Cup', 'cups keep their name');
+    eq(W.compShort(lg('Whatever', { spoken: 'The Big One' })), 'The Big One', 'a competition can carry its own');
+    eq(
+      W.formerName(lg('English Premier Division')),
+      'English First Division',
+      'a Premier Division was a First Division',
+    );
+    ok(
+      ['Neckar Meisterliga', 'Thai Super League', 'Welsh Uwch Division'].every((n) => W.formerName(lg(n)) !== n),
+      'a former name is never the name',
+    );
+  }
+  {
     // known by one name
     const mk = (nat, i, fn = 'Francisco') => ({ id: 'kn' + i, nat, fn, ln: 'García' });
     const sp = Array.from({ length: 2000 }, (_, i) => mk('ESP', i)),

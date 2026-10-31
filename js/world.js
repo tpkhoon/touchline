@@ -11,6 +11,29 @@
   // Names are stored given name first (fn) and family name (ln); a nation that writes the family name first shows it so
   // (Kim Min-jae, Wu Lei, Nguyễn Quang Hải), a Vietnamese player (Trần Văn Hiếu) is known by his given name, which his shirt carries too
   const famFirst = (p) => !!p.fn && !p.heritage && !!FM.D.FAMILY_FIRST && FM.D.FAMILY_FIRST.includes(p.nat);
+  // How a league is said in the street: the long name without its leading place or demonym (the English Premier Division is the Premier
+  // Division, the Daehan Insurance Premier League the Insurance Premier League), at most three words. A competition can carry its own
+  // (c.spoken). Cups and continental competitions keep their name, which is how they are said.
+  const GENERIC = /^(Cup|League|Division|Trophy|Shield|Liga|Lig)$/;
+  W.compShort = (c) => {
+    if (!c) return '';
+    if (c.spoken) return c.spoken;
+    const base = c.baseName || c.name || '';
+    if (c.type && c.type !== 'league') return base;
+    let r = base.split(' ').slice(1);
+    if (r.length > 3) r = r.slice(-2);
+    return !r.length || (r.length === 1 && GENERIC.test(r[0])) ? base : r.join(' ');
+  };
+  // The name a league had before it was renamed (a made-up predecessor for the history of a league the game begins with)
+  W.formerName = (c) => {
+    const base = c.baseName || c.name || '';
+    const first = /Premier/.test(base)
+      ? base.replace(/Premier( League| Division)?/, 'First Division')
+      : /Division/.test(base)
+        ? base.replace(/Division/, 'League')
+        : `${base.split(' ')[0]} Football Alliance`;
+    return first === base ? `${base.split(' ')[0]} Football Alliance` : first;
+  };
   W.name = (p) => (famFirst(p) ? `${p.ln} ${p.fn}` : p.fn ? `${p.fn} ${p.ln}` : p.ln);
   // Known by one name: about one player in eight in the nations with two surnames (Spain and Latin America; Brazil and Portugal have their
   // own one-word names, below) goes by his first name or a nickname of it (Paco, Nacho, Rodri). Worked out from his name and his id, so it

@@ -51,7 +51,7 @@
         second = seconds[0],
         europe = places + seconds.reduce((t, x) => t + FM.Cups.feedersOf(x)[ctx.id], 0);
       if (exp === 1)
-        ((aim = { t: 1, text: `Win ${ctx.baseName || ctx.name}` }),
+        ((aim = { t: 1, text: `Win ${FM.W.compShort(ctx)}` }),
           (min = places ? { t: places, text: `${ctx.ccName} qualification` } : { t: 2, text: 'second place' }));
       else if (places && exp <= places)
         ((aim = { t: places, text: `Qualify for the ${ctx.ccName} (top ${places})` }),

@@ -599,6 +599,7 @@
       if (!eligible(c)) continue;
       // a name changed by hand since the last tick (the world editor) is the new base
       if (c.baseName && c.sponsorShown && c.name !== c.sponsorShown) {
+        (c.formerly = c.formerly || []).push({ name: c.baseName, until: s.year }); // (the history keeps the old name)
         c.baseName = c.name;
         c.sponsor = undefined;
       }
@@ -642,7 +643,7 @@
         FM.News.add({
           type: 'world',
           title: `${brand} take over the title sponsorship`,
-          body: `The ${c.baseName} is now the ${c.name}${old ? `, after ${old}'s deal ended` : ''}.`,
+          body: `The ${W.compShort(c)} is now the ${c.name}${old ? `, after ${old}'s deal ended` : ''}.`,
           cat: 'competitions',
         });
     }
