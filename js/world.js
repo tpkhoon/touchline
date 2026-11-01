@@ -1720,7 +1720,13 @@
     if (tactic.lineup) {
       tactic.lineup.forEach((pid, i) => {
         const p = FM.S.players[pid];
-        if (p && p.clubId === clubId && W.available(p) && !used.has(pid) && i < slots.length) {
+        if (
+          p &&
+          (club.sim === 'nation' ? pool.includes(p) : p.clubId === clubId) &&
+          W.available(p) &&
+          !used.has(pid) &&
+          i < slots.length
+        ) {
           xi[i] = p;
           used.add(pid);
         }

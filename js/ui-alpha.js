@@ -1252,13 +1252,21 @@
     if (d && d.tab) UI._ntTab = d.tab;
     UI.ntSquadSheet();
   };
-  UI._ntTab = 'squad';
-  UI.ntSquadSheet = function () {
+  UI._ntTab = 'lineup';
+  // The national squad: a screen of the Nations tab (not a sheet). The Lineup tab is the club's lineup editor (pitch, XI, bench, formation,
+  // roles); the call-ups, favourites and Quick pick are in Call-ups.
+  UI.ntSquadSheet = () => (UI.tab === 'ntsquad' ? UI.render() : UI.go('ntsquad'));
+  UI.screens.ntsquad = () => {
+    const t = S().user.nation && T(S().user.nation);
+    if (!t) return '<div class="empty">You are not managing a national team.</div>';
+    return `<div class="row" style="gap:8px;margin-bottom:8px"><button class="btn sm" data-act="tab" data-tab="intl" aria-label="Back to Nations">←</button><div class="h2 grow">${esc(t.name)} squad</div></div>${UI.ntSquadHtml()}`;
+  };
+  UI.ntSquadHtml = function () {
     const s = S(),
       t = T(s.user.nation);
-    if (!t) return;
+    if (!t) return '';
     const I = FM.Intl,
-      tab = UI._ntTab || 'squad';
+      tab = UI._ntTab || 'lineup';
     const pool = I.pool(t.code),
       squad = I.squad(t.code),
       picked = new Set(squad.map((p) => p.id));
@@ -1318,9 +1326,11 @@
         : 'Not in the best 23 for the balance of the squad.';
     };
     const row = (p, click, extra = '', why = '') =>
-      `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${U.plural(p.intl ? p.intl.caps : 0, 'cap')} · ${U.plural(p.season.apps, 'game')} this season · form ${form(p)}</div>${tags(p)}${why ? `<div class="tiny" style="margin-top:3px">${esc(why)}</div>` : ''}</div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
+      `<div class="prow tap" data-act="${click === 'ntPick' ? 'player' : click}" ${click === 'ntPick' ? 'data-lp="ntPick"' : ''} data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${U.plural(p.intl ? p.intl.caps : 0, 'cap')} · ${U.plural(p.season.apps, 'game')} this season · form ${form(p)}</div>${tags(p)}${why ? `<div class="tiny" style="margin-top:3px">${esc(why)}</div>` : ''}</div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
     let body;
-    if (tab === 'youth') {
+    if (tab === 'lineup') {
+      body = `${UI.tacticsView()}<div class="sec"><div class="h3">Captain & set pieces</div></div>${sel('capt', 'Captain', t.capt)}${sel('pen', 'Penalties', Tc.sp && Tc.sp.pen)}${sel('fk', 'Free kicks', Tc.sp && Tc.sp.fk)}${sel('cor', 'Corners', Tc.sp && Tc.sp.cor)}`;
+    } else if (tab === 'youth') {
       const yt = I.u21Of(t).sort((x, y) => y.pa - x.pa),
         rec = t.yth,
         gen = I.generation(t);
@@ -1412,16 +1422,14 @@
         ['MID', 'Midfielders'],
         ['ATT', 'Attackers'],
       ];
-      body = `<div class="row" style="margin-top:14px"><div class="h3 grow">Roles</div></div>
-        ${sel('capt', 'Captain', t.capt)}${sel('pen', 'Penalties', Tc.sp && Tc.sp.pen)}${sel('fk', 'Free kicks', Tc.sp && Tc.sp.fk)}${sel('cor', 'Corners', Tc.sp && Tc.sp.cor)}
-        <div class="row" style="margin-top:14px"><div class="h3 grow">Call-ups <span class="dim small">${picked.size}/23</span></div><button class="btn sm" data-act="ntQuick">Quick pick</button><button class="btn sm" data-act="ntAuto" style="margin-left:6px">Auto-pick</button></div>
+      body = `<div class="row" style="margin-top:6px"><div class="h3 grow">Call-ups <span class="dim small">${picked.size}/23</span></div><button class="btn sm" data-act="ntQuick">Quick pick</button><button class="btn sm" data-act="ntAuto" style="margin-left:6px">Auto-pick</button></div>
         ${
           fin
             ? `<div class="card flat" style="margin:6px 0;padding:8px 10px"><div class="tiny b">Final squad</div><div class="tiny dim" style="margin-top:3px;line-height:1.5">${fin.out.map(([id, why], i) => `${esc(W.short(P(id)))} withdrew (${esc(why)})${fin.ins[i] ? `, ${esc(W.short(P(fin.ins[i])))} called up` : ''}`).join('; ')}.</div></div>`
             : ''
         }
         ${warns.length ? `<div class="card flat" style="margin:6px 0;padding:8px 10px;border:1px solid var(--warn)"><div class="tiny b">Depth</div>${warns.map((w) => `<div class="tiny" style="margin-top:3px">${esc(w)}</div>`).join('')}</div>` : ''}
-        <div class="tiny dim" style="margin:4px 0 6px">The best ${pool.length} ${esc(D.NATIONS[t.code].name)} players. Tap to call up or drop; the star keeps a favourite in every Quick pick and Auto-pick. Injured players can't be picked.</div>
+        <div class="tiny dim" style="margin:4px 0 6px">The best ${pool.length} ${esc(D.NATIONS[t.code].name)} players. Tap a player to open his profile; hold to call him up or drop him. The star keeps a favourite in every Quick pick and Auto-pick. Injured players can't be picked.</div>
         <div class="chips" style="margin-bottom:4px">${[
           ['ca', 'Ability'],
           ['form', 'Form'],
@@ -1441,23 +1449,9 @@
           })
           .join('')}`;
     }
-    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('squad', 'Squad & tactics')}${sub('prepare', 'Prepare')}${sub('youth', 'Under-21s')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
-      ${
-        tab === 'squad'
-          ? `<div class="h3">Formation</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${Object.keys(
-              D.FORMATIONS,
-            )
-              .map(
-                (f) =>
-                  `<button class="chip ${Tc.formation === f ? 'on' : ''}" data-act="ntTac" data-k="formation" data-v="${f}">${f}</button>`,
-              )
-              .join(
-                '',
-              )}</div><div class="h3" style="margin-top:8px">Build-up</div>${seg('buildup', D.BUILDUP)}<div class="h3" style="margin-top:10px">Pressing</div>${seg('press', D.PRESS)}`
-          : ''
-      }${body}`;
-    if (document.querySelector('.sheet-wrap .nt-sheet')) UI.refreshSheet(`<div class="nt-sheet">${html}</div>`);
-    else UI.sheet(`<div class="nt-sheet">${html}</div>`, { title: `${esc(t.name)} squad` });
+    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('lineup', 'Lineup')}${sub('squad', 'Call-ups')}${sub('prepare', 'Prepare')}${sub('youth', 'Under-21s')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
+      ${body}`;
+    return html;
   };
   UI.acts.ntRole = (d, el) => {
     const t = T(S().user.nation),

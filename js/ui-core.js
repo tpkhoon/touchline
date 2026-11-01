@@ -653,7 +653,7 @@
     ['more', UI.icon.more, 'More'],
   ];
   // the screens More leads to: the tab that lights is More
-  const MORE_TABS = ['scout', 'intl', 'club'];
+  const MORE_TABS = ['scout', 'intl', 'club', 'ntsquad'];
   const navOf = (tab) => (MORE_TABS.includes(tab) ? 'more' : tab);
   const SWIPE = ['home', 'squad', 'transfers', 'league'];
   UI.mount = function () {
@@ -770,10 +770,65 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|liveEdit|liveEditPlayer|liveEditClub|liveBulk|live[A-Z]\w*|edOpenLive|ed[A-Z]\w*|wvFold|lnkComp|spotsFold|spotsRegion|totwComp|totwRound|awardsComp|chartsKind|fxSet|closeSheet|player|clubView|takeJob|advance|skipToMatch|skipToMatchGo|simDaysAsk|simDays|simAuto|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|bulkUndo|expandReroll|reviewFollow|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|digestTable|goCups|goNation|nation|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|liveEdit|liveEditPlayer|liveEditClub|liveBulk|live[A-Z]\w*|edOpenLive|ed[A-Z]\w*|wvFold|lrank[A-Z]\w*|slot|formation|tac|invfb|autoXI|role|pickSlot|coverToggle|lnkComp|spotsFold|spotsRegion|totwComp|totwRound|awardsComp|chartsKind|fxSet|closeSheet|player|clubView|takeJob|advance|skipToMatch|skipToMatchGo|simDaysAsk|simDays|simAuto|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|bulkUndo|expandReroll|reviewFollow|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|digestTable|goCups|goNation|nation|natTab|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
+  // Long press: an element with data-lp="act" runs that action when it is held (about half a second) without moving, and the click that
+  // ends the hold is ignored, so a tap still does what the element's data-act says. Used where a tap opens something and a hold selects.
+  {
+    let timer = null,
+      from = null,
+      held = false,
+      swallow = 0;
+    const cancel = () => {
+      clearTimeout(timer);
+      timer = null;
+    };
+    document.addEventListener('pointerdown', (e) => {
+      const el = e.target.closest && e.target.closest('[data-lp]');
+      if (!el || (e.pointerType === 'mouse' && e.button !== 0) || e.target.closest('button, a, select, input')) return;
+      from = [e.clientX, e.clientY];
+      cancel();
+      timer = setTimeout(() => {
+        timer = null;
+        const fn = UI.acts[el.dataset.lp];
+        if (!fn) return;
+        held = true;
+        if (FM.Native && FM.Native.haptic) FM.Native.haptic('medium');
+        fn(el.dataset, el, e);
+      }, 480);
+    });
+    document.addEventListener('pointermove', (e) => {
+      if (timer && from && Math.hypot(e.clientX - from[0], e.clientY - from[1]) > 8) cancel();
+    });
+    ['pointerup', 'pointercancel', 'scroll'].forEach((t) => document.addEventListener(t, cancel, true));
+    // (the click that follows the release of a hold comes at once: only that one is ignored)
+    document.addEventListener(
+      'pointerup',
+      () => {
+        if (held) swallow = Date.now() + 120;
+        held = false;
+      },
+      true,
+    );
+    // (a held row opens a menu on some phones: not here)
+    document.addEventListener(
+      'contextmenu',
+      (e) => e.target.closest && e.target.closest('[data-lp]') && e.preventDefault(),
+    );
+    document.addEventListener(
+      'click',
+      (e) => {
+        if (Date.now() < swallow && e.target.closest && e.target.closest('[data-lp]')) {
+          e.stopPropagation();
+          e.preventDefault();
+          swallow = 0;
+        }
+      },
+      true,
+    );
+  }
   document.addEventListener('click', (e) => {
     const crest = e.target.closest('svg.crest[data-club]');
     if (crest && FM.S && FM.S.clubs && FM.S.clubs[crest.dataset.club] && !crest.closest('#matchOv')) {

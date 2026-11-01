@@ -2105,35 +2105,183 @@
     UI._intlReg = el.value;
     UI.render();
   };
-  UI.acts.nation = (d) => {
-    const t = T(d.id),
-      s = S();
-    const squad = FM.Intl.squad(t.code);
-    const games = s.intlLog.filter((g) => g.h === t.id || g.a === t.id).slice(0, 8);
-    const rank = FM.Intl.ranked().indexOf(t) + 1;
-    UI.sheet(
-      `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
+  // ---------- A nation's profile, laid out like a club's ----------
+  // Overview (manager, form, the next match, the group, honours), Squad (the best XI on the pitch and the squad), History (honours and
+  // tournaments) and Head-to-head (against the nation you manage).
+  const NAT_TABS = [
+    ['overview', 'Overview'],
+    ['squad', 'Squad'],
+    ['history', 'History'],
+    ['h2h', 'Head-to-head'],
+  ];
+  // The match a nation plays next and where it stands in its group: from its qualifying group or Nations League group
+  const nextMatch = (t) => {
+    const s = S(),
+      I = FM.Intl;
+    const q = s.quals && s.quals.groups.find((x) => x.teams.includes(t.id));
+    const nl = !q && I.nlGroupOf ? I.nlGroupOf(t.id) : null;
+    const g = q || (nl && nl.g);
+    if (!g || !g.table[t.id]) return null;
+    const played = g.table[t.id].p,
+      // (the next round it plays in: a group of three has a free round)
+      fx = g.rounds
+        .slice(played)
+        .map((rd) => (rd || []).find((f) => f.h === t.id || f.a === t.id))
+        .find(Boolean),
+      pos = W.sortedTable({ table: g.table }).findIndex((r) => r.id === t.id) + 1,
+      label = q ? `${I.TNAME[g.tn] || 'Qualifying'} qualifier` : 'Nations League';
+    return { fx, pos, size: g.teams.length, row: g.table[t.id], label, group: g.name };
+  };
+  UI.nationSheet = function (id) {
+    const s = S(),
+      t = T(id);
+    if (!t) return;
+    const I = FM.Intl,
+      tab = UI._natTab || 'overview',
+      mine = s.user.nation && T(s.user.nation),
+      isMine = !!mine && mine.id === t.id;
+    const rank = I.ranked().indexOf(t) + 1;
+    const hero = `<div class="hero" style="--c1:${U.heroShade(t.colors[0] === '#FFFFFF' ? t.colors[1] : t.colors[0])};--c2:#111"><div class="row"><div style="font-size:46px">${C.flag(t.code)}</div><div class="grow"><div class="h1">${esc(t.name)}</div><div class="small" style="opacity:.9">World ranking #${rank} · Coefficient ${t.coef.toFixed(1)} · ${esc(D.NATIONS[t.code].style)}</div></div>${UI.followBtn('nation', t.id, true)}</div>
+        ${(t.form || []).length ? `<div class="row small" style="margin-top:10px;gap:10px;flex-wrap:wrap"><span>Form</span>${C.form(t.form.slice(-5))}</div>` : ''}</div>`;
+    const chips = `<div class="chips" style="margin:8px 0;flex-wrap:wrap">${NAT_TABS.map(([k, l]) => `<button class="chip ${tab === k ? 'on' : ''}" data-act="natTab" data-k="${k}">${l}</button>`).join('')}</div>`;
+    const natName = (x) => `${C.flag(x.code)} ${esc(x.name)}`;
+    let body = '';
+    if (tab === 'overview') {
+      const m = t.mgr,
+        mgrLine = isMine
+          ? 'You'
+          : m
+            ? `${esc(m.fn)} ${esc(m.ln)}${m.nat !== t.code ? ` (${C.flag(m.nat)})` : ''} · ability ${U.staffText(m.ability)} · since ${m.since}`
+            : t.vacantSince != null
+              ? 'Vacant: the federation is looking for a manager'
+              : '—';
+      const nm = nextMatch(t),
+        opp = nm && nm.fx ? T(nm.fx.h === t.id ? nm.fx.a : nm.fx.h) : null;
+      const games = s.intlLog.filter((g) => g.h === t.id || g.a === t.id).slice(0, 8);
+      body = `<div class="card"><div class="h3">Overview</div>
+          <div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:92px">Manager</span><div class="grow">${mgrLine}</div></div>
+          <div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:92px">Next match</span><div class="grow">${opp ? `${nm.fx.h === t.id ? 'Home' : 'Away'} to ${natName(opp)} <span class="dim">· ${esc(nm.label)}</span>` : 'Nothing scheduled'}</div></div>
+          ${nm ? `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:92px">Group</span><div class="grow">${U.ordinal(nm.pos)} of ${nm.size} in Group ${esc(nm.group.trim())} · ${nm.row.p} played, ${U.plural(nm.row.pts, 'point')} <span class="dim">· ${esc(nm.label)}</span></div></div>` : ''}
+          ${
+            Object.keys(t.titles).length
+              ? `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:92px">Honours</span><div class="grow">${Object.entries(
+                  t.titles,
+                )
+                  .map(([k, n]) => `${esc(TNAME[k] || k)} ×${n}`)
+                  .join(' · ')}</div></div>`
+              : ''
+          }
+          ${isMine ? `<div class="actions" style="margin-top:10px"><button class="btn sm pri" data-act="ntSquad" data-tab="lineup">Squad & tactics</button></div>` : ''}
+          ${UI.youthLine(t.code)}</div>
         ${
-          Object.keys(t.titles).length
-            ? `<div class="small" style="margin-top:8px">${Object.entries(t.titles)
-                .map(([k, n]) => `${TNAME[k] || k} ×${n}`)
-                .join(' · ')}</div>`
+          D.archetypeText && D.archetypeText(t.code).length
+            ? `<div class="card"><div class="h3">Known for</div>${D.archetypeText(t.code)
+                .map(
+                  (a) =>
+                    `<div class="small" style="margin-top:6px;line-height:1.5"><b>${esc(a.label)}</b> · <span class="dim">${esc(a.desc)}</span></div>`,
+                )
+                .join('')}</div>`
             : ''
-        }${UI.youthLine(t.code)}</div>
-      ${
-        D.archetypeText && D.archetypeText(t.code).length
-          ? `<div class="card"><div class="h3">Known for</div>${D.archetypeText(t.code)
+        }
+        <div class="card"><div class="h3">Recent results</div>${games.map((g) => resultRow(g, t.id)).join('') || '<div class="small dim">No matches yet.</div>'}</div>`;
+    } else if (tab === 'squad') {
+      const squad = I.squad(t.code),
+        { xi } = W.pickXI(t.id, t.tactic),
+        slots = D.FORMATIONS[t.tactic.formation];
+      const dots = slots
+        .map((sl, i) => {
+          const p = xi[i];
+          return `<div class="slot-dot" style="left:${U.clamp(sl.y * 100, 11, 89)}%;top:${sl.t === 'GK' ? 90 : Math.min(74, 13 + (1 - (sl.x - 0.04) / 0.76) * 70)}%" ${p ? `data-act="player" data-id="${p.id}"` : ''}><div class="d" style="background:${t.colors[0]};color:${U.ink(t.colors[0])}">${p ? W.stars(W.slotOverall(p, sl.t, sl, t.tactic.roles[i]), sl.t) : '—'}</div><div class="n">${p ? esc(p.ln) : 'Empty'}</div><div class="r">${D.slotLabel(sl)}</div></div>`;
+        })
+        .join('');
+      const caps = squad.slice().sort((x, y) => ((y.intl && y.intl.caps) || 0) - ((x.intl && x.intl.caps) || 0))[0],
+        goals = squad.slice().sort((x, y) => ((y.intl && y.intl.goals) || 0) - ((x.intl && x.intl.goals) || 0))[0];
+      body = `<div class="card"><div class="h3">Best XI <span class="dim small">${esc(t.tactic.formation)} · average ${C.starText(U.avg(xi.filter(Boolean), (p) => p.ca))}</span></div><div class="tpitch noswipe" style="margin-top:8px">${dots}</div>
+          <div class="tiny dim" style="margin-top:6px">${isMine ? 'Your lineup. Change it in Squad & tactics.' : 'The side the manager would pick today.'} Tap a player to open him.</div></div>
+        <div class="card"><div class="h3">Squad</div><div class="tiny dim" style="margin-bottom:6px">The best ${squad.length} available ${esc(D.NATIONS[t.code].name)} players${caps && caps.intl && caps.intl.caps ? ` · most caps ${esc(W.short(caps))} (${caps.intl.caps})` : ''}${goals && goals.intl && goals.intl.goals ? ` · top scorer ${esc(W.short(goals))} (${goals.intl.goals})` : ''}</div>${squad
+          .map(
+            (p) =>
+              `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(s.clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps</div></div>${C.playerStars(p)}</div>`,
+          )
+          .join('')}</div>`;
+    } else if (tab === 'history') {
+      const rows = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
+      const won = rows.filter((x) => x.winner === t.id),
+        lost = rows.filter((x) => x.runnerUp === t.id);
+      const spells = (s.user.ntHistory || []).filter((x) => x.nation === t.id);
+      body = `<div class="card"><div class="h3">Honours</div>${
+        Object.keys(t.titles).length
+          ? Object.entries(t.titles)
               .map(
-                (a) =>
-                  `<div class="small" style="margin-top:6px;line-height:1.5"><b>${esc(a.label)}</b> · <span class="dim">${esc(a.desc)}</span></div>`,
+                ([k, n]) =>
+                  `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="grow">${esc(TNAME[k] || k)}</span><b>×${n}</b></div>`,
               )
-              .join('')}</div>`
-          : ''
+              .join('')
+          : '<div class="small dim">No titles yet.</div>'
+      }<div class="tiny dim" style="margin-top:6px">${won.length ? `Won ${U.plural(won.length, 'tournament')} in this save` : 'No tournament won in this save yet'}${lost.length ? ` · runners-up ${lost.length}×` : ''}</div></div>
+        <div class="card"><div class="h3">Tournaments</div>${
+          rows.length
+            ? rows
+                .slice(0, 12)
+                .map((x) => {
+                  const w = x.winner === t.id ? 'Winners' : x.runnerUp === t.id ? 'Runners-up' : '';
+                  return `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:48px">${x.year + 1}</span><div class="grow"><div class="b">${esc(x.name)}</div><div class="tiny dim">${esc(T(x.winner).name)} won${w && x.winner !== t.id ? ' · ' + esc(t.name) + ' ' + w.toLowerCase() : ''}</div></div>${w ? `<span class="pill ${w === 'Winners' ? 'acc' : ''}">${w}</span>` : ''}</div>`;
+                })
+                .join('')
+            : '<div class="small dim">The first tournament is played at the end of this season.</div>'
+        }</div>
+        ${
+          spells.length
+            ? `<div class="card"><div class="h3">Your spells</div>${spells.map((x) => `<div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="grow">${x.from}${x.to ? ' to ' + x.to : ' to now'}</span><span class="dim">${x.how ? esc(x.how) : x.to ? '' : 'in charge'}</span></div>`).join('')}</div>`
+            : ''
+        }`;
+    } else {
+      // Head-to-head: against the nation you manage (the games kept in the international log)
+      if (!mine)
+        body =
+          '<div class="card"><div class="small dim">Take a national team job to see how this nation has done against yours.</div></div>';
+      else if (isMine) body = '<div class="card"><div class="small dim">This is your nation.</div></div>';
+      else {
+        const gs = s.intlLog.filter((g) => (g.h === t.id && g.a === mine.id) || (g.h === mine.id && g.a === t.id));
+        const tally = gs.reduce(
+          (n, g) => {
+            const mineHome = g.h === mine.id,
+              gf = mineHome ? g.hg : g.ag,
+              ga = mineHome ? g.ag : g.hg;
+            g.winner == null ? n.d++ : g.winner === mine.id ? n.w++ : n.l++;
+            n.gf += gf;
+            n.ga += ga;
+            return n;
+          },
+          { w: 0, d: 0, l: 0, gf: 0, ga: 0 },
+        );
+        const rank2 = I.ranked().indexOf(mine) + 1;
+        body = `<div class="card"><div class="row"><div class="h3 grow">${natName(mine)} against ${natName(t)}</div></div>
+          <div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:92px">World ranking</span><div class="grow">#${rank2} against #${rank}</div></div>
+          <div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span class="dim" style="width:92px">Record</span><div class="grow">${gs.length ? `<b>${tally.w}W ${tally.d}D ${tally.l}L</b> · goals ${tally.gf}–${tally.ga}` : 'No games between you in the log'}</div></div>
+          <div class="tiny dim" style="margin-top:4px">From the international log (the last 120 games of the world).</div></div>
+          ${
+            gs.length
+              ? `<div class="card"><div class="h3">Meetings</div>${gs
+                  .slice(0, 8)
+                  .map((g) => resultRow(g, mine.id))
+                  .join('')}</div>`
+              : ''
+          }`;
       }
-      <div class="card"><div class="h3">Squad</div><div class="tiny dim" style="margin-bottom:6px">The best ${squad.length} available ${esc(D.NATIONS[t.code].name)} players</div>${squad.map((p) => `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(s.clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${p.intl ? p.intl.caps : 0} caps</div></div>${C.playerStars(p)}</div>`).join('')}</div>
-      <div class="card"><div class="h3">Recent results</div>${games.map((g) => resultRow(g, t.id)).join('') || '<div class="small dim">No matches yet.</div>'}</div>`,
-      { title: t.name },
-    );
+    }
+    const html = `${hero}${chips}${body}`;
+    if (document.querySelector('.sheet-wrap .nat-sheet')) UI.refreshSheet(`<div class="nat-sheet">${html}</div>`);
+    else UI.sheet(`<div class="nat-sheet">${html}</div>`, { title: t.name });
+  };
+  UI.acts.nation = (d) => {
+    UI._natId = d.id;
+    UI._natTab = 'overview';
+    UI.nationSheet(d.id);
+  };
+  UI.acts.natTab = (d) => {
+    UI._natTab = d.k;
+    UI.nationSheet(UI._natId);
   };
   // a player of your own B team or youth sides is yours already: there is no offer to make for him
   ['offer', 'offerLoan', 'offerClubs'].forEach((k) => {

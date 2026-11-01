@@ -1154,10 +1154,15 @@
 
   // ---------- Tactics ----------
   // The tactic being edited: Plan A (the one matches start with) or Plan B (switch to it in a match)
-  const TT = () => (UI._planB ? W.secondTactic() : S().user.tactic);
+  // (a national team's squad screen, in the Nations tab, edits the nation's own tactic and squad with the same editor)
+  const natCtx = () => (UI.tab === 'ntsquad' && S().user.nation ? S().nteams[S().user.nation] : null);
+  const ctxClub = () => natCtx() || club();
+  const sqOf = (c) => (c.sim === 'nation' ? FM.Intl.squad(c.code) : W.squad(c.id));
+  const TT = () => (natCtx() ? natCtx().tactic : UI._planB ? W.secondTactic() : S().user.tactic);
+  UI.tacticsView = () => tacticsView();
   function tacticsView() {
     const T = TT(),
-      c = club();
+      c = ctxClub();
     const slots = D.FORMATIONS[T.formation];
     const { xi, bench } = W.pickXI(c.id, T);
     const sel = UI._slot;
@@ -1179,12 +1184,12 @@
       B = S().user.tactic2;
     const plans = `<div class="seg" style="margin-bottom:6px"><button class="${planB ? '' : 'on'}" data-act="tacPlan" data-v="A">Plan A · ${Math.round(A.fam ?? 60)}%</button><button class="${planB ? 'on' : ''}" data-act="tacPlan" data-v="B">Plan B${B ? ` · ${Math.round(B.fam ?? 40)}%` : ''}</button></div>
       <div class="tiny dim" style="margin:0 2px 10px">${planB ? 'Plan B: switch to it during a match from Tactics. It has its own familiarity, which grows when you use it.' : 'Plan A starts every match. Set up a Plan B to switch to during a match (a chase, or shutting up shop).'}${planB ? ` <button class="btn sm" data-act="swapPlans">Make Plan B the starting plan</button>` : ''}</div>`;
-    return `${plans}<div class="chips">${Object.keys(D.FORMATIONS)
+    return `${natCtx() ? '' : plans}<div class="chips">${Object.keys(D.FORMATIONS)
       .map(
         (f) => `<button class="chip ${T.formation === f ? 'on' : ''}" data-act="formation" data-v="${f}">${f}</button>`,
       )
       .join('')}</div>
-      <div class="row small dim" style="margin:-4px 2px 8px"><span>${D.shapeOf(T.formation)}</span><span>·</span><span>XI ${C.starText(U.avg(xi.filter(Boolean), (p) => p.ca))}</span><span>·</span><span>Familiarity ${Math.round(T.fam ?? 60)}%</span><span class="grow"></span><button class="btn sm" data-act="autoXI">Auto-pick</button></div>
+      <div class="row small dim" style="margin:-4px 2px 8px"><span>${D.shapeOf(T.formation)}</span><span>·</span><span>XI ${C.starText(U.avg(xi.filter(Boolean), (p) => p.ca))}</span><span>·</span><span>Familiarity ${Math.round(natCtx() ? FM.Intl.nationFam(c) : (T.fam ?? 60))}%</span><span class="grow"></span><button class="btn sm" data-act="autoXI">Auto-pick</button></div>
       <div class="tpitch noswipe">${dots}</div>
       <div class="small dim center" style="margin:6px 0 12px">Tap a player to change him or his role. Orange ring = out of position. Bar = match fitness — auto-pick rests tired players.</div>
       <div class="card"><div class="h3">Build-up</div>${seg('buildup', D.BUILDUP)}
@@ -1193,7 +1198,7 @@
         <div class="row" style="margin-top:14px"><div class="grow"><div class="h3">Inverted full-backs</div><div class="small dim">Full-backs step into midfield in possession</div></div><button class="btn sm ${T.invFB ? 'pri' : ''}" data-act="invfb">${T.invFB ? 'On' : 'Off'}</button></div>
         <div class="small muted" style="margin-top:12px;line-height:1.5">${tacticHint(T)}</div></div>
       ${coverCard(T)}
-      ${leadershipCard(xi, arm)}
+      ${natCtx() ? '' : leadershipCard(xi, arm)}
       <div class="sec"><div class="h3">Bench</div></div><div class="card flat list" style="padding:4px 12px">${bench.map((p) => C.playerRow(p)).join('')}</div>`;
   }
   // Squad cover: for the formation you play, how many players in your squad are at home (accomplished or better) in each
@@ -1206,8 +1211,8 @@
   function coverCard(T) {
     if (!UI._cover)
       return `<div class="card"><div class="row"><div class="grow"><div class="h3">Squad cover</div><div class="small dim">Where you are thin in this shape, and which formations your squad suits</div></div><button class="btn sm" data-act="coverToggle">Show</button></div></div>`;
-    const c = club(),
-      sq = W.squad(c.id).filter((p) => !p.team);
+    const c = ctxClub(),
+      sq = sqOf(c).filter((p) => !p.team);
     const slots = D.FORMATIONS[T.formation],
       need = {};
     slots.forEach((s) => (need[s.t] = (need[s.t] || 0) + 1));
@@ -1391,7 +1396,7 @@
   };
   UI.acts.autoXI = () => {
     const T = TT(),
-      id = club().id;
+      id = ctxClub().id;
     T.lineup = null;
     // Compare with a pick that ignores fitness: whoever drops out was rested
     const withFit = new Set(
@@ -1419,12 +1424,12 @@
   UI.acts.slot = (d) => UI.slotPicker(+d.i);
   UI.slotPicker = function (i, inMatch) {
     const T = TT(),
-      c = club(),
+      c = ctxClub(),
       s = D.FORMATIONS[T.formation][i];
     const { xi } = W.pickXI(c.id, T);
     const cur = xi[i];
     const roles = Object.keys(D.ROLES[s.t]);
-    const cands = W.squad(c.id)
+    const cands = sqOf(c)
       .filter((p) => (s.t === 'GK') === (p.pos === 'GK'))
       .sort((a, b) => W.effAt(b, s.t, s, T.roles[i]) - W.effAt(a, s.t, s, T.roles[i]));
     UI.sheet(
@@ -1457,7 +1462,7 @@
   };
   UI.acts.pickSlot = (d) => {
     const T = TT(),
-      c = club(),
+      c = ctxClub(),
       p = P(d.id);
     if (!W.available(p)) return UI.toast(`${W.short(p)} is unavailable`);
     const { xi } = W.pickXI(c.id, T);
