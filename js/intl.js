@@ -433,20 +433,145 @@
     return out;
   };
   // The squad: the user's own call-ups when managing the nation, otherwise the best 23 available (with three keepers at least)
+  // Fit to play now: not injured, suspended or on service, and not one who pulled out of this window (p.ntOut: the day he did)
+  I.fit = (p) => W.available(p) && !(p.ntOut != null && S().day >= p.ntOut && S().day - p.ntOut <= 6);
   I.squad = function (code) {
     const t = S().nteams && S().nteams['n_' + code];
     if (t && t.picks && W.isUserNation(t.id)) {
       const picked = t.picks
         .map((id) => S().players[id])
-        .filter((p) => p && !p.retired && I.nationOf(p) === code && W.available(p));
+        .filter((p) => p && !p.retired && I.nationOf(p) === code && I.fit(p));
       if (picked.length >= 16) return I.withKeepers(picked.slice(0, 26), code, 26);
       return I.withKeepers(
-        picked.concat(I.pool(code).filter((p) => W.available(p) && !picked.includes(p))).slice(0, 23),
+        picked.concat(I.pool(code).filter((p) => I.fit(p) && !picked.includes(p))).slice(0, 23),
         code,
         23,
       );
     }
-    return I.withKeepers(I.pool(code).filter(W.available).slice(0, 23), code, 23);
+    const auto = I.pool(code).filter(I.fit);
+    // (the manager's favourites come first, when they are fit)
+    const favs = t && W.isUserNation(t.id) && t.locks ? auto.filter((p) => t.locks.includes(p.id)) : [];
+    return I.withKeepers(favs.concat(auto.filter((p) => !favs.includes(p))).slice(0, 23), code, 23);
+  };
+  // ---------- Call-ups: quick pick, favourites, depth and the final squad ----------
+  I.toggleLock = function (code, id) {
+    const t = T('n_' + code);
+    t.locks = t.locks || [];
+    t.locks = t.locks.includes(id) ? t.locks.filter((x) => x !== id) : [...t.locks, id];
+    return t.locks.includes(id);
+  };
+  // How good a pick he is now: ability, nudged by form, fitness and whether he plays at his club
+  I.pickScore = (p) => {
+    const form = p.form && p.form.length >= 3 ? U.avg(p.form.slice(-5)) - 6.5 : 0,
+      g = p.clubId ? FM.Season.gamesPlayed(p.clubId) : 0,
+      plays = !p.clubId ? -4 : g >= 5 && p.season.apps < g * 0.3 ? -3 : 0;
+    return p.ca + form * 2 + (p.fitness - 85) / 8 + plays;
+  };
+  // A balanced squad of 23 (three keepers, eight defenders, seven midfielders, five attackers), the manager's favourites first
+  I.quickPick = function (code) {
+    const t = T('n_' + code),
+      fit = I.pool(code).filter(I.fit),
+      need = { GK: 3, DEF: 8, MID: 7, ATT: 5 },
+      out = [];
+    for (const p of fit) if ((t.locks || []).includes(p.id) && out.length < 23) out.push(p);
+    for (const g of Object.keys(need)) {
+      const have = out.filter((p) => D.POS_GROUP[p.pos] === g).length;
+      fit
+        .filter((p) => D.POS_GROUP[p.pos] === g && !out.includes(p))
+        .sort((a, b) => I.pickScore(b) - I.pickScore(a))
+        .slice(0, Math.max(0, need[g] - have))
+        .forEach((p) => out.push(p));
+    }
+    fit
+      .filter((p) => !out.includes(p))
+      .sort((a, b) => I.pickScore(b) - I.pickScore(a))
+      .forEach((p) => out.length < 23 && out.push(p));
+    return out.slice(0, 23).map((p) => p.id);
+  };
+  // Where a squad is thin: fit players for the places the formation asks for, with one to spare (three keepers), by side for the
+  // flanks: ["Only two fit full-backs for the two places: no cover"]
+  const ROLE_NAME = {
+    GK: 'goalkeeper',
+    CB: 'centre-back',
+    FB: 'full-back',
+    DM: 'defensive midfielder',
+    CM: 'central midfielder',
+    WM: 'wide midfielder',
+    AM: 'attacking midfielder',
+    W: 'winger',
+    ST: 'striker',
+  };
+  const COVER = { FB: ['FB', 'WB'], W: ['W', 'WM'], WM: ['WM', 'W'] };
+  I.depthWarnings = function (code, ids) {
+    const t = T('n_' + code),
+      slots = (D.FORMATIONS[(t.tactic && t.tactic.formation) || '4-3-3'] || []).map((x) => x.t);
+    const mine = ids.map((id) => S().players[id]).filter((p) => p && I.fit(p));
+    const out = [];
+    for (const role of [...new Set(slots)]) {
+      const places = slots.filter((x) => x === role).length,
+        have = mine.filter((p) => (COVER[role] || [role]).includes(p.pos)).length,
+        want = role === 'GK' ? 3 : places + 1,
+        name = ROLE_NAME[role] || role;
+      if (have < want)
+        out.push(
+          have === 0
+            ? `No fit ${name} in the squad.`
+            : `Only ${U.plural(have, 'fit ' + name)} for ${U.plural(places, 'place')}${have <= places ? ': no cover' : ''}.`,
+        );
+    }
+    return out;
+  };
+  // The final squad: before a window's first match (and a tournament's) the players picked who cannot play withdraw (injured,
+  // suspended, on service, or tired and pulled out by the club) and the best fit players of their positions are called up instead.
+  // A manager's picks are changed to match; an automatic squad simply fills in. Reported in the news and on the squad screen.
+  I.finalSquad = function (code) {
+    const s = S(),
+      t = T('n_' + code);
+    if (!t) return;
+    const prov = t.picks
+      ? t.picks.map((id) => s.players[id]).filter((p) => p && !p.retired && I.nationOf(p) === code)
+      : I.pool(code).slice(0, 23);
+    const out = [];
+    for (const p of prov) {
+      let why = null;
+      if (p.inj) why = `injured, back in ${FM.Injury.range(FM.Injury.weeksLeft(p))}`;
+      else if (p.susp) why = 'suspended';
+      else if (!W.available(p)) why = 'on military service';
+      else if (p.fitness < 62 && Math.random() < 0.3) {
+        why = 'pulled out tired by his club';
+        p.ntOut = s.day;
+      }
+      if (why) out.push([p, why]);
+    }
+    if (!out.length) {
+      t.finalNote = null;
+      return;
+    }
+    const gone = new Set(out.map((x) => x[0].id)),
+      keep = prov.filter((p) => !gone.has(p.id)),
+      ins = [];
+    for (const [p] of out) {
+      // (from every player of the nation, not only the thirty best: a thin squad can still be filled)
+      const pick = (I.pool(code), poolIdx.by[code] || [])
+        .filter((q) => !q.retired && W.age(q) >= 17 && I.fit(q) && !keep.includes(q) && !ins.includes(q))
+        .sort(
+          (a, b) =>
+            (D.POS_GROUP[b.pos] === D.POS_GROUP[p.pos]) - (D.POS_GROUP[a.pos] === D.POS_GROUP[p.pos]) ||
+            (b.pos === p.pos) - (a.pos === p.pos) ||
+            b.ca - a.ca,
+        )[0];
+      if (pick) ins.push(pick);
+    }
+    if (t.picks) t.picks = [...keep, ...ins].map((p) => p.id);
+    t.finalNote = { day: s.day, year: s.year, out: out.map(([p, why]) => [p.id, why]), ins: ins.map((p) => p.id) };
+    if (W.isUserNation(t.id))
+      FM.News.add({
+        type: 'club',
+        title: `${t.name}: ${U.plural(out.length, 'withdrawal')} from the squad`,
+        body: out
+          .map(([p, why], i) => `${W.short(p)} (${why})${ins[i] ? `, replaced by ${W.short(ins[i])}` : ''}.`)
+          .join(' '),
+      });
   };
   I.ranked = () => Object.values(S().nteams).sort((a, b) => b.coef - a.coef);
   // Sanctions (S.bans, set in the world editor): a nation out of international competition for some seasons. It keeps its place in
@@ -977,6 +1102,14 @@
     }
     const fx = cal.type === 'tourn' ? I.tournamentDay(cal.stage) : I.breakDay(cal.tag);
     s.intlDay = { day: s.day, year: s.year, fx };
+    const mine = s.user && s.user.nation && T(s.user.nation);
+    if (mine && fx.some((f) => f.h === mine.id || f.a === mine.id)) {
+      const key = cal.type === 'tourn' ? `${s.year}T` : `${s.year}${cal.tag}`;
+      if (/a$/.test(cal.tag || '') || (cal.type === 'tourn' && s.finalSquadKey !== key)) {
+        if (s.finalSquadKey !== key) I.finalSquad(mine.code);
+        s.finalSquadKey = key;
+      }
+    }
     return fx;
   };
   I.breakDay = function (tag) {

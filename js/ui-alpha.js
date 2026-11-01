@@ -1262,6 +1262,19 @@
     const pool = I.pool(t.code),
       squad = I.squad(t.code),
       picked = new Set(squad.map((p) => p.id));
+    // the sort of the pool, the thin places of the squad, and a final squad's withdrawals (shown for a while)
+    const sort = UI._ntSort || 'ca',
+      avgForm = (p) => (p.form && p.form.length ? U.avg(p.form.slice(-5)) : 0),
+      by = (a, b) =>
+        sort === 'form'
+          ? avgForm(b) - avgForm(a)
+          : sort === 'apps'
+            ? b.season.apps - a.season.apps
+            : sort === 'fit'
+              ? b.fitness - a.fitness
+              : b.ca - a.ca;
+    const warns = I.depthWarnings(t.code, [...picked]),
+      fin = t.finalNote && s.year === t.finalNote.year && s.day - t.finalNote.day <= 12 ? t.finalNote : null;
     const Tc = t.tactic;
     const seg = (k, vals) =>
       `<div class="seg" style="margin-top:6px">${vals.map((v) => `<button class="${Tc[k] === v ? 'on' : ''}" data-act="ntTac" data-k="${k}" data-v="${v}">${v.replace(' Press', '').replace(' Block', '')}</button>`).join('')}</div>`;
@@ -1284,7 +1297,11 @@
       const g = p.clubId ? FM.Season.gamesPlayed(p.clubId) : 0;
       if (p.clubId && g >= 5 && p.season.apps < g * 0.3) out.push('<span class="pill warn">Rarely plays</span>');
       else if (!p.clubId) out.push('<span class="pill warn">No club</span>');
-      if (!(p.intl && p.intl.caps)) out.push('<span class="pill">Uncapped</span>');
+      const caps = p.intl && p.intl.caps > 0,
+        other = W.eligibleFor(p).length > 1;
+      if (!caps) out.push(`<span class="pill">Uncapped${other ? ' · could switch' : ''}</span>`);
+      else if (other) out.push('<span class="pill">Cap-tied</span>');
+      if (W.citizenships(p).length > 1) out.push('<span class="pill">2nd passport</span>');
       return out.length ? `<div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">${out.join('')}</div>` : '';
     };
     // Why a player of the nation is not in the squad
@@ -1342,13 +1359,29 @@
       ];
       body = `<div class="row" style="margin-top:14px"><div class="h3 grow">Roles</div></div>
         ${sel('capt', 'Captain', t.capt)}${sel('pen', 'Penalties', Tc.sp && Tc.sp.pen)}${sel('fk', 'Free kicks', Tc.sp && Tc.sp.fk)}${sel('cor', 'Corners', Tc.sp && Tc.sp.cor)}
-        <div class="row" style="margin-top:14px"><div class="h3 grow">Call-ups <span class="dim small">${picked.size}/23</span></div><button class="btn sm" data-act="ntAuto">Auto-pick</button></div>
-        <div class="tiny dim" style="margin:4px 0 6px">The best ${pool.length} ${esc(D.NATIONS[t.code].name)} players. Tap to call up or drop. Injured players can't be picked.</div>
+        <div class="row" style="margin-top:14px"><div class="h3 grow">Call-ups <span class="dim small">${picked.size}/23</span></div><button class="btn sm" data-act="ntQuick">Quick pick</button><button class="btn sm" data-act="ntAuto" style="margin-left:6px">Auto-pick</button></div>
+        ${
+          fin
+            ? `<div class="card flat" style="margin:6px 0;padding:8px 10px"><div class="tiny b">Final squad</div><div class="tiny dim" style="margin-top:3px;line-height:1.5">${fin.out.map(([id, why], i) => `${esc(W.short(P(id)))} withdrew (${esc(why)})${fin.ins[i] ? `, ${esc(W.short(P(fin.ins[i])))} called up` : ''}`).join('; ')}.</div></div>`
+            : ''
+        }
+        ${warns.length ? `<div class="card flat" style="margin:6px 0;padding:8px 10px;border:1px solid var(--warn)"><div class="tiny b">Depth</div>${warns.map((w) => `<div class="tiny" style="margin-top:3px">${esc(w)}</div>`).join('')}</div>` : ''}
+        <div class="tiny dim" style="margin:4px 0 6px">The best ${pool.length} ${esc(D.NATIONS[t.code].name)} players. Tap to call up or drop; the star keeps a favourite in every Quick pick and Auto-pick. Injured players can't be picked.</div>
+        <div class="chips" style="margin-bottom:4px">${[
+          ['ca', 'Ability'],
+          ['form', 'Form'],
+          ['apps', 'Games'],
+          ['fit', 'Fitness'],
+        ]
+          .map(
+            ([k, l]) => `<button class="chip ${sort === k ? 'on' : ''}" data-act="ntSort" data-k="${k}">${l}</button>`,
+          )
+          .join('')}</div>
         ${groups
           .map(([g, l]) => {
-            const ps = pool.filter((p) => D.POS_GROUP[p.pos] === g);
+            const ps = pool.filter((p) => D.POS_GROUP[p.pos] === g).sort(by);
             return ps.length
-              ? `<div class="small b dim" style="margin:10px 0 2px">${l.toUpperCase()} · ${ps.filter((p) => picked.has(p.id)).length}/${ps.length}</div><div class="list">${ps.map((p) => row(p, 'ntPick')).join('')}</div>`
+              ? `<div class="small b dim" style="margin:10px 0 2px">${l.toUpperCase()} · ${ps.filter((p) => picked.has(p.id)).length}/${ps.length}</div><div class="list">${ps.map((p) => row(p, 'ntPick', `<button class="btn sm" style="margin-left:6px;min-width:44px;min-height:44px" data-act="ntLock" data-id="${p.id}" aria-label="Favourite">${(t.locks || []).includes(p.id) ? '★' : '☆'}</button>`)).join('')}</div>`
               : '';
           })
           .join('')}`;
@@ -1412,6 +1445,27 @@
         : `${W.short(p)} takes it well: he knows where he stands.`,
       3500,
     );
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntSort = (d) => {
+    UI._ntSort = d.k;
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntLock = (d) => {
+    const on = FM.Intl.toggleLock(S().user.nation.replace(/^n_/, ''), d.id);
+    UI.toast(
+      on
+        ? `${W.short(P(d.id))} is a favourite: he is picked whenever he is fit.`
+        : `${W.short(P(d.id))} is no longer a favourite.`,
+      2500,
+    );
+    UI.save();
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntQuick = () => {
+    const t = T(S().user.nation);
+    t.picks = FM.Intl.quickPick(t.code);
+    UI.save();
     UI.ntSquadSheet();
   };
   UI.acts.ntAuto = () => {
