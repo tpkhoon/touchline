@@ -1320,7 +1320,15 @@
     const row = (p, click, extra = '', why = '') =>
       `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${U.plural(p.intl ? p.intl.caps : 0, 'cap')} · ${U.plural(p.season.apps, 'game')} this season · form ${form(p)}</div>${tags(p)}${why ? `<div class="tiny" style="margin-top:3px">${esc(why)}</div>` : ''}</div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
     let body;
-    if (tab === 'prepare') {
+    if (tab === 'youth') {
+      const yt = I.u21Of(t).sort((x, y) => y.pa - x.pa),
+        rec = t.yth,
+        gen = I.generation(t);
+      body = `<div class="tiny dim" style="margin:4px 0 6px">The ${esc(D.NATIONS[t.code].name)} Under-21 side: the 18 best young players who have not played for the seniors. They play a youth match every window and earn youth caps. A youth cap does not tie a player to a nation.</div>
+        <div class="card flat" style="margin:6px 0;padding:8px 10px"><div class="small b">${rec ? `W${rec.w} D${rec.d} L${rec.l}` : 'No youth matches yet'}${rec && rec.last ? ` · last: ${rec.last.gf}–${rec.last.ga} v ${esc(T(rec.last.opp) ? T(rec.last.opp).name : '')}` : ''}</div>${gen ? `<div class="tiny dim" style="margin-top:3px;line-height:1.5">${gen.golden ? 'A golden generation: the best eleven have a potential of ' + gen.pa + ", above the seniors' " + gen.senior + '.' : gen.lean ? 'A thin generation: the best eleven have a potential of ' + gen.pa + " against the seniors' " + gen.senior + '.' : 'The best eleven have a potential of ' + gen.pa + ', the seniors ' + gen.senior + '.'}</div>` : ''}</div>
+        <div class="row" style="margin-top:8px;gap:10px"><div class="grow"><div class="small b">Let them play</div><div class="tiny dim">More minutes for the Under-21s: they come on a little faster (about a quarter of a point of ability a match).</div></div><button class="chip ${t.youthFocus === 'play' ? 'on' : ''}" data-act="ntYouthFocus">${t.youthFocus === 'play' ? 'On' : 'Off'}</button></div>
+        <div class="list" style="margin-top:8px">${yt.map((p) => row(p, 'player', `<button class="btn sm" style="margin-left:6px;min-height:44px" data-act="ntPick" data-id="${p.id}">${picked.has(p.id) ? 'In the seniors' : 'Call up'}</button>`, `${U.plural((p.youthCaps && p.youthCaps[t.code]) || 0, 'youth cap')} · potential ${Math.round(p.pa)}`)).join('') || '<div class="empty">No Under-21 squad: the nation has too few young players who have not played for the seniors. It is picked at the start of each season.</div>'}</div>`;
+    } else if (tab === 'prepare') {
       const cx = I.complexity(Tc.formation),
         fam = Math.round(I.nationFam(t)),
         focus = t.campFocus || 'tactics',
@@ -1433,7 +1441,7 @@
           })
           .join('')}`;
     }
-    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('squad', 'Squad & tactics')}${sub('prepare', 'Prepare')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
+    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('squad', 'Squad & tactics')}${sub('prepare', 'Prepare')}${sub('youth', 'Under-21s')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
       ${
         tab === 'squad'
           ? `<div class="h3">Formation</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${Object.keys(
@@ -1492,6 +1500,12 @@
         : `${W.short(p)} takes it well: he knows where he stands.`,
       3500,
     );
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntYouthFocus = () => {
+    const t = T(S().user.nation);
+    t.youthFocus = t.youthFocus === 'play' ? null : 'play';
+    UI.save();
     UI.ntSquadSheet();
   };
   UI.acts.ntRotate = () => {

@@ -961,6 +961,7 @@
     I.topUp();
     I.allegianceTick();
     I.fedSeason();
+    I.generationNews();
     I.refreshJobs();
   };
 
@@ -1758,6 +1759,7 @@
   I.afterDay = function (cal) {
     const s = S();
     if (cal.type === 'intl' && /b$/.test(cal.tag)) {
+      I.youthWindow();
       FM.Stories.intlWindow(s.intlBreak);
       s.intlBreak = [];
       if (s.user && s.user.nation) I.clubBalance();
@@ -2043,10 +2045,12 @@
     return out;
   };
   I.allegianceScore = (p, code) => I.allegiancePull(p, code).reduce((t, x) => t + x[1], 0);
-  // ---------- Youth caps ----------
-  // Each year the best young players of a nation are called up for its youth sides (an uncapped player under 22 who is among the 18
-  // best of his age for it). Youth caps do not tie him to a nation: only a senior cap does. A young player who could play for
-  // more than one nation is sometimes called up by the other (p.youthCaps: nation -> caps).
+  // ---------- Youth national teams ----------
+  // Each year the best young players of a nation (uncapped, 16 to 21, the 18 best of his age for it) make its Under-21 squad
+  // (t.u21). Each international window the Under-21s play a match against another nation's (matched by strength), and every player
+  // in both squads earns a youth cap (p.youthCaps: nation -> caps). Youth caps do not tie him to a nation: only a senior cap does. A
+  // young player who could play for more than one nation is sometimes picked by the other. A manager can have his youngsters play
+  // more (t.youthFocus), which brings them on a little faster.
   I.YOUTH_SQUAD = 18;
   I.youthTick = function () {
     const s = S(),
@@ -2058,11 +2062,84 @@
       if (el && el.length > 1 && Math.random() < 0.25) code = U.pick(el);
       if (s.nteams && s.nteams['n_' + code]) (by[code] ||= []).push(p);
     }
-    for (const code in by)
-      for (const p of by[code].sort((a, b) => b.ca - a.ca).slice(0, I.YOUTH_SQUAD)) {
+    for (const t of Object.values(s.nteams || {}))
+      t.u21 = (by[t.code] || [])
+        .sort((x, y) => y.ca - x.ca)
+        .slice(0, I.YOUTH_SQUAD)
+        .map((p) => p.id);
+  };
+  I.u21Of = (t) => (t.u21 || []).map((id) => S().players[id]).filter((p) => p && !p.retired);
+  I.u21Rating = (t) => {
+    const l = I.u21Of(t);
+    return l.length ? U.avg(l, (p) => p.ca) : 0;
+  };
+  // How many goals a side scores against another: from the gap in their young players' ability
+  const poisson = (lam) => {
+    let k = 0,
+      p = 1;
+    const L = Math.exp(-lam);
+    do {
+      k++;
+      p *= Math.random();
+    } while (p > L);
+    return k - 1;
+  };
+  I.youthMatch = function (a, b) {
+    const ra = I.u21Rating(a),
+      rb = I.u21Rating(b),
+      d = (ra - rb) / 18;
+    const ga = poisson(1.3 * Math.exp(d * 0.5)),
+      gb = poisson(1.3 * Math.exp(-d * 0.5));
+    [
+      [a, b, ga, gb],
+      [b, a, gb, ga],
+    ].forEach(([t, o, gf, gc]) => {
+      const rec = (t.yth = t.yth || { w: 0, d: 0, l: 0, last: null });
+      gf > gc ? rec.w++ : gf < gc ? rec.l++ : rec.d++;
+      rec.last = { opp: o.id, gf, ga: gc, year: S().year };
+      const grow = W.isUserNation(t.id) && t.youthFocus === 'play' ? 0.3 : 0; // (only the manager's own side is brought on)
+      I.u21Of(t).forEach((p) => {
         p.youthCaps = p.youthCaps || {};
-        p.youthCaps[code] = (p.youthCaps[code] || 0) + U.randi(3, 8);
-      }
+        p.youthCaps[t.code] = (p.youthCaps[t.code] || 0) + 1;
+        if (grow && FM.Season.applyGrowth) FM.Season.applyGrowth(p, Math.min(grow, Math.max(0, p.pa - p.ca) * 0.1));
+      });
+    });
+  };
+  // Once a window: the Under-21s of every nation play, neighbours in strength meeting
+  I.youthWindow = function () {
+    const s = S();
+    if (Object.values(s.nteams || {}).some((t) => !t.u21)) I.youthTick(); // (a world from before the Under-21s: made now)
+    const teams = Object.values(s.nteams || {}).filter((t) => (t.u21 || []).length >= 11 && !I.banned(t));
+    const order = teams
+      .map((t) => [t, I.u21Rating(t) + U.gauss(0, 3)])
+      .sort((x, y) => y[1] - x[1])
+      .map((x) => x[0]);
+    for (let i = 0; i + 1 < order.length; i += 2) I.youthMatch(order[i], order[i + 1]);
+  };
+  // A golden generation: when the young ones have more potential than the senior side has ability
+  I.generation = function (t) {
+    const young = I.u21Of(t);
+    if (young.length < 11) return null;
+    const top = young
+        .slice()
+        .sort((x, y) => y.pa - x.pa)
+        .slice(0, 11),
+      pa = U.avg(top, (p) => p.pa),
+      senior = I.rating(t.code);
+    return { pa: Math.round(pa), senior: Math.round(senior), golden: pa >= senior + 6, lean: pa <= senior - 8 };
+  };
+  I.generationNews = function () {
+    const s = S(),
+      t = s.user && s.user.nation && T(s.user.nation);
+    if (!t) return;
+    const g = I.generation(t);
+    if (g && g.golden && t.goldYear !== s.year - 1)
+      FM.News.add({
+        type: 'club',
+        title: `${t.name}: a golden generation is coming`,
+        body: `The Under-21 side's best eleven have a potential of ${g.pa}, against ${g.senior} for the senior side's best eleven today. Bring them on.`,
+      });
+    if (g && g.golden) t.goldYear = s.year;
   };
   I.allegianceTick = function () {
     I.youthTick();
