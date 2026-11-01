@@ -434,7 +434,11 @@
   };
   // The squad: the user's own call-ups when managing the nation, otherwise the best 23 available (with three keepers at least)
   // Fit to play now: not injured, suspended or on service, and not one who pulled out of this window (p.ntOut: the day he did)
-  I.fit = (p) => W.available(p) && !(p.ntOut != null && S().day >= p.ntOut && S().day - p.ntOut <= 6);
+  I.fit = (p) =>
+    W.available(p) &&
+    !(p.ntBan > 0) &&
+    p.ntRest !== S().day &&
+    !(p.ntOut != null && S().day >= p.ntOut && S().day - p.ntOut <= 6);
   I.squad = function (code) {
     const t = S().nteams && S().nteams['n_' + code];
     if (t && t.picks && W.isUserNation(t.id)) {
@@ -643,6 +647,74 @@
     t.picks = I.quickPick(t.code);
     t.campFocus = 'tactics';
     t.campLength = 'standard';
+  };
+  // ---------- Tournament depth: bans, bookings and rotation ----------
+  // A red card is a ban for the nation's next match; in a tournament two yellow cards (over the games) are one too. A ban is
+  // counted in the nation's own matches (p.ntBan), apart from a club suspension. Injuries in a tournament keep a player out for as
+  // long as they last, so a short tournament thins a squad.
+  const TOURN_YELLOWS = 2;
+  I.cardsAfter = function (fx, m, tourn) {
+    const out = [];
+    m.sides.forEach((sd, k) => {
+      const club = sd.club,
+        newly = [];
+      // the bans served in this match are counted off first
+      club.banned = (club.banned || []).filter((pid) => {
+        const p = S().players[pid];
+        if (!p) return false;
+        p.ntBan = Math.max(0, (p.ntBan || 0) - 1);
+        return p.ntBan > 0;
+      });
+      for (const e of m.events) {
+        if (e.side !== k || (e.k !== 'yellow' && e.k !== 'red')) continue;
+        const p = S().players[e.pid];
+        if (!p) continue;
+        if (e.k === 'red') {
+          // (a second yellow in a match is a red, and the yellow does not count again)
+          p.ntBan = (p.ntBan || 0) + 1;
+          newly.push([p, 'sent off']);
+        } else if (tourn) {
+          club.cards = club.cards || {};
+          club.cards[p.id] = (club.cards[p.id] || 0) + 1;
+          if (club.cards[p.id] >= TOURN_YELLOWS) {
+            club.cards[p.id] = 0;
+            p.ntBan = (p.ntBan || 0) + 1;
+            newly.push([p, 'second booking of the tournament']);
+          } else out.push([club, W.short(p), 'booked']);
+        }
+      }
+      for (const [p, why] of newly) {
+        if (!club.banned.includes(p.id)) club.banned.push(p.id);
+        out.push([club, W.short(p), `banned for the next match (${why})`]);
+      }
+    });
+    const mine = out.filter(([c]) => W.isUserNation(c.id));
+    if (mine.length)
+      FM.News.add({
+        type: 'club',
+        title: `${T(S().user.nation).name}: bookings and bans`,
+        body: mine.map(([, name, what]) => `${name} ${what}.`).join(' '),
+      });
+  };
+  // Rest the tired before a tournament match (the manager's choice): starters under 72 fitness sit out, when the squad can spare them
+  I.restTired = function (t) {
+    const s = S(),
+      sq = I.squad(t.code);
+    const tired = sq.filter((p) => p.pos !== 'GK' && p.fitness < 72).sort((a, b) => a.fitness - b.fitness);
+    let spare = sq.length - 18;
+    const rested = [];
+    for (const p of tired) {
+      if (spare <= 0) break;
+      p.ntRest = s.day;
+      rested.push(p);
+      spare--;
+    }
+    if (rested.length)
+      FM.News.add({
+        type: 'club',
+        title: `${t.name}: ${U.plural(rested.length, 'player')} rested`,
+        body: `${rested.map((p) => `${W.short(p)} (${Math.round(p.fitness)}%)`).join(', ')} sit out the next match to recover.`,
+      });
   };
   // ---------- Call-ups: quick pick, favourites, depth and the final squad ----------
   I.toggleLock = function (code, id) {
@@ -1295,6 +1367,8 @@
     const fx = cal.type === 'tourn' ? I.tournamentDay(cal.stage) : I.breakDay(cal.tag);
     s.intlDay = { day: s.day, year: s.year, fx };
     const mine = s.user && s.user.nation && T(s.user.nation);
+    if (mine && cal.type === 'tourn' && mine.rotate && fx.some((f) => f.h === mine.id || f.a === mine.id))
+      I.restTired(mine);
     if (mine && fx.some((f) => f.h === mine.id || f.a === mine.id)) {
       const key = cal.type === 'tourn' ? `${s.year}T` : `${s.year}${cal.tag}`;
       if (/a$/.test(cal.tag || '') || (cal.type === 'tourn' && s.finalSquadKey !== key)) {
@@ -1626,7 +1700,10 @@
               });
             }
           }
-        } else p.fitness = Math.max(50, Math.round(sd.st[pid] ?? p.fitness));
+        } else {
+          p.fitness = Math.max(50, Math.round(sd.st[pid] ?? p.fitness));
+          if (sd.injured[pid]) FM.Injury.hurt(p, { where: 'intl' });
+        }
         if (first && (W.isUser(p.clubId) || W.age(p) <= 19 || W.isUserNation(sd.club.id)))
           FM.Stories.firstCap(p, sd.club, m.sides[1 - k].club);
       }
@@ -1653,6 +1730,8 @@
         lost = k ? r.hg > r.ag : r.ag > r.hg;
       sd.club.form = (sd.club.form || []).concat([won ? 'W' : lost ? 'L' : 'D']).slice(-5);
     });
+    if (fx.kind === 'tourn' || fx.kind === 'qual' || fx.kind === 'nl' || fx.kind === 'invite')
+      I.cardsAfter(fx, m, tourn);
     rec.winner = r.hg !== r.ag || r.pens ? FM.Season.winnerOf({ h: rec.h, a: rec.a, res: r }) : null;
     rec.motm = m.motm;
     s.intlLog.unshift(rec);

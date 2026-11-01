@@ -1288,6 +1288,7 @@
       const out = [];
       if (p.inj) out.push(`<span class="pill bad">Out ${FM.Injury.weeksLeft(p)}w</span>`);
       else if (p.susp) out.push('<span class="pill warn">Suspended</span>');
+      else if (p.ntBan > 0) out.push('<span class="pill warn">Banned for the next match</span>');
       else if (p.service && !(p.loan && p.loan.military)) out.push('<span class="pill warn">Military service</span>');
       else {
         if (p.fitness < 70) out.push(`<span class="pill warn">Tired ${Math.round(p.fitness)}%</span>`);
@@ -1308,6 +1309,7 @@
     const whyNot = (p) => {
       if (p.inj) return `Injured: back in ${FM.Injury.range(FM.Injury.weeksLeft(p))}.`;
       if (p.susp) return 'Suspended.';
+      if (p.ntBan > 0) return "Banned for his nation's next match.";
       if (p.service && !(p.loan && p.loan.military)) return 'On military service.';
       if (t.picks) return 'You left him out of your call-ups.';
       const rank = pool.indexOf(p) + 1;
@@ -1346,6 +1348,7 @@
         <div class="h3" style="margin-top:14px">Backroom team</div>
         ${Object.keys(I.FED_ROLES).map(staffRow).join('')}
         <div class="row" style="margin-top:10px;gap:10px"><div class="grow"><div class="small b">Let the assistant handle it</div><div class="tiny dim">Each window he picks the squad (Quick pick, your favourites first) and runs a camp of tactics, so a busy club schedule is not a chore.</div></div><button class="chip ${t.auto ? 'on' : ''}" data-act="ntAuto2">${t.auto ? 'On' : 'Off'}</button></div>
+        <div class="row" style="margin-top:10px;gap:10px"><div class="grow"><div class="small b">Rotation in a tournament</div><div class="tiny dim">Tired starters (under 72% fitness) sit out the next match when the squad can spare them. Off: you keep your team and ask a lot of tired legs.</div></div><button class="chip ${t.rotate ? 'on' : ''}" data-act="ntRotate">${t.rotate ? 'Rest the tired' : 'Keep the team'}</button></div>
         <div class="h3" style="margin-top:14px">Camp focus</div>
         <div class="chips" style="margin-top:6px">${Object.entries(I.CAMPS)
           .map(
@@ -1491,6 +1494,12 @@
     );
     UI.ntSquadSheet();
   };
+  UI.acts.ntRotate = () => {
+    const t = T(S().user.nation);
+    t.rotate = !t.rotate;
+    UI.save();
+    UI.ntSquadSheet();
+  };
   UI.acts.ntCampLen = (d) => {
     T(S().user.nation).campLength = d.k;
     UI.save();
@@ -1565,7 +1574,7 @@
         return UI.toast(`A squad needs at least ${U.plural(FM.Intl.MIN_KEEPERS, 'goalkeeper')}.`);
       picks = picks.filter((x) => x !== d.id);
     } else {
-      if (!W.available(p)) return UI.toast('He is unavailable.');
+      if (!FM.Intl.fit(p)) return UI.toast('He is unavailable.');
       if (picks.length >= 23) return UI.toast('Squad is full (23). Drop someone first.');
       picks.push(d.id);
     }
