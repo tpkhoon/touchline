@@ -528,7 +528,9 @@
       def *= day;
       const famNow =
         sd.club.sim === 'nation'
-          ? null
+          ? sd.user && FM.Intl && FM.Intl.nationFam
+            ? FM.Intl.nationFam(sd.club)
+            : null
           : sd.user
             ? (sd.tactic.fam ?? FM.S.user.tactic.fam)
             : CAL.aiFam

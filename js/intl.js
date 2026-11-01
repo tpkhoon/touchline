@@ -453,6 +453,83 @@
     const favs = t && W.isUserNation(t.id) && t.locks ? auto.filter((p) => t.locks.includes(p.id)) : [];
     return I.withKeepers(favs.concat(auto.filter((p) => !favs.includes(p))).slice(0, 23), code, 23);
   };
+  // ---------- Preparation: a few days, not months ----------
+  // A national manager has days with the squad each window. The team's tactical familiarity (t.fam) is what he builds in camp, and it
+  // fades between windows. A complex system (three at the back, a diamond) is learned slowly and never as well in such little time.
+  I.COMPLEX = {
+    '3-5-2': 1,
+    '3-4-3': 1,
+    '4-3-1-2': 1,
+    '4-1-2-1-2': 2,
+    '3-4-2-1': 2,
+    '4-1-4-1': 0.5,
+    '4-4-1-1': 0.5,
+    '5-4-1': 0.5,
+  };
+  I.complexity = (formation) => I.COMPLEX[formation] || 0;
+  I.CAMPS = {
+    tactics: { label: 'Tactics', desc: 'Drill the system: familiarity grows fastest.' },
+    fitness: { label: 'Fitness', desc: 'Freshen the squad: fitness comes back, a little tactical work.' },
+    bonding: { label: 'Team spirit', desc: 'Get the squad together: morale up, a little tactical work.' },
+  };
+  I.famCap = (t) => 100 - 15 * I.complexity((t.tactic && t.tactic.formation) || '4-3-3');
+  // The familiarity that counts in a match: what has been built, no more than the formation allows (the engine reads this)
+  I.nationFam = (t) => Math.min(t.fam ?? 50, I.famCap(t));
+  I.runCamp = function (t, days) {
+    const s = S(),
+      cx = I.complexity((t.tactic && t.tactic.formation) || '4-3-3'),
+      focus = t.campFocus || 'tactics',
+      was = t.fam ?? 50;
+    // (what was built fades between windows: a camp starts from three quarters of it)
+    let fam = t.campDay != null ? was * 0.75 : was;
+    const squad = I.squad(t.code);
+    const gain = (perDay) => days * perDay * (1 - 0.25 * cx);
+    if (focus === 'tactics') fam += gain(8);
+    else {
+      fam += gain(1.2);
+      if (focus === 'fitness') squad.forEach((p) => (p.fitness = Math.min(100, p.fitness + 8)));
+      else squad.forEach((p) => (p.morale = Math.min(100, p.morale + 4)));
+    }
+    t.fam = Math.round(Math.min(fam, I.famCap(t)));
+    t.campDay = s.day;
+    FM.News.add({
+      type: 'club',
+      title: `${t.name}: ${U.plural(days, 'day')} in camp`,
+      body: `${I.CAMPS[focus].label} work. Tactical familiarity ${Math.round(was)}% to ${t.fam}%${cx ? ` (the ${t.tactic.formation} is hard to learn in so little time, and can reach ${I.famCap(t)}% at most)` : ''}.`,
+    });
+  };
+  // Three opponents for a friendly: a stronger side to test the team, an equal one, and a weaker one for confidence
+  I.friendlyOptions = function () {
+    const s = S(),
+      me = T(s.user.nation),
+      ranked = I.ranked(),
+      i = ranked.indexOf(me),
+      ok = (x) => x && x.id !== me.id && !I.banned(x);
+    const around = (from, step) => {
+      for (let k = 0; k < 40; k++) {
+        const x = ranked[from + step * k];
+        if (ok(x) && I.region(x.code) !== I.region(me.code)) return x;
+      }
+      return ranked.find((x) => ok(x)) || null;
+    };
+    return [
+      { kind: 'test', label: 'A stronger side', team: around(Math.max(0, i - 8), -1) },
+      { kind: 'equal', label: 'An equal', team: around(Math.min(ranked.length - 1, i + 2), 1) },
+      { kind: 'confidence', label: 'A weaker side', team: around(Math.min(ranked.length - 1, i + 25), 1) },
+    ].filter((o) => o.team);
+  };
+  I.bookFriendly = function (oppId, kind) {
+    const t = T(S().user.nation);
+    t.friendly = oppId ? { opp: oppId, kind } : null;
+  };
+  // What a friendly was for: against a stronger side the team learns, against a weaker one it gains confidence
+  I.friendlyEffect = function (t, fx, won, lost) {
+    const opp = T(fx.h === t.id ? fx.a : fx.h),
+      sq = I.squad(t.code);
+    if (opp.coef > t.coef + 4) t.fam = Math.min(I.famCap(t), (t.fam ?? 50) + 4);
+    else if (opp.coef < t.coef - 4) sq.forEach((p) => (p.morale = U.clamp(p.morale + (won ? 3 : -2), 0, 100)));
+    sq.forEach((p) => (p.morale = U.clamp(p.morale + (won ? 1 : lost ? -1 : 0), 0, 100)));
+  };
   // ---------- Call-ups: quick pick, favourites, depth and the final squad ----------
   I.toggleLock = function (code, id) {
     const t = T('n_' + code);
@@ -1106,7 +1183,10 @@
     if (mine && fx.some((f) => f.h === mine.id || f.a === mine.id)) {
       const key = cal.type === 'tourn' ? `${s.year}T` : `${s.year}${cal.tag}`;
       if (/a$/.test(cal.tag || '') || (cal.type === 'tourn' && s.finalSquadKey !== key)) {
-        if (s.finalSquadKey !== key) I.finalSquad(mine.code);
+        if (s.finalSquadKey !== key) {
+          I.runCamp(mine, cal.type === 'tourn' ? 6 : 3);
+          I.finalSquad(mine.code);
+        }
         s.finalSquadKey = key;
       }
     }
@@ -1131,7 +1211,18 @@
     if (s.quals && tag === 'I2b') fx.push(...I.playoffDay(busy));
     // The season's invitational, in the second window
     fx.push(...I.inviteDay(tag, busy));
-    // The Nations League (no friendlies: a nation with nothing to play in a window rests)
+    // The manager's friendly, on the first matchday his nation is free (and the opponent too)
+    const mine = S().user && S().user.nation && T(S().user.nation);
+    if (mine && mine.friendly) {
+      const f = mine.friendly;
+      if (!busy.has(mine.id) && !busy.has(f.opp) && T(f.opp)) {
+        busy.add(mine.id);
+        busy.add(f.opp);
+        fx.push(mkFx(mine.id, f.opp, 'Friendly', { kind: 'friendly' }));
+        mine.friendly = null;
+      }
+    }
+    // The Nations League (no other friendlies: a nation with nothing to play in a window rests)
     I.nlGroups().forEach((x) =>
       (x.g.rounds[md] || []).forEach(({ h, a }) => {
         if (busy.has(h) || busy.has(a)) return;
@@ -1983,6 +2074,7 @@
     const won = gf > ga || (r.pens && r.pens[side] > r.pens[1 - side]),
       lost = ga > gf || (r.pens && r.pens[side] < r.pens[1 - side]);
     u.ntStats = u.ntStats || { games: 0, w: 0, d: 0, l: 0 };
+    if (fx.kind === 'friendly') I.friendlyEffect(T(u.nation), fx, won, lost);
     u.ntStats.games++;
     won ? u.ntStats.w++ : lost ? u.ntStats.l++ : u.ntStats.d++;
     u.rep = U.clamp(u.rep + (won ? 0.4 : lost ? -0.3 : 0.05) * (fx.kind === 'friendly' ? 0.5 : 1.5), 1, 99);

@@ -1318,7 +1318,31 @@
     const row = (p, click, extra = '', why = '') =>
       `<div class="prow tap" data-act="${click}" data-id="${p.id}" style="${click === 'ntPick' && !picked.has(p.id) ? 'opacity:.55' : ''}">${C.pos(p)}<div class="grow"><div class="b ellip">${click === 'ntPick' && picked.has(p.id) ? '✓ ' : ''}${t.capt === p.id ? '<span class="capt-tag">C</span> ' : ''}${C.flags(p)} ${esc(W.name(p))}${W.ownPlayer(p) ? ' <span class="pill acc">Yours</span>' : ''}</div><div class="tiny dim ellip">${p.clubId ? esc(S().clubs[p.clubId].name) : 'Free agent'} · ${W.age(p)} · ${U.plural(p.intl ? p.intl.caps : 0, 'cap')} · ${U.plural(p.season.apps, 'game')} this season · form ${form(p)}</div>${tags(p)}${why ? `<div class="tiny" style="margin-top:3px">${esc(why)}</div>` : ''}</div><b>${C.starText(p.ca, p.pos)}</b>${extra}</div>`;
     let body;
-    if (tab === 'leftout') {
+    if (tab === 'prepare') {
+      const cx = I.complexity(Tc.formation),
+        fam = Math.round(I.nationFam(t)),
+        focus = t.campFocus || 'tactics',
+        opts = I.friendlyOptions(),
+        booked = t.friendly && T(t.friendly.opp);
+      body = `<div class="tiny dim" style="margin:4px 0 6px">A national manager has days, not months. Each window brings three days in camp (six before a tournament). What the team learns fades by a quarter between windows.</div>
+        <div class="h3">Tactical familiarity</div>
+        <div class="row small" style="margin-top:6px;gap:10px"><div class="grow"><div style="height:8px;border-radius:4px;background:var(--card2);overflow:hidden"><div style="height:100%;width:${fam}%;background:var(--acc,#c8f03c)"></div></div></div><b>${fam}%</b></div>
+        <div class="tiny dim" style="margin-top:4px;line-height:1.5">${cx ? `The ${esc(Tc.formation)} is hard to learn in so little time: it can reach ${I.famCap(t)}% at most and is learned ${cx >= 2 ? 'half' : 'a little'} slower. A simple system such as 4-3-3 or 4-4-2 is learned fastest.` : `The ${esc(Tc.formation)} is simple enough to learn in a camp.`} Under 60% it costs a little in every match; above it, it helps.</div>
+        <div class="h3" style="margin-top:14px">Camp focus</div>
+        <div class="chips" style="margin-top:6px">${Object.entries(I.CAMPS)
+          .map(
+            ([k, c]) =>
+              `<button class="chip ${focus === k ? 'on' : ''}" data-act="ntCamp" data-k="${k}">${esc(c.label)}</button>`,
+          )
+          .join('')}</div>
+        <div class="tiny dim" style="margin-top:4px">${esc(I.CAMPS[focus].desc)}</div>
+        <div class="h3" style="margin-top:14px">Friendly</div>
+        ${
+          booked
+            ? `<div class="card flat" style="margin:6px 0;padding:8px 10px"><div class="small b">${D.NATIONS[booked.code].flag} ${esc(booked.name)}</div><div class="tiny dim" style="margin-top:3px">Booked for the first free matchday of the next window. ${{ test: 'A test against a stronger side: the team learns.', equal: 'An even contest.', confidence: 'A game to build confidence.' }[t.friendly.kind] || ''}</div><div class="actions" style="margin-top:6px"><button class="btn sm" data-act="ntFriendly" data-id="">Cancel it</button></div></div>`
+            : `<div class="tiny dim" style="margin:4px 0 6px">A friendly fills a window you have nothing else in. Pick an opponent: a stronger side tests and teaches, a weaker one builds confidence. Playing more costs fitness.</div>${opts.map((o) => `<div class="prow tap" data-act="ntFriendly" data-id="${o.team.id}" data-kind="${o.kind}"><div class="grow"><div class="b ellip">${D.NATIONS[o.team.code].flag} ${esc(o.team.name)}</div><div class="tiny dim">${esc(o.label)} · world ranking ${I.ranked().indexOf(o.team) + 1}</div></div><button class="btn sm">Book</button></div>`).join('') || '<div class="empty">No opponent available.</div>'}`
+        }`;
+    } else if (tab === 'leftout') {
       const out = pool.filter((p) => !picked.has(p.id));
       body = `<div class="tiny dim" style="margin:4px 0 6px">The best players of ${esc(D.NATIONS[t.code].name)} who are not in the squad, and why. Explaining the decision to a player who is fit keeps him on side; call him up if you have changed your mind.</div>
         <div class="list">${
@@ -1386,7 +1410,7 @@
           })
           .join('')}`;
     }
-    const html = `<div class="chips" style="margin-bottom:6px">${sub('squad', 'Squad & tactics')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
+    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('squad', 'Squad & tactics')}${sub('prepare', 'Prepare')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
       ${
         tab === 'squad'
           ? `<div class="h3">Formation</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${Object.keys(
@@ -1445,6 +1469,16 @@
         : `${W.short(p)} takes it well: he knows where he stands.`,
       3500,
     );
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntCamp = (d) => {
+    T(S().user.nation).campFocus = d.k;
+    UI.save();
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntFriendly = (d) => {
+    FM.Intl.bookFriendly(d.id || null, d.kind);
+    UI.save();
     UI.ntSquadSheet();
   };
   UI.acts.ntSort = (d) => {
