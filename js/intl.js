@@ -458,7 +458,10 @@
       const key = `${S().year}-${S().day}-${I.natVer}-${W.rosterVer}`;
       if (!t.aiSq || t.aiSq.key !== key) {
         const fit = I.pool(code).filter(I.fit);
-        const omit = fit.length > 12 && Math.random() < 0.06 ? U.pick(fit.slice(0, 3)) : null;
+        const omit =
+          fit.length > 12 && Math.random() < 0.06
+            ? U.pick(fit.filter((p) => !(p.ntUntil >= S().year)).slice(0, 3)) || null
+            : null;
         const rank = (p) => I.aiScore(p) + (omit === p ? -100 : 0);
         const ids = fit
           .slice()
@@ -481,7 +484,9 @@
     const favs = t && W.isUserNation(t.id) && t.locks ? auto.filter((p) => t.locks.includes(p.id)) : [];
     return I.withKeepers(favs.concat(auto.filter((p) => !favs.includes(p))).slice(0, 23), code, 23);
   };
-  I.aiScore = (p) => I.pickScore(p) + Math.min((p.intl && p.intl.caps) || 0, 50) / 10;
+  // (a player a world definition called up for his country is picked ahead of better ones until p.ntUntil: the pool puts him first)
+  I.aiScore = (p) =>
+    I.pickScore(p) + Math.min((p.intl && p.intl.caps) || 0, 50) / 10 + (p.ntUntil >= S().year ? 100 : 0);
   // ---------- The other federations: managers who are hired and sacked ----------
   // Every national team has a manager. His ability sets how well the team is prepared (its tactical familiarity in a match); the
   // federation's confidence in him moves with every result against what was expected, and when it is gone he is sacked and the
