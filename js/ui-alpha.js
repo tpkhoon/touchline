@@ -1323,11 +1323,29 @@
         fam = Math.round(I.nationFam(t)),
         focus = t.campFocus || 'tactics',
         opts = I.friendlyOptions(),
-        booked = t.friendly && T(t.friendly.opp);
+        booked = t.friendly && T(t.friendly.opp),
+        fed = I.fed(t),
+        left = I.fedLeft(t);
+      const staffRow = (key) => {
+        const st = I.staffOf(t, key),
+          r = I.FED_ROLES[key],
+          cands = UI._ntStaff === key ? I.staffOptions(t, key) : [];
+        return `<div class="card flat" style="margin:6px 0;padding:8px 10px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${esc(r.label)}</div><div class="tiny dim" style="margin-top:2px">${st ? `${esc(st.fn)} ${esc(st.ln)} · ability ${U.staffText(st.ability)} · ${U.money(I.staffCost(st))} a year` : 'Vacant'}</div><div class="tiny dim" style="margin-top:2px">${esc(r.effect)}</div></div><button class="btn sm" data-act="ntStaff" data-k="${key}">${UI._ntStaff === key ? 'Close' : st ? 'Change' : 'Appoint'}</button></div>${
+          cands.length
+            ? `<div style="margin-top:6px">${cands.map((c) => `<div class="prow tap" data-act="ntAppoint" data-k="${key}" data-id="${c.id}"><div class="grow"><div class="b ellip">${D.NATIONS[c.nat].flag} ${esc(c.fn)} ${esc(c.ln)}</div><div class="tiny dim">${c.age} · ${esc(c.personality)} · ability ${U.staffText(c.ability)} · ${U.money(I.staffCost(c))} a year</div></div><button class="btn sm">Appoint</button></div>`).join('')}${st ? `<div class="actions" style="margin-top:6px"><button class="btn sm" data-act="ntRelease" data-k="${key}">Release ${esc(st.ln)}</button></div>` : ''}</div>`
+            : ''
+        }</div>`;
+      };
       body = `<div class="tiny dim" style="margin:4px 0 6px">A national manager has days, not months. Each window brings three days in camp (six before a tournament). What the team learns fades by a quarter between windows.</div>
         <div class="h3">Tactical familiarity</div>
         <div class="row small" style="margin-top:6px;gap:10px"><div class="grow"><div style="height:8px;border-radius:4px;background:var(--card2);overflow:hidden"><div style="height:100%;width:${fam}%;background:var(--acc,#c8f03c)"></div></div></div><b>${fam}%</b></div>
         <div class="tiny dim" style="margin-top:4px;line-height:1.5">${cx ? `The ${esc(Tc.formation)} is hard to learn in so little time: it can reach ${I.famCap(t)}% at most and is learned ${cx >= 2 ? 'half' : 'a little'} slower. A simple system such as 4-3-3 or 4-4-2 is learned fastest.` : `The ${esc(Tc.formation)} is simple enough to learn in a camp.`} Under 60% it costs a little in every match; above it, it helps.</div>
+        <div class="h3" style="margin-top:14px">Federation budget</div>
+        <div class="row small" style="margin-top:6px;gap:10px"><div class="grow"><div style="height:8px;border-radius:4px;background:var(--card2);overflow:hidden"><div style="height:100%;width:${U.clamp(Math.round(((fed.spent + I.committed(t)) / fed.total) * 100), 0, 100)}%;background:${left < 0 ? 'var(--bad,#f87171)' : 'var(--acc,#c8f03c)'}"></div></div></div><b>${left < 0 ? 'Over by ' + U.money(-left) : U.money(left) + ' left'}</b></div>
+        <div class="tiny dim" style="margin-top:4px;line-height:1.5">${U.money(fed.total)} this season: ${U.money(I.committed(t))} for the staff below (a year of wages each)${fed.spent ? `, ${U.money(fed.spent)} on camps` : ''}. Spending more than the budget costs you the federation's confidence at the start of the next season.</div>
+        <div class="h3" style="margin-top:14px">Backroom team</div>
+        ${Object.keys(I.FED_ROLES).map(staffRow).join('')}
+        <div class="row" style="margin-top:10px;gap:10px"><div class="grow"><div class="small b">Let the assistant handle it</div><div class="tiny dim">Each window he picks the squad (Quick pick, your favourites first) and runs a camp of tactics, so a busy club schedule is not a chore.</div></div><button class="chip ${t.auto ? 'on' : ''}" data-act="ntAuto2">${t.auto ? 'On' : 'Off'}</button></div>
         <div class="h3" style="margin-top:14px">Camp focus</div>
         <div class="chips" style="margin-top:6px">${Object.entries(I.CAMPS)
           .map(
@@ -1336,6 +1354,8 @@
           )
           .join('')}</div>
         <div class="tiny dim" style="margin-top:4px">${esc(I.CAMPS[focus].desc)}</div>
+        <div class="chips" style="margin-top:8px"><button class="chip ${t.campLength === 'extended' ? '' : 'on'}" data-act="ntCampLen" data-k="standard">Three days</button><button class="chip ${t.campLength === 'extended' ? 'on' : ''}" data-act="ntCampLen" data-k="extended">Five days · ${U.money(I.EXTENDED_COST)}</button></div>
+        <div class="tiny dim" style="margin-top:4px">A longer camp builds more, for a price.</div>
         <div class="h3" style="margin-top:14px">Friendly</div>
         ${
           booked
@@ -1469,6 +1489,34 @@
         : `${W.short(p)} takes it well: he knows where he stands.`,
       3500,
     );
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntCampLen = (d) => {
+    T(S().user.nation).campLength = d.k;
+    UI.save();
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntAuto2 = () => {
+    const t = T(S().user.nation);
+    t.auto = !t.auto;
+    UI.save();
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntStaff = (d) => {
+    UI._ntStaff = UI._ntStaff === d.k ? null : d.k;
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntAppoint = (d) => {
+    const r = FM.Intl.appoint(T(S().user.nation), d.k, d.id);
+    UI.toast(r.msg, 3500);
+    if (r.ok) UI._ntStaff = null;
+    UI.save();
+    UI.ntSquadSheet();
+  };
+  UI.acts.ntRelease = (d) => {
+    FM.Intl.release(T(S().user.nation), d.k);
+    UI._ntStaff = null;
+    UI.save();
     UI.ntSquadSheet();
   };
   UI.acts.ntCamp = (d) => {

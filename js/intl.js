@@ -480,16 +480,34 @@
       cx = I.complexity((t.tactic && t.tactic.formation) || '4-3-3'),
       focus = t.campFocus || 'tactics',
       was = t.fam ?? 50;
+    // a longer camp (two more days) costs the federation's money
+    if (t.campLength === 'extended' && days < 6) {
+      days += 2;
+      I.fed(t).spent += I.EXTENDED_COST;
+    }
+    // the assistant's ability sets how fast the team learns (no assistant: a caretaker, a little slower)
+    const asst = I.staffOf(t, 'assistant'),
+      learn = FM.Staff.IMPACT.assistant(asst ? asst.ability : 8).fam;
     // (what was built fades between windows: a camp starts from three quarters of it)
     let fam = t.campDay != null ? was * 0.75 : was;
     const squad = I.squad(t.code);
-    const gain = (perDay) => days * perDay * (1 - 0.25 * cx);
+    const gain = (perDay) => days * perDay * (1 - 0.25 * cx) * learn;
     if (focus === 'tactics') fam += gain(8);
     else {
       fam += gain(1.2);
       if (focus === 'fitness') squad.forEach((p) => (p.fitness = Math.min(100, p.fitness + 8)));
       else squad.forEach((p) => (p.morale = Math.min(100, p.morale + 4)));
     }
+    // the goalkeeping coach: the squad's keepers improve a little in every camp
+    const gk = I.staffOf(t, 'keepers');
+    if (gk && gk.ability > 8)
+      squad
+        .filter((p) => p.pos === 'GK')
+        .forEach((p) => {
+          for (const k of ['handling', 'reflexes', 'positioning'])
+            p.attrs[k] = Math.min(20, p.attrs[k] + (gk.ability - 8) * 0.02);
+          W.refresh(p);
+        });
     t.fam = Math.round(Math.min(fam, I.famCap(t)));
     t.campDay = s.day;
     FM.News.add({
@@ -529,6 +547,102 @@
     if (opp.coef > t.coef + 4) t.fam = Math.min(I.famCap(t), (t.fam ?? 50) + 4);
     else if (opp.coef < t.coef - 4) sq.forEach((p) => (p.morale = U.clamp(p.morale + (won ? 3 : -2), 0, 100)));
     sq.forEach((p) => (p.morale = U.clamp(p.morale + (won ? 1 : lost ? -1 : 0), 0, 100)));
+  };
+  // ---------- The federation: a budget, a backroom team and an assistant who handles the chores ----------
+  // Each season the federation gives the manager a budget by the nation's standing. Staff wages (a year each) and a longer camp
+  // come out of it; spending more than it ends in a reprimand at the start of the next season.
+  I.FED_ROLES = {
+    assistant: {
+      role: 'Assistant Manager',
+      label: 'Assistant manager',
+      effect: 'Tactics are learned faster in camp; he handles the chores when you ask',
+    },
+    keepers: {
+      role: 'First-Team Coach',
+      label: 'Goalkeeping coach',
+      effect: "The squad's goalkeepers improve a little in every camp",
+    },
+    scout: { role: 'Scout', label: 'National scout', effect: 'Finds eligible players abroad more often' },
+  };
+  I.EXTENDED_COST = 120000;
+  I.fed = function (t) {
+    const s = S();
+    if (!t.fed || t.fed.year !== s.year) {
+      t.fed = { year: s.year, total: Math.round((600000 + (t.coef || 50) * 25000) / 50000) * 50000, spent: 0 };
+    }
+    return t.fed;
+  };
+  I.staffOf = (t, key) => (t.staff && t.staff[key] ? S().staff[t.staff[key]] : null);
+  I.staffCost = (st) => st.wage * 52;
+  I.committed = (t) =>
+    Object.keys(I.FED_ROLES).reduce((n, k) => n + (I.staffOf(t, k) ? I.staffCost(I.staffOf(t, k)) : 0), 0);
+  I.fedLeft = (t) => I.fed(t).total - I.fed(t).spent - I.committed(t);
+  // Three people for a post (made when asked, kept for the season; the ones not appointed are dropped at the next)
+  I.staffOptions = function (t, key) {
+    const s = S();
+    t.cands = t.cands || {};
+    if (!t.cands[key] || t.cands.year !== s.year) {
+      (t.cands[key] || []).forEach((id) => !I.isAppointed(t, id) && delete s.staff[id]);
+      t.cands[key] = [0, 1, 2].map(
+        () => W.genStaff(I.FED_ROLES[key].role, t.code, { ability: U.randi(8, 17), contract: s.year + 3 }).id,
+      );
+      t.cands.year = s.year;
+    }
+    return t.cands[key].map((id) => s.staff[id]).filter(Boolean);
+  };
+  I.isAppointed = (t, id) => Object.values(t.staff || {}).includes(id);
+  I.appoint = function (t, key, id) {
+    const st = S().staff[id];
+    if (!st) return { ok: false, msg: 'He is no longer available.' };
+    const cost = I.staffCost(st);
+    const old = I.staffOf(t, key);
+    if (I.fedLeft(t) + (old ? I.staffCost(old) : 0) < cost)
+      return {
+        ok: false,
+        msg: `The federation cannot afford ${U.money(cost)} a year: ${U.money(Math.max(0, I.fedLeft(t)))} of the budget is left.`,
+      };
+    if (old) delete S().staff[old.id];
+    (t.staff = t.staff || {})[key] = id;
+    return {
+      ok: true,
+      msg: `${st.fn} ${st.ln} joins as ${I.FED_ROLES[key].label.toLowerCase()} (${U.money(cost)} a year).`,
+    };
+  };
+  I.release = function (t, key) {
+    const old = I.staffOf(t, key);
+    if (old) delete S().staff[old.id];
+    if (t.staff) delete t.staff[key];
+  };
+  // The staff go when the job does
+  I.dropFedStaff = function (t) {
+    const s = S();
+    Object.values(t.staff || {}).forEach((id) => delete s.staff[id]);
+    Object.values(t.cands || {}).forEach((l) => Array.isArray(l) && l.forEach((id) => delete s.staff[id]));
+    t.staff = null;
+    t.cands = null;
+  };
+  // A new season: the budget renews; spending over last season's earns a reprimand
+  I.fedSeason = function () {
+    const s = S(),
+      u = s.user,
+      t = u && u.nation && T(u.nation);
+    if (!t) return;
+    const was = t.fed;
+    if (was && was.year < s.year && was.spent + I.committed(t) > was.total) {
+      u.ntConf = U.clamp((u.ntConf ?? 65) - 6, 0, 100);
+      FM.News.add({
+        type: 'board',
+        title: `${t.name}: the federation is unhappy about the spending`,
+        body: `The budget was ${U.money(was.total)} and ${U.money(was.spent + I.committed(t))} went. The federation expects it to be kept to.`,
+      });
+    }
+    I.fed(t);
+  };
+  // The assistant does the chores for a window (when the manager asks): the squad by Quick pick, a camp of tactics
+  I.autoWindow = function (t) {
+    t.picks = I.quickPick(t.code);
+    t.campFocus = 'tactics';
+    t.campLength = 'standard';
   };
   // ---------- Call-ups: quick pick, favourites, depth and the final squad ----------
   I.toggleLock = function (code, id) {
@@ -774,6 +888,7 @@
     s.invite = s.invites[0] || null;
     I.topUp();
     I.allegianceTick();
+    I.fedSeason();
     I.refreshJobs();
   };
 
@@ -1184,6 +1299,7 @@
       const key = cal.type === 'tourn' ? `${s.year}T` : `${s.year}${cal.tag}`;
       if (/a$/.test(cal.tag || '') || (cal.type === 'tourn' && s.finalSquadKey !== key)) {
         if (s.finalSquadKey !== key) {
+          if (mine.auto) I.autoWindow(mine);
           I.runCamp(mine, cal.type === 'tourn' ? 6 : 3);
           I.finalSquad(mine.code);
         }
@@ -1708,6 +1824,8 @@
     }
     const t = T(u.nation);
     t.picks = null;
+    I.dropFedStaff(t);
+    t.fed = null;
     u.nation = null;
     if (how === 'resigned')
       FM.News.add({
@@ -1953,7 +2071,11 @@
     const pool = I.pool(t.code),
       bar = pool[22] ? pool[22].ca - 2 : 0;
     const scouts = (u.scouts || []).map((id) => s.staff[id]).filter(Boolean);
-    const skill = scouts.length ? U.avg(scouts, (x) => x.judge || x.ability) : 8;
+    const natScout = I.staffOf(t, 'scout');
+    const skill = Math.max(
+      scouts.length ? U.avg(scouts, (x) => x.judge || x.ability) : 8,
+      natScout ? natScout.ability : 0,
+    );
     const list = I.eligibleSwitch(t.code).filter(
       (p) => !found[p.id] && p.ca >= bar && Math.random() < 0.3 + skill / 40,
     );
