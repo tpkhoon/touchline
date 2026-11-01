@@ -452,11 +452,126 @@
         23,
       );
     }
+    // The managers of the other nations choose by form and fitness as well as ability, with a little loyalty to those who have played
+    // for them, and now and then leave a star out (kept for the day, so a squad does not change between its own matches)
+    if (t && !W.isUserNation(t.id)) {
+      const key = `${S().year}-${S().day}-${I.natVer}-${W.rosterVer}`;
+      if (!t.aiSq || t.aiSq.key !== key) {
+        const fit = I.pool(code).filter(I.fit);
+        const omit = fit.length > 12 && Math.random() < 0.06 ? U.pick(fit.slice(0, 3)) : null;
+        const rank = (p) => I.aiScore(p) + (omit === p ? -100 : 0);
+        const ids = fit
+          .slice()
+          .sort((a, b) => rank(b) - rank(a))
+          .slice(0, 23)
+          .map((p) => p.id);
+        t.aiSq = { key, ids, omit: omit && omit.id };
+        if (omit && omit.ca >= 72 && I.ranked().indexOf(t) < 30 && t.aiSq.news !== key)
+          FM.News.add({
+            type: 'club',
+            title: `${omit.fn ? W.short(omit) : omit.ln} left out of the ${t.name} squad`,
+            body: `${t.mgr ? `${t.mgr.fn} ${t.mgr.ln}` : 'The manager'} has chosen to go without him for this window.`,
+            pid: omit.id,
+          });
+      }
+      return I.withKeepers(t.aiSq.ids.map((id) => S().players[id]).filter(Boolean), code, 23);
+    }
     const auto = I.pool(code).filter(I.fit);
     // (the manager's favourites come first, when they are fit)
     const favs = t && W.isUserNation(t.id) && t.locks ? auto.filter((p) => t.locks.includes(p.id)) : [];
     return I.withKeepers(favs.concat(auto.filter((p) => !favs.includes(p))).slice(0, 23), code, 23);
   };
+  I.aiScore = (p) => I.pickScore(p) + Math.min((p.intl && p.intl.caps) || 0, 50) / 10;
+  // ---------- The other federations: managers who are hired and sacked ----------
+  // Every national team has a manager. His ability sets how well the team is prepared (its tactical familiarity in a match); the
+  // federation's confidence in him moves with every result against what was expected, and when it is gone he is sacked and the
+  // job is open (for you too) until a new man is hired at the start of the next season, now and then a foreigner.
+  I.newManager = function (t, foreign, ranked = I.ranked()) {
+    const s = S();
+    let nat = t.code;
+    if (foreign) {
+      const best = I.ranked()
+        .slice(0, 24)
+        .filter((x) => x.code !== t.code);
+      nat = U.pick(best).code;
+    }
+    const nm = W.rollName(nat, null, s.year - U.randi(40, 62));
+    return {
+      fn: nm.fn,
+      ln: nm.ln,
+      nat,
+      // (by the nation's place in the ranking: the best nations hire the best managers)
+      ability: U.clamp(
+        Math.round(
+          U.gauss(6.5 + 6.5 * (1 - ranked.indexOf(t) / Math.max(1, ranked.length - 1)) + (foreign ? 1.5 : 0), 2.2),
+        ),
+        4,
+        18,
+      ),
+      since: s.year,
+      conf: 62,
+    };
+  };
+  I.ensureManagers = function () {
+    const need = Object.values(S().nteams || {}).filter((t) => !t.mgr && !t.vacantSince && !W.isUserNation(t.id));
+    if (!need.length) return;
+    const ranked = I.ranked();
+    need.forEach((t) => (t.mgr = I.newManager(t, false, ranked)));
+  };
+  // What the match engine reads for a nation the manager does not run: 60 is neutral, a good manager is a little above
+  I.aiFam = (t) => (t.mgr ? U.clamp(60 + (t.mgr.ability - 11) * 2.2, 40, 85) : 55);
+  I.sackAI = function (t, why) {
+    const s = S();
+    const old = t.mgr;
+    t.mgr = null;
+    t.vacantSince = s.year;
+    s.ntJobs = [t.id, ...(s.ntJobs || []).filter((x) => x !== t.id)].slice(0, 6); // (a vacancy you can apply for)
+    if (old && I.ranked().indexOf(t) < 40)
+      FM.News.add({
+        type: 'world',
+        title: `${old.fn} ${old.ln} sacked as ${t.name} manager`,
+        body: `${why} The federation will look for a successor.`,
+        cat: 'competitions',
+      });
+  };
+  I.hireAI = function (t) {
+    const s = S();
+    t.mgr = I.newManager(t, Math.random() < 0.28);
+    t.vacantSince = null;
+    s.ntJobs = (s.ntJobs || []).filter((x) => x !== t.id);
+    if (I.ranked().indexOf(t) < 40)
+      FM.News.add({
+        type: 'world',
+        title: `${t.mgr.fn} ${t.mgr.ln} appointed ${t.name} manager`,
+        body: `${t.mgr.nat !== t.code ? `${D.NATIONS[t.mgr.nat].flag} A foreign coach takes over. ` : ''}Ability ${U.staffText(t.mgr.ability)}.`,
+        cat: 'competitions',
+      });
+    return t.mgr;
+  };
+  // A result against what was expected moves the federation's confidence in its manager (the sacking is at 15)
+  I.managerResult = function (t, score, exp, kind) {
+    if (!t.mgr) return;
+    const w = kind === 'tourn' ? 1.5 : kind === 'qual' ? 1.1 : kind === 'nl' ? 0.8 : 0.4;
+    t.mgr.conf = U.clamp(t.mgr.conf + (score - exp) * 14 * w, 0, 100);
+    // (not in the middle of a tournament: the federation waits for it to end)
+    if (t.mgr.conf < 15 && kind !== 'tourn' && !W.isUserNation(t.id))
+      I.sackAI(t, 'The results have not been good enough.');
+  };
+  // Start of a season: the open jobs are filled
+  I.managersSeason = function () {
+    const s = S();
+    I.ensureManagers();
+    for (const t of Object.values(s.nteams || {})) {
+      // (a summer tournament that went badly: the manager goes now and his successor is named at once)
+      if (t.mgr && t.mgr.conf < 20 && !W.isUserNation(t.id)) {
+        I.sackAI(t, 'The tournament was a disappointment.');
+        t.vacantSince = s.year - 1;
+      }
+      if (!t.mgr && t.vacantSince != null && t.vacantSince < s.year && !W.isUserNation(t.id)) I.hireAI(t);
+      if (t.mgr) t.mgr.conf = Math.round(t.mgr.conf * 0.7 + 62 * 0.3); // (a new season: the slate is part wiped)
+    }
+  };
+
   // ---------- Preparation: a few days, not months ----------
   // A national manager has days with the squad each window. The team's tactical familiarity (t.fam) is what he builds in camp, and it
   // fades between windows. A complex system (three at the back, a diamond) is learned slowly and never as well in such little time.
@@ -961,6 +1076,7 @@
     I.topUp();
     I.allegianceTick();
     I.fedSeason();
+    I.managersSeason();
     I.generationNews();
     I.refreshJobs();
   };
@@ -1365,6 +1481,7 @@
       }
       return s.intlDay.fx;
     }
+    I.ensureManagers(); // (every national team has a manager before its day's matches)
     const fx = cal.type === 'tourn' ? I.tournamentDay(cal.stage) : I.breakDay(cal.tag);
     s.intlDay = { day: s.day, year: s.year, fx };
     const mine = s.user && s.user.nation && T(s.user.nation);
@@ -1722,6 +1839,8 @@
         (tourn ? 45 : fx.kind === 'qual' ? 35 : fx.kind === 'nl' ? 30 : fx.kind === 'invite' ? 28 : 22) *
         (gd <= 1 ? 1 : gd === 2 ? 1.5 : 1.75);
     const delta = (K * (score - exp)) / 10;
+    if (!W.isUserNation(H.club.id)) I.managerResult(H.club, score, exp, fx.kind);
+    if (!W.isUserNation(A.club.id)) I.managerResult(A.club, 1 - score, 1 - exp, fx.kind);
     H.club.coef = Math.round((H.club.coef + delta) * 10) / 10;
     A.club.coef = Math.round((A.club.coef - delta) * 10) / 10;
     H.club.rep = I.repFromCoef(H.club.coef);
@@ -1857,7 +1976,12 @@
         .slice(0, Math.ceil(pool.length / 2)),
     ).slice(0, 2);
     const rest = U.shuffle(pool.filter((t) => !low.includes(t))).slice(0, 2);
-    let jobs = low.concat(rest);
+    // (nations whose federation has sacked its manager come first, then the others)
+    const open = U.shuffle(pool.filter((t) => t.vacantSince != null && !t.mgr)).slice(0, 3);
+    let jobs = open
+      .concat(low.filter((t) => !open.includes(t)))
+      .concat(rest.filter((t) => !open.includes(t)))
+      .slice(0, 4);
     const home = s.user && s.user.nat && s.nteams['n_' + s.user.nat];
     if (home && s.user.nation !== home.id && !jobs.includes(home) && Math.random() < 0.35)
       jobs = jobs.slice(0, 3).concat(home); // your own country comes calling now and then
@@ -1871,6 +1995,8 @@
     const c = I.canTake(t);
     if (!c.ok) return { ok: false, msg: c.why };
     if (u.nation) I.leaveNational('resigned');
+    t.mgr = null;
+    t.vacantSince = null;
     u.nation = id;
     u.ntStats = { games: 0, w: 0, d: 0, l: 0 };
     u.ntConf = 65;
@@ -1908,6 +2034,7 @@
     I.dropFedStaff(t);
     t.fed = null;
     u.nation = null;
+    t.vacantSince = s.year; // (the federation looks for a new manager: filled at the start of the next season)
     if (how === 'resigned')
       FM.News.add({
         type: 'board',

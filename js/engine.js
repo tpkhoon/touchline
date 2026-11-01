@@ -530,7 +530,9 @@
         sd.club.sim === 'nation'
           ? sd.user && FM.Intl && FM.Intl.nationFam
             ? FM.Intl.nationFam(sd.club)
-            : null
+            : CAL.aiFam && FM.Intl && FM.Intl.aiFam
+              ? FM.Intl.aiFam(sd.club)
+              : null
           : sd.user
             ? (sd.tactic.fam ?? FM.S.user.tactic.fam)
             : CAL.aiFam
