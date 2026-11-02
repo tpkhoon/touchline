@@ -15,6 +15,7 @@
     "ios": "npm run cap:sync && npx cap open ios",
     "calibrate": "node tools/calibrate.mjs --seasons 3",
     "calibrate:intl": "node tools/intl-calibrate.mjs --tournaments 60",
+    "calibrate:nat": "node tools/natmix-calibrate.mjs",
     "check:docs": "node tools/check-docs.mjs",
     "changelog": "node tools/changelog.mjs",
     "test:suite": "node tools/suite.mjs --seasons 3",
