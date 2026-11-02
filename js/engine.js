@@ -1678,7 +1678,7 @@
           })),
         cards: this.events
           .filter((e) => e.k === 'yellow' || e.k === 'red')
-          .map((e) => ({ side: e.side, pid: e.pid, k: e.k })),
+          .map((e) => ({ side: e.side, pid: e.pid, k: e.k, min: e.min })),
         ...(this.knockout ? { win: this.tieWinner() } : {}),
         ...(this.agg ? { agg: [this.agg[0] + H.goals, this.agg[1] + A.goals] } : {}),
       };

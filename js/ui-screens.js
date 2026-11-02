@@ -3611,14 +3611,25 @@
         .sort((a, b) => b[1] - a[1]);
     const tag = (k) => {
       const c = CL(k ? f.a : f.h);
-      return `<b class="ev-team" style="background:${c.colors[0]};color:${U.ink(c.colors[0])}">${esc(c.name)}</b>`;
+      return `<b class="ev-team" style="background:${c.colors[0]};color:${U.ink(c.colors[0])};flex:none" title="${esc(c.name)}">${esc(c.short || c.name)}</b>`;
     };
     UI.sheet(
       `<div class="row" style="justify-content:space-around;text-align:center"><div>${C.crest(CL(f.h), 48)}<div class="small b">${esc(CL(f.h).name)}</div></div><div class="h1">${r.hg}–${r.ag}</div><div>${C.crest(CL(f.a), 48)}<div class="small b">${esc(CL(f.a).name)}</div></div></div>
       ${r.pens ? `<div class="center small dim">Penalties ${r.pens[0]}–${r.pens[1]}</div>` : ''}
       ${r.agg ? `<div class="center small b">Aggregate ${r.agg[0]}–${r.agg[1]}</div>` : ''}
       <div class="center small dim" style="margin:6px 0">${r.xg ? `xG ${r.xg[0]} – ${r.xg[1]}` : ''}${r.poss ? ` · Possession ${r.poss[0]}% – ${r.poss[1]}%` : ''}${r.weather ? ` · ${r.weather}` : ''}${r.att ? ` · ${r.att.toLocaleString()} crowd` : ''}${r.sim ? ` · ${FM.Tiers.LABEL[r.sim].toLowerCase()}` : ''}</div>
-      <div class="card flat">${r.goals.map((g) => `<div class="row small" style="padding:4px 0;${g.side ? 'flex-direction:row-reverse;text-align:right' : ''}">${tag(g.side)}<b>${C.pname(P(g.pid))}</b> <span class="dim">${g.min || ''}${g.pen ? ' (pen)' : ''}</span></div>`).join('') || `<div class="dim small center">${r.hg + r.ag ? 'Scorers not recorded' : 'No goals'}</div>`}</div>
+      <div class="card flat">${r.goals.map((g) => `<div class="row small" style="padding:5px 0;gap:8px;align-items:flex-start"><span class="dim" style="width:40px;flex:none">${g.min || ''}</span>${tag(g.side)}<div class="grow"><b>${C.pname(P(g.pid))}</b>${g.pen ? ' <span class="dim">(pen)</span>' : ''}${g.ast && P(g.ast) ? `<div class="tiny dim">assist ${esc(W.short(P(g.ast)))}</div>` : ''}</div></div>`).join('') || `<div class="dim small center">${r.hg + r.ag ? 'Scorers not recorded' : 'No goals'}</div>`}</div>
+      ${
+        (r.cards || []).length
+          ? `<div class="card flat"><div class="tiny dim" style="margin-bottom:4px">CARDS</div>${r.cards
+              .filter((c) => P(c.pid))
+              .map(
+                (c) =>
+                  `<div class="row small" style="padding:5px 0;gap:8px;align-items:center"><span class="dim" style="width:40px;flex:none">${c.min || ''}</span>${tag(c.side)}<span class="pill ${c.k === 'red' ? 'bad' : 'warn'}" style="flex:none">${c.k === 'red' ? 'Red' : 'Yellow'}</span><b>${C.pname(P(c.pid))}</b></div>`,
+              )
+              .join('')}</div>`
+          : ''
+      }
       <div class="row" style="align-items:flex-start;gap:12px">${[0, 1]
         .map(
           (k) =>
