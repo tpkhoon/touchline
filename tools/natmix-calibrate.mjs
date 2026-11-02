@@ -233,6 +233,13 @@ for (const k of Object.keys(start.variety)
   );
 }
 
+// (the real range of 8-15 is for the leagues with a lot of foreign players; the others have fewer nationalities)
+const lots = tier1.filter(([, L]) => L.foreign / L.n >= 0.45),
+  few1 = tier1.filter(([, L]) => L.foreign / L.n < 0.45);
+const vAvg = (list) => (list.length ? list.reduce((t, [, L]) => t + L.distinct / L.squads, 0) / list.length : 0);
+say(
+  `  top flights with 45% or more foreign players (${lots.length}): ${vAvg(lots).toFixed(1)} nationalities a squad [real 8-15] ${vAvg(lots) < 8 ? 'LOW' : 'ok'}; the others (${few1.length}): ${vAvg(few1).toFixed(1)} [real about 5-9]`,
+);
 say('\nTop-flight foreign share by age and by position');
 say(
   '  age:      ' +

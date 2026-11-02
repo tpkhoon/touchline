@@ -423,7 +423,8 @@
       if (out.length >= size) {
         let k = -1;
         out.forEach((p, i) => {
-          if (p.pos !== 'GK' && (k < 0 || p.ca <= out[k].ca)) k = i;
+          // (never a player a world definition called up for his country: he is the one picked ahead of better players)
+          if (p.pos !== 'GK' && !(p.ntUntil >= S().year) && (k < 0 || p.ca <= out[k].ca)) k = i;
         });
         if (k < 0) break;
         out.splice(k, 1);

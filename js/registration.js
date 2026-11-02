@@ -495,6 +495,19 @@
   R.genNat = function (club, made, age, pick) {
     const r = R.rulesFor(club);
     if (!r) return pick();
+    // A foreigner the non-EU cap is full for is swapped for one the rules allow, from the league's own mix, rather than redrawn from the
+    // whole mix (which would turn him into a home player and bring the league's foreign share down)
+    const mix = club.comp && FM.D.NAT_MIX[club.comp];
+    const swap = () => {
+      if (!mix || !r.nonEU) return null;
+      const ok = Object.keys(mix).filter(
+        (k) =>
+          k !== club.nat &&
+          !R.nonEUNat(k, club) &&
+          !R.foreignGroups(club, r).some((g) => g.f({ nat: k }) && made.filter(g.f).length >= g.cap),
+      );
+      return ok.length ? FM.U.wpick(ok, (k) => mix[k]) : null;
+    };
     for (let i = 0; i < 10; i++) {
       const n = pick();
       if (
@@ -504,11 +517,15 @@
         made.filter((x) => x.age > 21 && x.nat !== club.nat).length >= r.squad - r.hg
       )
         continue;
-      if (r.nonEU && R.nonEUNat(n, club) && made.filter((x) => R.nonEUNat(x.nat, club)).length >= r.nonEU) continue;
+      if (r.nonEU && R.nonEUNat(n, club) && made.filter((x) => R.nonEUNat(x.nat, club)).length >= r.nonEU) {
+        const sw = n !== club.nat && !r.squad ? swap() : null;
+        if (sw) return sw;
+        continue;
+      }
       if (R.foreignGroups(club, r).some((g) => g.f({ nat: n }) && made.filter(g.f).length >= g.cap)) continue;
       return n;
     }
-    return club.nat;
+    return swap() || club.nat;
   };
   // Limits on the matchday squad (XI and bench) for W.pickXI: [{ f: counts against it, cap }]
   const limCache = new Map();

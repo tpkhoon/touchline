@@ -2644,7 +2644,10 @@
       if (d.contract) p.contract = d.contract;
       else if (!d.club) p.contract = S.year; // (a free agent, like the ones the world makes)
       p.defId = d.id;
-      if (d.callup) p.ntUntil = S.year + 3; // picked for his country ahead of better players for three years
+      if (d.callup) {
+        p.ntUntil = S.year + 3; // picked for his country ahead of better players for three years
+        if (FM.Intl) FM.Intl.natVer++; // (the squads already made for the day did not know it)
+      }
       W.claimName(`${p.fn} ${p.ln}`);
       S.players[p.id] = p;
       if (d.club && S.clubs[d.club]) W.startSpell(p, d.club);

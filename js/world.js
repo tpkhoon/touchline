@@ -1383,12 +1383,28 @@
   W.freeAgentCA = () => (Math.random() < 0.01 ? U.randi(60, 70) : Math.round(U.clamp(U.gauss(42, 6), 30, 56)));
 
   // Nationality for a new player at a club: league mix where one exists, mostly local elsewhere
-  W.natFor = function (club) {
+  // How much more or less foreign a player is likely to be: by the club (an oil-backed club carries more foreign stars, a fan-owned or
+  // youth-focused one fewer), his age (the young and the old are more domestic than the prime years) and his position (goalkeepers the
+  // most domestic). It multiplies the weight of every foreign nation in the league's mix, around 1 so the league keeps its overall share.
+  const FOREIGN_BY_IDENTITY = { oil: 1.4, giant: 1.2, fan: 0.75, youth: 0.7 };
+  const FOREIGN_BY_POS = { GK: 0.7, DEF: 0.95, MID: 1, ATT: 1.1 };
+  const foreignByAge = (a) => (a <= 19 ? 0.6 : a <= 21 ? 0.8 : a <= 25 ? 1.05 : a <= 30 ? 1.12 : a <= 33 ? 0.95 : 0.8);
+  W.foreignFactor = (club, ctx) =>
+    (FOREIGN_BY_IDENTITY[club.identity] || 1) *
+    (ctx.age != null ? foreignByAge(ctx.age) : 1) *
+    (ctx.pos ? FOREIGN_BY_POS[D.POS_GROUP[ctx.pos]] || 1 : 1);
+  W.natFor = function (club, ctx) {
     const mix = club.comp && D.NAT_MIX[club.comp];
+    const f = ctx ? W.foreignFactor(club, ctx) : 1;
     // (a cross-nation league has no mix of its own: each club's players come from its own nation, as in a league with no mix)
     const cross = club.comp && FM.S.comps[club.comp] && FM.S.comps[club.comp].nats;
-    if (mix && !cross) return D.pickNat(mix);
-    return Math.random() < 0.88 ? club.nat : D.foreignPick ? D.foreignPick(club.nat) : U.pick(D.nationCodes());
+    if (mix && !cross)
+      return f === 1 ? D.pickNat(mix) : U.wpick(Object.keys(mix), (k) => (k === club.nat ? mix[k] : mix[k] * f));
+    return Math.random() < U.clamp(1 - 0.12 * f, 0.5, 0.98)
+      ? club.nat
+      : D.foreignPick
+        ? D.foreignPick(club.nat)
+        : U.pick(D.nationCodes());
   };
   W.youthNat = (club) =>
     D.YOUTH_MIX[club.nat]
@@ -1409,8 +1425,15 @@
     }
     const made = []; // nationality and age of each player so far: the squad starts within its league's rules
     have.forEach((h) => made.push({ nat: h.nat, age: W.age(h) }));
+    // (no more than three players of one foreign country in a top-flight squad, two lower down: a squad has a variety of nationalities)
+    const comp = club.comp && FM.S.comps && FM.S.comps[club.comp],
+      perCountry = comp && comp.tier > 1 ? 2 : 3;
     const nat = (age, pick) => {
-      const n = FM.Reg.genNat(club, made, age, pick);
+      let n;
+      for (let t = 0; t < 6; t++) {
+        n = FM.Reg.genNat(club, made, age, pick);
+        if (n === club.nat || made.filter((x) => x.nat === n).length < perCountry) break;
+      }
       made.push({ nat: n, age });
       return n;
     };
@@ -1437,7 +1460,7 @@
         ),
       );
       const p = W.genPlayer({
-        nat: mil ? 'KOR' : nat(age, () => W.natFor(club)),
+        nat: mil ? 'KOR' : nat(age, () => W.natFor(club, { age, pos })),
         pos,
         age,
         ca,
