@@ -359,11 +359,14 @@
       ${text ? '<div class="m-pitchwrap m-textwrap" id="mWrap"><div class="m-goalflash" id="mFlash"></div></div>' : '<div class="m-pitchwrap" id="mWrap"><canvas id="mCanvas"></canvas><div class="m-goalflash" id="mFlash"></div></div>'}
       <div class="m-mom${text ? ' big' : ''}"><svg id="mMom" viewBox="0 0 120 36" preserveAspectRatio="none"></svg></div>${text ? '<div class="m-panel" id="mPanel"></div>' : ''}
       <div class="m-ticker${text ? ' m-feed' : ''}" id="mTicker"><div>The teams are out${capt ? `, ${esc(W.short(capt))} wearing the armband` : ''}. ${esc(H.club.name)} vs ${esc(A.club.name)}.</div>${talkMsg ? `<div>${esc(talkMsg)}</div>` : ''}</div>
-      <div class="m-ctrl"><button id="mPause" data-act="mPause">Pause</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.speed || 1}×</button><button data-act="mTactics">Tactics</button><button data-act="mShout">Shout</button><button data-act="mSubs">Subs</button><button data-act="mSkip">Skip ▾</button></div>`;
+      <div class="m-ctrl"><button id="mPause" data-act="mPause">Pause</button><button id="mSpeed" data-act="mSpeed">${FM.S.settings.highlights ? 'Highlights' : (FM.S.settings.speed || 1) + '×'}</button><button data-act="mTactics">Tactics</button><button data-act="mShout">Shout</button><button data-act="mSubs">Subs</button><button data-act="mSkip">Skip ▾</button></div>`;
     document.getElementById('app').appendChild(ov);
     MV.st = {
       paused: false,
-      speed: FM.S.settings.speed || 1,
+      // Highlights only: the quiet minutes go by at once, a minute with a card or a small chance at once (it is in the feed), and the goals, the big chances,
+      // the red cards and the injuries at the pace of the 2× speed
+      hl: !!FM.S.settings.highlights,
+      speed: FM.S.settings.highlights ? 2 : FM.S.settings.speed || 1,
       prompt: null,
       actions: [],
       act: null,
@@ -467,7 +470,15 @@
       st.ball.h = st.act.arc ? Math.sin(f * Math.PI) * st.act.arc : 0;
       if (f >= 1) MV.endAction();
     } else if (st.actions.length) MV.beginAction(st.actions.shift());
-    if (!st.act && !st.actions.length && st.minuteT >= st.minuteMs) MV.nextMinute();
+    // (in Highlights, the quiet minutes are played through together: a minute that is worth watching ends the run)
+    for (
+      let n = 0;
+      !st.act && !st.actions.length && st.minuteT >= st.minuteMs && !st.prompt && !st.done && !(st.hold > 0);
+      n++
+    ) {
+      MV.nextMinute();
+      if (!st.hl || n >= 20) break;
+    }
   };
 
   MV.beginAction = function (a) {
@@ -586,6 +597,12 @@
     const big = out.events.some((e) => (e.k === 'chance' || e.k === 'goal') && e.big);
     st.minuteMs =
       ((st.text ? 600 : 1150) / st.speed) * (big && !(FM.S.settings && FM.S.settings.reduceMotion) ? 2.4 : 1); // (a big moment slows the match down, unless motion is reduced)
+    if (st.hl) {
+      // a goal, a red card, an injury or a penalty gets its time; a big chance a moment; the rest goes by at once (it is in the feed)
+      const top = out.events.some((e) => e.k === 'goal' || e.k === 'red' || e.k === 'injury' || e.k === 'pens');
+      const chance = out.events.some((e) => e.k === 'chance' && e.big);
+      st.minuteMs = top ? 1200 : chance ? 450 : 0;
+    }
     st.minuteT = 0;
     if (st.text) st.actions = [];
     else MV.planActions(out.script);
@@ -938,8 +955,18 @@
   };
   UI.acts.mSpeed = () => {
     const st = MV.st;
-    st.speed = st.speed === 1 ? 2 : st.speed === 2 ? 4 : 1;
-    document.getElementById('mSpeed').textContent = st.speed + '×';
+    // 1×, 2×, 4×, then Highlights only, then round again
+    if (st.hl) {
+      st.hl = false;
+      st.speed = 1;
+    } else if (st.speed === 1) st.speed = 2;
+    else if (st.speed === 2) st.speed = 4;
+    else {
+      st.hl = true;
+      st.speed = 2;
+    }
+    FM.S.settings.highlights = st.hl; // (the next match starts the same way)
+    document.getElementById('mSpeed').textContent = st.hl ? 'Highlights' : st.speed + '×';
   };
   UI.acts.mSim = () => {
     const st = MV.st,

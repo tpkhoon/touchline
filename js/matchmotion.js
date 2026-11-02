@@ -170,7 +170,15 @@
       )
         MV.endAction();
     } else if (st.actions.length) MV.beginAction(st.actions.shift());
-    if (!st.act && !st.actions.length && st.minuteT >= st.minuteMs) MV.nextMinute();
+    // (in Highlights, the quiet minutes are played through together: a minute that is worth watching ends the run)
+    for (
+      let n = 0;
+      !st.act && !st.actions.length && st.minuteT >= st.minuteMs && !st.prompt && !st.done && !(st.hold > 0);
+      n++
+    ) {
+      MV.nextMinute();
+      if (!st.hl || n >= 20) break;
+    }
   };
 
   // everybody within a few steps of the place he is heading for
