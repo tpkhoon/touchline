@@ -85,6 +85,12 @@
       ${v.mental ? v.mental.map((t) => `<div class="phrase"><span>${UI.ico('compass')}</span><span>${esc(t)}</span></div>`).join('') : ''}
       ${v.agent ? `<div class="phrase"><span>${UI.ico('briefcase')}</span><span>${esc(v.agent.name)} (${esc(v.agent.style)}) · would want ~${U.money(v.wageAsk)}/wk from us</span></div>` : ''}
       <div class="phrase"><span>${UI.ico('puzzle')}</span><span>Tactical fit: best as <b>${v.fit.slot}</b> (${esc(v.fit.role)}) in your ${s.user.tactic.formation}</span></div>
+      ${(() => {
+        const su = FM.Scouting.suits(p, v);
+        return su
+          ? `<div class="phrase" style="margin-top:6px"><span>${UI.ico('compass')}</span><span${su.tone ? ` style="color:var(--${su.tone === 'warn' ? 'warn' : su.tone})"` : ''}><b>${esc(su.label)}</b></span></div>${su.lines.map(([t, tone]) => `<div class="tiny" style="margin:1px 0 1px 26px;${tone ? `color:var(--${tone})` : 'opacity:.75'}">${esc(t)}</div>`).join('')}`
+          : '';
+      })()}
       ${!v.own && FM.Scouting.nextRung(v.k) ? `<div class="tiny dim" style="margin-top:6px">${Math.round(v.k)}% known · at ${FM.Scouting.nextRung(v.k)[0]}%: ${esc(FM.Scouting.nextRung(v.k)[1])}</div>` : ''}
       <div class="phrase"><span>${UI.ico('trendUp')}</span><span>Potential confidence: <b>${v.confidence}</b></span></div>
       ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">${esc(v.moneyball)}</div>` : ''}

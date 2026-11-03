@@ -431,6 +431,86 @@
       short: same.length < want,
     };
   };
+  // Fit for how we play: whether a player suits the club's system and squad, beyond his rating: his position in the formation, the
+  // build-up and the pressing, and where the squad is thin. { label, tone, lines: [[text, 'good' | 'bad' | '']] }, null when little is known
+  // of him (the same 25% as his strengths and weaknesses) or the club has no system.
+  Sc.suits = function (p, v) {
+    const u = FM.S.user,
+      T = u && u.tactic,
+      club = W.userClub();
+    if (!T || !club || !v || v.k < 25 || !v.fit) return null;
+    const a = p.attrs,
+      group = D.POS_GROUP[p.pos],
+      lines = [];
+    const add = (t, tone) => lines.push([t, tone]);
+    const avg = (q, ...k) => k.reduce((t, x) => t + q.attrs[x], 0) / k.length;
+    // what he is set against: his own level. A quality our system leans on is judged by how it stands against the rest of his game, so
+    // a weaker player is not marked down for being weaker (his rating says that), only for a profile that does not suit
+    const w = D.POS_W[p.pos];
+    const rel = D.ATTRS.filter((x) => w[x] || ['pace', 'stamina', 'composure', 'workRate'].includes(x));
+    const level = rel.reduce((t, x) => t + a[x], 0) / rel.length;
+    // a quality well above or below the rest of his game: +1 / -1 / 0
+    const vs = (...k) => {
+      const d = avg(p, ...k) - level;
+      return d >= 1.5 ? 1 : d <= -2 ? -1 : 0;
+    };
+    const f = v.fit;
+    if (f.score < 0.8)
+      add(
+        `Not a natural fit in our ${T.formation}: he is at about ${Math.round(f.score * 100)}% as a ${f.slot}`,
+        'bad',
+      );
+    if (p.pos !== 'GK') {
+      const bu = T.buildup.toLowerCase();
+      if ((T.buildup === 'Possession' || T.buildup === 'Short') && group !== 'ATT') {
+        const x = vs('passing', 'technique');
+        if (x > 0) add(`A better passer than the rest of his game: suits our ${bu} build-up`, 'good');
+        else if (x < 0) add(`Weak on the ball for a player of his level: a worse fit for our ${bu} build-up`, 'bad');
+      }
+      if (
+        (T.buildup === 'Direct' || T.buildup === 'Counter') &&
+        (group === 'ATT' || p.pos === 'AM' || p.pos === 'WM')
+      ) {
+        const x = vs('pace');
+        const what = T.buildup === 'Counter' ? 'counter-attacking' : 'direct play';
+        if (x > 0) add(`Pace is his strength: the pace for our ${what}`, 'good');
+        else if (x < 0) add(`Short of pace for a player of his level: lacks the pace our ${what} wants`, 'bad');
+      }
+      if (T.buildup === 'Wing Play' && ['FB', 'WB', 'W', 'WM'].includes(p.pos)) {
+        const x = vs('pace', 'dribbling');
+        if (x > 0) add('Quick and tricky for his level: suits our wing play', 'good');
+        else if (x < 0) add('Neither quick nor tricky for his level: a worse fit for our wing play', 'bad');
+      }
+      if (T.press === 'High Press') {
+        const x = vs('stamina', 'workRate');
+        if (x > 0) add('Plenty of engine: suits our high press', 'good');
+        else if (x < 0) add('Little engine for his level: he will tire in our high press', 'bad');
+      } else if (T.press === 'Low Block' && group === 'DEF') {
+        const x = vs('positioning', 'tackling');
+        if (x > 0) add('Reads the game and tackles well: suits our low block', 'good');
+        else if (x < 0) add('Not solid for his level: a worse fit for our low block', 'bad');
+      }
+    }
+    // the squad
+    const need = v.need;
+    if (need && need.short) add(`We are thin at ${p.pos}: ${need.depth} of the ${need.want} we want`, 'good');
+    else if (need && !need.helps && need.depth > need.want) add(`We already have ${need.depth} at ${p.pos}`, '');
+    const good = lines.filter((x) => x[1] === 'good').length,
+      bad = lines.filter((x) => x[1] === 'bad').length;
+    const label =
+      bad >= 2 || (f.score < 0.8 && bad >= 1)
+        ? ['A poor fit for how we play', 'bad']
+        : bad >= 1 && good >= 1
+          ? ['Fits, with doubts', 'warn']
+          : good >= 2 && !bad
+            ? ['Suits how we play', 'good']
+            : bad
+              ? ['Some doubts about the fit', 'warn']
+              : good
+                ? ['A decent fit', 'good']
+                : ['Neutral for how we play', ''];
+    return { label: label[0], tone: label[1], lines };
+  };
   // Three prices for a target: what the analytics department makes of his value, what his side (or his agent) wants, and what
   // the sporting director thinks you could get him for. They differ, and which to believe is the decision.
   Sc.prices = function (p, k) {
