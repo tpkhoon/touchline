@@ -1494,6 +1494,24 @@
       ${reg('asian', 'Extra place only an Asian player can fill', [1, 2])}
       ${reg('asean', 'Extra place only a Southeast Asian player can fill', [1])}
       ${reg('matchday', 'Foreign players in a matchday squad', [3, 5, 9])}
+      <div class="ng-label">Youth and homegrown players <span class="tiny dim">· at least this many, so they play</span></div>
+      ${lbl('Youth means players aged', sq.youthAge ? '' : 'the game uses 21')}${playSeg(
+        'edPlaySquad',
+        'youthAge',
+        sq.youthAge,
+        [
+          [19, '19'],
+          [21, '21'],
+          [23, '23'],
+        ],
+        '',
+        'As the game (21)',
+      )}
+      ${reg('youthSquad', 'Youth players in a matchday squad (at least)', [2, 3, 4, 5, 6])}
+      ${reg('youthXI', 'Youth players in the starting XI (at least): their minutes', [1, 2, 3, 4])}
+      ${reg('hgSquad', 'Homegrown players in a matchday squad (at least)', [4, 6, 8, 10])}
+      ${reg('hgXI', 'Homegrown players in the starting XI (at least)', [2, 4, 6])}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A club short of them fields as many as it has. A starting XI with a youth minimum gives those players minutes in every match.</div>
       ${lbl('Nations that never count as foreign', 'the game has ' + (game.exempt ? game.exempt.join(', ') : 'none'))}
       <div class="chips" style="flex-wrap:wrap">${exempt
         .map(
@@ -2230,6 +2248,80 @@
     UI.worldEditor();
   };
   // A cross-nation league: open to clubs of other nations (a Gulf league, a North African league, Welsh clubs in England's pyramid)
+  // Add a club of another nation straight to this league: the league is opened to the nation if it is not already, and the club
+  // (one it already has, or a new one) joins it, keeping its own nation
+  const addFromNation = (l) => {
+    const xn = ED.xnat && ED.xnat !== l.nat && D.NATIONS[ED.xnat] ? ED.xnat : '',
+      nations = natEntries()
+        .filter(([k]) => k !== l.nat)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name)),
+      pool = xn
+        ? ED.def.clubs.filter((c) => c.nat === xn && c.league !== l.id).sort((a, b) => a.name.localeCompare(b.name))
+        : [];
+    return `<div class="ng-label" style="margin-top:14px">Add a club from another nation</div>
+      <select data-input="edXNat" aria-label="Nation"><option value="">Choose a nation…</option>${nations.map(([k, n]) => `<option value="${k}" ${xn === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
+      ${
+        xn
+          ? `<div class="ng-names" style="margin-top:6px"><select id="ed-xclub" aria-label="Club" style="flex:1;min-width:0"><option value="">Choose a club…</option><option value="new">A new club of ${esc(D.NATIONS[xn].name)}</option>${pool.map((c) => `<option value="${esc(c.id)}">${esc(c.name)} (${esc((leagueOf(c.league) || { name: '' }).name)})</option>`).join('')}</select><button class="btn sm" data-act="edXClubAdd">Add</button></div>
+        <div class="tiny dim" style="margin-top:6px;line-height:1.5">The league is opened to ${esc(D.NATIONS[xn].name)} if it is not already. The club leaves its own league (which keeps at least 8 clubs) and keeps its nation, its players and its national cup.</div>`
+          : ''
+      }`;
+  };
+  UI.acts.edXNat = (d, el) => {
+    ED.xnat = el.value;
+    UI.worldEditor();
+  };
+  UI.acts.edXClubAdd = () => {
+    const l = leagueOf(ED.lid),
+      nat = ED.xnat,
+      id = ($('#ed-xclub') || {}).value;
+    if (!nat) return UI.toast('Choose a nation first', 2000);
+    if (!id) return UI.toast('Choose a club, or a new one', 2000);
+    const E = WD.editor(ED.def, null),
+      opened = !(l.nats || []).includes(nat);
+    if (opened) {
+      const r = E.setLeague(l.id, { nats: [...(l.nats || []), nat] });
+      if (!r.ok) {
+        ED.err = r.errors;
+        return UI.worldEditor();
+      }
+    }
+    if (id === 'new') {
+      const rows = clubsOf(l.id),
+        mid = rows.length ? Math.round(rows.reduce((t, c) => t + c.rep, 0) / rows.length) : 50,
+        code = newCode('New Club');
+      const c = {
+        id: 'c_' + code,
+        name: 'New Club',
+        short: 'NEW',
+        nick: '',
+        city: 'Newtown',
+        nat,
+        colors: ['#2a6fdb', '#ffffff'],
+        identity: 'historic',
+        rep: Math.max(20, Math.min(99, mid)),
+        league: l.id,
+        parent: null,
+        founded: 1900,
+        stadium: { name: 'Newtown Stadium', cap: 8000 },
+      };
+      ED.def.clubs.push(c);
+      ED.view = 'club';
+      ED.cid = c.id;
+      ED.err = [];
+      return UI.worldEditor();
+    }
+    const club = ED.def.clubs.find((x) => x.id === id);
+    const r = club ? E.setClub(id, { league: l.id, nat: club.nat }) : { ok: false, errors: ['No such club'] };
+    if (!r.ok) {
+      if (opened) E.setLeague(l.id, { nats: (l.nats || []).filter((k) => k !== nat) });
+      ED.err = r.errors;
+    } else {
+      ED.err = [];
+      UI.toast(`${club.name} now plays in ${l.name}`, 3000);
+    }
+    UI.worldEditor();
+  };
   const leagueNatsCard = (l) => {
     const nats = l.nats || [],
       options = natEntries()
@@ -2238,7 +2330,8 @@
     return `<div class="ng-label">Open to clubs of other nations <span class="tiny dim">· a cross-nation league</span></div>
       ${nats.length ? `<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:6px">${nats.map((k) => `<button class="btn sm" data-act="edDropLeagueNat" data-n="${k}">${esc((D.NATIONS[k] || {}).flag || '')} ${esc((D.NATIONS[k] || { name: k }).name)} ✕</button>`).join('')}</div>` : ''}
       <div class="ng-names" style="margin-top:0"><select id="ed-lnat"><option value="">Add a nation…</option>${options.map(([k, n]) => `<option value="${k}">${n.flag} ${esc(n.name)}</option>`).join('')}</select><button class="btn sm" data-act="edAddLeagueNat">Add</button></div>
-      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Open the league to other nations, then move clubs in from their own leagues (the club's League setting). A club keeps its own nation: its players, its national cup and its foreign-player rules. The league's own nation (${esc((D.NATIONS[l.nat] || { name: l.nat }).name)}) decides its rules, prize money and continental places. Each league a club leaves must keep at least 8 clubs.</div>`;
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Open the league to other nations, then move clubs in from their own leagues (the club's League setting). A club keeps its own nation: its players, its national cup and its foreign-player rules. The league's own nation (${esc((D.NATIONS[l.nat] || { name: l.nat }).name)}) decides its rules, prize money and continental places. Each league a club leaves must keep at least 8 clubs.</div>
+      ${addFromNation(l)}`;
   };
   const setLeagueNats = (l, nats) => {
     const r = WD.editor(ED.def, null).setLeague(l.id, { nats });
@@ -3205,6 +3298,84 @@
       }
       <div class="actions" style="margin-top:12px"><button class="btn sm" data-act="edImpSample">Fill in a sample</button></div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${imp.from === 'squad' ? 'squad' : 'home'}" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edImpRun">Import</button></div>`;
+  };
+
+  // ---------- A club's squad as a CSV ----------
+  // Every player of the club as a row of a spreadsheet (or a text box), edited and put back: changed, added or taken out in one go
+  const sqClub = () => (ED.cid === FREE ? null : ED.cid);
+  UI.acts.edSquadCsv = () => {
+    ED.sq = { text: FM.CsvWorld.squadExport(ED.def, sqClub()), replace: false, report: null };
+    ED.view = 'squadcsv';
+    ED.err = [];
+    UI.worldEditor();
+  };
+  UI.acts.edSqCsvReset = () => {
+    ED.sq = { text: FM.CsvWorld.squadExport(ED.def, sqClub()), replace: ED.sq ? ED.sq.replace : false, report: null };
+    UI.worldEditor();
+  };
+  UI.acts.edSqCsvTemplate = () => {
+    ED.sq = { ...(ED.sq || {}), text: FM.CsvWorld.squadTemplate(ED.def, sqClub()), report: null };
+    UI.worldEditor();
+  };
+  UI.acts.edSqCsvApply = () => {
+    const text = (($('#ed-sqtext') || {}).value || '').trim(),
+      replace = !!($('#ed-sqreplace') || {}).checked;
+    ED.sq = { ...(ED.sq || {}), text, replace };
+    if (!text) {
+      ED.err = ['Paste the squad as CSV or open a file first'];
+      return UI.worldEditor();
+    }
+    ED.err = [];
+    const r = FM.CsvWorld.squadApply(ED.def, sqClub(), text, { replace });
+    ED.sq.report = r;
+    // (what changed goes into the box, so a second Apply starts from the squad as it now is)
+    if (r.added || r.updated || r.removed) ED.sq.text = FM.CsvWorld.squadExport(ED.def, sqClub());
+    UI.worldEditor();
+  };
+  UI.acts.edSqCsvSave = async () => {
+    try {
+      const c = ED.def.clubs.find((x) => x.id === ED.cid);
+      const name = `squad-${String((c && c.name) || 'free-agents')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')}.csv`;
+      const r = await FM.Native.shareFile({
+        bytes: new TextEncoder().encode(`${(($('#ed-sqtext') || {}).value || '').replace(/\r?\n/g, '\r\n')}\r\n`),
+        name,
+        type: 'text/csv',
+        title: 'Squad CSV',
+        preferShare: matchMedia('(pointer: coarse)').matches,
+      });
+      if (r !== 'cancelled') UI.toast(`Squad ${r === 'saved' ? 'saved' : 'ready'}: ${name}`, 3500);
+    } catch (e) {
+      UI.toast('' + (e.message || 'Could not save the file'), 4000);
+    }
+  };
+  const squadCsvView = () => {
+    const free = ED.cid === FREE,
+      c = free ? null : ED.def.clubs.find((x) => x.id === ED.cid),
+      sq = ED.sq || { text: '', replace: false, report: null },
+      rp = sq.report;
+    return `<div class="h1" style="margin-top:2vh">${free ? 'Free agents' : `${crestDot(c)} ${esc(c.name)}`}: squad as CSV</div><div class="tag">Every player is a row. Change a cell, add a row for a new player (leave the id empty), or put x in the remove column to take one out. Ability makes his attributes again when you change it.</div>
+      ${errBox()}
+      <input type="file" id="ed-sqfile" accept=".csv,text/csv,text/plain">
+      <textarea id="ed-sqtext" rows="14" spellcheck="false" style="width:100%;margin-top:8px;font-family:monospace;font-size:12px;white-space:pre">${esc(sq.text)}</textarea>
+      <label class="small" style="display:flex;gap:10px;align-items:center;margin-top:8px;min-height:44px"><input type="checkbox" id="ed-sqreplace" style="width:24px;height:24px;flex:none" ${sq.replace ? 'checked' : ''}> Players the file leaves out are taken out of the squad</label>
+      <div class="tiny dim" style="margin-top:4px;line-height:1.5">Columns: ${FM.CsvWorld.SQUAD_COLUMNS.join(', ')}. Position is GK, CB, FB, WB, DM, CM, WM, AM, W or ST; foot Left, Right or Both; ability 20–95 and potential up to 96; contract a year; wage a weekly sum; number 1–99. An empty cell keeps what the player has. A row naming a player of another club is refused.</div>
+      ${
+        rp
+          ? `<div class="card" style="margin-top:12px;padding:10px 12px"><div class="small b">${[rp.added && `${U.plural(rp.added, 'player')} added`, rp.updated && `${U.plural(rp.updated, 'player')} changed`, rp.removed && `${U.plural(rp.removed, 'player')} taken out`].filter(Boolean).join(' · ') || 'Nothing changed'}</div>${
+              rp.errors.length
+                ? `<div class="tiny" style="color:#f87171;margin-top:6px;line-height:1.5">${rp.errors
+                    .slice(0, 8)
+                    .map((e) => '• ' + esc(e))
+                    .join('<br>')}${rp.errors.length > 8 ? `<br>… and ${rp.errors.length - 8} more` : ''}</div>`
+                : ''
+            }</div>`
+          : ''
+      }
+      <div class="actions" style="margin-top:12px"><button class="btn sm" data-act="edSqCsvSave">▲ Save as a file</button><button class="btn sm" data-act="edSqCsvReset">The squad as it is</button><button class="btn sm" data-act="edSqCsvTemplate">An empty example</button></div>
+      <div class="actions ng-foot"><button class="btn sm" data-act="edSquad" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edSqCsvApply">Apply</button></div>`;
   };
 
   // ---------- Players ----------
@@ -4527,7 +4698,9 @@
       ...(o.pool ? { pool: o.pool } : { host: v('ihost-' + o.id) }),
       feeds: v('ifeeds-' + o.id) || '',
     }));
-    const r = WD.editor(ED.def, null).setIntl({ cycle: Math.round(+v('icycle')), tourns, invites });
+    const every = {};
+    for (const k of Object.keys(FM.Intl.EVERY)) every[k] = Math.round(+v('ievery-' + k)) || FM.Intl.EVERY[k];
+    const r = WD.editor(ED.def, null).setIntl({ cycle: Math.round(+v('icycle')), every, tourns, invites });
     ED.err = r.ok ? [] : r.errors;
     if (r.ok) UI.toast('Saved', 1500);
     UI.worldEditor();
@@ -4536,9 +4709,9 @@
     const cur = intlNow(),
       nations = natEntries().sort((a, b) => a[1].name.localeCompare(b[1].name));
     const kinds = {
-      world: 'Every four years',
-      continental: 'Two years on',
-      confed: 'The year before the World Championship',
+      world: 'The World Championship',
+      continental: 'Continental championships',
+      confed: 'The Trophy',
     };
     return `<div class="h1" style="margin-top:2vh">International football</div><div class="tag">The summer tournaments, the national teams and their history.</div>
       ${errBox()}
@@ -4550,6 +4723,19 @@
         )
         .join('')}</select>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Counted from the year 0 of each four (a year that divides by four). The continental championships follow two years on, and the Continental Champions Trophy comes the year before the World Championship. Your first season plays the qualifiers for whichever is next.</div>
+      <div class="ng-label">How often they are played</div>
+      ${[
+        ['world', 'World Championship'],
+        ['continental', 'Continental championships'],
+        ['confed', 'Continental Champions Trophy'],
+        ['cwc', 'World Club Championship'],
+      ]
+        .map(
+          ([k, l]) =>
+            `<div class="row" style="gap:8px;margin-top:6px"><span class="grow small">${l}</span><select id="ed-ievery-${k}" style="width:auto">${[1, 2, 3, 4, 5, 6, 8].map((n) => `<option value="${n}" ${((cur.every || FM.Intl.EVERY)[k] || 4) === n ? 'selected' : ''}>${n === 1 ? 'Every year' : `Every ${U.plural(n, 'year')}`}</option>`).join('')}</select></div>`,
+        )
+        .join('')}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Each keeps its place in the cycle: the continental championships fall two years after the World Championship, the Trophy the year before it and the World Club Championship the year before the Trophy. Where two fall in one year the World Championship takes it, then the continental championships. The qualifiers are played in the same season.</div>
       <div class="ng-label">Tournaments</div>
       ${Object.entries(FM.Intl.TOURNS)
         .map(([kind, list]) =>
@@ -6049,7 +6235,7 @@
             : `<div class="card tap" style="margin:0 0 8px;padding:10px 12px" data-act="edBuildSquads"><div class="row"><div class="grow"><div class="small b">Build every club's squad to edit them</div><div class="tiny dim">about 30 seconds; the squads are saved with the world</div></div><span class="dim">›</span></div></div>`
         }`
       }
-      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm" data-act="edImportPlayers">▼ Import</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
+      <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="${free ? 'home' : 'club'}" aria-label="Back">←</button><button class="btn sm" data-act="edSquadCsv">▤ CSV</button><button class="btn sm" data-act="edImportPlayers">▼ Import</button><button class="btn sm pri grow" data-act="edAddPlayer">＋ Add a player</button></div>`;
   };
 
   const playerView = () => {
@@ -6100,6 +6286,7 @@
       diff: diffView,
       clubx: clubxView,
       squad: squadView,
+      squadcsv: squadCsvView,
       player: playerView,
       cups: cupsView,
       regionals: regionalsView,
@@ -6225,6 +6412,11 @@
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
     bind('ed-sab', (v) => ($('#ed-sabv').textContent = v));
     bind('ed-mrep', (v) => ($('#ed-mrepv').textContent = v));
+    if (ED.view === 'squadcsv' && $('#ed-sqfile'))
+      $('#ed-sqfile').addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) $('#ed-sqtext').value = await file.text();
+      });
     if (ED.view === 'importp' && $('#ed-impfile'))
       $('#ed-impfile').addEventListener('change', async (e) => {
         const file = e.target.files && e.target.files[0];

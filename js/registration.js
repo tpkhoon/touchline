@@ -137,6 +137,17 @@
     else if (r.foreign)
       out.push(`At most ${r.foreign} ${id === 'US1' ? 'international slots' : 'foreign players'} on the books.`);
     if (r.matchday) out.push(`No more than ${r.matchday} foreign players in a matchday squad.`);
+    const yAge = r.youthAge || 21;
+    if (r.youthSquad)
+      out.push(
+        `At least ${U.plural(r.youthSquad, 'player')} aged ${yAge} or under in every matchday squad (the XI and the bench).`,
+      );
+    if (r.youthXI)
+      out.push(
+        `At least ${U.plural(r.youthXI, 'player')} aged ${yAge} or under in the starting XI, so they play minutes every match.`,
+      );
+    if (r.hgSquad) out.push(`At least ${r.hgSquad} homegrown players in every matchday squad.`);
+    if (r.hgXI) out.push(`At least ${r.hgXI} homegrown players in the starting XI.`);
     if (r.mls)
       out.push(
         `Salary budget: the 20 biggest wage charges add up to at most ${U.money(r.mls.cap)} a year. No player counts for more than ${U.money(r.mls.maxCharge)}, and up to ${r.mls.dp} Designated Players may earn above that and still count only that much; nobody else may earn more. A senior roster of at most ${r.mls.roster}.`,
@@ -549,6 +560,15 @@
       if (r.nonEU) out.push({ f: (p) => R.nonEU(p, club), cap: r.nonEU });
       R.foreignGroups(club, r).forEach((g) => out.push({ f: g.f, cap: g.cap }));
       if (r.matchday) out.push({ f: (p) => R.isForeign(p, club, r), cap: r.matchday });
+      // youth and homegrown minimums: at least n of them is a cap on everyone else (the matchday squad is the XI and nine on the
+      // bench; a cap marked xi counts the starting XI alone, so the bench is not squeezed by it)
+      const SQUAD = 20,
+        young = (p) => W.age(p) <= (r.youthAge || 21),
+        home = (p) => R.homegrown(p, club.nat);
+      if (r.youthSquad) out.push({ f: (p) => !young(p), cap: Math.max(0, SQUAD - r.youthSquad), young: true });
+      if (r.youthXI) out.push({ f: (p) => !young(p), cap: Math.max(0, 11 - r.youthXI), xi: true, young: true });
+      if (r.hgSquad) out.push({ f: (p) => !home(p), cap: Math.max(0, SQUAD - r.hgSquad) });
+      if (r.hgXI) out.push({ f: (p) => !home(p), cap: Math.max(0, 11 - r.hgXI), xi: true });
       limCache.set(key, out);
     }
     return out;

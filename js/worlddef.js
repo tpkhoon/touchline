@@ -683,6 +683,7 @@
   const tournList = () => Object.values(I().TOURNS).flat();
   WD.intlNow = () => ({
     cycle: I().CYCLE,
+    every: { ...I().EVERY },
     tourns: Object.fromEntries(
       tournList().map((tn) => [
         tn.id,
@@ -747,6 +748,9 @@
     if (!x || typeof x !== 'object') return e;
     if (x.cycle != null && !(Number.isInteger(x.cycle) && x.cycle >= 0 && x.cycle <= 3))
       e.push('international: the World Championship year is 0–3 of the four');
+    for (const [k, n] of Object.entries(x.every || {}))
+      if (!(k in I().EVERY) || !(Number.isInteger(n) && n >= 1 && n <= 8))
+        e.push(`international: how often ${k} is played is a whole number of years from 1 to 8`);
     for (const [id, v] of Object.entries(x.tourns || {})) {
       const tn = tournList().find((t) => t.id === id);
       if (!tn) {
@@ -792,6 +796,7 @@
   const inviteIds = () => new Set(I().INVITE_IDS);
   const applyIntl = (x) => {
     if (x.cycle != null) I().CYCLE = x.cycle;
+    if (x.every) Object.assign(I().EVERY, x.every);
     for (const [id, v] of Object.entries(x.tourns || {})) {
       const tn = tournList().find((t) => t.id === id);
       if (!tn) continue;
@@ -1058,12 +1063,14 @@
       const cur = WD.intlNow(),
         d = { tourns: {}, invites: [] };
       if (def.intl.cycle != null && def.intl.cycle !== cur.cycle) d.cycle = def.intl.cycle;
+      if (def.intl.every && !same(def.intl.every, cur.every)) d.every = { ...def.intl.every };
       for (const [id, v] of Object.entries(def.intl.tourns || {})) if (!same(v, cur.tourns[id])) d.tourns[id] = v;
       for (const v of def.intl.invites || []) if (!cur.invites.some((o) => same(o, v))) d.invites.push(v);
       const keptIds = (def.intl.invites || []).map((v) => v.id);
       if (def.intl.invites && keptIds.length < cur.invites.length)
         d.invitesAll = def.intl.invites.map((v) => ({ id: v.id }));
-      if (d.cycle != null || Object.keys(d.tourns).length || d.invites.length || d.invitesAll) patch.intl = d;
+      if (d.cycle != null || d.every || Object.keys(d.tourns).length || d.invites.length || d.invitesAll)
+        patch.intl = d;
     }
     return patch;
   };
@@ -1344,7 +1351,7 @@
         intl: D.INTL_AFTER,
       }),
       euroPrize: (D.EURO_CUPS || []).map((c) => c.prize),
-      intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE }),
+      intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE, e: I().EVERY }),
     };
     const removeNations = addNations(patch.newNations); // (before the leagues: their mixes are copied from a twin)
     const restoreNations = editNations(patch.nationEdits);
@@ -1477,6 +1484,8 @@
           }
         }
         I().CYCLE = o.c;
+        if (o.e) Object.assign(I().EVERY, o.e);
+        else Object.assign(I().EVERY, { world: 4, continental: 4, confed: 4, cwc: 4 }); // (a snapshot from before has the four-year cycle)
       }
       D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...snap.agents);
       D.AREAS.splice(0, D.AREAS.length, ...JSON.parse(snap.areas));
@@ -1776,6 +1785,12 @@
           const num = (hi) => v == null || (Number.isInteger(v) && v >= 0 && v <= hi);
           if (['foreign', 'matchday', 'nonEU', 'nonEUSign', 'asian', 'asean'].includes(k)) {
             if (!num(30)) e.push(`${at}: ${k} is a number of players from 0 (no limit) to 30`);
+          } else if (['youthSquad', 'hgSquad'].includes(k)) {
+            if (!num(20)) e.push(`${at}: ${k} is a number of players from 0 (none) to 20`);
+          } else if (['youthXI', 'hgXI'].includes(k)) {
+            if (!num(11)) e.push(`${at}: ${k} is a number of players from 0 (none) to 11`);
+          } else if (k === 'youthAge') {
+            if (v != null && ![19, 21, 23].includes(v)) e.push(`${at}: the youth age is 19, 21 or 23`);
           } else if (k === 'listSize') {
             if (!num(40)) e.push(`${at}: the squad list is 0 (none) to 40 players`);
           } else if (k === 'homegrown') {
@@ -3141,6 +3156,7 @@
         const cur = def.intl && Object.keys(def.intl).length ? def.intl : WD.intlNow();
         const next = {
           cycle: patch.cycle != null ? patch.cycle : cur.cycle,
+          every: { ...(cur.every || I().EVERY), ...(patch.every || {}) },
           tourns: { ...cur.tourns, ...(patch.tourns || {}) },
           invites: patch.invites || cur.invites,
         };

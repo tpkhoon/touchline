@@ -985,10 +985,17 @@
   // (I.CYCLE: the year of the four, counted from 0, in which the World Championship is played; the continental championships
   // follow two years on and the Trophy comes the year before. A world definition can move it.)
   I.CYCLE = 2;
-  I.tournamentFor = (year) => {
-    const k = (((year - I.CYCLE) % 4) + 4) % 4;
-    return k === 0 ? 'world' : k === 2 ? 'continental' : k === 3 ? 'confed' : null;
+  // How often each is played (years) and the years after the World Championship's base year it falls in (I.CYCLE, then this): the
+  // continental championships two years on, the Trophy the year before, the World Club Championship the year before the Trophy.
+  // A world definition can change how often (a World Championship every two years); where two fall in one year the World
+  // Championship takes it, then the continental championships.
+  I.EVERY = { world: 4, continental: 4, confed: 4, cwc: 4 };
+  I.OFFSET = { world: 0, continental: 2, confed: 3, cwc: 1 };
+  I.heldIn = (kind, year) => {
+    const e = I.EVERY[kind] || 4;
+    return (((year - I.CYCLE - I.OFFSET[kind]) % e) + e) % e === 0;
   };
+  I.tournamentFor = (year) => ['world', 'continental', 'confed'].find((k) => I.heldIn(k, year)) || null;
   I.kindName = (kind) =>
     ({ world: 'World Championship', continental: 'continental championships', confed: 'Continental Champions Trophy' })[
       kind

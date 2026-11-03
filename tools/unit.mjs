@@ -242,6 +242,108 @@ try {
   fs.rmSync(dir, { recursive: true, force: true });
 }
 
+// ---- the editor: tournament frequency, a club's squad as a CSV, youth and homegrown rules ----
+{
+  const I = FM.Intl,
+    WD = FM.WorldDef,
+    CS = FM.CsvWorld,
+    NL = String.fromCharCode(10);
+  const lrules = (squad) => ({ id: 'X', name: 'X', nat: 'ENG', tier: 1, rules: { squad } });
+  // (the game's own cycle is unchanged: continental 2024, Trophy 2025, World Championship 2026, a World Club Championship 2027)
+  eq(
+    [2024, 2025, 2026, 2027].map((y) => I.tournamentFor(y)),
+    ['continental', 'confed', 'world', null],
+    'the default tournament cycle',
+  );
+  ok(FM.Cups.cwcYear(2027) && !FM.Cups.cwcYear(2026), 'the World Club Championship year follows the cycle');
+  I.EVERY.world = 2;
+  ok(I.tournamentFor(2024) === 'world' && I.tournamentFor(2026) === 'world', 'a World Championship every two years');
+  I.EVERY.world = 4;
+  eq(WD.validateIntl({ every: { world: 2, cwc: 8 } }), [], 'a World Championship every two years is allowed');
+  ok(WD.validateIntl({ every: { world: 0 } }).length === 1, 'a frequency of 0 years is refused');
+  ok(WD.validateIntl({ every: { nonsense: 2 } }).length === 1, 'an unknown tournament is refused');
+  const okRules = { youthXI: 3, youthSquad: 6, youthAge: 21, hgSquad: 8, hgXI: 4 };
+  ok(
+    WD.validateLeagueRules(lrules(okRules), { clubs: [], leagues: [] }).length === 0,
+    'youth and homegrown rules are accepted',
+  );
+  ok(
+    WD.validateLeagueRules(lrules({ youthXI: 12, youthAge: 20 }), { clubs: [], leagues: [] }).length === 2,
+    'a youth XI of 12 and a youth age of 20 are refused',
+  );
+  const def = WD.blank('Unit'),
+    lg = FM.D.LEAGUES[0];
+  def.clubs.push({
+    id: 'c_UT',
+    name: 'Unit FC',
+    short: 'UTF',
+    nick: '',
+    city: 'Unit',
+    nat: lg.nat,
+    colors: ['#112233', '#ffffff'],
+    identity: 'historic',
+    rep: 60,
+    league: lg.id,
+    parent: null,
+    founded: 1900,
+    stadium: { name: 'Park', cap: 9000 },
+  });
+  const E = WD.editor(def, null);
+  for (const [fn, pos, ca] of [
+    ['Ann', 'ST', 70],
+    ['Ben', 'CB', 65],
+    ['Cal', 'GK', 60],
+  ])
+    E.addPlayer({
+      fn,
+      ln: 'Test',
+      nat: lg.nat,
+      pos,
+      born: 2000,
+      foot: 'Right',
+      attrs: WD.suggestAttrs(pos, ca),
+      pa: ca + 5,
+      club: 'c_UT',
+      contract: 2029,
+    });
+  const head = CS.SQUAD_COLUMNS.join(','),
+    ids = def.players.map((p) => p.id);
+  eq(CS.squadExport(def, 'c_UT').split(NL)[0].trim(), head, 'the squad CSV has its header');
+  const file = [
+    head,
+    `${ids[0]},,,,,,,80,,2031,12000,9,`,
+    `${ids[1]},,,,,,,,,,,,x`,
+    `,Dan,Test,${lg.nat},2005,CM,Left,55,70,2030,,,`,
+    `,Bad,Row,XXX,1700,ZZ,Up,5,,,,,`,
+  ].join(NL);
+  const r = CS.squadApply(def, 'c_UT', file);
+  eq([r.added, r.updated, r.removed], [1, 1, 1], 'the squad CSV adds, changes and takes out a player');
+  ok(
+    r.errors.length >= 4 && r.errors.every((e) => e.startsWith('row 5')),
+    'a bad row is reported by its row and left out',
+  );
+  eq(
+    [E.player(ids[0]).wage, E.player(ids[0]).no, E.player(ids[0]).contract],
+    [12000, 9, 2031],
+    'a changed row sets its cells',
+  );
+  ok(
+    Math.round(FM.W.calcCA({ attrs: E.player(ids[0]).attrs }, 'ST')) === 80,
+    'a changed ability makes the attributes again',
+  );
+  const eve = [head, `,Eve,Test,${lg.nat},2001,W,Right,60,,2030,,,`].join(NL);
+  ok(
+    CS.squadApply(def, 'c_UT', eve, { replace: true }).removed === 3,
+    'replacing the squad takes out everyone the file leaves out',
+  );
+  ok(
+    CS.squadRows(def, 'c_UT')
+      .map((x) => x.first_name)
+      .join() === 'Eve',
+    'and leaves the file as the squad',
+  );
+}
+
 // ---- managers and staff: where they come from (W.foreignNation, W.managerNation) ----
 {
   const pickMany = (host, n = 3000) => {

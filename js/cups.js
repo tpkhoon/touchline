@@ -559,7 +559,7 @@
   // African champions first, the American champions against each other, the winners in the Challenger Cup and the European
   // champion in the final. The World Club Championship is played in the summer of every fourth season: 32 clubs in eight groups of four,
   // then a round of 16, quarter-finals, semi-finals and the final (the same neutral venues all through).
-  Cu.cwcYear = (y = S().year) => (((y - (FM.Intl && FM.Intl.CYCLE != null ? FM.Intl.CYCLE : 2)) % 4) + 4) % 4 === 1;
+  Cu.cwcYear = (y = S().year) => (FM.Intl && FM.Intl.heldIn ? FM.Intl.heldIn('cwc', y) : (((y - 2) % 4) + 4) % 4 === 1);
   // The season of the next World Club Championship (the one now, if this is its season)
   Cu.nextCwc = () => {
     let y = S().year;

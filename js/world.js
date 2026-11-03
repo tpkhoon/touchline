@@ -1819,7 +1819,9 @@
     // Youth-side players (U21, U18) only step up when the first-team squad is short
     // (a loanee is never one of them: he came to play for the first team)
     const youth = (p) => p.team && !p.loan;
-    if (club.sim !== 'nation' && pool.some(youth)) {
+    // (a league with a minimum of young players in the squad or the XI lets the club's youth sides step up to meet it)
+    const needYouth = club.sim !== 'nation' && FM.Reg.matchdayLimits(club).some((l) => l.young);
+    if (club.sim !== 'nation' && !needYouth && pool.some(youth)) {
       const first = pool.filter((p) => !youth(p));
       pool =
         first.length >= 16
@@ -1987,9 +1989,9 @@
     const rest = pool.filter((p) => !used.has(p.id)).sort((a, b) => b.ca - a.ca);
     const bench = [];
     const add = (p) => {
-      if (!p || bench.includes(p) || bench.length >= 9 || lims.some((l, k) => l.f(p) && left[k] <= 0)) return;
+      if (!p || bench.includes(p) || bench.length >= 9 || lims.some((l, k) => !l.xi && l.f(p) && left[k] <= 0)) return;
       bench.push(p);
-      lims.forEach((l, k) => l.f(p) && left[k]--);
+      lims.forEach((l, k) => !l.xi && l.f(p) && left[k]--);
     };
     // players you put on the bench yourself (Tactics > Bench) come first
     for (const pid of tactic.bench || []) add(rest.find((p) => p.id === pid));

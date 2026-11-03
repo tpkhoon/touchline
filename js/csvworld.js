@@ -386,6 +386,155 @@
     };
   };
 
+  // ---------- One club's squad as a CSV ----------
+  // The players of a club (or the free agents) in a definition as a spreadsheet, and back: a row with an id the club's squad has is
+  // changed (only the cells that are filled in), a row without one is a new player, a row marked in `remove` takes him out, and
+  // with `replace` anyone the file leaves out goes too. Ability changed (or the position) gives him new attributes for it.
+  const SQUAD_COLS = [
+    'id',
+    'first_name',
+    'surname',
+    'nat',
+    'born',
+    'position',
+    'foot',
+    'ability',
+    'potential',
+    'contract',
+    'wage',
+    'number',
+    'remove',
+  ];
+  CS.SQUAD_COLUMNS = SQUAD_COLS;
+  CS.squadRows = (def, clubId) =>
+    (def.players || [])
+      .filter((p) => (p.club || null) === (clubId || null))
+      .sort((a, b) => W().calcCA({ attrs: b.attrs }, b.pos) - W().calcCA({ attrs: a.attrs }, a.pos))
+      .map((p) => ({
+        id: p.id,
+        first_name: p.fn,
+        surname: p.ln,
+        nat: p.nat,
+        born: p.born,
+        position: p.pos,
+        foot: p.foot,
+        ability: W().calcCA({ attrs: p.attrs }, p.pos),
+        potential: p.pa,
+        contract: p.contract,
+        wage: p.wage,
+        number: p.no,
+        remove: '',
+      }));
+  CS.squadExport = (def, clubId) => toCsv(SQUAD_COLS, CS.squadRows(def, clubId));
+  CS.squadTemplate = (def, clubId) =>
+    toCsv(SQUAD_COLS, [
+      {
+        first_name: 'Sam',
+        surname: 'Example',
+        nat: ((def.clubs || []).find((c) => c.id === clubId) || {}).nat || 'ENG',
+        born: ((def.meta && def.meta.startYear) || D.SEASON_START) - 22,
+        position: 'ST',
+        foot: 'Right',
+        ability: 62,
+        potential: 74,
+        contract: ((def.meta && def.meta.startYear) || D.SEASON_START) + 3,
+      },
+    ]);
+  CS.squadApply = function (def, clubId, text, opts = {}) {
+    const errors = [],
+      E = WD.editor(def, null),
+      club = clubId || null;
+    let added = 0,
+      updated = 0,
+      removed = 0;
+    const year = (def.meta && def.meta.startYear) || D.SEASON_START,
+      clubRow = club && (def.clubs || []).find((c) => c.id === club),
+      natOk = (n) => !!D.NATIONS[n] || (def.newNations || []).some((x) => x.code === n);
+    const bad = (n, who, col, msg) => errors.push(`row ${n}${who ? ` (${who})` : ''}${col ? `, ${col}` : ''}: ${msg}`);
+    const keep = new Set(),
+      rows = rowsOf(text);
+    if (!rows.length) return { errors: ['The file has no players in it'], added, updated, removed };
+    for (const { n, v } of rows) {
+      const who = `${v.first_name} ${v.surname}`.trim(),
+        cur = v.id ? E.player(v.id) : null;
+      if (cur) keep.add(cur.id); // (a player the file names stays, whatever else is wrong with his row)
+      if (cur && (cur.club || null) !== club) {
+        bad(n, who, 'id', `${v.id} belongs to another club: move him from his own squad first`);
+        continue;
+      }
+      if (/^(1|x|y|yes|true|remove|delete)$/i.test(v.remove)) {
+        if (cur) {
+          E.removePlayer(cur.id);
+          keep.delete(cur.id);
+          removed++;
+        } else bad(n, who, 'remove', 'there is no such player to take out');
+        continue;
+      }
+      const e0 = errors.length;
+      const nat = (v.nat || (cur && cur.nat) || (clubRow && clubRow.nat) || '').toUpperCase();
+      if (!natOk(nat)) bad(n, who, 'nat', `"${v.nat}" is not a nation of the game`);
+      const pos = (v.position || (cur && cur.pos) || '').toUpperCase();
+      if (!D.POS.includes(pos)) bad(n, who, 'position', `"${v.position}" should be one of ${D.POS.join(', ')}`);
+      let born = v.born !== '' ? intOf(v.born) : v.age ? year - intOf(v.age) : cur ? cur.born : NaN;
+      if (!(year - born >= 15 && year - born <= 45))
+        bad(n, who, 'born', `"${v.born}" should be a year of birth that makes him 15 to 45 in ${year}`);
+      const foot = v.foot ? v.foot[0].toUpperCase() + v.foot.slice(1).toLowerCase() : cur ? cur.foot : 'Right';
+      if (!['Left', 'Right', 'Both'].includes(foot)) bad(n, who, 'foot', `"${v.foot}" should be Left, Right or Both`);
+      const curCa = cur ? Math.round(W().calcCA({ attrs: cur.attrs }, cur.pos)) : null;
+      const rep = clubRow ? clubRow.rep : 50;
+      const ca = v.ability !== '' ? intOf(v.ability) : cur ? curCa : Math.round(W().levelFor ? W().levelFor(rep) : 50);
+      if (!(ca >= 20 && ca <= 95)) bad(n, who, 'ability', `"${v.ability}" should be a whole number from 20 to 95`);
+      const pa = v.potential !== '' ? intOf(v.potential) : null;
+      if (pa != null && !(pa >= 20 && pa <= 96))
+        bad(n, who, 'potential', `"${v.potential}" should be a whole number from 20 to 96`);
+      const contract = v.contract !== '' ? intOf(v.contract) : cur ? cur.contract : null;
+      if (contract != null && !(contract >= year && contract <= year + 8))
+        bad(n, who, 'contract', `"${v.contract}" should be a year from ${year} to ${year + 8}`);
+      const wage = v.wage !== '' ? intOf(v.wage) : cur && cur.wage != null ? cur.wage : null;
+      if (wage != null && !(wage >= 0 && wage <= 5e6))
+        bad(n, who, 'wage', `"${v.wage}" should be a weekly wage from 0 to 5,000,000`);
+      const no = v.number !== '' ? intOf(v.number) : cur && cur.no ? cur.no : null;
+      if (no != null && !(no >= 1 && no <= 99))
+        bad(n, who, 'number', `"${v.number}" should be a squad number from 1 to 99`);
+      if (!who && !cur) bad(n, who, 'surname', 'a player needs a name');
+      if (errors.length > e0) continue;
+      // (his attributes stay as they are unless his ability or position changed: then they are made again for it)
+      const same = cur && pos === cur.pos && ca === curCa;
+      const attrs = same ? cur.attrs : WD.suggestAttrs(pos, ca);
+      const real = W().calcCA({ attrs }, pos);
+      const spec = {
+        fn: v.first_name || (cur && cur.fn) || '',
+        ln: v.surname || (cur && cur.ln) || '',
+        nat,
+        pos,
+        born,
+        foot,
+        club,
+        attrs,
+        pa: Math.max(
+          real,
+          Math.min(96, pa != null ? pa : cur ? cur.pa : real + Math.max(0, Math.round((27 - (year - born)) * 1.2))),
+        ),
+        ...(contract != null ? { contract } : {}),
+        ...(wage != null ? { wage } : {}),
+        ...(no != null ? { no } : {}),
+      };
+      const r = cur ? E.updatePlayer(cur.id, spec) : E.addPlayer({ ...spec, ...(v.id ? { id: v.id } : {}) });
+      if (!r.ok) for (const m of r.errors) bad(n, who, '', m.replace(/^player [^:]*: /, ''));
+      else {
+        if (cur) updated++;
+        else added++;
+        keep.add(cur ? cur.id : r.id);
+      }
+    }
+    if (opts.replace)
+      for (const p of (def.players || []).filter((x) => (x.club || null) === club && !keep.has(x.id))) {
+        E.removePlayer(p.id);
+        removed++;
+      }
+    return { errors, added, updated, removed };
+  };
+
   // ---------- In: rows into a definition ----------
   const HEX = /^#[0-9a-f]{6}$/i;
   const intOf = (s) => (/^-?\d+$/.test(String(s).trim()) ? +s : NaN);
