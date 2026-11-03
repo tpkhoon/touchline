@@ -510,7 +510,28 @@
         <div class="tiny dim" style="margin-top:6px">${t === 'Low' ? 'Cheaper seats: fuller ground, happier fans, less money per fan.' : t === 'High' ? 'Dearer seats: more money per fan, emptier stands, grumbling in the terraces.' : 'Normal prices.'}</div></div>
       <div class="card"><div class="row"><div class="h3 grow">Wages against revenue</div><b style="color:${col}">${pctR}%</b></div>
         <div style="margin-top:8px">${C.bar(Math.min(100, pctR), col)}</div>
-        <div class="tiny dim" style="margin-top:6px">The board want wages under ${Math.round(F.LIMIT.cut * 100)}% of revenue: above it they cut the transfer budget, above ${Math.round(F.LIMIT.freeze * 100)}% they freeze new wages.${fp && fp.freeze && fp.year === S().year ? ' <b style="color:var(--bad)">Wage freeze in force.</b>' : ''}${c.balance < 0 ? ` In debt: ${Math.round(F.LIMIT.interest * 100)}% interest a month, and administration below ${U.money(-F.adminThreshold(c))}.` : ''}</div></div>`;
+        <div class="tiny dim" style="margin-top:6px">The board want wages under ${Math.round(F.LIMIT.cut * 100)}% of revenue: above it they cut the transfer budget, above ${Math.round(F.LIMIT.freeze * 100)}% they freeze new wages.${fp && fp.freeze && fp.year === S().year ? ' <b style="color:var(--bad)">Wage freeze in force.</b>' : ''}${c.balance < 0 ? ` In debt: ${Math.round(F.LIMIT.interest * 100)}% interest a month, and administration below ${U.money(-F.adminThreshold(c))}.` : ''}</div></div>
+      ${UI.budgetCard(c)}`;
+  };
+  // Adjust the transfer budget (within your cash) and set a wage budget (below the board's limit)
+  UI.budgetCard = function (c) {
+    const F = FM.Finance,
+      u = S().user,
+      step = F.budgetStep(c),
+      wb = F.wageBudget(c),
+      own = !!u.wageBudget && wb < F.wageLimit(c);
+    const ctl = (kind, label, val, note) =>
+      `<div class="row" style="margin-top:12px;gap:8px"><div class="grow"><div class="small b">${label}</div><div class="tiny dim">${note}</div></div><button class="btn sm" style="min-width:44px;min-height:44px" data-act="budgetStep" data-k="${kind}" data-d="-1" aria-label="Lower the ${label.toLowerCase()}">−</button><b style="min-width:72px;text-align:center">${val}</b><button class="btn sm" style="min-width:44px;min-height:44px" data-act="budgetStep" data-k="${kind}" data-d="1" aria-label="Raise the ${label.toLowerCase()}">+</button></div>`;
+    return `<div class="card"><div class="h3">Budgets</div>
+      ${ctl('transfer', 'Transfer budget', U.money(c.budget), `Fees you can spend, up to the cash in the bank (${U.money(Math.max(0, c.balance))}). Steps of ${U.money(step)}.`)}
+      ${ctl('wage', 'Wage budget', U.money(wb), own ? `Your own ceiling on the yearly wage bill (${U.money(F.wageBill(c))} now); a deal past it is refused. Raise it to the board's limit to clear it.` : `The board's limit (${Math.round(F.LIMIT.freeze * 100)}% of revenue); lower it to keep a margin. The wage bill is ${U.money(F.wageBill(c))} a year.`)}</div>`;
+  };
+  UI.acts.budgetStep = (d) => {
+    const c = W.userClub();
+    if (!c) return;
+    FM.Finance.adjustBudget(c, d.k, +d.d);
+    UI.save();
+    UI.render();
   };
   UI.acts.tickets = (d) => {
     S().user.tickets = d.v;

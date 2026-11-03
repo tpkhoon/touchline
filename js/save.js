@@ -184,6 +184,8 @@
             .filter((t, i, a) => a.indexOf(t) === i)
             .slice(0, 3);
     }
+    // the Continental Champions Trophy has its own id now (it shared 'CT' with the Carpathian Cup)
+    if (FM.Intl && FM.Intl.renameTrophy) FM.Intl.renameTrophy(s);
     // clubs with a signing policy (Eibar: Basque players only; Andorra: Catalan): older saves get the policy
     if (!s.policyV1 && s.clubs && FM.D.CLUB_POLICY) {
       s.policyV1 = 1;

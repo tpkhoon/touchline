@@ -77,7 +77,6 @@
         <div class="row" style="gap:8px"><button class="play grow" data-act="preview">▶ MATCHDAY</button><button class="play sec" style="flex:none;width:auto;padding:14px 16px" data-act="simDaysAsk">Skip days</button></div></div>`;
     } else if (cal) {
       const others = FM.Season.dayFixtures();
-      const isNear = (cp) => cp.type === 'continental' || cp.type === 'world' || cp.nat === c.nat;
       const away =
         cal.type === 'intl'
           ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(FM.Intl.nationOf(p)).includes(p))
@@ -95,11 +94,7 @@
           : cal.type === 'playoff'
             ? 'The playoffs are being contested.'
             : cal.type === 'cup'
-              ? ((near) =>
-                  // (the competitions named are your own nation's and the continental and world ones; the cups of every other country are only counted)
-                  `${others.length} ${cal.regional ? 'regional ' : ''}${others.length === 1 ? 'tie' : 'ties'} elsewhere${near.length ? `: ${near.join(', ')}` : ''}${near.length && others.some((f) => !isNear(s.comps[f.comp])) ? ', and others in other countries' : ''}.`)(
-                  [...new Set(others.filter((f) => isNear(s.comps[f.comp])).map((f) => s.comps[f.comp].name))],
-                )
+              ? `${U.plural(others.length, cal.regional ? 'regional tie' : 'tie')} elsewhere.`
               : '';
       const what2 =
         cal.type === 'tourn'

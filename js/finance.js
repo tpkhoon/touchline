@@ -314,6 +314,41 @@
     const fp = S().user && S().user.finPressure;
     return !!(fp && fp.freeze && fp.year === S().year && wageAdded > 0);
   };
+  // Your own wage budget: a yearly wage bill you will not go over, set below the board's limit (S().user.wageBudget; none: the board's
+  // limit alone). A deal that would take the bill past it is refused.
+  F.wageLimit = (c) => (F.LIMIT.freeze + ((S().user.finPressure && S().user.finPressure.boost) || 0)) * F.revenue(c);
+  F.wageBudget = (c) => Math.min(Math.max(S().user.wageBudget || Infinity, 0.3 * F.revenue(c)), F.wageLimit(c));
+  F.overBudget = (wageAdded) => {
+    const uc = W.employed() && W.userClub();
+    return !!(
+      uc &&
+      S().user.wageBudget &&
+      wageAdded > 0 &&
+      F.wageBill(uc) + wageAdded * FM.D.WAGE_WEEKS > F.wageBudget(uc)
+    );
+  };
+  // Why a deal that adds wages is refused ('' when it is not): the board's freeze or your own wage budget
+  F.freezeWhy = (wageAdded) =>
+    F.frozen(wageAdded)
+      ? 'The board have frozen the wage bill'
+      : F.overBudget(wageAdded)
+        ? 'Your wage budget is used up'
+        : '';
+  // Steps for the two budget controls: about 1% of revenue, in round sums
+  F.budgetStep = (c) => Math.max(1e5, Math.round((F.revenue(c) * 0.01) / 1e5) * 1e5);
+  // dir: +1 or -1. The transfer budget stays between nothing and the cash in the bank; the wage budget between 30% of revenue and
+  // the board's limit (at the limit it is the board's again)
+  F.adjustBudget = (c, kind, dir) => {
+    const step = F.budgetStep(c);
+    if (kind === 'transfer') {
+      c.budget = U.clamp(c.budget + dir * step, 0, Math.max(0, c.balance));
+      return;
+    }
+    const u = S().user,
+      top = F.wageLimit(c),
+      next = U.clamp(F.wageBudget(c) + dir * step, 0.3 * F.revenue(c), top);
+    u.wageBudget = next >= top - 1 ? null : next;
+  };
   // Administration: debts beyond half a season's revenue (and at least £8M)
   F.adminThreshold = (c) => -Math.max(8e6, 0.5 * F.revenue(c));
   // Title sponsors. The top leagues and the domestic cups carry a sponsor's name ("Corvid Energy English Premier Division") for a

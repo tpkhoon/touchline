@@ -66,7 +66,7 @@
         ],
       },
     ],
-    confed: [{ id: 'CT', name: 'Continental Champions Trophy', size: 8, pools: [], confed: true }],
+    confed: [{ id: 'CCT', name: 'Continental Champions Trophy', size: 8, pools: [], confed: true }],
     continental: [
       { id: 'EC', name: 'European Nations Championship', size: 24, pools: [[['EUR'], 24]] },
       { id: 'SA', name: 'South American Nations Cup', size: 16, guests: { from: 'NAM', n: 6 }, pools: [[['SAM'], 10]] },
@@ -112,8 +112,22 @@
     AS: 'Asian Nations Cup',
     NA: 'North American Nations Cup',
     OF: 'Oceania Nations Cup',
-    CT: 'Continental Champions Trophy',
+    CCT: 'Continental Champions Trophy',
     NL: 'Nations League',
+  };
+  // The Continental Champions Trophy was once 'CT', the id of the Carpathian Cup (a club competition): a state or world snapshot
+  // made then gets the new id
+  I.renameTrophy = function (o) {
+    if (!o) return;
+    for (const t of o.tourns || []) if (t.id === 'CT' && t.name === 'Continental Champions Trophy') t.id = 'CCT';
+    const by = o.compStats && o.compStats.by; // (the finals' scorers so far)
+    if (by && by.T_CT && !by.T_CCT && (o.tourns || []).some((t) => t.id === 'CCT'))
+      ((by.T_CCT = by.T_CT), delete by.T_CT);
+    const q = o.quals;
+    if (q && q.hosts && q.hosts.CT && !q.hosts.CCT) {
+      q.hosts.CCT = q.hosts.CT;
+      delete q.hosts.CT;
+    }
   };
 
   // Invitational tournaments in the international windows: a host and three invited nations play semi-finals on the first day
@@ -1931,7 +1945,7 @@
     s.intlSeason.push(res);
     FM.Stories.intlTournament(res, champ);
     const u = s.user;
-    if (u && u.nation && t.id !== 'CT' && t.teams.includes(u.nation)) I.judgeTournament(t); // (the Trophy is an invitation: no verdict)
+    if (u && u.nation && t.id !== 'CCT' && t.teams.includes(u.nation)) I.judgeTournament(t); // (the Trophy is an invitation: no verdict)
   };
   I.seasonResults = () => (S().intlSeason || []).slice();
   I.seasonEnd = function () {

@@ -317,10 +317,11 @@
     if (!rc.ok) return { ok: false, msg: `You can't register him: ${rc.why}` };
     const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, false) : { ok: true };
     if (!mc.ok) return { ok: false, msg: mc.why };
-    if (FM.Finance.frozen(t.wage))
+    const fz = FM.Finance.freezeWhy(t.wage);
+    if (fz)
       return {
         ok: false,
-        msg: 'The board have frozen the wage bill: sell or let a high earner go before adding wages.',
+        msg: `${fz}: sell or let a high earner go before adding wages.`,
       };
     const seller = p.clubId && s.clubs[p.clubId];
     const clause = seller && p.deal && p.deal.release;
@@ -392,10 +393,11 @@
         ok: false,
         msg: `${W.name(p)} has signed a pre-contract with ${s.clubs[p.pre.c].name}. He leaves in the summer.`,
       };
-    if (FM.Finance.frozen(t.wage - p.wage))
+    const fzRenew = FM.Finance.freezeWhy(t.wage - p.wage);
+    if (fzRenew)
       return {
         ok: false,
-        msg: `The board have frozen the wage bill: a renewal can't pay him more than his ${U.money(p.wage)}/wk now.`,
+        msg: `${fzRenew}: a renewal can't pay him more than his ${U.money(p.wage)}/wk now.`,
       };
     const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, true) : { ok: true };
     if (!mc.ok) return { ok: false, msg: mc.why };

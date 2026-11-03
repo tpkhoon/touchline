@@ -890,7 +890,8 @@
     const chk = M.canPre(p);
     if (!chk.ok) return chk;
     if (Co.blocked(p)) return { ok: false, msg: `${W.name(p)}'s agent has broken off talks for now.` };
-    if (FM.Finance.frozen(t.wage)) return { ok: false, msg: 'The board have frozen the wage bill.' };
+    const fz = FM.Finance.freezeWhy(t.wage);
+    if (fz) return { ok: false, msg: `${fz}.` };
     const ev = Co.evaluate(p, club, t, 'transfer');
     if (!ev.ok) {
       if (!ev.hard) Co.logDemand(p, ev, t);

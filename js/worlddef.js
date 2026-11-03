@@ -1462,6 +1462,8 @@
       D.RIVALS.splice(0, D.RIVALS.length, ...snap.rivals.map((r) => r.slice()));
       {
         const o = JSON.parse(snap.intl);
+        for (const tn of (o.t && o.t.confed) || []) if (tn.id === 'CT') tn.id = 'CCT'; // (the Trophy's old id was the Carpathian Cup's)
+        if (o.n && o.n.CT === 'Continental Champions Trophy') ((o.n.CCT = o.n.CT), delete o.n.CT);
         for (const [key, val] of [
           ['TOURNS', o.t],
           ['TNAME', o.n],

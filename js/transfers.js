@@ -96,8 +96,8 @@
         msg: `${S.clubs[p.clubId].name} want you to cover at least ${Math.round(Math.min(1, need) * 100)}% of his wages${fee ? '' : ' (a small loan fee would help)'}.`,
       };
     // (registration is sorted out by the deadline, not by calling the deal off: FM.Reg.registerSquad)
-    if (FM.Finance.frozen(p.wage * share))
-      return { ok: false, msg: 'The board have frozen the wage bill: no new wages until it comes down.' };
+    const fz = FM.Finance.freezeWhy(p.wage * share);
+    if (fz) return { ok: false, msg: `${fz}: no new wages until it comes down.` };
     const lvl = FM.Scouting.level();
     if (p.ca < lvl - 14 && W.age(p) > 21)
       return { ok: false, msg: `His club want him to play regularly — they don't think he'd get minutes with you.` };
