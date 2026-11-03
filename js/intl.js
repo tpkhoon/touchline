@@ -509,12 +509,7 @@
   I.newManager = function (t, foreign, ranked = I.ranked()) {
     const s = S();
     let nat = t.code;
-    if (foreign) {
-      const best = I.ranked()
-        .slice(0, 24)
-        .filter((x) => x.code !== t.code);
-      nat = U.pick(best).code;
-    }
+    if (foreign) nat = W.foreignNation(t.code); // (a Frenchman for Togo: by what the nation exports and how close it is)
     const nm = W.rollName(nat, null, s.year - U.randi(40, 62));
     return {
       fn: nm.fn,
@@ -532,11 +527,14 @@
       conf: 62,
     };
   };
+  // How often a federation looks abroad for its manager: the strong nations seldom do, the weak ones often
+  I.foreignP = (t, ranked = I.ranked()) =>
+    0.1 + 0.55 * (Math.max(0, ranked.indexOf(t)) / Math.max(1, ranked.length - 1));
   I.ensureManagers = function () {
     const need = Object.values(S().nteams || {}).filter((t) => !t.mgr && !t.vacantSince && !W.isUserNation(t.id));
     if (!need.length) return;
     const ranked = I.ranked();
-    need.forEach((t) => (t.mgr = I.newManager(t, false, ranked)));
+    need.forEach((t) => (t.mgr = I.newManager(t, Math.random() < I.foreignP(t, ranked), ranked)));
   };
   // What the match engine reads for a nation the manager does not run: 60 is neutral, a good manager is a little above
   I.aiFam = (t) => (t.mgr ? U.clamp(60 + (t.mgr.ability - 11) * 2.2, 40, 85) : 55);
@@ -556,7 +554,7 @@
   };
   I.hireAI = function (t) {
     const s = S();
-    t.mgr = I.newManager(t, Math.random() < 0.28);
+    t.mgr = I.newManager(t, Math.random() < I.foreignP(t));
     t.vacantSince = null;
     s.ntJobs = (s.ntJobs || []).filter((x) => x !== t.id);
     if (I.ranked().indexOf(t) < 40)

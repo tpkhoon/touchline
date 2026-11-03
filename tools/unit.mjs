@@ -242,6 +242,31 @@ try {
   fs.rmSync(dir, { recursive: true, force: true });
 }
 
+// ---- managers and staff: where they come from (W.foreignNation, W.managerNation) ----
+{
+  const pickMany = (host, n = 3000) => {
+    const m = {};
+    for (let i = 0; i < n; i++) {
+      const x = W.foreignNation(host);
+      m[x] = (m[x] || 0) + 1;
+    }
+    return m;
+  };
+  const tog = pickMany('TOG'),
+    ger = pickMany('GER');
+  ok(tog.FRA > tog.ENG && tog.FRA > 300, 'a Frenchman is the likeliest foreign manager for Togo');
+  ok((ger.FIJ || 0) <= 3, 'a Fijian almost never manages in Germany');
+  ok(!pickMany('GER').GER, 'a foreign pick is never the host nation');
+  ok(W.mgrTie('TOG', 'FRA') > W.mgrTie('TOG', 'FIJ'), 'France is closer to Togo than Fiji is');
+  ok(W.mgrTie('BUL', 'BRA') >= 1.6 && W.mgrExport('BRA') >= 6, 'a Brazilian can manage anywhere (the big exporters)');
+  let foreign = 0;
+  for (let i = 0; i < 4000; i++) if (W.managerNation('BUL', 60) !== 'BUL') foreign++;
+  ok(
+    foreign > 4000 * 0.25 && foreign < 4000 * 0.5,
+    `about a third of clubs have a foreign manager (${foreign} of 4000)`,
+  );
+}
+
 // ---- nationality archetypes: how a nation's players are made ----
 {
   const lean = (nat, pos, k) => D.archetypeLean(nat, pos)[k] || 0;

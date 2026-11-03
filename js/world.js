@@ -1563,22 +1563,107 @@
     AFR: ['EUR', 'ENG', 'ASIA'],
     OFC: ['ASIA', 'ENG', 'EUR'],
   };
-  // The nationality of a member of staff (or a scout) a club in `nat` would hire: mostly the club's own part of the world
-  // (a fifth the club's own nation), then the regions it has ties with, and now and then anyone
+  // Where managers and staff come from. Football hires along lines of language and tradition, and from the nations that make
+  // managers: a Frenchman manages Togo, a Brazilian a Bulgarian club, a Spaniard anywhere in Latin America, and hardly ever
+  // does a Fijian manage in Germany. A foreign pick is weighted by what the nation exports (EXPORT: how many managers it sends
+  // abroad, the big football nations most) times how close it is to the host (CULTURE: a shared language or tradition, then
+  // the same part of the world, then the regions the host looks to: W.REGION_TIES).
+  const CULTURE = {
+    es: 'ESP MEX ARG URU COL CHI PAR ECU PER VEN BOL CRC HON PAN GUA SLV CUB DOM NCA PUR',
+    pt: 'POR BRA ANG MOZ CPV GNB STP',
+    fr: 'FRA BEL LUX SEN CIV MLI BFA GUI CMR ALG TUN MAR COD CGO GAB BEN TOG NIG CHA MAD HAI CTA COM DJI',
+    en: 'ENG SCO WAL NIR IRL USA CAN AUS NZL RSA NGA GHA ZAM ZIM KEN UGA TAN JAM TRI SGP',
+    de: 'GER AUT SUI LIE',
+    it: 'ITA SMR SUI',
+    nl: 'NED BEL SUR CUW',
+    nord: 'DEN NOR SWE FIN ISL FRO',
+    slav: 'SRB CRO BIH SVN MNE MKD BUL KOS RUS UKR BLR CZE SVK POL',
+    arab: 'KSA EGY UAE QAT IRQ JOR OMA BHR KUW LBY ALG TUN MAR',
+    turk: 'TUR AZE UZB KAZ',
+    brit: 'ENG SCO WAL NIR IRL',
+  };
+  const CULT_OF = {};
+  for (const [g, list] of Object.entries(CULTURE))
+    list.split(' ').forEach((n) => (CULT_OF[n] = (CULT_OF[n] || new Set()).add(g)));
+  const EXPORT = {
+    ESP: 10,
+    ITA: 10,
+    POR: 9,
+    GER: 8,
+    FRA: 8,
+    ENG: 8,
+    ARG: 7,
+    NED: 6,
+    BRA: 6,
+    URU: 3,
+    CRO: 3,
+    SRB: 3,
+    SCO: 3,
+    BEL: 3,
+    DEN: 2,
+    SWE: 2,
+    TUR: 2,
+    SUI: 2,
+    ROU: 2,
+    GRE: 2,
+    MEX: 2,
+    COL: 1.5,
+    CHI: 1.5,
+    USA: 1.5,
+    NOR: 1.5,
+    POL: 1.5,
+    AUT: 1.5,
+    IRL: 1.2,
+    CZE: 1.2,
+    RUS: 1.2,
+    UKR: 1.2,
+    BUL: 1,
+    HUN: 1,
+    JPN: 0.6,
+    KOR: 0.6,
+    AUS: 0.6,
+    SEN: 0.5,
+    CIV: 0.5,
+    NGA: 0.5,
+    CMR: 0.5,
+    GHA: 0.5,
+    EGY: 0.5,
+    MAR: 0.5,
+    ALG: 0.5,
+    TUN: 0.5,
+  };
+  W.mgrExport = (n) => EXPORT[n] ?? 0.15;
+  // How close a nation is to a host, as a multiplier
+  W.mgrTie = (host, n) => {
+    const h = D.NATIONS[host],
+      x = D.NATIONS[n];
+    if (!h || !x) return 0.12;
+    const gh = CULT_OF[host],
+      gx = CULT_OF[n];
+    if (gh && gx && [...gh].some((g) => gx.has(g))) return 5;
+    if (h.region === x.region) return 2.5;
+    const ties = W.REGION_TIES[h.region] || [];
+    const i = ties.indexOf(x.region);
+    const far = i === 0 ? 1.5 : i === 1 ? 1.1 : i === 2 ? 0.8 : 0.12;
+    return W.mgrExport(n) >= 6 ? Math.max(far, 1.6) : far; // (the big names of the game are hired from anywhere)
+  };
+  // A foreign nation a host would draw a manager or staff member from
+  W.foreignNation = function (host) {
+    const all = D.nationCodes().filter((n) => n !== host);
+    return U.wpick(all, (n) => W.mgrExport(n) * W.mgrTie(host, n)) || U.pick(all);
+  };
+  // How often the dugout is held by a foreigner: clubs hire one about a third of the time, rather more when the host's own game
+  // is small (a poorer club, a weaker nation)
+  W.MGR_FOREIGN = { club: 0.34, hire: 0.4 };
+  W.managerNation = function (host, rep = 60, hire = false) {
+    const base = hire ? W.MGR_FOREIGN.hire : W.MGR_FOREIGN.club;
+    const p = base + (rep < 55 ? 0.08 : rep > 75 ? -0.04 : 0);
+    return Math.random() < p ? W.foreignNation(host) : host;
+  };
+  // The nationality of a member of staff (or a scout) a club in `nat` would hire: mostly a local, otherwise a foreigner from
+  // the nations close to it (W.foreignNation)
   W.staffNation = function (nat) {
-    const home = (D.NATIONS[nat] || D.NATIONS.ENG).region,
-      all = D.nationCodes(),
-      inRegion = (r) => all.filter((n) => D.NATIONS[n].region === r);
-    const roll = Math.random();
-    if (roll < 0.2) return nat;
-    if (roll < 0.65) return U.pick(inRegion(home).concat([nat]));
-    const ties = W.REGION_TIES[home] || [];
-    if (roll < 0.9 && ties.length) {
-      const r = ties[Math.random() < 0.6 ? 0 : Math.random() < 0.6 ? 1 : ties.length - 1];
-      const list = inRegion(r);
-      if (list.length) return U.pick(list);
-    }
-    return U.pick(all);
+    return Math.random() < 0.45 ? nat : W.foreignNation(nat);
   };
   // A scout knows their home region best, the regions their home has ties with a little, the rest hardly
   W.scoutProfile = function (nat, ability) {
@@ -2621,7 +2706,7 @@
       manager:
         sim === 'minimal'
           ? null
-          : W.genStaff('Manager', U.chance(0.75) ? nat : U.pick(D.nationCodes()), {
+          : W.genStaff('Manager', W.managerNation(nat, rep), {
               rep: Math.round(rep * U.rand(0.8, 1.05)),
             }).id,
     };
@@ -3238,10 +3323,57 @@
       const lad = ladder[c.nat];
       return lad ? lad.findIndex((x) => x.id === c.comp) : -1;
     };
+    // Every season is walked back from today's divisions (the one before it, then the one before that): at the end of each season a few clubs went up and as many
+    // came down (weak clubs of the upper division, strong ones of the lower, by their reputation then), so a division's champion
+    // can be one of the clubs that went up from it, and nobody wins a lower division twice in a row or stays in it.
+    const CHAIN = years + 1,
+      chain = { 0: Object.fromEntries(leagues.map((comp) => [comp.id, clubs.filter((c) => c.comp === comp.id)])) };
+    const takeN = (list, n, weight) => {
+      const pool = list.slice(),
+        out = [];
+      while (out.length < n && pool.length) {
+        const c = U.wpick(pool, weight) || pool[0];
+        out.push(c);
+        pool.splice(pool.indexOf(c), 1);
+      }
+      return out;
+    };
+    for (let ago = 1; ago <= CHAIN; ago++) {
+      const year = S.year - ago,
+        at = chain[ago - 1],
+        by = Object.fromEntries(Object.entries(at).map(([id, list]) => [id, list.slice()])),
+        moved = new Set(),
+        rep = (c) => W.repPath(c, ago),
+        here = (c) => !c.founded || c.founded <= year;
+      for (const nat in ladder) {
+        const lad = ladder[nat];
+        for (let ti = 1; ti < lad.length; ti++) {
+          const up = lad[ti - 1].id,
+            low = lad[ti].id;
+          const n = U.clamp(Math.round(at[low].length * 0.15), 2, 4);
+          const goUp = takeN(
+            at[up].filter((c) => here(c) && !moved.has(c.id)),
+            n,
+            (c) => Math.exp(-(rep(c) - 55) / 8),
+          );
+          const goDown = takeN(
+            at[low].filter((c) => here(c) && !moved.has(c.id) && !goUp.includes(c)),
+            n,
+            (c) => Math.exp((rep(c) - 55) / 8),
+          );
+          [...goUp, ...goDown].forEach((c) => moved.add(c.id));
+          by[up] = by[up].filter((c) => !goUp.includes(c)).concat(goDown);
+          by[low] = by[low].filter((c) => !goDown.includes(c)).concat(goUp);
+        }
+      }
+      for (const id in by) by[id] = by[id].filter(here);
+      chain[ago] = by;
+    }
     // who stood in which division in a season (year `ago` seasons back): a map from division id to its clubs
     const season = (year) => {
       const ago = S.year - year,
         by = {};
+      if (chain[ago]) return chain[ago];
       for (const comp of leagues) by[comp.id] = [];
       const loose = [];
       for (const c of clubs) {
@@ -3298,12 +3430,14 @@
       for (const comp of leagues) {
         const pool = divs[comp.id];
         if (pool.length < 2) continue;
-        const w = (c) => Math.exp((W.repPath(c, ago) - 55) / 8) * (prev[comp.id] === c.id ? 2.4 : 1);
-        const champ = U.wpick(pool, w) || pool[0];
-        const second = U.wpick(
-          pool.filter((c) => c.id !== champ.id),
-          w,
-        );
+        // A division with one above it: its champion goes up at the end of the season, so he is one of the clubs promoted from it
+        // (and cannot win it again, nor still be in it the year after). The top flight alone favours last year's winner.
+        const goingUp = pool.filter((c) => entry.promoted.includes(c.id)),
+          top = goingUp.length === 0;
+        const w = (c) => Math.exp((W.repPath(c, ago) - 55) / 8) * (top && prev[comp.id] === c.id ? 2.4 : 1);
+        const champ = U.wpick(top ? pool : goingUp, w) || (top ? pool : goingUp)[0];
+        const rest = (top ? pool : goingUp.length > 1 ? goingUp : pool).filter((c) => c.id !== champ.id);
+        const second = U.wpick(rest, w);
         prev[comp.id] = champ.id;
         champ.titles = champ.titles || {};
         champ.titles[comp.id] = (champ.titles[comp.id] || 0) + 1;
