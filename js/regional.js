@@ -46,7 +46,51 @@
     pt: (r) => `Taça ${r}`,
     nl: (r) => `${r} Beker`,
   };
-  const joinNames = (a) => (a.length < 2 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+  // A region as its cup writes it: the short name in the nation's own language (Bretagne, País Vasco, Bayern), the data's name
+  // where it is short already
+  const PLACE = {
+    en: { 'Yorkshire and the Humber': 'Yorkshire', 'Washington DC area': 'Washington DC' },
+    es: {
+      Andalusia: 'Andalucía',
+      'Balearic Islands': 'Baleares',
+      'Basque Country': 'País Vasco',
+      Catalonia: 'Cataluña',
+      Navarre: 'Navarra',
+      'Buenos Aires City': 'Capital',
+      'Buenos Aires Province': 'Bonaerense',
+      'Santiago del Estero': 'Santiago',
+    },
+    de: {
+      Bavaria: 'Bayern',
+      Hesse: 'Hessen',
+      'North Rhine-Westphalia': 'Nordrhein-Westfalen',
+      'Rhineland-Palatinate': 'Rheinland-Pfalz',
+      Saxony: 'Sachsen',
+      'Saxony-Anhalt': 'Sachsen-Anhalt',
+    },
+    fr: {
+      'Auvergne-Rhône-Alpes': 'Rhône-Alpes',
+      Brittany: 'Bretagne',
+      'Burgundy-Franche-Comté': 'Bourgogne',
+      'Grand Est': 'Est',
+      'Hauts-de-France': 'Nord',
+      Normandy: 'Normandie',
+      "Provence-Alpes-Côte d'Azur": 'Provence',
+    },
+    it: {
+      Apulia: 'Puglia',
+      'Emilia-Romagna': 'Emilia',
+      'Friuli-Venezia Giulia': 'Friuli',
+      Lombardy: 'Lombardia',
+      Piedmont: 'Piemonte',
+      Sardinia: 'Sardegna',
+      Tuscany: 'Toscana',
+    },
+    pt: { Azores: 'Açores', Lisbon: 'Lisboa' },
+    nl: { 'North Brabant': 'Noord-Brabant', 'North Holland': 'Noord-Holland', 'South Holland': 'Zuid-Holland' },
+  };
+  // (regions that share a cup are joined with a slash: Copa Valencia / Asturias / Galicia, shorter than a list with "and")
+  const joinNames = (a, lang) => a.map((r) => (PLACE[lang] && PLACE[lang][r]) || r).join(' / ');
   const centre = (g) => [
     g.cs.reduce((t, c) => t + c.g[0], 0) / g.cs.length,
     g.cs.reduce((t, c) => t + c.g[1], 0) / g.cs.length,
@@ -113,7 +157,7 @@
           `${l.nat}_${i + 1}`,
           l.nat,
           'rr',
-          CUP_NAME[lang](joinNames(g.names) + (pieces[key(g)] > 1 ? ' ' + ROMAN[n - 1] : '')),
+          CUP_NAME[lang](joinNames(g.names, lang) + (pieces[key(g)] > 1 ? ' ' + ROMAN[n - 1] : '')),
           l.nat + 'ABCDEFGHIJ'[i],
           g.cs.map((c) => c.code).join(' '),
         ]);
