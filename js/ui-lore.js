@@ -28,14 +28,14 @@
       out.push(
         row(
           P.chair.title,
-          `${C.flag(P.chair.nat)} ${esc(P.chair.name)}${P.chair.legend != null ? ' <span class="pill">former player</span>' : ''}<div class="tiny dim">in the post since ${P.chair.since}${P.chair.legend != null && (c.legends || [])[P.chair.legend] ? `; played ${U.plural(c.legends[P.chair.legend].apps, 'game')} for the club` : ''}</div>`,
+          `${C.flag(P.chair.nat)} <span data-nolink>${esc(P.chair.name)}</span>${P.chair.legend != null ? ' <span class="pill">former player</span>' : ''}<div class="tiny dim">in the post since ${P.chair.since}${P.chair.legend != null && (c.legends || [])[P.chair.legend] ? `; played ${U.plural(c.legends[P.chair.legend].apps, 'game')} for the club` : ''}</div>`,
         ),
       );
     if (P.amb)
       out.push(
         row(
           'Ambassador',
-          `${C.flag(P.amb.nat)} ${esc(P.amb.name)}<div class="tiny dim">${esc(P.amb.pos)} · ${esc(P.amb.era)} · ${U.plural(P.amb.apps, 'game')}, ${U.plural(P.amb.goals, 'goal')}. Represents the club at dinners, openings and every big night.</div>`,
+          `${C.flag(P.amb.nat)} <span data-nolink>${esc(P.amb.name)}</span><div class="tiny dim">${esc(P.amb.pos)} · ${esc(P.amb.era)} · ${U.plural(P.amb.apps, 'game')}, ${U.plural(P.amb.goals, 'goal')}. Represents the club at dinners, openings and every big night.</div>`,
         ),
       );
     if (P.mgr) {
@@ -43,7 +43,7 @@
       out.push(
         row(
           'Manager',
-          `${C.flag(P.mgr.nat)} ${esc(P.mgr.fn + ' ' + P.mgr.ln)}<div class="tiny dim">${
+          `${C.flag(P.mgr.nat)} <span data-nolink>${esc(P.mgr.fn + ' ' + P.mgr.ln)}</span><div class="tiny dim">${
             src && src.id !== c.id
               ? `Played ${U.plural(P.mgr.lore.apps, 'game')} for ${esc(src.name)} (${esc(P.mgr.lore.era)}), the rivals.`
               : `A club legend: ${U.plural(P.mgr.lore.apps, 'game')} for the club (${esc(P.mgr.lore.era)}).`

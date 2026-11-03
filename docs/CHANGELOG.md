@@ -1,6 +1,6 @@
 # Touchline — Changelog
 
-Nov 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.
+Nov 4, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e233d43c-4d87-4b44-a3ed-0310bbfea1ea) · Generated from the Shipped list in [docs/ROADMAP.md](ROADMAP.md) by tools/changelog.mjs (npm run changelog); do not edit it here. Newest first.
 
 ## Playtest feedback, round 24
 
@@ -187,6 +187,8 @@ Nov 3, 2026 · Source: [Claude Docs version](https://claude.ai/code/artifact/e23
 - Match report (`UI.acts.matchReport`, js/ui-screens.js; `res.cards` now carries the minute, js/engine.js): goals with the assist and the minute, a cards list, minute first with the club's short name. Results from before this change show their cards without a minute.
 - Fit for how we play (`Sc.suits`, js/scouting.js; the block in `UI.reportCard`, js/ui-extra.js): a verdict and up to a few lines in the scout report on how a player suits the user's formation, build-up and press (judged against his own level) and the squad's depth. Over a sample of 300 players with full knowledge: most are a decent or neutral fit, about one in ten suits the system, one in eight has doubts, and the lines change with the tactic.
 - Youth pathways (`UI.youthPathway`, `UI.youthHub`, js/ui-youth.js; shown at the top of the Academy tab): a card per promising youngster with where he is, what comes next and who blocks him, from the gap in ability to the weakest regular of his position over what he should grow in a year.
+- Bench swap (`UI.acts.benchSwap`, `UI.acts.benchSwapDo`, js/ui-screens.js; `tactic.bench` read by `W.pickXI`, js/world.js): each bench row on Tactics has a Swap button to change places with a starter (goalkeepers only with goalkeepers) or with a player outside the matchday squad; the chosen bench is saved and Auto-pick or a formation change resets it.
+- Fix: an agent, manager, chairman or ambassador who shared a name with a player was linked to that player's profile by the name sweep (`UI.linkSweep`, js/ui-core.js); those names are marked `data-nolink` and the sweep skips them.
 - Fix: a player a world definition calls up for his country was dropped as the weakest outfield player when a nation's squad was topped up to three goalkeepers (`I.withKeepers`); he is never the one dropped, and a call-up now clears the squads already made for the day (the editor check caught it after the nationality change moved the squads).
 - Spain's Basque-only club (Arrasti) plays in the first division (Sorar go down in its place, rated 57 in the top flight), and the Catalan-only club (Serrallac) is an ordinary club with no signing rule, in new worlds.
 

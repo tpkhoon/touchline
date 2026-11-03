@@ -1200,8 +1200,66 @@
         <div class="small muted" style="margin-top:12px;line-height:1.5">${tacticHint(T)}</div></div>
       ${coverCard(T)}
       ${natCtx() ? '' : leadershipCard(xi, arm)}
-      <div class="sec"><div class="h3">Bench</div></div><div class="card flat list" style="padding:4px 12px">${bench.map((p) => C.playerRow(p)).join('')}</div>`;
+      <div class="sec"><div class="h3">Bench</div></div><div class="card flat list" style="padding:4px 12px">${bench.map((p) => C.playerRow(p, '', `<button class="btn sm" data-act="benchSwap" data-id="${p.id}">Swap</button>`)).join('')}</div>`;
   }
+  // Swap a bench player: with a starter (he takes the place, the starter goes to the bench) or with someone outside the
+  // matchday squad (he takes the bench place)
+  UI.acts.benchSwap = (d) => {
+    const T = TT(),
+      c = ctxClub(),
+      p = P(d.id);
+    const { xi, bench } = W.pickXI(c.id, T);
+    const inSquad = new Set(
+      xi
+        .concat(bench)
+        .filter(Boolean)
+        .map((q) => q.id),
+    );
+    const starters = xi
+      .map((q, i) => ({ q, i }))
+      .filter((x) => x.q && (x.q.pos === 'GK') === (p.pos === 'GK'))
+      .map(
+        ({ q, i }) =>
+          `<div class="prow tap" data-act="benchSwapDo" data-id="${p.id}" data-with="${q.id}">${C.pos(q)}<div class="grow"><div class="b ellip">${esc(W.name(q))}</div><div class="small dim">Starts: ${D.slotLabel(D.FORMATIONS[T.formation][i])} · ${W.fitAt(p, D.FORMATIONS[T.formation][i].t, D.FORMATIONS[T.formation][i], T.roles[i]) >= 0.8 ? 'he suits the place' : 'out of position there'}</div></div>${C.fitTag(q.fitness)}</div>`,
+      )
+      .join('');
+    const others = sqOf(c)
+      .filter((q) => !inSquad.has(q.id) && W.available(q) && !q.unreg)
+      .sort((a, b) => b.ca - a.ca)
+      .map(
+        (q) =>
+          `<div class="prow tap" data-act="benchSwapDo" data-id="${p.id}" data-with="${q.id}">${C.pos(q)}<div class="grow"><div class="b ellip">${esc(W.name(q))}</div><div class="small dim">Not in the matchday squad</div></div>${C.fitTag(q.fitness)}</div>`,
+      )
+      .join('');
+    UI.sheet(
+      `<div class="h3">Swap with a starter</div><div class="list">${starters}</div>
+      <div class="h3" style="margin-top:12px">Swap with a player outside the squad</div><div class="list">${others || '<div class="small dim" style="padding:8px 0">No one else is available.</div>'}</div>`,
+      { title: `Swap ${W.short(p)}` },
+    );
+  };
+  UI.acts.benchSwapDo = (d) => {
+    const T = TT(),
+      c = ctxClub(),
+      p = P(d.id),
+      q = P(d.with);
+    if (!p || !q) return;
+    const { xi, bench } = W.pickXI(c.id, T);
+    const lineup = xi.map((x) => (x ? x.id : null));
+    const benchIds = bench.map((x) => x.id);
+    const slot = lineup.indexOf(q.id);
+    if (slot >= 0) lineup[slot] = p.id;
+    benchIds[benchIds.indexOf(p.id)] = q.id;
+    T.lineup = lineup;
+    T.bench = benchIds;
+    UI.save();
+    UI.closeSheet();
+    UI.render();
+    UI.toast(
+      slot >= 0
+        ? `${W.short(p)} starts, ${W.short(q)} to the bench`
+        : `${W.short(q)} replaces ${W.short(p)} on the bench`,
+    );
+  };
   // Squad cover: for the formation you play, how many players in your squad are at home (accomplished or better) in each
   // position it needs against the places to fill, and how the other formations would line up with the squad you have
   UI._cover = false;
@@ -1380,6 +1438,7 @@
     T.formation = d.v;
     T.roles = W.defaultRoles(d.v);
     T.lineup = null;
+    T.bench = null;
     UI._slot = null;
     UI.save();
     UI.render();
@@ -1399,6 +1458,7 @@
     const T = TT(),
       id = ctxClub().id;
     T.lineup = null;
+    T.bench = null;
     // Compare with a pick that ignores fitness: whoever drops out was rested
     const withFit = new Set(
       W.pickXI(id, T)

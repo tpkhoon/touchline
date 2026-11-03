@@ -910,7 +910,7 @@
     return (linkIndex = by);
   };
   const SKIP_LINK =
-    '[data-act],button,a,input,select,textarea,option,script,style,svg,.sh-head,.hero,.pcard-hero,#topbar,#matchOv,.nav,.tag,.h1,.h2,.t-title';
+    '[data-act],[data-nolink],button,a,input,select,textarea,option,script,style,svg,.sh-head,.hero,.pcard-hero,#topbar,#matchOv,.nav,.tag,.h1,.h2,.t-title';
   const seenText = new WeakSet();
   UI.linkSweep = function () {
     if (!FM.S || !FM.S.user || !FM.S.clubs) return;

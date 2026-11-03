@@ -2157,7 +2157,7 @@
         mgrLine = isMine
           ? 'You'
           : m
-            ? `${esc(m.fn)} ${esc(m.ln)}${m.nat !== t.code ? ` (${C.flag(m.nat)})` : ''} · ability ${U.staffText(m.ability)} · since ${m.since}`
+            ? `<span data-nolink>${esc(m.fn)} ${esc(m.ln)}</span>${m.nat !== t.code ? ` (${C.flag(m.nat)})` : ''} · ability ${U.staffText(m.ability)} · since ${m.since}`
             : t.vacantSince != null
               ? 'Vacant: the federation is looking for a manager'
               : '—';
