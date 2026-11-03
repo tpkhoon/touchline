@@ -154,9 +154,7 @@
     };
     const who = (pid) => (P(pid) ? C.pname(P(pid)) : '<span class="dim">Unknown</span>');
     const ratings = (k) =>
-      Object.entries(m.ratings || {})
-        .filter(([pid]) => P(pid) && P(pid).clubId === (k ? m.a : m.h))
-        .sort((p, q) => q[1] - p[1]);
+      Object.entries(m.ratings || {}).filter(([pid]) => P(pid) && P(pid).clubId === (k ? m.a : m.h)); // (the starting XI in formation order, then the substitutes as they came on)
     const rated = !nat && m.ratings && Object.keys(m.ratings).length;
     const crest = (k) => (nat ? `<div style="font-size:34px">${sd[k].mark}</div>` : C.crest(CL(k ? m.a : m.h), 48));
     UI.sheet(

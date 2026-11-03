@@ -34367,49 +34367,49 @@
   "SC": {
    "region": "Asia",
    "tier": 4,
-   "name": "Southeast Asian Club Cup",
+   "name": "Southeast Asian Cup",
    "short": "SEC"
   },
   "GC": {
    "region": "Asia",
    "tier": 4,
-   "name": "Gulf Club Cup",
+   "name": "Gulf Cup",
    "short": "GCC"
   },
   "AB": {
    "region": "Asia",
    "tier": 4,
-   "name": "Arab Club Cup",
+   "name": "Arab Cup",
    "short": "ARB"
   },
   "WF": {
    "region": "Africa",
    "tier": 4,
-   "name": "West African Club Cup",
+   "name": "West African Cup",
    "short": "WAF"
   },
   "EF": {
    "region": "Africa",
    "tier": 4,
-   "name": "East and Southern African Club Cup",
+   "name": "East African Cup",
    "short": "EAF"
   },
   "CA": {
    "region": "North America",
    "tier": 4,
-   "name": "Central American Club Cup",
+   "name": "Central American Cup",
    "short": "CAC"
   },
   "AN": {
    "region": "South America",
    "tier": 4,
-   "name": "Andean Club Cup",
+   "name": "Andes Cup",
    "short": "AND"
   },
   "CE": {
    "region": "Europe",
    "tier": 4,
-   "name": "Atlantic Club Cup",
+   "name": "Atlantic Cup",
    "short": "ATL"
   }
  },

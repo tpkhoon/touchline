@@ -200,15 +200,15 @@ All have groups of four then knockouts, as the game's scaled-down format.
 | AFC Champions League Two | Two legs | One match, neutral |
 | CAF Champions League, CAF Confederation Cup | Two legs | Two legs |
 | CONCACAF Champions Cup, North American Shield | Two legs | Two legs |
-| Adriatic and Aegean Cup, Carpathian Cup, Northern League Cup (regional cups) | Two legs | One match, neutral |
+| Adriatic Cup, Carpathian Cup, Northern Cup (regional cups) | Two legs | One match, neutral |
 | European Holders' Cup (a knockout from the first round) | Semi-finals over two legs, other rounds single matches | One match, neutral |
 | European Summer Cup | Single matches | One match, neutral |
 
 ### Cups in every nation, and the regional ones
 
 Every nation with a league (all 92) has a domestic cup: a seeded single-leg knockout for all its clubs (every division), extra time and
-penalties, the final at a neutral ground. Asia has two regional club cups after the Asian cups: the Southeast Asian Club Cup
-(Thailand, Vietnam, Indonesia, Malaysia three clubs each, Singapore and the Philippines two) and the Gulf Club Cup (Saudi Arabia,
+penalties, the final at a neutral ground. Asia has two regional club cups after the Asian cups: the Southeast Asian Cup
+(Thailand, Vietnam, Indonesia, Malaysia three clubs each, Singapore and the Philippines two) and the Gulf Cup (Saudi Arabia,
 the UAE, Qatar and Iran four each): groups of four, then the knockouts. Nations also meet in the Southeast Asian, Gulf and East Asian
 Nations Cups, invitational tournaments in the international windows with a host that rotates through the region.
 
@@ -217,7 +217,7 @@ Nations Cups, invitational tournaments in the international windows with a host 
 At the start of each season every nation plays a Super Cup: the league champions against the cup winners of the season before (the
 league's runner-up when one club won both), one match at a neutral ground with extra time and penalties. Each continent has one too:
 the champions cup winner against the winner of its Shield. Besides the Asian regional club cups above, there are the Arab, West
-African, East and Southern African, Central American, Andean and Atlantic Club Cups (groups of four, then the knockouts). Three
+African, East and Southern African, Central American, Andean and Atlantic Cups (groups of four, then the knockouts). Three
 regional tournaments for nations are played each season in turn (the Southeast Asian, Gulf, East Asian, East, Southern, West and North
 African, Arab, Central Asian, Baltic, Nordic, Balkan, Central European, Celtic, Caucasus, Central American and Caribbean, Andean and
 River Plate cups, and the Cherry Blossom, Golden Elephant and Monsoon Cups): a host rotating through the region's nations, the three
@@ -247,9 +247,9 @@ Entrants are the places just below the main cups in each league; a club is never
 | Competition | Entrants |
 | --- | --- |
 | North American Shield | Places 5–8 of the American league and of Mexico's league (the Champions Cup takes the top four); 8 clubs in two groups |
-| Adriatic and Aegean Cup | Serbia 3, Greece 2, Turkey 3 (after their European places); 8 clubs in two groups |
+| Adriatic Cup | Serbia 3, Greece 2, Turkey 3 (after their European places); 8 clubs in two groups |
 | Carpathian Cup | Czechia, Poland, Hungary and Austria 4 each; 16 clubs in four groups |
-| Northern League Cup | Norway 4, Denmark 4; 8 clubs in two groups |
+| Northern Cup | Norway 4, Denmark 4; 8 clubs in two groups |
 | European Holders' Cup | One club from each European nation: its domestic cup winner, or the runner-up when the winner is in the European Champions Cup; a nation with no domestic cup sends its best club with no other European place. Knockout from the first round (byes for the top seeds) |
 | European Summer Cup | The next place after the European Trophy's in England, Spain, Germany, Italy, France, Portugal, the Netherlands and Belgium; 8 clubs in a knockout before the Trophy's group stage. The two finalists take the places of the Trophy's lowest-ranked entrants (never the user's club) |
 

@@ -3659,7 +3659,7 @@
     {
       id: 'AA',
       region: 'Europe',
-      name: 'Adriatic and Aegean Cup',
+      name: 'Adriatic Cup',
       short: 'AAC',
       prize: 1.2e6,
       tier: 4,
@@ -3677,7 +3677,7 @@
     {
       id: 'NR',
       region: 'Europe',
-      name: 'Northern League Cup',
+      name: 'Northern Cup',
       short: 'NLC',
       prize: 1.2e6,
       tier: 4,
@@ -3687,7 +3687,7 @@
     {
       id: 'SC',
       region: 'Asia',
-      name: 'Southeast Asian Club Cup',
+      name: 'Southeast Asian Cup',
       short: 'SEC',
       prize: 1e6,
       tier: 4,
@@ -3696,7 +3696,7 @@
     {
       id: 'GC',
       region: 'Asia',
-      name: 'Gulf Club Cup',
+      name: 'Gulf Cup',
       short: 'GCC',
       prize: 1.2e6,
       tier: 4,
@@ -3705,7 +3705,7 @@
     {
       id: 'AB',
       region: 'Asia',
-      name: 'Arab Club Cup',
+      name: 'Arab Cup',
       short: 'ARB',
       prize: 1e6,
       tier: 5,
@@ -3714,7 +3714,7 @@
     {
       id: 'WF',
       region: 'Africa',
-      name: 'West African Club Cup',
+      name: 'West African Cup',
       short: 'WAF',
       prize: 1e6,
       tier: 4,
@@ -3723,7 +3723,7 @@
     {
       id: 'EF',
       region: 'Africa',
-      name: 'East and Southern African Club Cup',
+      name: 'East African Cup',
       short: 'EAF',
       prize: 1e6,
       tier: 4,
@@ -3732,7 +3732,7 @@
     {
       id: 'CA',
       region: 'North America',
-      name: 'Central American Club Cup',
+      name: 'Central American Cup',
       short: 'CAC',
       prize: 1e6,
       tier: 4,
@@ -3741,7 +3741,7 @@
     {
       id: 'AN',
       region: 'South America',
-      name: 'Andean Club Cup',
+      name: 'Andes Cup',
       short: 'AND',
       prize: 1e6,
       tier: 4,
@@ -3750,7 +3750,7 @@
     {
       id: 'CE',
       region: 'Europe',
-      name: 'Atlantic Club Cup',
+      name: 'Atlantic Cup',
       short: 'ATL',
       prize: 1e6,
       tier: 4,

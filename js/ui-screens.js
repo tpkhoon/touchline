@@ -1122,6 +1122,7 @@
       <div class="row" style="gap:8px;margin-top:12px"><span class="small dim grow">${list.length} of ${U.plural(sq.length, 'player')}</span>${sqActive() ? '<button class="btn sm" data-act="sqReset">Clear filters</button>' : ''}<button class="btn sm pri" data-act="closeSheet">Done</button></div>`;
     return `<div class="row small dim" style="margin:0 2px 8px"><span>${U.plural(sq.length, 'player')}</span><span>·</span><span>Wages ${U.money(U.sum(sq, (p) => p.wage))}/wk</span><span class="grow"></span><span>Foreign ${foreign}${FM.Reg.real() ? '' : ` (${W.foreignLimitText()} in squad)`}</span></div>${UI.regLine(club())}
       ${expiring ? `<button class="warnline tap" style="width:100%;text-align:left;border:0" data-act="sqFilter" data-v="expiring">… ${expiring} contract${expiring === 1 ? '' : 's'} expire this season — unsigned players leave on a free. Show them ›</button>` : ''}
+      ${UI.trialistsCard ? UI.trialistsCard() : ''}
       <input type="text" placeholder="Search your squad…" value="${esc(q.text)}" data-input="sqText" aria-label="Search your squad" style="width:100%;min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:4px">
       ${UI.posFilter(q.pos, 'sqPos', 'sqPosGroup', true)}
       <div class="row" style="margin:6px 0 8px;gap:6px"><button class="btn sm" data-act="sqSheet">Sort &amp; filter${sqActive() ? ` (${sqActive()})` : ''}</button><span class="tiny dim grow">${sqActive() ? `${list.length} of ${U.plural(sq.length, 'player')}` : `Sorted by ${SQ_SORT[q.sort][0].toLowerCase()}`}</span>${sqActive() ? `<button class="btn sm" data-act="sqReset">Clear</button>` : ''}</div>
@@ -1761,6 +1762,7 @@
         ${p.honours && p.honours.length ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Honours</span><b>${honoursLine(p)}</b></div>` : ''}
         ${trainedRows(p)}
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
+      ${naturalCard(p)}
       ${persuadeCard(p)}
       ${bioCard(p)}
       ${UI.natCard(p)}
@@ -1768,6 +1770,13 @@
       ${UI.careerCard(p, history)}
       ${injuryCard(p)}`;
   }
+  // The national team you manage and a foreign player at a club in its country who could be naturalised for it: how far he is
+  const naturalCard = (p) => {
+    const w = FM.Intl.naturalFor ? FM.Intl.naturalFor(p) : null;
+    if (!w) return '';
+    const nt = S().nteams[S().user.nation];
+    return `<div class="card"><div class="row"><div class="h3 grow">Naturalising for ${esc(nt.name)}</div><b class="small">${w.ready ? 'Qualified' : `${w.years} of ${U.plural(w.need, 'year')}`}</b></div><div style="margin-top:8px">${C.bar(Math.min(100, (w.years / w.need) * 100), w.ready ? 'var(--good)' : 'var(--acc2)')}</div><div class="tiny dim" style="margin-top:6px">${w.ready ? `He has lived here long enough. Each year the federation has about a ${Math.round(w.rate * 100)}% chance of pushing his citizenship through, up to its limit for the season.` : `${U.plural(w.need - w.years, 'more year')} at a club in ${esc(nt.name)} before he can be naturalised; the federation wants him for the squad.`} He is eligible only if he has not been capped.</div></div>`;
+  };
   // A keeper's clean sheets are counted only in the seasons the game has a record of: said so when his career is longer
   const gkSheets = (p) => {
     const cs = (p.history || []).reduce((t, h) => t + (h.cs || 0), 0) + (p.season.cs || 0),
@@ -3703,10 +3712,7 @@
     const f = FM.Cups.allFixtures().find((x) => x.id === d.id);
     if (!f || !f.res) return UI.toast('Report no longer available');
     const r = f.res;
-    const side = (k) =>
-      Object.entries(f.ratings || {})
-        .filter(([pid]) => P(pid) && P(pid).clubId === (k ? f.a : f.h))
-        .sort((a, b) => b[1] - a[1]);
+    const side = (k) => Object.entries(f.ratings || {}).filter(([pid]) => P(pid) && P(pid).clubId === (k ? f.a : f.h)); // (the starting XI in formation order, then the substitutes as they came on)
     const tag = (k) => {
       const c = CL(k ? f.a : f.h);
       return `<b class="ev-team" style="background:${c.colors[0]};color:${U.ink(c.colors[0])};flex:none" title="${esc(c.name)}">${esc(c.short || c.name)}</b>`;

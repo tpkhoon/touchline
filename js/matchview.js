@@ -1266,15 +1266,20 @@
         ${MV.promptLog && MV.promptLog.length ? `<div class="card"><div class="h3">Your decisions</div>${MV.promptLog.map((l) => `<div class="small muted" style="margin-top:6px">${esc(l)}</div>`).join('')}</div>` : ''}`;
     } else if (t === 'ratings') {
       const marks = MV.markers(m);
-      const list = (sd) =>
-        Object.entries(sd.rating)
+      // the starting XI in formation order (goalkeeper to striker), then the substitutes in the order they came on
+      const list = (sd) => {
+        let subs = false;
+        return Object.entries(sd.rating)
           .filter(([pid]) => sd.mins[pid])
-          .sort((a, b) => b[1] - a[1])
-          .map(
-            ([pid, r]) =>
-              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}</span><span class="marks">${marks(pid)}</span><span class="dim tiny" style="margin-right:6px">${sd.mins[pid]}'</span>${C.rating(r)}</div>`,
-          )
+          .map(([pid, r]) => {
+            const head =
+              !subs && sd.on[pid] > 0
+                ? ((subs = true), '<div class="tiny dim b" style="padding:6px 0 0">SUBSTITUTES</div>')
+                : '';
+            return `${head}<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="grow ellip">${C.pname(P(pid))}</span><span class="marks">${marks(pid)}</span><span class="dim tiny" style="margin-right:6px">${sd.mins[pid]}'</span>${C.rating(r)}</div>`;
+          })
           .join('');
+      };
       body.innerHTML = `<div class="row" style="align-items:flex-start;gap:12px"><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(H.club, 18)} ${esc(H.club.name)}</div>${list(H)}</div><div class="grow card flat" style="padding:8px 10px"><div class="row b small">${C.crest(A.club, 18)} ${esc(A.club.name)}</div>${list(A)}</div></div>`;
     } else {
       const sd = m.sides[MV.us];

@@ -215,6 +215,14 @@
       msg: `${W.name(p)} joins training on trial for about two weeks. Other clubs can still sign him in the meantime.`,
     };
   };
+  // Days of the trial still to run (each day's unit is the game's market day: about half a week)
+  M.trialLeft = (t) => Math.max(0, t.until - now());
+  // Send a trialist home: the trial ends, he is a free agent again
+  M.endTrial = function (pid) {
+    const before = M.trials().length;
+    S().user.trials = M.trials().filter((t) => t.pid !== pid);
+    return S().user.trials.length < before;
+  };
   M.trialsDaily = function () {
     const s = S(),
       c = W.userClub();

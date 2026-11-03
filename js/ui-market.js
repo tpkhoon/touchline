@@ -388,6 +388,34 @@
     if (M.onTrial(p)) return '<button class="btn sm grow" disabled>On trial</button>';
     return `<button class="btn sm grow" data-act="trial" data-id="${p.id}">Trial</button>`;
   };
+  // The free agents on trial with you: how long is left, with a way to offer a contract or send him home
+  UI.trialistsCard = function () {
+    if (!W.employed()) return '';
+    const ts = M.trials()
+      .map((t) => ({ t, p: P(t.pid) }))
+      .filter((x) => x.p);
+    const left = (t) => {
+      const wk = Math.ceil(M.trialLeft(t) / 2);
+      return wk <= 0 ? 'verdict due' : `about ${U.plural(wk, 'week')} left`;
+    };
+    const rows = ts
+      .map(
+        ({ t, p }) =>
+          `<div class="prow tap" data-act="player" data-id="${p.id}">${C.pos(p)}<div class="grow"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))}</div><div class="small dim">${W.age(p)} yrs · ${left(t)}${t.ext ? ' · extended' : ''}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}<div class="row" style="gap:6px"><button class="btn sm" data-act="offer" data-id="${p.id}">Offer a deal</button><button class="btn sm" data-act="endTrial" data-id="${p.id}">Send home</button></div></div></div>`,
+      )
+      .join('');
+    return `<details class="card flat cupfold" data-cup="trialists" ${((UI._cupsOpen || {}).trialists ?? ts.length > 0) ? 'open' : ''} style="padding:6px 12px;margin-bottom:8px"><summary><div class="row"><div class="h3 grow">Trialists</div><span class="dim small">${ts.length} of ${M.MAX_TRIALS}</span></div></summary>${
+      ts.length
+        ? `<div class="list">${rows}</div><div class="tiny dim" style="margin:6px 0">Other clubs can still sign a trialist. When a trial ends you are asked whether to offer a contract.</div>`
+        : '<div class="small dim" style="padding:8px 0">No one is on trial. A free agent can come in for a fortnight from his profile (Trial).</div>'
+    }</details>`;
+  };
+  UI.acts.endTrial = (d) => {
+    const p = P(d.id);
+    if (p && M.endTrial(p.id)) UI.toast(`${W.short(p)} is sent home`);
+    UI.save();
+    UI.render();
+  };
   UI.acts.trial = (d) => {
     const r = M.startTrial(d.id);
     UI.toast(r.msg, 4000);

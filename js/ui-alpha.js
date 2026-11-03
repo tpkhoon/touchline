@@ -1398,6 +1398,21 @@
             )
             .join('') || '<div class="empty">Everyone worth picking is in.</div>'
         }</div>`;
+    } else if (tab === 'natural') {
+      const w = I.naturalWatch(t.code);
+      body = `<div class="tiny dim" style="margin:4px 0 6px">Foreign players at clubs in ${esc(t.name)} who have never played for a senior nation and are good enough for the squad. Each year at a club here counts towards citizenship; once a player has served the years ${esc(t.name)} asks of him, the federation can push it through, up to its limit for the season. He is then eligible, though he may still choose his own nation if he has not been capped.</div>
+        <div class="list">${
+          w
+            .map(({ p, years, need, ready, rate }) =>
+              row(
+                p,
+                'player',
+                `<div style="width:64px;margin-left:6px;text-align:right"><div class="tiny b">${ready ? 'Qualified' : `${years}/${need} yrs`}</div>${C.bar(Math.min(100, (years / need) * 100), ready ? 'var(--good)' : 'var(--acc2)')}</div>`,
+                `${D.NATIONS[p.nat] ? D.NATIONS[p.nat].name : p.nat}: ${ready ? `qualified, about a ${Math.round(rate * 100)}% chance each year the federation takes one` : `${U.plural(need - years, 'year')} to go`}`,
+              ),
+            )
+            .join('') || '<div class="empty">Nobody is on the way to a passport right now.</div>'
+        }</div>`;
     } else if (tab === 'eligible') {
       const el = I.eligibleSwitch(t.code);
       body = `<div class="tiny dim" style="margin:4px 0 6px">Players eligible for ${esc(t.name)} through birth or family who have not yet played for a senior national team. Open one to ask him to commit. A player who has been capped is tied to that nation for good.</div>
@@ -1449,7 +1464,7 @@
           })
           .join('')}`;
     }
-    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('lineup', 'Lineup')}${sub('squad', 'Call-ups')}${sub('prepare', 'Prepare')}${sub('youth', 'Under-21s')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}</div>
+    const html = `<div class="chips" style="margin-bottom:6px;flex-wrap:wrap">${sub('lineup', 'Lineup')}${sub('squad', 'Call-ups')}${sub('prepare', 'Prepare')}${sub('youth', 'Under-21s')}${sub('leftout', 'Left out')}${sub('eligible', 'Eligible players')}${sub('natural', 'Naturalising')}</div>
       ${body}`;
     return html;
   };

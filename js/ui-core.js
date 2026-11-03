@@ -291,6 +291,11 @@
       );
     if (p.loan && W.ownPlayer(p)) tags.push(`<span class="pill acc">Loan</span>`);
     const uc = own && W.userClub();
+    const nz = FM.Intl && FM.Intl.naturalFor ? FM.Intl.naturalFor(p) : null;
+    if (nz)
+      tags.push(
+        `<span class="pill acc" title="Could be naturalised for the nation you manage: ${nz.ready ? 'qualified' : `${nz.years} of ${U.plural(nz.need, 'year')} served`}">${nz.ready ? 'Naturalise' : `Natur. ${nz.years}/${nz.need}`}</span>`,
+      );
     const reg = uc && p.clubId === uc.id ? FM.Reg.tag(p, uc) : null;
     if (reg) tags.push(`<span class="pill" title="${esc(reg.why)}">${esc(reg.label)}</span>`);
     const club = p.clubId ? FM.S.clubs[p.clubId] : null;

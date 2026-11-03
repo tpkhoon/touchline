@@ -11,6 +11,18 @@
   // old-to-new table is not kept in the game (it would keep the real abbreviations in it). The migrations below it are kept as they were.
   Sv.OLDEST = 9;
 
+  const REGIONAL_RENAMES = {
+    'Adriatic and Aegean Cup': 'Adriatic Cup',
+    'Northern League Cup': 'Northern Cup',
+    'Southeast Asian Club Cup': 'Southeast Asian Cup',
+    'Gulf Club Cup': 'Gulf Cup',
+    'Arab Club Cup': 'Arab Cup',
+    'West African Club Cup': 'West African Cup',
+    'East and Southern African Club Cup': 'East African Cup',
+    'Central American Club Cup': 'Central American Cup',
+    'Andean Club Cup': 'Andes Cup',
+    'Atlantic Club Cup': 'Atlantic Cup',
+  };
   // ---------- Migrations ----------
   // MIG[v] upgrades an unpacked state from version v to v + 1. Never edit a shipped migration:
   // add the next one and bump FM.SAVE_VERSION in core.js.
@@ -184,6 +196,10 @@
             .filter((t, i, a) => a.indexOf(t) === i)
             .slice(0, 3);
     }
+    // the regional club cups have shorter names now ("Gulf Club Cup" is the Gulf Cup)
+    if (s.comps)
+      for (const c of Object.values(s.comps))
+        if (c.type === 'continental' && REGIONAL_RENAMES[c.name]) c.name = REGIONAL_RENAMES[c.name];
     // the Continental Champions Trophy has its own id now (it shared 'CT' with the Carpathian Cup)
     if (FM.Intl && FM.Intl.renameTrophy) FM.Intl.renameTrophy(s);
     // clubs with a signing policy (Eibar: Basque players only; Andorra: Catalan): older saves get the policy

@@ -1589,7 +1589,7 @@
     Cu.reallocateRegional();
     return changes;
   };
-  // The regional club cups (the Carpathian Cup, the Southeast Asian Club Cup, the Gulf Club Cup and the rest, below the main
+  // The regional club cups (the Carpathian Cup, the Southeast Asian Cup, the Gulf Cup and the rest, below the main
   // continental cups) hand their places out by coefficient too: the same set of places the world began with, given in the order of
   // the nations' coefficients, so a nation whose clubs do well in them (and in the big cups) climbs the ranking and one whose clubs
   // fail slips. S.spotsRegional keeps the places each cup began with.

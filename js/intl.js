@@ -2171,6 +2171,44 @@
         });
     }
   };
+  // The players at clubs in a nation who could be naturalised for its national team: foreign, uncapped, no second nation, the nation
+  // allows it, and good enough that its federation wants them (the same tests as the yearly tick). Each with the years he has lived
+  // there against the years it asks, closest first: { p, years, need, ready, rate }. `ready`: he qualifies, and the federation
+  // pushes him through with chance `rate` a year (as few as its limit allows).
+  let nwCache = null;
+  I.naturalWatch = function (code) {
+    const s = S(),
+      key = `${s.year}|${s.day}|${W.rosterVer}|${code}`;
+    if (nwCache && nwCache.s === s && nwCache.key === key) return nwCache.out;
+    const out = I.naturalList(code);
+    nwCache = { s, key, out };
+    return out;
+  };
+  I.naturalList = function (code) {
+    const s = S(),
+      bar = (I.pool(code)[22] || { ca: 0 }).ca,
+      out = [];
+    if (!s.nteams || !s.nteams['n_' + code]) return out;
+    for (const p of Object.values(s.players)) {
+      if (p.retired || !p.clubId || W.age(p) < 18 || p.nat2 || !I.uncapped(p)) continue;
+      const club = s.clubs[p.clubId];
+      if (!club || club.nat !== code || p.nat === code) continue;
+      const rule = I.naturalRule(code, p.nat);
+      if (!rule || p.ca < bar - 3) continue;
+      const years = I.residence(p, code);
+      out.push({ p, years, need: rule.need, ready: years >= rule.need, rate: rule.rate });
+    }
+    return out.sort((a, b) => b.ready - a.ready || a.need - a.years - (b.need - b.years) || b.p.ca - a.p.ca);
+  };
+  // Is he on that list for the nation you manage? ({ years, need, ready, rate } or null), for his profile and the squad rows
+  I.naturalFor = function (p) {
+    const u = S().user,
+      t = u && u.nation && S().nteams && S().nteams[u.nation];
+    if (!t || !p.clubId || p.nat2 || p.nat === t.code) return null;
+    const club = S().clubs[p.clubId];
+    if (!club || club.nat !== t.code) return null;
+    return I.naturalWatch(t.code).find((x) => x.p === p) || null;
+  };
   // How much a nation appeals to a player who could play for it, in points: [reason, change]. His ties (where he grew up, his passport,
   // his family), whether he would be in the squad, and how good the team is (an ambitious player weighs that more)
   I.allegiancePull = function (p, code) {
