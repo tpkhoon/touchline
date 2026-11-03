@@ -22,6 +22,80 @@
       ? '<span class="tiny dim">Youth league starts with the season</span>'
       : `<span class="tiny dim">${U.ordinal(i + 1)} of ${t.length} · ${U.pts(t[i].pts)}${last && opp ? ` · last: ${last.gf}–${last.ga} ${last.home ? 'v' : 'at'} ${esc(opp.name)}` : ''}</span>`;
   };
+  // ---------- Pathways: one card for each youngster ----------
+  // Where he is, what comes next, and who is in his way. The player to beat is the weakest regular of his position in the first team (the
+  // places the formation has for it); the time to get there is the gap in ability over what he is likely to grow in a year.
+  UI.youthPathway = function (c, p, where) {
+    const T = S().user.tactic,
+      D = FM.D;
+    const slots = (D.FORMATIONS[T.formation] || []).filter((x) => x.t === p.pos).length || 1;
+    const same = W.squad(c.id)
+      .filter((q) => !q.team && !q.loan && q.pos === p.pos && q.id !== p.id)
+      .sort((a, b) => b.ca - a.ca);
+    const gate = same[Math.min(slots, same.length) - 1] || null;
+    const age = W.age(p),
+      growth = Math.max(0.6, (p.pa - p.ca) / Math.max(1, 25 - age));
+    const gap = gate ? gate.ca - p.ca : 0;
+    const out = { where, next: '', blocker: '', tone: '' };
+    if (!gate) {
+      out.next = `No one ahead of him at ${p.pos}: ready to play as soon as he is picked`;
+      out.tone = 'good';
+    } else if (gap <= 0) {
+      out.next = 'Good enough for the first team now';
+      out.tone = 'good';
+    } else if (p.pa < gate.ca - 1) {
+      out.next = `Unlikely to get past ${W.short(gate)} here: a loan or a sale would suit him`;
+      out.tone = 'bad';
+      out.blocker = gate;
+    } else {
+      const years = gap / growth;
+      out.next =
+        years <= 1
+          ? 'Ready for first-team minutes in about a year'
+          : years <= 2.5
+            ? 'About two years from the first team'
+            : `About ${U.plural(Math.round(years), 'year')} from the first team`;
+      out.tone = years <= 1 ? 'good' : '';
+      out.blocker = gate;
+    }
+    if (out.blocker) {
+      const g = out.blocker,
+        yrsLeft = g.contract - S().year;
+      out.blockNote = `${W.short(g)} (${W.age(g)})${W.age(g) >= 31 ? ', who will need replacing soon' : yrsLeft <= 0 ? ', whose contract ends this season' : yrsLeft === 1 ? ', whose contract ends next season' : ''}`;
+    }
+    return out;
+  };
+  UI.youthHub = function (c) {
+    const list = [];
+    for (const [team, def] of Object.entries(Y.TEAMS))
+      for (const p of Y.squadOf(c.id, team)) list.push([p, def.label, team]);
+    for (const p of W.squad(c.id))
+      if (!p.team && !p.loan && W.age(p) <= 21) list.push([p, 'First-team squad', 'first']);
+    const b = Y.bTeamOf(c.id);
+    if (b) for (const p of W.squad(b.id)) if (!p.loan && W.age(p) <= 21) list.push([p, 'B team', 'b']);
+    for (const p of Object.values(S().players))
+      if (p.loan && p.loan.from === c.id && !p.retired && W.age(p) <= 21)
+        list.push([p, `On loan at ${S().clubs[p.clubId] ? S().clubs[p.clubId].name : 'another club'}`, 'loan']);
+    if (!list.length) return '';
+    list.sort((x, y) => y[0].pa - x[0].pa);
+    const cards = list.slice(0, 12).map(([p, where, team]) => {
+      const w = UI.youthPathway(c, p, where);
+      const moves =
+        team === 'u21'
+          ? btn(p.id, 'first', '↑ First team') + btn(p.id, 'u18', '↓ U18')
+          : team === 'u18'
+            ? btn(p.id, 'first', '↑ First team') + btn(p.id, 'u21', '↑ U21')
+            : team === 'first'
+              ? btn(p.id, W.age(p) <= 18 ? 'u18' : 'u21', W.age(p) <= 18 ? '↓ U18' : '↓ U21')
+              : '';
+      const line = (t, tone) =>
+        `<div class="tiny" style="margin-top:3px;${tone ? `color:var(--${tone})` : 'opacity:.8'}">${esc(t)}</div>`;
+      return `<div style="padding-bottom:6px">${C.playerRow(p, ` · ${esc(where)}${p.season.apps ? ` · ${U.plural(p.season.apps, 'game')}` : ''}`)}<div style="margin:0 0 4px 4px">${line(w.next, w.tone)}${w.blocker ? line(`Blocked by ${w.blockNote}`, '') : ''}${moves ? `<div class="row" style="gap:4px;margin-top:6px">${moves}</div>` : ''}</div></div>`;
+    });
+    return `<div class="sec"><div class="h3">Pathways</div></div>
+      <div class="tiny dim" style="margin:-4px 2px 6px">Your most promising youngsters: where each is, what comes next and who is in his way. The player to beat is the weakest regular in his position; the time is the gap in ability over what he should grow in a year.</div>
+      <div class="card flat list" style="padding:4px 12px">${cards.join('')}${list.length > 12 ? `<div class="tiny dim" style="padding:6px 0">and ${list.length - 12} more in the lists below</div>` : ''}</div>`;
+  };
   UI.youthSides = function (c) {
     const out = [];
     for (const [team, def] of Object.entries(Y.TEAMS)) {

@@ -1149,6 +1149,7 @@
     const grads = W.squad(c.id).filter((p) => p.youth === c.id);
     return `<div class="card"><div class="row"><div class="grow"><div class="h3">Youth Academy</div><div class="small dim">Level ${c.facilities.academy} · Intake arrives around matchday ${Math.round(((D.YOUTH_ROUND + 1) / 22) * (FM.S.comps[c.comp] && FM.S.comps[c.comp].fixtures ? FM.S.comps[c.comp].fixtures.length : 22))}</div></div><div class="lvl">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= c.facilities.academy ? 'on' : ''}"></i>`).join('')}</div></div>
       <div class="small muted" style="margin-top:8px">Academy graduates in squad: <b>${grads.length}</b> · Youth debuts under you: <b>${S().user.stats.youthDebuts}</b></div></div>
+      ${UI.youthHub ? UI.youthHub(c) : ''}
       ${UI.youthSides(c)}`;
   }
 
