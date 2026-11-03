@@ -325,7 +325,9 @@
   G.continentOf = (nat) => {
     if (nat === 'AUS' || nat === 'NZL') return 'oceania';
     const r = D.NATIONS[nat] && D.NATIONS[nat].region;
-    return { ENG: 'europe', EUR: 'europe', SAM: 'sam', NAM: 'nam', ASIA: 'asia', AFR: 'africa' }[r] || 'asia';
+    return (
+      { ENG: 'europe', EUR: 'europe', SAM: 'sam', NAM: 'nam', ASIA: 'asia', AFR: 'africa', OFC: 'oceania' }[r] || 'asia'
+    );
   };
   // [{ key, name, nations: [codes with a league, by name], leagues: [leagues] }] for the continents that have leagues
   G.byContinent = () =>

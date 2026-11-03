@@ -290,6 +290,9 @@
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',
       );
     if (p.loan && W.ownPlayer(p)) tags.push(`<span class="pill acc">Loan</span>`);
+    const uc = own && W.userClub();
+    const reg = uc && p.clubId === uc.id ? FM.Reg.tag(p, uc) : null;
+    if (reg) tags.push(`<span class="pill" title="${esc(reg.why)}">${esc(reg.label)}</span>`);
     const club = p.clubId ? FM.S.clubs[p.clubId] : null;
     // what is moving his mood, when it is moving it (the biggest reason, with its size)
     const f = own && FM.People ? FM.People.moodFactors(p)[0] : null;

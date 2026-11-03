@@ -2289,14 +2289,12 @@
     UI._natTab = d.k;
     UI.nationSheet(UI._natId);
   };
-  // a player of your own B team or youth sides is yours already: there is no offer to make for him
-  ['offer', 'offerLoan', 'offerClubs'].forEach((k) => {
-    const f = UI.acts[k];
-    if (!f) return;
-    UI.acts[k] = (d, ...rest) => {
-      const p = d && FM.S.players[d.id];
-      if (p && W.ownPlayer(p)) return UI.toast(`${W.name(p)} is already your player.`, 2500);
-      return f(d, ...rest);
-    };
-  });
+  // a player of your own B team or youth sides is yours already: there is no offer to buy him
+  // (offerLoan and offerClubs are the other way round: your own player, offered out)
+  const buyOffer = UI.acts.offer;
+  UI.acts.offer = (d, ...rest) => {
+    const p = d && FM.S.players[d.id];
+    if (p && W.ownPlayer(p)) return UI.toast(`${W.name(p)} is already your player.`, 2500);
+    return buyOffer(d, ...rest);
+  };
 })();

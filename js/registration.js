@@ -553,6 +553,30 @@
     }
     return out;
   };
+  // The label a squad row carries when he counts against one of the club's foreign-player limits: { label, why }, or null.
+  // (Non-EU where the league caps those; else foreign, with Asian and ASEAN places named where the league has them.)
+  R.tag = function (p, c) {
+    if (!c || c.sim === 'nation') return null;
+    if (!R.real()) {
+      const cap = c.sim === 'full' ? FM.S.rules.foreignLimit : Infinity;
+      return cap < W.NO_LIMIT && p.nat !== c.nat
+        ? { label: 'Foreign', why: `Counts against the limit of ${cap} foreign players` }
+        : null;
+    }
+    const r = R.rulesFor(c);
+    if (!r) return null;
+    if (r.nonEU && R.nonEU(p, c)) return { label: 'Non-EU', why: 'Counts against the non-EU limit' };
+    if (!r.foreign || !R.isForeign(p, c, r)) return null;
+    const ps = W.citizenships(p),
+      intl = c.comp === 'US1' ? 'International' : 'Foreign';
+    if (r.asean && ps.some((n) => R.ASEAN.has(n)))
+      return { label: 'ASEAN foreign', why: 'Fills the ASEAN foreign place' };
+    if (r.asian && ps.some(R.isAsian)) return { label: 'Asian foreign', why: 'Fills the Asian foreign place' };
+    return {
+      label: intl,
+      why: `Counts against the limit of ${r.foreign + (r.asian || 0) + (r.asean || 0)} foreign players`,
+    };
+  };
   // One line for the squad screen: "Non-EU 2/3", "Homegrown rule: 15/17 non-homegrown over-21s", ...
   R.summary = function (c) {
     const st = R.status(c);

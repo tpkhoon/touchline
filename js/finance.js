@@ -290,18 +290,27 @@
         clubId: uc.id,
       });
     }
-    if (fp.freeze && r < F.LIMIT.freeze + boost - 0.03) {
-      fp.freeze = false;
-      FM.News.add({
-        type: 'board',
-        title: 'Wage freeze lifted',
-        body: 'The wage bill is back within limits.',
-        clubId: uc.id,
-      });
-    }
+    F.thaw();
   };
-  // The board's wage freeze: no new deal may push wages up (renewals at the same wage or less, and sales, are fine)
+  // Lifts the wage freeze once wages are back under the limit the board named (below it, not a margin under it)
+  F.thaw = () => {
+    const s = S(),
+      fp = s.user && s.user.finPressure,
+      uc = W.employed() && W.userClub();
+    if (!fp || !fp.freeze || !uc || fp.year !== s.year) return;
+    if (F.wageRatio(uc) >= F.LIMIT.freeze + (fp.boost || 0)) return;
+    fp.freeze = false;
+    FM.News.add({
+      type: 'board',
+      title: 'Wage freeze lifted',
+      body: 'The wage bill is back within limits.',
+      clubId: uc.id,
+    });
+  };
+  // The board's wage freeze: no new deal may push wages up (renewals at the same wage or less, and sales, are fine).
+  // Checked against the wage bill as it is now, so selling a high earner frees the next deal at once.
   F.frozen = (wageAdded) => {
+    F.thaw();
     const fp = S().user && S().user.finPressure;
     return !!(fp && fp.freeze && fp.year === S().year && wageAdded > 0);
   };
