@@ -1750,11 +1750,11 @@
       ${UI.statsCard(p, avg)}
       <div class="card"><div class="h3">Career</div><div class="row small" style="margin:8px 0"><span class="grow muted">Total</span><b>${U.plural(p.career.apps, 'game')} · ${p.pos === 'GK' ? gkSheets(p) : `${U.plural(p.career.goals, 'goal')}`}</b></div>
         ${p.career.spells
-          .slice()
+          .map((sp, i) => ({ ...sp, first: i === 0 }))
           .reverse()
           .map(
             (sp) =>
-              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow ${CL(sp.c) ? 'tap' : ''}" ${CL(sp.c) ? `data-act="clubView" data-id="${sp.c}"` : ''}>${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : ''}${sp.to ? seasonSpan(sp.from, sp.to) : `${seasonSpan(sp.from, null)}–now`}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
+              `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)">${CL(sp.c) ? C.crest(CL(sp.c), 18) : ''}<span class="grow ${CL(sp.c) ? 'tap' : ''}" ${CL(sp.c) ? `data-act="clubView" data-id="${sp.c}"` : ''}>${esc(CL(sp.c) ? CL(sp.c).name : '—')}</span><span class="dim">${sp.loan ? 'Loan · ' : sp.fee != null ? `${sp.fee ? U.money(sp.fee) : 'Free'} · ` : sp.first ? '' : 'Fee undisclosed · '}${sp.to ? seasonSpan(sp.from, sp.to) : `${seasonSpan(sp.from, null)}–now`}</span><b style="margin-left:8px">${sp.apps}/${sp.goals}</b></div>`,
           )
           .join('')}
         <div class="row small" style="margin-top:8px"><span class="grow muted">International</span><b>${p.intl && p.intl.caps ? natLink(`${C.flag(playsFor)} ${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'} · ${p.pos === 'GK' ? `${p.intl.cs ?? '—'} clean sheets` : `${p.intl.goals} goal${p.intl.goals === 1 ? '' : 's'}`}`) : `<span class="dim" style="font-weight:600">Uncapped${p.nat2 ? ' · free to choose' : ''}</span>`}</b></div>
@@ -1854,15 +1854,48 @@
   };
   UI.seasonsCard = function (p, history) {
     const gk = p.pos === 'GK';
-    const head = gk
-      ? ['Apps', 'CS', 'Conc', 'Rtg', 'Mins', 'MotM', 'YC', 'RC']
-      : ['Apps', 'G', 'A', 'Rtg', 'Mins', 'MotM', 'YC', 'RC'];
+    // The columns: a heading, the value of a row, whether a total makes sense and (for a decimal) its places. A season the game
+    // played without the full match detail (a lower league) shows a dash where there is nothing counted.
+    const one = (x) => (x ? (Math.round(x * 10) / 10).toFixed(1) : '—');
+    const n = (x) => x || '—';
+    const cols = gk
+      ? [
+          ['Apps', (h) => h.apps, 'apps'],
+          ['Mins', (h) => n(h.mins), 'mins'],
+          ['CS', (h) => h.cs || 0, 'cs'],
+          ['Conc', (h) => h.ga || 0, 'ga'],
+          ['xGA', (h) => one(h.xga), 'xga', 1],
+          ['Saves', (h) => n(h.sv), 'sv'],
+          [
+            'Sv%',
+            (h) => (h.sv || h.ga ? Math.round((100 * (h.sv || 0)) / ((h.sv || 0) + (h.ga || 0))) + '%' : '—'),
+            null,
+          ],
+          ['Rtg', (h) => (h.r ? h.r.toFixed(2) : '—'), null],
+          ['MotM', (h) => h.motm || 0, 'motm'],
+          ['YC', (h) => h.yc || 0, 'yc'],
+          ['RC', (h) => h.rc || 0, 'rc'],
+        ]
+      : [
+          ['Apps', (h) => h.apps, 'apps'],
+          ['Mins', (h) => n(h.mins), 'mins'],
+          ['G', (h) => h.g, 'g'],
+          ['A', (h) => h.a || 0, 'a'],
+          ['xG', (h) => one(h.xg), 'xg', 1],
+          ['xA', (h) => one(h.xa), 'xa', 1],
+          ['Sh', (h) => n(h.sh), 'sh'],
+          ['SoT', (h) => n(h.sot), 'sot'],
+          ['KP', (h) => n(h.kp), 'kp'],
+          ['Tkl', (h) => n(h.tk), 'tk'],
+          ['Int', (h) => n(h.ic), 'ic'],
+          ['Rtg', (h) => (h.r ? h.r.toFixed(2) : '—'), null],
+          ['MotM', (h) => h.motm || 0, 'motm'],
+          ['YC', (h) => h.yc || 0, 'yc'],
+          ['RC', (h) => h.rc || 0, 'rc'],
+        ];
     const row = (h) => {
       const c = CL(h.c);
-      const v = gk
-        ? [h.apps, h.cs || 0, h.ga || 0, h.r ? h.r.toFixed(2) : '—', h.mins || '—', h.motm || 0, h.yc || 0, h.rc || 0]
-        : [h.apps, h.g, h.a || 0, h.r ? h.r.toFixed(2) : '—', h.mins || '—', h.motm || 0, h.yc || 0, h.rc || 0];
-      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.name) : '—'}</span></span></td>${v.map((x) => `<td>${x}</td>`).join('')}</tr>`;
+      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.name) : '—'}</span></span></td>${cols.map(([, f]) => `<td>${f(h)}</td>`).join('')}</tr>`;
     };
     // The rows only go back as far as the game has a record: what the Career panel counts beyond them (earlier
     // seasons at a club, and his career before that) comes as rows of its own, so the totals agree
@@ -1881,24 +1914,24 @@
       extra.push({ apps: p.career.apps - shownApps, g: Math.max(0, p.career.goals - shownG), before: true });
     const extraRow = (h) => {
       const c = h.c && CL(h.c);
-      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.name) : 'Other clubs'}</span></span></td><td>${h.apps}</td><td>${gk ? '—' : h.g}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>`;
+      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.name) : 'Other clubs'}</span></span></td>${cols.map(([head]) => `<td>${head === 'Apps' ? h.apps : head === 'G' && !gk ? h.g : '—'}</td>`).join('')}</tr>`;
     };
     if (!history.length && !extra.length) return '';
-    const tot = history.concat(extra).reduce(
-      (t, h) => ({
-        apps: t.apps + h.apps,
-        g: t.g + h.g,
-        a: t.a + (h.a || 0),
-        cs: t.cs + (h.cs || 0),
-        ga: t.ga + (h.ga || 0),
-        motm: t.motm + (h.motm || 0),
-        yc: t.yc + (h.yc || 0),
-        rc: t.rc + (h.rc || 0),
-      }),
-      { apps: 0, g: 0, a: 0, cs: 0, ga: 0, motm: 0, yc: 0, rc: 0 },
-    );
+    const all = history.concat(extra);
+    const total = ([head, , key, dec]) => {
+      if (head === 'Apps') return all.reduce((t, h) => t + h.apps, 0);
+      if (head === 'G') return all.reduce((t, h) => t + h.g, 0);
+      if (head === 'Sv%') {
+        const sv = all.reduce((t, h) => t + (h.sv || 0), 0),
+          ga = all.reduce((t, h) => t + (h.ga || 0), 0);
+        return sv || ga ? Math.round((100 * sv) / (sv + ga)) + '%' : '';
+      }
+      if (!key) return '';
+      const t = all.reduce((x, h) => x + (h[key] || 0), 0);
+      return t ? (dec ? t.toFixed(1) : t) : '';
+    };
     return `<div class="card"><div class="h3">Season by season</div>
-      <div style="overflow-x:auto"><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${head.map((h) => `<th>${h}</th>`).join('')}</tr>
+      <div style="overflow-x:auto"><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${cols.map(([h]) => `<th>${h}</th>`).join('')}</tr>
       ${history
         .map((h, i) => {
           // the seasons at a club the rows do not go back to come right after its last row, not at the foot of the table
@@ -1917,7 +1950,8 @@
         .filter((x) => !x.earlier || !history.some((h) => h.c === x.c))
         .map(extraRow)
         .join('')}
-      <tr style="font-weight:700"><td class="l">Total</td><td></td>${(gk ? [tot.apps, tot.cs, tot.ga, ''] : [tot.apps, tot.g, tot.a, '']).map((x) => `<td>${x}</td>`).join('')}<td></td><td>${tot.motm || ''}</td><td>${tot.yc || ''}</td><td>${tot.rc || ''}</td></tr></table></div></div>`;
+      <tr style="font-weight:700"><td class="l">Total</td><td></td>${cols.map((c) => `<td>${total(c)}</td>`).join('')}</tr></table></div>
+      <div class="tiny dim" style="margin-top:6px">Scroll across for every column. Minutes, shots, chances, tackles, expected goals and keeper numbers are counted in fully simulated matches; a dash is a season without them.</div></div>`;
   };
   // Every move he has made (fee, loan or free) and every trophy and award the archive holds for him: league and cup titles in
   // the seasons he played for the winner, and the individual awards of each league and cup
@@ -1928,7 +1962,15 @@
     const moves = sp
       .map((x, i) => {
         const prev = sp[i - 1];
-        const how = x.loan ? 'Loan' : x.fee != null ? (x.fee ? U.money(x.fee) : 'Free') : i === 0 ? 'Start' : 'Move';
+        const how = x.loan
+          ? 'Loan'
+          : x.fee != null
+            ? x.fee
+              ? U.money(x.fee)
+              : 'Free'
+            : i === 0
+              ? 'Start'
+              : 'Fee undisclosed';
         return { y: x.from, text: `${prev ? `${name(prev.c)} → ` : ''}${name(x.c)}`, how };
       })
       .reverse();
@@ -2044,7 +2086,7 @@
         return p.youth === x.c ? `Came through ${club}'s academy.` : `Began his career at ${club} in ${x.from}.`;
       if (x.fee != null)
         return `Joined ${club} in ${x.from} ${x.fee ? `for ${U.money(x.fee)}` : 'on a free transfer'}.`;
-      return `Moved to ${club} in ${x.from}.`;
+      return `Moved to ${club} in ${x.from} (fee undisclosed).`;
     });
     out.push(...(moves.length > 6 ? [moves[0], '…', ...moves.slice(-4)] : moves));
     const gk = p.pos === 'GK',

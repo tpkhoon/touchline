@@ -146,7 +146,8 @@
     });
     const teamAvg = U.avg(groups, (x) => x.avg);
     const weak = groups.sort((a, b) => a.avg - b.avg)[0];
-    const scouting = (g) => s.user.assignments.some((a) => a.type !== 'player' && a.pos === g);
+    const scouting = (g) =>
+      s.user.assignments.some((a) => a.type !== 'player' && FM.Scouting.posList(a.pos).includes(g));
     if (weak.avg < teamAvg - 3 && !scouting(weak.g))
       add(
         'weak:' + weak.g,

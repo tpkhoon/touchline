@@ -965,6 +965,10 @@
     motm: st.motm,
     yc: st.yc,
     rc: st.rc,
+    sot: st.sot,
+    pas: st.pas,
+    xg: Math.round((st.xg || 0) * 10) / 10,
+    xa: Math.round((st.xa || 0) * 10) / 10,
   });
   // The season's rows: a player who moved mid-season (a transfer, a loan, back from loan) gets one per club
   W.seasonRows = function (p, y) {
@@ -995,6 +999,7 @@
     // a move in the middle of a season: remember the numbers so far, for a history row with the old club
     if (p.clubId && p.clubId !== clubId && p.season && p.season.apps > 0)
       (p.splits = p.splits || []).push({ c: p.clubId, s: { ...p.season } });
+    const unattached = !p.clubId && p.career.spells.length > 0; // (a free agent signing: no fee was paid)
     p.clubId = clubId;
     if (p.team) p.team = undefined; // a new club (or a loan): he joins its first-team squad, not a youth side
     delete p.teamSet;
@@ -1007,7 +1012,14 @@
       if (!b.includes(p)) b.push(p);
       sqIdx.ver = W.rosterVer; // still complete: squads filter out anyone who has since left
     }
-    p.career.spells.push({ c: clubId, from: FM.S.year, to: null, apps: 0, goals: 0 });
+    p.career.spells.push({
+      c: clubId,
+      from: FM.S.year,
+      to: null,
+      apps: 0,
+      goals: 0,
+      ...(unattached ? { fee: 0 } : {}),
+    });
     W.assignNo(p, clubId);
   };
   // Squad numbers: a player keeps his number when it is free at his new club, otherwise takes one that suits his
@@ -3343,6 +3355,10 @@
     'yc',
     'rc',
     'ic',
+    'sot',
+    'pas',
+    'xg',
+    'xa',
   ]; // history row fields, packed in this order (old saves: the first five)
   const SEASON = [
     'apps',

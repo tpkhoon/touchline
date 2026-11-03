@@ -683,6 +683,22 @@
     UI.go('club');
   };
 
+  // Chips that toggle: a position is added to the list or taken off it; "Any" clears it
+  const asPosChips = (a, opts) => {
+    const on = FM.Scouting.posList(a.pos);
+    return `<div class="chips" style="flex-wrap:wrap;margin-top:6px">${opts.map(([v, l]) => `<button class="chip ${v === 'any' ? (on.length ? '' : 'on') : on.includes(v) ? 'on' : ''}" data-act="asPos" data-v="${v}" aria-pressed="${v === 'any' ? !on.length : on.includes(v)}">${l}</button>`).join('')}</div>`;
+  };
+  // The fee slider's steps (the last is no limit); the age slider runs to FM.Scouting.AGE_ANY
+  const FEE_STEPS = [2.5e5, 5e5, 1e6, 2e6, 3e6, 5e6, 8e6, 1.2e7, 2e7, 3.5e7, 5e7, 7.5e7, 1e8];
+  const feeStep = (fee) => {
+    if (!fee) return FEE_STEPS.length;
+    const i = FEE_STEPS.findIndex((x) => x >= fee);
+    return i < 0 ? FEE_STEPS.length : i;
+  };
+  const feeText = (fee) => (fee ? `under ${U.money(fee)}` : 'Any fee');
+  const ageText = (age) => (age >= FM.Scouting.AGE_ANY ? 'Any age' : `${age} or younger`);
+  const slider = (label, key, min, max, val, text) =>
+    `<div class="row" style="margin-top:10px"><div class="h3 grow">${label}</div><b class="as-val">${text}</b></div><input type="range" class="as-range" min="${min}" max="${max}" step="1" value="${val}" data-input="asSlide" data-k="${key}" aria-label="${label}">`;
   UI._as = {
     type: 'region',
     region: 'SAM',
@@ -742,14 +758,17 @@
               W.leagues().map((c) => [c.id, c.name]),
             )}`
       }
-      <div class="h3" style="margin-top:6px">Position</div>${chipRow('as', 'pos', a.pos, [
-        ['any', 'Any'],
-        ['GK', 'GK'],
-        ['DEF', 'DEF'],
-        ['MID', 'MID'],
-        ['ATT', 'ATT'],
-      ])}
-      <div class="tiny dim" style="margin-top:6px">Or one position exactly</div>${chipRow('as', 'pos', a.pos, [
+      <div class="h3" style="margin-top:6px">Positions</div><div class="tiny dim">Tap as many as you like</div>${asPosChips(
+        a,
+        [
+          ['any', 'Any'],
+          ['GK', 'GK'],
+          ['DEF', 'DEF'],
+          ['MID', 'MID'],
+          ['ATT', 'ATT'],
+        ],
+      )}
+      <div class="tiny dim" style="margin-top:6px">Or exact positions</div>${asPosChips(a, [
         ['ST', 'ST'],
         ['W:L', 'LW'],
         ['W:R', 'RW'],
@@ -764,15 +783,9 @@
         ['FB:R', 'RB'],
         ['CB', 'CB'],
       ])}
-      <div class="tiny dim" style="margin-top:6px">Or a type of player: the position and the role he plays best</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${FM.Scouting.TYPES.map(([label, pos, role], i) => `<button class="chip ${a.role === role && a.pos === pos ? 'on' : ''}" data-act="asType" data-i="${i}">${label}</button>`).join('')}</div>
+      <div class="tiny dim" style="margin-top:6px">Or a type of player: the position and the role he plays best</div><div class="chips" style="flex-wrap:wrap;margin-top:6px">${FM.Scouting.TYPES.map(([label, pos, role], i) => `<button class="chip ${a.role === role && FM.Scouting.posList(a.pos).length === 1 && FM.Scouting.posList(a.pos)[0] === pos ? 'on' : ''}" data-act="asType" data-i="${i}">${label}</button>`).join('')}</div>
       <div class="h3" style="margin-top:6px">Nationality</div><select id="as-nat" class="as-nat"><option value="any">Any nationality</option>${natOpts.map((k) => `<option value="${k}" ${a.nat === k ? 'selected' : ''}>${D.NATIONS[k].flag} ${esc(D.NATIONS[k].name)}</option>`).join('')}</select>
-      <div class="h3" style="margin-top:6px">Max age</div>${chipRow('as', 'maxAge', a.maxAge, [
-        [19, '≤19'],
-        [21, '≤21'],
-        [23, '≤23'],
-        [27, '≤27'],
-        [35, 'Any'],
-      ])}
+      ${slider('Max age', 'maxAge', 16, FM.Scouting.AGE_ANY, a.maxAge >= FM.Scouting.AGE_ANY ? FM.Scouting.AGE_ANY : a.maxAge, ageText(a.maxAge))}
       <div class="h3" style="margin-top:6px">Minimum potential</div>${chipRow('as', 'minStars', a.minStars, [
         [0, 'Any'],
         [3, '3★'],
@@ -780,13 +793,8 @@
         [4, '4★'],
         [4.5, '4.5★'],
       ])}
-      <div class="h3" style="margin-top:6px">Max fee</div>${chipRow('as', 'maxFee', a.maxFee, [
-        [0, 'Any'],
-        [1e6, U.money(1e6)],
-        [5e6, U.money(5e6)],
-        [1.5e7, U.money(1.5e7)],
-        [Math.max(1e5, U.roundMoney(bud)), `Budget (${U.money(bud)})`],
-      ])}
+      ${slider('Max fee', 'maxFee', 0, FEE_STEPS.length, feeStep(a.maxFee), feeText(a.maxFee))}
+      <button class="chip" data-act="asFeeBudget" style="margin-top:4px">Use my budget (${U.money(bud)})</button>
       <div class="h3" style="margin-top:6px">Focus</div>${chipRow('as', 'focus', a.focus, [
         ['any', 'Best available'],
         ['moneyball', 'Undervalued'],
@@ -810,6 +818,32 @@
     const num = ['maxAge', 'minStars', 'maxFee'].includes(d.k);
     UI._as[d.k] = num ? +d.v : d.v;
     if (d.k === 'pos') UI._as.role = null; // (a position chosen by itself leaves the role open)
+    UI.assignSheet();
+  };
+  // a position added to or taken off the list of positions wanted
+  UI.acts.asPos = (d) => {
+    const list = FM.Scouting.posList(UI._as.pos).slice();
+    if (d.v === 'any') list.length = 0;
+    else if (list.includes(d.v)) list.splice(list.indexOf(d.v), 1);
+    else list.push(d.v);
+    UI._as.pos = list.length ? list : 'any';
+    if (list.length !== 1) UI._as.role = null; // (a role belongs to one position)
+    UI.assignSheet();
+  };
+  // a slider moves: the age and the fee are set as it is dragged (the sheet is not redrawn under the finger)
+  UI.acts.asSlide = (d, el) => {
+    const v = +el.value,
+      label = el.parentElement.querySelector('.as-val');
+    if (d.k === 'maxAge') {
+      UI._as.maxAge = v >= FM.Scouting.AGE_ANY ? 45 : v;
+      if (label) label.textContent = ageText(UI._as.maxAge);
+    } else {
+      UI._as.maxFee = v >= FEE_STEPS.length ? 0 : FEE_STEPS[v];
+      if (label) label.textContent = feeText(UI._as.maxFee);
+    }
+  };
+  UI.acts.asFeeBudget = () => {
+    UI._as.maxFee = Math.max(1e5, U.roundMoney(club().budget));
     UI.assignSheet();
   };
   UI.acts.doAssign = () => {

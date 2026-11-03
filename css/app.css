@@ -2823,3 +2823,10 @@ tr.tap {
 .mood-angry {
   color: var(--bad);
 }
+
+/* the scouting sliders (age and fee): a full-width track with a finger-sized hit area */
+.as-range {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--acc);
+}

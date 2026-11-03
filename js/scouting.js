@@ -295,18 +295,28 @@
   ];
   // does he play the role best (his best role at his own position)?
   Sc.roleMatch = (p, role) => !role || (D.ROLES[p.pos] && FM.bestRole(p, p.pos) === role);
-  Sc.posLabel = (k) => (k === 'any' ? 'all positions' : Sc.POS_LABEL[k] || k);
-  Sc.posMatch = (p, k) => {
-    if (!k || k === 'any' || D.POS_GROUP[p.pos] === k) return true;
+  // An assignment's position is 'any', one position, or a list of them (older assignments hold the one)
+  Sc.AGE_ANY = 36; // the age slider's last step: no limit
+  Sc.posList = (k) => (Array.isArray(k) ? k : k && k !== 'any' ? [k] : []);
+  Sc.posLabel = (k) => {
+    const l = Sc.posList(k);
+    return l.length ? l.map((x) => Sc.POS_LABEL[x] || x).join(', ') : 'all positions';
+  };
+  const posOne = (p, k) => {
+    if (D.POS_GROUP[p.pos] === k) return true;
     if (k.includes(':')) {
       const [pos, side] = k.split(':');
       return p.pos === pos && p.side === side;
     }
     return p.pos === k;
   };
+  Sc.posMatch = (p, k) => {
+    const l = Sc.posList(k);
+    return !l.length || l.some((x) => posOne(p, x));
+  };
   Sc.focusLabel = (a) => {
     const where = a.type === 'league' ? FM.S.comps[a.comp].name : D.REGIONS[a.region];
-    const bits = [a.role ? `${a.role}` : Sc.posLabel(a.pos), `≤${a.maxAge}`];
+    const bits = [a.role ? `${a.role}` : Sc.posLabel(a.pos), a.maxAge >= Sc.AGE_ANY ? 'any age' : `≤${a.maxAge}`];
     if (a.nat && a.nat !== 'any') bits.push(`${D.NATIONS[a.nat].name} only`);
     if (a.minStars) bits.push(`${a.minStars}★+ potential`);
     if (a.maxFee) bits.push(`under ${U.money(a.maxFee)}`);
