@@ -183,6 +183,23 @@
     };
   };
 
+  // The agent's second proposal: less a week and more up front. A fifth off the wage he needs, the difference made up in a signing-on
+  // fee (what he weighs it at is the agent's bonus weight), so a club short of wage room can still do the deal. Null if it would
+  // not help (a small wage, an old deal with a bonus already) or the package is not one he would take at any wage.
+  Co.cashTerms = function (p, club, t, mode) {
+    const need = Co.wageNeeded(p, club, t, mode);
+    if (need == null || need < 600) return null;
+    const wage = Math.max(50, Math.round((need * 0.8) / 50) * 50),
+      ag = Co.agentInfo(p);
+    const base = { ...t, wage, bonus: 0 };
+    const ev = Co.evaluate(p, club, base, mode);
+    if (ev.hard) return null;
+    let bonus = U.roundMoney(Math.max(0, ((ev.need - ev.value) * 52 * t.years) / Math.max(0.2, ag.bonusW)));
+    for (let i = 0; i < 6 && !Co.evaluate(p, club, { ...base, bonus }, mode).ok; i++)
+      bonus = U.roundMoney(bonus * 1.05 + 1000);
+    return Co.evaluate(p, club, { ...base, bonus }, mode).ok && bonus > (t.bonus || 0) ? { ...base, bonus } : null;
+  };
+
   // Negotiation rounds: each rejected package costs patience; at zero the agent walks away for a while
   Co.patience = function (p) {
     const u = S().user;
@@ -356,6 +373,7 @@
             : ` (${Co.patience(p).left} round${Co.patience(p).left === 1 ? '' : 's'} of patience left)`),
         gap: ev.gap,
         terms: need != null ? { ...t, wage: need } : null,
+        cashTerms: need != null ? Co.cashTerms(p, club, t, 'transfer') : null,
       };
     }
     // Everyone has agreed: now the player weighs your offer against any other club chasing him
@@ -415,6 +433,7 @@
             : ` (${Co.patience(p).left} round${Co.patience(p).left === 1 ? '' : 's'} of patience left)`),
         gap: ev.gap,
         terms: !ev.hard && !walked ? { ...t, wage: Co.wageNeeded(p, club, t, 'renew') } : null,
+        cashTerms: !ev.hard && !walked ? Co.cashTerms(p, club, t, 'renew') : null,
       };
     }
     const before = p.contract;

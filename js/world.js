@@ -256,8 +256,11 @@
   // How well a player fits a slot (0–1): his natural position's table, or a second position he has learned
   // (p.alt). Given the slot itself, its side counts on the flanks: a full-back or wing-back is at home on the side
   // of his stronger foot, a winger too unless his role cuts inside (inv), when he wants the other flank.
-  W.SIDE_FIT = 0.93; // full-back or wing-back on his weaker side
-  W.SIDE_FIT_W = 0.95; // winger on the side his role doesn't want
+  W.SIDE_FIT = 0.8; // full-back or wing-back on the other flank: a different job on the weaker foot, which costs
+  W.SIDE_FIT_W = 0.9; // winger on the side his role doesn't want (a winger cuts in or goes outside, so he loses less)
+  // Very few flank players are at home on both wings: the two-footed (foot Both) and a few more who learned both sides (p.twoSided)
+  W.bothSides = (p) => p.foot === 'Both' || !!p.twoSided;
+  W.TWO_SIDED = 0.04;
   W.fitAt = (p, slotType, slot, role) => {
     let f = (D.FIT[p.pos] && D.FIT[p.pos][slotType]) || (p.pos === slotType ? 1 : 0.4);
     if (p.alt && p.alt[slotType] > f) f = p.alt[slotType];
@@ -270,7 +273,7 @@
           wide = slotType === 'W' || slotType === 'WM';
         const inv = wide && role && (D.ROLES[slotType][role] || {}).inv;
         const want = inv && p.foot !== 'Both' ? (p.foot === 'Left' ? 'R' : 'L') : nat;
-        if (nat && p.foot !== 'Both' && side !== want) f *= wide ? W.SIDE_FIT_W : W.SIDE_FIT;
+        if (nat && !W.bothSides(p) && side !== want) f *= wide ? W.SIDE_FIT_W : W.SIDE_FIT;
       }
     }
     return f;
@@ -849,6 +852,7 @@
       born: FM.S.year - age,
       pos,
       foot: U.chance(0.72) ? 'Right' : U.chance(0.85) ? 'Left' : 'Both',
+      ...(W.FLANK.includes(pos) && U.chance(W.TWO_SIDED) ? { twoSided: true } : {}),
       attrs: genAttrs(pos, nat, ca),
       pa: Math.round(U.clamp(pa, ca, 96)),
       ca: 0,
@@ -1127,121 +1131,167 @@
     CB: [0.05, 0.03, 0.4, 0.2, 1.5, 2.1],
     GK: [0, 0, 0, 0, 0, 0],
   };
+  // The clubs of a nation, for the earlier clubs of a past (listed once per world)
+  let histClubs = { S: null, by: {} };
+  const clubsOfNation = (nat) => {
+    if (histClubs.S !== FM.S) histClubs = { S: FM.S, by: {} };
+    return (histClubs.by[nat] =
+      histClubs.by[nat] ||
+      Object.values(FM.S.clubs)
+        .filter((x) => x.nat === nat && x.sim !== 'nation' && !x.parent && x.comp)
+        .sort((a, b) => a.rep - b.rep));
+  };
+  // His whole career before today: a season of numbers for every year since he was 17 (at most sixteen), at the clubs his ability
+  // would have found him: the last three in full, the earlier ones with the headline numbers. A teenager plays little, a player
+  // in his prime most of the games, and the clubs climb with his ability. The spells, his career totals and the rows agree.
+  const YOUTH_SHARE = { 17: 0.15, 18: 0.3, 19: 0.5, 20: 0.7, 21: 0.85 };
   W.backfillHistory = function (p) {
     const S = FM.S,
       c = p.clubId && S.clubs[p.clubId],
       age = W.age(p);
     if (!c || age < 18 || p.history) return;
-    const seasons = Math.min(3, age - 17),
+    const seasons = Math.min(16, age - 17),
       sp = W.spell(p);
     if (!sp) return;
-    // the young came through here; an older player who arrived recently has an earlier club for the seasons before
+    // the young came through here; an older player who arrived recently has earlier clubs for the seasons before
     let here = Math.min(seasons, Math.max(0, S.year - sp.from));
     if (age < 22) {
       here = seasons;
       sp.from = Math.min(sp.from, S.year - seasons);
     }
-    let prev = null;
+    const growth = (k) => Math.max(0, Math.min(k, 23 - (age - k))) * 2; // (about two points a year before 23)
+    // the clubs of the earlier seasons, in stints of two to five years that climb with his ability then
+    const clubAt = {};
     if (here < seasons) {
-      const near = Object.values(S.clubs).filter(
-        (x) => x.nat === c.nat && x.id !== c.id && x.sim !== 'nation' && Math.abs(x.rep - c.rep) <= 10 && !x.parent,
-      );
-      prev = near.length ? U.pick(near) : null;
+      const pool = clubsOfNation(c.nat);
+      let k = seasons,
+        last = null;
+      while (k > here) {
+        const len = Math.min(k - here, 2 + Math.floor(Math.random() * 4));
+        const want = p.ca - growth(k) + U.gauss(-3, 5);
+        // the clubs nearest his level then: a window of the rep-sorted pool around it
+        const at = pool.findIndex((x) => W.levelFor(x.rep) >= want),
+          mid = at < 0 ? pool.length - 1 : at,
+          pick = [];
+        for (let d = 0; pick.length < 5 && d < pool.length; d++)
+          for (const x of d ? [pool[mid - d], pool[mid + d]] : [pool[mid]])
+            if (x && x.id !== c.id && x !== last) pick.push(x);
+        const club = pick.length ? U.pick(pick) : null;
+        for (let j = 0; j < len; j++) clubAt[k - j] = club;
+        last = club;
+        k -= len;
+      }
     }
     const lvl = W.levelFor(c.rep),
       rate = HIST_RATES[p.pos] || HIST_RATES.CM,
-      comp = c.comp && S.comps[c.comp],
-      games = (comp && comp.fixtures && comp.fixtures.length) || 38;
-    const rows = [],
-      spellAt = {};
+      gk = p.pos === 'GK';
+    const rows = [];
     // where he ranks in his position at his club decides his games: a starter plays most of the matches, the next man in about half,
     // then a rotation place, then the fringe (the players of his own group at the club, by ability)
     const grp = D.POS_GROUP[p.pos],
-      starters = { GK: 1, DEF: 4, MID: 3, ATT: 3 }[grp] || 3,
+      starters = { GK: 1, DEF: 5, MID: 5, ATT: 4 }[grp] || 3,
       mates = W.squad(c.id).filter((q) => q !== p && !q.team && D.POS_GROUP[q.pos] === grp);
     for (let k = seasons; k >= 1; k--) {
-      const y = S.year - k;
-      const club = k <= here || !prev ? c : prev,
-        young = age - k < 21;
-      // he was weaker then, if he was still growing (about two points a year before 23)
-      const then = p.ca - Math.max(0, Math.min(k, 23 - (age - k))) * 2;
-      const clubLvl = club === c ? lvl : W.levelFor(prev.rep);
-      const rel = then - clubLvl;
+      const y = S.year - k,
+        a = age - k; // (his age in that season)
+      const club = k <= here ? c : clubAt[k] || c;
+      const then = p.ca - growth(k);
+      const rel = then - (club === c ? lvl : W.levelFor(club.rep));
+      const comp = club.comp && S.comps[club.comp],
+        cap = ((comp && comp.fixtures && comp.fixtures.length) || 38) + Math.round(3 + club.rep * 0.12), // (the cup and continental games on top of the league's)
+        games = cap - 1;
       let share;
       if (club === c) {
         const rank = mates.filter((q) => q.ca > then).length;
-        share = rank < starters ? 0.8 : rank === starters ? 0.55 : rank === starters + 1 ? 0.35 : 0.15;
+        share = rank < starters ? 0.86 : rank === starters ? 0.55 : rank === starters + 1 ? 0.35 : 0.15;
         if (then >= lvl + 6) share = Math.max(share, 0.86); // a class above his club's level: always in the team
-      } else share = U.clamp(0.55 + rel * 0.025, 0.1, 0.88);
-      if (age - k < 19) share *= 0.6;
-      else if (young) share *= 0.85;
-      const apps = U.clamp(Math.round(U.gauss(games * share, games * 0.09)), 0, games);
-      const finish = 0.6 + p.attrs.finishing / 25;
+      } else share = U.clamp(0.64 + rel * 0.03, 0.1, 0.9);
+      share *= YOUTH_SHARE[a] || (a >= 34 ? 0.8 : 1);
+      const apps = U.clamp(Math.round(U.gauss(games * share, games * 0.09)), 0, cap);
+      const finish = (0.6 + p.attrs.finishing / 25) * (1 + U.clamp(rel * 0.012, -0.25, 0.25));
       const g = Math.round(apps * rate[0] * finish * U.rand(0.6, 1.4));
-      const a = Math.round(apps * rate[1] * U.rand(0.6, 1.4));
-      const gk = p.pos === 'GK';
+      const as = Math.round(apps * rate[1] * U.rand(0.6, 1.4));
       const ga = gk ? Math.round(apps * U.rand(1.0, 1.5)) : 0;
-      rows.push({
+      const row = {
         y,
         c: club.id,
         apps,
         g,
-        a,
+        a: as,
         r: apps
           ? +U.clamp(
-              6.62 + U.clamp(rel * 0.04, -0.5, 0.9) + U.gauss(0, 0.12) + (g + a) / Math.max(1, apps) / 6,
+              6.62 + U.clamp(rel * 0.04, -0.5, 0.9) + U.gauss(0, 0.12) + (g + as) / Math.max(1, apps) / 6,
               5.8,
               7.9,
             ).toFixed(2)
           : 0,
         mins: apps * Math.round(share >= 0.7 ? U.rand(78, 90) : U.rand(55, 80)),
-        sh: Math.round(apps * rate[2] * U.rand(0.7, 1.3)),
-        kp: Math.round(apps * rate[3] * U.rand(0.7, 1.3)),
-        tk: Math.round(apps * rate[4] * U.rand(0.7, 1.3)),
-        ic: Math.round(apps * rate[5] * U.rand(0.7, 1.3)),
-        cs: gk ? Math.round(apps * U.rand(0.22, 0.38)) : 0,
-        sv: gk ? Math.round(ga * U.rand(2, 3.2)) : 0,
-        ga,
-        xga: gk ? Math.round(ga * U.rand(0.85, 1.15) * 10) / 10 : 0,
         motm: Math.round(apps * 0.02 * Math.max(0, 1 + rel * 0.08) * U.rand(0, 2)),
         yc: Math.round(
           apps * ({ CB: 0.16, DM: 0.2, CM: 0.12, FB: 0.12, WB: 0.12, GK: 0.02 }[p.pos] || 0.07) * U.rand(0.4, 1.6),
         ),
         rc: Math.random() < 0.04 ? 1 : 0,
-      });
-      const sk = club.id;
-      spellAt[sk] = spellAt[sk] || { apps: 0, goals: 0, from: null };
-      if (apps > 0 && spellAt[sk].from === null) spellAt[sk].from = y; // (his first season with games: the rows, not a year without)
-      spellAt[sk].apps += apps;
-      spellAt[sk].goals += g;
+      };
+      if (k > 3) for (const f of ['mins', 'motm', 'yc', 'rc']) delete row[f]; // (older seasons: the headline numbers only, to keep the world light)
+      if (k <= 3 && !gk) {
+        // the last three seasons carry the full detail; the earlier ones the headline numbers (the table shows a dash)
+        row.sh = Math.round(apps * rate[2] * U.rand(0.7, 1.3));
+        row.kp = Math.round(apps * rate[3] * U.rand(0.7, 1.3));
+        row.tk = Math.round(apps * rate[4] * U.rand(0.7, 1.3));
+        row.ic = Math.round(apps * rate[5] * U.rand(0.7, 1.3));
+      }
+      if (gk) {
+        row.cs = Math.round(apps * U.rand(0.22, 0.38));
+        row.ga = ga;
+        if (k <= 3) {
+          row.sv = Math.round(ga * U.rand(2, 3.2));
+          row.xga = Math.round(ga * U.rand(0.85, 1.15) * 10) / 10;
+        }
+      }
+      rows.push(row);
     }
     p.history = rows.filter((r) => r.apps > 0); // (a season without a game is no row, as in a played world)
-    // spells and career totals agree with the rows: the current spell covers at least its rows, an earlier club gets one
-    const mine = spellAt[c.id];
-    if (mine) {
-      // a spell that began inside the rows (he came from another club) is exactly its rows; one that began before them
-      // (a long-serving player) also has the seasons the rows do not go back to
-      // (a spell that starts at the first stored season is covered by the rows too, not "before" them)
-      const exact = here < seasons || sp.from >= S.year - seasons;
-      if (mine.apps > sp.apps || exact) {
-        p.career.apps += mine.apps - sp.apps;
-        sp.apps = mine.apps;
-      }
-      sp.goals = exact ? mine.goals : Math.max(sp.goals || 0, mine.goals);
+    // spells: a stint at each earlier club (consecutive seasons there), then the current one
+    const stints = [];
+    for (const r of p.history) {
+      const s = stints[stints.length - 1];
+      if (s && s.c === r.c && r.y - s.to <= 1) {
+        s.to = r.y;
+        s.apps += r.apps;
+        s.goals += r.g;
+      } else stints.push({ c: r.c, from: r.y, to: r.y, apps: r.apps, goals: r.g });
     }
-    if (prev && spellAt[prev.id] && spellAt[prev.id].apps > 0) {
-      const e = spellAt[prev.id];
-      p.career.spells.splice(-1, 0, {
-        c: prev.id,
-        from: e.from ?? sp.from - 1,
-        to: sp.from - 1,
-        apps: e.apps,
-        goals: e.goals,
-      });
-      p.career.apps += e.apps;
-      p.career.goals += e.goals;
+    const mine = stints.filter((s) => s.c === c.id && s.to >= S.year - here),
+      mineApps = mine.reduce((t, s) => t + s.apps, 0),
+      mineGoals = mine.reduce((t, s) => t + s.goals, 0),
+      earlier = stints.filter((s) => !mine.includes(s));
+    // a spell that began inside the rows (he came from another club) is exactly its rows; one that began before them
+    // (a long-serving player) also has the seasons the rows do not go back to
+    const exact = here < seasons || sp.from >= S.year - seasons;
+    let extraApps = 0,
+      extraGoals = 0;
+    if (!exact && sp.apps > mineApps) {
+      extraApps = sp.apps - mineApps;
+      extraGoals = Math.round(extraApps * (mineApps ? mineGoals / mineApps : rate[0] * 0.8));
     }
-    if (mine) p.career.goals += mine.goals;
+    sp.apps = mineApps + extraApps;
+    sp.goals = mineGoals + extraGoals;
+    // (a fee for most moves after the first club, in line with what he was worth then)
+    const spells = earlier.map((s, i) => {
+      const sp0 = { c: s.c, from: s.from, to: s.to, apps: s.apps, goals: s.goals };
+      if (i > 0 && Math.random() < 0.8) {
+        const then = p.ca - growth(S.year - s.from);
+        sp0.fee = Math.max(
+          1e4,
+          Math.round(((p.value || W.value(p)) * Math.pow(Math.max(0.3, then / p.ca), 6) * U.rand(0.3, 0.9)) / 1e4) *
+            1e4,
+        );
+      } else if (i > 0) sp0.fee = 0;
+      return sp0;
+    });
+    p.career.spells.splice(-1, 0, ...spells);
+    p.career.apps = p.history.reduce((t, r) => t + r.apps, 0) + extraApps;
+    p.career.goals = p.history.reduce((t, r) => t + r.g, 0) + extraGoals;
   };
   // Your player: at your club or at your B team (whose players belong to you)
   // Your club or your B team (whose wages you pay): never an AI buyer, borrower or bidder
@@ -1433,13 +1483,45 @@
     (FOREIGN_BY_IDENTITY[club.identity] || 1) *
     (ctx.age != null ? foreignByAge(ctx.age) : 1) *
     (ctx.pos ? FOREIGN_BY_POS[D.POS_GROUP[ctx.pos]] || 1 : 1);
+  // The strength of a nation's own top flight (a reputation, 25 for a nation with no league): its players above that standard go abroad
+  const leagueRepCache = {};
+  W.nationLeagueRep = (nat) => {
+    if (!(nat in leagueRepCache)) {
+      const reps = D.LEAGUES.filter((l) => l.nat === nat && l.tier === 1).map((l) => (l.repBand ? l.repBand[0] : 50));
+      leagueRepCache[nat] = reps.length ? Math.max(...reps) : 25;
+    }
+    return leagueRepCache[nat];
+  };
+  // A nationality from a league's mix, where the good players of the weaker football nations are found at the bigger clubs: the
+  // further a club stands above a nation's own top flight, the more of its foreign players come from that nation (up to about
+  // double). The foreign share of the squad does not change, only whose it is; a weak nation's best go abroad, the rest stay home.
+  const EMIGRANT_PULL = 5;
+  W.pickEmigrant = (club, mix, f) => {
+    const keys = Object.keys(mix),
+      w = new Array(keys.length);
+    let before = 0,
+      after = 0;
+    keys.forEach((k, i) => {
+      if (k === club.nat) return (w[i] = mix[k]);
+      const gap = club.rep - W.nationLeagueRep(k),
+        pull = gap > 8 ? 1 + Math.min(1.5, (gap - 8) / 30) * EMIGRANT_PULL : 1;
+      before += mix[k] * f;
+      after += mix[k] * f * pull;
+      w[i] = mix[k] * f * pull;
+    });
+    const scale = after ? before / after : 1;
+    keys.forEach((k, i) => {
+      if (k !== club.nat) w[i] *= scale;
+    });
+    const at = new Map(keys.map((k, i) => [k, i]));
+    return U.wpick(keys, (k) => w[at.get(k)]);
+  };
   W.natFor = function (club, ctx) {
     const mix = club.comp && D.NAT_MIX[club.comp];
     const f = ctx ? W.foreignFactor(club, ctx) : 1;
     // (a cross-nation league has no mix of its own: each club's players come from its own nation, as in a league with no mix)
     const cross = club.comp && FM.S.comps[club.comp] && FM.S.comps[club.comp].nats;
-    if (mix && !cross)
-      return f === 1 ? D.pickNat(mix) : U.wpick(Object.keys(mix), (k) => (k === club.nat ? mix[k] : mix[k] * f));
+    if (mix && !cross) return W.pickEmigrant(club, mix, f);
     return Math.random() < U.clamp(1 - 0.12 * f, 0.5, 0.98)
       ? club.nat
       : D.foreignPick
@@ -2917,7 +2999,7 @@
       sp.apps = Math.round(yrs * 40 * share * U.rand(0.8, 1.1));
       p.career.apps += sp.apps;
     }
-    for (const id in S.players) W.backfillHistory(S.players[id]); // up to three seasons of stats behind each player
+    for (const id in S.players) W.backfillHistory(S.players[id]); // a career of seasons behind each player
     for (const id in S.players) S.players[id].value = W.value(S.players[id]); // priced with their final club and contract
     FM.Youth.assignAll(); // U21 and U18 squads from the start
     FM.Transfers.seedLoans(); // lower-division clubs start with players on loan from the better clubs

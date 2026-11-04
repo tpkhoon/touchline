@@ -221,6 +221,7 @@ Every feature from the game design document, with what is playable in the protot
 | Transfers | Players running down their contracts sell cheaper | Playtest round 2 |
 | Transfers | Fan and board reactions to your transfers | Playtest round 2 |
 | Transfers | Full negotiation of bids for your players (fee, instalments, add-on, sell-on) | Playtest round 2 |
+| Transfers | The agent's second proposal in contract talks: less a week with the difference as a signing-on fee, beside the wage-only one | Playtest round 24 |
 | Transfers | Loan offers for your players, some with an option to buy | Playtest round 2 |
 | Transfers | Loan suggestions that name where he'd play | Playtest round 2 |
 | Scouting | Scouting reveals more, rung by rung: foot, second positions, best role, situation, mentality, wage demands, agent | Playtest round 2 |

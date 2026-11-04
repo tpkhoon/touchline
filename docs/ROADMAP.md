@@ -39,6 +39,8 @@ The web prototype runs on a phone browser with no build step, covering 1877 fict
 
 ### Playtest feedback, round 24
 
+- **Whole careers, flank players and negotiations:** a player's profile now has a season-by-season history back to when he was 17 (up to sixteen seasons, the last three in full and the earlier ones with the headline numbers), at clubs that climb with his ability, with a spell and a fee for each move and career totals that agree with the rows; the players of weaker football nations are found abroad more, at the bigger clubs, so about half of such a nation's best 23 play outside it; only about one full-back, wing-back or winger in ten can play both wings (two-footed players and a few who learned both sides), the rest lose a real share of their ability on the other flank; and a failed offer gets the agent's second proposal beside the wage-only one: a fifth less a week with the difference as a signing-on fee.
+
 - **Faces, dates and cups:** mood faces are colour-coded, the real date shows beside the matchday number, the ties of other countries' cups are not listed, and the editor's pooled invitational tournaments no longer default their host to Afghanistan (Oceania replaces OFC in the editor and the docs)
 
 - **More playtest fixes:** a national squad always has at least three goalkeepers; sponsors' names are in the language of the nation they sponsor; the full-time report of a live match has no Ratings tab; and the tap areas of links in text and in the matchday digest no longer cover each other

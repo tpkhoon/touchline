@@ -237,11 +237,15 @@
       o.counterTerms && o.mode !== 'loan'
         ? `<button class="btn block" style="margin-top:10px" data-act="ngAgentTerms">Take the agent's proposal: ${U.money(o.counterTerms.wage)}/wk, rest unchanged</button>`
         : '';
+    const cashBtn =
+      o.cashTerms && o.mode !== 'loan'
+        ? `<button class="btn block" style="margin-top:10px" data-act="ngCashTerms">Or the agent's other version: ${U.money(o.cashTerms.wage)}/wk with a ${U.money(o.cashTerms.bonus)} signing-on fee</button>`
+        : '';
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)}</span></div>${p.clubId && !renew ? C.crest(CL(p.clubId), 26) : renew ? '<span class="pill acc">Renewal</span>' : '<span class="pill">Free agent</span>'}</div>
       <div class="small dim" style="margin-top:6px">${renew ? `Current: ${U.money(p.wage)}/wk until ${p.contract}` : `Budget ${U.money(c.budget)} · Window ${FM.Season.windowOpen() ? '<b style="color:var(--acc)">open</b>' : '<b style="color:var(--bad)">closed</b>'}`}${dir.vacant ? '' : ` · ${esc(dir.fn + ' ' + dir.ln)} negotiating (${U.staffText(dir.ability)})`}</div>
       <div class="card flat row" style="margin-top:10px;padding:10px 12px"><span style="font-size:22px">${UI.ico(ag.icon)}</span><div class="grow"><div class="small b" data-nolink>${esc(ag.name)} · ${esc(ag.firm)}</div><div class="tiny dim">${esc(ag.style)} — ${esc(ag.desc)} Agent fee ${Math.round(ag.fee * 100)}%.</div></div><div class="tiny dim" style="text-align:right">Patience<br>${Co.blocked(p) ? '<b style="color:var(--bad)">Walked out</b>' : dots(pat.left, ag.patience)}</div></div>
       ${o.mode !== 'loan' ? talksLine(p) : ''}${extraLines}${tabs}${body}
-      ${msg ? `<div class="reply" style="margin-top:12px">${esc(msg)}</div>` : ''}${agentBtn}
+      ${msg ? `<div class="reply" style="margin-top:12px">${esc(msg)}</div>` : ''}${agentBtn}${cashBtn}
       <button class="btn pri block" style="margin-top:16px" data-act="submitOffer">${o.mode === 'loan' ? 'Propose loan' : o.mode === 'pre' ? 'Offer pre-contract' : renew ? 'Offer new contract' : p.clubId ? 'Submit offer' : 'Offer contract'}</button>`;
     if (document.querySelector('.sheet-wrap .offer-sheet')) {
       const b = document.querySelector('.sheet-wrap:last-child .sh-body');
@@ -308,7 +312,13 @@
   UI.acts.ngAgentTerms = () => {
     const o = UI._offer;
     if (o.counterTerms) o.terms = { ...o.counterTerms };
-    o.counterTerms = null;
+    o.counterTerms = o.cashTerms = null;
+    UI.offerSheet();
+  };
+  UI.acts.ngCashTerms = () => {
+    const o = UI._offer;
+    if (o.cashTerms) o.terms = { ...o.cashTerms };
+    o.counterTerms = o.cashTerms = null;
     UI.offerSheet();
   };
   UI.acts.ofMode = (d) => {
@@ -378,6 +388,7 @@
       return;
     }
     o.counterTerms = r.terms || null;
+    o.cashTerms = r.cashTerms || null;
     if (r.counter) {
       if (o.mode === 'loan') o.share = r.counter;
       else o.fee = r.counter;

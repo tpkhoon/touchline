@@ -2466,10 +2466,10 @@
       // (a small nation's players hardly ever turn up in a league far from its emigrants' routes)
       added[n.code] = n.weight * (n.ties.includes(l.nat) ? 4 : same ? 1.2 : n.weight < 0.5 ? 0.04 : 0.35);
     }
-    // the newer nations take about 7% of a league's squads between them, however many there are, so the league's own mix
+    // the newer nations take about 11% of a league's squads between them, however many there are, so the league's own mix
     // (home nation first) keeps its shape
     const tot = Object.values(added).reduce((t, v) => t + v, 0),
-      k = tot ? (0.07 * base) / tot : 0;
+      k = tot ? (0.11 * base) / tot : 0;
     for (const [code, w] of Object.entries(added)) mix[code] = Math.round(w * k * 100) / 100;
   }
   // How many of a league's players are from its own nation, about as it is in the real leagues (the squad rules then push a club's
