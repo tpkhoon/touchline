@@ -347,6 +347,7 @@
           ability: m.ability,
           personality: m.personality,
           rep: m.rep,
+          attrs: { ...W.staffAttrs(m) },
           tactic: c.tactic
             ? { formation: c.tactic.formation, buildup: c.tactic.buildup, press: c.tactic.press, width: c.tactic.width }
             : undefined,
@@ -376,6 +377,7 @@
           ...(p.alt && Object.keys(p.alt).length ? { alt: { ...p.alt } } : {}),
           ...(p.traits && p.traits.length ? { traits: [...p.traits] } : {}),
           ...(p.no > 0 ? { no: p.no } : {}),
+          ...(p.rep != null ? { rep: p.rep } : {}),
           club: p.clubId || null,
           contract: p.contract,
         });
@@ -1957,6 +1959,19 @@
       e.push(`${at}: league "${c.league}" is not in the definition`);
     return { errors: e, warnings: w };
   };
+  // A member of staff's attributes: a few of the keys his role is judged on (D.STAFF_ATTRS), each a whole number from 1 to 20 (the
+  // others are the game's own)
+  WD.validateStaffAttrs = function (role, attrs, at) {
+    const e = [];
+    if (attrs == null) return e;
+    const keys = (D.STAFF_ATTRS[role] || []).map((x) => x[0]);
+    if (typeof attrs !== 'object' || Array.isArray(attrs)) return [`${at}: attributes are a list of settings`];
+    for (const [k, v] of Object.entries(attrs)) {
+      if (!keys.includes(k)) e.push(`${at}: a ${role.toLowerCase()} has no attribute "${k}"`);
+      else if (!(Number.isInteger(v) && v >= 1 && v <= 20)) e.push(`${at}: ${k} must be a whole number from 1 to 20`);
+    }
+    return e;
+  };
   WD.validatePlayer = function (p, ctx = {}) {
     const e = [],
       w = [];
@@ -1989,6 +2004,7 @@
       e.push(`${at}: second positions must be positions with a fit from 0 to 1`);
     if (p.no != null && !(isInt(p.no) && p.no >= 1 && p.no <= 99)) e.push(`${at}: the squad number is 1 to 99`);
     if (p.wage != null && !(p.wage >= 0)) e.push(`${at}: the wage cannot be negative`);
+    if (p.rep != null && !(isInt(p.rep) && p.rep >= 1 && p.rep <= 99)) e.push(`${at}: reputation is 1 to 99`);
     const a = p.attrs || {};
     for (const k of D.ATTRS)
       if (!(a[k] >= 1 && a[k] <= 20)) e.push(`${at}: attribute ${k} must be 1–20 (it is ${a[k]})`);
@@ -2134,6 +2150,7 @@
       if (m.age != null && !(m.age >= 28 && m.age <= 80)) errors.push(`${at}: age must be 28–80`);
       if (m.ability != null && !(m.ability >= 1 && m.ability <= 20)) errors.push(`${at}: ability must be 1–20`);
       if (m.rep != null && !(m.rep >= 20 && m.rep <= 99)) errors.push(`${at}: reputation must be 20–99`);
+      errors.push(...WD.validateStaffAttrs('Manager', m.attrs, at));
       if (m.personality && !D.STAFF_PERSONALITY.includes(m.personality))
         errors.push(`${at}: unknown personality "${m.personality}"`);
       if (m.tactic) errors.push(...tacticErrors(m.tactic, at));
@@ -2255,6 +2272,7 @@
       if (s.years != null && !(Number.isInteger(s.years) && s.years >= 1 && s.years <= 5))
         errors.push(`${at}: the contract runs 1–5 years`);
       if (s.judge != null && !(s.judge >= 1 && s.judge <= 20)) errors.push(`${at}: judgement must be 1–20`);
+      errors.push(...WD.validateStaffAttrs(s.role, s.attrs, at));
       if (s.regions) {
         if (s.role !== 'Scout') errors.push(`${at}: only a scout has a network of regions`);
         for (const [k, v] of Object.entries(s.regions))
@@ -2586,6 +2604,7 @@
       if (m.ability) st.ability = m.ability;
       if (m.personality) st.personality = m.personality;
       if (m.rep) st.rep = m.rep;
+      if (m.attrs) st.attrs = { ...m.attrs }; // (the ones left out are the game's own: W.staffAttrs)
       if (m.tactic) c.tactic = W.newTactic(m.tactic.formation, m.tactic.buildup, m.tactic.press, m.tactic.width);
       rep.managers++;
     }
@@ -2675,6 +2694,7 @@
       if (d.cit) p.cit = [...new Set([p.nat, ...d.cit])];
       if (d.traits) p.traits = [...d.traits];
       if (d.no) p.no = d.no; // (a number that is taken is given another when the squad is numbered)
+      if (d.rep != null) p.rep = d.rep; // (his reputation: otherwise it follows his ability, caps and club)
       W.refresh(p);
       p.wage = d.wage || W.wageFor(p);
       if (d.contract) p.contract = d.contract;
@@ -2830,6 +2850,7 @@
   const makeStaff = (d) => {
     const extra = { fn: d.fn, ln: d.ln, age: d.age, ability: d.ability };
     if (d.personality) extra.personality = d.personality;
+    if (d.attrs) extra.attrs = { ...d.attrs };
     if (d.wage) extra.wage = d.wage;
     if (d.years) extra.contract = FM.S.year + d.years;
     if (d.role === 'Scout' && d.regions) {

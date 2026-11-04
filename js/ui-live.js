@@ -134,6 +134,7 @@
       ${lab('Second positions <span class="tiny dim">· where he can also play</span>')}<div id="pf-alt">${altBlock()}</div>
       ${nrow(nin('pf-age', 'Age', m.age, 15, 45), nin('pf-contract', 'Contract ends', m.contract, o.year, o.year + 8), nin('pf-no', 'Squad number', m.no, 1, 99))}
       ${nrow(nin('pf-wage', 'Wage a week <span class="tiny dim">· 0: the game sets it</span>', m.wage, 0, 1000000, 'step="50"'), live ? nin('pf-morale', 'Morale', m.morale, 0, 100) : '<div></div>')}
+      ${nrow(nin('pf-rep', 'Reputation <span class="tiny dim">· 1–99' + (live ? '' : ', empty: it follows his ability, caps and club') + '</span>', m.rep, 1, 99, live ? '' : 'placeholder="Automatic"'), '<div></div>')}
       ${live ? `${lab('Club <span class="tiny dim">· type a club\'s name, or Free agent</span>')}<input type="text" id="pf-club" list="le-clubs" value="${esc(m.club || 'Free agent')}" autocomplete="off">${m.injured ? `<label class="row" style="gap:10px;margin-top:10px;min-height:44px"><input type="checkbox" id="pf-heal" style="width:24px;height:24px;flex:none"> <span class="small">Heal his injury (${esc(m.injured)})</span></label>` : ''}` : ''}
       ${lab('Traits')}<div id="pf-traits">${traitBlock()}</div>
       <div class="ng-label">Attributes <span class="tiny dim">· 1 to 20; only those that matter for his position</span></div>
@@ -183,6 +184,7 @@
       no: Math.round(+v$('pf-no')) > 0 ? num1(v$('pf-no'), 1, 99) : undefined,
       wage: Math.max(0, Math.round(+v$('pf-wage') || 0)) || undefined,
       morale: $('#pf-morale') ? num1(v$('pf-morale'), 0, 100) : undefined,
+      rep: v$('pf-rep') !== '' && v$('pf-rep') != null ? num1(v$('pf-rep'), 1, 99) : undefined,
       club: v$('pf-club'),
       heal: !!($('#pf-heal') || {}).checked,
       pa: st.pa,
@@ -364,6 +366,7 @@
           attrs: p.attrs,
           traits: p.traits,
           morale: Math.round(p.morale ?? 70),
+          rep: Math.round(FM.W.rep(p)),
           club: p.clubId && FM.S.clubs[p.clubId] ? FM.S.clubs[p.clubId].name : 'Free agent',
           injured: inj,
         },
@@ -412,6 +415,7 @@
     else delete p.alt;
     if (f.no) p.no = f.no;
     if (f.morale != null) p.morale = f.morale;
+    if (f.rep != null) p.rep = f.rep;
     if (f.heal) p.inj = null;
     if (cn) movePlayer(p, to);
     FM.W.refresh(p); // (his ability, and his value, follow from the attributes)

@@ -389,6 +389,45 @@ try {
     FM.Staff.IMPACT.physio(10, { attrs: { rehab: 18 } }).layoff < 0.8,
     'a physio good at rehabilitation shortens layoffs',
   );
+  // (the editor: attributes of a member of staff and a player's reputation in a definition)
+  eq(
+    FM.WorldDef.validateStaffAttrs('Head Physio', { rehab: 20, sportsScience: 3 }, 's'),
+    [],
+    'staff attributes of his role are accepted',
+  );
+  ok(
+    FM.WorldDef.validateStaffAttrs('Head Physio', { goalkeeping: 5 }, 's').length === 1,
+    'an attribute his role does not have is refused',
+  );
+  ok(FM.WorldDef.validateStaffAttrs('Manager', { tactical: 25 }, 's').length === 1, 'an attribute above 20 is refused');
+  const part = { role: 'Manager', ability: 12, id: 's77', attrs: { tactical: 19 } };
+  const full = W.staffAttrs(part);
+  ok(
+    full.tactical === 19 && Object.keys(full).length === 8 && full.youth >= 1,
+    "a partly set list is completed with the game's own",
+  );
+  const pdef = {
+    id: 'dp_x',
+    fn: 'A',
+    ln: 'B',
+    nat: 'ENG',
+    pos: 'ST',
+    born: 2000,
+    foot: 'Right',
+    attrs: Object.fromEntries(D.ATTRS.map((k) => [k, 10])),
+    pa: 70,
+    club: null,
+    contract: 2029,
+  };
+  eq(
+    FM.WorldDef.validatePlayer({ ...pdef, rep: 80 }, { clubs: new Set(), year: 2026 }).errors,
+    [],
+    'a player with a reputation is accepted',
+  );
+  ok(
+    FM.WorldDef.validatePlayer({ ...pdef, rep: 120 }, { clubs: new Set(), year: 2026 }).errors.length === 1,
+    'a reputation above 99 is refused',
+  );
   eq(
     [W.repLabel(90), W.repLabel(66), W.repLabel(51), W.repLabel(36), W.repLabel(21), W.repLabel(3)],
     ['World star', 'International name', 'National name', 'Known in the league', 'Local name', 'Unknown'],

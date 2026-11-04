@@ -1590,7 +1590,12 @@
   };
   W.staffAttrs = (st) => {
     if (!st) return {};
-    if (!st.attrs) st.attrs = W.rollStaffAttrs(st.role, st.ability, st.id);
+    // (a list an editor set in part has the game's own for the rest)
+    const keys = (D.STAFF_ATTRS[st.role] || []).map((x) => x[0]);
+    if (!st.attrs || keys.some((k) => st.attrs[k] == null)) {
+      const base = W.rollStaffAttrs(st.role, st.ability, st.id);
+      st.attrs = { ...base, ...(st.attrs || {}) };
+    }
     return st.attrs;
   };
   // One attribute of the member of staff the club has in a role (his ability where he has none, a caretaker's 6)

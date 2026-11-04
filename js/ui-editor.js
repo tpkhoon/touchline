@@ -443,6 +443,7 @@
         age: Math.max(28, Math.min(80, Math.round(+$('#ed-mage').value) || 48)),
         ability: Math.round(+$('#ed-mab').value),
         rep: Math.round(+$('#ed-mrep').value),
+        ...(readAttrs('Manager', 'mattr') ? { attrs: readAttrs('Manager', 'mattr') } : {}),
         ...($('#ed-mpers').value ? { personality: $('#ed-mpers').value } : {}),
         ...($('#ed-mform').value
           ? {
@@ -2649,6 +2650,24 @@
     }
     UI.worldEditor();
   };
+  // A member of staff's attributes as number boxes for his role (1 to 20; empty is the game's own), and read back: only the ones filled in
+  const attrFields = (role, attrs, prefix) =>
+    `<div class="ng-label">Attributes <span class="tiny dim">· 1–20; empty: the game's own, worked out from his ability</span></div><div style="display:flex;flex-wrap:wrap;gap:8px">${(
+      D.STAFF_ATTRS[role] || []
+    )
+      .map(
+        ([k, label]) =>
+          `<div style="flex:1 1 44%;min-width:130px"><div class="tiny dim">${esc(label)}</div><input type="number" id="ed-${prefix}-${k}" min="1" max="20" inputmode="numeric" placeholder="Auto" value="${attrs && attrs[k] != null ? attrs[k] : ''}" style="width:100%"></div>`,
+      )
+      .join('')}</div>`;
+  const readAttrs = (role, prefix) => {
+    const out = {};
+    for (const [k] of D.STAFF_ATTRS[role] || []) {
+      const raw = ($(`#ed-${prefix}-${k}`) || {}).value;
+      if (raw !== '' && raw != null) out[k] = Math.max(1, Math.min(20, Math.round(+raw) || 1));
+    }
+    return Object.keys(out).length ? out : undefined;
+  };
   const managerOf = (cid) => (ED.def.managers || []).find((m) => m.club === cid);
   const managerFields = (c) => {
     const m = managerOf(c.id) || {};
@@ -2664,7 +2683,7 @@
       <select id="ed-mform"><option value="">As the game sets the club up</option>${Object.keys(D.FORMATIONS)
         .map((k) => `<option ${(m.tactic || {}).formation === k ? 'selected' : ''}>${k}</option>`)
         .join('')}</select>
-      <div class="ng-names"><select id="ed-mbuild" style="flex:1">${D.BUILDUP.map((k) => `<option ${((m.tactic || {}).buildup || 'Short') === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-mpress" style="flex:1">${D.PRESS.map((k) => `<option ${((m.tactic || {}).press || 'Mid Block') === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-mwidth" style="flex:1">${D.WIDTH.map((k) => `<option ${((m.tactic || {}).width || 'Balanced') === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>`;
+      <div class="ng-names"><select id="ed-mbuild" style="flex:1">${D.BUILDUP.map((k) => `<option ${((m.tactic || {}).buildup || 'Short') === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-mpress" style="flex:1">${D.PRESS.map((k) => `<option ${((m.tactic || {}).press || 'Mid Block') === k ? 'selected' : ''}>${k}</option>`).join('')}</select><select id="ed-mwidth" style="flex:1">${D.WIDTH.map((k) => `<option ${((m.tactic || {}).width || 'Balanced') === k ? 'selected' : ''}>${k}</option>`).join('')}</select></div>${attrFields('Manager', m.attrs, 'mattr')}`;
   };
   // Derby and B team: a club has one derby rival (any club of its nation) and may be the B team of a club of a higher division
   const tierOfLeague = (lid) => (leagueOf(lid) || {}).tier || 1;
@@ -3476,6 +3495,7 @@
       alt: f.alt,
       traits: f.traits,
       pa: f.pa,
+      rep: f.rep,
       callup: $('#ed-pcall').checked || undefined,
       attrs: f.attrs,
     });
@@ -4608,6 +4628,7 @@
       personality: v('spers') || undefined,
       years: Math.round(+v('syears')) || undefined,
       wage: Math.round(+v('swage')) || undefined,
+      attrs: readAttrs(v('srole'), 'sattr'),
       ...scoutNet(v('srole')),
     });
     if (!r.ok) {
@@ -4652,6 +4673,7 @@
       <div class="ng-label">Ability <b id="ed-sabv" style="color:#e6edf6">${s.ability}</b> <span class="tiny dim">(1–20)</span></div><input type="range" id="ed-sab" min="1" max="20" step="1" value="${s.ability}" style="width:100%">
       <div class="ng-label">Personality</div><select id="ed-spers"><option value="">As the game gives</option>${D.STAFF_PERSONALITY.map((k) => `<option ${s.personality === k ? 'selected' : ''}>${k}</option>`).join('')}</select>
       <div class="ng-names"><div style="flex:1"><div class="ng-label" style="margin-top:0">Contract (years)</div><input type="number" id="ed-syears" min="1" max="5" inputmode="numeric" placeholder="Game's" value="${s.years || ''}"></div><div style="flex:1"><div class="ng-label" style="margin-top:0">Wage a week</div><input type="number" id="ed-swage" min="50" max="500000" inputmode="numeric" placeholder="Game's" value="${s.wage || ''}"></div></div>
+      ${attrFields(s.role, s.attrs, 'sattr')}
       <div class="ng-label">Scout's network <span class="tiny dim">· scouts only</span></div>
       <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ed-scustom" ${s.regions ? 'checked' : ''}> I set it (otherwise the game makes it from where they come from)</label>
       ${Object.entries(D.REGIONS)
@@ -6321,6 +6343,7 @@
         contract: p.contract || '',
         wage: p.wage,
         no: p.no,
+        rep: p.rep,
         pa: p.pa ?? abilityOf(p.attrs, p.pos),
         attrs: p.attrs,
         traits: p.traits,
