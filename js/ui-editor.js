@@ -1384,7 +1384,7 @@
       <div class="ng-label">Level on points</div><select id="ed-tb">${opts
         .map(([k, t]) => `<option value="${k.join()}" ${k.join() === tbKey(l) ? 'selected' : ''}>${esc(t)}</option>`)
         .join('')}</select>
-      <div class="ng-label">Simulation</div><select id="ed-lsim">${[
+      <div class="ng-label">Simulation the editor assumes <span class="tiny dim">· the player chooses each league's tier when a career starts</span></div><select id="ed-lsim">${[
         ['full', 'Full: every match played out'],
         ['light', 'Light: results from the engine, less detail'],
         ['minimal', 'Minimal: quick results'],
@@ -5522,6 +5522,42 @@
     UI.worldEditor();
   };
 
+  // ---------- A nation's regions ----------
+  // The named parts of the world a nation belongs to (the Nordics, Southeast Asia ...): chips to switch on, and a box for new ones.
+  // The chips toggle in place (the form is read when it is saved, so a name you have typed is not lost).
+  const partNames = (selected) =>
+    [
+      ...new Set([
+        ...Object.keys(D.SUBREGIONS),
+        ...selected,
+        ...Object.values(ED.def.nationEdits || {}).flatMap((x) => x.parts || []),
+        ...(ED.def.newNations || []).flatMap((x) => x.parts || []),
+      ]),
+    ].sort((a, b) => a.localeCompare(b));
+  const partsPicker = (selected) =>
+    `<div class="ng-label">Regions <span class="tiny dim">· the parts of the world it belongs to; its neighbours and its region at a new career are found from them</span></div>
+      <div id="ed-parts" class="chips" style="flex-wrap:wrap">${partNames(selected)
+        .map(
+          (k) =>
+            `<button type="button" class="chip ${selected.includes(k) ? 'on' : ''}" data-act="edPartToggle" data-name="${esc(k)}" aria-pressed="${selected.includes(k)}">${esc(k)}</button>`,
+        )
+        .join('')}</div>
+      <input type="text" id="ed-partnew" maxlength="90" placeholder="A new region (several: separate them with commas)" style="margin-top:8px" aria-label="A new region">
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A nation is in at least one; with none chosen it is placed with its part of the world. Switching a region off for every nation takes it away.</div>`;
+  UI.acts.edPartToggle = (d, el) => {
+    el.classList.toggle('on');
+    el.setAttribute('aria-pressed', String(el.classList.contains('on')));
+  };
+  const readParts = () => [
+    ...new Set([
+      ...[...document.querySelectorAll('#ed-parts .chip.on')].map((b) => b.dataset.name),
+      ...(($('#ed-partnew') || {}).value || '')
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean),
+    ]),
+  ];
+
   // ---------- National teams ----------
   // The name, short name, colours and ranking points a national team starts with (a nation too thin in players to field a team
   // keeps none; its entry is ignored)
@@ -5555,6 +5591,12 @@
       style: v('ed-ninfostyle') === styleKey(ED.code) ? null : v('ed-ninfostyle'),
       abroad: abroad === 1 ? null : abroad,
     };
+    {
+      // the regions: only a change from the game's own is kept
+      const now = readParts(),
+        base = D.explicitSubregions(ED.code);
+      patch.parts = now.length === base.length && now.every((x) => base.includes(x)) ? null : now;
+    }
     {
       // the citizenship law: only what differs from the game's own
       const cur = { soli: v('ed-nlawsoli'), descent: +v('ed-nlawdescent'), dual: v('ed-nlawdual') },
@@ -5791,6 +5833,7 @@
       ${cur ? '' : presetPicker()}
       <div class="ng-names"><div style="flex:3"><div class="ng-label" style="margin-top:${cur ? 0 : 12}px">Name</div><input type="text" id="ed-nnname" maxlength="30" value="${esc(n.name)}" data-input="edNnAuto" autocomplete="off"></div><div style="flex:1;min-width:84px"><div class="ng-label" style="margin-top:0">Code</div><input type="text" id="ed-nncode" maxlength="3" value="${esc(n.code)}" ${cur ? 'readonly' : ''} style="text-transform:uppercase" placeholder="ABC"></div></div>
       <div class="ng-names"><div style="flex:1"><div class="ng-label">Flag <span class="tiny dim">· any emoji</span></div><input type="text" id="ed-nnflag" maxlength="12" value="${esc(n.flag)}"></div><div style="flex:2"><div class="ng-label">Part of the world</div><select id="ed-nnregion">${opts(WD.NATION_REGIONS, n.region)}</select></div></div>
+      ${partsPicker(n.parts || [])}
       <div class="ng-label">Players' names come from <span class="tiny dim">· the culture of their first names and surnames</span></div>
       <select id="ed-nnpool">${pools}</select>
       <div class="ng-label">How they play</div>
@@ -5836,6 +5879,7 @@
       style: v('nnstyle'),
       colors: [v('nnc1'), v('nnc2')],
       weight: +v('nnweight'),
+      parts: readParts(),
     });
     if (!r.ok) {
       ED.err = r.errors;
@@ -5881,6 +5925,7 @@
             `<option value="${k}" ${(ne.style || styleKey(ED.code)) === k ? 'selected' : ''}>${esc(v[0])}</option>`,
         )
         .join('')}</select></div></div>
+      ${partsPicker(ne.parts || D.explicitSubregions(ED.code))}
       <div class="ng-label">Citizenship <span class="tiny dim">· what a family can claim: a player's passports and the nations he could play for follow these laws (a first pass from general knowledge; set them as you like)</span></div>
       <div class="ng-names" style="margin-top:0"><div style="flex:1"><div class="tiny dim">By birth</div><select id="ed-nlawsoli">${Object.entries(
         D.LAW_TEXT.soli,

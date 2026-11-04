@@ -2571,4 +2571,76 @@
   D.nationOn = (code) => !!D.NATIONS[code];
   // The nationalities a random pick may choose from
   D.nationCodes = () => Object.keys(D.NATIONS).filter(D.nationOn);
+
+  // ---------- Parts of the world ----------
+  // The named parts of the world a nation belongs to, finer than its confederation (Denmark is in the Nordics and in Scandinavia,
+  // Vietnam in Southeast Asia): every nation is in at least one, and most in two or three. The new-career screen reads them for
+  // the nations next to yours and for your part of the world.
+  D.SUBREGIONS = {
+    'British Isles': 'ENG SCO WAL NIR IRL',
+    'Western Europe': 'ENG FRA BEL NED LUX GER SUI AUT LIE IRL',
+    Benelux: 'BEL NED LUX',
+    Iberia: 'ESP POR AND GIB',
+    'Southern Europe': 'ESP POR ITA GRE MLT SMR AND GIB CYP FRA',
+    Mediterranean: 'ESP FRA ITA MLT SMR GRE CYP TUR MAR ALG TUN LBY EGY ISR LBN SYR PLE CRO MNE ALB',
+    'Alpine countries': 'GER AUT SUI LIE ITA SVN',
+    Nordics: 'DEN NOR SWE FIN ISL FRO',
+    Scandinavia: 'DEN NOR SWE',
+    Baltics: 'EST LVA LTU',
+    'Central Europe': 'GER AUT SUI LIE CZE SVK POL HUN SVN',
+    Balkans: 'SRB CRO BIH SVN MNE MKD ALB KOS BUL ROU GRE',
+    'Eastern Europe': 'UKR BLR RUS MDA POL ROU',
+    Caucasus: 'GEO ARM AZE TUR',
+    'Eastern Mediterranean': 'TUR CYP GRE ISR LBN SYR PLE EGY JOR',
+    'Central Asia': 'KAZ UZB TJK KGZ TKM AFG MNG',
+    'East Asia': 'JPN KOR PRK CHN HKG TPE MAC MNG',
+    'Southeast Asia': 'THA VIE IDN MYS PHI SGP MYA CAM LAO BRU TLS',
+    'South Asia': 'IND PAK BAN NEP SRI MDV BHU AFG',
+    Gulf: 'KSA UAE QAT OMA BHR KUW IRQ IRN YEM',
+    'Middle East': 'IRN IRQ JOR SYR LBN PLE ISR YEM KSA UAE QAT OMA BHR KUW EGY TUR',
+    'Arab world': 'KSA EGY UAE QAT IRQ JOR OMA BHR KUW SYR LBN PLE YEM LBY ALG TUN MAR MTN SDN SOM DJI COM',
+    'North Africa': 'MAR ALG TUN LBY EGY MTN SDN',
+    'West Africa': 'NGA SEN GHA CIV MLI BFA GUI TOG BEN NIG GNB SLE LBR GAM CPV MTN',
+    'Central Africa': 'CMR COD GAB CGO CTA CHA EQG STP BDI RWA',
+    'East Africa': 'TAN KEN UGA ETH RWA BDI SSD SOM DJI ERI SDN',
+    'Southern Africa': 'RSA ZIM ZAM MOZ BOT NMB MWI LES SWZ ANG',
+    'Indian Ocean': 'MAD MRI SEY COM',
+    Lusophone: 'POR BRA ANG MOZ CPV GNB STP TLS',
+    'North America': 'USA CAN MEX',
+    'Central America': 'CRC HON PAN GUA SLV NCA BLZ MEX',
+    Caribbean: 'JAM TRI HAI CUB DOM PUR CUW ARU GRN SKN LCA ATG AIA BAH BRB CAY DMA MSR VIN TCA VGB VIR BER GUY SUR',
+    'Southern Cone': 'ARG URU PAR CHI BRA',
+    'Andean countries': 'COL ECU PER BOL VEN CHI',
+    'South America': 'BRA ARG URU COL CHI PAR ECU PER VEN BOL GUY SUR',
+    Oceania: 'AUS NZL FIJ PNG SOL VAN NCL TAH WSM TGA ASA COK GUM',
+    'Pacific Islands': 'FIJ PNG SOL VAN NCL TAH WSM TGA ASA COK GUM',
+  };
+  const subSets = {};
+  for (const [k, v] of Object.entries(D.SUBREGIONS)) subSets[k] = new Set(v.split(' '));
+  // The parts of the world a nation is listed in, as the data has them (none for a nation no part lists)
+  D.explicitSubregions = (code) => Object.keys(subSets).filter((k) => subSets[k].has(code));
+  // The parts of the world a nation is in (a nation that none lists is in its confederation's part: never none)
+  D.subregionsOf = (code) => {
+    const out = D.explicitSubregions(code);
+    if (out.length || !D.NATIONS[code]) return out;
+    const n = D.NATIONS[code];
+    return [(D.REGIONS && D.REGIONS[n.confed || n.region]) || n.confed || n.region];
+  };
+  // Put a nation in exactly these parts of the world (a name no part has yet makes a new one; a part left with no nation is gone):
+  // the world editor changes a nation's regions and gives a new nation its own. Calling it again with what it replaced undoes it.
+  D.setSubregions = (code, names) => {
+    const want = [...new Set((names || []).map((x) => String(x).trim()).filter(Boolean))];
+    for (const k of Object.keys(subSets)) {
+      if (want.includes(k)) continue;
+      if (subSets[k].delete(code) && !subSets[k].size) {
+        delete subSets[k];
+        delete D.SUBREGIONS[k];
+      } else if (subSets[k]) D.SUBREGIONS[k] = [...subSets[k]].join(' ');
+    }
+    for (const k of want) {
+      subSets[k] = subSets[k] || new Set();
+      subSets[k].add(code);
+      D.SUBREGIONS[k] = [...subSets[k]].join(' ');
+    }
+  };
 })();

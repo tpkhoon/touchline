@@ -1160,29 +1160,34 @@
     }
     return out;
   };
-  const simOfLeague = (l, locked) => (locked.has(l.id) ? 'full' : NG.sims[l.id] || l.sim);
-  // The leagues at a simulation tier, by name (the "wider world" text on the new-career screen reads the data)
+  // There is no default tier for a league: the player chooses each one. A league not yet chosen starts as Light (honest numbers,
+  // a tenth of the work of Full); the leagues next to yours are Full whatever is chosen.
+  const START_TIER = 'light';
+  const simOfLeague = (l, locked) => (locked.has(l.id) ? 'full' : NG.sims[l.id] || START_TIER);
+  // The leagues at a simulation tier, by name (the "wider world" text on the new-career screen reads the choice)
   const tierList = (sim) => {
-    const n = D.LEAGUES.filter((l) => (NG.sims[l.id] || l.sim) === sim).map((l) => l.name);
+    const locked = lockedLeagues(),
+      n = D.LEAGUES.filter((l) => simOfLeague(l, locked) === sim).map((l) => l.name);
     return n.length > 1 ? `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}` : n[0] || 'none';
   };
   UI.simSetup = function () {
     const locked = lockedLeagues();
     const load = (f) => D.LEAGUES.reduce((t, l) => t + D[l.clubs].length * TIERS.find((x) => x[0] === f(l))[2], 0);
     const mine = load((l) => simOfLeague(l, locked)),
-      base = load((l) => (locked.has(l.id) ? 'full' : l.sim));
+      everything = load(() => 'full');
     const counts = { full: 0, light: 0, minimal: 0 };
     D.LEAGUES.forEach((l) => (counts[simOfLeague(l, locked)] += D[l.clubs].length));
-    const pct = Math.round((100 * mine) / base);
+    const pct = Math.round((100 * mine) / everything);
     const seg = (l) =>
       `<div class="seg" style="width:174px">${TIERS.map(([k, label]) => {
         const on = simOfLeague(l, locked) === k;
         return `<button class="${on ? 'on' : ''}" ${locked.has(l.id) && k !== 'full' ? 'disabled style="opacity:.35"' : ''} data-act="ngSim" data-id="${l.id}" data-v="${k}">${label}</button>`;
       }).join('')}</div>`;
     const nations = [...new Set(D.LEAGUES.map((l) => l.nat))];
-    return `<details id="ng-sim" ${NG.simOpen ? 'open' : ''} style="margin-top:16px"><summary class="small" style="color:#c9d4e3;cursor:pointer">Choose how much of the world is simulated <span class="dim" style="color:#6f7f96">· ${U.plural(counts.full, 'club')} in full, ${counts.light} light, ${counts.minimal} minimal</span></summary>
-      <div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${TIERS.map(([, label, , d]) => `<b style="color:#c9d4e3">${label}</b>: ${d}.`).join(' ')} Your league and the ones just above and below it are always full. More full leagues means a richer world but slower days and bigger saves; simulation load ${pct}% of the default.</div>
-      <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm" data-act="ngSimPreset" data-v="default">Default</button><button class="btn sm" data-act="ngSimPreset" data-v="fast">Faster</button><button class="btn sm" data-act="ngSimPreset" data-v="deep">Deeper</button></div>
+    return `<details id="ng-sim" ${NG.simOpen !== false ? 'open' : ''} style="margin-top:16px"><summary class="small" style="color:#c9d4e3;cursor:pointer">Choose how much of the world is simulated <span class="dim" style="color:#6f7f96">· ${U.plural(counts.full, 'club')} in full, ${counts.light} light, ${counts.minimal} minimal</span></summary>
+      <div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${TIERS.map(([, label, , d]) => `<b style="color:#c9d4e3">${label}</b>: ${d}.`).join(' ')} Choose each league yourself: nothing is chosen for you, and every league starts as Light. Your league and the ones just above and below it are always full. More full leagues means a richer world but slower days and bigger saves; simulation load ${pct}% of everything in full.</div>
+      <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm" data-act="ngSimPreset" data-v="minimal">All minimal</button><button class="btn sm" data-act="ngSimPreset" data-v="light">All light</button><button class="btn sm" data-act="ngSimPreset" data-v="full">All full</button></div>
+      ${simMixHtml()}
       ${nations
         .map((nat) => {
           const ls = D.LEAGUES.filter((l) => l.nat === nat);
@@ -1203,14 +1208,119 @@
   };
   UI.acts.ngSim = (d) => {
     if (lockedLeagues().has(d.id)) return;
-    const l = D.LEAGUES.find((x) => x.id === d.id);
-    if (d.v === l.sim) delete NG.sims[d.id];
-    else NG.sims[d.id] = d.v;
+    NG.sims[d.id] = d.v;
+    redrawKeepingPlace();
+  };
+  // The nation of the league you start in (null for a career with no club)
+  const simHome = () => {
+    const id = [...lockedLeagues()][0];
+    return id ? (D.LEAGUES.find((l) => l.id === id) || {}).nat || null : null;
+  };
+  const confedOf = (nat) => {
+    const n = D.NATIONS[nat];
+    return n ? n.confed || (n.region === 'ENG' ? 'EUR' : n.region) : null;
+  };
+  const confedName = (c) => (FM.Intl && FM.Intl.CONFEDS && FM.Intl.CONFEDS[c]) || c;
+  const leagueNations = () => [...new Set(D.LEAGUES.map((l) => l.nat))];
+  // Where a nation lies: the middle of its clubs (their places are in the data)
+  const natPoints = {};
+  const natPoint = (nat) => {
+    if (natPoints[nat]) return natPoints[nat];
+    const pts = [];
+    for (const l of D.LEAGUES)
+      if (l.nat === nat) for (const r of D[l.clubs]) if (D.GEO && D.GEO[r[1]]) pts.push(D.GEO[r[1]]);
+    return (natPoints[nat] = pts.length
+      ? [pts.reduce((t, p) => t + p[0], 0) / pts.length, pts.reduce((t, p) => t + p[1], 0) / pts.length]
+      : null);
+  };
+  const kmBetween = (a, b) => {
+    const p = natPoint(a),
+      q = natPoint(b);
+    if (!p || !q) return Infinity;
+    const r = Math.PI / 180,
+      h =
+        Math.sin(((q[0] - p[0]) * r) / 2) ** 2 +
+        Math.cos(p[0] * r) * Math.cos(q[0] * r) * Math.sin(((q[1] - p[1]) * r) / 2) ** 2;
+    return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
+  };
+  const shared = (a, b) => {
+    const mine = D.subregionsOf(a);
+    return D.subregionsOf(b).filter((r) => mine.includes(r)).length;
+  };
+  // The nations that share a part of the world with a nation and have leagues, the ones sharing most (then the nearest) first,
+  // at most eight; a nation in a part of its own is given its nearest neighbours up to four
+  const neighboursOf = (nat) => {
+    const all = leagueNations().filter((n) => n !== nat),
+      byDistance = (a, b) => kmBetween(nat, a) - kmBetween(nat, b);
+    const near = all
+      .filter((n) => shared(nat, n))
+      .sort((a, b) => shared(nat, b) - shared(nat, a) || byDistance(a, b))
+      .slice(0, 8);
+    for (const n of all.slice().sort(byDistance)) if (near.length < 4 && !near.includes(n)) near.push(n);
+    return near;
+  };
+  // Every nation with leagues in any part of the world a nation is in
+  const regionOf = (nat) => leagueNations().filter((n) => n !== nat && shared(nat, n));
+  // The nations with the strongest top flights (by the reputation a league's clubs reach), among the nations given
+  const strongest = (n, among) => {
+    const best = {};
+    for (const l of D.LEAGUES)
+      if (l.tier === 1 && l.repBand && (!among || among(l.nat))) best[l.nat] = Math.max(best[l.nat] || 0, l.repBand[0]);
+    return Object.keys(best)
+      .sort((a, b) => best[b] - best[a])
+      .slice(0, n);
+  };
+  const majorNations = () => strongest(8);
+  const confedMajors = (confed) => strongest(confed === 'EUR' ? 8 : 6, (n) => confedOf(n) === confed);
+  const nameList = (nats) => nats.map((n) => (D.NATIONS[n] ? D.NATIONS[n].name : n)).join(', ');
+  // Your nation in full, then whichever of the four groups are on in light (the top two divisions of the major leagues), the rest
+  // minimal. The groups combine: neighbours and the top leagues of your confederation, say.
+  const applyMix = () => {
+    const mix = NG.simMix || {},
+      home = simHome(),
+      near = new Set(home && mix.neighbours ? neighboursOf(home) : []),
+      region = new Set(home && mix.region ? regionOf(home) : []),
+      major = new Set(mix.major ? majorNations() : []),
+      confed = new Set(home && mix.confed ? confedMajors(confedOf(home)) : []);
+    NG.sims = {};
+    for (const l of D.LEAGUES)
+      NG.sims[l.id] =
+        l.nat === home
+          ? 'full'
+          : near.has(l.nat) || region.has(l.nat) || ((major.has(l.nat) || confed.has(l.nat)) && l.tier <= 2)
+            ? 'light'
+            : 'minimal';
+  };
+  // The groups to switch on, built from the league you start in (each says who it covers); a career with no club has the major
+  // leagues alone
+  const simMixHtml = () => {
+    const home = simHome(),
+      mix = NG.simMix || {};
+    const chip = (k, label, who) =>
+      `<button class="chip ${mix[k] ? 'on' : ''}" data-act="ngSimMix" data-k="${k}" aria-pressed="${!!mix[k]}" title="${esc(who)}">${label}</button>`;
+    const note = (text) => `<div class="tiny" style="color:#6f7f96;margin:6px 0 0;line-height:1.5">${text}</div>`;
+    if (!home)
+      return `<div class="tiny" style="color:#6f7f96;margin:10px 0 4px">Pick a club to build starting points from its league (its neighbours, its part of the world, the top leagues of its confederation).</div><div class="row" style="gap:8px;flex-wrap:wrap">${chip('major', 'Major leagues of the world', nameList(majorNations()))}</div>`;
+    const cf = confedOf(home),
+      parts = D.subregionsOf(home);
+    const on = (k, label, who) => (mix[k] ? note(`<b style="color:#c9d4e3">${label}:</b> ${esc(who)}.`) : '');
+    const nbr = neighboursOf(home),
+      reg = regionOf(home),
+      maj = majorNations(),
+      cm = confedMajors(cf);
+    return `<div class="tiny" style="color:#6f7f96;margin:10px 0 4px">Starting points built from your league: your nation is full, what you switch on is light (the major leagues from their top two divisions), everything else minimal. Switch on any of them, then adjust league by league below.</div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm ${Object.values(mix).some(Boolean) ? '' : 'pri'}" data-act="ngSimMix" data-k="none">My nation only</button>${chip('neighbours', 'Neighbours', nameList(nbr))}${chip('region', `My region (${parts.join(', ')})`, nameList(reg))}${chip('major', 'Major leagues of the world', nameList(maj))}${chip('confed', `Top leagues of ${confedName(cf)}`, nameList(cm))}</div>
+      ${on('neighbours', 'Neighbours', nameList(nbr))}${on('region', parts.join(' and '), nameList(reg))}${on('major', 'Major leagues', nameList(maj))}${on('confed', `Top leagues of ${confedName(cf)}`, nameList(cm))}`;
+  };
+  UI.acts.ngSimMix = (d) => {
+    NG.simMix = d.k === 'none' ? {} : { ...NG.simMix, [d.k]: !(NG.simMix || {})[d.k] };
+    applyMix();
     redrawKeepingPlace();
   };
   UI.acts.ngSimPreset = (d) => {
+    NG.simMix = {};
     NG.sims = {};
-    if (d.v !== 'default') for (const l of D.LEAGUES) NG.sims[l.id] = d.v === 'fast' ? 'minimal' : 'full';
+    for (const l of D.LEAGUES) NG.sims[l.id] = d.v;
     redrawKeepingPlace();
   };
   // A career needs a manager's name: flag the empty fields and say which (updates as you type once shown)
@@ -1769,8 +1879,8 @@
       const theme = (FM.S && FM.S.settings) || { theme: document.documentElement.dataset.theme || 'dark', speed: 1 };
       FM.S = null;
       // your league and the two next to it are fully simulated whatever else was chosen
-      const sims = { ...NG.sims };
-      lockedLeagues().forEach((id) => (sims[id] = 'full'));
+      const locked = lockedLeagues(),
+        sims = Object.fromEntries(D.LEAGUES.map((l) => [l.id, simOfLeague(l, locked)]));
       let built = false;
       if (NG.db && NG.db.ok) {
         try {

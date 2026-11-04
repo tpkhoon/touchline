@@ -1174,6 +1174,7 @@
       D.NATIVE_POOL[n.code] = n.pool;
       D.NT_COLORS[n.code] = (n.colors || ['#FFFFFF', '#000000']).slice(0, 2);
       D.POOL_NATS[n.pool] = [...(D.POOL_NATS[n.pool] || []), n.code];
+      if ((n.parts || []).length) D.setSubregions(n.code, n.parts);
       const w = n.weight != null ? n.weight : 0.5;
       for (const l of D.LEAGUES) {
         const mix = D.NAT_MIX[l.id];
@@ -1191,6 +1192,7 @@
         delete D.NATIVE_POOL[n.code];
         delete D.NT_COLORS[n.code];
         D.POOL_NATS[n.pool] = (D.POOL_NATS[n.pool] || []).filter((c) => c !== n.code);
+        D.setSubregions(n.code, []);
         for (const k of Object.keys(D.NAT_MIX)) delete D.NAT_MIX[k][n.code];
       }
     };
@@ -1210,6 +1212,7 @@
         region: N.region,
         style: N.style,
         bias: N.bias,
+        parts: D.explicitSubregions(code),
         mix: Object.fromEntries(Object.entries(D.NAT_MIX).map(([l, m]) => [l, m[code]])),
         law: D.CITIZENSHIP && D.CITIZENSHIP[code] ? { ...D.CITIZENSHIP[code] } : null,
       });
@@ -1217,6 +1220,7 @@
       if (e.name) N.name = e.name;
       if (e.flag) N.flag = e.flag;
       if (e.region) N.region = e.region;
+      if (Array.isArray(e.parts)) D.setSubregions(code, e.parts); // (its regions)
       if (e.style && WD.NATION_STYLES[e.style]) {
         N.style = WD.NATION_STYLES[e.style][0];
         N.bias = { ...WD.NATION_STYLES[e.style][1] };
@@ -1232,6 +1236,7 @@
         const N = D.NATIONS[s.code];
         if (!N) continue;
         Object.assign(N, { name: s.name, flag: s.flag, region: s.region, style: s.style, bias: s.bias });
+        D.setSubregions(s.code, s.parts);
         for (const [l, v] of Object.entries(s.mix)) if (D.NAT_MIX[l]) D.NAT_MIX[l][s.code] = v;
         if (D.CITIZENSHIP) {
           if (s.law) D.CITIZENSHIP[s.code] = s.law;
@@ -1241,6 +1246,17 @@
     };
   };
   WD.editNations = editNations;
+  // A nation's regions: a list of up to eight names (a part of the world the game has, or a new one), each 2 to 30 characters
+  WD.validateParts = function (parts, at) {
+    const e = [];
+    if (parts == null) return e;
+    if (!Array.isArray(parts) || parts.length > 8) return [`${at}: the regions are a list of at most eight`];
+    for (const x of parts) {
+      const t = String(x || '').trim();
+      if (t.length < 2 || t.length > 30) e.push(`${at}: a region's name is 2 to 30 characters`);
+    }
+    return e;
+  };
   // the nation edits a world definition can hold are checked here (the part of the world, the style, the multiplier, the name)
   WD.validateNationEdits = function (def) {
     const e = [];
@@ -1263,6 +1279,7 @@
         e.push(`${at}: the flag is an emoji (up to 12 characters)`);
       if (x.region != null && !regions.has(x.region))
         e.push(`${at}: the part of the world is one of ${[...regions].join(', ')}`);
+      e.push(...WD.validateParts(x.parts, at));
       if (x.style != null && !WD.NATION_STYLES[x.style])
         e.push(`${at}: the way they play is one of ${Object.keys(WD.NATION_STYLES).join(', ')}`);
       if (x.abroad != null && !(x.abroad >= 0.2 && x.abroad <= 3))
@@ -1306,6 +1323,7 @@
       if (!WD.NATION_REGIONS[n.region])
         e.push(`${at}: the part of the world is one of ${Object.keys(WD.NATION_REGIONS).join(', ')}`);
       if (!D.NAME_POOLS[n.pool]) e.push(`${at}: no names of the culture "${n.pool}"`);
+      e.push(...WD.validateParts(n.parts, at));
       if (n.style != null && !WD.NATION_STYLES[n.style])
         e.push(`${at}: the way they play is one of ${Object.keys(WD.NATION_STYLES).join(', ')}`);
       if (n.colors && !(Array.isArray(n.colors) && n.colors.length >= 2 && n.colors.every((x) => HEX.test(x))))
@@ -3183,6 +3201,7 @@
           style: spec.style || 'technical',
           colors: (spec.colors || ['#2255cc', '#ffffff']).slice(0, 2),
           weight: spec.weight != null ? +spec.weight : 0.5,
+          ...(Array.isArray(spec.parts) ? { parts: spec.parts.map((x) => String(x).trim()).filter(Boolean) } : {}),
         };
         const list = def.newNations || (def.newNations = []);
         const test = { ...def, newNations: [...list.filter((x) => x.code !== n.code), n] };

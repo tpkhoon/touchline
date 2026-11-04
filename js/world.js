@@ -2985,7 +2985,8 @@
     '',
   ];
   W.AVATAR_BG = ['#1f6feb', '#c8102e', '#0b8a3e', '#6a1b9a', '#f59e0b', '#0f172a', '#e11d48', '#0891b2'];
-  W.homeLeague = (x) => !x.sim || x.sim === 'full' || D.LEAGUES.some((l) => l.nat === x.nat && l.sim === 'full');
+  W.homeLeague = (x) =>
+    !x.sim || x.sim === 'full' || W.leagues().some((l) => l.nat === x.nat && (l.baseSim || l.sim) === 'full');
   W.employed = () => !!(FM.S.user && FM.S.user.clubId && FM.S.clubs[FM.S.user.clubId]);
   // Out of work (sacked, resigned, or a career that starts without a club): the old club hires a successor,
   // time keeps passing, and job offers arrive through FM.Season.jobMarket

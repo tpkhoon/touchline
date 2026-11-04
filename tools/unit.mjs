@@ -358,6 +358,38 @@ try {
   );
 }
 
+// ---- parts of the world: every nation is in at least one (D.SUBREGIONS, D.subregionsOf) ----
+{
+  const listed = new Set(Object.values(D.SUBREGIONS).flatMap((v) => v.split(' ')));
+  eq(
+    Object.keys(D.NATIONS).filter((c) => !listed.has(c)),
+    [],
+    'every nation is in at least one named part of the world',
+  );
+  eq(
+    [...listed].filter((c) => !D.NATIONS[c]),
+    [],
+    'every code in a part of the world is a nation',
+  );
+  eq(D.subregionsOf('DEN'), ['Nordics', 'Scandinavia'], 'Denmark is in the Nordics and in Scandinavia');
+  eq(D.subregionsOf('VIE'), ['Southeast Asia'], 'Vietnam is in Southeast Asia');
+  ok(D.subregionsOf('XXX').length === 0, 'an unknown nation is in none');
+  // (the editor changes a nation's regions and gives a new nation its own: setSubregions, and what it replaced puts it back)
+  const was = D.explicitSubregions('DEN');
+  D.setSubregions('DEN', ['Nordics', 'Baltic Sea']);
+  eq(D.subregionsOf('DEN'), ['Nordics', 'Baltic Sea'], 'a nation can be given other regions, a new one among them');
+  ok(
+    !D.SUBREGIONS.Scandinavia.split(' ').includes('DEN') && D.SUBREGIONS['Baltic Sea'] === 'DEN',
+    'and the regions list it',
+  );
+  D.setSubregions('DEN', was);
+  eq(D.subregionsOf('DEN'), ['Nordics', 'Scandinavia'], 'giving it back what it had restores it');
+  ok(D.SUBREGIONS['Baltic Sea'] === undefined, 'a region left with no nation is gone');
+  eq(FM.WorldDef.validateParts(['Nordics', 'Baltic Sea'], 'n'), [], 'regions of a nation are accepted');
+  ok(FM.WorldDef.validateParts(['X'], 'n').length === 1, 'a region name of one letter is refused');
+  ok(FM.WorldDef.validateParts(new Array(9).fill('Region'), 'n').length === 1, 'more than eight regions are refused');
+}
+
 // ---- managers and staff: where they come from (W.foreignNation, W.managerNation) ----
 {
   const pickMany = (host, n = 3000) => {
