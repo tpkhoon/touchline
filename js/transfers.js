@@ -486,6 +486,48 @@
         return 1;
     }
   };
+  // The corridors keep the league's mix alive: a club leans toward the nationalities its league's mix is rich in (a French winger for a
+  // Belgian club, a Brazilian for a Portuguese one) and away from those it hardly draws, as a mild preference on every AI target.
+  // His own countrymen are the home pull's business, not this one's.
+  const affinityCache = { S: null, by: {} };
+  T.natAffinity = (c, p) => {
+    if (p.nat === c.nat || !c.comp) return 1;
+    if (affinityCache.S !== FM.S) ((affinityCache.S = FM.S), (affinityCache.by = {}));
+    let a = affinityCache.by[c.comp];
+    if (a === undefined) {
+      const mix = FM.D.NAT_MIX[c.comp];
+      const foreign = mix ? Object.entries(mix).filter(([k]) => k !== c.nat) : [];
+      a = affinityCache.by[c.comp] = foreign.length
+        ? { mix, mean: foreign.reduce((t, [, v]) => t + v, 0) / foreign.length }
+        : null;
+    }
+    if (!a || !(a.mean > 0)) return 1;
+    return U.clamp(Math.pow((a.mix[p.nat] || a.mean * 0.1) / a.mean, 0.35), 0.5, 1.8);
+  };
+  // A club keeps to its league's mix of home and foreign players: the share of foreigners in each league as the world began
+  // (S.natTarget, W.seedNatTargets) is what its squad drifts back to. Below it a foreign target is worth more and a countryman less;
+  // above it the reverse. Without this the academies (mostly home-grown) and the home pull wear the foreign share down over the seasons.
+  const shareCache = { S: null, ver: -1, by: {} };
+  T.foreignShare = (c) => {
+    if (shareCache.S !== FM.S || shareCache.ver !== W.rosterVer)
+      Object.assign(shareCache, { S: FM.S, ver: W.rosterVer, by: {} });
+    let v = shareCache.by[c.id];
+    if (v === undefined) {
+      const sq = W.squad(c.id).filter((q) => !q.team && !q.loan);
+      v = shareCache.by[c.id] = sq.length ? sq.filter((q) => q.nat !== c.nat).length / sq.length : null;
+    }
+    return v;
+  };
+  T.natBalance = (c, p) => {
+    const tgt = FM.S.natTarget && FM.S.natTarget[c.comp];
+    if (tgt == null) return 1;
+    const have = T.foreignShare(c);
+    if (have == null) return 1;
+    const gap = tgt - have; // positive: too few foreigners
+    return U.clamp(1 + (p.nat === c.nat ? -gap : gap) * 6, 0.35, 2.5);
+  };
+  const identityBase = T.identityFit;
+  T.identityFit = (c, p) => identityBase(c, p) * T.natAffinity(c, p) * T.natBalance(c, p);
   T.fillGap = function (c, sq, mkt) {
     if (sq.length >= W.squadTarget(c)) return false;
     const want = W.squadWant(c);

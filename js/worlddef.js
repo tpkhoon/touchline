@@ -1178,12 +1178,23 @@
       D.POOL_NATS[n.pool] = [...(D.POOL_NATS[n.pool] || []), n.code];
       if ((n.parts || []).length) D.setSubregions(n.code, n.parts);
       const w = n.weight != null ? n.weight : 0.5;
+      // A template: a real nation this one stands in for, so its players go where that nation's go (its ties, and its pull in each league)
+      const tpl = n.template && D.NATIONS[n.template] && n.template !== n.code ? n.template : null;
+      if (tpl && D.NATION_TIES) D.NATION_TIES[n.code] = [...(D.NATION_TIES[tpl] || []).filter((c) => c !== n.code)];
       for (const l of D.LEAGUES) {
         const mix = D.NAT_MIX[l.id];
         if (!mix) continue;
         const nat = D.NATIONS[l.nat];
         const same = nat && nat.region === n.region;
-        mix[n.code] = Math.round(w * (same ? 1.2 : 0.35) * 100) / 100;
+        let k = same ? 1.2 : 0.35;
+        // (the template's share in this league, taken as how much more or less than the average foreign nation it is; in a league of the
+        // template's own nation, the nation's own share says nothing about its emigrants, so the plain rule stands)
+        if (tpl && l.nat !== tpl && mix[tpl] != null) {
+          const foreign = Object.entries(mix).filter(([c]) => c !== l.nat);
+          const mean = foreign.reduce((t, [, v]) => t + v, 0) / Math.max(1, foreign.length);
+          if (mean > 0) k = Math.min(6, mix[tpl] / mean);
+        }
+        mix[n.code] = Math.round(w * k * 100) / 100;
       }
       added.push(n);
     }
@@ -1195,7 +1206,8 @@
         delete D.NT_COLORS[n.code];
         D.POOL_NATS[n.pool] = (D.POOL_NATS[n.pool] || []).filter((c) => c !== n.code);
         D.setSubregions(n.code, []);
-        for (const k of Object.keys(D.NAT_MIX)) delete D.NAT_MIX[k][n.code];
+        if (D.NATION_TIES) delete D.NATION_TIES[n.code];
+        for (const k of Object.keys(D.NAT_MIX)) if (D.NAT_MIX[k]) delete D.NAT_MIX[k][n.code];
       }
     };
   };
@@ -1330,6 +1342,8 @@
         e.push(`${at}: the way they play is one of ${Object.keys(WD.NATION_STYLES).join(', ')}`);
       if (n.colors && !(Array.isArray(n.colors) && n.colors.length >= 2 && n.colors.every((x) => HEX.test(x))))
         e.push(`${at}: colours must be two #rrggbb values`);
+      if (n.template && !(D.NATIONS[n.template] && D.NATIONS[n.template].name))
+        e.push(`${at}: the template must be a nation of the game`);
       if (n.weight != null && !(n.weight >= 0.1 && n.weight <= 3))
         e.push(`${at}: how common its players are is between 0.1 and 3`);
     }
@@ -3222,6 +3236,7 @@
           style: spec.style || 'technical',
           colors: (spec.colors || ['#2255cc', '#ffffff']).slice(0, 2),
           weight: spec.weight != null ? +spec.weight : 0.5,
+          ...(spec.template ? { template: String(spec.template) } : {}),
           ...(Array.isArray(spec.parts) ? { parts: spec.parts.map((x) => String(x).trim()).filter(Boolean) } : {}),
         };
         const list = def.newNations || (def.newNations = []);

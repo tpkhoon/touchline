@@ -1543,6 +1543,7 @@
   UI.playerSheet = function (pid) {
     const p = P(pid);
     if (!p) return UI.toast('That player has retired.');
+    UI._ptab = { pid, v: 'overview' };
     UI.sheet(playerHTML(p), { full: true, title: '' });
     const rep = S().user.reports[pid];
     if (rep) rep.isNew = false;
@@ -1645,6 +1646,12 @@
       .join('');
     return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${U.plural(A.mins, 'minute')} this season, per 90 against ${A.n} ${esc(pos)}${A.exact ? 's' : ' and the like'} in ${esc(where)} (300 minutes or more). Higher is better.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${bars}<div class="small b dim" style="margin:14px 0 2px;text-transform:uppercase;letter-spacing:.6px">Shot map</div>${shotMap}${sim ? `<div class="small b dim" style="margin:14px 0 2px;text-transform:uppercase;letter-spacing:.6px">Players like him</div><div class="tiny dim" style="margin-bottom:2px">The nearest in how they played this season (a match of 100% would be the same profile)</div>${sim}` : ''}</div>`;
   };
+  // The facts at a glance under the header, as on a stats app: age, shirt, foot and the end of his contract
+  const statStrip = (p, v, own) => {
+    const cell = (val, l) =>
+      `<div class="kpi" style="padding:8px 4px"><div class="v" style="font-size:16px">${val}</div><div class="l">${l}</div></div>`;
+    return `<div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px">${cell(W.age(p), 'Age')}${cell(p.clubId && p.no ? '#' + p.no : '—', 'Shirt')}${cell(esc(p.foot), 'Foot')}${cell(own || v.k >= 30 ? p.contract || '—' : '?', 'Contract')}</div>`;
+  };
   function playerHTML(p) {
     const v = FM.Scouting.view(p),
       c = p.clubId && CL(p.clubId),
@@ -1735,17 +1742,11 @@
       nt
         ? `<span class="tap" data-act="nation" data-id="${nt.id}" style="text-decoration:underline dotted">${html}</span>`
         : html;
-    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${esc(D.NATIONS[playsFor].name)}`)} · <b title="International appearances">${p.intl && p.intl.caps ? `${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'}` : 'Uncapped'}</b>${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : p.natur && p.natur.code === otherNat ? 'Naturalised in ' + p.natur.year : 'Eligible through family'}">${C.flag(otherNat)} ${esc(D.NATIONS[otherNat].name)} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}<br>${age} yrs${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''}${c ? ` · <span class="tap" data-act="clubView" data-id="${c.id}" style="text-decoration:underline dotted">${esc(c.name)}</span>` : ''}</div></div>${c ? `<span class="tap" data-act="clubView" data-id="${c.id}">${C.crest(c, 48)}</span>` : ''}</div>
-      <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].name)}${(own || v.k >= 40) && C.posOveralls(p) ? ` · ${C.posOveralls(p)}` : ''}${own && p.pa0 !== undefined && Math.abs(p.pa - p.pa0) >= 4 ? ` · <span title="His potential has ${p.pa > p.pa0 ? 'risen' : 'fallen'} since we first assessed him" style="color:${p.pa > p.pa0 ? '#9be37a' : '#ff9d9d'}">potential ${p.pa > p.pa0 ? '▲' : '▼'}</span>` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${UI.moodFace(me)} ${ml}</b></div>` : ''}</div></div>
-      <div class="row small" style="margin:10px 2px 0;gap:8px" title="How well known he is, 1 to 99: his ability, caps, honours, games played and the club he plays for"><span class="dim">Reputation</span><b>${W.repLabel(W.rep(p))}</b><div class="grow">${C.bar(W.rep(p), 'var(--acc2)')}</div><span class="dim">${W.rep(p)}</span></div>
-      <div class="sp"></div>
-      ${ownActions}
+    const secOverview = `${statStrip(p, v, own)}
       ${FM.Season.isIcon(p) ? `<div style="margin-bottom:6px"><span class="trait" title="${esc(`${U.plural(p.career.spells.at(-1).apps, 'appearance')} for ${esc(CL(p.clubId).name)}`)}">Club icon</span></div>` : ''}
       ${v.traits.length || own ? `<div style="margin-bottom:8px">${(own ? p.traits : v.traits).map((t) => `<span class="trait" title="${esc(D.TRAITS[t].desc)}">${UI.ico(D.TRAITS[t].icon)} ${t}</span>`).join('')}${own ? `<span class="trait">${esc(p.personality)}</span>` : ''}</div>` : ''}
       ${own && p.traits.length ? `<div class="small dim" style="margin:-2px 2px 12px">${p.traits.map((t) => D.TRAITS[t].desc).join(' ')}</div>` : ''}
       ${report}
-      <div class="card"><div class="row"><div class="h3 grow">Profile</div>${!own && v.k < 70 ? '<span class="pill warn">Approximate</span>' : ''}</div>${own || v.k >= 40 ? C.radar(p, !own && v.k < 70) : '<div class="lock">Profile hidden</div>'}${attrs()}</div>
-      ${own ? moodCard() : ''}${positionsCard(p, v, own)}${peerCard(p, v, own)}${profileCard(p)}
       ${p.totw ? `<div class="card"><div class="row small"><span class="grow">Team of the week</span><b>${p.totwY && p.totwY[0] === S().year ? p.totwY[1] : 0} this season · ${p.totw} career</b></div></div>` : ''}${
         p.form.length
           ? `<div class="card"><div class="row"><div class="h3 grow">Form</div><span class="small dim">last ${p.form.length}</span></div>
@@ -1753,7 +1754,11 @@
 </div>`
           : ''
       }
-      ${UI.statsCard(p, avg)}
+      ${UI.statsCard(p, avg)}`;
+    const secAttrs = `<div class="card"><div class="row"><div class="h3 grow">Profile</div>${!own && v.k < 70 ? '<span class="pill warn">Approximate</span>' : ''}</div>${own || v.k >= 40 ? C.radar(p, !own && v.k < 70) : '<div class="lock">Profile hidden</div>'}${attrs()}</div>
+      ${positionsCard(p, v, own)}${peerCard(p, v, own)}${profileCard(p)}`;
+    const secCareer = `${UI.seasonsCard(p, history)}
+      ${UI.careerCard(p, history)}
       <div class="card"><div class="h3">Career</div><div class="row small" style="margin:8px 0"><span class="grow muted">Total</span><b>${U.plural(p.career.apps, 'game')} · ${p.pos === 'GK' ? gkSheets(p) : `${U.plural(p.career.goals, 'goal')}`}</b></div>
         ${p.career.spells
           .map((sp, i) => ({ ...sp, first: i === 0 }))
@@ -1767,13 +1772,27 @@
         ${p.honours && p.honours.length ? `<div class="row small" style="margin-top:8px"><span class="grow muted">Honours</span><b>${honoursLine(p)}</b></div>` : ''}
         ${trainedRows(p)}
         <div class="row small" style="margin-top:8px"><span class="grow muted">Contract</span><b>until ${p.contract}</b></div></div>
+      ${UI.natCard(p)}`;
+    const secDetails = `${own ? moodCard() : ''}
       ${naturalCard(p)}
       ${persuadeCard(p)}
       ${bioCard(p)}
-      ${UI.natCard(p)}
-      ${UI.seasonsCard(p, history)}
-      ${UI.careerCard(p, history)}
       ${injuryCard(p)}`;
+    const tab = UI._ptab && UI._ptab.pid === p.id ? UI._ptab.v : 'overview';
+    const tabs = [
+      ['overview', 'Overview'],
+      ['attrs', 'Attributes'],
+      ['career', 'Career'],
+      ['details', own ? 'Mood and deal' : 'Details'],
+    ];
+    const body = { overview: secOverview, attrs: secAttrs, career: secCareer, details: secDetails }[tab] || secOverview;
+    return `<div class="pcard-hero" style="--c1:${U.heroShade(col)}"><div class="row" style="align-items:flex-start"><div class="grow"><div class="tiny b" style="opacity:.85;letter-spacing:1px;text-transform:uppercase">${p.clubId && p.no ? `#${p.no} · ` : ''}${D.POS_NAME[p.pos]}${altLine(p)} · ${p.foot} foot</div><div class="h1" style="margin-top:6px">${p.fn ? `${esc(p.fn)}<br>` : ''}${esc(p.ln)}</div>${own ? '' : `<div style="margin-top:6px">${UI.followBtn('player', p.id, true)}</div>`}<div class="small" style="margin-top:8px;opacity:.9">${natLink(`${C.flag(playsFor)} ${esc(D.NATIONS[playsFor].name)}`)} · <b title="International appearances">${p.intl && p.intl.caps ? `${p.intl.caps} cap${p.intl.caps === 1 ? '' : 's'}` : 'Uncapped'}</b>${p.nat2 && D.NATIONS[otherNat] ? ` · <span title="${p.alleg ? 'Has chosen to play for ' + esc(D.NATIONS[playsFor].name) : p.natur && p.natur.code === otherNat ? 'Naturalised in ' + p.natur.year : 'Eligible through family'}">${C.flag(otherNat)} ${esc(D.NATIONS[otherNat].name)} (${FM.Intl.uncapped(p) ? 'eligible' : 'not available: capped'})</span>` : ''}<br>${age} yrs${p.heritage && D.HERITAGE_LABEL[p.heritage] ? ` · ${esc(D.HERITAGE_LABEL[p.heritage])} heritage` : ''}${c ? ` · <span class="tap" data-act="clubView" data-id="${c.id}" style="text-decoration:underline dotted">${esc(c.name)}</span>` : ''}</div></div>${c ? `<span class="tap" data-act="clubView" data-id="${c.id}">${C.crest(c, 48)}</span>` : ''}</div>
+      <div class="row" style="margin-top:14px;gap:14px"><div><div class="tiny" style="opacity:.75">RATING</div>${C.playerStars(p)}<div class="tiny" style="opacity:.85" title="Stars are measured against ${esc(S().comps[W.refComp()].name)}, the league you manage in: three and a half is a typical starter there, five among the best. In a lower league the same player rates higher. The faded stars are his potential.">${C.playerOverall(p)} in the ${esc(S().comps[W.refComp()].name)}${(own || v.k >= 40) && C.posOveralls(p) ? ` · ${C.posOveralls(p)}` : ''}${own && p.pa0 !== undefined && Math.abs(p.pa - p.pa0) >= 4 ? ` · <span title="His potential has ${p.pa > p.pa0 ? 'risen' : 'fallen'} since we first assessed him" style="color:${p.pa > p.pa0 ? '#9be37a' : '#ff9d9d'}">potential ${p.pa > p.pa0 ? '▲' : '▼'}</span>` : ''}</div></div><div><div class="tiny" style="opacity:.75">VALUE</div><b>${own || v.k >= 30 ? U.money(p.value) : '?'}</b></div><div><div class="tiny" style="opacity:.75">WAGE</div><b>${own || v.k >= 30 ? U.money(p.wage) + '/wk' : '?'}</b></div>${own ? `<div><div class="tiny" style="opacity:.75">MORALE</div><b>${UI.moodFace(me)} ${ml}</b></div>` : ''}</div></div>
+      <div class="row small" style="margin:10px 2px 0;gap:8px" title="How well known he is, 1 to 99: his ability, caps, honours, games played and the club he plays for"><span class="dim">Reputation</span><b>${W.repLabel(W.rep(p))}</b><div class="grow">${C.bar(W.rep(p), 'var(--acc2)')}</div><span class="dim">${W.rep(p)}</span></div>
+      <div class="sp"></div>
+      ${ownActions}
+      <div class="seg ptabs" style="margin:4px 0 12px">${tabs.map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-act="ptab" data-v="${k}" data-id="${p.id}">${l}</button>`).join('')}</div>
+      ${body}`;
   }
   // The national team you manage and a foreign player at a club in its country who could be naturalised for it: how far he is
   const naturalCard = (p) => {
@@ -1874,6 +1893,7 @@
     const n = (x) => x || '—';
     const cols = gk
       ? [
+          ['Level', (h) => (h.ca ? C.starText(h.ca, p.pos) : '—'), null],
           ['Apps', (h) => h.apps, 'apps'],
           ['Mins', (h) => n(h.mins), 'mins'],
           ['CS', (h) => h.cs || 0, 'cs'],
@@ -1891,6 +1911,7 @@
           ['RC', (h) => h.rc || 0, 'rc'],
         ]
       : [
+          ['Level', (h) => (h.ca ? C.starText(h.ca, p.pos) : '—'), null],
           ['Apps', (h) => h.apps, 'apps'],
           ['Mins', (h) => n(h.mins), 'mins'],
           ['G', (h) => h.g, 'g'],
@@ -1965,7 +1986,7 @@
         .map(extraRow)
         .join('')}
       <tr style="font-weight:700"><td class="l">Total</td><td></td>${cols.map((c) => `<td>${total(c)}</td>`).join('')}</tr></table></div>
-      <div class="tiny dim" style="margin-top:6px">Scroll across for every column. Minutes, shots, chances, tackles, expected goals and keeper numbers are counted in fully simulated matches; a dash is a season without them.</div></div>`;
+      <div class="tiny dim" style="margin-top:6px">Scroll across for every column. Level is his ability that season, in stars, so the numbers read against it. Minutes, shots, chances, tackles, expected goals and keeper numbers are counted in fully simulated matches; a dash is a season without them.</div></div>`;
   };
   // Every move he has made (fee, loan or free) and every trophy and award the archive holds for him: league and cup titles in
   // the seasons he played for the winner, and the individual awards of each league and cup
@@ -3477,6 +3498,12 @@
         .join('')
     );
   }
+  UI.acts.ptab = (d) => {
+    UI._ptab = { pid: d.id, v: d.v };
+    if (P(d.id)) UI.refreshSheet(playerHTML(P(d.id)));
+    const body = document.querySelector('.sheet-wrap:last-child .sh-body');
+    if (body) body.scrollTop = 0;
+  };
   UI.acts.attrMode = (d) => {
     UI._attrMode = d.v;
     const body = document.querySelector('.sheet-wrap:last-child .sh-body'),

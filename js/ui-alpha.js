@@ -139,6 +139,9 @@
     `<div class="row" style="gap:4px;margin-top:6px;flex-wrap:wrap">${steps.map((st) => `<button class="btn sm" style="flex:1;padding:7px 2px;font-size:12px" data-act="ngStep" data-f="${field}" data-v="${st}">${st > 0 ? '+' : '−'}${U.money(Math.abs(st)).replace('$', '')}</button>`).join('')}</div>`;
   const numIn = (field, val, id) =>
     `<div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="0" step="50" value="${val}" data-input="ngNum" data-f="${field}" class="numin"><b id="${id}" style="min-width:74px;text-align:right">${U.money(val)}</b></div>`;
+  const plainIn = (field, val, min, max, unit) =>
+    `<div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="${min}" max="${max}" step="1" value="${val}" data-input="ngNum" data-f="${field}" class="numin"><b style="min-width:74px;text-align:right">${unit}</b></div>`;
+  const custom = (field, val) => numIn(field, val, 'ng_' + field);
   UI.offerSheet = function (msg) {
     const o = UI._offer,
       p = P(o.pid),
@@ -208,22 +211,31 @@
             y,
             renew ? `+${y} (to ${Co.renewedUntil(p.contract, y)})` : `${y} yr${y > 1 ? 's' : ''}`,
           ]),
-        )}
+        )}${plainIn('years', t.years, 1, 6, t.years === 1 ? 'year' : 'years')}
         <div class="h3" style="margin-top:12px">Squad status <span class="tiny dim">(he expects: ${esc(D.STATUS[ev.expSt || Co.expectedStatus(p, c)].label.toLowerCase())})</span></div>${chipRow(
           'ngSet',
           'status',
           t.status,
           Co.STATUS_ORDER.map((k) => [k, D.STATUS[k].label]),
         )}
-        <div class="h3" style="margin-top:12px">Signing-on fee</div>${chipRow('ngSet', 'bonus', t.bonus, withCur([[0, 'None'], ...[4, 10, 26].map((k) => [U.roundMoney((w || t.wage) * k), U.money(U.roundMoney((w || t.wage) * k))])], t.bonus, U.money))}
-        <div class="h3" style="margin-top:12px">Appearance fee</div>${chipRow('ngSet', 'app', t.app, [[0, 'None'], ...[0.1, 0.25, 0.5].map((f) => [Math.round((t.wage * f) / 50) * 50, U.money(Math.round((t.wage * f) / 50) * 50)])])}
-        ${['ST', 'W', 'WM', 'AM', 'CM'].includes(p.pos) ? `<div class="h3" style="margin-top:12px">Goal bonus</div>${chipRow('ngSet', 'goal', t.goal, [[0, 'None'], ...[0.25, 0.5, 1].map((f) => [Math.round((t.wage * f) / 50) * 50, U.money(Math.round((t.wage * f) / 50) * 50)])])}` : ''}
-        <div class="h3" style="margin-top:12px">Release clause</div>${chipRow('ngSet', 'release', t.release, [[0, 'None'], ...[1.5, 2.5, 4].map((f) => [U.roundMoney(p.value * f), `${U.money(p.value * f)}`])])}
-        <div class="h3" style="margin-top:12px">Yearly wage rise</div>${chipRow('ngSet', 'rise', t.rise, [
-          [0, 'None'],
-          [0.05, '+5%'],
-          [0.1, '+10%'],
-        ])}
+        <div class="h3" style="margin-top:12px">Signing-on fee</div>${chipRow('ngSet', 'bonus', t.bonus, withCur([[0, 'None'], ...[4, 10, 26].map((k) => [U.roundMoney((w || t.wage) * k), U.money(U.roundMoney((w || t.wage) * k))])], t.bonus, U.money))}${custom('bonus', t.bonus)}
+        <div class="h3" style="margin-top:12px">Appearance fee</div>${chipRow('ngSet', 'app', t.app, withCur([[0, 'None'], ...[0.1, 0.25, 0.5].map((f) => [Math.round((t.wage * f) / 50) * 50, U.money(Math.round((t.wage * f) / 50) * 50)])], t.app, U.money))}${custom('app', t.app)}
+        ${['ST', 'W', 'WM', 'AM', 'CM'].includes(p.pos) ? `<div class="h3" style="margin-top:12px">Goal bonus</div>${chipRow('ngSet', 'goal', t.goal, withCur([[0, 'None'], ...[0.25, 0.5, 1].map((f) => [Math.round((t.wage * f) / 50) * 50, U.money(Math.round((t.wage * f) / 50) * 50)])], t.goal, U.money))}${custom('goal', t.goal)}` : ''}
+        <div class="h3" style="margin-top:12px">Release clause</div>${chipRow('ngSet', 'release', t.release, withCur([[0, 'None'], ...[1.5, 2.5, 4].map((f) => [U.roundMoney(p.value * f), `${U.money(p.value * f)}`])], t.release, U.money))}${custom('release', t.release)}
+        <div class="h3" style="margin-top:12px">Yearly wage rise</div>${chipRow(
+          'ngSet',
+          'rise',
+          t.rise,
+          withCur(
+            [
+              [0, 'None'],
+              [0.05, '+5%'],
+              [0.1, '+10%'],
+            ],
+            t.rise,
+            (v) => `+${Math.round(v * 100)}%`,
+          ),
+        )}${plainIn('rise', Math.round((t.rise || 0) * 100), 0, 50, '% a year')}
         ${FM.Season.isClosed(c.comp) ? '' : `<div class="row" style="margin-top:12px"><div class="grow"><div class="h3">Relegation wage cut</div><div class="tiny dim">Wage drops 25% if we go down</div></div><button class="btn sm ${t.relegCut ? 'pri' : ''}" data-act="ngToggle">${t.relegCut ? 'Included' : 'Off'}</button></div>`}
         <div class="card flat" style="margin-top:14px"><div class="row small"><span class="grow">Package vs his demands</span><b style="color:${ev.ok ? 'var(--good)' : pct >= 90 ? 'var(--warn)' : 'var(--bad)'}">${ev.hard ? 'Refuses the role' : ev.ok ? 'Acceptable' : pct + '%'}</b></div>${C.bar(pct, ev.ok ? 'var(--good)' : pct >= 90 ? 'var(--warn)' : 'var(--bad)')}
           <div class="small" style="margin-top:8px"><b>This deal:</b> ${U.money(cost.first)}/yr in wages, ${renew ? 'adding' : ''} ${Math.round(cost.share * 100)}% ${renew ? 'to' : 'of'} your wage bill, ${U.money(cost.total)} over the contract${!renew && o.mode !== 'pre' && o.fee ? ` plus the ${U.money(o.fee)} fee` : ''}</div>
@@ -345,17 +357,23 @@
     o.fee = p.deal.release;
     UI.offerSheet();
   };
-  const field = (o, f) => (f === 'wage' ? [o.terms, 'wage'] : [o, f]);
+  const TERM_FIELDS = ['wage', 'bonus', 'app', 'goal', 'release'];
+  const field = (o, f) => (TERM_FIELDS.includes(f) ? [o.terms, f] : [o, f]);
   UI.acts.ngStep = (d) => {
     const [obj, k] = field(UI._offer, d.f);
     obj[k] = Math.max(0, obj[k] + +d.v);
     UI.offerSheet();
   };
   UI.acts.ngNum = (d, el) => {
-    const [obj, k] = field(UI._offer, d.f);
-    obj[k] = Math.max(0, Math.round(+el.value || 0));
-    const b = document.getElementById({ fee: 'ngFee', wage: 'ngWage', loanFee: 'ngLoanFee' }[d.f]);
-    if (b) b.textContent = U.money(obj[k]);
+    const o = UI._offer;
+    if (d.f === 'years') o.terms.years = U.clamp(Math.round(+el.value || 1), 1, 6);
+    else if (d.f === 'rise') o.terms.rise = U.clamp(Math.round(+el.value || 0), 0, 50) / 100;
+    else {
+      const [obj, k] = field(o, d.f);
+      obj[k] = Math.max(0, Math.round(+el.value || 0));
+      const b = document.getElementById({ fee: 'ngFee', wage: 'ngWage', loanFee: 'ngLoanFee' }[d.f] || 'ng_' + d.f);
+      if (b) b.textContent = U.money(obj[k]);
+    }
     clearTimeout(UI._ngT);
     UI._ngT = setTimeout(() => {
       const pos = el.selectionStart;
@@ -639,7 +657,7 @@
       : '';
     return `<div class="card">${head}<div class="tiny dim" style="margin-top:2px">${U.plural(A.n, 'match', 'matches')} in ${esc(A.comp)}, per match, ranked among ${U.plural(A.of, 'club')}. The radar's rim is the best in the league.</div><div class="small" style="line-height:1.5;margin-top:8px">${esc(A.summary)}</div>${radar}<div style="margin-top:6px">${rowsHtml}</div>${trend}${forms}${mix}</div>`;
   };
-  UI.clubSheet = function (id) {
+  UI.clubSheet = function (id, keepTab) {
     const s = S(),
       c = s.clubs[id];
     if (!c) return;
@@ -763,9 +781,7 @@
             : '';
         })
         .join('')}`;
-    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${D.clubRegion && D.clubRegion(c) ? ` ${esc(D.clubRegion(c))} ·` : ''}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(I.icon)} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''} <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
-      ${W.isUser(id) ? `<button class="btn block" style="margin-bottom:10px" data-act="clubGoMine">This is your club → Club tab</button>` : `<div class="row" style="margin-bottom:10px"><span class="grow"></span>${UI.followBtn('club', id)}</div>`}
-      <div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg ? C.starText(avg) : '—'}</div><div class="l">XI rating</div></div></div>
+    const secOverview = `<div class="kpis"><div class="kpi"><div class="v">${row ? row.pts : '—'}</div><div class="l">Points</div></div><div class="kpi"><div class="v">${row ? `${row.w}-${row.d}-${row.l}` : '—'}</div><div class="l">W-D-L</div></div><div class="kpi"><div class="v">${avg ? C.starText(avg) : '—'}</div><div class="l">XI rating</div></div></div>
       <div class="card"><div class="row small"><span class="grow muted">Manager</span><b data-nolink>${W.isUser(id) ? `${s.user.nat ? C.flag(s.user.nat) + ' ' : ''}${esc(s.user.name)}` : mgr ? `${C.flag(mgr.nat)} <span class="tap" data-act="manager" data-id="${mgr.id}" style="text-decoration:underline dotted">${esc(mgr.fn + ' ' + mgr.ln)}</span>` : '—'}</b></div>
         ${!W.isUser(id) && mgr && FM.Records.managerLine(mgr, id) ? `<div class="tiny dim" style="text-align:right;margin-top:2px">${esc(FM.Records.managerLine(mgr, id))}</div>` : ''}
         ${!W.isUser(id) && UI.mgrLegendLine ? UI.mgrLegendLine(mgr, id, s.user.clubId) : ''}
@@ -778,17 +794,38 @@
         ${rivalTag ? `<div class="row small" style="margin-top:6px"><span class="grow muted">With your club</span><b>${rivalTag}</b></div>` : ''}
         ${row ? `<div class="row small" style="margin-top:6px"><span class="grow muted">Form</span>${C.form(row.form)}</div>` : ''}
         ${c.sim && c.sim !== 'full' ? `<div class="tiny dim" style="margin-top:8px">${FM.Tiers.ICON[c.sim]} ${FM.Tiers.LABEL[c.sim]}</div>` : ''}</div>
-      ${UI.teamProfileCard(id)}
-      ${squadHtml}
-      ${nextCard}
-      ${movesCard}
+      ${UI.teamProfileCard(id)}`;
+    const secSquad = `${squadHtml}`;
+    const secMatches = `${nextCard}
       ${h2h.length ? `<div class="card"><div class="row"><div class="h3 grow">Head-to-head this season</div>${h2hRec}</div>${h2h.map((f) => `<div class="tiny dim" style="padding-top:6px">${esc(fxWhere(f))}</div>${f.res ? UI.fxLine(f) : `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span class="grow ellip" style="text-align:right">${esc(s.clubs[f.h].name)}</span><b style="min-width:44px;text-align:center">v</b><span class="grow ellip">${esc(s.clubs[f.a].name)}</span></div>`}`).join('')}</div>` : ''}
-      ${allTimeCard}
+      ${allTimeCard}`;
+    const secHistory = `${movesCard}
       ${UI.clubSeasonsCard(id)}
       ${UI.clubLegendsCard(id)}
       ${UI.loreCard ? UI.loreCard(c) : ''}
       ${UI.honoursCard(c)}`;
-    UI.sheet(html, { full: true, title: esc(c.name) });
+    const tab = keepTab && UI._ctab && UI._ctab.id === id ? UI._ctab.v : 'overview';
+    const tabs = [
+      ['overview', 'Overview'],
+      ['squad', 'Squad'],
+      ['matches', 'Matches'],
+      ['history', 'History'],
+    ];
+    const body =
+      { overview: secOverview, squad: secSquad, matches: secMatches, history: secHistory }[tab] || secOverview;
+    const html = `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 58)}<div class="grow"><div class="h2">${esc(c.name)}</div><div class="small" style="opacity:.9;margin-top:4px">${C.flag(c.nat)}${D.clubRegion && D.clubRegion(c) ? ` ${esc(D.clubRegion(c))} ·` : ''}${c.nick ? ` “${esc(c.nick)}” ·` : ''} ${comp ? `${esc(comp.name)} · ${U.ordinal(W.position(id))}` : 'No league'}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(I.icon)} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''} <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0" title="Confidence from recent results">Form: ${FM.Season.confLabel(c)}</span></div></div></div></div>
+      ${W.isUser(id) ? `<button class="btn block" style="margin-bottom:10px" data-act="clubGoMine">This is your club → Club tab</button>` : `<div class="row" style="margin-bottom:10px"><span class="grow"></span>${UI.followBtn('club', id)}</div>`}
+      <div class="seg ctabs" style="margin:4px 0 12px">${tabs.map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-act="ctab" data-v="${k}" data-id="${id}">${l}</button>`).join('')}</div>
+      ${body}`;
+    UI._ctab = { id, v: tab };
+    if (keepTab) UI.refreshSheet(html);
+    else UI.sheet(html, { full: true, title: esc(c.name) });
+  };
+  UI.acts.ctab = (d) => {
+    UI._ctab = { id: d.id, v: d.v };
+    UI.clubSheet(d.id, true);
+    const body = document.querySelector('.sheet-wrap:last-child .sh-body');
+    if (body) body.scrollTop = 0;
   };
   UI.acts.clubGoMine = () => {
     UI.closeAllSheets();

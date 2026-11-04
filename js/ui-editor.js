@@ -5862,6 +5862,12 @@
       <select id="ed-nnstyle">${opts(WD.NATION_STYLES, n.style)}</select>
       <div class="ng-label">Colours</div>
       <div class="row" style="gap:10px"><input type="color" id="ed-nnc1" value="${esc(n.colors[0])}" style="width:64px;height:44px;padding:2px"><input type="color" id="ed-nnc2" value="${esc(n.colors[1])}" style="width:64px;height:44px;padding:2px"></div>
+      <div class="ng-label">Stands in for <span class="tiny dim">· a real nation whose players this nation's players follow abroad: the leagues they go to and how common they are there</span></div>
+      <select id="ed-nntemplate"><option value="">None: by its part of the world</option>${Object.entries(D.NATIONS)
+        .filter(([c]) => c !== n.code && Object.values(D.NAT_MIX).some((m) => m[c] != null))
+        .sort((a, b) => a[1].name.localeCompare(b[1].name))
+        .map(([c, x]) => `<option value="${esc(c)}" ${n.template === c ? 'selected' : ''}>${esc(x.name)}</option>`)
+        .join('')}</select>
       <div class="ng-label">Players abroad <b id="ed-nnwv" style="color:#e6edf6">${n.weight}</b> <span class="tiny dim">(per cent of a league's players: 0.2 a small nation, 1 a big football country, 3 a giant)</span></div>
       <input type="range" id="ed-nnweight" min="0.1" max="3" step="0.1" value="${n.weight}" style="width:100%">
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Players are made for the nation in every league by this share, and fill most of the squads of its own leagues. With sixteen of them it has a national team (name, colours and ranking points under National teams).</div>
@@ -5901,6 +5907,7 @@
       style: v('nnstyle'),
       colors: [v('nnc1'), v('nnc2')],
       weight: +v('nnweight'),
+      template: v('nntemplate') || undefined,
       parts: readParts(),
     });
     if (!r.ok) {

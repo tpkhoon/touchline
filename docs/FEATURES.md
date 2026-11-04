@@ -82,7 +82,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Regional tournaments: the Southeast Asian, Gulf and East Asian Nations Cups and the Southeast Asian and Gulf Club Cups | Playtest round 20 |
 | World | Second divisions in Japan, Korea, Thailand, Indonesia and Vietnam; first divisions in India, Chile, Peru and Paraguay (1209 clubs in 73 leagues across 58 nations) | Playtest round 20 |
 | Competitions | Super cups (122: every nation's champions against its cup winners, and one for each continent), six more regional club cups (22 continental cups) and sifteen more regional nation tournaments, three of them played each season | Playtest round 23 |
-| World | Twenty-five more nations with a national team, a league and a cup (Europe, Asia, Africa, North America): 117 nations, 132 leagues, 1877 clubs | Playtest round 22 |
+| World | Twenty-five more nations with a national team, a league and a cup (Europe, Asia, Africa, North America): 117 nations, 139 leagues, 2001 clubs | Playtest round 22 |
 | World | Thirty-four more top flights (Africa, Europe, South America, North America, Asia and Oceania): every nation with a national team has a league and a cup (1621 clubs in 107 leagues across 92 nations) | Playtest round 21 |
 | World | A place for every club (js/geo.js), distances, away-trip wear and cost, local derbies (the world map and the start by region were taken out in round 24) | Playtest round 19 |
 | World | Older glory before the records, club details (motto, anthem, mascot, ground, records, eras), rivalries with an origin and a record, competition histories, club types, legends as managers, chairmen, ambassadors and pundits | Playtest round 19 |

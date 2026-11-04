@@ -2031,7 +2031,7 @@
       sim: 'full',
       clubs: 'CLUBS_BR1',
       repBand: [85, 62],
-      rules: { qualify: { to: 'CL', n: 5 } },
+      rules: { qualify: { to: 'CL', n: 5 }, relegate: { to: 'BR2', n: 4 } },
     },
     {
       id: 'IT1',
@@ -2064,7 +2064,7 @@
       sim: 'light',
       clubs: 'CLUBS_PT1',
       repBand: [83, 53],
-      rules: { qualify: { to: 'CC', n: 1 } },
+      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'PT2', n: 2 } },
     },
     {
       id: 'NL1',
@@ -2075,7 +2075,7 @@
       sim: 'light',
       clubs: 'CLUBS_NL1',
       repBand: [81, 54],
-      rules: { qualify: { to: 'CC', n: 1 } },
+      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'NL2', n: 2 } },
     },
     {
       id: 'AR1',
@@ -2271,7 +2271,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_TR1',
       repBand: [72, 50],
-      rules: {},
+      rules: { relegate: { to: 'TR2', n: 3 } },
     },
     {
       id: 'CZ1',
@@ -2320,7 +2320,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO1',
       repBand: [63, 46],
-      rules: {},
+      rules: { relegate: { to: 'NO2', n: 2 } },
     },
     {
       id: 'PL1',
@@ -2331,7 +2331,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_PL1',
       repBand: [62, 46],
-      rules: {},
+      rules: { relegate: { to: 'PL2', n: 3 } },
     },
     {
       id: 'DK1',
@@ -2635,7 +2635,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE1',
       repBand: [62, 42],
-      rules: { qualify: { to: 'CC', n: 1 } },
+      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'SE2', n: 2 } },
     },
     {
       id: 'RO1',
@@ -3540,6 +3540,83 @@
       clubs: 'CLUBS_TT1',
       repBand: [37, 29],
       rules: {},
+    },
+    {
+      id: 'NL2',
+      nat: 'NED',
+      name: 'Dutch Tweede Klasse',
+      short: 'NL2',
+      tier: 2,
+      sim: 'light',
+      clubs: 'CLUBS_NL2',
+      repBand: [56, 42],
+      rules: { promote: { to: 'NL1', auto: 2 } },
+    },
+    {
+      id: 'PT2',
+      nat: 'POR',
+      name: 'Portucale Liga de Acesso',
+      short: 'PT2',
+      tier: 2,
+      sim: 'light',
+      clubs: 'CLUBS_PT2',
+      repBand: [57, 43],
+      rules: { promote: { to: 'PT1', auto: 2 } },
+    },
+    {
+      id: 'BR2',
+      nat: 'BRA',
+      name: 'Atlântica Brasil Série Acesso',
+      short: 'BR2',
+      tier: 2,
+      sim: 'light',
+      clubs: 'CLUBS_BR2',
+      repBand: [66, 50],
+      rules: { promote: { to: 'BR1', auto: 4 } },
+    },
+    {
+      id: 'TR2',
+      nat: 'TUR',
+      name: 'Turkish Ikinci Lig',
+      short: 'TR2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_TR2',
+      repBand: [56, 42],
+      rules: { promote: { to: 'TR1', auto: 3 } },
+    },
+    {
+      id: 'PL2',
+      nat: 'POL',
+      name: 'Mazowsze Pierwsza Liga',
+      short: 'PL2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_PL2',
+      repBand: [52, 40],
+      rules: { promote: { to: 'PL1', auto: 3 } },
+    },
+    {
+      id: 'NO2',
+      nat: 'NOR',
+      name: 'Norwegian Adeccoliga',
+      short: 'NO2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_NO2',
+      repBand: [52, 40],
+      rules: { promote: { to: 'NO1', auto: 2 } },
+    },
+    {
+      id: 'SE2',
+      nat: 'SWE',
+      name: 'Kaizen Superettan',
+      short: 'SE2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_SE2',
+      repBand: [52, 39],
+      rules: { promote: { to: 'SE1', auto: 2 } },
     },
   ];
   FM.D.CONTINENTALS = [
@@ -4460,6 +4537,13 @@
     QA1: { QAT: 34, BRA: 6, ESP: 5, ARG: 4, EGY: 5, MAR: 4, IRQ: 3, SRB: 3, NGA: 2, SEN: 2, ALG: 3, TUN: 3 },
     CS1: { CHN: 68, BRA: 12, KOR: 3, JPN: 2, SRB: 3, NGA: 2, ESP: 3, ENG: 2, GHA: 2, AUS: 3 },
   });
+  FM.D.NAT_MIX.NL2 = { ...FM.D.NAT_MIX.NL1 };
+  FM.D.NAT_MIX.PT2 = { ...FM.D.NAT_MIX.PT1 };
+  FM.D.NAT_MIX.BR2 = { ...FM.D.NAT_MIX.BR1 };
+  FM.D.NAT_MIX.TR2 = { ...FM.D.NAT_MIX.TR1 };
+  FM.D.NAT_MIX.PL2 = { ...FM.D.NAT_MIX.PL1 };
+  FM.D.NAT_MIX.NO2 = { ...FM.D.NAT_MIX.NO1 };
+  FM.D.NAT_MIX.SE2 = { ...FM.D.NAT_MIX.SE1 };
 
   // ---------- Alpha 1: contracts, agents, promises, badges ----------
   FM.D.AGENTS = {

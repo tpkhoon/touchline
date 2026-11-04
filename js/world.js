@@ -950,9 +950,10 @@
   });
   W.STAT_KEYS = Object.keys(W.blankSeason());
   // One history row per season and club from a season's numbers ({ y, c, apps, g, a, r, ... })
-  W.seasonRow = (y, c, st) => ({
+  W.seasonRow = (y, c, st, ca) => ({
     y,
     c,
+    ca,
     apps: st.apps,
     g: st.goals,
     a: st.ast,
@@ -981,11 +982,11 @@
     const diff = (a, b) => Object.fromEntries(W.STAT_KEYS.map((k) => [k, (a[k] || 0) - (b[k] || 0)]));
     for (const sp of p.splits || []) {
       const d = diff(sp.s, prev);
-      if (d.apps > 0) rows.push(W.seasonRow(y, sp.c, d));
+      if (d.apps > 0) rows.push(W.seasonRow(y, sp.c, d, Math.round(p.ca)));
       prev = sp.s;
     }
     const last = diff(p.season, prev);
-    if (last.apps > 0) rows.push(W.seasonRow(y, p.clubId, last));
+    if (last.apps > 0) rows.push(W.seasonRow(y, p.clubId, last, Math.round(p.ca)));
     return rows;
   };
   // A wage follows ability, age and position (half the market's position premium), not market swings or the contract, and what the
@@ -1114,6 +1115,76 @@
     );
     if (!(p.no > 0 && !taken.has(p.no))) p.no = W.pickNo(p, taken);
   };
+  // Every nation with a national team has a pool to pick it from: at least 23 players of 17 or more at clubs. A small nation's are found
+  // where its emigrants go (its ties, or its part of the world): at a host club, a fringe foreigner of a nation with plenty is replaced by
+  // a player of the small nation of the same position, age and ability. Nothing is added to the world's size.
+  W.POOL_MIN = 23;
+  // The share of foreign players in each league's first-team squads as the world begins: what the market holds the league to
+  W.seedNatTargets = function () {
+    const S = FM.S,
+      tot = {};
+    for (const c of Object.values(S.clubs)) {
+      if (!c.comp || c.sim === 'nation' || c.parent) continue;
+      const t = (tot[c.comp] = tot[c.comp] || { n: 0, f: 0 });
+      for (const p of W.squad(c.id))
+        if (!p.team) {
+          t.n++;
+          if (p.nat !== c.nat) t.f++;
+        }
+    }
+    S.natTarget = Object.fromEntries(
+      Object.entries(tot)
+        .filter(([, t]) => t.n)
+        .map(([k, t]) => [k, t.f / t.n]),
+    );
+  };
+  W.fillNationPools = function () {
+    const S = FM.S,
+      by = {};
+    for (const p of Object.values(S.players))
+      if (p.clubId && !p.retired && W.age(p) >= 17) by[p.nat] = (by[p.nat] || 0) + 1;
+    const clubs = Object.values(S.clubs).filter((c) => c.sim !== 'nation' && !c.parent && c.comp && !c.policy);
+    let made = 0;
+    for (const code of D.nationCodes()) {
+      // (a nation under sixteen is too thin for a national team and stays without one; from sixteen it is topped up to a full pool)
+      if (!D.nationOn(code) || (by[code] || 0) < 16) continue;
+      let need = W.POOL_MIN - (by[code] || 0);
+      if (need <= 0) continue;
+      const ties = (D.NATION_TIES && D.NATION_TIES[code]) || [],
+        region = D.NATIONS[code] && D.NATIONS[code].region;
+      let hosts = clubs.filter((c) => ties.includes(c.nat));
+      if (hosts.length < 8)
+        hosts = hosts.concat(
+          clubs.filter((c) => c.nat !== code && D.NATIONS[c.nat] && D.NATIONS[c.nat].region === region),
+        );
+      hosts = hosts.filter((c) => c.nat !== code);
+      if (!hosts.length) continue;
+      for (let guard = 0; need > 0 && guard < need * 12; guard++) {
+        const club = U.wpick(hosts, (c) => 110 - c.rep);
+        const victims = W.squad(club.id).filter(
+          (p) => !p.team && !p.loan && p.nat !== club.nat && p.nat !== code && (by[p.nat] || 0) > 40 && W.age(p) >= 19,
+        );
+        if (!victims.length) continue;
+        const v = victims.reduce((a, b) => (b.ca < a.ca ? b : a));
+        const q = W.genPlayer({
+          nat: code,
+          pos: v.pos,
+          age: W.age(v),
+          ca: v.ca,
+          pa: Math.max(v.pa, v.ca),
+          clubId: club.id,
+        });
+        by[v.nat]--;
+        by[code] = (by[code] || 0) + 1;
+        delete S.players[v.id];
+        S.players[q.id] = q;
+        need--;
+        made++;
+      }
+    }
+    if (made) W.rosterVer++;
+    return made;
+  };
   W.spell = (p) => p.career.spells[p.career.spells.length - 1];
   // A past for a player of a new world: his last three seasons as history rows (appearances by how good he is for his
   // club, goals and assists by position and finishing), most at his current club, now and then with an earlier one. The
@@ -1159,7 +1230,9 @@
       here = seasons;
       sp.from = Math.min(sp.from, S.year - seasons);
     }
-    const growth = (k) => Math.max(0, Math.min(k, 23 - (age - k))) * 2; // (about two points a year before 23)
+    // how far his ability then differs from now: he was weaker if he was still growing (about two points a year before 23) and
+    // stronger if he has declined since (about a point and a half a year after 30), so a veteran's best seasons are behind him
+    const growth = (k) => Math.max(0, Math.min(k, 23 - (age - k))) * 2 - Math.max(0, age - Math.max(30, age - k)) * 1.5;
     // the clubs of the earlier seasons, in stints of two to five years that climb with his ability then
     const clubAt = {};
     if (here < seasons) {
@@ -1215,6 +1288,7 @@
       const row = {
         y,
         c: club.id,
+        ca: Math.round(then),
         apps,
         g,
         a: as,
@@ -1496,6 +1570,9 @@
   // further a club stands above a nation's own top flight, the more of its foreign players come from that nation (up to about
   // double). The foreign share of the squad does not change, only whose it is; a weak nation's best go abroad, the rest stay home.
   const EMIGRANT_PULL = 5;
+  // A foreign nation counts a little less the more it dominates the mix (the share is raised to this power), so a squad draws from more
+  // nationalities: eight to fifteen in a top flight, not five. The total foreign share is rescaled and does not change.
+  const FOREIGN_FLATTEN = 0.75;
   W.pickEmigrant = (club, mix, f) => {
     const keys = Object.keys(mix),
       w = new Array(keys.length);
@@ -1506,8 +1583,8 @@
       const gap = club.rep - W.nationLeagueRep(k),
         pull = gap > 8 ? 1 + Math.min(1.5, (gap - 8) / 30) * EMIGRANT_PULL : 1;
       before += mix[k] * f;
-      after += mix[k] * f * pull;
-      w[i] = mix[k] * f * pull;
+      after += Math.pow(mix[k], FOREIGN_FLATTEN) * f * pull;
+      w[i] = Math.pow(mix[k], FOREIGN_FLATTEN) * f * pull;
     });
     const scale = after ? before / after : 1;
     keys.forEach((k, i) => {
@@ -1531,11 +1608,13 @@
   W.youthNat = (club) =>
     D.YOUTH_MIX[club.nat]
       ? D.pickNat(D.YOUTH_MIX[club.nat])
-      : Math.random() < 0.95
-        ? club.nat
-        : D.foreignPick
-          ? D.foreignPick(club.nat)
-          : U.pick(D.nationCodes());
+      : club.comp && D.NAT_MIX[club.comp]
+        ? W.natFor(club, { age: 16 }) // (a league with a mix: its academies draw from it too, a younger and so more domestic share)
+        : Math.random() < 0.95
+          ? club.nat
+          : D.foreignPick
+            ? D.foreignPick(club.nat)
+            : U.pick(D.nationCodes());
 
   // A squad for a club. `have`: players it already has (a database that fixes some of them): only the gaps are filled
   function genSquad(club, have = []) {
@@ -2999,6 +3078,8 @@
       sp.apps = Math.round(yrs * 40 * share * U.rand(0.8, 1.1));
       p.career.apps += sp.apps;
     }
+    W.fillNationPools(); // (small nations have a pool abroad to pick a national team from)
+    W.seedNatTargets();
     for (const id in S.players) W.backfillHistory(S.players[id]); // a career of seasons behind each player
     for (const id in S.players) S.players[id].value = W.value(S.players[id]); // priced with their final club and contract
     FM.Youth.assignAll(); // U21 and U18 squads from the start
