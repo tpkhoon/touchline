@@ -371,8 +371,15 @@
       const acad = c.facilities.academy || 2;
       const n = 2 + Math.floor(acad / 2) + (c.identity === 'youth' ? 1 : 0);
       const made = [];
+      // A club in a quick-simulated league makes no signings abroad, so its foreign share could only fall: when it stands below its
+      // league's share the intake is drawn from the league's mix as for a grown player (a young signing from abroad, in effect)
+      let short = 0;
+      if (c.sim === 'minimal' && !W.isUser(c.id) && c.comp && S.natTarget && S.natTarget[c.comp] != null) {
+        const sq = W.squad(c.id).filter((p) => !p.team);
+        if (sq.length) short = S.natTarget[c.comp] - sq.filter((p) => p.nat !== c.nat).length / sq.length;
+      }
       for (let i = 0; i < n; i++) {
-        const nat = W.youthNat(c);
+        const nat = short > 0.02 && Math.random() < Math.min(1, short * 6) ? W.natFor(c, { age: 24 }) : W.youthNat(c);
         const shift = Sea.youthRating(nat) - 50; // (a strong youth nation: a little more ability and potential, and more wonderkids)
         const pos = U.pick(['GK', 'CB', 'CB', 'FB', 'WB', 'DM', 'CM', 'CM', 'WM', 'AM', 'W', 'W', 'ST', 'ST']);
         const ca = Math.round(U.clamp(U.gauss(26 + acad * 3 + shift * 0.04, 4), 18, 48));
