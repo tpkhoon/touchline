@@ -3112,6 +3112,7 @@
       p.career.apps += sp.apps;
     }
     W.fillNationPools(); // (small nations have a pool abroad to pick a national team from)
+    if (FM.Reg && FM.Reg.repairWorld) FM.Reg.repairWorld(); // (a club over its league's foreign-player limits swaps the excess)
     W.seedNatTargets();
     for (const id in S.players) W.backfillHistory(S.players[id]); // a career of seasons behind each player
     for (const id in S.players) S.players[id].value = W.value(S.players[id]); // priced with their final club and contract

@@ -530,6 +530,38 @@
     }
     return swap() || club.nat;
   };
+  // World generation, once the squads and the national pools are made: a club over one of its league's limits (a non-EU cap, the
+  // foreign places of an Asian league) has its weakest offenders replaced by players of the same position, age and ability whose
+  // nationality the rules allow, drawn from the league's own mix. The foreign share stays as it was: a foreigner swaps for a foreigner.
+  // Nothing is added to the world's size, and no history exists yet to be rewritten.
+  R.repairWorld = function () {
+    const S = FM.S;
+    let fixed = 0;
+    for (const c of Object.values(S.clubs)) {
+      if (!c.comp || c.sim === 'nation' || c.parent || W.isUser(c.id) || !R.rulesFor(c)) continue;
+      for (let guard = 0; guard < 6; guard++) {
+        const over = R.over(c);
+        if (!over.length) break;
+        const g = over[0];
+        const out = g.players.find((p) => !p.team && !p.loan);
+        if (!out) break;
+        const others = W.squad(c.id)
+          .filter((p) => p !== out)
+          .map((p) => ({ nat: p.nat, age: W.age(p) }));
+        const age = W.age(out);
+        const nat = R.genNat(c, others, age, () => W.natFor(c, { age, pos: out.pos }));
+        if (nat === out.nat) break;
+        const q = W.genPlayer({ nat, pos: out.pos, age, ca: out.ca, pa: Math.max(out.pa, out.ca), clubId: c.id });
+        if (out.youth) q.youth = out.youth;
+        if (out.team) q.team = out.team;
+        delete S.players[out.id];
+        S.players[q.id] = q;
+        W.rosterVer++;
+        fixed++;
+      }
+    }
+    return fixed;
+  };
   // Limits on the matchday squad (XI and bench) for W.pickXI: [{ f: counts against it, cap }]
   const limCache = new Map();
   R.matchdayLimits = function (club) {
