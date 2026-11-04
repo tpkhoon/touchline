@@ -256,11 +256,11 @@
   // How well a player fits a slot (0–1): his natural position's table, or a second position he has learned
   // (p.alt). Given the slot itself, its side counts on the flanks: a full-back or wing-back is at home on the side
   // of his stronger foot, a winger too unless his role cuts inside (inv), when he wants the other flank.
-  W.SIDE_FIT = 0.8; // full-back or wing-back on the other flank: a different job on the weaker foot, which costs
-  W.SIDE_FIT_W = 0.9; // winger on the side his role doesn't want (a winger cuts in or goes outside, so he loses less)
-  // Very few flank players are at home on both wings: the two-footed (foot Both) and a few more who learned both sides (p.twoSided)
+  W.SIDE_FIT = 0.92; // full-back or wing-back on the other flank, when he has not learned both: a small cost
+  W.SIDE_FIT_W = 0.95; // winger on the side his role doesn't want
+  // A good share of flank players are at home on both wings: the two-footed (foot Both) and many more who learned both sides (p.twoSided)
   W.bothSides = (p) => p.foot === 'Both' || !!p.twoSided;
-  W.TWO_SIDED = 0.04;
+  W.TWO_SIDED = { FB: 0.3, WB: 0.35, WM: 0.35, W: 0.4 }; // (the share of each position, on top of the two-footed)
   W.fitAt = (p, slotType, slot, role) => {
     let f = (D.FIT[p.pos] && D.FIT[p.pos][slotType]) || (p.pos === slotType ? 1 : 0.4);
     if (p.alt && p.alt[slotType] > f) f = p.alt[slotType];
@@ -852,7 +852,7 @@
       born: FM.S.year - age,
       pos,
       foot: U.chance(0.72) ? 'Right' : U.chance(0.85) ? 'Left' : 'Both',
-      ...(W.FLANK.includes(pos) && U.chance(W.TWO_SIDED) ? { twoSided: true } : {}),
+      ...(W.FLANK.includes(pos) && U.chance(W.TWO_SIDED[pos]) ? { twoSided: true } : {}),
       attrs: genAttrs(pos, nat, ca),
       pa: Math.round(U.clamp(pa, ca, 96)),
       ca: 0,
