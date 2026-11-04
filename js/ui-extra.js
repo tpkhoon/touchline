@@ -458,7 +458,7 @@
       const r = D.STAFF_ROLES[role];
       return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? UI.ico('chair') : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
         <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
-        ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div>` : ''}
+        ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div><details style="margin-top:6px"><summary class="tiny dim" style="cursor:pointer;min-height:44px;display:flex;align-items:center">Where he knows players</summary>${UI.scoutRegionBars(st)}</details>` : ''}
         <div class="small" style="margin-top:6px">${esc(FM.Staff.IMPACT[key](st.ability, st.vacant ? null : (W.staffAttrs(st), st)).text)}</div>${UI.staffAttrsHtml(st)}${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
         <div class="tiny dim" style="margin-top:4px">${r.effect}${st.vacant ? '' : ` · contract to ${st.contract}`}</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="staffMarket" data-role="${esc(role)}">${st.vacant ? 'Hire' : key === 'scout' ? 'Hire another' : 'Replace'}</button>${st.vacant ? '' : `<button class="btn sm grow danger" data-act="staffFire" data-id="${st.id}">Release (${U.money(FM.Staff.compensation(st))})</button>`}</div></div>`;
@@ -750,21 +750,23 @@
         const best = Object.entries(sc.regions)
           .sort((x, y) => y[1] - x[1])
           .slice(0, 2)
-          .map(([k]) => D.REGIONS[k])
+          .map(([k]) => FM.Scouting.regionName(k))
           .join(', ');
         return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${U.staffText(sc.judge)}</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
       })
       .join('');
     return `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
       <div class="card"><div class="row"><div class="h3 grow">Assignments</div><button class="btn sm" data-act="goStaff">Hire scouts</button></div>${asg}</div>
-      <div class="card"><div class="h3">Scouting knowledge</div><div class="small dim" style="margin:4px 0 8px">Your network's best coverage per region</div>${Object.entries(
-        D.REGIONS,
-      )
-        .map(([k, l]) => {
-          const b = Math.max(...s.user.scouts.map((id) => s.staff[id].regions[k] || 0));
-          return `<div class="row tiny" style="margin:5px 0"><span style="width:96px" class="dim">${l}</span><div class="grow">${C.bar(b * 100, b >= 0.8 ? 'var(--good)' : b >= 0.45 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="width:34px;text-align:right">${Math.round(b * 100)}%</b></div>`;
-        })
-        .join('')}</div>`;
+      <div class="card"><div class="h3">Scouting knowledge</div><div class="small dim" style="margin:4px 0 8px">Your network's best coverage per region</div>${(() => {
+        const Sc = FM.Scouting,
+          best = (k) => Math.max(0, ...s.user.scouts.map((id) => Sc.regionKnow(s.staff[id], k))),
+          bar = (k) => {
+            const b = best(k);
+            return `<div class="row tiny" style="margin:5px 0"><span style="width:110px;flex:none" class="dim">${esc(Sc.regionName(k))}</span><div class="grow">${C.bar(b * 100, b >= 0.8 ? 'var(--good)' : b >= 0.45 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="width:34px;text-align:right">${Math.round(b * 100)}%</b></div>`;
+          },
+          parts = Sc.partKeys().sort((a, b) => best(b) - best(a));
+        return `${Object.keys(D.REGIONS).map(bar).join('')}<details style="margin-top:6px"><summary class="tiny dim" style="cursor:pointer;min-height:44px;display:flex;align-items:center">Parts of the world (${parts.length})</summary>${parts.map(bar).join('')}</details>`;
+      })()}</div>`;
   }
   UI.acts.goStaff = () => {
     UI.sub.club = 'staff';
@@ -787,6 +789,27 @@
   const ageText = (age) => (age >= FM.Scouting.AGE_ANY ? 'Any age' : `${age} or younger`);
   const slider = (label, key, min, max, val, text) =>
     `<div class="row" style="margin-top:10px"><div class="h3 grow">${label}</div><b class="as-val">${text}</b></div><input type="range" class="as-range" min="${min}" max="${max}" step="1" value="${val}" data-input="asSlide" data-k="${key}" aria-label="${label}">`;
+  // The regions a scout can be sent to or asked about, as a select: the continents, then the named parts of the world (the Baltics,
+  // the Balkans, Western Europe, Southeast Asia ...), each with his knowledge of it and its youth rating
+  UI.scoutRegionSelect = (id, sc, cur) => {
+    const Sc = FM.Scouting,
+      opt = (k) =>
+        `<option value="${esc(k)}" ${cur === k ? 'selected' : ''}>${esc(Sc.regionName(k))} · ${Math.round(Sc.regionKnow(sc, k) * 100)}% · ${UI.regionYouth(k)}</option>`;
+    return `<select id="${id}" class="as-nat" aria-label="Region"><optgroup label="Continents">${Object.keys(D.REGIONS).map(opt).join('')}</optgroup><optgroup label="Parts of the world">${Sc.partKeys()
+      .sort((a, b) => a.localeCompare(b))
+      .map(opt)
+      .join('')}</optgroup></select>`;
+  };
+  // A scout's knowledge of each continent as bars, and of the parts of the world behind a fold
+  UI.scoutRegionBars = (sc) => {
+    const Sc = FM.Scouting,
+      bar = (k) => {
+        const b = Sc.regionKnow(sc, k);
+        return `<div class="row tiny" style="margin:5px 0"><span style="width:110px;flex:none" class="dim">${esc(Sc.regionName(k))}</span><div class="grow">${C.bar(b * 100, b >= 0.8 ? 'var(--good)' : b >= 0.45 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="width:34px;text-align:right">${Math.round(b * 100)}%</b></div>`;
+      };
+    const parts = Sc.partKeys().sort((a, b) => Sc.regionKnow(sc, b) - Sc.regionKnow(sc, a));
+    return `${Object.keys(D.REGIONS).map(bar).join('')}<details style="margin-top:6px"><summary class="tiny dim" style="cursor:pointer;min-height:44px;display:flex;align-items:center">Parts of the world (${parts.length})</summary>${parts.map(bar).join('')}</details>`;
+  };
   UI._as = {
     type: 'region',
     region: 'SAM',
@@ -797,6 +820,11 @@
     minStars: 0,
     maxFee: 0,
     focus: 'any',
+  };
+  // the search's part-of-the-world select
+  UI.acts.srPart = (d, el) => {
+    UI._q.region = el.value || 'any';
+    UI.render();
   };
   UI.acts.assignScout = (d) => {
     UI._as.scout = d.id;
@@ -814,7 +842,7 @@
     // Nationality: the nations of the chosen region, or the nationalities actually playing in the chosen league
     const natOpts = (
       a.type === 'region'
-        ? Object.keys(D.NATIONS).filter((k) => D.nationOn(k) && D.NATIONS[k].region === a.region)
+        ? FM.Scouting.nationsIn(a.region)
         : [...new Set(s.comps[a.comp].clubs.flatMap((id) => W.squad(id).map((p) => p.nat)))]
     ).sort((x, y) => D.NATIONS[x].name.localeCompare(D.NATIONS[y].name));
     if (a.nat !== 'any' && !natOpts.includes(a.nat)) a.nat = 'any';
@@ -830,15 +858,7 @@
         .join('')}</div>
       ${
         a.type === 'region'
-          ? `<div class="h3" style="margin-top:12px">Region</div>${chipRow(
-              'as',
-              'region',
-              a.region,
-              Object.entries(D.REGIONS).map(([k, l]) => [
-                k,
-                `${l} · ${Math.round((sc.regions[k] || 0) * 100)}% · ${UI.regionYouth(k)}`,
-              ]),
-            )}`
+          ? `<div class="h3" style="margin-top:12px">Region</div>${UI.scoutRegionSelect('as-region', sc, a.region)}`
           : `<div class="h3" style="margin-top:12px">League</div>${chipRow(
               'as',
               'comp',
@@ -895,6 +915,12 @@
     else UI.sheet(`<div class="assign-sheet">${html}</div>`, { title: 'Scouting assignment' });
     const nat = document.querySelector('.assign-sheet #as-nat');
     if (nat) nat.addEventListener('change', () => (UI._as.nat = nat.value));
+    const rg = document.querySelector('.assign-sheet #as-region');
+    if (rg)
+      rg.addEventListener('change', () => {
+        UI._as.region = rg.value;
+        UI.assignSheet();
+      });
   };
   // a type of player: a position and a role in one tap
   UI.acts.asType = (d) => {
@@ -1428,7 +1454,7 @@
           .toLowerCase()
           .includes(q.text.toLowerCase()),
       );
-    if (q.region !== 'any') ps = ps.filter((p) => FM.Scouting.region(p) === q.region);
+    if (q.region !== 'any') ps = ps.filter((p) => FM.Scouting.regionsOf(p).includes(q.region));
     // the cheap filters first, so the scouting estimates are worked out only for what's left
     ps = sfSort(
       sfApply(ps),
@@ -1436,7 +1462,10 @@
       (a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value,
     );
     return `<input type="text" placeholder="Search players, clubs or nations…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:6px">
-      <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}</div>
+      <div class="chips" style="margin-top:6px">${[['any', 'Everywhere'], ...Object.entries(D.REGIONS)].map(([v, l]) => `<button class="chip ${q.region === v ? 'on' : ''}" data-act="q" data-k="region" data-v="${v}">${l}</button>`).join('')}<select data-input="srPart" class="chip ${FM.Scouting.partKeys().includes(q.region) ? 'on' : ''}" aria-label="A part of the world" style="min-height:44px"><option value="">A part of the world…</option>${FM.Scouting.partKeys()
+        .sort((a, b) => a.localeCompare(b))
+        .map((k) => `<option value="${esc(k)}" ${q.region === k ? 'selected' : ''}>${esc(k)}</option>`)
+        .join('')}</select></div>
       ${sfPanel('search', ps.length)}
       ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">${esc(W.userClub().name)} only sign ${esc(W.userClub().policy.label)} players, so only they are scouted and listed.</div>` : ''}
       <div class="card flat list" style="padding:4px 12px">${

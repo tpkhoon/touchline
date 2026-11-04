@@ -266,10 +266,16 @@
     // any assignment to a region that does not exist is cleared
     if (s.staff && FM.W && FM.D.REGIONS) {
       for (const st of Object.values(s.staff))
-        if (st.role === 'Scout' && st.regions && Object.keys(st.regions).some((k) => !FM.D.REGIONS[k]))
+        if (
+          st.role === 'Scout' &&
+          st.regions &&
+          Object.keys(st.regions).some((k) => !FM.D.REGIONS[k] && !FM.D.SUBREGIONS[k])
+        )
           Object.assign(st, FM.W.scoutProfile(st.nat in FM.D.NATIONS ? st.nat : 'ENG', st.ability || 12));
       if (s.user && s.user.assignments)
-        s.user.assignments = s.user.assignments.filter((a) => a.region == null || FM.D.REGIONS[a.region]);
+        s.user.assignments = s.user.assignments.filter(
+          (a) => a.region == null || FM.D.REGIONS[a.region] || FM.D.SUBREGIONS[a.region],
+        );
     }
     // three clubs were renamed when the name generator learned to avoid rude words ("Cabrona FC")
     if (s.clubs && FM.D.LEAGUES)

@@ -358,6 +358,40 @@ try {
   );
 }
 
+// ---- scouting regions: the continents and the named parts of the world ----
+{
+  const Sc = FM.Scouting;
+  ok(
+    Sc.partKeys().length >= 30 && !Sc.partKeys().includes('British Isles') && !Sc.partKeys().includes('Oceania'),
+    'the parts a scout can be sent to leave out the ones a continent already is',
+  );
+  ok(
+    ['EST', 'LVA', 'LTU'].every((n) => Sc.nationsIn('Baltics').includes(n)) && Sc.nationsIn('Baltics').length === 3,
+    'the Baltics are Estonia, Latvia and Lithuania',
+  );
+  ok(Sc.nationsIn('EUR').includes('DEN') && !Sc.nationsIn('EUR').includes('BRA'), 'a continent is its nations');
+  const legacy = { regions: { EUR: 0.9, ASIA: 0.2, AFR: 0.2, SAM: 0.2, NAM: 0.2, OFC: 0.2, ENG: 0.3 } };
+  ok(
+    Math.abs(Sc.regionKnow(legacy, 'Nordics') - 0.9) < 1e-9 &&
+      Math.abs(Sc.regionKnow(legacy, 'Southeast Asia') - 0.2) < 1e-9,
+    'a scout made before the parts knows each part as well as its continent',
+  );
+  const dane = W.scoutProfile('DEN', 14);
+  ok(
+    dane.regions.Nordics >= 0.8 && dane.regions.Scandinavia >= 0.8,
+    'a Danish scout knows the Nordics and Scandinavia best',
+  );
+  ok(
+    Sc.partKeys().every((k) => dane.regions[k] >= 0.1 && dane.regions[k] <= 0.97) &&
+      Object.keys(D.REGIONS).every((k) => dane.regions[k] != null),
+    'and has a knowledge of every part and continent',
+  );
+  ok(
+    Sc.regionName('SAM') === 'South America' && Sc.regionName('Balkans') === 'Balkans',
+    'a region is named by its continent or itself',
+  );
+}
+
 // ---- staff attributes and player reputation ----
 {
   const roles = Object.keys(D.STAFF_ROLES);

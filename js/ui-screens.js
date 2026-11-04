@@ -862,6 +862,7 @@
         ['list', 'Squad'],
         ['tactics', 'Tactics'],
         ['academy', 'Academy'],
+        ['depth', 'Depth'],
         ['training', 'Training'],
         ['analytics', 'Analytics'],
         ['promises', 'Promises'],
@@ -870,13 +871,15 @@
         ? tacticsView()
         : tab === 'academy'
           ? academyView()
-          : tab === 'training'
-            ? UI.trainingView()
-            : tab === 'analytics'
-              ? UI.analyticsView()
-              : tab === 'promises'
-                ? UI.promisesView()
-                : squadView())
+          : tab === 'depth'
+            ? UI.depthView()
+            : tab === 'training'
+              ? UI.trainingView()
+              : tab === 'analytics'
+                ? UI.analyticsView()
+                : tab === 'promises'
+                  ? UI.promisesView()
+                  : squadView())
     );
   };
   const SQ_DEFAULT = () => ({ text: '', pos: [], age: 'any', nat: 'any', contract: 'any', foot: 'any', level: 'any' });
@@ -2373,7 +2376,7 @@
           const task = !a
             ? '<span class="pill">Idle</span>'
             : a.type === 'region'
-              ? `<span class="pill acc">Scouting ${D.REGIONS[a.region]} · ${a.role ? a.role : a.pos === 'any' ? 'all' : FM.Scouting.posLabel(a.pos)} · ≤${a.maxAge}</span>`
+              ? `<span class="pill acc">Scouting ${esc(FM.Scouting.regionName(a.region))} · ${a.role ? a.role : a.pos === 'any' ? 'all' : FM.Scouting.posLabel(a.pos)} · ≤${a.maxAge}</span>`
               : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${a.weeks}w</span>`;
           return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${U.staffText(sc.judge)} · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
         <div class="small muted" style="margin:10px 0 6px">${esc(sc.note)}</div>
@@ -2460,7 +2463,7 @@
         (W.name(p) + ' ' + (p.clubId ? CL(p.clubId).name : '')).toLowerCase().includes(q.text.toLowerCase()),
       );
     if (q.pos !== 'any') ps = ps.filter((p) => D.POS_GROUP[p.pos] === q.pos);
-    if (q.region !== 'any') ps = ps.filter((p) => FM.Scouting.region(p) === q.region);
+    if (q.region !== 'any') ps = ps.filter((p) => FM.Scouting.regionsOf(p).includes(q.region));
     ps.sort((a, b) => FM.Scouting.know(b.id) - FM.Scouting.know(a.id) || b.value - a.value);
     return `<input type="text" placeholder="Search players or clubs…" value="${esc(q.text)}" data-input="searchText" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:10px">
       <div class="chips">${[

@@ -12,6 +12,32 @@
     if (c) return c.nat === 'ENG' ? 'ENG' : D.NATIONS[c.nat].region;
     return D.NATIONS[p.nat].region;
   };
+  // Scouting regions: the continents (D.REGIONS) and the named parts of the world (D.SUBREGIONS: the Baltics, the Balkans, Western
+  // Europe, Southeast Asia, Central Asia ...). A player is in his continent and in every part his nation (where he plays) is in; a
+  // scout's knowledge of him is his best across them. A scout made before the parts existed has none of his own for them: his
+  // knowledge of a part is the average of his knowledge of its nations' continents, so he knows what he always did.
+  const isContinentName = (k) => Object.values(D.REGIONS).includes(k);
+  Sc.partKeys = () => Object.keys(D.SUBREGIONS).filter((k) => !isContinentName(k));
+  Sc.regionKeys = () => [...Object.keys(D.REGIONS), ...Sc.partKeys()];
+  Sc.regionName = (k) => D.REGIONS[k] || k;
+  Sc.nationsIn = (k) =>
+    D.SUBREGIONS[k]
+      ? D.SUBREGIONS[k].split(' ').filter(D.nationOn)
+      : D.nationCodes().filter((n) => D.NATIONS[n].region === k);
+  Sc.regionsOf = (p) => {
+    const c = p.clubId && FM.S.clubs[p.clubId];
+    return [Sc.region(p), ...D.explicitSubregions(c ? c.nat : p.nat).filter((k) => !isContinentName(k))];
+  };
+  Sc.regionKnow = (scout, k) => {
+    const r = scout.regions || {};
+    if (r[k] != null) return r[k];
+    if (D.SUBREGIONS[k]) {
+      const ns = Sc.nationsIn(k);
+      return ns.length ? ns.reduce((t, n) => t + (r[D.NATIONS[n].region] ?? 0.2), 0) / ns.length : 0.2;
+    }
+    return 0.2;
+  };
+  Sc.expert = (scout, p) => Math.max(...Sc.regionsOf(p).map((k) => Sc.regionKnow(scout, k)));
   // A club with a signing policy (the Basque and Catalan clubs) only looks at players it could sign: its scouts, search and
   // suggestions leave everyone else out
   Sc.scoutable = function (p) {
@@ -222,15 +248,14 @@
     if (spec.type === 'player') {
       const s = FM.S.staff[scoutId],
         p = FM.S.players[spec.pid];
-      spec.weeks = Math.max(1, Math.round(3 - 2 * (s.regions[Sc.region(p)] ?? 0.2)));
+      spec.weeks = Math.max(1, Math.round(3 - 2 * Sc.expert(s, p)));
     }
     u.assignments.push({ scout: scoutId, since: FM.S.day, ...spec });
   };
 
   function learn(scout, p, mult = 1) {
     const u = FM.S.user,
-      reg = Sc.region(p),
-      exp = scout.regions[reg] ?? 0.2;
+      exp = Sc.expert(scout, p);
     const gain = (6 + 24 * exp + scout.judge * 0.6) * mult;
     const before = u.knowledge[p.id] || 0;
     u.knowledge[p.id] = Math.min(100, before + gain * (1 - before / 140));
@@ -321,7 +346,7 @@
     return !l.length || l.some((x) => posOne(p, x));
   };
   Sc.focusLabel = (a) => {
-    const where = a.type === 'league' ? FM.S.comps[a.comp].name : D.REGIONS[a.region];
+    const where = a.type === 'league' ? FM.S.comps[a.comp].name : Sc.regionName(a.region);
     const bits = [a.role ? `${a.role}` : Sc.posLabel(a.pos), a.maxAge >= Sc.AGE_ANY ? 'any age' : `≤${a.maxAge}`];
     if (a.nat && a.nat !== 'any') bits.push(`${D.NATIONS[a.nat].name} only`);
     if (a.minStars) bits.push(`${a.minStars}★+ potential`);
@@ -351,7 +376,9 @@
             !W.ownPlayer(p) &&
             !dis[p.id] &&
             Sc.scoutable(p) &&
-            (a.type === 'league' ? p.clubId && S.clubs[p.clubId].comp === a.comp : Sc.region(p) === a.region) &&
+            (a.type === 'league'
+              ? p.clubId && S.clubs[p.clubId].comp === a.comp
+              : Sc.regionsOf(p).includes(a.region)) &&
             Sc.posMatch(p, a.pos) &&
             Sc.roleMatch(p, a.role) &&
             (!a.nat || a.nat === 'any' || p.nat === a.nat) &&
@@ -590,7 +617,7 @@
     const unc = 1 - k / 100;
     // one scout's read of ability and potential: his errors, his knowledge of the region and his lean
     const estOf = (r, sc) => {
-      const e = sc ? (sc.regions[Sc.region(p)] ?? 0.2) : 0.4;
+      const e = sc ? Sc.expert(sc, p) : 0.4;
       const ca = U.clamp(p.ca + (r ? r.err : 0) * unc * 14 * (1.3 - e) + Sc.leanAdj(sc, p) * unc * 1.2, 20, 99);
       return { ca, pa: U.clamp(Math.max(ca, p.pa + (r ? r.errP : 0) * unc * 22 * (1.3 - e)), 20, 99) };
     };

@@ -1131,6 +1131,7 @@
     club: null,
     q: '', // club picker search
     lg: 'all', // club picker league filter
+    rg: '', // club picker real-life region filter: 'NAT|Region name' (D.clubRegion), or none
     df: 'all', // club picker difficulty filter
     view: null, // club picker: 'ask' (three questions), 'rec' (suggestions) or 'browse' (every club)
     want: { diff: 'balanced', project: 'underdog', where: 'any' },
@@ -1522,14 +1523,17 @@
           if (NG.lg.startsWith('cont:') ? G.continentOf(nat) !== NG.lg.slice(5) : NG.lg !== 'all' && NG.lg !== cid)
             return '';
           // B teams (row[9] names the parent) aren't yours to manage: their players belong to the parent club
+          const [rgNat, rgName] = NG.rg ? NG.rg.split('|') : [];
+          if (rgNat && nat !== rgNat) return '';
           const rows = D[key].filter(
             (r) =>
               !r[9] &&
+              (!rgName || D.clubRegion({ id: 'c_' + r[1], nat }) === rgName) &&
               (NG.df === 'all' || G.diffKey(r[1]) === NG.df) &&
               (!q || plain(r[0]).includes(q) || plain(r[2] || '').includes(q)),
           );
           return rows.length
-            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 4px;letter-spacing:1px">${D.NATIONS[nat].flag} ${esc(names[cid].toUpperCase())} · ${esc(D.NATIONS[nat].name.toUpperCase())}</div><div class="tiny" style="color:#6f7f96;margin-bottom:8px;line-height:1.45">${esc(G.leagueCard(l))}</div>${rows.map((r) => row(r, tier[cid])).join('')}`
+            ? `<div class="small b" style="color:${cols[i % cols.length]};margin:16px 0 4px;letter-spacing:1px">${D.NATIONS[nat].flag} ${esc(names[cid].toUpperCase())} · ${esc(D.NATIONS[nat].name.toUpperCase())}</div><div class="tiny" style="color:#6f7f96;margin-bottom:8px;line-height:1.45">${esc(G.leagueCard(l))}</div>${rows.map((r) => row(r, tier[cid], undefined, D.clubRegion({ id: 'c_' + r[1], nat }) || '')).join('')}`
             : '';
         }).join('');
         return html || '<div class="empty">No club matches that search.</div>';
@@ -1636,7 +1640,10 @@
                 )
                 .join('')}</select>`;
             })
-            .join('')}${NG.lg !== 'all' ? '<button class="chip" data-act="ngLgAll">All leagues</button>' : ''}</div>
+            .join(
+              '',
+            )}${NG.lg !== 'all' || NG.rg ? '<button class="chip" data-act="ngLgAll">All leagues and regions</button>' : ''}</div>
+          ${UI.ngRegionPicker()}
           <div class="seg" style="margin:0 0 4px">${[
             ['all', 'Any'],
             ['relaxed', 'Relaxed'],
@@ -1684,6 +1691,12 @@
       ngQ.addEventListener('input', () => {
         NG.q = ngQ.value;
         $('#ng-list').innerHTML = UI._ngList();
+      });
+    const ngRg = $('#ng-rg');
+    if (ngRg)
+      ngRg.addEventListener('change', () => {
+        NG.rg = ngRg.value;
+        UI.newCareer();
       });
     ngLgs.forEach((sel) =>
       sel.addEventListener('change', () => {
@@ -1780,7 +1793,7 @@
       NG.club = null;
       NG.step = Math.min(NG.step, 1);
     }
-    Object.assign(NG, { recs: [], lg: 'all', df: 'all', q: '' });
+    Object.assign(NG, { recs: [], lg: 'all', rg: '', df: 'all', q: '' });
   };
   // The rules a database sets (the points for a win, the substitutes, two-legged ties and away goals): the rest of a world's
   // rules are each competition's real ones
@@ -1813,8 +1826,34 @@
     NG.want[d.k] = d.v;
     UI.newCareer();
   };
+  // The real-life regions the clubs sit in (Bavaria, Yorkshire, Catalonia ...), by nation, for the club browser: a select of the
+  // regions that have clubs, grouped by nation, so a start can be chosen by where a club really is
+  UI.ngRegionPicker = () => {
+    const by = {};
+    for (const l of D.LEAGUES)
+      for (const r of D[l.clubs]) {
+        if (r[9]) continue;
+        const g = D.clubRegion({ id: 'c_' + r[1], nat: l.nat });
+        if (g) (by[l.nat] = by[l.nat] || {})[g] = (by[l.nat][g] || 0) + 1;
+      }
+    const nations = Object.keys(by).sort((a, b) => D.NATIONS[a].name.localeCompare(D.NATIONS[b].name));
+    if (!nations.length) return '';
+    return `<div class="ng-conts" style="margin-top:6px"><select id="ng-rg" class="${NG.rg ? 'on' : ''}" aria-label="Real-life region"><option value="">Any real-life region</option>${nations
+      .map(
+        (nat) =>
+          `<optgroup label="${D.NATIONS[nat].flag} ${esc(D.NATIONS[nat].name)}">${Object.keys(by[nat])
+            .sort((a, b) => a.localeCompare(b))
+            .map(
+              (g) =>
+                `<option value="${esc(nat + '|' + g)}" ${NG.rg === nat + '|' + g ? 'selected' : ''}>${esc(g)} (${by[nat][g]})</option>`,
+            )
+            .join('')}</optgroup>`,
+      )
+      .join('')}</select></div>`;
+  };
   UI.acts.ngLgAll = () => {
     NG.lg = 'all';
+    NG.rg = '';
     UI.newCareer();
   };
   UI.acts.ngDiff = (d) => {
@@ -1866,7 +1905,7 @@
       .map((r) => 'c_' + r[1])
       .filter((id) => id !== NG.club);
     NG.club = U.pick(all);
-    Object.assign(NG, { view: 'browse', q: '', lg: 'all', df: 'all' });
+    Object.assign(NG, { view: 'browse', q: '', lg: 'all', rg: '', df: 'all' });
     UI.newCareer();
     const el = document.querySelector(`[data-act=ngClub][data-id="${NG.club}"]`);
     if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });

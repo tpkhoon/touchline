@@ -35,6 +35,7 @@ const UI_FILES = [
   'ui-follow',
   'ui-icons',
   'ui-youth',
+  'ui-depth',
   'ui-editor',
   'ui-live',
   'ui-training',

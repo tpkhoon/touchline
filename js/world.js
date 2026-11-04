@@ -1718,21 +1718,33 @@
   W.staffNation = function (nat) {
     return Math.random() < 0.45 ? nat : W.foreignNation(nat);
   };
-  // A scout knows their home region best, the regions their home has ties with a little, the rest hardly
+  // A scout knows their home region best, the regions their home has ties with a little, the rest hardly; and the named parts of the
+  // world (the Baltics, Southeast Asia ...): the ones his own nation is in best of all, the rest from what he knows of their
+  // continents
   W.scoutProfile = function (nat, ability) {
     const home = D.NATIONS[nat].region;
     const ties = W.REGION_TIES[home] || [];
     const regions = {};
-    for (const r in D.REGIONS) regions[r] = U.clamp(U.rand(0.1, 0.35) + (r === home ? 0.6 : 0), 0.1, 0.97);
+    for (const r in D.REGIONS) regions[r] = U.clamp(U.rand(0.1, 0.35) + (r === home ? 0.4 : 0), 0.1, 0.97);
     // (one near region is a second home: the first tie most often)
     const second = Math.random() < 0.65 ? ties[0] : U.pick(ties);
-    if (second && D.REGIONS[second]) regions[second] = Math.max(regions[second], U.rand(0.5, 0.75));
+    if (second && D.REGIONS[second]) regions[second] = Math.max(regions[second], U.rand(0.4, 0.62));
+    const Sc = FM.Scouting;
+    for (const k of Sc.partKeys()) {
+      const ns = Sc.nationsIn(k);
+      if (!ns.length) continue;
+      const base = ns.reduce((t, n) => t + regions[D.NATIONS[n].region], 0) / ns.length;
+      regions[k] = ns.includes(nat)
+        ? U.rand(0.8, 0.97)
+        : U.clamp(base * U.rand(0.9, 1.3) + U.rand(-0.05, 0.1), 0.1, 0.9);
+    }
     const judge = U.clamp(Math.round(ability + U.randi(-2, 2)), 6, 19);
     const best = Object.keys(regions).sort((a, b) => regions[b] - regions[a]);
+    const weak = Object.keys(D.REGIONS).sort((a, b) => regions[a] - regions[b])[0];
     return {
       regions,
       judge,
-      note: `Strongest in ${D.REGIONS[best[0]]}${regions[best[1]] > 0.6 ? ' and ' + D.REGIONS[best[1]] : ''}. Weak in ${D.REGIONS[best[best.length - 1]]}.`,
+      note: `Strongest in ${Sc.regionName(best[0])}${regions[best[1]] > 0.6 ? ' and ' + Sc.regionName(best[1]) : ''}. Weak in ${D.REGIONS[weak]}.`,
     };
   };
   // Staff available for hire (refreshed each season and during windows)

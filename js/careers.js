@@ -345,7 +345,9 @@
   Sea.youthHistory = (nat) => (FM.S.youthHist && FM.S.youthHist[nat]) || [];
   // A part of the world's youth rating: the average of its nations, with the average move this season
   Sea.regionYouth = (reg) => {
-    const ns = D.nationCodes().filter((k) => D.NATIONS[k].region === reg);
+    const ns = D.SUBREGIONS[reg]
+      ? D.SUBREGIONS[reg].split(' ').filter(D.nationOn)
+      : D.nationCodes().filter((k) => D.NATIONS[k].region === reg);
     return { r: ns.length ? U.avg(ns, Sea.youthRating) : 50, d: ns.length ? U.avg(ns, Sea.youthTrend) : 0 };
   };
   // A youngster from an intake the manager does not want: he goes to the free agents (the academy's day of signings can be undone today)

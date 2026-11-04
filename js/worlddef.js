@@ -2276,7 +2276,7 @@
       if (s.regions) {
         if (s.role !== 'Scout') errors.push(`${at}: only a scout has a network of regions`);
         for (const [k, v] of Object.entries(s.regions))
-          if (!D.REGIONS[k] || !(v >= 0.05 && v <= 1))
+          if (!(D.REGIONS[k] || D.SUBREGIONS[k]) || !(v >= 0.05 && v <= 1))
             errors.push(`${at}: region "${k}" needs a knowledge between 5% and 100%`);
       }
       if (s.club) {
