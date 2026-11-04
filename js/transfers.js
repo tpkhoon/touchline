@@ -461,7 +461,13 @@
   // and a player from the club's own country: small clubs know and can afford their own market and almost never
   // look abroad, the biggest ones scout the world
   T.HOME_SCALE = 1; // a multiplier on the home pull below (a tuning knob for the developer sweeps)
-  T.homePull = (c) => (c.rep >= 75 ? 16 : c.rep >= 62 ? 34 : 70) * T.HOME_SCALE;
+  // (a league with many foreign players looks abroad more: the pull is raised to a power that falls as the league's foreign share
+  // (S.natTarget) rises, so the squads keep the share they began with instead of filling up with countrymen)
+  T.homePull = (c) => {
+    const base = (c.rep >= 75 ? 16 : c.rep >= 62 ? 34 : 70) * T.HOME_SCALE,
+      tgt = FM.S && FM.S.natTarget && c.comp ? FM.S.natTarget[c.comp] : null;
+    return tgt == null ? base : Math.pow(base, 1 - U.clamp(tgt, 0, 0.8));
+  };
   // What a club's identity makes it look for: a weight on each target from his age, potential, nationality and standing. A
   // youth club wants youngsters, a selling club young players it can sell on, a fan-owned club its own countrymen and not the
   // old, an oil-backed or giant club stars, a fallen giant experience for the rebuild.
@@ -524,7 +530,7 @@
     const have = T.foreignShare(c);
     if (have == null) return 1;
     const gap = tgt - have; // positive: too few foreigners
-    return U.clamp(1 + (p.nat === c.nat ? -gap : gap) * 6, 0.35, 2.5);
+    return U.clamp(1 + (p.nat === c.nat ? -gap : gap) * 14, 0.15, 5);
   };
   const identityBase = T.identityFit;
   T.identityFit = (c, p) => identityBase(c, p) * T.natAffinity(c, p) * T.natBalance(c, p);
