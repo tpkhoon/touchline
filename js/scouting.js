@@ -18,7 +18,13 @@
     const c = FM.S.user && FM.S.user.clubId && FM.S.clubs[FM.S.user.clubId];
     return !c || !c.policy || FM.Reg.policy(c, p).ok;
   };
-  Sc.know = (pid) => FM.S.user.knowledge[pid] || 0;
+  // How well your scouts know a player: what they have learned, and at least what his name tells everyone (a world star is
+  // known from the first day, an international name a good deal)
+  Sc.know = (pid) => {
+    const p = FM.S.players[pid],
+      r = p ? W.rep(p) : 0;
+    return Math.max(FM.S.user.knowledge[pid] || 0, r >= 80 ? 60 : r >= 65 ? 40 : r >= 50 ? 15 : 0);
+  };
   // Average ability of the user's current XI (cached per matchday — used on every report render)
   Sc.level = function () {
     const S = FM.S,

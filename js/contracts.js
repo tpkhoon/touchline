@@ -161,6 +161,7 @@
     const ng = (S().user.neg || {})[p.id];
     if (ng && ng.year === S().year && ng.ease) need *= ng.ease;
     need *= FM.Market.trialDiscount(p, club);
+    need *= 1 + (W.rep(p) - 20) / 700; // a name asks for more (the average player no more)
     if (p.wantsOut && mode === 'renew') need *= 1.25;
     // Veterans staying put take less, an icon or a loyal servant most of all
     if (mode === 'renew' && age >= 32 && !p.wantsOut) {

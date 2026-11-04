@@ -148,8 +148,8 @@
       if (arc === 'plateau') head = Math.min(head, p.arc.cap - p.ca);
       if (head <= 0 && arc !== 'meteor') return;
       head = Math.max(0, head);
-      const train =
-        (club ? club.facilities.training || 2 : 2) + (club && W.isUser(club.id) ? FM.Staff.impact('coach').dev : 0);
+      const coach = club && W.isUser(club.id) ? FM.Staff.impact('coach') : null;
+      const train = (club ? club.facilities.training || 2 : 2) + (coach ? coach.dev : 0);
       const mins = Math.min(0.45, p.season.apps * 0.03 + Math.min(0.15, (p.season.yapps || 0) * 0.008)); // youth-team games help a little
       const f =
         0.55 +
@@ -165,6 +165,8 @@
       if (p.ca >= Sea.ELITE.from) g *= Sea.ELITE.growth; // the very best grow more slowly: keeps the elite from inflating
       if (p.inj && (p.inj.out || 0) >= 8) g *= 0.4; // months on the treatment table cost development
       g *= FM.Training.devK(p); // your training focus and intensity
+      // (his coach's way with the young and with keepers)
+      if (coach) g *= (a <= 21 ? coach.young : 1) * (p.pos === 'GK' ? coach.gk : 1);
       // a Mentor in the squad: the young learn from him
       if (a <= 21 && club && W.squad(club.id).some((q) => q !== p && W.hasTrait(q, 'Mentor'))) g *= 1.12;
       // the training ground has a ceiling: a player who has outgrown it develops slowly until it is upgraded

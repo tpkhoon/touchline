@@ -612,6 +612,9 @@
     if (p.wantsOut) add('away', -10, 'He wants to leave');
     if (W.hasTrait(p, 'Homesick') && club.nat !== p.nat && club.nat !== p.nat2) add('home', -6, 'Far from home');
     if (p.inj && (p.inj.out || 0) >= 6) add('injury', -5, 'A long injury');
+    // a name bigger than his club: he looks up the ladder
+    const big = W.rep(p) - club.rep;
+    if (big >= 15) add('rep', -Math.min(10, Math.round((big - 10) / 2)), 'His name is bigger than the club');
     if (FM.Matchday.captainOf(club.id) === p) add('captain', 3, 'Captain of the club');
     return out.sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 5);
   };

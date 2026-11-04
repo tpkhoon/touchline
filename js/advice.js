@@ -352,34 +352,66 @@
   // What each role's ability (1–20, 10 = an average professional) does, as multipliers and a line for the staff
   // screen. Every number here is used somewhere in the game.
   const pc = (x) => `${x >= 0 ? '+' : '−'}${Math.abs(Math.round(x * 100))}%`;
+  // (a role's effects read its member's attributes; where only an ability is given they all take it)
+  const at = (st, k, a) => {
+    const v = st && st.attrs && st.attrs[k];
+    return v == null ? a : v;
+  };
   St.IMPACT = {
-    assistant: (a) => ({
-      fam: 1 + (a - 10) * 0.04,
-      text: `Tactics bed in ${pc((a - 10) * 0.04)} faster · sharper advice`,
-    }),
-    coach: (a) => ({
-      dev: (a - 10) * 0.12,
-      learn: 1 + (a - 10) * 0.05,
-      text: `Player development ${pc((a - 10) * 0.011)} · new positions learned ${pc((a - 10) * 0.05)} faster`,
-    }),
-    analyst: (a) => ({
-      sp: 1 + (a - 10) * 0.012,
-      text: `Set-piece chances ${pc((a - 10) * 0.012)} · opposition reports, bargains and match analytics`,
-    }),
-    physio: (a) => ({
-      risk: 1 - (a - 10) * 0.012,
-      layoff: 1 - (a - 10) * 0.03,
-      rec: (a - 10) * 0.5,
-      text: `Injury risk ${pc(-(a - 10) * 0.012)} · layoffs ${pc(-(a - 10) * 0.03)} · recovery ${(a - 10) * 0.5 >= 0 ? '+' : '−'}${Math.abs((a - 10) * 0.5)} fitness a day`,
-    }),
-    director: (a) => ({
-      buy: 1 - (a - 10) * 0.008,
-      sell: 1 + (a - 10) * 0.01,
-      text: `Fees and wages you pay ${pc(-(a - 10) * 0.008)} · bids for your players ${pc((a - 10) * 0.01)}`,
-    }),
+    assistant: (a, st) => {
+      const t = at(st, 'tactical', a);
+      return { fam: 1 + (t - 10) * 0.04, text: `Tactics bed in ${pc((t - 10) * 0.04)} faster · sharper advice` };
+    },
+    coach: (a, st) => {
+      const core =
+          ['attacking', 'defending', 'technical', 'mental', 'fitness', 'tactical'].reduce(
+            (t, k) => t + at(st, k, a),
+            0,
+          ) / 6 || a,
+        yo = at(st, 'youth', a),
+        gk = at(st, 'goalkeeping', a),
+        tac = at(st, 'tactical', a);
+      return {
+        dev: (core - 10) * 0.12,
+        young: 1 + (yo - 10) * 0.015,
+        gk: 1 + (gk - 10) * 0.02,
+        learn: 1 + (tac - 10) * 0.05,
+        text: `Player development ${pc((core - 10) * 0.011)} · the young ${pc((yo - 10) * 0.015)} · keepers ${pc((gk - 10) * 0.02)} · new positions learned ${pc((tac - 10) * 0.05)} faster`,
+      };
+    },
+    analyst: (a, st) => {
+      const sp = at(st, 'setPieces', a);
+      return {
+        sp: 1 + (sp - 10) * 0.012,
+        text: `Set-piece chances ${pc((sp - 10) * 0.012)} · opposition reports, bargains and match analytics`,
+      };
+    },
+    physio: (a, st) => {
+      const sci = at(st, 'sportsScience', a),
+        reh = at(st, 'rehab', a),
+        rec = (at(st, 'physio', a) + at(st, 'conditioning', a)) / 2;
+      return {
+        risk: 1 - (sci - 10) * 0.012,
+        layoff: 1 - (reh - 10) * 0.03,
+        rec: (rec - 10) * 0.5,
+        text: `Injury risk ${pc(-(sci - 10) * 0.012)} · layoffs ${pc(-(reh - 10) * 0.03)} · recovery ${(rec - 10) * 0.5 >= 0 ? '+' : '−'}${Math.abs((rec - 10) * 0.5)} fitness a day`,
+      };
+    },
+    director: (a, st) => {
+      const neg = at(st, 'negotiating', a),
+        biz = at(st, 'business', a);
+      return {
+        buy: 1 - (neg - 10) * 0.008,
+        sell: 1 + (biz - 10) * 0.01,
+        text: `Fees and wages you pay ${pc(-(neg - 10) * 0.008)} · bids for your players ${pc((biz - 10) * 0.01)}`,
+      };
+    },
     scout: () => ({ text: 'Finds and assesses players; better in the regions he knows' }),
   };
-  St.impact = (key) => St.IMPACT[key](W.staffAbility(key));
+  St.impact = (key) => {
+    const st = St.get(key);
+    return St.IMPACT[key](st.ability ?? W.staffAbility(key), st.vacant ? null : (W.staffAttrs(st), st));
+  };
   St.compensation = (st) => U.roundMoney(st.wage * 8 * Math.max(1, st.contract - S().year + 1));
   St.hire = function (id) {
     const s = S(),

@@ -43,7 +43,7 @@
       out.push(
         row(
           'Manager',
-          `${C.flag(P.mgr.nat)} <span data-nolink>${esc(P.mgr.fn + ' ' + P.mgr.ln)}</span><div class="tiny dim">${
+          `${C.flag(P.mgr.nat)} <span class="tap" data-act="manager" data-id="${P.mgr.id}" style="text-decoration:underline dotted">${esc(P.mgr.fn + ' ' + P.mgr.ln)}</span><div class="tiny dim">${
             src && src.id !== c.id
               ? `Played ${U.plural(P.mgr.lore.apps, 'game')} for ${esc(src.name)} (${esc(P.mgr.lore.era)}), the rivals.`
               : `A club legend: ${U.plural(P.mgr.lore.apps, 'game')} for the club (${esc(P.mgr.lore.era)}).`

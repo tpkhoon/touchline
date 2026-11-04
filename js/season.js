@@ -2437,6 +2437,7 @@
       p.season = W.blankSeason();
       p.flagMinutes = false;
       p.lastGrowth = 0;
+      W.updateRep(p); // his name follows the season
       if (Math.random() < Sea.retireChance(p)) return Sea.retire(p);
       // a pre-contract agreed in the winter: he moves on a free now
       if (p.pre && FM.Market.completePre(p)) return W.refresh(p);

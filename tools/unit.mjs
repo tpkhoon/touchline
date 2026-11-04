@@ -358,6 +358,44 @@ try {
   );
 }
 
+// ---- staff attributes and player reputation ----
+{
+  const roles = Object.keys(D.STAFF_ROLES);
+  ok(
+    roles.every((r) => (D.STAFF_ATTRS[r] || []).length >= 2) && D.STAFF_ATTRS.Manager.length === 8,
+    'every staff role has attributes, a manager eight',
+  );
+  const a1 = W.rollStaffAttrs('First-Team Coach', 13, 's99'),
+    a2 = W.rollStaffAttrs('First-Team Coach', 13, 's99');
+  eq(a1, a2, 'the same person always has the same attributes');
+  const vals = Object.values(a1);
+  ok(
+    vals.every((v) => v >= 1 && v <= 20) && Math.abs(vals.reduce((t, v) => t + v, 0) / vals.length - 13) < 0.7,
+    'attributes are 1 to 20 around his ability',
+  );
+  ok(
+    Object.keys(a1).join() === D.STAFF_ATTRS['First-Team Coach'].map((x) => x[0]).join(),
+    'and are the ones his role is judged on',
+  );
+  // (with no attributes a role's effects are what its ability always gave)
+  const old = FM.Staff.IMPACT.coach(12);
+  ok(
+    Math.abs(old.dev - 0.24) < 1e-9 && Math.abs(old.learn - 1.1) < 1e-9,
+    'a coach with only an ability gives the same effects as before',
+  );
+  const sharp = FM.Staff.IMPACT.coach(10, { attrs: { youth: 18, goalkeeping: 4 } });
+  ok(sharp.young > 1.1 && sharp.gk < 0.9, 'a coach good with the young and poor with keepers shows it');
+  ok(
+    FM.Staff.IMPACT.physio(10, { attrs: { rehab: 18 } }).layoff < 0.8,
+    'a physio good at rehabilitation shortens layoffs',
+  );
+  eq(
+    [W.repLabel(90), W.repLabel(66), W.repLabel(51), W.repLabel(36), W.repLabel(21), W.repLabel(3)],
+    ['World star', 'International name', 'National name', 'Known in the league', 'Local name', 'Unknown'],
+    'reputation bands',
+  );
+}
+
 // ---- parts of the world: every nation is in at least one (D.SUBREGIONS, D.subregionsOf) ----
 {
   const listed = new Set(Object.values(D.SUBREGIONS).flatMap((v) => v.split(' ')));

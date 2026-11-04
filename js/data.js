@@ -1443,6 +1443,59 @@
     Scout: { key: 'scout', effect: 'Finds and assesses players' },
   };
 
+  // What each role is judged on, 1 to 20 (10 an average professional): [key, label]. A member of staff has these around his overall
+  // ability; the role's effects (FM.Staff.IMPACT) read the ones that matter to them, and a manager's profile shows his.
+  FM.D.STAFF_ATTRS = {
+    Manager: [
+      ['tactical', 'Tactical knowledge'],
+      ['manMgmt', 'Man management'],
+      ['motivating', 'Motivating'],
+      ['judgingAbility', 'Judging player ability'],
+      ['youth', 'Working with youngsters'],
+      ['discipline', 'Discipline'],
+      ['adaptability', 'Adaptability'],
+      ['determination', 'Determination'],
+    ],
+    'Assistant Manager': [
+      ['tactical', 'Tactical knowledge'],
+      ['manMgmt', 'Man management'],
+      ['judgingAbility', 'Judging player ability'],
+      ['discipline', 'Discipline'],
+    ],
+    'First-Team Coach': [
+      ['attacking', 'Attacking'],
+      ['defending', 'Defending'],
+      ['technical', 'Technical'],
+      ['mental', 'Mental'],
+      ['fitness', 'Fitness'],
+      ['tactical', 'Tactical'],
+      ['goalkeeping', 'Goalkeeping'],
+      ['youth', 'Working with youngsters'],
+    ],
+    'Head of Analytics': [
+      ['dataAnalysis', 'Data analysis'],
+      ['setPieces', 'Set-piece analysis'],
+    ],
+    'Head Physio': [
+      ['physio', 'Physiotherapy'],
+      ['conditioning', 'Conditioning'],
+      ['sportsScience', 'Sports science'],
+      ['rehab', 'Rehabilitation'],
+    ],
+    'Sporting Director': [
+      ['negotiating', 'Negotiating'],
+      ['business', 'Business'],
+      ['judgingValue', 'Judging player value'],
+      ['manMgmt', 'Man management'],
+    ],
+    Scout: [
+      ['judgingAbility', 'Judging ability'],
+      ['judgingPotential', 'Judging potential'],
+      ['adaptability', 'Adaptability'],
+      ['determination', 'Determination'],
+    ],
+  };
+
   // ---------- Club identities (drive board objectives + fan culture) ----------
   FM.D.IDENTITY = {
     oil: {

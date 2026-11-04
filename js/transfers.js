@@ -40,6 +40,7 @@
     if (T.isKey(p)) f *= 1.25;
     if (c.sim === 'minimal') f *= 0.85;
     if (W.hasTrait(p, 'Loyal')) f *= 1.2;
+    f *= 1 + (W.rep(p) - 20) / 500; // a name commands a premium (a quiet player a small discount; the average player none)
     f *= FM.Market.sellFactor(p); // a player who wants away, a club that needs the money, a surplus: cheaper
     if (p.deal && p.deal.release) f = Math.min(f, p.deal.release); // nobody asks more than the clause
     return U.roundMoney(f);

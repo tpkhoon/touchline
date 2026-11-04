@@ -995,6 +995,34 @@
     const v = W.abilityValue(p) * Math.sqrt(W.ageCurve(W.age(p)) * (W.POS_VALUE[p.pos] || 1));
     return Math.max(Math.round(450 * Math.min(1, pay)), Math.round((v * W.WAGE_K * pay) / 50) * 50);
   };
+  // ---------------- Player reputation ----------------
+  // How well known and respected a player is, 1 to 99, apart from how good he is: it follows his ability, his caps, his honours, the
+  // games he has played and how big a club's shop window he plays in. It moves toward that target once a season (up quickly, down
+  // slowly: a name outlasts the form). A player without one has his target; it is kept from his first summer.
+  W.REP_BANDS = [
+    [80, 'World star'],
+    [65, 'International name'],
+    [50, 'National name'],
+    [35, 'Known in the league'],
+    [20, 'Local name'],
+    [0, 'Unknown'],
+  ];
+  W.repLabel = (r) => W.REP_BANDS.find(([min]) => r >= min)[1];
+  W.repTarget = (p) => {
+    const club = p.clubId && FM.S.clubs[p.clubId],
+      abil = U.clamp((p.ca - 40) * 1.25, 0, 62),
+      caps = Math.min(10, ((p.intl && p.intl.caps) || 0) / 8),
+      honours = Math.min(10, ((p.honours || []).length || 0) * 1.5),
+      apps = Math.min(5, (p.career.apps || 0) / 120),
+      stage = club ? club.rep * 0.14 : 4;
+    return U.clamp(Math.round(abil + caps + honours + apps + stage), 1, 99);
+  };
+  W.rep = (p) => (p.rep != null ? p.rep : W.repTarget(p));
+  W.updateRep = (p) => {
+    const t = W.repTarget(p),
+      r = W.rep(p);
+    p.rep = U.clamp(Math.round(t > r ? r + Math.min(9, (t - r) * 0.55) : r - Math.min(3, (r - t) * 0.25)), 1, 99);
+  };
   W.startSpell = function (p, clubId) {
     // a move in the middle of a season: remember the numbers so far, for a history row with the old club
     if (p.clubId && p.clubId !== clubId && p.season && p.season.apps > 0)
@@ -1550,6 +1578,26 @@
     s.contract = s.contract || FM.S.year + U.randi(1, 3);
     FM.S.staff[s.id] = s;
     return s;
+  };
+  // The attributes of a member of staff for his role (D.STAFF_ATTRS), 1 to 20, centred on his ability: each is spread around it by a
+  // fixed amount worked out from his id (so the same person always has the same attributes, saves from before get them the first
+  // time they are looked at), and the set is shifted so its average is his ability.
+  W.rollStaffAttrs = (role, ability, id) => {
+    const list = D.STAFF_ATTRS[role] || [];
+    const raw = list.map(([k]) => ((U.hash(`${id}:${k}`) % 1000) / 1000 - 0.5) * 7);
+    const shift = raw.length ? raw.reduce((t, x) => t + x, 0) / raw.length : 0;
+    return Object.fromEntries(list.map(([k], i) => [k, U.clamp(Math.round(ability + raw[i] - shift), 1, 20)]));
+  };
+  W.staffAttrs = (st) => {
+    if (!st) return {};
+    if (!st.attrs) st.attrs = W.rollStaffAttrs(st.role, st.ability, st.id);
+    return st.attrs;
+  };
+  // One attribute of the member of staff the club has in a role (his ability where he has none, a caretaker's 6)
+  W.staffAttr = (key, name) => {
+    const id = FM.S.user.staff[key] || null,
+      st = id && FM.S.staff[id];
+    return st ? (W.staffAttrs(st)[name] ?? st.ability) : 6;
   };
   W.staffWage = (s) => Math.round((200 + Math.pow(s.judge || s.ability, 2.4) * 9) / 50) * 50;
   // Which parts of the world a region's staff come from after their own: where its football looks (a South American

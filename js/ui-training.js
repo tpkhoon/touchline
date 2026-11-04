@@ -302,7 +302,7 @@
           `<div class="row tiny" style="gap:6px;margin:3px 0"><span style="width:44px" class="dim">${l}</span><div class="grow" style="display:flex;justify-content:flex-end"><div style="width:${(a / bmax) * 100}%;height:8px;background:var(--acc);border-radius:2px"></div></div><b style="width:18px;text-align:center">${a}</b><b style="width:18px;text-align:center" class="dim">${b}</b><div class="grow"><div style="width:${(b / bmax) * 100}%;height:8px;background:var(--bad);opacity:.75;border-radius:2px"></div></div></div>`,
       )
       .join('');
-    const an = W.staffAbility('analyst'),
+    const an = W.staffAttr('analyst', 'dataAnalysis'),
       notes = insights(log, lg, rank).slice(0, an >= 15 ? 6 : an >= 11 ? 4 : an >= 7 ? 3 : 2);
     return `${tabs}
       <div class="card"><div class="row" style="text-align:center">${[

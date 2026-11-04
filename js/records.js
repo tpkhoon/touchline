@@ -632,6 +632,50 @@
     mgrJoin(m, clubId);
     R.logMove(m, null, clubId, 'new');
   };
+  // A manager's record from the seasons played in this save: [{ year, club, comp, pos, w, d, l, title, cups, up, down }] oldest first,
+  // and the totals. The archive names a club's manager each season, so it is matched by name and club (the seasons before the save
+  // began carry no manager and are not counted).
+  R.managerRecord = function (m) {
+    const s = S(),
+      name = `${m.fn} ${m.ln}`,
+      rows = [];
+    for (const e of s.archive || []) {
+      for (const [cid, info] of Object.entries(e.clubInfo || {})) {
+        if (info.m !== name || !s.clubs[cid]) continue;
+        const lg = Object.values(e.comps || {}).find((c) => (c.table || []).some((r) => r.id === cid)),
+          i = lg ? lg.table.findIndex((r) => r.id === cid) : -1,
+          row = i >= 0 ? lg.table[i] : null;
+        rows.push({
+          year: e.year,
+          club: cid,
+          comp: lg ? lg.name : '',
+          pos: i >= 0 ? i + 1 : null,
+          w: row ? row.w || 0 : 0,
+          d: row ? row.d || 0 : 0,
+          l: row ? row.l || 0 : 0,
+          title: !!(lg && lg.champion === cid),
+          cups: Object.values(e.cups || {}).filter((c) => c.winner === cid).length,
+          up: (e.promoted || []).includes(cid),
+          down: (e.relegated || []).includes(cid),
+        });
+      }
+    }
+    rows.sort((x, y) => x.year - y.year);
+    const sum = (k) => rows.reduce((t, r) => t + (r[k] || 0), 0),
+      games = sum('w') + sum('d') + sum('l');
+    return {
+      rows,
+      w: sum('w'),
+      d: sum('d'),
+      l: sum('l'),
+      games,
+      winPct: games ? Math.round((100 * sum('w')) / games) : 0,
+      titles: rows.filter((r) => r.title).length,
+      cups: sum('cups'),
+      promotions: rows.filter((r) => r.up).length,
+      relegations: rows.filter((r) => r.down).length,
+    };
+  };
   // "Since 2027 · previously Eastport Dockers" for the team overview
   R.managerLine = function (m, clubId) {
     const car = m.career || [],

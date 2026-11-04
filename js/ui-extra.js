@@ -439,6 +439,18 @@
   };
 
   // ======================= Staff =======================
+  // A member of staff's attributes for his role as bars (1 to 20): what he is good and bad at
+  UI.staffAttrsHtml = (st) => {
+    const list = st && !st.vacant && D.STAFF_ATTRS[st.role];
+    if (!list) return '';
+    const at = W.staffAttrs(st);
+    return `<div class="tiny dim" style="margin-top:10px;letter-spacing:1px">ATTRIBUTES</div>${list
+      .map(
+        ([k, label]) =>
+          `<div class="row tiny" style="gap:6px;margin-top:3px"><span style="width:138px;flex:none" class="dim">${esc(label)}</span><div class="grow">${C.bar((at[k] / 20) * 100, at[k] >= 15 ? 'var(--good)' : at[k] >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="width:22px;text-align:right">${at[k]}</b></div>`,
+      )
+      .join('')}`;
+  };
   UI.staffView = function () {
     const s = S();
     const roles = Object.entries(D.STAFF_ROLES).filter(([, r]) => r.key !== 'scout');
@@ -447,7 +459,7 @@
       return `<div class="card"><div class="row"><div style="font-size:26px">${st.vacant ? UI.ico('chair') : C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(role)}${st.vacant ? '' : ` · ${esc(st.personality)} · age ${st.age}`}</div></div>${st.vacant ? '<span class="pill bad">Vacant</span>' : `<b>${U.money(st.wage)}/wk</b>`}</div>
         <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((st.ability / 20) * 100, st.ability >= 15 ? 'var(--good)' : st.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
         ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note || '')}</div>` : ''}
-        <div class="small" style="margin-top:6px">${esc(FM.Staff.IMPACT[key](st.ability).text)}</div>${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
+        <div class="small" style="margin-top:6px">${esc(FM.Staff.IMPACT[key](st.ability, st.vacant ? null : (W.staffAttrs(st), st)).text)}</div>${UI.staffAttrsHtml(st)}${FM.People.callRecord(key) ? `<div class="tiny dim" style="margin-top:4px">On youth calls: ${FM.People.callRecord(key)}</div>` : ''}
         <div class="tiny dim" style="margin-top:4px">${r.effect}${st.vacant ? '' : ` · contract to ${st.contract}`}</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="staffMarket" data-role="${esc(role)}">${st.vacant ? 'Hire' : key === 'scout' ? 'Hire another' : 'Replace'}</button>${st.vacant ? '' : `<button class="btn sm grow danger" data-act="staffFire" data-id="${st.id}">Release (${U.money(FM.Staff.compensation(st))})</button>`}</div></div>`;
     };
@@ -456,6 +468,82 @@
       ${roles.map(([role, r]) => card(FM.Staff.get(r.key), role, r.key)).join('')}
       <div class="sec"><div class="h3">Scouts</div><span class="dim small">${s.user.scouts.length}/${W.maxScouts()}</span></div>
       ${s.user.scouts.map((id) => card(s.staff[id], 'Scout', 'scout')).join('')}`;
+  };
+  // ======================= Manager profiles =======================
+  // Any club's manager as a profile: who he is, what he is good at, how his teams play, where he has worked and what he has won
+  const seasonText = (y) => `${y}/${String((y + 1) % 100).padStart(2, '0')}`;
+  const ordinal = (n) => `${n}${['th', 'st', 'nd', 'rd'][n % 100 > 10 && n % 100 < 14 ? 0 : n % 10 < 4 ? n % 10 : 0]}`;
+  UI.acts.manager = (d) => UI.managerSheet(d.id);
+  UI.managerSheet = function (id) {
+    const s = S(),
+      m = s.staff[id];
+    if (!m || m.role !== 'Manager') return UI.toast('He has left the game');
+    const club = Object.values(s.clubs).find((c) => c.manager === id),
+      rec = FM.Records.managerRecord(m),
+      rep = m.rep || 50,
+      tac = club && club.tactic;
+    const stat = (v, l) =>
+      `<div class="kpi" style="padding:8px 4px"><div class="v" style="font-size:18px">${v}</div><div class="l">${l}</div></div>`;
+    const career = (m.career || [])
+      .slice()
+      .reverse()
+      .map((x) => {
+        const c = s.clubs[x[0]];
+        const span = x[1] ? `${x[1]}${x[2] ? '–' + x[2] : '–now'}` : x[2] ? `until ${x[2]}` : '';
+        return `<div class="row small ${c ? 'tap' : ''}" style="padding:6px 0;border-top:1px solid var(--line)" ${c ? `data-act="clubView" data-id="${c.id}"` : ''}>${c ? C.crest(c, 18) : ''}<span class="grow">${esc(c ? c.name : '—')}</span><span class="dim">${span}${x[3] ? ` · ${esc(x[3])}` : ''}</span></div>`;
+      })
+      .join('');
+    const seasons = rec.rows
+      .slice()
+      .reverse()
+      .map((r) => {
+        const c = s.clubs[r.club];
+        const tags = [
+          r.title ? 'Champions' : '',
+          r.up ? 'Promoted' : '',
+          r.down ? 'Relegated' : '',
+          r.cups ? `${U.plural(r.cups, 'cup')} won` : '',
+        ]
+          .filter(Boolean)
+          .join(' · ');
+        return `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line);gap:8px"><span class="dim" style="width:58px;flex:none">${seasonText(r.year)}</span><span class="grow ellip">${esc(c ? c.name : '—')}${tags ? ` <span class="tiny" style="color:var(--acc)">${esc(tags)}</span>` : ''}</span><span class="dim">${r.pos ? ordinal(r.pos) : '—'}</span><b>${r.w}-${r.d}-${r.l}</b></div>`;
+      })
+      .join('');
+    UI.sheet(
+      `<div class="card"><div class="row" style="gap:12px"><div style="font-size:34px">${C.flag(m.nat)}</div><div class="grow"><div class="h2">${esc(m.fn + ' ' + m.ln)}</div><div class="small dim">${esc(D.NATIONS[m.nat].name)} · ${m.age} yrs · ${esc(m.personality)}</div><div class="small" style="margin-top:4px">${club ? `Manager of <span class="tap" data-act="clubView" data-id="${club.id}" style="text-decoration:underline dotted">${esc(club.name)}</span>${m.career && m.career.at(-1) && m.career.at(-1)[1] ? ` since ${m.career.at(-1)[1]}` : ''}` : 'Out of work'}</div></div>${club ? C.crest(club, 44) : ''}</div>
+        <div class="row small" style="margin-top:10px;gap:8px" title="How well the game rates him, from his results and the clubs he has managed"><span class="dim">Reputation</span><b>${W.repLabel(rep).replace('World star', 'World-renowned')}</b><div class="grow">${C.bar(rep, 'var(--acc2)')}</div><span class="dim">${rep}</span></div>
+        <div class="row small" style="margin-top:6px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((m.ability / 20) * 100, m.ability >= 15 ? 'var(--good)' : m.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(m.ability)}</b></div></div>
+      <div class="card"><div class="h3">How he works</div>${UI.staffAttrsHtml(m)}${
+        tac
+          ? `<div class="tiny dim" style="margin-top:12px;letter-spacing:1px">HIS TEAM PLAYS</div><div class="small" style="margin-top:4px">${esc(tac.formation)} · ${esc(tac.buildup)} build-up · ${esc(tac.press)} · ${esc(tac.width)} width</div>`
+          : ''
+      }</div>
+      <div class="card"><div class="h3">Record in this career</div>${
+        rec.games
+          ? `<div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-top:8px">${stat(rec.games, 'Matches')}${stat(`${rec.w}-${rec.d}-${rec.l}`, 'W-D-L')}${stat(rec.winPct + '%', 'Wins')}${stat(rec.titles + rec.cups, 'Trophies')}</div><div class="tiny dim" style="margin-top:6px">${[rec.titles ? `${U.plural(rec.titles, 'league title')}` : '', rec.cups ? `${U.plural(rec.cups, 'cup')}` : '', rec.promotions ? `${U.plural(rec.promotions, 'promotion')}` : '', rec.relegations ? `${U.plural(rec.relegations, 'relegation')}` : ''].filter(Boolean).join(' · ') || 'No trophies yet'}</div>${seasons}`
+          : '<div class="small dim" style="margin-top:6px">No finished seasons with him in charge yet.</div>'
+      }</div>
+      <div class="card"><div class="h3">Career</div>${career || '<div class="small dim" style="margin-top:6px">Nothing recorded before this save.</div>'}</div>`,
+      { title: m.fn + ' ' + m.ln },
+    );
+  };
+  // A national team's manager: the same, with what the game knows (no club career)
+  UI.acts.natManager = (d) => UI.nationManagerSheet(d.code);
+  UI.nationManagerSheet = function (code) {
+    const s = S(),
+      t = s.nteams && s.nteams['n_' + code],
+      m = t && t.mgr;
+    if (!m) return UI.toast('The job is vacant');
+    const st = { role: 'Manager', ability: m.ability, id: 'nm_' + code + m.ln };
+    const rank = FM.Intl.ranked().indexOf(t) + 1;
+    UI.sheet(
+      `<div class="card"><div class="row" style="gap:12px"><div style="font-size:34px">${C.flag(m.nat)}</div><div class="grow"><div class="h2">${esc(m.fn + ' ' + m.ln)}</div><div class="small dim">${esc(D.NATIONS[m.nat].name)}${m.nat !== t.code ? ' · a foreign manager' : ''}</div><div class="small" style="margin-top:4px">Manager of <span class="tap" data-act="nation" data-id="${t.id}" style="text-decoration:underline dotted">${C.flag(t.code)} ${esc(t.name)}</span> since ${m.since}</div></div></div>
+        <div class="row small" style="margin-top:10px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar((m.ability / 20) * 100, m.ability >= 15 ? 'var(--good)' : m.ability >= 10 ? 'var(--acc2)' : 'var(--bad)')}</div><b style="margin-left:8px">${U.staffText(m.ability)}</b></div>
+        <div class="row small" style="margin-top:6px"><span class="dim" style="width:64px">Backing</span><div class="grow">${C.bar(m.conf ?? 60, 'var(--acc2)')}</div><b style="margin-left:8px">${Math.round(m.conf ?? 60)}%</b></div>
+        <div class="tiny dim" style="margin-top:6px">The federation's confidence moves with every result against what was expected; when it is gone he is sacked. ${esc(t.name)} are ranked ${rank} in the world.</div></div>
+      <div class="card"><div class="h3">How he works</div>${UI.staffAttrsHtml({ ...st, attrs: W.rollStaffAttrs('Manager', m.ability, st.id) })}</div>`,
+      { title: m.fn + ' ' + m.ln },
+    );
   };
   UI.acts.staffMarket = (d) => {
     const s = S(),
@@ -472,7 +560,7 @@
               st,
             ) => `<div class="card"><div class="row"><div style="font-size:24px">${C.flag(st.nat)}</div><div class="grow"><div class="b">${esc(st.fn + ' ' + st.ln)}</div><div class="small dim">${esc(st.personality)} · age ${st.age}</div></div><b>${U.money(st.wage)}/wk</b></div>
       <div class="row small" style="margin-top:8px"><span class="dim" style="width:64px">Ability</span><div class="grow">${C.bar(((st.judge || st.ability) / 20) * 100)}</div><b style="margin-left:8px">${U.staffText(st.judge || st.ability)}</b></div>
-      ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note)}</div>` : ''}
+      ${st.regions ? `<div class="tiny dim" style="margin-top:6px">${esc(st.note)}</div>` : ''}${UI.staffAttrsHtml(st)}
       <button class="btn sm pri block" style="margin-top:10px" data-act="staffHire" data-id="${st.id}">Hire · ${U.money(U.roundMoney(st.wage * 4))} fee</button></div>`,
           )
           .join('') || '<div class="empty">Nobody available right now. The market refreshes each season.</div>'
@@ -1877,7 +1965,7 @@
       op = m.sides[1 - us],
       out = [];
     const a = FM.Staff.get('analyst'),
-      n = 3 + Math.round((a.ability - 6) / 2.5);
+      n = 3 + Math.round(((a.vacant ? a.ability : (W.staffAttrs(a).dataAnalysis ?? a.ability)) - 6) / 2.5);
     const gd = me.goals - op.goals,
       xgd = me.xg - op.xg;
     if (xgd > 0.8 && gd <= 0)
@@ -2191,7 +2279,7 @@
         mgrLine = isMine
           ? 'You'
           : m
-            ? `<span data-nolink>${esc(m.fn)} ${esc(m.ln)}</span>${m.nat !== t.code ? ` (${C.flag(m.nat)})` : ''} · ability ${U.staffText(m.ability)} · since ${m.since}`
+            ? `<span class="tap" data-act="natManager" data-code="${t.code}" style="text-decoration:underline dotted">${esc(m.fn)} ${esc(m.ln)}</span>${m.nat !== t.code ? ` (${C.flag(m.nat)})` : ''} · ability ${U.staffText(m.ability)} · since ${m.since}`
             : t.vacantSince != null
               ? 'Vacant: the federation is looking for a manager'
               : '—';
