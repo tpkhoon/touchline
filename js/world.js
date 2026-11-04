@@ -1550,13 +1550,46 @@
   // How much more or less foreign a player is likely to be: by the club (an oil-backed club carries more foreign stars, a fan-owned or
   // youth-focused one fewer), his age (the young and the old are more domestic than the prime years) and his position (goalkeepers the
   // most domestic). It multiplies the weight of every foreign nation in the league's mix, around 1 so the league keeps its overall share.
-  const FOREIGN_BY_IDENTITY = { oil: 1.4, giant: 1.2, fan: 0.75, youth: 0.7 };
+  const FOREIGN_BY_IDENTITY = {
+    oil: 1.4,
+    giant: 1.2,
+    historic: 1.05,
+    fallen: 0.95,
+    selling: 1.1,
+    fan: 0.75,
+    youth: 0.7,
+  };
+  // (a club that belongs to its members, a union, the army, the police or a works is more local; a sovereign owner buys stars)
+  const FOREIGN_BY_OWNER = { sovereign: 1.15, investors: 1.05, state: 0.7, society: 0.8, company: 0.85, fans: 0.85 };
   const FOREIGN_BY_POS = { GK: 0.7, DEF: 0.95, MID: 1, ATT: 1.1 };
   const foreignByAge = (a) => (a <= 19 ? 0.6 : a <= 21 ? 0.8 : a <= 25 ? 1.05 : a <= 30 ? 1.12 : a <= 33 ? 0.95 : 0.8);
-  W.foreignFactor = (club, ctx) =>
-    (FOREIGN_BY_IDENTITY[club.identity] || 1) *
-    (ctx.age != null ? foreignByAge(ctx.age) : 1) *
-    (ctx.pos ? FOREIGN_BY_POS[D.POS_GROUP[ctx.pos]] || 1 : 1);
+  // A club's own lean to foreign players before its league is taken into account: identity, owner and a steady quirk of its own
+  // (some clubs in a league simply recruit abroad more than others)
+  const clubLean = (c) => {
+    const own = W.clubAttr(c).own;
+    return (
+      (FOREIGN_BY_IDENTITY[c.identity] || 1) * (FOREIGN_BY_OWNER[own] || 1) * (0.88 + ((U.hash(c.id) >> 5) % 25) / 100)
+    );
+  };
+  // Scaled by the mean of its league, so the clubs differ from each other and the league as a whole keeps its share
+  const leagueLean = { S: null, n: -1, by: {} };
+  W.clubForeign = (c) => {
+    if (!c.comp) return clubLean(c);
+    const cl = Object.values(FM.S.clubs);
+    if (leagueLean.S !== FM.S || leagueLean.n !== cl.length)
+      Object.assign(leagueLean, { S: FM.S, n: cl.length, by: {} });
+    let m = leagueLean.by[c.comp];
+    if (m === undefined) {
+      const same = cl.filter((x) => x.comp === c.comp && x.sim !== 'nation' && !x.parent);
+      m = leagueLean.by[c.comp] = same.length ? same.reduce((t, x) => t + clubLean(x), 0) / same.length : 1;
+    }
+    return clubLean(c) / (m || 1);
+  };
+  W.foreignFactor = (club, ctx) => {
+    // (a club that sells young talent holds a lot of young foreign prospects: the young are not more domestic there)
+    const age = ctx.age == null ? 1 : club.identity === 'selling' && ctx.age <= 23 ? 1.25 : foreignByAge(ctx.age);
+    return W.clubForeign(club) * age * (ctx.pos ? FOREIGN_BY_POS[D.POS_GROUP[ctx.pos]] || 1 : 1);
+  };
   // The strength of a nation's own top flight (a reputation, 25 for a nation with no league): its players above that standard go abroad
   const leagueRepCache = {};
   W.nationLeagueRep = (nat) => {
