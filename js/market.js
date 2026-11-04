@@ -100,6 +100,11 @@
     const listed = sq.filter((p) => p.listed && W.ownPlayer(p)).length;
     const bits = [`Budget ${U.money(c.budget)}.`];
     if (thin.length) bits.push(`Thin at ${thin.join(', ')}.`);
+    const shortReg = FM.Reg.real() ? FM.Reg.shortfalls(c) : [];
+    for (const g of shortReg)
+      bits.push(
+        `Short of ${g.label}: ${g.have} of ${g.need} registered, so ${U.plural(g.cost, 'player')} will be left out at the deadline.`,
+      );
     if (bids) bits.push(`${U.plural(bids, 'bid')} waiting for an answer.`);
     if (listed) bits.push(`${U.plural(listed, 'listed player')} still here.`);
     if (s.user.shortlist.length) bits.push(`${U.plural(s.user.shortlist.length, 'player')} on your shortlist.`);
@@ -115,7 +120,7 @@
     FM.News.add({
       type: 'club',
       title: 'Deadline day',
-      body: 'The window shuts at 23:00. Follow it hour by hour from the Home screen: late bids, panic buys, deals collapsing at the last minute. Anything you want done has to be done today.',
+      body: `The window shuts at 23:00. Follow it hour by hour from the Home screen: late bids, panic buys, deals collapsing at the last minute. Anything you want done has to be done today.${(FM.Reg.real() ? FM.Reg.shortfalls(c) : []).map((g) => ` The squad is registered tonight: ${g.have} of the ${g.need} ${g.label} the league asks for, so ${U.plural(g.cost, 'player')} will be left out.`).join('')}`,
       clubId: c.id,
     });
   };
@@ -124,7 +129,10 @@
     const s = S(),
       c = W.userClub(),
       from = state().from;
-    if (FM.Reg.real()) FM.Reg.registerSquad(c); // the registration deadline
+    if (FM.Reg.real()) {
+      FM.Reg.registerSquad(c); // the registration deadline
+      FM.Reg.registerOthers();
+    }
     const deals = s.seasonLog.transfers.filter((t) => t.day >= from && !t.loan);
     const ins = deals.filter((t) => t.to === c.id),
       outs = deals.filter((t) => t.from === c.id);

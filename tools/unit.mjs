@@ -262,14 +262,28 @@ try {
   eq(WD.validateIntl({ every: { world: 2, cwc: 8 } }), [], 'a World Championship every two years is allowed');
   ok(WD.validateIntl({ every: { world: 0 } }).length === 1, 'a frequency of 0 years is refused');
   ok(WD.validateIntl({ every: { nonsense: 2 } }).length === 1, 'an unknown tournament is refused');
-  const okRules = { youthXI: 3, youthSquad: 6, youthAge: 21, hgSquad: 8, hgXI: 4 };
+  const okRules = { youthMin: 3, youthScope: 'pitch', youthAge: 21, hgMin: 8, hgScope: 'registered' };
   ok(
     WD.validateLeagueRules(lrules(okRules), { clubs: [], leagues: [] }).length === 0,
     'youth and homegrown rules are accepted',
   );
   ok(
-    WD.validateLeagueRules(lrules({ youthXI: 12, youthAge: 20 }), { clubs: [], leagues: [] }).length === 2,
-    'a youth XI of 12 and a youth age of 20 are refused',
+    WD.validateLeagueRules(lrules({ youthMin: 21, youthAge: 20, hgScope: 'bench' }), { clubs: [], leagues: [] })
+      .length === 3,
+    'a youth minimum of 21, a youth age of 20 and a scope of the bench are refused',
+  );
+  const reqs = FM.Reg.requirements({ youthMin: 3, youthScope: 'xi', youthAge: 19, hgMin: 5 }, { nat: 'ENG' });
+  eq(
+    reqs.map((q) => [q.kind, q.n, q.scope]),
+    [
+      ['youth', 3, 'xi'],
+      ['hg', 5, 'squad'],
+    ],
+    'each requirement has a scope (the matchday squad unless set)',
+  );
+  ok(
+    FM.Reg.SCOPES.length === 4 && reqs[0].label.includes('19'),
+    'the scopes are the XI, the pitch, the XI and subs and the registered players',
   );
   const def = WD.blank('Unit'),
     lg = FM.D.LEAGUES[0];

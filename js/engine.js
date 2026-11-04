@@ -1504,8 +1504,23 @@
       if (!sd.subsLeft) return null;
       const out = sd.xi[i];
       const t = sd.slots[i].t;
-      const cands = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id) && (t === 'GK') === (p.pos === 'GK'));
-      const pIn = inPid ? sd.bench.find((p) => p.id === inPid) : cands.sort((a, b) => W.effAt(b, t) - W.effAt(a, t))[0];
+      // (a league that asks for a minimum of young or homegrown players on the pitch at all times: a change may not take it below)
+      const mins = FM.Reg.pitchMins(sd.club);
+      const keeps = (c) => {
+        if (!mins.length) return true;
+        const on = this.onPitch(sd).map((x) => x.p);
+        return mins.every(({ f, min }) => {
+          const now = on.filter(f).length,
+            after = now - (out && f(out) ? 1 : 0) + (f(c) ? 1 : 0);
+          return after >= min || after >= now;
+        });
+      };
+      const cands = sd.bench.filter(
+        (p) => !Object.hasOwn(sd.on, p.id) && (t === 'GK') === (p.pos === 'GK') && keeps(p),
+      );
+      const pIn = inPid
+        ? sd.bench.find((p) => p.id === inPid && keeps(p))
+        : cands.sort((a, b) => W.effAt(b, t) - W.effAt(a, t))[0];
       if (!pIn || Object.hasOwn(sd.on, pIn.id)) return null;
       const m = tl ? tl.m : this.minute;
       sd.xi[i] = pIn;

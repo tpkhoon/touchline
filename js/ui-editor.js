@@ -1418,6 +1418,21 @@
       `<div class="tiny dim" style="margin:10px 0 4px">${t}${extra ? ` <span>(${extra})</span>` : ''}</div>`;
     const reg = (k, label, vals) =>
       `${lbl(label, gameText(k))}${playSeg('edPlaySquad', k, sq[k], [[0, 'None'], ...vals.map((n) => [n, String(n)])], '', 'As the game')}`;
+    // where a minimum counts: the starting XI, the players on the pitch at all times, the XI and the bench, or everyone registered
+    const scopeSeg = (k, cur) =>
+      `${lbl('Counted among', cur ? '' : 'the matchday squad unless set')}${playSeg(
+        'edPlaySquad',
+        k,
+        cur,
+        [
+          ['xi', 'Starting XI'],
+          ['pitch', 'On the pitch'],
+          ['squad', 'XI and subs'],
+          ['registered', 'All registered'],
+        ],
+        '',
+        'XI and subs',
+      )}`;
     const flag = (k, label, on, off) =>
       `${lbl(label, game[KEY[k] || k] ? 'the game has it on' : 'the game has it off')}${playSeg(
         'edPlaySquad',
@@ -1507,11 +1522,11 @@
         '',
         'As the game (21)',
       )}
-      ${reg('youthSquad', 'Youth players in a matchday squad (at least)', [2, 3, 4, 5, 6])}
-      ${reg('youthXI', 'Youth players in the starting XI (at least): their minutes', [1, 2, 3, 4])}
-      ${reg('hgSquad', 'Homegrown players in a matchday squad (at least)', [4, 6, 8, 10])}
-      ${reg('hgXI', 'Homegrown players in the starting XI (at least)', [2, 4, 6])}
-      <div class="tiny dim" style="margin-top:6px;line-height:1.5">A club short of them fields as many as it has. A starting XI with a youth minimum gives those players minutes in every match.</div>
+      ${reg('youthMin', 'Youth players (at least)', [1, 2, 3, 4, 5, 6])}
+      ${scopeSeg('youthScope', sq.youthScope)}
+      ${reg('hgMin', 'Homegrown players (at least)', [2, 4, 6, 8, 10])}
+      ${scopeSeg('hgScope', sq.hgScope)}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Starting XI: they start every match, so they play minutes. On the pitch: they start, and no substitution may take the pitch below the minimum. XI and subs: the matchday squad. All registered: the club's squad (a squad that falls short is flagged, and the rule is not enforced on the day). A club short of them fields as many as it has.</div>
       ${lbl('Nations that never count as foreign', 'the game has ' + (game.exempt ? game.exempt.join(', ') : 'none'))}
       <div class="chips" style="flex-wrap:wrap">${exempt
         .map(
@@ -1718,7 +1733,7 @@
     l.rules = l.rules || {};
     const p = (l.rules.squad = l.rules.squad || {});
     if (d.v === '') delete p[d.k];
-    else p[d.k] = d.v === 'true' ? true : d.v === 'false' ? false : +d.v;
+    else p[d.k] = /Scope$/.test(d.k) ? d.v : d.v === 'true' ? true : d.v === 'false' ? false : +d.v;
     if (d.k === 'listSize' && p.listSize && p.homegrown == null) p.homegrown = 8;
     if (!Object.keys(p).length) delete l.rules.squad;
     UI.worldEditor();

@@ -574,10 +574,14 @@
     const over = FM.Reg.over(c),
       dl = FM.Reg.deadlineIn(),
       un = W.squad(c.id).filter((p) => p.unreg).length;
+    const short = FM.Reg.shortfalls(c);
+    const shortLine = short.length
+      ? `<div class="warnline tap" style="margin:-4px 0 8px" data-act="regInfo">Short of the registration minimums (${short.map((x) => `${esc(x.label)} ${x.have}/${x.need}`).join(', ')}): ${dl != null ? `at the deadline in ${U.plural(dl, 'day')}` : 'at the next deadline'} each one short costs a place on the registered list. Sign or promote players, or choose who is left out ›</div>`
+      : '';
     const warn = over.length
       ? `<div class="warnline tap" style="margin:-4px 0 8px" data-act="regInfo">Over the registration limits (${over.map((g) => `${esc(g.label)} ${g.n}/${g.cap}`).join(', ')}). ${dl != null ? `Deadline in ${dl} day${dl === 1 ? '' : 's'}: sell, loan out or choose who to leave out ›` : 'Fixed at the next window ›'}</div>`
       : '';
-    return `${warn}<div class="small dim tap" style="margin:-4px 2px 8px;padding:12px 0" data-act="regInfo">Registration: ${esc(sum)}${un ? ` · ${un} unregistered` : ''} ›</div>`;
+    return `${warn}${shortLine}<div class="small dim tap" style="margin:-4px 2px 8px;padding:12px 0" data-act="regInfo">Registration: ${esc(sum)}${un ? ` · ${un} unregistered` : ''} ›</div>`;
   };
   UI.acts.regInfo = () => {
     const c = W.userClub(),
@@ -595,9 +599,23 @@
     const unl = un.length
       ? `<div class="card flat small" style="margin-top:10px"><b>Unregistered</b> (can't play until the next deadline): ${un.map((p) => C.pname(p, W.name(p))).join(', ')}</div>`
       : '';
-    if (!over.length) return unl;
+    // a minimum of registered youth or homegrown players the squad is short of: each one short leaves a player out
+    const shorts = FM.Reg.shortfalls(c)
+      .map(
+        (g) =>
+          `<div class="card flat small" style="margin-top:10px"><div class="b">Short of ${esc(g.label)}: ${g.have} of ${g.need}</div><div class="tiny dim" style="margin-bottom:6px">${dl != null ? `At the deadline (${U.plural(dl, 'day')}) ${U.plural(g.cost, 'player')} cannot be registered: tick who, or sign or promote ${U.plural(g.need - g.have, 'more player')} who count. Unticked, the weakest are left out.` : `${U.plural(g.cost, 'player')} cannot be registered until the next window closes.`}</div>${g.players
+            .slice(0, 12)
+            .map(
+              (p) =>
+                `<div class="row small" style="padding:4px 0">${C.pos(p)}<span class="grow">${C.pname(p, W.name(p))} <span class="dim">${C.starText(p.ca, p.pos)}</span></span>${dl != null ? `<button class="chip ${p.leaveOut ? 'on' : ''}" data-act="regLeaveOut" data-id="${p.id}">${p.leaveOut ? 'Leaving out' : 'Leave out'}</button>` : ''}</div>`,
+            )
+            .join('')}</div>`,
+      )
+      .join('');
+    if (!over.length) return unl + shorts;
     return (
       unl +
+      shorts +
       over
         .map(
           (g) =>

@@ -137,17 +137,9 @@
     else if (r.foreign)
       out.push(`At most ${r.foreign} ${id === 'US1' ? 'international slots' : 'foreign players'} on the books.`);
     if (r.matchday) out.push(`No more than ${r.matchday} foreign players in a matchday squad.`);
-    const yAge = r.youthAge || 21;
-    if (r.youthSquad)
-      out.push(
-        `At least ${U.plural(r.youthSquad, 'player')} aged ${yAge} or under in every matchday squad (the XI and the bench).`,
-      );
-    if (r.youthXI)
-      out.push(
-        `At least ${U.plural(r.youthXI, 'player')} aged ${yAge} or under in the starting XI, so they play minutes every match.`,
-      );
-    if (r.hgSquad) out.push(`At least ${r.hgSquad} homegrown players in every matchday squad.`);
-    if (r.hgXI) out.push(`At least ${r.hgXI} homegrown players in the starting XI.`);
+    R.requirements(r, { nat: null }).forEach((q) =>
+      out.push(`At least ${U.plural(q.n, 'player')} ${q.what} ${R.SCOPE_TEXT[q.scope]}.`),
+    );
     if (r.mls)
       out.push(
         `Salary budget: the 20 biggest wage charges add up to at most ${U.money(r.mls.cap)} a year. No player counts for more than ${U.money(r.mls.maxCharge)}, and up to ${r.mls.dp} Designated Players may earn above that and still count only that much; nobody else may earn more. A senior roster of at most ${r.mls.roster}.`,
@@ -561,15 +553,105 @@
       R.foreignGroups(club, r).forEach((g) => out.push({ f: g.f, cap: g.cap }));
       if (r.matchday) out.push({ f: (p) => R.isForeign(p, club, r), cap: r.matchday });
       // youth and homegrown minimums: at least n of them is a cap on everyone else (the matchday squad is the XI and nine on the
-      // bench; a cap marked xi counts the starting XI alone, so the bench is not squeezed by it)
-      const SQUAD = 20,
-        young = (p) => W.age(p) <= (r.youthAge || 21),
-        home = (p) => R.homegrown(p, club.nat);
-      if (r.youthSquad) out.push({ f: (p) => !young(p), cap: Math.max(0, SQUAD - r.youthSquad), young: true });
-      if (r.youthXI) out.push({ f: (p) => !young(p), cap: Math.max(0, 11 - r.youthXI), xi: true, young: true });
-      if (r.hgSquad) out.push({ f: (p) => !home(p), cap: Math.max(0, SQUAD - r.hgSquad) });
-      if (r.hgXI) out.push({ f: (p) => !home(p), cap: Math.max(0, 11 - r.hgXI), xi: true });
+      // bench; a cap marked xi counts the starting XI alone, so the bench is not squeezed by it). "On the pitch" also holds the
+      // XI to it, and the substitutions after (R.pitchMins); "registered" is checked against the squad (R.shortfalls).
+      for (const q of R.requirements(r, club)) {
+        if (q.scope === 'registered') continue;
+        const xi = q.scope === 'xi' || q.scope === 'pitch';
+        out.push({
+          f: (p) => !q.f(p),
+          cap: Math.max(0, (xi ? 11 : 20) - q.n),
+          ...(xi ? { xi: true } : {}),
+          ...(q.kind === 'youth' ? { young: true } : {}),
+        });
+      }
       limCache.set(key, out);
+    }
+    return out;
+  };
+  // The youth and homegrown minimums a league's rules ask for: [{ kind, n, scope, what, label, f }] where f says whether a player counts
+  // towards it. Each has a scope: the starting XI ('xi'), the players on the pitch at all times ('pitch': the XI and every
+  // substitution), the XI and the bench ('squad': the matchday squad) or every registered player ('registered').
+  R.SCOPES = ['xi', 'pitch', 'squad', 'registered'];
+  R.SCOPE_TEXT = {
+    xi: 'in the starting XI, so they play minutes every match',
+    pitch: 'on the pitch at all times (in the starting XI and after every substitution)',
+    squad: 'in every matchday squad (the XI and the bench)',
+    registered: 'among the registered players at the registration deadline (each one short costs a place on the list)',
+  };
+  R.requirements = function (r, club) {
+    const out = [],
+      age = r.youthAge || 21;
+    const scopeOf = (k) => (R.SCOPES.includes(r[k]) ? r[k] : 'squad');
+    if (r.youthMin)
+      out.push({
+        kind: 'youth',
+        n: r.youthMin,
+        scope: scopeOf('youthScope'),
+        what: `aged ${age} or under`,
+        label: `youth players (${age} or under)`,
+        f: (p) => W.age(p) <= age,
+      });
+    if (r.hgMin)
+      out.push({
+        kind: 'hg',
+        n: r.hgMin,
+        scope: scopeOf('hgScope'),
+        what: 'who are homegrown',
+        label: 'homegrown players',
+        f: (p) => R.homegrown(p, club.nat),
+      });
+    return out;
+  };
+  // The minimums that hold on the pitch during a match: the count of players satisfying f on it may not fall below min
+  // ([{ f, min }]; the engine checks every substitution against it)
+  R.pitchMins = function (club) {
+    if (!club || club.sim === 'nation') return [];
+    const r = R.rulesFor(club);
+    return r
+      ? R.requirements(r, club)
+          .filter((q) => q.scope === 'pitch')
+          .map((q) => ({ f: q.f, min: q.n }))
+      : [];
+  };
+  // The registered-player minimums a club does not meet: [{ label, need, have, cost, players }]. Each missing player costs a place on
+  // the registered list (as the Premier League's homegrown rule shortens the squad list): at the deadline `cost` players who do
+  // not count towards the minimum, the ones you tick to leave out and then the weakest, cannot be registered. `players` are the
+  // ones who could be left out, weakest first; a squad is never cut below 16 registered players.
+  R.REG_FLOOR = 16;
+  R.shortfalls = function (c) {
+    const r = R.rulesFor(c);
+    if (!r) return [];
+    const sq = W.squad(c.id);
+    return R.requirements(r, c)
+      .filter((q) => q.scope === 'registered')
+      .map((q) => {
+        const have = sq.filter((p) => !p.unreg && q.f(p)).length,
+          others = sq.filter((p) => !q.f(p)).sort((a, b) => a.ca - b.ca);
+        return {
+          label: q.label,
+          need: q.n,
+          have,
+          cost: Math.max(0, Math.min(q.n - have, Math.max(0, sq.length - R.REG_FLOOR))),
+          players: others,
+        };
+      })
+      .filter((x) => x.have < x.need);
+  };
+  // The registered places a club's shortfalls cost: the players who can't be registered (those you chose to leave out first, a
+  // keeper last), for the registration deadline. The squad's own `unreg` marks are cleared by the caller.
+  R.shortOut = function (c) {
+    const out = [];
+    for (const g of R.shortfalls(c)) {
+      const order = g.players
+        .filter((p) => !out.includes(p))
+        .sort(
+          (a, b) =>
+            (b.leaveOut ? 1 : 0) - (a.leaveOut ? 1 : 0) ||
+            (a.pos === 'GK' ? 1 : 0) - (b.pos === 'GK' ? 1 : 0) ||
+            a.ca - b.ca,
+        );
+      out.push(...order.slice(0, g.cost));
     }
     return out;
   };
@@ -609,6 +691,10 @@
       bits.push(`${i ? g.label : c.comp === 'US1' ? 'international slots' : 'foreigners'} ${g.n}/${g.cap}`),
     );
     if (r.nonEUSign) bits.push(`non-EU signings from abroad ${st.nonEUSigned}/${r.nonEUSign}`);
+    for (const q of R.requirements(r, c).filter((x) => x.scope === 'registered'))
+      bits.push(
+        `${q.label} ${W.squad(c.id).filter((p) => !p.unreg && q.f(p)).length}/${q.n} (at least; each one short costs a registered place)`,
+      );
     if (r.mls) {
       const ms = R.mlsStatus(c);
       bits.push(
@@ -641,6 +727,18 @@
   R.deadlineIn = () => (FM.Season.windowOpen() ? FM.Market.daysLeft() : null);
   // At the deadline your squad is registered within the rules: players you chose to leave out go first, then the
   // weakest in each group over its limit. Anyone left out can't play until the next window's deadline.
+  // The deadline for every club but yours: a league's registered-player minimums leave places empty (the squads of the AI clubs
+  // are otherwise kept within the limits on the day)
+  R.registerOthers = function () {
+    for (const c of Object.values(FM.S.clubs)) {
+      if (c.sim !== 'full' || W.isUser(c.id) || !c.comp) continue;
+      const r = R.rulesFor(c);
+      if (!r || !(r.youthMin || r.hgMin)) continue;
+      const sq = W.squad(c.id);
+      for (const p of sq) delete p.unreg;
+      for (const p of R.shortOut(c)) p.unreg = true;
+    }
+  };
   R.registerSquad = function (c) {
     for (const p of W.squad(c.id)) delete p.unreg;
     const out = [];
@@ -658,12 +756,31 @@
         excess--;
       }
     }
-    for (const p of W.squad(c.id)) delete p.leaveOut;
-    if (out.length)
+    // a minimum of registered youth or homegrown players: each one the squad is short of costs a place
+    const short = R.shortOut(c).filter((p) => !out.includes(p));
+    for (const p of short) p.unreg = true;
+    if (short.length)
       FM.News.add({
         type: 'club',
-        title: `Squad registered: ${out.length} left out`,
-        body: `Over the league's limits at the deadline, so these players can't play until the next window closes: ${out.map((p) => W.name(p)).join(', ')}.`,
+        title: `Short of registration minimums: ${short.length} left out`,
+        body: `The league asks for ${R.shortfalls(c)
+          .map((g) => `at least ${g.need} ${g.label} among the registered players (you have ${g.have})`)
+          .join(
+            ' and ',
+          )}. Each missing player costs a place, so these can't play until the next window closes: ${short.map((p) => W.name(p)).join(', ')}.`,
+        clubId: c.id,
+        big: true,
+      });
+    out.push(...short);
+    for (const p of W.squad(c.id)) delete p.leaveOut;
+    if (out.length - short.length)
+      FM.News.add({
+        type: 'club',
+        title: `Squad registered: ${out.length - short.length} left out`,
+        body: `Over the league's limits at the deadline, so these players can't play until the next window closes: ${out
+          .filter((p) => !short.includes(p))
+          .map((p) => W.name(p))
+          .join(', ')}.`,
         clubId: c.id,
         big: true,
       });

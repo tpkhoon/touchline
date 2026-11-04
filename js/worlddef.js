@@ -1785,10 +1785,11 @@
           const num = (hi) => v == null || (Number.isInteger(v) && v >= 0 && v <= hi);
           if (['foreign', 'matchday', 'nonEU', 'nonEUSign', 'asian', 'asean'].includes(k)) {
             if (!num(30)) e.push(`${at}: ${k} is a number of players from 0 (no limit) to 30`);
-          } else if (['youthSquad', 'hgSquad'].includes(k)) {
+          } else if (['youthMin', 'hgMin'].includes(k)) {
             if (!num(20)) e.push(`${at}: ${k} is a number of players from 0 (none) to 20`);
-          } else if (['youthXI', 'hgXI'].includes(k)) {
-            if (!num(11)) e.push(`${at}: ${k} is a number of players from 0 (none) to 11`);
+          } else if (['youthScope', 'hgScope'].includes(k)) {
+            if (v != null && !['xi', 'pitch', 'squad', 'registered'].includes(v))
+              e.push(`${at}: ${k} is the starting XI, the pitch, the matchday squad or the registered players`);
           } else if (k === 'youthAge') {
             if (v != null && ![19, 21, 23].includes(v)) e.push(`${at}: the youth age is 19, 21 or 23`);
           } else if (k === 'listSize') {

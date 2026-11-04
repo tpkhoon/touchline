@@ -1088,7 +1088,13 @@
     const sd = MV.m.sides[MV.us];
     if (MV._subOut == null) return UI.toast('Pick who comes off first');
     if (!sd.subsLeft) return UI.toast('No substitutions left');
-    MV.doSub(MV._subOut, d.id);
+    if (!MV.doSub(MV._subOut, d.id))
+      UI.toast(
+        FM.Reg.pitchMins(MV.m.sides[MV.us].club).length
+          ? 'The league asks for a minimum of young or homegrown players on the pitch: that change would take you below it'
+          : 'That change cannot be made',
+        4500,
+      );
     MV._subOut = null;
     UI.refreshSheet(MV._subRender());
   };
