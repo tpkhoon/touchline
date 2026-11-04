@@ -137,6 +137,38 @@
   // How far a club's training ground can take a player: its level and the club's standing (a big club's coaching and
   // players pull a young player along beyond what the pitches alone would)
   Sea.devCap = (c) => Math.round(50 + ((c.facilities && c.facilities.training) || 2) * 7 + (c.rep - 60) * 0.35);
+  // The challenge of the football a young player plays: how far above his own ability the level he plays at is. A player cruising
+  // far below his level learns little, one slightly above it grows fastest, and one far out of his depth loses his footing. It only
+  // counts once he plays regularly (a handful of games), and only while he is young; the level is his club's, lowered a step for the
+  // youth sides (the Under-21s and Under-18s). Returns a multiplier on his growth, a little over 1 at a level about his own, so that across the world growth is as before.
+  Sea.CHALLENGE = [
+    [-18, 0.9],
+    [-8, 1],
+    [0, 1.06],
+    [6, 1.14],
+    [12, 1.08],
+    [20, 0.95],
+    [30, 0.8],
+  ];
+  Sea.TEAM_STEP = { u21: 8, u18: 14 };
+  Sea.challengeGap = function (p) {
+    const club = p.clubId && FM.S.clubs[p.clubId];
+    if (!club) return null;
+    const games = (p.season.apps || 0) + (p.season.yapps || 0) * 0.6;
+    if (games < 6) return null;
+    return W.levelFor(club.rep) - (Sea.TEAM_STEP[p.team] || 0) - p.ca;
+  };
+  Sea.challengeK = function (p) {
+    if (W.age(p) > 23) return 1;
+    const gap = Sea.challengeGap(p);
+    if (gap === null) return 1;
+    const t = Sea.CHALLENGE;
+    if (gap <= t[0][0]) return t[0][1];
+    for (let i = 1; i < t.length; i++)
+      if (gap <= t[i][0])
+        return t[i - 1][1] + ((t[i][1] - t[i - 1][1]) * (gap - t[i - 1][0])) / (t[i][0] - t[i - 1][0]);
+    return t[t.length - 1][1];
+  };
   Sea.develop = function (p, frac) {
     const S = FM.S;
     const club = p.clubId && S.clubs[p.clubId];
@@ -165,6 +197,7 @@
       if (p.ca >= Sea.ELITE.from) g *= Sea.ELITE.growth; // the very best grow more slowly: keeps the elite from inflating
       if (p.inj && (p.inj.out || 0) >= 8) g *= 0.4; // months on the treatment table cost development
       g *= FM.Training.devK(p); // your training focus and intensity
+      g *= Sea.challengeK(p); // the level he plays at: too easy teaches little, a little above his own teaches most
       // (his coach's way with the young and with keepers)
       if (coach) g *= (a <= 21 ? coach.young : 1) * (p.pos === 'GK' ? coach.gk : 1);
       // a Mentor in the squad: the young learn from him

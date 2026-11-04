@@ -63,8 +63,78 @@
         yrsLeft = g.contract - S().year;
       out.blockNote = `${W.short(g)} (${W.age(g)})${W.age(g) >= 31 ? ', who will need replacing soon' : yrsLeft <= 0 ? ', whose contract ends this season' : yrsLeft === 1 ? ', whose contract ends next season' : ''}`;
     }
+    out.flag = UI.youthFlag(c, p, where, gate, gap);
     return out;
   };
+  // The two flags that save scanning every row: "ready to step up" (good enough for the level above) and "needs more minutes" (a
+  // prospect who is playing too little for his age and promise, in the first team or the youth sides).
+  // A minutes plan for a prospect: what the manager wants for him this season. The share is of his club's league matches he should play.
+  UI.PLANS = {
+    regular: { label: 'Play regularly', share: 0.5 },
+    cover: { label: 'Bench cover', share: 0.15 },
+    loan: { label: 'Loan for minutes', share: 0.5 },
+  };
+  UI.youthFlag = function (c, p, where, gate, gap) {
+    const age = W.age(p),
+      comp = c.comp && S().comps[c.comp],
+      played = comp && comp.table && comp.table[c.id] ? comp.table[c.id].p : 0;
+    const promise = p.pa - p.ca >= 6 && age <= 21;
+    if (p.loan) {
+      // out on loan: his games at the other club, against that club's matches
+      const lc = S().clubs[p.clubId],
+        lcomp = lc && lc.comp && S().comps[lc.comp],
+        lp = lcomp && lcomp.table && lcomp.table[lc.id] ? lcomp.table[lc.id].p : 0;
+      if (lp >= 8 && p.season.apps < lp * 0.3)
+        return {
+          key: 'minutes',
+          text: `Needs more minutes: ${U.plural(p.season.apps, 'game')} in ${U.plural(lp, 'match', 'matches')} on loan, so he could be recalled or moved`,
+        };
+      return null;
+    }
+    if (p.team) {
+      const sq = Y.squadOf(c.id, p.team === 'u18' ? 'u21' : 'first').map((q) => q.ca);
+      if (p.team === 'u18' && sq.length) {
+        const med = sq.slice().sort((a, b) => a - b)[Math.floor(sq.length / 2)];
+        if (p.ca >= med) return { key: 'ready', text: 'Ready to step up: as good as the middle of the Under-21s' };
+      }
+      if (p.team === 'u21' && gate && gap <= 0)
+        return { key: 'ready', text: 'Ready to step up: good enough for the first team now' };
+      if (p.team === 'u21' && gate && gap <= 3 && age >= 19)
+        return { key: 'ready', text: `Ready to step up soon: ${U.plural(gap, 'point')} behind ${W.short(gate)}` };
+      return null;
+    }
+    if (where === 'B team' && gate && gap <= 0)
+      return { key: 'ready', text: 'Ready to step up: good enough for the first team now' };
+    const plan = UI.PLANS[p.plan];
+    if (plan && where !== 'B team' && !p.team && !p.loan && age <= 23) {
+      if (p.plan === 'loan')
+        return {
+          key: 'minutes',
+          text: 'Plan: loan for minutes, and he is still here. Arrange a loan or change his plan',
+        };
+      if (played >= 8 && p.season.apps < played * plan.share)
+        return {
+          key: 'minutes',
+          text: `Below plan (${plan.label.toLowerCase()}): ${U.plural(p.season.apps, 'game')} in ${U.plural(played, 'match', 'matches')}, he should play about ${Math.round(plan.share * 100)}% of them`,
+        };
+      return null;
+    }
+    if (where !== 'B team' && !p.team && !p.loan && promise && played >= 8 && p.season.apps < played * 0.25 && gap > 0)
+      return {
+        key: 'minutes',
+        text: `Needs more minutes: ${U.plural(p.season.apps, 'game')} in ${U.plural(played, 'match', 'matches')}; a youth game or a loan would help`,
+      };
+    return null;
+  };
+  const planChips = (p) =>
+    `<div class="row" style="gap:4px;margin-top:6px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Plan</span>${Object.entries(
+      UI.PLANS,
+    )
+      .map(
+        ([k, v]) =>
+          `<button class="chip${p.plan === k ? ' on' : ''}" data-act="youthPlan" data-id="${p.id}" data-v="${k}">${esc(v.label)}</button>`,
+      )
+      .join('')}</div>`;
   UI.youthHub = function (c) {
     const list = [];
     for (const [team, def] of Object.entries(Y.TEAMS))
@@ -90,7 +160,7 @@
               : '';
       const line = (t, tone) =>
         `<div class="tiny" style="margin-top:3px;${tone ? `color:var(--${tone})` : 'opacity:.8'}">${esc(t)}</div>`;
-      return `<div style="padding-bottom:6px">${C.playerRow(p, ` · ${esc(where)}${p.season.apps ? ` · ${U.plural(p.season.apps, 'game')}` : ''}`)}<div style="margin:0 0 4px 4px">${line(w.next, w.tone)}${w.blocker ? line(`Blocked by ${w.blockNote}`, '') : ''}${moves ? `<div class="row" style="gap:4px;margin-top:6px">${moves}</div>` : ''}</div></div>`;
+      return `<div style="padding-bottom:6px">${C.playerRow(p, ` · ${esc(where)}${p.season.apps ? ` · ${U.plural(p.season.apps, 'game')}` : ''}`)}<div style="margin:0 0 4px 4px">${planChips(p)}${w.flag ? `<div class="tiny" style="margin-top:3px;font-weight:600;color:var(--${w.flag.key === 'ready' ? 'good' : 'warn'})">${esc(w.flag.text)}</div>` : ''}${line(w.next, w.tone)}${w.blocker ? line(`Blocked by ${w.blockNote}`, '') : ''}${moves ? `<div class="row" style="gap:4px;margin-top:6px">${moves}</div>` : ''}</div></div>`;
     });
     return `<div class="sec"><div class="h3">Pathways</div></div>
       <div class="tiny dim" style="margin:-4px 2px 6px">Your most promising youngsters: where each is, what comes next and who is in his way. The player to beat is the weakest regular in his position; the time is the gap in ability over what he should grow in a year.</div>
@@ -158,6 +228,13 @@
         );
     }
     return out.join('');
+  };
+  UI.acts.youthPlan = (d) => {
+    const p = S().players[d.id];
+    if (!p || !UI.PLANS[d.v]) return;
+    p.plan = p.plan === d.v ? undefined : d.v; // (a second tap clears it)
+    UI.save();
+    UI.render();
   };
   UI.acts.youthMove = (d) => {
     const s = S(),
