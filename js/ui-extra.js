@@ -158,9 +158,16 @@
   UI.acts.pMore = (d) => {
     const p = P(d.id);
     UI.sheet(
-      `<div class="col" style="gap:8px"><button class="btn block" data-act="pMoreDo" data-a="loanList" data-id="${p.id}">${p.loanListed ? 'Take off the loan list' : 'Loan list'}</button>${p.loanListed ? `<button class="btn block pri" data-act="pMoreDo" data-a="offerLoan" data-id="${p.id}">Offer him on loan</button>` : ''}<button class="btn block danger" data-act="pMoreDo" data-a="release" data-id="${p.id}">Release…</button></div>`,
+      `<div class="col" style="gap:8px"><button class="btn block" data-act="pMoreDo" data-a="loanList" data-id="${p.id}">${p.loanListed ? 'Take off the loan list' : 'Loan list'}</button>${p.loanListed ? `<div class="row" style="gap:4px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Loan wishes</span><button class="chip${p.loanWish && p.loanWish.starter ? ' on' : ''}" data-act="loanWish" data-id="${p.id}" data-v="starter">A guaranteed starter</button><button class="chip${p.loanWish && p.loanWish.home ? ' on' : ''}" data-act="loanWish" data-id="${p.id}" data-v="home">In the same country</button></div><button class="btn block pri" data-act="pMoreDo" data-a="offerLoan" data-id="${p.id}">Offer him on loan</button>` : ''}<button class="btn block danger" data-act="pMoreDo" data-a="release" data-id="${p.id}">Release…</button></div>`,
       { title: 'More for ' + W.short(p) },
     );
+  };
+  // What he asks of a loan: a place as a starter, a club in his own country; the clubs that bid are picked to fit
+  UI.acts.loanWish = (d) => {
+    const p = P(d.id);
+    p.loanWish = { ...(p.loanWish || {}), [d.v]: !(p.loanWish && p.loanWish[d.v]) };
+    UI.save();
+    UI.acts.pMore(d);
   };
   UI.acts.pMoreDo = (d) => {
     UI.closeSheet();

@@ -127,6 +127,7 @@
         : `${U.plural(apps, 'appearance')}`,
     };
   };
+  T.CLAUSE_SHARE = 0.6; // the share of the borrower's matches a guaranteed-minutes clause asks for
   T.loan = function (p, toId, share, fee = 0) {
     const S = FM.S,
       from = S.clubs[p.clubId],
@@ -136,7 +137,7 @@
     to.budget = Math.max(0, to.budget - fee);
     const sp = W.spell(p);
     if (sp) sp.to = S.year;
-    p.loan = { from: from.id, share, fee, year: S.year, wg: FM.Season.gamesPlayed(toId), wa: 0 }; // wg/wa: minutes watch
+    p.loan = { from: from.id, share, fee, year: S.year, wg: FM.Season.gamesPlayed(toId), wa: 0, ca0: p.ca }; // wg/wa: minutes watch; ca0: his ability when he left
     p.team = undefined; // out on loan he plays for the borrower's first team, not a youth side
     p.loanListed = false;
     W.startSpell(p, toId);
@@ -1206,6 +1207,8 @@
       T.loan(p, buyer.id, n.data.loan.share, 0);
       if (n.data.loan.buy) p.loan.buy = n.data.loan.buy;
       if (n.data.loan.starts) p.loan.promised = true;
+      // a guaranteed-minutes clause (written in when you accept with it): if he plays too little the loan can be ended at once
+      if (n.data.loan.clause) p.loan.clause = { share: T.CLAUSE_SHARE };
       return `${W.name(p)} joins ${buyer.name} on loan${n.data.loan.buy ? ` (option to buy: ${U.money(n.data.loan.buy)})` : ''}.`;
     }
     if (FM.Market.refusesMove(p, buyer)) {

@@ -332,6 +332,26 @@
     }
     return { games: FM.Season.gamesPlayed(p.clubId) - l.wg, apps: sp.apps - l.wa };
   };
+  // How a loan is going for the player: his average rating, the change in his ability since he left, and a verdict on his development
+  M.loanVerdict = function (p, sp, elapsed) {
+    const l = p.loan,
+      share = elapsed > 0 ? sp.apps / elapsed : 0,
+      gain = l.ca0 != null ? p.ca - l.ca0 : 0,
+      rated = p.season.apps ? p.season.rsum / p.season.apps : 0;
+    const bits = [];
+    if (rated) bits.push('rated ' + rated.toFixed(1));
+    if (l.ca0 != null)
+      bits.push(gain === 0 ? 'no change in ability yet' : 'ability ' + (gain > 0 ? '+' : '') + gain + ' since he left');
+    const verdict =
+      share >= 0.6 && gain >= 1
+        ? 'Developing well.'
+        : share >= 0.5
+          ? 'Playing regularly; the progress will follow.'
+          : share >= 0.3
+            ? 'Playing some, but not enough to develop.'
+            : 'Not getting the football he went for.';
+    return (bits.length ? bits.join(', ').replace(/^./, (c) => c.toUpperCase()) + '. ' : '') + verdict;
+  };
   // The loan report: every four games at the host the feed says how the loan stands against its goal, and when it is behind the
   // desk offers the recall
   M.loanReport = function (p) {
@@ -347,7 +367,7 @@
       k = Math.min(1, elapsed / g.total);
     const appsOk = sp.apps >= Math.floor(g.apps * k * 0.8),
       goalsOk = !g.goals || sp.goals >= Math.floor(g.goals * k * 0.8);
-    const line = `${U.plural(sp.apps, 'appearance')} of ${g.apps}${g.goals ? `, ${U.plural(sp.goals, 'goal')} of ${g.goals}` : ''} after ${U.plural(elapsed, 'game')} at ${host.name}.`;
+    const line = `${U.plural(sp.apps, 'appearance')} of ${g.apps}${g.goals ? `, ${U.plural(sp.goals, 'goal')} of ${g.goals}` : ''} after ${U.plural(elapsed, 'game')} at ${host.name}. ${M.loanVerdict(p, sp, elapsed)}`;
     if (appsOk && goalsOk) {
       FM.News.add({
         type: 'club',
@@ -393,6 +413,34 @@
       if (p.loan.recall) continue;
       M.loanReport(p);
       if (p.inj) continue;
+      const cl = p.loan.clause;
+      if (cl && !p.loan.clauseBreach) {
+        const m = M.loanMinutes(p);
+        if (m.games >= 6 && m.apps < m.games * cl.share * 0.75) {
+          p.loan.clauseBreach = true;
+          const host = S().clubs[p.clubId];
+          M.desk({
+            kind: 'loan',
+            title: host.name + ' are in breach of ' + W.short(p) + "'s loan",
+            body:
+              'The loan guaranteed him ' +
+              Math.round(cl.share * 100) +
+              '% of their matches; he has played ' +
+              U.plural(m.apps, 'game') +
+              ' of ' +
+              U.plural(m.games, 'game') +
+              '. The clause lets you end the loan at once, whatever the window.',
+            pid: p.id,
+            rec: 0,
+            def: 1,
+            choices: [
+              { k: 'recallNow', label: 'End the loan now' },
+              { k: 'leave', label: 'Leave him there' },
+            ],
+          });
+          continue;
+        }
+      }
       const { games, apps } = M.loanMinutes(p);
       if (games < M.LOAN_GAMES || apps >= games * M.LOAN_SHARE) continue;
       const host = S().clubs[p.clubId];
@@ -424,6 +472,10 @@
       }
       p.loan.recall = true;
       return { msg: `He'll come back as soon as the window opens.` };
+    }
+    if (k === 'recallNow') {
+      M.recall(p);
+      return { msg: 'The clause is called in: ' + W.name(p) + ' is back with us.' };
     }
     if (k === 'complain') {
       p.loan.promised = true;
@@ -1167,16 +1219,19 @@
     const s = S(),
       parent = s.clubs[p.clubId],
       g = D.POS_GROUP[p.pos];
+    const wish = p.loanWish || {};
     const fits = Object.values(s.clubs).filter((c) => {
       if ((c.sim !== 'full' && c.sim !== 'light') || c.id === p.clubId || W.isUserSide(c.id) || skip.includes(c.id))
         return false;
+      if (wish.home && c.nat !== parent.nat) return false; // (his wish: stay in the country)
       if (c.rep >= parent.rep - 3 || !FM.Reg.policy(c, p).ok) return false;
       const lvl = W.levelFor(c.rep);
       if (p.ca < lvl - 6 || p.ca > lvl + 10) return false;
       const best = W.squad(c.id)
         .filter((q) => D.POS_GROUP[q.pos] === g)
         .sort((a, b) => b.ca - a.ca)[g === 'GK' ? 0 : 2];
-      return (!best || best.ca <= p.ca + 2) && W.squad(c.id).length < W.squadTarget(c) + 3;
+      // (his wish: a place as a starter, not a place in the rotation)
+      return (!best || best.ca <= p.ca + (wish.starter ? -1 : 2)) && W.squad(c.id).length < W.squadTarget(c) + 3;
     });
     // the higher the level he'd still start at, the better for his development
     return fits.sort((a, b) => leagueTop(b) + b.rep * 0.5 - (leagueTop(a) + a.rep * 0.5))[0] || null;

@@ -159,7 +159,7 @@
   // ---------- Counter-bids for your players ----------
   UI.bidButtons = (n) =>
     n.data.loan
-      ? `<div class="row" style="margin-top:10px;gap:6px;flex-wrap:wrap"><button class="btn sm pri" data-act="bid" data-id="${n.id}" data-v="1">Accept the loan</button><button class="btn sm" data-act="bid" data-id="${n.id}" data-v="0">Turn it down</button><span class="grow"></span><button class="btn sm" data-act="player" data-id="${n.data.pid}">View</button></div>`
+      ? `<div class="row" style="margin-top:10px;gap:6px;flex-wrap:wrap"><button class="btn sm pri" data-act="bid" data-id="${n.id}" data-v="1">Accept the loan</button>${n.data.loan.starts ? `<button class="btn sm" data-act="bid" data-id="${n.id}" data-v="2">Accept with guaranteed minutes</button>` : ''}<button class="btn sm" data-act="bid" data-id="${n.id}" data-v="0">Turn it down</button><span class="grow"></span><button class="btn sm" data-act="player" data-id="${n.data.pid}">View</button></div>`
       : (n.data.deal
           ? `<div class="tiny" style="margin-top:8px">Paid as ${esc(M.describeDeal(n.data.fee, n.data.deal))}</div>`
           : '') +

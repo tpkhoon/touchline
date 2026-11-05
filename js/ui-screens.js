@@ -443,7 +443,9 @@
   };
   UI.acts.bid = (d) => {
     const n = S().news.find((x) => x.id === d.id);
-    n.reply = FM.Transfers.respondBid(n, d.v === '1');
+    // (v 2: a loan accepted with a guaranteed-minutes clause, which they give because they see him as a regular starter)
+    if (d.v === '2' && n.data.loan) n.data.loan.clause = true;
+    n.reply = FM.Transfers.respondBid(n, d.v === '1' || d.v === '2');
     UI.toast(n.reply);
     UI.save();
     UI.render();
