@@ -4730,6 +4730,7 @@
           ? {
               hosts: [...new Set([0, 1, 2, 3].map((i) => v(`ihost-${tn.id}-${i}`)).filter(Boolean))],
               hostCount: Math.round(+v('ihostn-' + tn.id)) || 1,
+              hostsQual: !!($('#ed-ihostq-' + tn.id) || {}).checked,
             }
           : {}),
       };
@@ -4830,10 +4831,10 @@
             hs = v.hosts || [],
             opt = (sel) =>
               `<option value="">Not chosen</option>${nations.map(([k, n]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}`;
-          return `<div class="small b" style="margin-top:12px">${esc(v.name || tn.name)}</div><div class="ng-names" style="margin-top:4px;flex-wrap:wrap">${[0, 1, 2, 3].map((i) => `<select id="ed-ihost-${tn.id}-${i}" style="flex:1;min-width:120px">${opt(hs[i])}</select>`).join('')}</div><div class="ng-names" style="margin-top:4px;align-items:center"><span class="tiny dim grow">With none chosen, the hosts are drawn each time</span><select id="ed-ihostn-${tn.id}" style="max-width:170px">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${(v.hostCount || 1) === n ? 'selected' : ''}>${n === 1 ? 'One host' : `${n} co-hosts`}</option>`).join('')}</select></div>`;
+          return `<div class="small b" style="margin-top:12px">${esc(v.name || tn.name)}</div><div class="ng-names" style="margin-top:4px;flex-wrap:wrap">${[0, 1, 2, 3].map((i) => `<select id="ed-ihost-${tn.id}-${i}" style="flex:1;min-width:120px">${opt(hs[i])}</select>`).join('')}</div><div class="ng-names" style="margin-top:4px;align-items:center"><span class="tiny dim grow">With none chosen, the hosts are drawn each time</span><select id="ed-ihostn-${tn.id}" style="max-width:170px">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${(v.hostCount || 1) === n ? 'selected' : ''}>${n === 1 ? 'One host' : `${n} co-hosts`}</option>`).join('')}</select></div><label class="tiny" style="display:flex;gap:6px;align-items:center;min-height:44px"><input type="checkbox" id="ed-ihostq-${tn.id}" ${v.hostsQual ? 'checked' : ''}> Hosts play in the qualifying groups too, without taking a place</label>`;
         })
         .join('')}
-      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Hosts are in the finals without qualifying (they take places from their part of the world, and stay in whatever their ranking), head the pots of the draw, and play at home against a team that is not a host.</div>
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Hosts are in the finals without qualifying (they take places from their part of the world, and stay in whatever their ranking), head the pots of the draw, and play at home against a team that is not a host. With the option on, they are also drawn into the qualifying groups and play every match, but whatever their result the next team in the group goes through in their place.</div>
       <div class="ng-label">Invitational tournaments <span class="tiny dim">· one a season, in turn: a host and three guests</span></div>
       ${FM.Intl.INVITES.map((o) => {
         const have = cur.invites.find((x) => x.id === o.id);

@@ -694,7 +694,12 @@
           size: tn.size,
           slots: tn.pools.map(([, n]) => n),
           ...(tn.pools.length
-            ? { qual: tn.qualSize || 4, hosts: (tn.hosts || []).slice(), hostCount: tn.hostCount || 1 }
+            ? {
+                qual: tn.qualSize || 4,
+                hosts: (tn.hosts || []).slice(),
+                hostCount: tn.hostCount || 1,
+                hostsQual: !!tn.hostsQual,
+              }
             : {}),
         },
       ]),
@@ -773,6 +778,8 @@
           e.push(`tournament ${id}: up to four different host nations`);
         else for (const c of hs) if (!D.NATIONS[c]) e.push(`tournament ${id}: unknown host nation "${c}"`);
       }
+      if (v.hostsQual != null && typeof v.hostsQual !== 'boolean')
+        e.push(`tournament ${id}: hosts in qualifying is on or off`);
       if (v.hostCount != null && !(Number.isInteger(v.hostCount) && v.hostCount >= 1 && v.hostCount <= 4))
         e.push(`tournament ${id}: one to four hosts`);
       if (v.qual != null && (!tn.pools.length || ![2, 3, 4].includes(v.qual)))
@@ -818,6 +825,7 @@
       if (v.qual) tn.qualSize = v.qual;
       if (v.hosts) tn.hosts = v.hosts.slice();
       if (v.hostCount) tn.hostCount = v.hostCount;
+      if (v.hostsQual != null) tn.hostsQual = !!v.hostsQual;
     }
     if (x.invitesAll) {
       // the ones the world keeps, in the game's order (the others are taken out)

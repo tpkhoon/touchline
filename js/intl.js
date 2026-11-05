@@ -1079,15 +1079,19 @@
             .filter((id) => !hosts.includes(id))
             .slice(0, Math.max(0, places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length));
           if (auto.length) (q.auto ||= {})[key] = auto;
+          // (a world can have its hosts play the qualifying groups too, tn.hostsQual: they are drawn in and play every match, but
+          // never take a place, so the next team in their group goes through)
           const teams = I.qualRanked().filter(
-            (t) => regions.includes(I.region(t.code)) && !hosts.includes(t.id) && !auto.includes(t.id),
+            (t) =>
+              regions.includes(I.region(t.code)) && (tn.hostsQual || !hosts.includes(t.id)) && !auto.includes(t.id),
           );
+          const nonHosts = teams.filter((t) => !hosts.includes(t.id));
           const slots = Math.max(
             0,
             places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length - auto.length,
           );
-          if (teams.length <= slots || tn.direct || slots === 0) {
-            q.direct[key] = teams.slice(0, slots).map((t) => t.id);
+          if (nonHosts.length <= slots || tn.direct || slots === 0) {
+            q.direct[key] = nonHosts.slice(0, slots).map((t) => t.id);
             return;
           }
           const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || 4)));
@@ -1439,14 +1443,18 @@
   const rankPool = (key) => {
     const q = S().quals,
       groups = q.groups.filter((g) => g.key === key);
+    // (hosts that play the groups take no place: they are left out, and the teams below move up)
+    const hosts = (groups[0] && q.hosts && q.hosts[groups[0].tn]) || [];
     const rows = groups.flatMap((g) =>
-      W.sortedTable({ table: g.table }).map((r, pos) => ({
-        ...r,
-        pos,
-        ppg: r.p ? r.pts / r.p : 0,
-        gdg: r.p ? r.gd / r.p : 0,
-        gfg: r.p ? r.gf / r.p : 0,
-      })),
+      W.sortedTable({ table: g.table })
+        .filter((r) => !hosts.includes(r.id))
+        .map((r, pos) => ({
+          ...r,
+          pos,
+          ppg: r.p ? r.pts / r.p : 0,
+          gdg: r.p ? r.gd / r.p : 0,
+          gfg: r.p ? r.gf / r.p : 0,
+        })),
     );
     rows.sort(
       (a, b) => a.pos - b.pos || b.ppg - a.ppg || b.gdg - a.gdg || b.gfg - a.gfg || T(b.id).coef - T(a.id).coef,
