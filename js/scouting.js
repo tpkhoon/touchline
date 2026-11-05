@@ -51,6 +51,18 @@
       r = p ? W.rep(p) : 0;
     return Math.max(FM.S.user.knowledge[pid] || 0, r >= 80 ? 60 : r >= 65 ? 40 : r >= 50 ? 15 : 0);
   };
+  // A young player of your own academy is not known through and through: the staff have only seen him for a season or two. How well
+  // they know him rises with his age (a fifteen-year-old 35%, a sixteen-year-old about 55%, seventeen about 70%, eighteen about 90%), the
+  // youth games he plays and the academy's level; from nineteen, or once he is a regular in the first team, he is known fully (null).
+  Sc.academyKnow = (p) => {
+    const u = FM.S.user,
+      a = W.age(p);
+    if (!u || !p.youth || p.clubId !== u.clubId || a >= 19 || p.season.apps >= 10) return null;
+    const c = FM.S.clubs[p.clubId],
+      lvl = (c && c.facilities && c.facilities.academy) || 2;
+    const k = 35 + (a - 15) * 18 + Math.min(15, (p.season.yapps || 0) * 0.3) + lvl * 2;
+    return k >= 100 ? null : k;
+  };
   // Average ability of the user's current XI (cached per matchday — used on every report render)
   Sc.level = function () {
     const S = FM.S,
@@ -150,7 +162,8 @@
   // An attribute as you read it: exact for your own players, a little off for one you only partly know (the same
   // misreading every time, so it doesn't jump about between screens)
   Sc.noisy = function (p, k) {
-    const known = p.clubId === FM.S.user.clubId ? 100 : Sc.know(p.id);
+    const ak = Sc.academyKnow(p),
+      known = ak != null ? ak : p.clubId === FM.S.user.clubId ? 100 : Sc.know(p.id);
     return p.attrs[k] + ((U.hash(p.id + k) % 200) / 100 - 1) * (1 - known / 100) * 3;
   };
   // In words: how good an attribute is against the players in his position in his league (a percentile), or against
@@ -608,8 +621,10 @@
   Sc.view = function (p) {
     const S = FM.S,
       u = S.user,
-      own = p.clubId === u.clubId || !!(p.loan && p.loan.from === u.clubId); // (a player you have loaned out is still yours)
-    const k = own ? 100 : Sc.know(p.id);
+      own0 = p.clubId === u.clubId || !!(p.loan && p.loan.from === u.clubId); // (a player you have loaned out is still yours)
+    const ak = own0 ? Sc.academyKnow(p) : null,
+      own = own0 && ak == null; // (a young academy player is read like any other: a range that narrows)
+    const k = own ? 100 : ak != null ? ak : Sc.know(p.id);
     const rep = u.reports[p.id];
     const scout = rep && S.staff[rep.scout];
     const rep2 = rep && rep.second && S.staff[rep.second.scout] ? rep.second : null,

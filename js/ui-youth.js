@@ -25,6 +25,15 @@
   // ---------- Pathways: one card for each youngster ----------
   // Where he is, what comes next, and who is in his way. The player to beat is the weakest regular of his position in the first team (the
   // places the formation has for it); the time to get there is the gap in ability over what he is likely to grow in a year.
+  // What the staff believe of a youngster: the middle of the range they give (the truth for a player they know fully)
+  const est = (p) => {
+    const v = FM.Scouting.view(p),
+      mid = (r) => (r ? (r[0] + r[1]) / 2 : null);
+    return v.own
+      ? { ca: p.ca, pa: p.pa, sure: true }
+      : { ca: mid(v.ca) ?? p.ca, pa: mid(v.pa) ?? mid(v.ca) ?? p.pa, sure: false };
+  };
+  UI.youthEst = est;
   UI.youthPathway = function (c, p, where) {
     const T = S().user.tactic,
       D = FM.D;
@@ -34,8 +43,9 @@
       .sort((a, b) => b.ca - a.ca);
     const gate = same[Math.min(slots, same.length) - 1] || null;
     const age = W.age(p),
-      growth = Math.max(0.6, (p.pa - p.ca) / Math.max(1, 25 - age));
-    const gap = gate ? gate.ca - p.ca : 0;
+      e = est(p),
+      growth = Math.max(0.6, (e.pa - e.ca) / Math.max(1, 25 - age));
+    const gap = gate ? gate.ca - e.ca : 0;
     const out = { where, next: '', blocker: '', tone: '' };
     if (!gate) {
       out.next = `No one ahead of him at ${p.pos}: ready to play as soon as he is picked`;
@@ -43,7 +53,7 @@
     } else if (gap <= 0) {
       out.next = 'Good enough for the first team now';
       out.tone = 'good';
-    } else if (p.pa < gate.ca - 1) {
+    } else if (e.pa < gate.ca - 1) {
       out.next = `Unlikely to get past ${W.short(gate)} here: a loan or a sale would suit him`;
       out.tone = 'bad';
       out.blocker = gate;
@@ -78,7 +88,8 @@
     const age = W.age(p),
       comp = c.comp && S().comps[c.comp],
       played = comp && comp.table && comp.table[c.id] ? comp.table[c.id].p : 0;
-    const promise = p.pa - p.ca >= 6 && age <= 21;
+    const ee = est(p),
+      promise = ee.pa - ee.ca >= 6 && age <= 21;
     if (p.loan) {
       // out on loan: his games at the other club, against that club's matches
       const lc = S().clubs[p.clubId],
@@ -95,7 +106,7 @@
       const sq = Y.squadOf(c.id, p.team === 'u18' ? 'u21' : 'first').map((q) => q.ca);
       if (p.team === 'u18' && sq.length) {
         const med = sq.slice().sort((a, b) => a - b)[Math.floor(sq.length / 2)];
-        if (p.ca >= med) return { key: 'ready', text: 'Ready to step up: as good as the middle of the Under-21s' };
+        if (est(p).ca >= med) return { key: 'ready', text: 'Ready to step up: as good as the middle of the Under-21s' };
       }
       if (p.team === 'u21' && gate && gap <= 0)
         return { key: 'ready', text: 'Ready to step up: good enough for the first team now' };
@@ -147,7 +158,7 @@
       if (p.loan && p.loan.from === c.id && !p.retired && W.age(p) <= 21)
         list.push([p, `On loan at ${S().clubs[p.clubId] ? S().clubs[p.clubId].name : 'another club'}`, 'loan']);
     if (!list.length) return '';
-    list.sort((x, y) => y[0].pa - x[0].pa);
+    list.sort((x, y) => est(y[0]).pa - est(x[0]).pa);
     const cards = list.slice(0, 12).map(([p, where, team]) => {
       const w = UI.youthPathway(c, p, where);
       const moves =
@@ -162,7 +173,9 @@
         `<div class="tiny" style="margin-top:3px;${tone ? `color:var(--${tone})` : 'opacity:.8'}">${esc(t)}</div>`;
       return `<div style="padding-bottom:6px">${C.playerRow(p, ` · ${esc(where)}${p.season.apps ? ` · ${U.plural(p.season.apps, 'game')}` : ''}`)}<div style="margin:0 0 4px 4px">${planChips(p)}${w.flag ? `<div class="tiny" style="margin-top:3px;font-weight:600;color:var(--${w.flag.key === 'ready' ? 'good' : 'warn'})">${esc(w.flag.text)}</div>` : ''}${line(w.next, w.tone)}${w.blocker ? line(`Blocked by ${w.blockNote}`, '') : ''}${moves ? `<div class="row" style="gap:4px;margin-top:6px">${moves}</div>` : ''}</div></div>`;
     });
-    return `<div class="sec"><div class="h3">Pathways</div></div>
+    const used = Y.academyOf(c.id).length,
+      places = Y.places(c);
+    return `<div class="sec"><div class="h3">Pathways</div><span class="tiny dim">Academy places ${used} of ${places}</span></div>
       <div class="tiny dim" style="margin:-4px 2px 6px">Your most promising youngsters: where each is, what comes next and who is in his way. The player to beat is the weakest regular in his position; the time is the gap in ability over what he should grow in a year.</div>
       <div class="card flat list" style="padding:4px 12px">${cards.join('')}${list.length > 12 ? `<div class="tiny dim" style="padding:6px 0">and ${list.length - 12} more in the lists below</div>` : ''}</div>`;
   };

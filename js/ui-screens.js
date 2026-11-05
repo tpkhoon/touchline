@@ -307,7 +307,17 @@
             `<button class="chip ${P(id).contract > S().year ? 'on' : ''}" data-act="renew" data-id="${id}">${P(id).contract > S().year ? '✓' : ''} ${esc(W.short(P(id)))} · ${C.starText(P(id).ca, P(id).pos)}</button>`,
         )
         .join('')}</div>`;
-    if (n.type === 'youth' && n.intake && n.pids)
+    if (n.type === 'youth' && n.review && n.pids)
+      extra = `<div style="margin-top:10px">${n.pids
+        .filter((id) => P(id) && W.isUser(P(id).clubId))
+        .map(
+          (id) =>
+            `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line);gap:8px"><span class="grow tap" data-act="player" data-id="${id}">${C.flag(P(id).nat)} ${esc(W.name(P(id)))} <span class="dim">${W.posLabel(P(id))} · ${W.age(P(id))}</span></span>${C.playerStars(P(id))}${n.done ? '' : `<button class="chip${P(id).kept === S().year ? ' on' : ''}" data-act="reviewKeep" data-id="${id}" data-nid="${n.id}">Keep</button><button class="btn sm" data-act="intakeRelease" data-id="${id}" data-nid="${n.id}">Release</button>`}</div>`,
+        )
+        .join(
+          '',
+        )}${n.done ? '' : `<button class="btn pri block" style="margin-top:10px" data-act="intakeDone" data-nid="${n.id}">Done</button>`}</div>`;
+    else if (n.type === 'youth' && n.intake && n.pids)
       extra = `<div style="margin-top:10px">${n.pids
         .filter((id) => P(id) && W.isUser(P(id).clubId))
         .map(
@@ -2223,6 +2233,13 @@
     UI.save();
     UI.render();
     UI.toast('Released: he joins the free agents');
+  };
+  UI.acts.reviewKeep = (d) => {
+    const p = P(d.id);
+    if (!p) return;
+    p.kept = p.kept === S().year ? undefined : S().year;
+    UI.save();
+    UI.render();
   };
   UI.acts.intakeDone = (d) => {
     const n = S().news.find((x) => x.id === d.nid);

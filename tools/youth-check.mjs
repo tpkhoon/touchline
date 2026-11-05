@@ -52,6 +52,7 @@ function snapshot() {
       if (p.clubId && W.age(p) <= 17 && p.youth && played(S().clubs[p.clubId])) {
         cohort.set(id, {
           y0: S().year,
+          born: p.born,
           club0: p.clubId,
           ca0: p.ca,
           pa0: p.pa,
@@ -142,14 +143,18 @@ const ids = [...cohort.keys()];
 say(`Academy players watched: ${ids.length} (made in ${year0} to ${S().year})`);
 // by the age reached: those who got there and what became of them
 for (const age of [19, 21]) {
-  const reached = ids.filter((id) => Object.keys(cohort.get(id).ages).some((a) => +a >= age));
+  // (everyone who is old enough by now, those let go and cleared from the world included: they count as lost)
+  const reached = ids.filter((id) => S().year - cohort.get(id).born >= age);
   if (reached.length < 30) {
     say(`  by ${age}: too few have reached it in ${seasons} seasons (${reached.length})`);
     continue;
   }
   const deb = reached.filter((id) => cohort.get(id).debut !== null && cohort.get(id).debut <= age).length;
   const top = reached.filter((id) => cohort.get(id).top && cohort.get(id).topDebut <= age).length;
-  const still = reached.filter((id) => cohort.get(id).ages[age] && cohort.get(id).ages[age].pro).length;
+  const still = reached.filter((id) => {
+    const p = S().players[id];
+    return p && !p.retired && p.clubId;
+  }).length;
   say(
     `  by ${age} (${reached.length} reached it): ${pct(share(deb, reached.length))} have played a senior game [real: about 5 to 12% by 21], ${pct(share(top, reached.length))} in a top flight [real: about 1 to 4%], ${pct(share(still, reached.length))} still at a club`,
   );

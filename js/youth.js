@@ -209,6 +209,39 @@
     const lg = S().youth && S().youth[nat] && S().youth[nat][team];
     return lg ? W.sortedTable({ table: lg.table }) : [];
   };
+  // The places in an academy: its level sets how many youngsters it can carry in the Under-18s and Under-21s
+  Y.places = (c) => 12 + 4 * ((c.facilities && c.facilities.academy) || 2);
+  Y.academyOf = (clubId) => W.squad(clubId).filter((p) => p.team && !p.loan);
+  // The academy review at the start of a season: the youngsters at a decision (sixteen: a scholarship, eighteen: a first professional
+  // deal, twenty-one: the last year of the Under-21s) and, when the academy is over its places, a prompt to make room. Their reports
+  // are still a range, so a release is a judgement that can turn out wrong. Yours only: the AI clubs rebalance their sides.
+  Y.review = function () {
+    const uc = W.userClub();
+    if (!uc || !Y.hasYouth(uc)) return;
+    const sq = Y.academyOf(uc.id),
+      places = Y.places(uc),
+      over = Math.max(0, sq.length - places);
+    const due = sq.filter((p) => {
+      const a = W.age(p);
+      return a === 16 || a === 18 || (a === 21 && p.contract <= S().year + 1);
+    });
+    if (!due.length && !over) return;
+    FM.News.add({
+      type: 'youth',
+      review: true,
+      title: 'Academy review: ' + U.plural(due.length, 'youngster') + ' at a decision',
+      body:
+        'The academy has ' +
+        sq.length +
+        ' of its ' +
+        places +
+        ' places' +
+        (over ? ': ' + U.plural(over, 'place') + ' too many, so some must go to make room' : '') +
+        '. Sixteen-year-olds are offered a scholarship, eighteen-year-olds a first professional deal, and the Under-21s are in their last year. The staff reports on the young ones are still a range: let go of one too early and he may come back to haunt you.',
+      pids: due.map((p) => p.id),
+      clubId: uc.id,
+    });
+  };
   // New season: fresh youth tables, squads re-sorted (B teams restocked too)
   Y.newSeason = function () {
     const s = S();
@@ -216,5 +249,6 @@
     s.youthForm = {};
     Y.assignAll();
     Y.rebalance();
+    Y.review();
   };
 })();
