@@ -136,7 +136,16 @@
     if (mine && Y.BRIEFS[mine]) return mine;
     return c && c.identity === 'youth' ? 'develop' : 'win';
   };
-  // The thirteen (eleven and two substitutes) who play a youth match for the club's side, under its brief
+  // How good the club's youth coaching is, -1 (poor) to 1 (excellent): your coach's way with the young, or for another club its training ground
+  Y.coachSkill = function (clubId) {
+    const c = S().clubs[clubId];
+    if (!c) return 0;
+    if (W.isUser(clubId)) return U.clamp((FM.Staff.impact('coach').young - 1) / 0.15, -1, 1);
+    return U.clamp((((c.facilities && c.facilities.training) || 2) - 3) / 2, -1, 1);
+  };
+  // The thirteen (eleven and two substitutes) who play a youth match for the club's side, under its brief. Your own pick, when you
+  // have made one (S.user.youthPick), comes first; a better coach picks the strongest more reliably (a poor one is fooled by a
+  // good training week)
   Y.matchSquad = function (clubId, team) {
     const brief = Y.briefOf(clubId, team);
     let pool = Y.squadOf(clubId, team).filter(W.available);
@@ -146,12 +155,22 @@
           (p) => !p.team && !p.loan && W.age(p) <= 21 && (p.season.apps || 0) < 6 && W.available(p),
         ),
       );
+    const sigma = 3 - 2.5 * Y.coachSkill(clubId),
+      day = S().day;
+    const fuzz = (p) => ((U.hash(p.id + day) % 2000) / 1000 - 1) * sigma * 1.7; // (the same all day, so the side stays the same)
     const by =
       brief === 'develop'
         ? (a, b) => (a.season.yapps || 0) - (b.season.yapps || 0) || b.pa - a.pa
         : brief === 'minutes'
-          ? (a, b) => (a.team ? 1 : 0) - (b.team ? 1 : 0) || b.ca - a.ca
-          : (a, b) => b.ca - a.ca;
+          ? (a, b) => (a.team ? 1 : 0) - (b.team ? 1 : 0) || b.ca + fuzz(b) - (a.ca + fuzz(a))
+          : (a, b) => b.ca + fuzz(b) - (a.ca + fuzz(a));
+    // your own pick: the players you chose, who are fit and still in the pool, come first
+    const picked = W.isUser(clubId) && S().user.youthPick && S().user.youthPick[team];
+    if (picked && picked.length) {
+      const chosen = picked.map((id) => pool.find((p) => p.id === id)).filter(Boolean);
+      const rest = pool.filter((p) => !chosen.includes(p)).sort(by);
+      return chosen.concat(rest).slice(0, 13);
+    }
     return pool.sort(by).slice(0, 13);
   };
   // A youth side's level: its real players, topped up to eleven by the academy's general standard (clubs don't
@@ -167,7 +186,7 @@
     const yf = (S().youthForm = S().youthForm || {}),
       k = clubId + team;
     if (yf[k] === undefined) yf[k] = U.gauss(0, 4);
-    return U.avg(real, (x) => x) + yf[k];
+    return U.avg(real, (x) => x) + yf[k] + Y.coachSkill(clubId) * 1.5; // (good coaching is worth a point or two to a youth side)
   };
   // One round of every nation's youth leagues: clubs paired at random, a result from the two sides' level
   Y.round = function () {

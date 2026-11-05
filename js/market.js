@@ -374,6 +374,7 @@
       def: 2,
       choices: [
         { k: 'sell', label: 'Let him go for ' + U.money(comp) },
+        { k: 'sellon', label: 'Sell for ' + U.money(U.roundMoney(comp * 0.8)) + ' with a 15% sell-on clause' },
         { k: 'keep', label: 'Offer him a professional deal' },
         { k: 'refuse', label: 'Turn them down' },
       ],
@@ -389,6 +390,14 @@
       return { msg: W.name(p) + ' joins ' + suitor.name + ' for ' + U.money(n.comp) + '.' };
     };
     if (k === 'sell') return sell();
+    if (k === 'sellon') {
+      if (!T().canRegister(suitor, p)) return { msg: suitor.name + ' cannot fit him in after all.' };
+      const fee = U.roundMoney(n.comp * 0.8);
+      T().execute(p, suitor.id, fee, null, { deal: { inst: 1, addOn: 0, addApps: 0, sellOn: 0.15 } });
+      return {
+        msg: W.name(p) + ' joins ' + suitor.name + ' for ' + U.money(fee) + ', and we keep 15% of his next fee.',
+      };
+    }
     if (k === 'keep') {
       const chance = 0.55 + (W.hasTrait(p, 'Loyal') ? 0.2 : 0) - (p.hid.amb >= 15 ? 0.25 : 0) + (p.morale - 50) / 200;
       if (Math.random() < chance) {

@@ -396,8 +396,31 @@
     p.freeSince = Sea.dayIndex();
     return true;
   };
+  // A new academy player for a club: his ability and potential from the club's academy and his nation's youth strength, a wonderkid
+  // now and then. Not yet in the world: the caller puts him there (an intake, or a youth trial). `clubId` null makes a trialist.
+  Sea.academyPlayer = function (c, nat, clubId = c.id) {
+    const Y = Sea.YOUTH,
+      acad = c.facilities.academy || 2;
+    const shift = Sea.youthRating(nat) - 50; // (a strong youth nation: a little more ability and potential, and more wonderkids)
+    const pos = U.pick(['GK', 'CB', 'CB', 'FB', 'WB', 'DM', 'CM', 'CM', 'WM', 'AM', 'W', 'W', 'ST', 'ST']);
+    const ca = Math.round(U.clamp(U.gauss(26 + acad * 3 + shift * 0.04, 4), 18, 48));
+    let pa = Math.round(
+      U.clamp(
+        U.gauss(Y.base + acad * Y.perAcad + (c.identity === 'youth' ? Y.youthClub : 0) + shift * 0.1, Y.sd),
+        ca + 8,
+        94,
+      ),
+    );
+    // Real wonderkids are rare: about 10 a year across the whole world
+    if (Math.random() < Y.wonder * acad * U.clamp(1 + shift / 50, 0.4, 2)) pa = U.randi(83, 95);
+    const p = W.genPlayer({ nat, pos, age: U.randi(15, 16), ca, pa, clubId, youthClub: clubId });
+    p.career.apps = 0;
+    p.career.goals = 0;
+    p.contract = FM.S.year + 3;
+    p.wage = 400;
+    return p;
+  };
   Sea.youthIntake = function () {
-    const Y = Sea.YOUTH;
     const S = FM.S;
     Object.values(S.clubs).forEach((c) => {
       if (W.army(c)) return; // the army's club has no academy
@@ -413,23 +436,7 @@
       }
       for (let i = 0; i < n; i++) {
         const nat = short > 0.02 && Math.random() < Math.min(1, short * 6) ? W.natFor(c, { age: 24 }) : W.youthNat(c);
-        const shift = Sea.youthRating(nat) - 50; // (a strong youth nation: a little more ability and potential, and more wonderkids)
-        const pos = U.pick(['GK', 'CB', 'CB', 'FB', 'WB', 'DM', 'CM', 'CM', 'WM', 'AM', 'W', 'W', 'ST', 'ST']);
-        const ca = Math.round(U.clamp(U.gauss(26 + acad * 3 + shift * 0.04, 4), 18, 48));
-        let pa = Math.round(
-          U.clamp(
-            U.gauss(Y.base + acad * Y.perAcad + (c.identity === 'youth' ? Y.youthClub : 0) + shift * 0.1, Y.sd),
-            ca + 8,
-            94,
-          ),
-        );
-        // Real wonderkids are rare: about 10 a year across the whole world
-        if (Math.random() < Y.wonder * acad * U.clamp(1 + shift / 50, 0.4, 2)) pa = U.randi(83, 95);
-        const p = W.genPlayer({ nat, pos, age: U.randi(15, 16), ca, pa, clubId: c.id, youthClub: c.id });
-        p.career.apps = 0;
-        p.career.goals = 0;
-        p.contract = S.year + 3;
-        p.wage = 400;
+        const p = Sea.academyPlayer(c, nat);
         S.players[p.id] = p;
         made.push(p);
       }
@@ -438,6 +445,87 @@
       if (made.length && FM.Youth && FM.Youth.assign) (W.rosterVer++, FM.Youth.assign(c));
       if (W.isUser(c.id)) FM.Stories.youthIntake(c, made);
     });
+  };
+
+  // ---------- Youth trials ----------
+  // Trials in a part of the world: a few young players of that region come to the academy for a look, and you sign the ones you want
+  // (places permitting). It costs travel and staff time, more the further from home, and a club can hold them about once a month.
+  Sea.TRIAL_DAYS = 30;
+  Sea.trialRegions = function () {
+    const seen = new Map();
+    for (const [code, n] of Object.entries(D.NATIONS))
+      if (n.region && D.nationOn(code)) seen.set(n.region, (seen.get(n.region) || 0) + 1);
+    return [...seen.keys()].sort();
+  };
+  Sea.trialCost = function (c, region) {
+    const home = D.NATIONS[c.nat] && D.NATIONS[c.nat].region;
+    return U.roundMoney((region === home ? 15000 : 40000) * (1 + (c.facilities.academy || 2) * 0.1));
+  };
+  Sea.holdTrials = function (region) {
+    const S = FM.S,
+      c = W.userClub();
+    if (!c || !FM.Youth.hasYouth(c)) return { ok: false, msg: 'Only a club with youth sides can hold trials.' };
+    const last = S.user.youthTrialsAt;
+    if (last && last.year === S.year && S.day - last.day < Sea.TRIAL_DAYS)
+      return {
+        ok: false,
+        msg:
+          'Your staff have only just finished trials: give it ' +
+          U.plural(Sea.TRIAL_DAYS - (S.day - last.day), 'more day') +
+          '.',
+      };
+    const cost = Sea.trialCost(c, region);
+    if (c.balance < cost) return { ok: false, msg: 'Not enough money for the trip: ' + U.money(cost) + '.' };
+    const nats = Object.keys(D.NATIONS).filter((n) => D.NATIONS[n].region === region && D.nationOn(n));
+    if (!nats.length) return { ok: false, msg: 'Nobody to see there.' };
+    c.balance -= cost;
+    S.user.youthTrialsAt = { year: S.year, day: S.day };
+    const made = [];
+    for (let i = 0; i < 4; i++) {
+      const nat = U.wpick(nats, (n) => Math.max(5, Sea.youthRating(n)));
+      const p = Sea.academyPlayer(c, nat, null);
+      p.youth = null;
+      p.trialOf = c.id;
+      p.contract = S.year;
+      S.players[p.id] = p;
+      made.push(p);
+    }
+    W.rosterVer++;
+    FM.News.add({
+      type: 'youth',
+      trials: true,
+      title: 'Youth trials: ' + U.plural(made.length, 'player') + ' from ' + (D.REGIONS[region] || region),
+      body:
+        'Your staff have been to ' +
+        (D.REGIONS[region] || region) +
+        ' and brought back ' +
+        made.length +
+        ' youngsters for a look. The reports are rough, and the academy has places for only so many: sign the ones you want, and the rest go home.',
+      pids: made.map((p) => p.id),
+      clubId: c.id,
+    });
+    return { ok: true, msg: 'The trials are held: see the feed.', cost };
+  };
+  Sea.signTrialist = function (p) {
+    const c = W.userClub();
+    if (!p || !p.trialOf || p.clubId) return { ok: false, msg: 'He is no longer there.' };
+    if (FM.Youth.academyOf(c.id).length >= FM.Youth.places(c))
+      return { ok: false, msg: 'The academy is full (' + FM.Youth.places(c) + ' places): release someone first.' };
+    delete p.trialOf;
+    p.youth = c.id;
+    p.clubId = c.id;
+    p.contract = FM.S.year + 3;
+    p.wage = 400;
+    W.startSpell(p, c.id);
+    W.rosterVer++;
+    FM.Youth.assign(c);
+    return { ok: true, msg: W.short(p) + ' joins the academy.' };
+  };
+  Sea.passTrialist = function (p) {
+    if (p && p.trialOf && !p.clubId) {
+      delete FM.S.players[p.id];
+      FM.W.rosterVer++;
+    }
   };
 
   // ---------- Retirement and renewals ----------

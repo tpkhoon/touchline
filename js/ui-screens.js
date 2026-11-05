@@ -307,12 +307,20 @@
             `<button class="chip ${P(id).contract > S().year ? 'on' : ''}" data-act="renew" data-id="${id}">${P(id).contract > S().year ? '✓' : ''} ${esc(W.short(P(id)))} · ${C.starText(P(id).ca, P(id).pos)}</button>`,
         )
         .join('')}</div>`;
-    if (n.type === 'youth' && n.review && n.pids)
+    if (n.type === 'youth' && n.trials && n.pids)
+      extra = `<div style="margin-top:10px">${n.pids
+        .filter((id) => P(id) && !P(id).clubId && P(id).trialOf)
+        .map(
+          (id) =>
+            `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line);gap:8px"><span class="grow tap" data-act="player" data-id="${id}">${C.flag(P(id).nat)} ${esc(W.name(P(id)))} <span class="dim">${W.posLabel(P(id))} · ${W.age(P(id))}</span></span>${C.playerStars(P(id))}<button class="btn sm pri" data-act="trialSign" data-id="${id}" data-nid="${n.id}">Sign</button><button class="btn sm" data-act="trialPass" data-id="${id}" data-nid="${n.id}">Pass</button></div>`,
+        )
+        .join('')}</div>`;
+    else if (n.type === 'youth' && n.review && n.pids)
       extra = `<div style="margin-top:10px">${n.pids
         .filter((id) => P(id) && W.isUser(P(id).clubId))
         .map(
           (id) =>
-            `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line);gap:8px"><span class="grow tap" data-act="player" data-id="${id}">${C.flag(P(id).nat)} ${esc(W.name(P(id)))} <span class="dim">${W.posLabel(P(id))} · ${W.age(P(id))}</span></span>${C.playerStars(P(id))}${n.done ? '' : `<button class="chip${P(id).kept === S().year ? ' on' : ''}" data-act="reviewKeep" data-id="${id}" data-nid="${n.id}">Keep</button><button class="btn sm" data-act="intakeRelease" data-id="${id}" data-nid="${n.id}">Release</button>`}</div>`,
+            `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line);gap:8px"><span class="grow tap" data-act="player" data-id="${id}">${C.flag(P(id).nat)} ${esc(W.name(P(id)))} <span class="dim">${W.posLabel(P(id))} · ${W.age(P(id))}</span></span>${C.playerStars(P(id))}${n.done ? '' : `<button class="chip${P(id).kept === S().year ? ' on' : ''}" data-act="reviewKeep" data-id="${id}" data-nid="${n.id}">Keep</button>${W.age(P(id)) >= 16 ? `<button class="chip" data-act="renew" data-id="${id}">Contract</button>` : ''}<button class="btn sm" data-act="intakeRelease" data-id="${id}" data-nid="${n.id}">Release</button>`}</div>`,
         )
         .join(
           '',
@@ -2233,6 +2241,17 @@
     UI.save();
     UI.render();
     UI.toast('Released: he joins the free agents');
+  };
+  UI.acts.trialSign = (d) => {
+    const r = FM.Season.signTrialist(P(d.id));
+    UI.toast(r.msg, 3500);
+    UI.save();
+    UI.render();
+  };
+  UI.acts.trialPass = (d) => {
+    FM.Season.passTrialist(P(d.id));
+    UI.save();
+    UI.render();
   };
   UI.acts.reviewKeep = (d) => {
     const p = P(d.id);

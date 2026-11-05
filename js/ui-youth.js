@@ -176,6 +176,7 @@
     const used = Y.academyOf(c.id).length,
       places = Y.places(c);
     return `<div class="sec"><div class="h3">Pathways</div><span class="tiny dim">Academy places ${used} of ${places}</span></div>
+      <div class="row" style="margin:-2px 2px 8px"><button class="btn sm" data-act="trialOpen">Hold youth trials</button></div>
       <div class="tiny dim" style="margin:-4px 2px 6px">Your most promising youngsters: where each is, what comes next and who is in his way. The player to beat is the weakest regular in his position; the time is the gap in ability over what he should grow in a year.</div>
       <div class="card flat list" style="padding:4px 12px">${cards.join('')}${list.length > 12 ? `<div class="tiny dim" style="padding:6px 0">and ${list.length - 12} more in the lists below</div>` : ''}</div>`;
   };
@@ -189,7 +190,8 @@
           `<button class="chip${cur === k ? ' on' : ''}" data-act="youthBrief" data-t="${team}" data-v="${k}">${esc(v.label)}</button>`,
       )
       .join('');
-    return `<div class="row" style="gap:4px;margin:2px 2px 6px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Brief</span>${chips}</div><div class="tiny dim" style="margin:0 2px 6px">${esc(Y.BRIEFS[cur].note.charAt(0).toUpperCase() + Y.BRIEFS[cur].note.slice(1))}. The coach picks the team; you can still move players between sides.</div>`;
+    const own = S().user.youthPick && S().user.youthPick[team] && S().user.youthPick[team].length;
+    return `<div class="row" style="gap:4px;margin:2px 2px 6px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Brief</span>${chips}<button class="chip${own ? ' on' : ''}" data-act="youthPickOpen" data-t="${team}">${own ? `Your team (${own})` : 'Pick the team'}</button></div><div class="tiny dim" style="margin:0 2px 6px">${esc(Y.BRIEFS[cur].note.charAt(0).toUpperCase() + Y.BRIEFS[cur].note.slice(1))}. The coach picks the team; you can still move players between sides.</div>`;
   };
   UI.youthSides = function (c) {
     const out = [];
@@ -254,6 +256,60 @@
         );
     }
     return out.join('');
+  };
+  // Pick the youth side yourself: up to thirteen players for the next matches; the coach fills the rest (and the side stays yours until
+  // you clear it)
+  UI.youthPickHTML = function (t) {
+    const c = W.userClub(),
+      sel = (S().user.youthPick && S().user.youthPick[t]) || [];
+    const pool = Y.squadOf(c.id, t).sort((a, b) => b.ca - a.ca);
+    return `<div class="tiny dim" style="margin-bottom:8px">Choose up to thirteen for the ${esc(Y.TEAMS[t].label)}: ${sel.length} chosen. Anyone you do not choose is picked by the coach under the brief. Players who are injured or tired are skipped.</div>
+      <div class="col" style="gap:4px">${
+        pool
+          .map(
+            (p) =>
+              `<button class="chip${sel.includes(p.id) ? ' on' : ''}" style="justify-content:space-between;width:100%" data-act="youthPickToggle" data-t="${t}" data-id="${p.id}"><span>${esc(W.short(p))} ${W.posLabel(p)} · ${W.age(p)}</span><span>${C.playerOverall(p)}${p.season.yapps ? ' · ' + U.plural(p.season.yapps, 'game') : ''}</span></button>`,
+          )
+          .join('') || '<div class="empty">Nobody in the squad.</div>'
+      }</div>
+      <div class="row" style="gap:8px;margin-top:12px"><button class="btn grow" data-act="youthPickClear" data-t="${t}">Let the coach pick</button><button class="btn pri grow" data-act="closeSheet">Done</button></div>`;
+  };
+  UI.acts.youthPickOpen = (d) => UI.sheet(UI.youthPickHTML(d.t), { title: 'Pick the ' + Y.TEAMS[d.t].label });
+  UI.acts.youthPickToggle = (d) => {
+    const u = S().user;
+    u.youthPick = u.youthPick || {};
+    const cur = u.youthPick[d.t] || [];
+    u.youthPick[d.t] = cur.includes(d.id) ? cur.filter((x) => x !== d.id) : cur.length < 13 ? cur.concat(d.id) : cur;
+    UI.save();
+    UI.refreshSheet(UI.youthPickHTML(d.t));
+  };
+  UI.acts.youthPickClear = (d) => {
+    if (S().user.youthPick) delete S().user.youthPick[d.t];
+    UI.save();
+    UI.refreshSheet(UI.youthPickHTML(d.t));
+    UI.render();
+  };
+  // Youth trials: pick a part of the world to send the staff to
+  UI.trialsHTML = function () {
+    const c = W.userClub(),
+      home = FM.D.NATIONS[c.nat] && FM.D.NATIONS[c.nat].region;
+    const last = S().user.youthTrialsAt,
+      wait = last && last.year === S().year && S().day - last.day < FM.Season.TRIAL_DAYS;
+    return `<div class="tiny dim" style="margin-bottom:8px">Your staff visit a part of the world and bring back four youngsters for a look. It costs travel and staff time (more away from home), and they can only go about once a month. You sign the ones you want, places permitting (${Y.academyOf(c.id).length} of ${Y.places(c)} used).${wait ? ' They have only just been out.' : ''}</div>
+      <div class="col" style="gap:6px">${FM.Season.trialRegions()
+        .map(
+          (r) =>
+            `<button class="btn block" data-act="trialGo" data-v="${esc(r)}"${wait ? ' disabled' : ''}>${esc(FM.D.REGIONS[r] || r)}${r === home ? ' (home)' : ''} · ${U.money(FM.Season.trialCost(c, r))}</button>`,
+        )
+        .join('')}</div>`;
+  };
+  UI.acts.trialOpen = () => UI.sheet(UI.trialsHTML(), { title: 'Youth trials' });
+  UI.acts.trialGo = (d) => {
+    const r = FM.Season.holdTrials(d.v);
+    UI.closeAllSheets();
+    UI.toast(r.msg, 3500);
+    UI.save();
+    UI.render();
   };
   UI.acts.youthBrief = (d) => {
     if (!Y.BRIEFS[d.v] || !Y.TEAMS[d.t]) return;
