@@ -308,6 +308,42 @@
         n.reply = `Withdrawn: ${W.short(p)} has joined ${where}.`;
       }
   };
+  // Training compensation: a club that signs a young player it did not train, for nothing, pays the club that did. A simplified form
+  // of the real rule (FIFA's training compensation, England's youth tariff): the years he spent in the academy, up to seven, at a yearly
+  // rate that rises with the training club's standing. Not the real tariffs, which differ by country and category.
+  T.trainingFee = function (p, origin) {
+    const years = U.clamp(W.age(p) - 14, 1, 7);
+    return U.roundMoney(years * (10000 + origin.rep * 1200));
+  };
+  T.trainingComp = function (p, to) {
+    const S = FM.S,
+      origin = p.youth && S.clubs[p.youth];
+    if (!origin || origin.id === to.id || FM.Youth.owner(to.id) === origin.id || W.age(p) > 22) return 0;
+    // (never more than a tenth of what the buyer has: a club short of money pays what it can)
+    const fee = Math.min(T.trainingFee(p, origin), U.roundMoney(Math.max(0, to.balance) * 0.1));
+    if (fee <= 0) return 0;
+    to.balance -= fee;
+    origin.balance += fee;
+    S.seasonLog.net[origin.id] = (S.seasonLog.net[origin.id] || 0) + fee;
+    S.seasonLog.net[to.id] = (S.seasonLog.net[to.id] || 0) - fee;
+    if (W.isUser(origin.id) || W.isUser(to.id))
+      FM.News.add({
+        type: 'club',
+        title: to.name + ' pay ' + U.money(fee) + ' in training compensation for ' + W.name(p),
+        body:
+          W.name(p) +
+          ' left ' +
+          origin.name +
+          "'s academy, where he trained, on a free: " +
+          to.name +
+          ' owe the club that trained him ' +
+          U.money(fee) +
+          '.',
+        pid: p.id,
+        clubId: W.isUser(origin.id) ? origin.id : to.id,
+      });
+    return fee;
+  };
   T.execute = function (p, toId, fee, wage, flags = {}) {
     const icon = W.ownPlayer(p) && FM.Season.isIcon(p);
     const S = FM.S,
@@ -342,6 +378,7 @@
         FM.Style.afterTransfer(from, p, fee, false);
       }
     }
+    if (!from) T.trainingComp(p, to); // (a free signing of a young player: the club that trained him is paid)
     to.balance -= cash;
     to.budget = Math.max(0, to.budget - cash - (fee - cash) * 0.5);
     S.seasonLog.net[toId] = (S.seasonLog.net[toId] || 0) - fee;

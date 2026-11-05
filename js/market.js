@@ -67,6 +67,7 @@
       M.loanWatch();
       M.preWatch();
       M.aiLoanBids();
+      M.poachYouth();
     }
     M.aiPreContracts();
     M.payDue();
@@ -170,13 +171,15 @@
         ? trialChoice
         : n.kind === 'loan'
           ? loanChoice
-          : n.kind === 'pre'
-            ? preChoice
-            : n.kind === 'board'
-              ? (nn, k) => FM.Board.answer(nn, k)
-              : n.kind === 'staff'
-                ? (nn, k, pp) => FM.People.staffAnswer(nn, k, pp)
-                : () => ({ msg: '' })
+          : n.kind === 'poach'
+            ? poachChoice
+            : n.kind === 'pre'
+              ? preChoice
+              : n.kind === 'board'
+                ? (nn, k) => FM.Board.answer(nn, k)
+                : n.kind === 'staff'
+                  ? (nn, k, pp) => FM.People.staffAnswer(nn, k, pp)
+                  : () => ({ msg: '' })
     )(n, ch.k, p);
     n.reply = r.msg;
     return r;
@@ -317,6 +320,90 @@
     if (k === 'renew') return { msg: 'Talk to his agent before they do.', renew: p.id };
     if (p.preWarned) p.preWarned.until = now(); // he'll agree with them now
     return { msg: `${W.name(p)} will leave on a free in the summer.` };
+  }
+  // ---------- Poaching: a bigger club comes for one of your academy prospects ----------
+  // A promising youngster of your own academy (fifteen to eighteen) draws a bigger club, which offers the training compensation for him.
+  // Sell, offer him a professional deal to keep him (his family and agent may still prefer the bigger club), or turn them down.
+  M.POACH_DAILY = 0.03;
+  M.poachYouth = function () {
+    const s = S(),
+      uc = W.userClub();
+    if (!uc || Math.random() > M.POACH_DAILY * W.dayScale()) return;
+    if (s.news.some((n) => n.type === 'desk' && n.kind === 'poach' && !n.resolved)) return;
+    const lvl = W.levelFor(uc.rep);
+    const cand = W.squad(uc.id)
+      .filter(
+        (p) =>
+          p.youth === uc.id && W.age(p) >= 15 && W.age(p) <= 18 && !p.loan && p.poached !== s.year && p.pa >= lvl + 6,
+      )
+      .sort((a, b) => b.pa - a.pa)[0];
+    if (!cand) return;
+    const comp = T().trainingFee(cand, uc);
+    const suitor = Object.values(s.clubs)
+      .filter(
+        (c) =>
+          (c.sim === 'full' || c.sim === 'light') &&
+          !W.isUserSide(c.id) &&
+          !c.parent &&
+          c.rep >= uc.rep + 4 &&
+          c.balance > comp * 3 &&
+          FM.Reg.policy(c, cand).ok,
+      )
+      .sort(() => Math.random() - 0.5)[0];
+    if (!suitor) return;
+    cand.poached = s.year;
+    const wants = cand.season.apps === 0 && W.age(cand) >= 17 ? ' His agent says he wants first-team football.' : '';
+    M.desk({
+      kind: 'poach',
+      title: suitor.name + ' want to sign ' + W.name(cand) + ' from your academy',
+      body:
+        W.name(cand) +
+        ' (' +
+        W.age(cand) +
+        ') is one of the best youngsters you have, and ' +
+        suitor.name +
+        ' offer ' +
+        U.money(comp) +
+        ' in training compensation.' +
+        wants +
+        ' You can sell, offer him a professional deal to keep him, or turn them down.',
+      pid: cand.id,
+      suitor: suitor.id,
+      comp,
+      rec: 1,
+      def: 2,
+      choices: [
+        { k: 'sell', label: 'Let him go for ' + U.money(comp) },
+        { k: 'keep', label: 'Offer him a professional deal' },
+        { k: 'refuse', label: 'Turn them down' },
+      ],
+    });
+  };
+  function poachChoice(n, k, p) {
+    const uc = W.userClub(),
+      suitor = S().clubs[n.suitor];
+    if (!p || p.clubId !== uc.id || !suitor) return { msg: 'He is no longer at the academy.' };
+    const sell = () => {
+      if (!T().canRegister(suitor, p)) return { msg: suitor.name + ' cannot fit him in after all.' };
+      T().execute(p, suitor.id, n.comp, null);
+      return { msg: W.name(p) + ' joins ' + suitor.name + ' for ' + U.money(n.comp) + '.' };
+    };
+    if (k === 'sell') return sell();
+    if (k === 'keep') {
+      const chance = 0.55 + (W.hasTrait(p, 'Loyal') ? 0.2 : 0) - (p.hid.amb >= 15 ? 0.25 : 0) + (p.morale - 50) / 200;
+      if (Math.random() < chance) {
+        p.contract = Math.max(p.contract, S().year + 4);
+        p.wage = Math.round((Math.max(p.wage, T().wageDemand(p, uc)) * 1.25) / 50) * 50;
+        p.morale = Math.min(100, p.morale + 6);
+        return {
+          msg: W.name(p) + ' signs a professional deal until ' + p.contract + ' on ' + U.money(p.wage) + '/wk.',
+        };
+      }
+      const r = sell();
+      return { msg: W.name(p) + ' and his family prefer the bigger club. ' + r.msg };
+    }
+    if (p.hid.amb >= 14) p.morale = Math.max(0, p.morale - 10);
+    return { msg: p.hid.amb >= 14 ? 'He is unhappy to see the move blocked.' : 'He stays and gets on with it.' };
   }
   // A player whose trial went well settles for a little less while it's fresh (Co.evaluate)
   M.trialDiscount = (p, club) => (p.trial && p.trial.c === club.id && now() < p.trial.until ? 0.95 : 1);
