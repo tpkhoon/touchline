@@ -593,6 +593,7 @@
         const p = S.players[pid];
         const r = sd.rating[pid];
         p.season.apps++;
+        p.lastSenior = S.day; // (a youth side cannot field him today)
         p.season.rsum += r;
         // the detail from the engine: minutes, shots, chances made, tackles, passes; clean sheets; keepers' numbers
         const st = p.season,
@@ -1284,6 +1285,7 @@
       FM.Records.afterLeagueDay(today);
       FM.Records.totwDay(today, fxs);
       FM.Youth.round(); // the U21 and U18 leagues play too
+      FM.Youth.clearCallups(); // (the day is done: this day's call-ups are spent)
       FM.Training.leagueDay();
     }
     // weekly processes
@@ -1640,6 +1642,7 @@
           if (p.inj || Math.random() < 0.15) return;
           const r = Math.round(U.clamp(U.gauss(6.6 + (p.ca - avg) / 15, 0.6), 4.5, 9.8) * 10) / 10;
           p.season.apps++;
+          p.lastSenior = S.day;
           p.season.rsum += r;
           p.career.apps++;
           const sp = W.spell(p);

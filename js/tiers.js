@@ -141,6 +141,7 @@
       sq.forEach((p) => {
         const r = Math.round(U.clamp(U.gauss(6.5 + (p.ca - avg) / 15 + (gf - ga) * 0.15, 0.55), 4.5, 9.8) * 10) / 10;
         p.season.apps++;
+        p.lastSenior = FM.S.day;
         p.season.rsum += r;
         p.career.apps++;
         const sp = W.spell(p);
@@ -228,6 +229,7 @@
           motm = p.id;
         }
         p.season.apps++;
+        p.lastSenior = FM.S.day;
         p.season.rsum += rt;
         p.career.apps++;
         p.season.lapps = (p.season.lapps || 0) + 1;

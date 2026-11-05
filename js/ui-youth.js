@@ -21,7 +21,7 @@
       opp = last && S().clubs[last.opp];
     return i < 0
       ? '<span class="tiny dim">Youth league starts with the season</span>'
-      : `<span class="tiny dim">${U.ordinal(i + 1)} of ${t.length} · ${U.pts(t[i].pts)}${last && opp ? ` · last: ${last.gf}–${last.ga} ${last.home ? 'v' : 'at'} ${esc(opp.name)}` : ''}</span>`;
+      : `<span class="tiny dim">${U.ordinal(i + 1)} of ${t.length} · ${U.pts(t[i].pts)}${last && opp ? ` · last: ${last.gf}–${last.ga} ${last.home ? 'v' : 'at'} ${esc(opp.name)}` : ''}</span>${last && last.note ? `<div class="tiny" style="color:var(--warn);margin-top:2px">${esc(last.note)}</div>` : ''}`;
   };
   // ---------- Pathways: one card for each youngster ----------
   // Where he is, what comes next, and who is in his way. The player to beat is the weakest regular of his position in the first team (the
@@ -258,7 +258,7 @@
       )
       .join('');
     const own = S().user.youthPick && S().user.youthPick[team] && S().user.youthPick[team].length;
-    return `<div class="row" style="gap:4px;margin:2px 2px 6px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Brief</span>${chips}<button class="chip${own ? ' on' : ''}" data-act="youthPickOpen" data-t="${team}">${own ? `Your team (${own})` : 'Pick the team'}</button></div><div class="tiny dim" style="margin:0 2px 6px">${esc(Y.BRIEFS[cur].note.charAt(0).toUpperCase() + Y.BRIEFS[cur].note.slice(1))}. The coach picks the team; you can still move players between sides.</div>`;
+    return `<div class="row" style="gap:4px;margin:2px 2px 6px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Brief</span>${chips}<button class="chip${own ? ' on' : ''}" data-act="youthPickOpen" data-t="${team}">${own ? `Your team (${own})` : 'Pick the team'}</button></div><div class="tiny dim" style="margin:0 2px 6px">${esc(Y.BRIEFS[cur].note.charAt(0).toUpperCase() + Y.BRIEFS[cur].note.slice(1))}. The coach picks the team; you can still move players between sides.</div><div class="tiny dim" style="margin:0 2px 8px">Rules: ${esc(Y.rulesText(team))}</div>`;
   };
   UI.youthSides = function (c) {
     const out = [];
@@ -272,7 +272,7 @@
               C.playerRow(
                 p,
                 p.season.yapps ? ` · ${p.season.yapps} youth games` : '',
-                `<div class="row" style="gap:4px;margin-top:4px">${btn(p.id, 'first', '↑ First team')}${btn(p.id, team === 'u21' ? 'u18' : 'u21', team === 'u21' ? '↓ U18' : '↑ U21')}</div>`,
+                `<div class="row" style="gap:4px;margin-top:4px;flex-wrap:wrap">${btn(p.id, 'first', '↑ First team')}${btn(p.id, team === 'u21' ? 'u18' : 'u21', team === 'u21' ? '↓ U18' : '↑ U21')}<button class="btn sm${p.callup ? ' pri' : ''}" style="padding:4px 8px" data-act="youthCall" data-id="${p.id}">${p.callup ? 'Called up ✓' : 'Call up'}</button></div>${Y.eligible(p, team) && !p.callup ? `<div class="tiny dim" style="margin-top:2px">Cannot play for the ${esc(def.label)}: ${esc(Y.eligible(p, team))}</div>` : ''}`,
               ),
             )
             .join('') || `<div class="empty">Nobody in the ${esc(def.label)} squad.</div>`
@@ -335,7 +335,7 @@
         pool
           .map(
             (p) =>
-              `<button class="chip${sel.includes(p.id) ? ' on' : ''}" style="justify-content:space-between;width:100%" data-act="youthPickToggle" data-t="${t}" data-id="${p.id}"><span>${esc(W.short(p))} ${W.posLabel(p)} · ${W.age(p)}</span><span>${C.playerOverall(p)}${p.season.yapps ? ' · ' + U.plural(p.season.yapps, 'game') : ''}</span></button>`,
+              `<button class="chip${sel.includes(p.id) ? ' on' : ''}" style="justify-content:space-between;width:100%" data-act="youthPickToggle" data-t="${t}" data-id="${p.id}"><span>${esc(W.short(p))} ${W.posLabel(p)} · ${W.age(p)}</span><span>${Y.eligible(p, t) ? esc(Y.eligible(p, t)) : C.playerOverall(p) + (p.season.yapps ? ' · ' + U.plural(p.season.yapps, 'game') : '')}</span></button>`,
           )
           .join('') || '<div class="empty">Nobody in the squad.</div>'
       }</div>
@@ -393,6 +393,13 @@
     UI.save();
     UI.render();
   };
+  UI.acts.youthCall = (d) => {
+    const p = S().players[d.id],
+      r = p ? Y.callUp(p) : { ok: false, msg: '' };
+    if (r.msg) UI.toast(r.msg, 4000);
+    UI.save();
+    UI.render();
+  };
   UI.acts.youthMove = (d) => {
     const s = S(),
       p = s.players[d.id],
@@ -400,6 +407,8 @@
     if (!p || !c) return;
     if (d.v === 'b') {
       const b = Y.bTeamOf(c.id);
+      const ok = b ? Y.canSendDown(p, b.id) : { ok: false, msg: '' };
+      if (!ok.ok) return ok.msg && UI.toast(ok.msg, 4500);
       if (b) Y.move(p, b.id);
     } else if (d.v === 'up') Y.move(p, c.id);
     else {

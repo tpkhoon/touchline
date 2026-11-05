@@ -136,6 +136,86 @@
     if (mine && Y.BRIEFS[mine]) return mine;
     return c && c.identity === 'youth' ? 'develop' : 'win';
   };
+  // ---------- Eligibility, call-ups and clashes ----------
+  // The rules of the youth sides, kept simple and visible:
+  //   Under-18s: players of 18 or under who have played ten senior games or fewer this season (more and he has outgrown them)
+  //   Under-21s: players of 21 or under, and up to three overage players of 22 to 24 on the fringe of the first team (five senior games
+  //     or fewer this season), who can play to find their fitness or minutes
+  //   a call-up: a youth-side player named for the first team stays in his youth side (dual registration); the first team has priority,
+  //     so he cannot play for his youth side the same matchday, and a player who has played a senior match that day cannot either
+  //   B team: it may carry no more than three players of 23 or over
+  Y.U18_SENIOR_MAX = 10;
+  Y.OVERAGE_MAX = 3;
+  Y.OVERAGE_GAMES = 5;
+  Y.B_OVERAGE_MAX = 3;
+  Y.rulesText = (team) =>
+    team === 'u18'
+      ? 'Players of 18 or under with ' +
+        Y.U18_SENIOR_MAX +
+        ' senior games or fewer this season. A call-up to the first team comes first.'
+      : 'Players of 21 or under, and up to ' +
+        Y.OVERAGE_MAX +
+        ' overage players (22 to 24) on the fringe of the first team (' +
+        Y.OVERAGE_GAMES +
+        ' senior games or fewer). A call-up to the first team comes first.';
+  Y.clash = function (p) {
+    if (p.callup) return 'called up to the first team';
+    if (p.lastSenior === S().day) return 'played for the first team today';
+    return null;
+  };
+  // Why a youth-side player cannot play for his side now (null when he can)
+  Y.eligible = function (p, team) {
+    const a = W.age(p);
+    if (team === 'u18') {
+      if (a > 18) return 'too old for the Under-18s';
+      if ((p.season.apps || 0) > Y.U18_SENIOR_MAX)
+        return 'has played ' + U.plural(p.season.apps, 'senior game') + ', too many for the Under-18s';
+    } else if (a > 21) return 'too old for the Under-21s';
+    return Y.clash(p);
+  };
+  // First-team players who may play for the Under-21s as overage guests
+  Y.overage = (clubId) =>
+    W.squad(clubId)
+      .filter(
+        (p) =>
+          !p.team &&
+          !p.loan &&
+          W.age(p) >= 22 &&
+          W.age(p) <= 21 + (Y.OVERAGE_MAX + 0) &&
+          (p.season.apps || 0) <= Y.OVERAGE_GAMES &&
+          W.available(p) &&
+          !Y.clash(p),
+      )
+      .sort((a, b) => b.ca - a.ca)
+      .slice(0, Y.OVERAGE_MAX);
+  Y.callUp = function (p) {
+    if (!p.team) return { ok: false, msg: 'He is already in the first team.' };
+    p.callup = !p.callup;
+    return {
+      ok: true,
+      msg: p.callup
+        ? W.short(p) + ' is called up for the next first-team match: he cannot play for his youth side that day.'
+        : W.short(p) + ' is released back to his youth side.',
+    };
+  };
+  // A B team carries no more than three players of 23 or over
+  Y.canSendDown = function (p, bId) {
+    if (W.age(p) < 23) return { ok: true };
+    const old = W.squad(bId).filter((q) => !q.loan && W.age(q) >= 23).length;
+    return old >= Y.B_OVERAGE_MAX
+      ? {
+          ok: false,
+          msg:
+            'A B team can carry only ' +
+            Y.B_OVERAGE_MAX +
+            ' players of 23 or over, and ' +
+            S().clubs[bId].name +
+            ' already has ' +
+            old +
+            '.',
+        }
+      : { ok: true };
+  };
   // How good the club's youth coaching is, -1 (poor) to 1 (excellent): your coach's way with the young, or for another club its training ground
   Y.coachSkill = function (clubId) {
     const c = S().clubs[clubId];
@@ -148,7 +228,8 @@
   // good training week)
   Y.matchSquad = function (clubId, team) {
     const brief = Y.briefOf(clubId, team);
-    let pool = Y.squadOf(clubId, team).filter(W.available);
+    let pool = Y.squadOf(clubId, team).filter((p) => W.available(p) && !Y.eligible(p, team));
+    if (team === 'u21' && pool.length < 13) pool = pool.concat(Y.overage(clubId)); // (overage guests, when the side is short)
     if (brief === 'minutes' && team === 'u21')
       pool = pool.concat(
         W.squad(clubId).filter(
@@ -218,12 +299,22 @@
           }
           lg.last[h] = { opp: a, gf: hg, ga: ag, home: true };
           lg.last[a] = { opp: h, gf: ag, ga: hg, home: false };
+          // (a first-team call-up costs the side the player: the manager is told which of his went)
+          if (W.isUser(h) || W.isUser(a)) {
+            const mine = W.isUser(h) ? h : a;
+            const away = Y.squadOf(mine, team).filter((p) => Y.clash(p));
+            lg.last[mine].note = away.length
+              ? away.map((p) => W.short(p) + ' (' + Y.clash(p) + ')').join(', ') + ' missed it.'
+              : '';
+          }
           // the players who played get a youth appearance (counted toward development)
           for (const id of [h, a]) Y.matchSquad(id, team).forEach((p) => (p.season.yapps = (p.season.yapps || 0) + 1));
         }
       }
     }
   };
+  // (the day is done: the call-ups for it are spent)
+  Y.clearCallups = () => Object.values(S().players).forEach((p) => p.callup && delete p.callup);
   Y.table = (nat, team) => {
     const lg = S().youth && S().youth[nat] && S().youth[nat][team];
     return lg ? W.sortedTable({ table: lg.table }) : [];

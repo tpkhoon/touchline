@@ -2077,7 +2077,7 @@
     );
     // Youth-side players (U21, U18) only step up when the first-team squad is short
     // (a loanee is never one of them: he came to play for the first team)
-    const youth = (p) => p.team && !p.loan;
+    const youth = (p) => p.team && !p.loan && !p.callup; // (a player you have called up is with the first team for the matchday)
     // (a league with a minimum of young players in the squad or the XI lets the club's youth sides step up to meet it)
     const needYouth = club.sim !== 'nation' && FM.Reg.matchdayLimits(club).some((l) => l.young);
     if (club.sim !== 'nation' && !needYouth && pool.some(youth)) {
