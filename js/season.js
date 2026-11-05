@@ -1135,12 +1135,13 @@
       winChange = false;
     const win0 = Sea.windowOpen(),
       dd0 = FM.Market.isDeadline(),
-      seen = new Set((S.user.offers || []).map((o) => o.id)),
+      seen = new Set([...(S.user.offers || []), ...(S.user.poach || [])].map((o) => o.id)),
       employed0 = W.employed();
     let deadline = false;
     Sea.stopRequested = false;
-    // Out of work: stop for any offer that wasn't on the table when the wait began (the window doesn't matter)
-    const newOffer = () => !W.employed() && (S.user.offers || []).some((o) => !seen.has(o.id));
+    // Out of work: stop for any offer that wasn't on the table when the wait began (the window doesn't matter); in a job, for a
+    // club that comes for you
+    const newOffer = () => (W.employed() ? S.user.poach || [] : S.user.offers || []).some((o) => !seen.has(o.id));
     do {
       yield [n, Sea.dayLabel()];
       summary = Sea.advance(null);
@@ -1189,9 +1190,9 @@
     const handled = { bids: 0, sold: 0, press: 0, meetings: 0, desk: 0 };
     const win0 = Sea.windowOpen(),
       dd0 = FM.Market.isDeadline(),
-      seen = new Set((S.user.offers || []).map((o) => o.id)),
+      seen = new Set([...(S.user.offers || []), ...(S.user.poach || [])].map((o) => o.id)),
       employed0 = W.employed();
-    const newOffer = () => !W.employed() && (S.user.offers || []).some((o) => !seen.has(o.id));
+    const newOffer = () => (W.employed() ? S.user.poach || [] : S.user.offers || []).some((o) => !seen.has(o.id));
     Sea.stopRequested = false; // (set from outside, by the Stop button, between two days)
     // opt.auto: the staff handle every decision, and the sim goes on through windows and deadline day
     const hand = () => {
@@ -1359,7 +1360,10 @@
     const summary = S.day >= S.calendar.length ? Sea.endSeason() : null;
     if (S.user.sacked) W.goUnemployed('sacked');
     else if (!W.employed()) Sea.jobMarket();
-    else if (!summary) FM.Injury.riskHim(Sea.userFixture()); // a key man nearly fit before a big game
+    else if (!summary) {
+      Sea.poachTick();
+      FM.Injury.riskHim(Sea.userFixture()); // a key man nearly fit before a big game
+    }
     if (!summary) {
       FM.Market.newDay(); // deadline, trials, loanees, payments
       FM.Matchday.pregame(); // an opponent in form, a full house away: the squad feels it
@@ -1373,6 +1377,52 @@
   // Offers come from clubs in your reputation range, more often from ones that are struggling. Each lasts a
   // week or so; up to three at a time. `initial` fills the list straight away (a sacking, a career start).
   Sea.dayIndex = () => FM.S.year * 1000 + FM.S.day;
+  // ---------- Bigger clubs come for a manager who is doing well ----------
+  // While you have a job, a club above yours may approach you: not often (a manager must have been in the job for a while, have
+  // played some games and be doing better than the board expected, with the board behind him), one approach at a time, and it
+  // stays on the table for a week or so (S.user.poach: [{ id, until, from }]). Accepting it means leaving your club; the old
+  // club appoints a successor, as when you resign (FM.UI acts poachDo). Turning it down pleases the board and the fans a little.
+  Sea.poachScore = function (c) {
+    const comp = FM.S.comps[c.comp];
+    if (!comp) return 0;
+    const pos = W.position(c.id),
+      exp = Sea.expectedPos(c);
+    return U.clamp((exp - pos) / 6, 0, 1) * 0.5 + U.clamp((c.boardConf - 55) / 45, 0, 1) * 0.5;
+  };
+  Sea.poachTick = function () {
+    const S = FM.S,
+      u = S.user,
+      c = W.userClub();
+    if (!u || !c || u.sacked) return;
+    const now = Sea.dayIndex();
+    const before = (u.poach || []).length;
+    u.poach = (u.poach || []).filter((o) => o.until > now && S.clubs[o.id] && o.id !== c.id);
+    if (before && !u.poach.length) u.poachCool = now + 40; // (it lapsed unanswered)
+    if (u.poach.length || (u.poachCool || 0) > now) return;
+    if (u.jobSince && now - u.jobSince < 70) return;
+    if (Sea.gamesPlayed(c.id) < 8) return;
+    const score = Sea.poachScore(c);
+    if (score < 0.3 || Math.random() > 0.03 * score) return;
+    const pool = Object.values(S.clubs).filter(
+      (x) =>
+        x.sim === 'full' &&
+        x.comp &&
+        !x.parent &&
+        x.id !== c.id &&
+        x.rep >= c.rep + 4 &&
+        x.rep <= u.rep + 15 &&
+        x.rep <= FM.Style.effectiveRep(x) + 14,
+    );
+    if (!pool.length) return;
+    const t = U.wpick(pool, (x) => 100 - Math.abs(x.rep - (u.rep + 5)) * 2);
+    u.poach.push({ id: t.id, until: now + U.randi(7, 12), from: c.id });
+    FM.News.add({
+      type: 'board',
+      title: `${t.name} want you as their manager`,
+      body: `${t.name} have approached you. They admire what you are doing at ${c.name}. The offer stands for about a week: it is on your Home screen.`,
+      clubId: t.id,
+    });
+  };
   Sea.jobMarket = function (initial) {
     const S = FM.S,
       u = S.user;

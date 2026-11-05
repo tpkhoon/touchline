@@ -82,7 +82,8 @@
     const base = I.TOURNS[kind] || [],
       extra = I.confedIds().filter(
         (id) =>
-          !I.CONFEDS[id] && Object.values((S() && S().nteams) || {}).filter((t) => I.region(t.code) === id).length >= 4,
+          !I.CONFEDS[id] &&
+          Object.values((S() && S().nteams) || {}).filter((t) => I.region(t.code) === id && !I.observer(t)).length >= 4,
       );
     if (!extra.length) return base;
     if (kind === 'world')
@@ -104,6 +105,19 @@
       );
     return base;
   };
+  // Short names for tight spaces (a pill, a table header): I.tshort(id) falls back to the full name
+  I.TSHORT = {
+    WC: 'World Champ.',
+    EC: 'European Champ.',
+    SA: 'Copa Sudamérica',
+    AF: 'African Cup',
+    AS: 'Asian Cup',
+    NA: 'N. American Cup',
+    OF: 'Oceania Cup',
+    CCT: 'Champions Trophy',
+    NL: 'Nations League',
+  };
+  I.tshort = (id) => I.TSHORT[id] || I.TNAME[id] || id;
   I.TNAME = {
     WC: 'World Championship',
     EC: 'European Nations Championship',
@@ -977,6 +991,15 @@
     return (S().bans || []).some((b) => b.kind === 'nation' && b.id === code && year >= b.from && year <= b.to);
   };
   I.openRanked = () => I.ranked().filter((t) => !I.banned(t));
+  // Observers (S.confeds.observers, set in the world editor): a nation that belongs to a confederation without full membership. It
+  // plays that confederation's Nations League and friendlies and keeps its ranking, but is left out of the qualifying groups, the
+  // continental championships, the World Championship places and the invitational guest lists until it is made a full member.
+  I.observer = (t) => {
+    const code = typeof t === 'string' ? t.replace(/^n_/, '') : t && t.code;
+    const o = S() && S().confeds && S().confeds.observers;
+    return !!(o && o[code]);
+  };
+  I.qualRanked = () => I.openRanked().filter((t) => !I.observer(t));
 
   // ---------- Calendar ----------
   // A World Championship every fourth year, continental championships two years on, and in the year before each World
@@ -1030,11 +1053,21 @@
       const q = { kind, year: s.year, groups: [], direct: {}, hosts: {}, pos: {} };
       I.tournsFor(kind).forEach((tn) => {
         // the host qualifies for nothing: it is in, and takes one of its part of the world's places
+        // (a tournament can have hosts of its own, set in the world editor: one or several nations; otherwise one to four are
+        // drawn from the better ranked nations of its part of the world, and several share the tournament as co-hosts)
         const hostPool = tn.pools[0];
         if (hostPool) {
-          const cands = I.openRanked().filter((t) => hostPool[0].includes(I.region(t.code)));
-          const top = cands.slice(0, Math.max(4, Math.ceil(cands.length * 0.6)));
-          if (top.length) q.hosts[tn.id] = [U.pick(top).id];
+          const fixed = (tn.hosts || []).map((c) => 'n_' + c).filter((id) => S().nteams[id] && !I.banned(id));
+          if (fixed.length) q.hosts[tn.id] = fixed;
+          else {
+            const cands = I.qualRanked().filter((t) => hostPool[0].includes(I.region(t.code)));
+            const top = cands.slice(0, Math.max(4, Math.ceil(cands.length * 0.6)));
+            const n = Math.max(1, Math.min(4, tn.hostCount || 1, top.length));
+            if (top.length)
+              q.hosts[tn.id] = U.shuffle(top.slice())
+                .slice(0, n)
+                .map((t) => t.id);
+          }
         }
       });
       I.tournsFor(kind).forEach((tn) =>
@@ -1046,7 +1079,7 @@
             .filter((id) => !hosts.includes(id))
             .slice(0, Math.max(0, places - hosts.filter((h) => regions.includes(I.region(T(h).code))).length));
           if (auto.length) (q.auto ||= {})[key] = auto;
-          const teams = I.openRanked().filter(
+          const teams = I.qualRanked().filter(
             (t) => regions.includes(I.region(t.code)) && !hosts.includes(t.id) && !auto.includes(t.id),
           );
           const slots = Math.max(
@@ -1625,7 +1658,7 @@
     const guestSpec = (tns.find((x) => x.guests) || {}).guests;
     const naTn = guestSpec && tns.find((x) => x.pools.some(([r]) => r.includes(guestSpec.from)));
     const guests = guestSpec
-      ? I.openRanked()
+      ? I.qualRanked()
           .filter((t) => I.region(t.code) === guestSpec.from && !(naTn && hostsOf(naTn).includes(t.id)))
           .slice(0, guestSpec.n)
       : [];
@@ -1638,7 +1671,7 @@
         const used = new Set(teams.map((t) => t.id));
         const inPools = (t) => tn.pools.some(([r]) => r.includes(I.region(t.code)));
         // the intercontinental play-offs: the best of the rest of the world who did not qualify
-        const extra = I.openRanked().filter(
+        const extra = I.qualRanked().filter(
           (t) =>
             !used.has(t.id) &&
             (tn.confed || (tn.playoff ? I.region(t.code) !== 'EUR' && inPools(t) : inPools(t))) &&
@@ -1646,7 +1679,11 @@
         );
         teams = teams.concat(extra.slice(0, tn.size - teams.length));
       }
-      teams = teams.sort((a, b) => b.coef - a.coef).slice(0, tn.size);
+      // (the hosts are in whatever their ranking)
+      teams = teams.sort((a, b) => b.coef - a.coef);
+      teams = [...teams.filter((t) => hostsOf(tn).includes(t.id)), ...teams.filter((t) => !hostsOf(tn).includes(t.id))]
+        .slice(0, tn.size)
+        .sort((a, b) => b.coef - a.coef);
       teams = teams.slice(0, Math.max(4, Math.floor(teams.length / 4) * 4)); // (groups of four)
       const hosts = hostsOf(tn).filter((h) => teams.some((t) => t.id === h));
       const drawn = I.draw(teams, hosts, tn.id === 'WC');
@@ -1729,6 +1766,10 @@
     });
     return pairs.map(([a, b]) => [a.id, b.id]);
   };
+  // (a host plays at home against a nation that is not a host too; every other match is on neutral ground)
+  const hostAway = (t, h, a) => !((t.hosts || []).includes(h) && !(t.hosts || []).includes(a));
+  // (a host drawn as the visitor against a team that is not a host is moved to the home side)
+  const hostHome = (t, h, a) => ((t.hosts || []).includes(a) && !(t.hosts || []).includes(h) ? [a, h] : [h, a]);
   I.tournamentDay = function (stage) {
     const s = S();
     if (!s.tourns) I.setupTournaments();
@@ -1738,9 +1779,17 @@
       if (stage[0] === 'G') {
         const r = +stage.slice(1) - 1;
         t.groups.forEach((g) =>
-          (g.rounds[r] || []).forEach(([h, a]) =>
-            out.push(mkFx(h, a, lbl(`Group ${g.name}`), { kind: 'tourn', tid: t.id, group: g.name, neutral: true })),
-          ),
+          (g.rounds[r] || []).forEach(([h0, a0]) => {
+            const [h, a] = hostHome(t, h0, a0);
+            out.push(
+              mkFx(h, a, lbl(`Group ${g.name}`), {
+                kind: 'tourn',
+                tid: t.id,
+                group: g.name,
+                neutral: hostAway(t, h, a),
+              }),
+            );
+          }),
         );
         continue;
       }
@@ -1772,7 +1821,7 @@
             kind: 'tourn',
             tid: t.id,
             ko: true,
-            neutral: true,
+            neutral: hostAway(t, h, a),
             ...(stage === 'F' ? { final: true } : {}),
           }),
         );

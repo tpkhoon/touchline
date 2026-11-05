@@ -109,6 +109,484 @@
             : 'Against you';
   };
 
+  // ---------- Press conference questions ----------
+  // More questions for the press conference (FM.Stories.pressQuestion mixes them with the ones in stories.js). Each takes your
+  // club and returns { body, pid?, choices: [{ label, fx, reply }] } or null when it does not fit the moment. Answers move
+  // squad morale (morale), the young players (youth), the fans, the board and one player (player, with pid); several have a
+  // risky answer that pays or costs by the club's situation.
+  const squadOf = (c) => W.squad(c.id).filter((p) => !p.team);
+  const lastN = (c, n) => (c.recent || []).slice(-n);
+  const inTable = (c) => {
+    const comp = FM.S.comps[c.comp];
+    return comp && comp.table[c.id] && comp.table[c.id].p >= 6 ? { pos: W.position(c.id), n: comp.clubs.length } : null;
+  };
+  M.PRESS_BANK = [
+    // injuries
+    (c) => {
+      const out = squadOf(c).filter((p) => p.inj);
+      if (out.length < 3) return null;
+      return {
+        body: `${U.plural(out.length, 'player')} are injured. Is the training load too heavy?`,
+        choices: [
+          { label: 'Just bad luck', fx: { morale: 1, board: -1 }, reply: 'The medical staff are relieved to hear it.' },
+          {
+            label: 'We are looking at it',
+            fx: { board: 2 },
+            reply: 'A sensible answer. The board like a manager who reviews things.',
+          },
+          { label: 'Rotation was needed', fx: { fans: -2, morale: -1 }, reply: 'Some fans hear an excuse.' },
+        ],
+      };
+    },
+    (c) => {
+      const p = squadOf(c)
+        .filter((q) => q.inj && q.ca >= 70)
+        .sort((a, b) => b.value - a.value)[0];
+      if (!p) return null;
+      return {
+        body: `How long will ${W.name(p)} be out, and can you cope without him?`,
+        pid: p.id,
+        choices: [
+          {
+            label: 'We have the depth',
+            fx: { morale: 2, player: -2 },
+            reply: `The squad take it as a challenge; ${W.short(p)} feels a little replaceable.`,
+          },
+          {
+            label: 'He is a huge miss',
+            fx: { player: 5, fans: -1 },
+            reply: `${W.short(p)} is touched. The fans start to worry.`,
+          },
+          { label: 'No timescale yet', fx: { board: 1 }, reply: 'Safe. The rumours fill the gap.' },
+        ],
+      };
+    },
+    // contracts and transfers
+    (c) => {
+      const p = squadOf(c)
+        .filter((q) => !q.loan && q.contract <= FM.S.year && q.ca >= 66)
+        .sort((a, b) => b.ca - a.ca)[0];
+      if (!p) return null;
+      return {
+        body: `${W.name(p)}'s contract is running down. Will he sign a new one?`,
+        pid: p.id,
+        choices: [
+          { label: 'We want him to stay', fx: { player: 5, fans: 2 }, reply: `${W.short(p)} likes being wanted.` },
+          { label: 'Talks are private', fx: { board: 1 }, reply: 'The papers fill the silence themselves.' },
+          {
+            label: 'Every player is replaceable',
+            fx: { player: -7, board: 2, morale: -1 },
+            reply: 'The dressing room hears that too.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      if (!FM.Season.windowOpen() || (c.budget || 0) < 5e6) return null;
+      return {
+        body: 'The window is open. Are you going to spend, or are you happy with the squad?',
+        choices: [
+          {
+            label: 'We will strengthen',
+            fx: { fans: 4, board: -1 },
+            reply: 'The fans want names. The board want a figure.',
+          },
+          {
+            label: 'Happy with what we have',
+            fx: { morale: 2, fans: -2 },
+            reply: 'The players feel trusted. Some supporters feel short-changed.',
+          },
+          { label: 'Only the right player', fx: { board: 2 }, reply: 'Disciplined. Exactly the board line.' },
+        ],
+      };
+    },
+    (c) => {
+      const old = squadOf(c)
+        .filter((q) => W.age(q) >= 34 && q.ca >= 68)
+        .sort((a, b) => b.ca - a.ca)[0];
+      if (!old) return null;
+      return {
+        body: `${W.name(old)} is ${W.age(old)} and still playing. How long can he go on?`,
+        pid: old.id,
+        choices: [
+          {
+            label: 'As long as he performs',
+            fx: { player: 3, board: 1 },
+            reply: `${W.short(old)} is happy to hear it.`,
+          },
+          { label: 'He has earned a say', fx: { player: 5, morale: 1 }, reply: 'The senior players nod along.' },
+          {
+            label: 'We are planning for life after him',
+            fx: { player: -5, youth: 2 },
+            reply: 'Honest, and it stings a little.',
+          },
+        ],
+      };
+    },
+    // form
+    (c) => {
+      const r = lastN(c, 5);
+      if (r.length < 5 || r.some((x) => x === 0)) return null;
+      return {
+        body: `Unbeaten in ${r.length}. What is the secret?`,
+        choices: [
+          {
+            label: 'The work on the training ground',
+            fx: { morale: 3, board: 1 },
+            reply: 'The staff get the credit they wanted.',
+          },
+          { label: 'The players', fx: { morale: 4 }, reply: 'The squad glow.' },
+          {
+            label: 'Do not mention it, you will jinx it',
+            fx: { fans: 3 },
+            reply: 'The fans laugh. They are all doing it too.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      const r = lastN(c, 4);
+      if (r.length < 4 || r.some((x) => x === 1)) return null;
+      return {
+        body: 'No win in four. Where is the problem?',
+        choices: [
+          {
+            label: 'In front of goal',
+            fx: { morale: -1, board: 1 },
+            reply: 'The forwards hear it in the dressing room.',
+          },
+          {
+            label: 'It is on me',
+            fx: { board: 3, fans: 2, morale: 1 },
+            reply: 'The squad respect you taking the heat.',
+          },
+          { label: 'We are unlucky', fx: { fans: -3 }, reply: 'Luck is not what the fans want to hear about.' },
+        ],
+      };
+    },
+    (c) => {
+      const t = inTable(c);
+      if (!t || t.pos > 3) return null;
+      return {
+        body: `${U.ordinal(t.pos)} in the table. Is this a title challenge?`,
+        choices: [
+          {
+            label: 'Yes, we are in it',
+            fx: { fans: 6, morale: 3, board: -2 },
+            reply: 'The ambition thrills the fans. The board hear a promise.',
+          },
+          {
+            label: 'Let us see in May',
+            fx: { board: 2, morale: 1 },
+            reply: 'Measured. Nobody can quote it back at you.',
+          },
+          { label: 'Ask me after the next game', fx: { fans: 1 }, reply: 'The press have their headline anyway.' },
+        ],
+      };
+    },
+    (c) => {
+      const t = inTable(c);
+      if (!t || t.pos <= t.n - 3 || t.n < 10) return null;
+      return {
+        body: 'You are in the bottom three. Is this a relegation fight?',
+        choices: [
+          {
+            label: 'We will fight',
+            fx: { fans: 4, morale: 2, board: -1 },
+            reply: 'The fans love the honesty and the fight.',
+          },
+          {
+            label: 'We are better than this table',
+            fx: { board: 1, morale: 2 },
+            reply: 'The players agree. The table does not.',
+          },
+          { label: 'I will not use that word', fx: { fans: -2 }, reply: 'The press use it for you.' },
+        ],
+      };
+    },
+    // rivalry
+    (c) => {
+      if (!c.rival || !FM.S.clubs[c.rival]) return null;
+      const r = FM.S.clubs[c.rival];
+      return {
+        body: `${r.name} are your rivals. How much does the ${c.derby || 'derby'} mean to you?`,
+        choices: [
+          {
+            label: 'Everything',
+            fx: { fans: 6, morale: 2, board: -1 },
+            reply: 'The supporters roar. The opposition pin it on the wall.',
+          },
+          {
+            label: 'Three points like any other',
+            fx: { board: 2, fans: -1 },
+            reply: 'The fans want more heart; the board want less noise.',
+          },
+          {
+            label: 'Respect them, beat them',
+            fx: { fans: 3, board: 1 },
+            reply: 'A measured line, the right side of the rivalry.',
+          },
+        ],
+      };
+    },
+    // youth
+    (c) => {
+      const kids = squadOf(c).filter((q) => W.age(q) <= 21);
+      if (kids.length < 5) return null;
+      return {
+        body: `You have ${kids.length} young players in the squad. Is this a youth-first club?`,
+        choices: [
+          {
+            label: 'Yes, they are the future',
+            fx: { youth: 4, fans: 2, board: 1 },
+            reply: 'The youngsters walk taller; the academy staff smile.',
+          },
+          { label: 'The best play, whatever age', fx: { morale: 2 }, reply: 'Clear, and the senior players like it.' },
+          {
+            label: 'Do not rush them',
+            fx: { youth: 1, board: 1 },
+            reply: 'Cautious, as expected from a careful manager.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      const p = squadOf(c)
+        .filter((q) => W.age(q) <= 20 && q.pa >= 78 && q.season.apps <= 2)
+        .sort((a, b) => b.pa - a.pa)[0];
+      if (!p) return null;
+      return {
+        body: `Why is ${W.name(p)} not getting any minutes?`,
+        pid: p.id,
+        choices: [
+          {
+            label: 'His time will come',
+            fx: { player: 2, youth: 1 },
+            reply: `${W.short(p)} takes the hint, patiently.`,
+          },
+          { label: 'He has to earn it', fx: { player: -3, morale: 1 }, reply: 'The senior players like that line.' },
+          {
+            label: 'Give him a game soon',
+            fx: { player: 5, youth: 2, morale: -1 },
+            reply: `${W.short(p)} is delighted. Others expect to be asked too.`,
+          },
+        ],
+      };
+    },
+    // scorers
+    (c) => {
+      const p = squadOf(c)
+        .filter((q) => q.season && q.season.goals >= 8)
+        .sort((a, b) => b.season.goals - a.season.goals)[0];
+      if (!p) return null;
+      return {
+        body: `${W.name(p)} has ${U.plural(p.season.goals, 'goal')}. Could he be the league's top scorer?`,
+        pid: p.id,
+        choices: [
+          { label: 'Why not?', fx: { player: 5, fans: 2 }, reply: `${W.short(p)} sees the chance.` },
+          { label: 'It is a team effort', fx: { morale: 3 }, reply: 'The team share the credit.' },
+          {
+            label: 'Let him keep his feet on the ground',
+            fx: { player: 1, board: 1 },
+            reply: 'Sensible. And a little dry.',
+          },
+        ],
+      };
+    },
+    // board and supporters
+    (c) => {
+      if ((c.boardConf ?? 60) < 40 || (c.boardConf ?? 60) >= 58) return null;
+      return {
+        body: 'Will the board back you with money in the next window?',
+        choices: [
+          {
+            label: 'We have their trust',
+            fx: { board: -1, fans: 2 },
+            reply: 'Brave. The chairman will read it twice.',
+          },
+          { label: 'Those talks are private', fx: { board: 1 }, reply: 'Discreet. The papers decide what that means.' },
+          {
+            label: 'I will manage with what I have',
+            fx: { board: 3, morale: -1 },
+            reply: 'The board like it; the squad wanted a signal.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      if ((c.fanMood ?? 60) >= 35) return null;
+      return {
+        body: 'There are boos and empty seats. What do you say to the supporters?',
+        choices: [
+          { label: 'They have every right', fx: { fans: 5, board: -1 }, reply: 'They respect you for not hiding.' },
+          { label: 'Stick with us', fx: { fans: 3, morale: 2 }, reply: 'A plea, taken kindly by some.' },
+          {
+            label: 'The noise hurts the players',
+            fx: { fans: -5, morale: 1 },
+            reply: 'That goes down badly in the stands.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      if ((c.fanMood ?? 60) < 78) return null;
+      return {
+        body: 'The fans adore you. Does that put extra pressure on the team?',
+        choices: [
+          { label: 'It is a privilege', fx: { fans: 3, morale: 2 }, reply: 'It goes down very well.' },
+          {
+            label: 'Pressure is for others',
+            fx: { fans: 4, board: -1 },
+            reply: 'A confident line. Expectations rise with it.',
+          },
+          { label: 'We have not won anything yet', fx: { board: 2 }, reply: 'Down to earth. The board nod.' },
+        ],
+      };
+    },
+    // the press
+    (c) => {
+      if (M.mood() > -25) return null;
+      return {
+        body: 'The papers are calling for change. How do you answer them?',
+        choices: [
+          { label: 'I do not read them', fx: { fans: 1 }, reply: 'Of course you do. The papers say so.' },
+          {
+            label: 'They are entitled to an opinion',
+            fx: { board: 2, fans: 1 },
+            reply: 'A calm answer; the tone softens a little.',
+          },
+          {
+            label: 'They have never played the game',
+            fx: { fans: 3, board: -2 },
+            reply: 'The fans love it. The tabloid sharpens its pen.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      if (M.mood() < 20) return null;
+      return {
+        body: 'The press have been kind to you lately. Is that a danger?',
+        choices: [
+          { label: 'Praise is cheap', fx: { board: 2 }, reply: 'Hard to argue with. They like you for it.' },
+          { label: 'I am grateful', fx: { fans: 2, morale: 1 }, reply: 'Warmth is returned.' },
+          { label: 'Wait until we lose', fx: { fans: 1 }, reply: 'The headline writes itself.' },
+        ],
+      };
+    },
+    (c) => {
+      const p = FM.S.user.poach && FM.S.user.poach[0];
+      if (!p || !FM.S.clubs[p.id]) return null;
+      return {
+        body: `You are being linked with ${FM.S.clubs[p.id].name}. Are you thinking of leaving?`,
+        choices: [
+          {
+            label: 'I am committed here',
+            fx: { fans: 5, board: 3, morale: 2 },
+            reply: 'The supporters cheer it. The rumour does not die.',
+          },
+          { label: 'I will not speculate', fx: { board: -1 }, reply: 'The story runs for another week.' },
+          { label: 'It is flattering', fx: { fans: -4, board: -3 }, reply: 'It will be quoted in the boardroom.' },
+        ],
+      };
+    },
+    // squad shape
+    (c) => {
+      const sq = squadOf(c);
+      const f = sq.filter((p) => p.nat !== c.nat).length;
+      if (sq.length < 18 || f / sq.length < 0.6) return null;
+      return {
+        body: 'Most of your squad are foreign. Is the club losing its identity?',
+        choices: [
+          {
+            label: 'Quality matters most',
+            fx: { board: 1, fans: -2 },
+            reply: 'Supporters in the stand do not all agree.',
+          },
+          { label: 'We value our own players', fx: { fans: 4, youth: 2 }, reply: 'The locals appreciate it.' },
+          { label: 'They are all one of us now', fx: { morale: 3 }, reply: 'A good line for the dressing room.' },
+        ],
+      };
+    },
+    (c) => {
+      if (!['oil', 'giant'].includes(c.identity)) return null;
+      return {
+        body: 'Critics say money wins trophies, not management. What is your reply?',
+        choices: [
+          {
+            label: 'Money does not play the game',
+            fx: { fans: 3, morale: 1 },
+            reply: 'A decent answer; the critics are not convinced.',
+          },
+          { label: 'We have been well run', fx: { board: 3 }, reply: 'The owners enjoy hearing it.' },
+          {
+            label: 'Ask the clubs that spend and fail',
+            fx: { fans: 2, board: -1 },
+            reply: 'Spicy. It gets picked up.',
+          },
+        ],
+      };
+    },
+    // international duty
+    (c) => {
+      const u = FM.S.user;
+      if (!u.nation || !FM.S.nteams || !FM.S.nteams[u.nation]) return null;
+      const nt = FM.S.nteams[u.nation];
+      return {
+        body: `You manage ${nt.name} as well as your club. Can you give both your full attention?`,
+        choices: [
+          { label: 'Both get everything', fx: { board: 1, fans: 2 }, reply: 'Ambitious, and a little hopeful.' },
+          {
+            label: 'The club comes first',
+            fx: { board: 3, fans: 1 },
+            reply: 'The board are pleased; the federation noted it.',
+          },
+          {
+            label: 'Country is a calling',
+            fx: { fans: 3, board: -2 },
+            reply: 'Admired by neighbours, noted in the boardroom.',
+          },
+        ],
+      };
+    },
+    (c) => {
+      const away = squadOf(c).filter((p) => p.intl && p.intl.caps && p.ca >= 70);
+      if (away.length < 3) return null;
+      return {
+        body: `${away.length} of your players are on international duty again. Does it hurt the club?`,
+        choices: [
+          {
+            label: 'It is an honour for them',
+            fx: { morale: 3, player: 0 },
+            reply: 'The internationals appreciate it.',
+          },
+          { label: 'It is a risk we manage', fx: { board: 1 }, reply: 'A fair summary of the dilemma.' },
+          {
+            label: 'I would rather keep them fit',
+            fx: { morale: -2, fans: 1 },
+            reply: 'The players hear a grumble in it.',
+          },
+        ],
+      };
+    },
+    // tactics
+    (c) => {
+      if (lastN(c, 3).filter((x) => x === 0.5).length < 2) return null;
+      return {
+        body: 'Too many draws. Are you too cautious?',
+        choices: [
+          {
+            label: 'We will be braver',
+            fx: { fans: 4, board: -1 },
+            reply: 'The fans want that. The board want points.',
+          },
+          { label: 'Points are points', fx: { board: 2 }, reply: 'A pragmatic answer.' },
+          { label: 'Ask the players to finish chances', fx: { morale: -1, fans: 1 }, reply: 'A little pointed.' },
+        ],
+      };
+    },
+  ];
+
   // ---------- Headlines ----------
   const post = (outlet, kicker, title, body, extra = {}) => {
     const club = W.userClub();

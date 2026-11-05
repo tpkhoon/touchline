@@ -37,7 +37,7 @@
       const us = str(me),
         them = str(opp);
       const pw = FM.Season.matchOdds(me, opp, home, us, them, fx.neutral, derby);
-      const compName = fx.intl ? 'International' : UI.cname(s.comps[fx.comp]);
+      const compName = fx.intl ? 'International' : UI.cshort(s.comps[fx.comp], 30);
       const f1 = fx.first && FM.Cups.findFixture(fx.first);
       const aggNote =
         f1 && f1.res
@@ -109,8 +109,9 @@
     if (!['club', 'reply', 'following', 'press', 'world'].includes(UI.sub.feed)) UI.sub.feed = 'club';
     const waiting = s.news.filter(UI.isOpenDecision).length;
     return `${hero}
+      ${UI.poachCards()}
       <div class="kpis">
-        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l">${esc(UI.cname(s.comps[c.comp]))} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l">${esc(UI.cname(s.comps[c.comp]))} · season starts soon</div>`}</div>
+        <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l" title="${esc(UI.cname(s.comps[c.comp]))}">${esc(UI.cshort(s.comps[c.comp], 20))} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l" title="${esc(UI.cname(s.comps[c.comp]))}">${esc(UI.cshort(s.comps[c.comp], 20))} · season starts soon</div>`}</div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.boardConf)}">${Math.round(c.boardConf)}%</div><div class="l">Board</div></div>
         <div class="kpi"><div class="v" style="color:${C.moodColor(c.fanMood)}">${Math.round(c.fanMood)}%</div><div class="l">Fans</div></div>
       </div>
@@ -131,7 +132,7 @@
   function cupPills(c) {
     const st = FM.Cups.status(c.id);
     if (!st.length) return '';
-    return `<div class="chips noswipe" style="margin-top:-2px">${st.map((x) => `<button class="chip" data-act="goCups" style="${x.text === 'Winners' ? 'border-color:var(--gold);color:var(--gold)' : x.alive === false ? 'opacity:.55' : ''}">${x.c.type === 'continental' ? UI.ico('star') : ''} ${esc(UI.cname(x.c))} · ${esc(x.text)}</button>`).join('')}</div>`;
+    return `<div class="chips noswipe" style="margin-top:-2px">${st.map((x) => `<button class="chip" data-act="goCups" style="${x.text === 'Winners' ? 'border-color:var(--gold);color:var(--gold)' : x.alive === false ? 'opacity:.55' : ''}">${x.c.type === 'continental' ? UI.ico('star') : ''} <span title="${esc(UI.cname(x.c))}">${esc(UI.cshort(x.c, 20))}</span> · ${esc(x.text)}</button>`).join('')}</div>`;
   }
   UI.acts.goCups = () => {
     UI.sub.league = 'cups';
@@ -754,18 +755,26 @@
       now = FM.Season.dayIndex();
     const from = un.from && CL(un.from),
       fresh = un.since === s.year && s.day - (un.day || 0) <= 2;
+    // (a national team is a job: with one, you are between clubs and not out of work)
+    const nt = W.hasNationJob() && s.nteams[u.nation];
     const title =
       un.reason === 'sacked' && fresh
         ? "You've been sacked."
         : un.reason === 'start' && !u.stats.games
-          ? 'Your career starts here.'
-          : 'Looking for your next job';
+          ? nt
+            ? `${nt.name} manager`
+            : 'Your career starts here.'
+          : nt
+            ? `${nt.name} manager, between clubs`
+            : 'Looking for your next job';
     const line =
       un.reason === 'sacked' && fresh && from
         ? `The board at ${esc(from.name)} have lost patience. Football is cruel — but your reputation still opens doors.`
         : un.reason === 'start' && !u.stats.games
           ? 'No club yet. Clubs in your reputation range will make offers — the struggling ones call first. Take one, or wait for a better one.'
-          : `Out of work${from ? ` since leaving ${esc(from.name)}` : ''}. Offers arrive every few days and last about a week.`;
+          : nt
+            ? `You manage ${esc(nt.name)}${from ? ` and have been without a club since leaving ${esc(from.name)}` : ' and have no club'}. Club offers arrive every few days and last about a week; you can take one and keep the national team.`
+            : `Out of work${from ? ` since leaving ${esc(from.name)}` : ''}. Offers arrive every few days and last about a week.`;
     const fx = FM.Season.userFixture(); // a national team job carries on while you are between clubs
     const offers = (u.offers || []).filter((o) => CL(o.id));
     const card = (o) => {
@@ -777,10 +786,10 @@
         <div class="small muted" style="margin-top:8px;line-height:1.5">${esc(o.why === 'struggling' ? 'Struggling and wants a change.' : o.why === 'step up' ? 'A step up for you.' : 'A fresh start.')}${obj ? ` The board expect you to: ${esc(obj.text.toLowerCase())}.` : ''} Budget ${U.money(c.budget || 0)}.</div>
         <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">Offer open for about ${days} day${days === 1 ? '' : 's'}</span><button class="btn sm" data-act="clubView" data-id="${c.id}">Look closer</button><button class="btn sm pri" data-act="takeJob" data-id="${c.id}">Accept</button></div></div>`;
     };
-    return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
+    return `<div class="hero" style="--c1:${U.heroShade(un.reason === 'sacked' && fresh ? '#5b0b12' : '#1b2533')};--c2:#0c1118"><div class="tag">${un.reason === 'sacked' && fresh ? 'Breaking' : nt ? 'National team job' : 'Out of work'}</div><div class="h1" style="margin:10px 0">${title}</div><div class="small" style="opacity:.85">${line}</div>
         <div class="small" style="opacity:.75;margin-top:8px">Reputation ${U.repText(u.rep)} · ${esc(u.badges)} licence${u.nation && s.nteams && s.nteams[u.nation] ? ` · ${esc(s.nteams[u.nation].name)} manager` : ''}</div>
         <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">Wait for an offer</button>'}${'<button class="play sec" style="flex:none;width:auto;padding:14px 16px" data-act="simDaysAsk">Skip days</button>'}</div></div>
-      <div class="sec"><div class="h3">Job offers</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
+      <div class="sec"><div class="h3">${nt ? 'Club offers' : 'Job offers'}</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
       ${offers.map(card).join('') || '<div class="empty">No offers right now. Keep waiting — clubs in your range will call.</div>'}
       <div class="sec"><div class="h3">The Feed</div></div>
       ${chips('feed', [
@@ -793,6 +802,68 @@
       ${UI.sub.feed === 'world' ? chips('wnews', WNEWS) : ''}
       ${feed()}`;
   }
+  // A bigger club has come for you while you have a job (FM.Season.poachTick): Accept leaves your club for theirs
+  UI.poachCards = function () {
+    const s = S(),
+      c = club(),
+      now = FM.Season.dayIndex();
+    return (s.user.poach || [])
+      .filter((o) => CL(o.id) && o.until > now)
+      .map((o) => {
+        const t = CL(o.id),
+          comp = s.comps[t.comp],
+          days = Math.max(1, o.until - now);
+        return `<div class="card"><div class="row">${C.crest(t, 42)}<div class="grow" style="min-width:0"><div class="tiny dim">JOB OFFER · THEY WANT YOU</div><div class="b ellip">${esc(t.name)}</div><div class="small dim ellip">${comp ? esc(UI.cname(comp)) : ''} · ${UI.ico(FM.Lore.identity(t.identity, t).icon)} ${esc(FM.Lore.identity(t.identity, t).label)}</div></div><span class="pill">Rep ${U.repText(t.rep)}</span></div>
+        <div class="small muted" style="margin-top:8px;line-height:1.5">A step up from ${esc(c.name)}.${t.budget ? ` Budget ${U.money(t.budget)}.` : ''} Say yes and you leave ${esc(c.name)} at once.</div>
+        <div class="row" style="margin-top:10px;gap:8px"><span class="tiny dim grow">${U.plural(days, 'day')} left</span><button class="btn sm" style="min-height:44px" data-act="clubView" data-id="${t.id}">Look closer</button><button class="btn sm" style="min-height:44px" data-act="poachNo" data-id="${t.id}">Decline</button><button class="btn sm pri" style="min-height:44px" data-act="poachAsk" data-id="${t.id}">Accept</button></div></div>`;
+      })
+      .join('');
+  };
+  UI.acts.poachAsk = (d) => {
+    const c = club(),
+      t = CL(d.id);
+    if (!c || !t) return;
+    UI.sheet(
+      `<div class="small" style="line-height:1.5">Leave <b>${esc(c.name)}</b> to manage <b>${esc(t.name)}</b>? ${esc(c.name)} appoint a successor, your promises and plans there end, and the fans and board there will not forget it. You keep any national team job.</div>
+      <div class="row" style="gap:8px;margin-top:14px"><button class="btn grow" data-act="closeSheet">Stay</button><button class="btn grow pri" data-act="poachDo" data-id="${t.id}">Take the job</button></div>`,
+      { title: `Join ${t.name}?` },
+    );
+  };
+  UI.acts.poachDo = (d) => {
+    const s = S(),
+      from = club(),
+      o = (s.user.poach || []).find((x) => x.id === d.id);
+    if (!from || !o || !CL(d.id)) return UI.closeAllSheets();
+    const target = CL(d.id);
+    W.goUnemployed('poached');
+    W.takeCharge(target.id, s.user.name, false);
+    s.user.poachCool = FM.Season.dayIndex() + 60;
+    FM.Stories.share({
+      kicker: 'NEW JOB',
+      title: `${s.user.name} leaves ${from.name} for ${target.name}`,
+      sub: `${from.name} will appoint a successor.`,
+      big: 'handshake',
+      clubId: target.id,
+    });
+    UI.closeAllSheets();
+    UI.tab = 'home';
+    UI.sub.feed = 'club';
+    UI.save();
+    UI.render();
+    UI.toast(`Welcome to ${target.name}`);
+  };
+  UI.acts.poachNo = (d) => {
+    const s = S(),
+      c = club();
+    if (!c) return;
+    s.user.poach = (s.user.poach || []).filter((x) => x.id !== d.id);
+    s.user.poachCool = FM.Season.dayIndex() + 45;
+    c.boardConf = U.clamp(c.boardConf + 3, 0, 100); // (the board hear that you turned a bigger club down)
+    c.fanMood = U.clamp(c.fanMood + 2, 0, 100);
+    UI.save();
+    UI.render();
+    UI.toast(`You turned ${CL(d.id) ? CL(d.id).name : 'them'} down. The board are pleased.`);
+  };
   UI.acts.takeJob = (d) => {
     const s = S(),
       prev = s.user.unemployed || {},

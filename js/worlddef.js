@@ -58,7 +58,7 @@
     noTeams: [], // nations the world gives no national team (their players still play; a world needs at least 16 teams)
     failure: {}, // when clubs fail: { admin, embargo, liquidate, phoenix, deduct (points), richSafe, proof: [club ids who cannot fail] } (empty: the game's own: administration only)
     bans: [], // sanctions: { kind: 'nation' | 'club', id, from, to, why } (out of international competition for the seasons from to to)
-    confeds: { names: {}, members: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id } }
+    confeds: { names: {}, members: {}, observers: {} }, // confederations: { names: { id: name } (a new one, or a rename), members: { nation code: id }, observers: { nation code: true } (a nation with observer status in its confederation) }
     history: { seasons: [] },
   });
 
@@ -693,7 +693,9 @@
           name: tn.name,
           size: tn.size,
           slots: tn.pools.map(([, n]) => n),
-          ...(tn.pools.length ? { qual: tn.qualSize || 4 } : {}),
+          ...(tn.pools.length
+            ? { qual: tn.qualSize || 4, hosts: (tn.hosts || []).slice(), hostCount: tn.hostCount || 1 }
+            : {}),
         },
       ]),
     ),
@@ -765,6 +767,14 @@
         e.push(`tournament ${id}: the teams come in groups of four, from 4 to 64`);
       else if (v.size != null && places(tn, v.size) < 0)
         e.push(`tournament ${id}: ${U.plural(v.size, 'team')} leave no room for its play-off places and guests`);
+      if (v.hosts != null) {
+        const hs = v.hosts;
+        if (!Array.isArray(hs) || hs.length > 4 || new Set(hs).size !== hs.length)
+          e.push(`tournament ${id}: up to four different host nations`);
+        else for (const c of hs) if (!D.NATIONS[c]) e.push(`tournament ${id}: unknown host nation "${c}"`);
+      }
+      if (v.hostCount != null && !(Number.isInteger(v.hostCount) && v.hostCount >= 1 && v.hostCount <= 4))
+        e.push(`tournament ${id}: one to four hosts`);
       if (v.qual != null && (!tn.pools.length || ![2, 3, 4].includes(v.qual)))
         e.push(`tournament ${id}: qualifying groups have two, three or four nations`);
       if (v.slots) {
@@ -806,6 +816,8 @@
       if (v.size) tn.size = v.size;
       if (v.slots) tn.pools.forEach((p, i) => (p[1] = v.slots[i]));
       if (v.qual) tn.qualSize = v.qual;
+      if (v.hosts) tn.hosts = v.hosts.slice();
+      if (v.hostCount) tn.hostCount = v.hostCount;
     }
     if (x.invitesAll) {
       // the ones the world keeps, in the game's order (the others are taken out)
@@ -2310,6 +2322,8 @@
           errors.push(`confederation ${id}: needs a name (up to 40 characters)`);
       for (const [id] of Object.entries(cf.names || {}))
         if (!/^[A-Za-z0-9]{2,6}$/.test(id)) errors.push(`confederation ${id}: the short name is 2–6 letters or digits`);
+      for (const code of Object.keys(cf.observers || {}))
+        if (!D.NATIONS[code]) errors.push(`observer ${code}: the game has no such nation`);
       for (const [code, id] of Object.entries(cf.members || {})) {
         if (!D.NATIONS[code]) errors.push(`confederation ${id}: the game has no nation "${code}"`);
         else if (!known.has(id))
@@ -3313,6 +3327,7 @@
         if ((def.managers || []).some((m) => m.nat === code)) uses.push('a manager');
         if (
           (def.confeds && def.confeds.members && def.confeds.members[code]) ||
+          (def.confeds && def.confeds.observers && def.confeds.observers[code]) ||
           (def.nations || []).some((n) => n.code === code)
         )
           uses.push('a confederation or national team entry');

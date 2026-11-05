@@ -4726,6 +4726,12 @@
         size,
         slots,
         ...(tn.pools.length ? { qual: Math.round(+v('iqual-' + tn.id)) || 4 } : {}),
+        ...(tn.pools.length
+          ? {
+              hosts: [...new Set([0, 1, 2, 3].map((i) => v(`ihost-${tn.id}-${i}`)).filter(Boolean))],
+              hostCount: Math.round(+v('ihostn-' + tn.id)) || 1,
+            }
+          : {}),
       };
     }
     const invites = FM.Intl.INVITES.filter((o) => ($('#ed-iinc-' + o.id) || {}).checked).map((o) => ({
@@ -4815,6 +4821,19 @@
         )
         .join('')}
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">The nations of each part of the world are drawn into groups by ranking, and the group winners go through first, then the runners-up, until the places are filled. Groups of four and three play each other once, pairs home and away; the two windows of the season have four match days.</div>
+      <div class="ng-label">Hosts <span class="tiny dim">· choose the host nations of a tournament, up to four for a co-hosted one</span></div>
+      ${Object.values(FM.Intl.TOURNS)
+        .flat()
+        .filter((tn) => tn.pools.length)
+        .map((tn) => {
+          const v = cur.tourns[tn.id] || {},
+            hs = v.hosts || [],
+            opt = (sel) =>
+              `<option value="">Not chosen</option>${nations.map(([k, n]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}`;
+          return `<div class="small b" style="margin-top:12px">${esc(v.name || tn.name)}</div><div class="ng-names" style="margin-top:4px;flex-wrap:wrap">${[0, 1, 2, 3].map((i) => `<select id="ed-ihost-${tn.id}-${i}" style="flex:1;min-width:120px">${opt(hs[i])}</select>`).join('')}</div><div class="ng-names" style="margin-top:4px;align-items:center"><span class="tiny dim grow">With none chosen, the hosts are drawn each time</span><select id="ed-ihostn-${tn.id}" style="max-width:170px">${[1, 2, 3, 4].map((n) => `<option value="${n}" ${(v.hostCount || 1) === n ? 'selected' : ''}>${n === 1 ? 'One host' : `${n} co-hosts`}</option>`).join('')}</select></div>`;
+        })
+        .join('')}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Hosts are in the finals without qualifying (they take places from their part of the world, and stay in whatever their ranking), head the pots of the draw, and play at home against a team that is not a host.</div>
       <div class="ng-label">Invitational tournaments <span class="tiny dim">· one a season, in turn: a host and three guests</span></div>
       ${FM.Intl.INVITES.map((o) => {
         const have = cur.invites.find((x) => x.id === o.id);
@@ -4856,7 +4875,11 @@
   // Which confederation each nation is in, and the confederations a world adds. Qualifying for the World Championship, the
   // continental championships and the Nations League go by confederation; a new one with four nations or more gets a place at
   // the World Championship and a championship of its own.
-  const CF = () => (ED.def.confeds = ED.def.confeds || { names: {}, members: {} });
+  const CF = () => {
+    const c = (ED.def.confeds = ED.def.confeds || { names: {}, members: {} });
+    c.observers = c.observers || {};
+    return c;
+  };
   const I_ = () => FM.Intl;
   const cfBase = (code) => I_().baseConfed(code);
   const cfOf = (code) => CF().members[code] || cfBase(code);
@@ -4867,9 +4890,12 @@
   const confedSummary = () => {
     const c = CF(),
       n = Object.keys(c.members).length,
-      k = Object.keys(c.names).filter((id) => !I_().CONFEDS[id]).length;
-    return k || n
-      ? `${k} added · ${n} nation${n === 1 ? '' : 's'} moved`
+      k = Object.keys(c.names).filter((id) => !I_().CONFEDS[id]).length,
+      o = Object.keys(c.observers).length;
+    return k || n || o
+      ? [k ? `${k} added` : '', n ? `${U.plural(n, 'nation')} moved` : '', o ? `${U.plural(o, 'observer')}` : '']
+          .filter(Boolean)
+          .join(' · ')
       : 'Europe, South America, Africa, Asia and North America · add your own and move nations between them';
   };
   UI.acts.edNewConfed = () => {
@@ -4910,8 +4936,19 @@
     UI.worldEditor();
     window.scrollTo(0, y);
   };
+  // (observer status: the nation belongs to its confederation and plays its Nations League, but not its qualifying or championship)
+  UI.acts.edObserver = (d) => {
+    const c = CF();
+    if (c.observers[d.code]) delete c.observers[d.code];
+    else c.observers[d.code] = true;
+    const open = document.querySelector('details[data-cf][open]');
+    ED.cfOpen = open ? open.dataset.cf : null;
+    const y = window.scrollY;
+    UI.worldEditor();
+    window.scrollTo(0, y);
+  };
   UI.acts.edResetConfeds = () => {
-    ED.def.confeds = { names: {}, members: {} };
+    ED.def.confeds = { names: {}, members: {}, observers: {} };
     UI.worldEditor();
   };
   const confedsView = () => {
@@ -4930,7 +4967,7 @@
                 .sort((a, b) => a[1].name.localeCompare(b[1].name))
                 .map(
                   ([code, n]) =>
-                    `<div class="row" style="gap:8px;margin-top:6px;align-items:center"><div class="grow small ellip">${C_flag(code)} ${esc(n.name)}${c.members[code] ? ' <span class="tiny dim">· moved</span>' : ''}</div><select data-input="edNationConfed" data-code="${code}" style="max-width:150px">${ids
+                    `<div class="row" style="gap:8px;margin-top:6px;align-items:center"><div class="grow small ellip">${C_flag(code)} ${esc(n.name)}${c.members[code] ? ' <span class="tiny dim">· moved</span>' : ''}${c.observers[code] ? ' <span class="tiny dim">· observer</span>' : ''}</div><button class="btn sm ${c.observers[code] ? 'pri' : ''}" data-act="edObserver" data-code="${code}" aria-pressed="${c.observers[code] ? 'true' : 'false'}" style="min-height:44px">Observer</button><select data-input="edNationConfed" data-code="${code}" style="max-width:150px">${ids
                       .map((x) => `<option value="${x}" ${x === id ? 'selected' : ''}>${esc(cfName(x))}</option>`)
                       .join('')}</select></div>`,
                 )
@@ -4940,8 +4977,8 @@
         .join('')}
       <div class="ng-label">A new confederation</div>
       <div class="ng-names" style="margin-top:0"><div style="flex:1"><input type="text" id="ed-cfname" maxlength="40" placeholder="Name, for example Oceania"></div><div style="flex:1;max-width:110px"><input type="text" id="ed-cfid" maxlength="6" placeholder="Short code, for example OCE" style="text-transform:uppercase"></div></div>
-      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewConfed">＋ Add it</button>${Object.keys(c.names).length || Object.keys(c.members).length ? '<button class="btn sm" data-act="edResetConfeds">Put the game’s back</button>' : ''}</div>
-      <div class="tiny dim" style="margin-top:8px;line-height:1.5">Open one, then use the lists to move a nation in or out. A confederation of four nations or more gets one place at the World Championship (taken from the biggest part of the world) and a championship of its own; a smaller one just plays its Nations League.</div>
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewConfed">＋ Add it</button>${Object.keys(c.names).length || Object.keys(c.members).length || Object.keys(c.observers).length ? '<button class="btn sm" data-act="edResetConfeds">Put the game’s back</button>' : ''}</div>
+      <div class="tiny dim" style="margin-top:8px;line-height:1.5">Open one, then use the lists to move a nation in or out. Observer: a nation with observer status belongs to the confederation and plays its Nations League and friendlies, but is left out of the qualifying groups, the continental championship and the World Championship places until you take the status off. A confederation of four nations or more gets one place at the World Championship (taken from the biggest part of the world) and a championship of its own; a smaller one just plays its Nations League.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
   };
   const C_flag = (code) => UI.C.flag(code);
@@ -5795,6 +5832,23 @@
     ['SSD', 'South Sudan', 'SS', 'AFR', 'eastafrican', ['#078930', '#DA121A']],
     ['CTA', 'Central African Republic', 'CF', 'AFR', 'centralafrican', ['#003082', '#FFCE00']],
     ['REU', 'Réunion', 'RE', 'AFR', 'french', ['#003F87', '#E8112D']],
+    // regions and territories that field their own sides outside FIFA (CONIFA and similar), and more crown dependencies
+    ['GAL', 'Galicia', '🏴', 'EUR', 'spanish', ['#FFFFFF', '#009EE0']],
+    ['CNI', 'Canary Islands', '🏴', 'AFR', 'spanish', ['#FFFFFF', '#0033A0']],
+    ['BRE', 'Brittany', '🏴', 'EUR', 'breton', ['#FFFFFF', '#000000']],
+    ['COR', 'Corsica', '🏴', 'EUR', 'corsican', ['#FFFFFF', '#000000']],
+    ['SIC', 'Sicily', '🏴', 'EUR', 'italian', ['#FF0000', '#FFD700']],
+    ['SAR', 'Sardinia', '🏴', 'EUR', 'italian', ['#FFFFFF', '#D52B1E']],
+    ['FRI', 'Frisia', '🏴', 'EUR', 'frisian', ['#0050A0', '#FFFFFF']],
+    ['SRK', 'Sark', '🏴', 'EUR', 'english', ['#FFFFFF', '#D52B1E']],
+    ['FLK', 'Falkland Islands', 'FK', 'SAM', 'english', ['#012169', '#FFFFFF']],
+    ['SPM', 'Saint-Pierre and Miquelon', 'PM', 'NAM', 'french', ['#003F87', '#E8112D']],
+    ['WLF', 'Wallis and Futuna', 'WF', 'OFC', 'pacific', ['#E8112D', '#FFFFFF']],
+    ['ZAN', 'Zanzibar', '🏴', 'AFR', 'swahili', ['#0099CC', '#000000']],
+    ['ESH', 'Western Sahara', 'EH', 'AFR', 'berber', ['#000000', '#007A3D']],
+    ['TIB', 'Tibet', '🏴', 'ASIA', 'bhutanese', ['#FFFFFF', '#0057B8']],
+    ['KUR', 'Kurdistan', '🏴', 'ASIA', 'kurdish', ['#ED2024', '#278E43']],
+    ['NCY', 'Northern Cyprus', '🏴', 'EUR', 'turkish', ['#E30A17', '#FFFFFF']],
   ];
   const presetPicker = () => {
     const taken = new Set([...Object.keys(D.NATIONS), ...(ED.def.newNations || []).map((x) => x.code)]);

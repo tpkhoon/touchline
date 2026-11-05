@@ -3014,8 +3014,17 @@
       user: null,
       // the confederations a world adds or changes (names, and which confederation a nation is in): { names, members }
       confeds:
-        opts.confeds && (Object.keys(opts.confeds.names || {}).length || Object.keys(opts.confeds.members || {}).length)
-          ? JSON.parse(JSON.stringify({ names: opts.confeds.names || {}, members: opts.confeds.members || {} }))
+        opts.confeds &&
+        (Object.keys(opts.confeds.names || {}).length ||
+          Object.keys(opts.confeds.members || {}).length ||
+          Object.keys(opts.confeds.observers || {}).length)
+          ? JSON.parse(
+              JSON.stringify({
+                names: opts.confeds.names || {},
+                members: opts.confeds.members || {},
+                observers: opts.confeds.observers || {},
+              }),
+            )
           : null,
       // nations the world gives no national team (a world with its own set: the others still have players and leagues)
       noTeams: Array.isArray(opts.noTeams) && opts.noTeams.length ? opts.noTeams.slice() : null,
@@ -3254,6 +3263,10 @@
   W.homeLeague = (x) =>
     !x.sim || x.sim === 'full' || W.leagues().some((l) => l.nat === x.nat && (l.baseSim || l.sim) === 'full');
   W.employed = () => !!(FM.S.user && FM.S.user.clubId && FM.S.clubs[FM.S.user.clubId]);
+  // Managing a country is a job: a manager with a national team and no club is between clubs, not out of work. (W.employed is the
+  // club job, which everything about the squad, money and board hangs on; W.hasJob is either.)
+  W.hasNationJob = () => !!(FM.S.user && FM.S.user.nation && FM.S.nteams && FM.S.nteams[FM.S.user.nation]);
+  W.hasJob = () => W.employed() || W.hasNationJob();
   // Out of work (sacked, resigned, or a career that starts without a club): the old club hires a successor,
   // time keeps passing, and job offers arrive through FM.Season.jobMarket
   W.goUnemployed = function (reason) {
@@ -3372,6 +3385,8 @@
     S.user.sacked = false;
     delete S.user.unemployed;
     S.user.offers = [];
+    S.user.poach = []; // (approaches from other clubs belonged to the old job)
+    S.user.jobSince = S.year * 1000 + S.day;
     if (club.manager && S.staff[club.manager] && FM.Records) FM.Records.managerLeft(S.staff[club.manager], clubId);
     club.manager = null;
     club.boardConf = 70;

@@ -4080,7 +4080,7 @@
     ['CUPECU', 'ECU', 'Ecuadorian Copa Nacional', 'ECUC', { neutral: [2] }],
     ['CUPURU', 'URU', 'Uruguayan Copa Nacional', 'URUC', { neutral: [2] }],
     ['CUPCOL', 'COL', 'Colombian Copa Nacional', 'COLC', { neutral: [2] }],
-    ['CUPCAN', 'CAN', 'Canadian Canadian Championship', 'CANC', { neutral: [2] }],
+    ['CUPCAN', 'CAN', 'Canadian Championship', 'CANC', { neutral: [2] }],
     ['CUPUAE', 'UAE', "Emirati King's Trophy", 'UAEC', { neutral: [2] }],
     ['CUPIRN', 'IRN', 'Iranian Federation Cup', 'IRNC', { neutral: [2] }],
     ['CUPQAT', 'QAT', "Qatari King's Trophy", 'QATC', { neutral: [2] }],

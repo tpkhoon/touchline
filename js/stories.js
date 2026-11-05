@@ -608,7 +608,9 @@
     },
   ];
   St.pressQuestion = function (c) {
-    for (const q of U.shuffle(St.PRESS_BANK)) {
+    // (the bank in stories.js, and the wider one in media.js: results, injuries, transfers, rivalries, youth, the board, the
+    // press itself, international duty)
+    for (const q of U.shuffle([...St.PRESS_BANK, ...((FM.Media && FM.Media.PRESS_BANK) || [])])) {
       const r = q(c);
       if (r) return r;
     }

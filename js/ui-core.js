@@ -647,6 +647,12 @@
     `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   // a competition's own name, without its title sponsor (for tight places: cards, pills, objectives, titles)
   UI.cname = (c) => (c && (c.baseName || c.name)) || '';
+  // For tight spaces (a pill, a chip, a stat label): the full name when it fits, else the competition's short name (every league
+  // and cup has one: ENG1, FA Cup ...). The full name stays in the title and wherever there is room.
+  UI.cshort = (c, max = 22) => {
+    const n = UI.cname(c);
+    return n.length <= max || !c || !c.short ? n : c.short;
+  };
   UI.icon = {
     home: svg('<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>'),
     squad: svg('<path d="M8 4l-5 3 2 4 3-1v10h8V10l3 1 2-4-5-3a4 4 0 0 1-8 0z"/>'),
@@ -770,7 +776,7 @@
     const nt = !club && S.user.nation && S.nteams && S.nteams[S.user.nation];
     $('#topbar').innerHTML = club
       ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><button class="money" data-act="goFinances" aria-label="Finances: balance ${esc(U.money(club.balance))}">${U.money(club.balance)}</button><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
-      : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${md} · <span style="color:var(--warn)">Out of work</span>${nt ? ` · ${esc(nt.name)}` : ''}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
+      : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${md} · ${nt ? `<span style="color:var(--acc)">${esc(nt.name)} manager</span>` : '<span style="color:var(--warn)">Out of work</span>'}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
     const html =
       !club && ['squad', 'scout', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
