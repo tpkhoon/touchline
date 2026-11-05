@@ -68,6 +68,7 @@
       M.preWatch();
       M.aiLoanBids();
       M.poachYouth();
+      M.agentPush();
     }
     M.aiPreContracts();
     M.payDue();
@@ -173,13 +174,15 @@
           ? loanChoice
           : n.kind === 'poach'
             ? poachChoice
-            : n.kind === 'pre'
-              ? preChoice
-              : n.kind === 'board'
-                ? (nn, k) => FM.Board.answer(nn, k)
-                : n.kind === 'staff'
-                  ? (nn, k, pp) => FM.People.staffAnswer(nn, k, pp)
-                  : () => ({ msg: '' })
+            : n.kind === 'agent'
+              ? agentChoice
+              : n.kind === 'pre'
+                ? preChoice
+                : n.kind === 'board'
+                  ? (nn, k) => FM.Board.answer(nn, k)
+                  : n.kind === 'staff'
+                    ? (nn, k, pp) => FM.People.staffAnswer(nn, k, pp)
+                    : () => ({ msg: '' })
     )(n, ch.k, p);
     n.reply = r.msg;
     return r;
@@ -321,6 +324,113 @@
     if (p.preWarned) p.preWarned.until = now(); // he'll agree with them now
     return { msg: `${W.name(p)} will leave on a free in the summer.` };
   }
+  // ---------- Agents and families ----------
+  // A young player who has hardly played, with an ambitious agent (or a family) behind him, asks where his football is coming from:
+  // promise him games (judged at the end of the season), put him on the loan list, or tell him to wait. At most one a season each.
+  M.AGENT_DAILY = 0.025;
+  M.agentPush = function () {
+    const s = S(),
+      uc = W.userClub();
+    if (!uc || Math.random() > M.AGENT_DAILY * W.dayScale()) return;
+    if (s.news.some((n) => n.type === 'desk' && n.kind === 'agent' && !n.resolved)) return;
+    const played = FM.Season.gamesPlayed(uc.id);
+    if (played < 12) return;
+    const lvl = W.levelFor(uc.rep);
+    const cand = W.squad(uc.id)
+      .filter(
+        (p) =>
+          !p.loan &&
+          W.age(p) >= 17 &&
+          W.age(p) <= 21 &&
+          p.pushed !== s.year &&
+          p.season.apps <= played * 0.15 &&
+          p.pa >= lvl - 4 &&
+          p.ca >= lvl - 16 &&
+          (p.hid.amb >= 12 || W.hasTrait(p, 'Needs Game Time')),
+      )
+      .sort((a, b) => b.pa - a.pa)[0];
+    if (!cand) return;
+    cand.pushed = s.year;
+    const family = W.age(cand) <= 18 ? ' His family have been in touch too.' : '';
+    M.desk({
+      kind: 'agent',
+      title: W.name(cand) + "'s agent wants to know where his football is coming from",
+      body:
+        W.name(cand) +
+        ' (' +
+        W.age(cand) +
+        ', ' +
+        W.posLabel(cand) +
+        ') has played ' +
+        U.plural(cand.season.apps, 'game') +
+        ' of ' +
+        played +
+        '. His agent says he wants a path: games with you, a loan to a club that will play him, or he will listen to offers in the summer.' +
+        family,
+      pid: cand.id,
+      rec: 1,
+      def: 2,
+      choices: [
+        { k: 'promise', label: 'Promise him games' },
+        { k: 'loan', label: 'Put him on the loan list' },
+        { k: 'wait', label: 'Tell them to wait' },
+      ],
+    });
+  };
+  function agentChoice(n, k, p) {
+    if (!p || p.clubId !== W.userClub().id) return { msg: 'He is no longer at the club.' };
+    if (k === 'promise') {
+      p.promise = { year: S().year, share: 0.3 };
+      p.morale = Math.min(100, p.morale + 8);
+      return {
+        msg:
+          'You promise ' +
+          W.short(p) +
+          ' games: about a third of the matches. He and his agent will hold you to it at the end of the season.',
+      };
+    }
+    if (k === 'loan') {
+      p.loanListed = true;
+      p.morale = Math.min(100, p.morale + 3);
+      return { msg: W.short(p) + ' is on the loan list: offer him to clubs from the Transfers tab.' };
+    }
+    if (p.hid.amb >= 14 || W.hasTrait(p, 'Needs Game Time')) {
+      p.morale = Math.max(0, p.morale - 10);
+      if (Math.random() < 0.3) p.wantsOut = true;
+      return {
+        msg: 'His agent is not happy to be told to wait.' + (p.wantsOut ? ' ' + W.short(p) + ' wants a move.' : ''),
+      };
+    }
+    return { msg: 'They accept it for now.' };
+  }
+  // The end of the season: was the promise kept? (Run from the season rollover for every young player who was promised games.)
+  M.promiseCheck = function (p) {
+    const pr = p.promise;
+    if (!pr) return;
+    delete p.promise;
+    if (pr.year !== S().year - 1 || !W.ownPlayer(p)) return;
+    const cl = S().clubs[p.clubId],
+      tb = cl && S().comps[cl.comp] && S().comps[cl.comp].table && S().comps[cl.comp].table[cl.id],
+      played = (tb && tb.p) || FM.Season.gamesPlayed(p.clubId) || 30,
+      kept = p.season.apps >= played * pr.share * 0.8;
+    // (the season has already turned when this runs; his figures are the season just played, until they are cleared)
+    FM.News.add({
+      type: 'club',
+      title: kept ? W.name(p) + ' is glad you kept your word' : W.name(p) + ' says you broke your promise',
+      body: kept
+        ? 'He got the games you promised, and his agent says so.'
+        : 'You promised him about a third of the matches and he played ' +
+          U.plural(p.season.apps, 'game') +
+          '. His agent is not pleased.',
+      pid: p.id,
+      clubId: p.clubId,
+    });
+    if (kept) p.morale = Math.min(100, p.morale + 5);
+    else {
+      p.morale = Math.max(0, p.morale - 15);
+      if (p.hid.amb >= 12) p.wantsOut = true;
+    }
+  };
   // ---------- Poaching: a bigger club comes for one of your academy prospects ----------
   // A promising youngster of your own academy (fifteen to eighteen) draws a bigger club, which offers the training compensation for him.
   // Sell, offer him a professional deal to keep him (his family and agent may still prefer the bigger club), or turn them down.

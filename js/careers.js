@@ -493,6 +493,12 @@
   Sea.releaseYouth = function (p) {
     const S = FM.S;
     if (!p || !p.clubId) return false;
+    if (W.isUser(p.clubId) && W.age(p) <= 21) {
+      // (the account of who was let go, so a late bloomer can be spotted later)
+      const st = (S.user.academyStats = S.user.academyStats || { made: 0, released: 0, ids: [] });
+      st.released++;
+      st.ids.push(p.id);
+    }
     const sp = W.spell(p);
     if (sp) sp.to = S.year;
     p.clubId = null;
@@ -549,7 +555,11 @@
       // (the new intake goes straight into the youth sides: until the next season they would sit in the first-team squad, and a short
       // position there gets a fifteen-year-old a league game)
       if (made.length && FM.Youth && FM.Youth.assign) (W.rosterVer++, FM.Youth.assign(c));
-      if (W.isUser(c.id)) FM.Stories.youthIntake(c, made);
+      if (W.isUser(c.id)) {
+        const st = (FM.S.user.academyStats = FM.S.user.academyStats || { made: 0, released: 0, ids: [] });
+        st.made += made.length;
+        FM.Stories.youthIntake(c, made);
+      }
     });
   };
 

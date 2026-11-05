@@ -285,6 +285,10 @@
     if (p.susp) tags.push(`<span class="pill warn">${p.susp}</span>`);
     if (p.listed) tags.push(`<span class="pill acc" title="On the transfer list">Listed</span>`);
     if (p.loanListed) tags.push(`<span class="pill acc" title="On the loan list">Loan list</span>`);
+    if (p.cupApps && Object.values(p.cupApps).some((c) => c !== p.clubId))
+      tags.push(
+        `<span class="pill" title="Played in a cup for another club this season: he cannot play in it for this one">Cup-tied</span>`,
+      );
     if (own && p.unreg)
       tags.push(
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',

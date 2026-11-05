@@ -594,6 +594,7 @@
         const r = sd.rating[pid];
         p.season.apps++;
         p.lastSenior = S.day; // (a youth side cannot field him today)
+        if (comp.type === 'cup') (p.cupApps = p.cupApps || {})[fx.comp] = sd.club.id; // (he is cup-tied to this club in this cup)
         p.season.rsum += r;
         // the detail from the engine: minutes, shots, chances made, tackles, passes; clean sheets; keepers' numbers
         const st = p.season,
@@ -2437,9 +2438,11 @@
       Sea.rustPositions(p);
       Sea.shiftPotential(p); // young players' potential moves with how the season went
       Sea.mentorYear(p); // a year with a mentor: his habits rub off
+      FM.Market.promiseCheck(p); // was a promise of games kept?
       p.shotsPrev = p.shots; // (last season's shots stay for his shot map until he has taken enough this season)
       p.shots = undefined;
       p.season = W.blankSeason();
+      p.cupApps = undefined; // (a new season: nobody is cup-tied)
       p.flagMinutes = false;
       p.lastGrowth = 0;
       W.updateRep(p); // his name follows the season

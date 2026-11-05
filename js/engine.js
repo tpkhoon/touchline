@@ -313,6 +313,7 @@
         club.id,
         tactic,
         this.o.rotate && !user ? FM.Regional.reserves(club.id) : undefined,
+        { comp: this.comp }, // (cup-tied players sit this one out)
       );
       const slots = D.FORMATIONS[tactic.formation];
       const sd = {

@@ -199,7 +199,17 @@
     };
   };
   // A B team carries no more than three players of 23 or over
+  // (and a first-team player who played a senior match in the last three days cannot be sent down to play for it)
   Y.canSendDown = function (p, bId) {
+    if (p.lastSenior != null && S().day - p.lastSenior < 3)
+      return {
+        ok: false,
+        msg:
+          W.short(p) +
+          ' played for the first team ' +
+          (S().day - p.lastSenior === 0 ? 'today' : U.plural(S().day - p.lastSenior, 'day') + ' ago') +
+          ': he cannot play for the B team for three days.',
+      };
     if (W.age(p) < 23) return { ok: true };
     const old = W.squad(bId).filter((q) => !q.loan && W.age(q) >= 23).length;
     return old >= Y.B_OVERAGE_MAX
@@ -407,6 +417,31 @@
       'Made a first appearance',
       mine.filter((p) => p.youth === uc.id && !p.team && W.age(p) <= 21 && p.season.apps >= 1 && p.season.apps < 15),
     );
+    // the account since you took over: how many the academy has made, let go, and how many reached the first team; and the ones let go
+    // who have since grown into players your first team would want (the late bloomers)
+    const as = s.user.academyStats;
+    if (as && as.made) {
+      const grads = Object.values(s.players).filter(
+        (p) => p.youth === uc.id && !p.retired && (p.season.apps >= 1 || p.career.apps > 0) && p.clubId,
+      ).length;
+      lines.push(
+        'Since you took over the academy has made ' +
+          as.made +
+          ', you have let ' +
+          U.plural(as.released, 'youngster') +
+          ' go, and ' +
+          grads +
+          ' of its players have played senior football',
+      );
+      const late = (as.ids || [])
+        .map((id) => s.players[id])
+        .filter((p) => p && !p.retired && p.clubId && W.age(p) >= 18 && !p.lateNote && p.ca >= W.levelFor(uc.rep) - 8);
+      late.forEach((p) => (p.lateNote = s.year));
+      add(
+        'Let go too soon',
+        late.sort((a, b2) => b2.ca - a.ca),
+      );
+    }
     const st = s.user.stats,
       debuts = (st.youthDebuts || 0) - (s.user.youthDebutsAtStart || 0);
     s.user.youthDebutsAtStart = st.youthDebuts || 0;

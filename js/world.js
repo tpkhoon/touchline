@@ -2069,11 +2069,14 @@
         : `max ${FM.S.rules.foreignLimit}`;
   // The order a quick pick fills the places in: the thinnest positions first
   const PICK_ORDER = ['GK', 'ST', 'CB', 'DM', 'CM', 'FB', 'WB', 'WM', 'W', 'AM'];
-  W.pickXI = function (clubId, tactic, squad) {
+  W.pickXI = function (clubId, tactic, squad, opts) {
     const slots = D.FORMATIONS[tactic.formation];
     const club = FM.clubOf(clubId);
+    // Cup-tied: a player who has played in this cup this season for another club cannot play in it for this one (a transfer or a loan
+    // back from the borrower in mid-competition); his club's other competitions are open to him
+    const tied = (p) => !!(opts && opts.comp && p.cupApps && p.cupApps[opts.comp] && p.cupApps[opts.comp] !== clubId);
     let pool = (squad || (club.sim === 'nation' ? FM.Intl.squad(club.code) : W.squad(clubId))).filter(
-      (p) => W.available(p) && (club.sim === 'nation' || !p.unreg), // left off the registered squad: can't play
+      (p) => W.available(p) && !tied(p) && (club.sim === 'nation' || !p.unreg), // left off the registered squad: can't play
     );
     // Youth-side players (U21, U18) only step up when the first-team squad is short
     // (a loanee is never one of them: he came to play for the first team)
@@ -2105,6 +2108,7 @@
           p &&
           (club.sim === 'nation' ? pool.includes(p) : p.clubId === clubId) &&
           W.available(p) &&
+          !tied(p) &&
           !used.has(pid) &&
           i < slots.length
         ) {

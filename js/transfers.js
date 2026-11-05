@@ -311,16 +311,25 @@
   // Training compensation: a club that signs a young player it did not train, for nothing, pays the club that did. A simplified form
   // of the real rule (FIFA's training compensation, England's youth tariff): the years he spent in the academy, up to seven, at a yearly
   // rate that rises with the training club's standing. Not the real tariffs, which differ by country and category.
-  T.trainingFee = function (p, origin) {
-    const years = U.clamp(W.age(p) - 14, 1, 7);
-    return U.roundMoney(years * (10000 + origin.rep * 1200));
+  // After FIFA's categories of club (the UEFA rates, from secondary sources and not checked against the current circular): a training
+  // club is Category I, II, III or IV by its standing at 90,000, 60,000, 30,000 and 10,000 a year; his years from twelve to fifteen
+  // are all costed at the Category IV rate, and from sixteen to twenty-one at his club's category; nothing is due when the club that
+  // signs him is a Category IV club.
+  T.trainingCategory = (c) => (c.rep >= 75 ? 1 : c.rep >= 60 ? 2 : c.rep >= 45 ? 3 : 4);
+  T.CATEGORY_RATE = { 1: 90000, 2: 60000, 3: 30000, 4: 10000 };
+  T.trainingFee = function (p, origin, to) {
+    if (to && T.trainingCategory(to) === 4) return 0;
+    const age = Math.min(W.age(p), 21);
+    const young = Math.max(0, Math.min(age, 15) - 11) * T.CATEGORY_RATE[4];
+    const older = Math.max(0, age - 15) * T.CATEGORY_RATE[T.trainingCategory(origin)];
+    return U.roundMoney(young + older);
   };
   T.trainingComp = function (p, to) {
     const S = FM.S,
       origin = p.youth && S.clubs[p.youth];
     if (!origin || origin.id === to.id || FM.Youth.owner(to.id) === origin.id || W.age(p) > 22) return 0;
     // (never more than a tenth of what the buyer has: a club short of money pays what it can)
-    const fee = Math.min(T.trainingFee(p, origin), U.roundMoney(Math.max(0, to.balance) * 0.1));
+    const fee = Math.min(T.trainingFee(p, origin, to), U.roundMoney(Math.max(0, to.balance) * 0.1));
     if (fee <= 0) return 0;
     to.balance -= fee;
     origin.balance += fee;
