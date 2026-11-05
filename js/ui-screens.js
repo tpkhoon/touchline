@@ -307,7 +307,20 @@
             `<button class="chip ${P(id).contract > S().year ? 'on' : ''}" data-act="renew" data-id="${id}">${P(id).contract > S().year ? '✓' : ''} ${esc(W.short(P(id)))} · ${C.starText(P(id).ca, P(id).pos)}</button>`,
         )
         .join('')}</div>`;
-    if (n.type === 'youth' && n.trials && n.pids)
+    if (n.type === 'youth' && n.report && n.groups)
+      extra = `<div style="margin-top:10px">${n.groups
+        .map(
+          (g) =>
+            `<div class="small b dim" style="margin:8px 0 2px">${esc(g.label)}</div>${g.pids
+              .filter(P)
+              .map(
+                (id) =>
+                  `<div class="row small" style="padding:5px 0;gap:8px"><span class="grow tap" data-act="player" data-id="${id}">${C.flag(P(id).nat)} ${esc(W.name(P(id)))} <span class="dim">${W.posLabel(P(id))} · ${W.age(P(id))}</span></span>${C.playerStars(P(id))}</div>`,
+              )
+              .join('')}`,
+        )
+        .join('')}</div>`;
+    else if (n.type === 'youth' && n.trials && n.pids)
       extra = `<div style="margin-top:10px">${n.pids
         .filter((id) => P(id) && !P(id).clubId && P(id).trialOf)
         .map(

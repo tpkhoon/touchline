@@ -261,6 +261,76 @@
       clubId: uc.id,
     });
   };
+  // The academy report at the end of a season, for your club: how each side finished, who took the biggest step, who stood still, who is
+  // now in the first team and who broke through this season. Run as the year turns, before the seasons' figures are cleared; it also
+  // marks each young player's ability, for the next report to measure against.
+  Y.seasonReport = function () {
+    const s = S(),
+      uc = W.userClub();
+    if (!uc) return;
+    const label = s.year - 1 + '/' + String(s.year).slice(2);
+    const lines = [];
+    for (const [team, def] of Object.entries(Y.TEAMS)) {
+      const t = Y.table(uc.nat, team),
+        i = t.findIndex((r) => r.id === uc.id);
+      if (i >= 0)
+        lines.push(
+          def.label +
+            ': ' +
+            U.ordinal(i + 1) +
+            ' of ' +
+            t.length +
+            ' (' +
+            U.plural(t[i].w, 'win') +
+            ', ' +
+            U.plural(t[i].d, 'draw') +
+            ', ' +
+            U.plural(t[i].l, 'defeat') +
+            ')',
+        );
+    }
+    const b = Y.bTeamOf(uc.id),
+      bc = b && s.comps[b.comp];
+    if (bc && bc.table && bc.table[b.id]) lines.push(b.name + ': ' + U.ordinal(W.position(b.id)) + ' in ' + bc.name);
+    const mine = W.squad(uc.id)
+      .filter((p) => !p.loan)
+      .concat(Object.values(s.players).filter((p) => p.loan && p.loan.from === uc.id && !p.retired));
+    const young = mine.filter((p) => W.age(p) <= 21 && p.caStart != null);
+    const groups = [];
+    const add = (label2, ps) => ps.length && groups.push({ label: label2, pids: ps.slice(0, 4).map((p) => p.id) });
+    add(
+      'Took the biggest step',
+      young.filter((p) => p.ca - p.caStart >= 3).sort((a, b2) => b2.ca - b2.caStart - (a.ca - a.caStart)),
+    );
+    add(
+      'Stood still',
+      young.filter((p) => W.age(p) <= 19 && p.ca - p.caStart <= 0).sort((a, b2) => b2.pa - a.pa),
+    );
+    add(
+      'Broke into the first team',
+      mine
+        .filter((p) => p.youth === uc.id && !p.team && W.age(p) <= 21 && p.season.apps >= 15)
+        .sort((a, b2) => b2.season.apps - a.season.apps),
+    );
+    add(
+      'Made a first appearance',
+      mine.filter((p) => p.youth === uc.id && !p.team && W.age(p) <= 21 && p.season.apps >= 1 && p.season.apps < 15),
+    );
+    const st = s.user.stats,
+      debuts = (st.youthDebuts || 0) - (s.user.youthDebutsAtStart || 0);
+    s.user.youthDebutsAtStart = st.youthDebuts || 0;
+    if (debuts > 0) lines.push(U.plural(debuts, 'academy debut') + ' for the first team');
+    if (lines.length || groups.length)
+      FM.News.add({
+        type: 'youth',
+        report: true,
+        title: 'Academy report ' + label,
+        body: lines.length ? lines.join('. ') + '.' : 'A quiet year for the academy.',
+        groups,
+        clubId: uc.id,
+      });
+    for (const p of Object.values(s.players)) if (!p.retired && W.age(p) <= 23) p.caStart = p.ca;
+  };
   // New season: fresh youth tables, squads re-sorted (B teams restocked too)
   Y.newSeason = function () {
     const s = S();

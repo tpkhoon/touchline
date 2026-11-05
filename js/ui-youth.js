@@ -147,6 +147,37 @@
           `<button class="chip${p.plan === k ? ' on' : ''}" data-act="youthPlan" data-id="${p.id}" data-v="${k}">${esc(v.label)}</button>`,
       )
       .join('')}</div>`;
+  // ---------- Graduates: who has come through a club's academy ----------
+  // Every player the club's academy made (his youth club is the club), where he is now and what he did for it
+  UI.graduatesCard = function (id) {
+    const c = S().clubs[id];
+    if (!c || c.sim === 'nation') return '';
+    const all = Object.values(S().players).filter((p) => p.youth === id);
+    if (!all.length) return '';
+    const here = all.filter((p) => (!p.retired && p.clubId === id) || (p.loan && p.loan.from === id)),
+      away = all.filter((p) => !p.retired && !here.includes(p)),
+      gone = all.filter((p) => p.retired);
+    const forClub = (p) => {
+      const rows = (p.history || []).filter((r) => r.c === id);
+      return {
+        apps: rows.reduce((t, r) => t + (r.apps || 0), 0) + (p.clubId === id ? p.season.apps || 0 : 0),
+        g: rows.reduce((t, r) => t + (r.g || 0), 0) + (p.clubId === id ? p.season.goals || 0 : 0),
+      };
+    };
+    const row = (p, tail) => {
+      const f = forClub(p);
+      return `<div class="row small" style="padding:5px 0;gap:8px;border-top:1px solid var(--line)"><span class="grow tap" data-act="player" data-id="${p.id}">${C.flag(p.nat)} ${esc(W.name(p))} <span class="dim">${W.posLabel(p)} · ${W.age(p)}${tail ? ' · ' + tail : ''}</span></span><span class="dim tiny">${f.apps ? U.plural(f.apps, 'game') + (f.g ? ', ' + U.plural(f.g, 'goal') : '') : 'no games'}</span>${C.playerStars(p)}</div>`;
+    };
+    const sec = (title, ps, tail) =>
+      ps.length
+        ? `<div class="small b dim" style="margin:8px 0 2px">${title} (${ps.length})</div>${ps
+            .sort((a, b) => b.ca - a.ca)
+            .slice(0, 8)
+            .map((p) => row(p, tail ? tail(p) : ''))
+            .join('')}${ps.length > 8 ? `<div class="tiny dim">and ${ps.length - 8} more</div>` : ''}`
+        : '';
+    return `<div class="card"><div class="h3">Academy graduates</div><div class="tiny dim" style="margin-bottom:4px">${U.plural(all.length, 'player')} came through ${esc(c.name)}'s academy: ${here.length} still at the club, ${away.length} playing elsewhere, ${gone.length} retired.</div>${sec('At the club', here)}${sec('Elsewhere', away, (p) => (p.clubId && S().clubs[p.clubId] ? esc(S().clubs[p.clubId].name) : 'a free agent'))}${sec('Retired', gone)}</div>`;
+  };
   // ---------- Mentors ----------
   const mentorLine = (p) => {
     if (W.age(p) > 21 || p.loan) return '';

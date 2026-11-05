@@ -389,12 +389,22 @@
         St.share({
           kicker: 'ACADEMY',
           title: `${W.age(p)}-year-old academy graduate makes debut`,
-          sub: `${W.name(p)} steps up from the ${club.name} academy.${me.rating[pid] >= 7 ? ' A composed display.' : ''}`,
+          sub: `${W.name(p)} steps up from the ${club.name} academy${p.nat === club.nat ? ': a local boy in the first team' : ''}.${me.rating[pid] >= 7 ? ' A composed display.' : ''}${U.chance(0.4) ? ' His family are in the stand.' : ''}`,
           big: `#${S.user.stats.youthDebuts}`,
           clubId: club.id,
           pid,
         });
       }
+      // an academy graduate's first senior goal (not on his debut: that has its own card)
+      if (p.youth === club.id && scored && kid(p) && p.career.apps > 1 && p.career.goals === scored)
+        St.share({
+          kicker: 'ACADEMY',
+          title: `${W.name(p)} scores his first senior goal`,
+          sub: `The ${W.age(p)}-year-old came through the ${club.name} academy${p.nat === club.nat ? ': a local boy' : ''}.`,
+          big: 'ball',
+          clubId: club.id,
+          pid,
+        });
       const ms = [100, 200, 300, 400, 500, 600, 700];
       if (ms.includes(p.career.apps))
         St.share({

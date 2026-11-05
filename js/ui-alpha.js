@@ -799,7 +799,7 @@
     const secMatches = `${nextCard}
       ${h2h.length ? `<div class="card"><div class="row"><div class="h3 grow">Head-to-head this season</div>${h2hRec}</div>${h2h.map((f) => `<div class="tiny dim" style="padding-top:6px">${esc(fxWhere(f))}</div>${f.res ? UI.fxLine(f) : `<div class="row small" style="padding:8px 0;border-top:1px solid var(--line)"><span class="grow ellip" style="text-align:right">${esc(s.clubs[f.h].name)}</span><b style="min-width:44px;text-align:center">v</b><span class="grow ellip">${esc(s.clubs[f.a].name)}</span></div>`}`).join('')}</div>` : ''}
       ${allTimeCard}`;
-    const secHistory = `${movesCard}
+    const secHistory = `${UI.graduatesCard ? UI.graduatesCard(id) : ''}${movesCard}
       ${UI.clubSeasonsCard(id)}
       ${UI.clubLegendsCard(id)}
       ${UI.loreCard ? UI.loreCard(c) : ''}

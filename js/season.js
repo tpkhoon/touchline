@@ -2423,6 +2423,7 @@
     FM.Analytics.newSeason();
     Object.values(S.clubs).forEach((cl) => ((cl.forms = undefined), (cl.lastDn = undefined))); // (the formations used are counted afresh; a new calendar has no last match)
     FM.Transfers.endLoans();
+    FM.Youth.seasonReport(); // the academy report, before the season figures are cleared
     // retirements, contracts, history snapshot
     Object.values(S.players).forEach((p) => {
       if (p.retired) return;
