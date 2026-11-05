@@ -433,6 +433,9 @@
         S.players[p.id] = p;
         made.push(p);
       }
+      // (the new intake goes straight into the youth sides: until the next season they would sit in the first-team squad, and a short
+      // position there gets a fifteen-year-old a league game)
+      if (made.length && FM.Youth && FM.Youth.assign) (W.rosterVer++, FM.Youth.assign(c));
       if (W.isUser(c.id)) FM.Stories.youthIntake(c, made);
     });
   };

@@ -166,11 +166,24 @@
       <div class="tiny dim" style="margin:-4px 2px 6px">Your most promising youngsters: where each is, what comes next and who is in his way. The player to beat is the weakest regular in his position; the time is the gap in ability over what he should grow in a year.</div>
       <div class="card flat list" style="padding:4px 12px">${cards.join('')}${list.length > 12 ? `<div class="tiny dim" style="padding:6px 0">and ${list.length - 12} more in the lists below</div>` : ''}</div>`;
   };
+  // Who gets the games in a youth side: the manager's brief, handed to the youth coach, who picks the sides under it
+  const briefChips = (c, team) => {
+    const cur = Y.briefOf(c.id, team);
+    const chips = Object.entries(Y.BRIEFS)
+      .filter(([k]) => k !== 'minutes' || team === 'u21')
+      .map(
+        ([k, v]) =>
+          `<button class="chip${cur === k ? ' on' : ''}" data-act="youthBrief" data-t="${team}" data-v="${k}">${esc(v.label)}</button>`,
+      )
+      .join('');
+    return `<div class="row" style="gap:4px;margin:2px 2px 6px;flex-wrap:wrap"><span class="tiny dim" style="align-self:center">Brief</span>${chips}</div><div class="tiny dim" style="margin:0 2px 6px">${esc(Y.BRIEFS[cur].note.charAt(0).toUpperCase() + Y.BRIEFS[cur].note.slice(1))}. The coach picks the team; you can still move players between sides.</div>`;
+  };
   UI.youthSides = function (c) {
     const out = [];
     for (const [team, def] of Object.entries(Y.TEAMS)) {
       const sq = Y.squadOf(c.id, team).sort((a, b) => b.pa - a.pa);
       out.push(`<div class="sec"><div class="h3">${esc(def.label)}</div>${leagueLine(c, team)}</div>
+        ${briefChips(c, team)}
         <div class="card flat list" style="padding:4px 12px">${
           sq
             .map((p) =>
@@ -228,6 +241,14 @@
         );
     }
     return out.join('');
+  };
+  UI.acts.youthBrief = (d) => {
+    if (!Y.BRIEFS[d.v] || !Y.TEAMS[d.t]) return;
+    const u = S().user;
+    u.youthBrief = u.youthBrief || {};
+    u.youthBrief[d.t] = d.v;
+    UI.save();
+    UI.render();
   };
   UI.acts.youthPlan = (d) => {
     const p = S().players[d.id];

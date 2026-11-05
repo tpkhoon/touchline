@@ -117,13 +117,48 @@
   };
   Y.assignAll = () => Object.values(S().clubs).forEach((c) => Y.assign(c));
   Y.squadOf = (clubId, team) => W.squad(clubId).filter((p) => p.team === team && !p.loan);
+  // The brief a youth side plays under: who gets the games. Yours is set on the Academy tab (S.user.youthBrief, a side each); a youth-focused
+  // AI club develops its youngsters, the rest play to win.
+  //   win:     the strongest players play (the best results)
+  //   develop: the players with the fewest games play first, so every youngster gets football
+  //   minutes: young players of the first-team squad who are not playing play first (the Under-21s only), then the strongest
+  Y.BRIEFS = {
+    win: { label: 'Win matches', note: 'the strongest players play' },
+    develop: { label: 'Develop youngsters', note: 'the players with the fewest games play first' },
+    minutes: {
+      label: 'Minutes for promoted players',
+      note: 'young first-team players who are not playing get Under-21 games first',
+    },
+  };
+  Y.briefOf = (clubId, team) => {
+    const c = S().clubs[clubId];
+    const mine = W.isUser(clubId) && S().user.youthBrief && S().user.youthBrief[team];
+    if (mine && Y.BRIEFS[mine]) return mine;
+    return c && c.identity === 'youth' ? 'develop' : 'win';
+  };
+  // The thirteen (eleven and two substitutes) who play a youth match for the club's side, under its brief
+  Y.matchSquad = function (clubId, team) {
+    const brief = Y.briefOf(clubId, team);
+    let pool = Y.squadOf(clubId, team).filter(W.available);
+    if (brief === 'minutes' && team === 'u21')
+      pool = pool.concat(
+        W.squad(clubId).filter(
+          (p) => !p.team && !p.loan && W.age(p) <= 21 && (p.season.apps || 0) < 6 && W.available(p),
+        ),
+      );
+    const by =
+      brief === 'develop'
+        ? (a, b) => (a.season.yapps || 0) - (b.season.yapps || 0) || b.pa - a.pa
+        : brief === 'minutes'
+          ? (a, b) => (a.team ? 1 : 0) - (b.team ? 1 : 0) || b.ca - a.ca
+          : (a, b) => b.ca - a.ca;
+    return pool.sort(by).slice(0, 13);
+  };
   // A youth side's level: its real players, topped up to eleven by the academy's general standard (clubs don't
   // carry full youth squads in the database; only the real players record appearances)
   const strength = (clubId, team) => {
     const c = S().clubs[clubId],
-      real = Y.squadOf(clubId, team)
-        .filter(W.available)
-        .sort((a, b) => b.ca - a.ca)
+      real = Y.matchSquad(clubId, team)
         .slice(0, 11)
         .map((p) => p.ca);
     const base = W.levelFor(c.rep) - (team === 'u21' ? 16 : 24) + ((c.facilities && c.facilities.academy) || 2) * 2;
@@ -165,12 +200,7 @@
           lg.last[h] = { opp: a, gf: hg, ga: ag, home: true };
           lg.last[a] = { opp: h, gf: ag, ga: hg, home: false };
           // the players who played get a youth appearance (counted toward development)
-          for (const id of [h, a])
-            Y.squadOf(id, team)
-              .filter(W.available)
-              .sort((x, y) => y.ca - x.ca)
-              .slice(0, 13)
-              .forEach((p) => (p.season.yapps = (p.season.yapps || 0) + 1));
+          for (const id of [h, a]) Y.matchSquad(id, team).forEach((p) => (p.season.yapps = (p.season.yapps || 0) + 1));
         }
       }
     }

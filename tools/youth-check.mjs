@@ -32,6 +32,7 @@ const tierOf = (c) => {
   const comp = c && c.comp && S().comps[c.comp];
   return comp ? comp.tier || 1 : null;
 };
+const examples = [];
 const cohort = new Map(); // id -> what we know about a player an academy made while we watched
 const seen = new Set(Object.keys(S().players));
 const startCA = new Map(); // id -> ca at the start of the season, for players 17 to 23
@@ -67,7 +68,13 @@ function snapshot() {
     if (m) {
       m.ages[a] = { ca: p.ca, club: p.clubId, pro: !!p.clubId };
       const c = p.clubId && S().clubs[p.clubId];
-      if (m.debut === null && !p.team && played(c) && (p.season.apps || 0) > 0) m.debut = a;
+      if (m.debut === null && !p.team && played(c) && (p.season.apps || 0) > 0) {
+        m.debut = a;
+        if (args.debug && a <= 17 && examples.length < 10)
+          examples.push(
+            `${p.ln} age ${a} ${p.pos} ca ${p.ca} apps ${p.season.apps} yapps ${p.season.yapps} team ${p.team} youth ${p.youth} club ${c.name} (made ${m.y0} at ${S().clubs[m.club0] && S().clubs[m.club0].name})`,
+          );
+      }
       if (played(c) && tierOf(c) === 1 && !c.parent && !p.team && (p.season.apps || 0) > 0) {
         m.top = true;
         if (m.topDebut === null) m.topDebut = a;
@@ -186,4 +193,8 @@ out.loans = { loan: L, stay: N };
 // the reserve sides: how the world's youth leagues and B teams end
 const bs = Object.values(S().clubs).filter((c) => c.parent);
 say(`\nB teams: ${bs.length}; none is promoted into its parent's division (a rule of the game, not measured)`);
+if (args.debug) {
+  console.log('\nExamples of a debut at 17 or younger:');
+  for (const e of examples) console.log(e);
+}
 if (args.json) console.log(JSON.stringify(out));
