@@ -169,6 +169,110 @@
         return t[i - 1][1] + ((t[i][1] - t[i - 1][1]) * (gap - t[i - 1][0])) / (t[i][0] - t[i - 1][0]);
     return t[t.length - 1][1];
   };
+  // ---------- Mentors ----------
+  // You pair a youngster (twenty-one or under) with an experienced first-team player of his club (twenty-six or over, two youngsters at most
+  // each). A good example speeds up the young player's development; a bad one slows it, and over the seasons the youngster's
+  // professionalism drifts toward his mentor's, so a model professional shapes him and a troublemaker spoils him. Only the user pairs them;
+  // another club's youngsters have the old effect of a Mentor trait in the squad.
+  Sea.MENTOR_MAX = 2;
+  Sea.mentorOf = function (p) {
+    const m = p.mentor && FM.S.players[p.mentor];
+    return m && !m.retired && m.clubId === p.clubId && !m.loan && !m.team && W.age(m) >= 26 && W.age(p) <= 21
+      ? m
+      : null;
+  };
+  // What a mentor does for a youngster, as a fraction of his growth: about +5% for an ordinary professional, up to +25% for a
+  // model mentor in the same line of the team, and below zero for a bad influence
+  Sea.mentorQuality = function (m, p) {
+    const bad = ['Volatile', 'Laid Back', 'Mercenary'].includes(m.personality);
+    let q =
+      0.05 +
+      (m.hid.prof - 10) * 0.007 +
+      (m.hid.lead - 10) * 0.004 +
+      (W.hasTrait(m, 'Mentor') ? 0.08 : 0) +
+      (W.hasTrait(m, 'Model Professional') ? 0.03 : 0) -
+      (W.hasTrait(m, 'Low Work Ethic') ? 0.06 : 0) -
+      (bad ? 0.05 : 0);
+    q = U.clamp(q, -0.15, 0.25);
+    if (q > 0 && p && D.POS_GROUP[m.pos] === D.POS_GROUP[p.pos]) q *= 1.4; // (learning from the man in his own position)
+    return U.clamp(q, -0.15, 0.3);
+  };
+  Sea.menteesOf = (m) => Object.values(FM.S.players).filter((x) => x.mentor === m.id && Sea.mentorOf(x) === m);
+  Sea.pairMentor = function (p, m) {
+    const c = W.userClub();
+    if (!c || p.clubId !== c.id || p.loan) return { ok: false, msg: 'He has to be at your club.' };
+    if (W.age(p) > 21) return { ok: false, msg: 'Mentors are for players of twenty-one or under.' };
+    if (!m) {
+      delete p.mentor;
+      return { ok: true, msg: W.short(p) + ' no longer has a mentor.' };
+    }
+    if (m.clubId !== c.id || m.loan || m.team || W.age(m) < 26)
+      return { ok: false, msg: 'A mentor has to be an experienced player (26 or over) in your first team.' };
+    if (m.id === p.id) return { ok: false, msg: 'He cannot mentor himself.' };
+    if (Sea.menteesOf(m).filter((x) => x.id !== p.id).length >= Sea.MENTOR_MAX)
+      return { ok: false, msg: W.short(m) + ' already has ' + Sea.MENTOR_MAX + ' youngsters to look after.' };
+    p.mentor = m.id;
+    p.mentorYears = 0;
+    return { ok: true, msg: W.short(m) + ' will mentor ' + W.short(p) + '.' };
+  };
+  // A year with a mentor: the youngster's professionalism and temperament drift toward his, and now and then he picks up a habit
+  Sea.mentorYear = function (p) {
+    if (!p.mentor) return;
+    const m = Sea.mentorOf(p),
+      mine = W.ownPlayer(p);
+    if (!m) {
+      if (mine && FM.S.players[p.mentor])
+        FM.News.add({
+          type: 'club',
+          title: W.name(p) + ' loses his mentor',
+          body:
+            W.name(FM.S.players[p.mentor]) +
+            ' is no longer with the first team, so the pairing ends. Pick a new mentor from his card.',
+          pid: p.id,
+          clubId: p.clubId,
+        });
+      delete p.mentor;
+      return;
+    }
+    p.mentorYears = (p.mentorYears || 0) + 1;
+    const before = p.personality;
+    for (const k of ['prof', 'temp'])
+      p.hid[k] = Math.round(U.clamp(p.hid[k] + U.clamp((m.hid[k] - p.hid[k]) * 0.2, -1.5, 1.5), 1, 20));
+    // a habit: a model professional's, or a bad example's
+    if (W.hasTrait(m, 'Model Professional') && !W.hasTrait(p, 'Model Professional') && Math.random() < 0.12)
+      p.traits.push('Model Professional');
+    if (
+      W.hasTrait(m, 'Low Work Ethic') &&
+      !W.hasTrait(p, 'Low Work Ethic') &&
+      !W.hasTrait(p, 'Model Professional') &&
+      Math.random() < 0.15
+    )
+      p.traits.push('Low Work Ethic');
+    p.personality = W.personality(p.hid);
+    if (mine && (p.personality !== before || Math.abs(Sea.mentorQuality(m, p)) >= 0.1))
+      FM.News.add({
+        type: 'club',
+        title: W.name(p) + ' after a year with ' + W.name(m),
+        body:
+          Sea.mentorQuality(m, p) >= 0.1
+            ? W.short(m) +
+              ' has been a good example: ' +
+              W.short(p) +
+              (p.personality !== before
+                ? ' is now seen as ' + p.personality.toLowerCase() + ' (was ' + before.toLowerCase() + ')'
+                : ' is picking up his habits') +
+              '.'
+            : Sea.mentorQuality(m, p) < 0
+              ? W.short(m) +
+                ' is not the example to follow: ' +
+                W.short(p) +
+                (p.personality !== before ? ' is now ' + p.personality.toLowerCase() : ' is picking up bad habits') +
+                '. Think about a different mentor.'
+              : W.short(p) + ' has learned from ' + W.short(m) + '.',
+        pid: p.id,
+        clubId: p.clubId,
+      });
+  };
   Sea.develop = function (p, frac) {
     const S = FM.S;
     const club = p.clubId && S.clubs[p.clubId];
@@ -200,8 +304,10 @@
       g *= Sea.challengeK(p); // the level he plays at: too easy teaches little, a little above his own teaches most
       // (his coach's way with the young and with keepers)
       if (coach) g *= (a <= 21 ? coach.young : 1) * (p.pos === 'GK' ? coach.gk : 1);
-      // a Mentor in the squad: the young learn from him
-      if (a <= 21 && club && W.squad(club.id).some((q) => q !== p && W.hasTrait(q, 'Mentor'))) g *= 1.12;
+      // a mentor you chose for him, or else a Mentor in the squad: the young learn from him
+      const mentor = Sea.mentorOf(p);
+      if (mentor) g *= 1 + Sea.mentorQuality(mentor, p);
+      else if (a <= 21 && club && W.squad(club.id).some((q) => q !== p && W.hasTrait(q, 'Mentor'))) g *= 1.12;
       // the training ground has a ceiling: a player who has outgrown it develops slowly until it is upgraded
       if (club) {
         const cap = Sea.devCap(club);

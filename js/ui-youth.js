@@ -8,7 +8,8 @@
     C = UI.C,
     Y = FM.Youth;
   const S = () => FM.S;
-  const esc = U.esc;
+  const esc = U.esc,
+    P = (id) => S().players[id];
 
   const btn = (id, to, label) =>
     `<button class="btn sm" style="padding:4px 8px" data-act="youthMove" data-id="${id}" data-v="${to}">${label}</button>`;
@@ -146,6 +147,41 @@
           `<button class="chip${p.plan === k ? ' on' : ''}" data-act="youthPlan" data-id="${p.id}" data-v="${k}">${esc(v.label)}</button>`,
       )
       .join('')}</div>`;
+  // ---------- Mentors ----------
+  const mentorLine = (p) => {
+    if (W.age(p) > 21 || p.loan) return '';
+    const m = FM.Season.mentorOf(p),
+      q = m ? FM.Season.mentorQuality(m, p) : 0;
+    const note = m
+      ? ` <span class="tiny" style="color:var(--${q >= 0.05 ? 'good' : q < 0 ? 'bad' : 'ink3'})">${q >= 0 ? '+' : ''}${Math.round(q * 100)}% growth</span>`
+      : '';
+    return `<div class="row" style="gap:4px;margin-top:6px"><span class="tiny dim" style="align-self:center">Mentor</span><button class="chip${m ? ' on' : ''}" data-act="mentorOpen" data-id="${p.id}">${m ? esc(W.short(m)) : 'None: choose'}</button>${note}</div>`;
+  };
+  UI.mentorHTML = function (p) {
+    const c = W.userClub(),
+      cur = FM.Season.mentorOf(p);
+    const cands = W.squad(c.id)
+      .filter((m) => !m.team && !m.loan && W.age(m) >= 26 && m.id !== p.id)
+      .sort((a, b) => FM.Season.mentorQuality(b, p) - FM.Season.mentorQuality(a, p));
+    const rows = cands
+      .map((m) => {
+        const q = FM.Season.mentorQuality(m, p),
+          n = FM.Season.menteesOf(m).filter((x) => x.id !== p.id).length,
+          full = n >= FM.Season.MENTOR_MAX;
+        const tone = q >= 0.1 ? 'good' : q < 0 ? 'bad' : 'ink3';
+        return `<button class="chip${cur && cur.id === m.id ? ' on' : ''}" style="justify-content:space-between;width:100%" data-act="mentorPick" data-id="${p.id}" data-m="${m.id}"${full ? ' disabled' : ''}><span>${esc(W.short(m))} ${W.posLabel(m)} · ${W.age(m)} · ${esc(m.personality)}${W.hasTrait(m, 'Mentor') ? ' · Mentor' : ''}</span><span style="color:var(--${tone})">${q >= 0 ? '+' : ''}${Math.round(q * 100)}%${full ? ' (full)' : ''}</span></button>`;
+      })
+      .join('');
+    return `<div class="tiny dim" style="margin-bottom:8px">A mentor is an experienced first-team player (26 or over) who looks after up to two youngsters. A good example speeds up ${esc(W.short(p))}'s growth, more so in the same position, and his professionalism rubs off over the seasons; a bad influence slows him and spoils him.</div><div class="col" style="gap:4px">${rows || '<div class="empty">Nobody experienced enough in the first team.</div>'}</div>${cur ? `<button class="btn block" style="margin-top:10px" data-act="mentorPick" data-id="${p.id}" data-m="">No mentor</button>` : ''}`;
+  };
+  UI.acts.mentorOpen = (d) => UI.sheet(UI.mentorHTML(P(d.id)), { title: 'Mentor for ' + W.short(P(d.id)) });
+  UI.acts.mentorPick = (d) => {
+    const r = FM.Season.pairMentor(P(d.id), d.m ? P(d.m) : null);
+    UI.toast(r.msg, 3500);
+    UI.save();
+    UI.closeAllSheets();
+    UI.render();
+  };
   UI.youthHub = function (c) {
     const list = [];
     for (const [team, def] of Object.entries(Y.TEAMS))
@@ -171,7 +207,7 @@
               : '';
       const line = (t, tone) =>
         `<div class="tiny" style="margin-top:3px;${tone ? `color:var(--${tone})` : 'opacity:.8'}">${esc(t)}</div>`;
-      return `<div style="padding-bottom:6px">${C.playerRow(p, ` · ${esc(where)}${p.season.apps ? ` · ${U.plural(p.season.apps, 'game')}` : ''}`)}<div style="margin:0 0 4px 4px">${planChips(p)}${w.flag ? `<div class="tiny" style="margin-top:3px;font-weight:600;color:var(--${w.flag.key === 'ready' ? 'good' : 'warn'})">${esc(w.flag.text)}</div>` : ''}${line(w.next, w.tone)}${w.blocker ? line(`Blocked by ${w.blockNote}`, '') : ''}${moves ? `<div class="row" style="gap:4px;margin-top:6px">${moves}</div>` : ''}</div></div>`;
+      return `<div style="padding-bottom:6px">${C.playerRow(p, ` · ${esc(where)}${p.season.apps ? ` · ${U.plural(p.season.apps, 'game')}` : ''}`)}<div style="margin:0 0 4px 4px">${planChips(p)}${mentorLine(p)}${w.flag ? `<div class="tiny" style="margin-top:3px;font-weight:600;color:var(--${w.flag.key === 'ready' ? 'good' : 'warn'})">${esc(w.flag.text)}</div>` : ''}${line(w.next, w.tone)}${w.blocker ? line(`Blocked by ${w.blockNote}`, '') : ''}${moves ? `<div class="row" style="gap:4px;margin-top:6px">${moves}</div>` : ''}</div></div>`;
     });
     const used = Y.academyOf(c.id).length,
       places = Y.places(c);
