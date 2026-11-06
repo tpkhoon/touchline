@@ -47,4 +47,8 @@ self.onmessage = async function (e) {
   } catch (err) {
     self.postMessage({ type: 'error', id: d.id, message: String((err && err.stack) || err) });
   }
+  // The world is let go as soon as the day has been sent back: the worker kept a whole copy of it (hundreds of megabytes in a big
+  // world) for as long as the page was open, on top of the one the screens use, which on a phone is memory the system takes back from
+  // other apps (the music player's, say). The next run sends a fresh copy.
+  FM.S = null;
 };
