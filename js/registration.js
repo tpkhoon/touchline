@@ -454,12 +454,22 @@
       over = R.mlsStatus(c).charge - m.cap;
     }
   };
-  R.canSign = function (c, p, st) {
+  // soft: for the manager's own signings. The limits on the squad (the squad list, non-EU and foreign places, the matchday cap) do not
+  // stop a deal: it goes through with `warn` saying what it breaks, and the squad is brought within the rules at the registration
+  // deadline (R.registerSquad: the players over a limit are left out). What he cannot be signed without stays a refusal: the club's own
+  // signing policy and embargo, the work permit, the signings from abroad a league allows and the MLS salary rules.
+  R.canSign = function (c, p, st, soft) {
     const pc = R.policy(c, p);
     if (!pc.ok) return pc;
     st = st || R.status(c, p.id);
     if (!st) return { ok: true };
     const r = st.r;
+    let warn = null;
+    const quota = (why) => {
+      if (!soft) return { ok: false, why };
+      warn = warn || why;
+      return null;
+    };
     if (r.permit && R.permitNeeded(p)) {
       const g = R.gbe(p, c);
       if (!g.ok)
@@ -468,30 +478,37 @@
           why: `No work permit (Governing Body Endorsement): ${g.need == null ? `${D.NATIONS[g.nation].name} are outside the top 70, so there is no automatic route` : `he has played ${Math.round(g.share * 100)}% of ${D.NATIONS[g.nation].name}'s games in two years and ${Math.round(g.need * 100)}% would be automatic`}; on points he has ${g.points} of the ${R.PERMIT_NEED} needed (${g.intl} for international games, ${g.club} for his minutes).`,
         };
     }
-    if (r.squad && senior(p) && !R.homegrown(p, c.nat) && st.nonHG >= r.squad - r.hg)
-      return {
-        ok: false,
-        why: `No room on the squad list: ${st.nonHG} of ${U.plural(r.squad - r.hg, 'place')} for non-homegrown over-21s are taken.`,
-      };
-    if (r.nonEU && R.nonEU(p, c) && st.nonEU >= r.nonEU)
-      return { ok: false, why: `All ${r.nonEU} non-EU places are taken.` };
+    if (r.squad && senior(p) && !R.homegrown(p, c.nat) && st.nonHG >= r.squad - r.hg) {
+      const f = quota(
+        `No room on the squad list: ${st.nonHG} of ${U.plural(r.squad - r.hg, 'place')} for non-homegrown over-21s are taken.`,
+      );
+      if (f) return f;
+    }
+    if (r.nonEU && R.nonEU(p, c) && st.nonEU >= r.nonEU) {
+      const f = quota(`All ${r.nonEU} non-EU places are taken.`);
+      if (f) return f;
+    }
     const full = (st.groups || []).find((g) => g.f(p) && g.n >= g.cap);
-    if (full)
-      return {
-        ok: false,
-        why: `All ${full.cap} ${full.label === 'international players' ? 'international slots' : full.label === 'foreign players' ? 'foreign-player places' : `places for ${full.label}`} are taken.`,
-      };
+    if (full) {
+      const f = quota(
+        `All ${full.cap} ${full.label === 'international players' ? 'international slots' : full.label === 'foreign players' ? 'foreign-player places' : `places for ${full.label}`} are taken.`,
+      );
+      if (f) return f;
+    }
     // a matchday cap needs a squad to match: at most five more foreigners than the matchday allows
-    if (r.matchday && !r.foreign && R.isForeign(p, c, r) && st.foreign >= r.matchday + 5)
-      return { ok: false, why: `Too many foreign players for the ${r.matchday}-a-matchday rule.` };
+    if (r.matchday && !r.foreign && R.isForeign(p, c, r) && st.foreign >= r.matchday + 5) {
+      const f = quota(`Too many foreign players for the ${r.matchday}-a-matchday rule.`);
+      if (f) return f;
+    }
     if (r.nonEUSign && !R.isEU(p) && p.clubId && FM.S.clubs[p.clubId].nat !== c.nat && st.nonEUSigned >= r.nonEUSign)
       return { ok: false, why: `The ${r.nonEUSign} non-EU signings from abroad allowed this season have been made.` };
     // the wage is still to be negotiated: with no Designated Player place left he can be signed on up to the maximum charge
     if (r.mls) {
       const w = W.wageFor(p) * WKS();
-      return R.mlsCheck(c, p, R.mlsStatus(c).dps < r.mls.dp ? w : Math.min(w, r.mls.maxCharge), false);
+      const m = R.mlsCheck(c, p, R.mlsStatus(c).dps < r.mls.dp ? w : Math.min(w, r.mls.maxCharge), false);
+      if (!m.ok) return m;
     }
-    return { ok: true };
+    return warn ? { ok: true, warn } : { ok: true };
   };
   // World generation: a nationality for a new squad member that keeps the club within its league's rules.
   // made: [{ nat, age }] of the players generated so far; pick: draws a nationality from the league's mix

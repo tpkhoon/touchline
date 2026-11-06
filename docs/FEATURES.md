@@ -606,6 +606,10 @@ Every feature from the game design document, with what is playable in the protot
 | Careers | Clubs come for a manager who is doing well: a bigger club's approach (one at a time, a week to answer, a cool-down after) with Accept, which leaves your club, and Decline, which pleases the board | Playtest round 24 |
 | International | A third international break late in the season: friendlies for every free nation and the invitational tournaments, after the two windows that carry the qualifiers and the Nations League (a third break to move in the editor's calendar) | Playtest round 24 |
 | Editor | Family ties for nations of your own: a parent nation and a share of players with a second nationality there (Greenland and Denmark), a few players with family in neighbours for a country with no ties | Playtest round 24 |
+| UI | Open all / Fold all on the Nations tab and the World leagues view | Playtest round 24 |
+| UI | Switching tabs in a player profile keeps your place instead of scrolling to the top | Playtest round 24 |
+| Transfers | Signings that break the registration limits go through with a warning: the squad is registered within the rules at the deadline | Playtest round 24 |
+| Finance | One slider for the wage and transfer budgets | Playtest round 24 |
 | Squad | Status filter on the squad screen: foreign or non-EU places, non-EU, EU, foreign Asian, ASEAN, African or American, homegrown, not homegrown, dual nationals | Playtest round 24 |
 | Transfers | Sliders for contract and transfer negotiations (fee, wage, bonuses, release clause, wage rise, length, and your asking fee when selling) | Playtest round 24 |
 | Finance | Transfer and wage budgets as sliders that respond at once (no full save and redraw on each change) | Playtest round 24 |

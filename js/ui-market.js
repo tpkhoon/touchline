@@ -550,24 +550,39 @@
   UI.budgetCard = function (c) {
     const F = FM.Finance,
       u = S().user,
-      step = F.budgetStep(c),
       wb = F.wageBudget(c),
       own = !!u.wageBudget && wb < F.wageLimit(c);
-    // a slider: the figure follows the thumb at once and the state is saved a moment after it stops (a tap used to save the whole
-    // game and draw the screen again)
-    const ctl = (kind, label, val, note, min, max, now) =>
-      `<div style="margin-top:12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${label}</div></div><b id="bud-${kind}" style="min-width:72px;text-align:right">${val}</b></div><input type="range" data-input="budgetSlide" data-k="${kind}" min="${Math.round(min)}" max="${Math.max(Math.round(max), Math.round(min))}" step="${step}" value="${Math.round(now)}" aria-label="${label}" style="width:100%;height:44px" ${max <= min ? 'disabled' : ''}><div class="tiny dim" id="bud-${kind}-note">${note}</div></div>`;
+    // One slider for both: the money the club can commit is shared between transfer fees (up to the cash in the bank) and the wage
+    // ceiling (from 30% of revenue to the board's limit), and the thumb moves it from one to the other. The figures follow the thumb at
+    // once and the state is saved a moment after it stops (a tap used to save the whole game and draw the screen again).
+    const cash = Math.max(0, c.balance),
+      wMin = 0.3 * F.revenue(c),
+      wTop = F.wageLimit(c);
+    const pos = cash > 0 ? c.budget / cash : wTop > wMin ? 1 - (wb - wMin) / (wTop - wMin) : 0;
+    const t = Math.round(U.clamp(pos, 0, 1) * 1000);
     return `<div class="card"><div class="h3">Budgets</div>
-      ${ctl('transfer', 'Transfer budget', U.money(c.budget), `Fees you can spend, up to the cash in the bank (${U.money(Math.max(0, c.balance))}).`, 0, Math.max(0, c.balance), c.budget)}
-      ${ctl('wage', 'Wage budget', U.money(wb), own ? `Your own ceiling on the yearly wage bill (${U.money(F.wageBill(c))} now); a deal past it is refused. Slide to the right to clear it.` : `The board's limit (${Math.round(F.LIMIT.freeze * 100)}% of revenue); lower it to keep a margin. The wage bill is ${U.money(F.wageBill(c))} a year.`, 0.3 * F.revenue(c), F.wageLimit(c), wb)}</div>`;
+      <div class="row" style="margin-top:12px;gap:8px"><div class="grow"><div class="small b">Transfer budget</div></div><b id="bud-transfer" style="min-width:72px;text-align:right">${U.money(c.budget)}</b></div>
+      <div class="row" style="margin-top:6px;gap:8px"><div class="grow"><div class="small b">Wage budget</div></div><b id="bud-wage" style="min-width:72px;text-align:right">${U.money(wb)}</b></div>
+      <input type="range" data-input="budgetSlide" min="0" max="1000" step="10" value="${t}" aria-label="Share the club's money between wages and transfers" style="width:100%;height:44px;margin-top:8px">
+      <div class="row tiny dim" style="justify-content:space-between"><span>More for wages</span><span>More for transfers</span></div>
+      <div class="tiny dim" style="margin-top:8px;line-height:1.5">One pot, shared out: slide towards transfers for more to spend on fees (up to the ${U.money(cash)} in the bank) and a lower ceiling on the yearly wage bill; towards wages for the board's limit (${Math.round(F.LIMIT.freeze * 100)}% of revenue) and less for fees. A signing past ${own ? 'your' : 'the'} wage ceiling is refused. The wage bill is ${U.money(F.wageBill(c))} a year.</div></div>`;
   };
   UI.acts.budgetSlide = (d, el) => {
     const c = W.userClub();
     if (!c) return;
-    FM.Finance.setBudget(c, d.k, +el.value);
-    const v = d.k === 'transfer' ? c.budget : FM.Finance.wageBudget(c);
-    const b = document.getElementById('bud-' + d.k);
-    if (b) b.textContent = U.money(v);
+    const F = FM.Finance,
+      t = U.clamp(+el.value / 1000, 0, 1),
+      step = F.budgetStep(c),
+      wMin = 0.3 * F.revenue(c),
+      wTop = F.wageLimit(c);
+    F.setBudget(c, 'transfer', Math.round((t * Math.max(0, c.balance)) / step) * step);
+    F.setBudget(c, 'wage', wTop - t * (wTop - wMin));
+    const set = (k, v) => {
+      const b = document.getElementById('bud-' + k);
+      if (b) b.textContent = U.money(v);
+    };
+    set('transfer', c.budget);
+    set('wage', F.wageBudget(c));
     clearTimeout(UI._budT);
     UI._budT = setTimeout(() => UI.save(), 1200);
   };

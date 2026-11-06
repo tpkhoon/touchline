@@ -275,8 +275,8 @@
           <div class="tiny dim" style="margin-top:6px">Bonuses are what he'd earn at his expected appearances and goals; the first season includes the agent's fee (${U.money(Co.agentFee(p, o.fee, t.wage, mode))}). Your wage bill would be ${Math.round(cost.ratio * 100)}% of revenue${cost.ratio >= FM.Finance.LIMIT.cut ? ` — over the ${Math.round(FM.Finance.LIMIT.cut * 100)}% where the board cut budgets` : ''}.${t.release ? ` A club paying ${U.money(t.release)} can take him.` : ''}</div></div>`;
     }
     const rivals = !renew && o.mode !== 'loan' ? FM.Market.rivals(p) : [];
-    const reg = !renew ? (FM.Reg.real() ? FM.Reg.canSign(c, p) : FM.Reg.policy(c, p)) : { ok: true };
-    const extraLines = `${rivals.length ? `<div class="warnline" style="margin-top:10px">Also in for him: <b>${rivals.map((x) => esc(x.name)).join(', ')}</b>. Once everything is agreed he'll weigh up the league, the club, playing time, wages and home.</div>` : ''}${reg.ok ? '' : `<div class="warnline" style="margin-top:10px;color:var(--bad)">${esc(reg.why)}</div>`}`;
+    const reg = !renew ? (FM.Reg.real() ? FM.Reg.canSign(c, p, undefined, true) : FM.Reg.policy(c, p)) : { ok: true };
+    const extraLines = `${rivals.length ? `<div class="warnline" style="margin-top:10px">Also in for him: <b>${rivals.map((x) => esc(x.name)).join(', ')}</b>. Once everything is agreed he'll weigh up the league, the club, playing time, wages and home.</div>` : ''}${reg.ok ? (reg.warn ? `<div class="warnline" style="margin-top:10px;color:var(--warn)">${esc(reg.warn)} You can still sign him: the squad is registered within the rules at the deadline, and whoever is over a limit is left out until the next window closes.</div>` : '') : `<div class="warnline" style="margin-top:10px;color:var(--bad)">${esc(reg.why)}</div>`}`;
     const agentBtn =
       o.counterTerms && o.mode !== 'loan'
         ? `<button class="btn block" style="margin-top:10px" data-act="ngAgentTerms">Take the agent's proposal: ${U.money(o.counterTerms.wage)}/wk, rest unchanged</button>`
@@ -1289,7 +1289,7 @@
         })()}`;
     }
     top += nationsLeagueSection(s, u);
-    return W.employed() ? top + origIntl() + vac : vac + top + origIntl();
+    return UI.foldBar() + (W.employed() ? top + origIntl() + vac : vac + top + origIntl());
   };
   // The Nations League: a fold for each confederation (yours first), its leagues and their groups
   const nationsLeagueSection = (s, u) => {

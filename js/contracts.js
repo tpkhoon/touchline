@@ -331,7 +331,7 @@
         ok: false,
         msg: `That exceeds your transfer budget of ${U.money(club.budget)}${deal && deal.inst > 1 ? ' (the board sets aside half of the later instalments)' : ''}.`,
       };
-    const rc = FM.Reg.real() ? FM.Reg.canSign(club, p) : FM.Reg.policy(club, p);
+    const rc = FM.Reg.real() ? FM.Reg.canSign(club, p, undefined, true) : FM.Reg.policy(club, p);
     if (!rc.ok) return { ok: false, msg: `You can't register him: ${rc.why}` };
     const mc = FM.Reg.real() ? FM.Reg.mlsCheck(club, p, t.wage * D.WAGE_WEEKS, false) : { ok: true };
     if (!mc.ok) return { ok: false, msg: mc.why };

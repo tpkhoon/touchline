@@ -2863,6 +2863,7 @@
     const tierPill = (sim) =>
       `<span class="pill ${sim === 'full' ? 'acc' : ''}" title="${FM.Tiers.LABEL[sim]}">${FM.Tiers.ICON[sim]} ${sim}</span>`;
     return (
+      `<div class="row" style="gap:8px;margin:0 0 6px"><button class="btn sm grow" style="min-height:44px" data-act="wvFoldAll" data-v="open">Open all</button><button class="btn sm grow" style="min-height:44px" data-act="wvFoldAll" data-v="close">Fold all</button></div>` +
       rankingCard() +
       spotsCard() +
       `<div class="small muted" style="margin:0 2px 10px;line-height:1.5">${U.plural(W.leagues().length, 'league')} in three simulation tiers. <b>Full</b>: every match in the engine. <b>Light</b>: every fixture played by a fast statistical model. <b>Minimal</b>: scores only — squads exist for scouting. Tap a league for its table.</div>` +
@@ -2885,6 +2886,15 @@
         .join('')
     );
   }
+  // (every part of the world, and the ranking and places cards, opened or folded at once)
+  UI.acts.wvFoldAll = (d) => {
+    const on = d.v === 'open';
+    UI.sub.wvFold = {};
+    for (const k of Object.values(FM.Intl.CONFEDS)) UI.sub.wvFold[k] = !on;
+    UI.sub.lrankOpen = on;
+    UI.sub.spotsOpen = on;
+    UI.render();
+  };
   UI.acts.wvFold = (d) => {
     const names = FM.Intl.CONFEDS,
       mine = club() && names[FM.Intl.baseConfed(club().nat)];
@@ -3664,9 +3674,13 @@
   }
   UI.acts.ptab = (d) => {
     UI._ptab = { pid: d.id, v: d.v };
-    if (P(d.id)) UI.refreshSheet(playerHTML(P(d.id)));
     const body = document.querySelector('.sheet-wrap:last-child .sh-body');
-    if (body) body.scrollTop = 0;
+    // the tab strip stays where it was on the screen: switching tabs no longer scrolls back to the top of the profile
+    const bar = () => body && body.querySelector('[data-act="ptab"]');
+    const top = (el) => el.getBoundingClientRect().top - body.getBoundingClientRect().top;
+    const was = bar() ? top(bar()) : null;
+    if (P(d.id)) UI.refreshSheet(playerHTML(P(d.id)));
+    if (body && was != null && bar()) body.scrollTop += top(bar()) - was;
   };
   UI.acts.attrMode = (d) => {
     UI._attrMode = d.v;
@@ -3690,6 +3704,17 @@
     },
     true,
   );
+  // Open all / Fold all for a screen of folding cards (the nations' tournaments, qualifying pools and Nations League): the cards on
+  // screen are opened or folded where they are, and the choice is kept like one made card by card
+  UI.foldBar = () =>
+    `<div class="row" style="gap:8px;margin:8px 0 4px"><button class="btn sm grow" style="min-height:44px" data-act="foldAll" data-v="open">Open all</button><button class="btn sm grow" style="min-height:44px" data-act="foldAll" data-v="close">Fold all</button></div>`;
+  UI.acts.foldAll = (d) => {
+    const on = d.v === 'open';
+    document.querySelectorAll('#main details.cupfold').forEach((x) => {
+      UI._cupsOpen[x.dataset.cup] = on;
+      x.open = on;
+    });
+  };
   UI.acts.cupsFold = (d) => {
     const all = [...W.cups(), ...W.continentals(), ...W.worldCups(), ...FM.Regional.regionals()];
     for (const c of all) UI._cupsOpen[c.id] = d.v === 'open';
