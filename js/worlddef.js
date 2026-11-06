@@ -1188,8 +1188,81 @@
     };
   };
   // Put the definition's nations into the static data (the ones not there yet); returns what takes them out again
+  // Family ties of a nation of the world's own: a share of its players have a family link to another nation (D.DEMOGRAPHICS, the
+  // heritage mix) and so a second nationality, which the usual rules then settle (a passport the law lets them claim: js/citizenship.js).
+  // With a parent nation (Greenland: Denmark, Catalonia: Spain, an island: its colonial power) that is the nation they have ties to,
+  // `dual` of the players (0.4 unless set) with names of the parent's culture, and a small share of the parent's own players have a link
+  // back. Without one, a few players (8%) have family in nations of its part of the world. What it changes is put back by the
+  // function returned.
+  const familyTies = (n) => {
+    const undo = [];
+    const keep = (code) => {
+      const old = D.DEMOGRAPHICS[code];
+      undo.push(() => (old === undefined ? delete D.DEMOGRAPHICS[code] : (D.DEMOGRAPHICS[code] = old)));
+    };
+    const diaKeep = (key, nat) => {
+      const had = D.DIASPORA[key] !== undefined,
+        old = had ? D.DIASPORA[key][nat] : undefined;
+      undo.push(() => {
+        if (!had) delete D.DIASPORA[key];
+        else if (old === undefined) delete D.DIASPORA[key][nat];
+        else D.DIASPORA[key][nat] = old;
+      });
+    };
+    if (!D.DEMOGRAPHICS || !D.DIASPORA) return () => {};
+    const parent = n.parent && D.NATIONS[n.parent] && n.parent !== n.code ? n.parent : null;
+    const ties = new Map(); // pool key -> [[nation, weight]]
+    let total = 0;
+    const add = (nat, share) => {
+      const key = D.NATIVE_POOL[nat];
+      if (!key || !D.NAME_POOLS[key]) return;
+      if (!ties.has(key)) ties.set(key, []);
+      ties.get(key).push([nat, share]);
+      total += share;
+    };
+    if (parent) add(parent, n.dual != null ? n.dual : 0.4);
+    else {
+      const mates = D.nationCodes()
+        .filter(
+          (c) =>
+            c !== n.code &&
+            D.NATIONS[c].region === n.region &&
+            !D.NATIONS[c].custom &&
+            D.NATIVE_POOL[c] &&
+            D.NATIVE_POOL[c] !== n.pool,
+        )
+        .sort((a, b) => U.hash(n.code + a) - U.hash(n.code + b))
+        .slice(0, 3);
+      for (const c of mates) add(c, 0.08 / mates.length);
+    }
+    if (!total) return () => {};
+    keep(n.code);
+    D.DEMOGRAPHICS[n.code] = [
+      ['native', Math.round((1 - total) * 1000) / 10],
+      ...[...ties].map(([k, l]) => [k, Math.round(U.sum(l, (x) => x[1]) * 1000) / 10]),
+    ];
+    // (a heritage that stands for several name pools, as a Nordic one does, is looked up by the pool drawn)
+    for (const [key, l] of ties)
+      for (const k of new Set([key, ...((D.HERITAGE_POOL && D.HERITAGE_POOL[key]) || [])])) {
+        diaKeep(k, n.code);
+        D.DIASPORA[k] = D.DIASPORA[k] || {};
+        D.DIASPORA[k][n.code] = l.map(([nat, w]) => [nat, w]);
+      }
+    if (parent && !(D.DEMOGRAPHICS[parent] || []).some((x) => x[0] === n.pool)) {
+      keep(parent);
+      D.DEMOGRAPHICS[parent] = [
+        ...(D.DEMOGRAPHICS[parent] || [['native', 100]]),
+        [n.pool, Math.min(3, 0.3 + (n.weight != null ? n.weight : 0.5) * 1.5)],
+      ];
+      diaKeep(n.pool, parent);
+      D.DIASPORA[n.pool] = D.DIASPORA[n.pool] || {};
+      D.DIASPORA[n.pool][parent] = [...(D.DIASPORA[n.pool][parent] || []), [n.code, 1]];
+    }
+    return () => undo.reverse().forEach((f) => f());
+  };
   const addNations = (list) => {
     const added = [];
+    const ties = [];
     for (const n of list || []) {
       if (!n || !n.code || D.NATIONS[n.code]) continue;
       D.NATIONS[n.code] = nationEntry(n);
@@ -1216,10 +1289,12 @@
         }
         mix[n.code] = Math.round(w * k * 100) / 100;
       }
+      ties.push(familyTies(n));
       added.push(n);
     }
     if (added.length) D.widenNames();
     return function remove() {
+      ties.reverse().forEach((f) => f());
       for (const n of added) {
         delete D.NATIONS[n.code];
         delete D.NATIVE_POOL[n.code];
@@ -1366,6 +1441,15 @@
         e.push(`${at}: the template must be a nation of the game`);
       if (n.weight != null && !(n.weight >= 0.1 && n.weight <= 3))
         e.push(`${at}: how common its players are is between 0.1 and 3`);
+      if (
+        n.parent &&
+        !(D.NATIONS[n.parent] || (def.newNations || []).some((x) => x.code === n.parent)) &&
+        n.parent !== n.code
+      )
+        e.push(`${at}: the nation it has family ties to must be a nation of the game`);
+      if (n.parent === n.code) e.push(`${at}: a nation cannot have family ties to itself`);
+      if (n.dual != null && !(n.dual >= 0 && n.dual <= 0.9))
+        e.push(`${at}: the share of players with family ties is between 0 and 0.9`);
     }
     return e;
   };
@@ -3259,6 +3343,7 @@
           colors: (spec.colors || ['#2255cc', '#ffffff']).slice(0, 2),
           weight: spec.weight != null ? +spec.weight : 0.5,
           ...(spec.template ? { template: String(spec.template) } : {}),
+          ...(spec.parent ? { parent: String(spec.parent), dual: spec.dual != null ? +spec.dual : 0.4 } : {}),
           ...(Array.isArray(spec.parts) ? { parts: spec.parts.map((x) => String(x).trim()).filter(Boolean) } : {}),
         };
         const list = def.newNations || (def.newNations = []);

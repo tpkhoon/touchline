@@ -5851,6 +5851,50 @@
     ['KUR', 'Kurdistan', '🏴', 'ASIA', 'kurdish', ['#ED2024', '#278E43']],
     ['NCY', 'Northern Cyprus', '🏴', 'EUR', 'turkish', ['#E30A17', '#FFFFFF']],
   ];
+  // The nation a territory's people have family ties to (a dual passport is common): the preset fills it in
+  const NATION_PARENT = {
+    CAT: 'ESP',
+    EUS: 'ESP',
+    GAL: 'ESP',
+    CNI: 'ESP',
+    MON: 'FRA',
+    VAT: 'ITA',
+    JEY: 'ENG',
+    GGY: 'ENG',
+    IMN: 'ENG',
+    SRK: 'ENG',
+    ALA: 'FIN',
+    GRL: 'DEN',
+    ARU: 'NED',
+    BOE: 'NED',
+    SXM: 'NED',
+    FRI: 'NED',
+    CAY: 'ENG',
+    TCA: 'ENG',
+    VGB: 'ENG',
+    AIA: 'ENG',
+    MSR: 'ENG',
+    FLK: 'ENG',
+    VIR: 'USA',
+    ASA: 'USA',
+    GUM: 'USA',
+    NMI: 'USA',
+    MTQ: 'FRA',
+    GPE: 'FRA',
+    GUF: 'FRA',
+    REU: 'FRA',
+    SPM: 'FRA',
+    WLF: 'FRA',
+    BRE: 'FRA',
+    COR: 'FRA',
+    SIC: 'ITA',
+    SAR: 'ITA',
+    COK: 'NZL',
+    NIU: 'NZL',
+    MAC: 'CHN',
+    ZAN: 'TAN',
+    NCY: 'TUR',
+  };
   const presetPicker = () => {
     const taken = new Set([...Object.keys(D.NATIONS), ...(ED.def.newNations || []).map((x) => x.code)]);
     const by = {};
@@ -5879,6 +5923,8 @@
     set('nnflag', FLAG(p[2]));
     set('nnregion', p[3]);
     set('nnpool', p[4]);
+    const par = NATION_PARENT[p[0]];
+    set('nnparent', par && D.NATIONS[par] ? par : '');
     set('nnc1', p[5][0].toLowerCase());
     set('nnc2', p[5][1].toLowerCase());
   };
@@ -5923,6 +5969,16 @@
         .sort((a, b) => a[1].name.localeCompare(b[1].name))
         .map(([c, x]) => `<option value="${esc(c)}" ${n.template === c ? 'selected' : ''}>${esc(x.name)}</option>`)
         .join('')}</select>
+      <div class="ng-label">Family ties <span class="tiny dim">· a nation its people have family in: some of its players are dual nationals of it, with names of its culture, and a few of its own players turn up in its leagues</span></div>
+      <select id="ed-nnparent"><option value="">None: a country of its own (a few players have family in its neighbours)</option>${Object.entries(
+        D.NATIONS,
+      )
+        .filter(([c]) => c !== n.code)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name))
+        .map(([c, x]) => `<option value="${esc(c)}" ${n.parent === c ? 'selected' : ''}>${esc(x.name)}</option>`)
+        .join('')}</select>
+      <div class="ng-label">Players with those ties <b id="ed-nndualv" style="color:#e6edf6">${Math.round((n.dual != null ? n.dual : 0.4) * 100)}%</b> <span class="tiny dim">(of its players: whether they hold the passport follows that nation's citizenship law)</span></div>
+      <input type="range" id="ed-nndual" min="0" max="0.9" step="0.05" value="${n.dual != null ? n.dual : 0.4}" style="width:100%">
       <div class="ng-label">Players abroad <b id="ed-nnwv" style="color:#e6edf6">${n.weight}</b> <span class="tiny dim">(per cent of a league's players: 0.2 a small nation, 1 a big football country, 3 a giant)</span></div>
       <input type="range" id="ed-nnweight" min="0.1" max="3" step="0.1" value="${n.weight}" style="width:100%">
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Players are made for the nation in every league by this share, and fill most of the squads of its own leagues. With sixteen of them it has a national team (name, colours and ranking points under National teams).</div>
@@ -5963,6 +6019,8 @@
       colors: [v('nnc1'), v('nnc2')],
       weight: +v('nnweight'),
       template: v('nntemplate') || undefined,
+      parent: v('nnparent') || undefined,
+      dual: +v('nndual'),
       parts: readParts(),
     });
     if (!r.ok) {
@@ -6552,6 +6610,7 @@
     });
     bind('ed-rep', (v) => ($('#ed-repv').textContent = v));
     bind('ed-nnweight', (v) => ($('#ed-nnwv').textContent = v));
+    bind('ed-nndual', (v) => ($('#ed-nndualv').textContent = Math.round(v * 100) + '%'));
     if (ED.view === 'newnation' && $('#ed-nncode'))
       $('#ed-nncode').addEventListener('input', (e) => (e.target.dataset.typed = '1'));
     bind('ed-mab', (v) => ($('#ed-mabv').textContent = v));
