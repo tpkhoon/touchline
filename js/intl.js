@@ -1038,7 +1038,10 @@
       : I.tournamentFor(year) === 'continental'
         ? ['G1', 'G2', 'G3', 'R16', 'QF', 'SF', 'F']
         : ['G1', 'G2', 'G3', 'SF', 'F'];
-  const MD = { I1a: 0, I1b: 1, I2a: 2, I2b: 3 };
+  const MD = { I1a: 0, I1b: 1, I2a: 2, I2b: 3, I3a: 4, I3b: 5 };
+  // The tags the season's invitationals are played on: the third break when the calendar has one (an older save or a definition with two
+  // breaks uses the second)
+  const inviteTags = () => ((S().calendar || []).some((d) => d.tag === 'I3a') ? ['I3a', 'I3b'] : ['I2a', 'I2b']);
 
   // ---------- Season setup: qualifying groups for the coming summer ----------
   I.newSeason = function () {
@@ -1390,7 +1393,8 @@
       });
     };
     const T = inv.teams;
-    if (tag === 'I2a' && !inv.sf) {
+    const [T1, T2] = inviteTags();
+    if (tag === T1 && !inv.sf) {
       inv.sf = [mk(T[0], T[3], 'Semi-final'), mk(T[1], T[2], 'Semi-final')];
       FM.News.add({
         type: 'world',
@@ -1400,14 +1404,14 @@
         body: `An invitational in the international window: semi-finals now, the final and the third-place match next.`,
       });
       out.push(...inv.sf);
-    } else if (tag === 'I2a' && inv.sf) out.push(...inv.sf.filter((f) => !f.res));
-    else if (tag === 'I2b' && inv.sf && inv.sf.every((f) => f.res) && !inv.final) {
+    } else if (tag === T1 && inv.sf) out.push(...inv.sf.filter((f) => !f.res));
+    else if (tag === T2 && inv.sf && inv.sf.every((f) => f.res) && !inv.final) {
       const w = inv.sf.map((f) => FM.Season.winnerOf(f)),
         l = inv.sf.map((f) => (f.h === FM.Season.winnerOf(f) ? f.a : f.h));
       inv.final = mk(w[0], w[1], 'Final', { final: true });
       inv.third = mk(l[0], l[1], 'Third place', { third: true });
       out.push(inv.final, inv.third);
-    } else if (tag === 'I2b' && inv.final) out.push(...[inv.final, inv.third].filter((f) => f && !f.res));
+    } else if (tag === T2 && inv.final) out.push(...[inv.final, inv.third].filter((f) => f && !f.res));
     return out;
   };
   // A match of the invitational is over: the final names the winner
@@ -1605,6 +1609,24 @@
         fx.push(mkFx(h, a, `${x.confed.name} · ${x.league} ${x.label}`, { kind: 'nl', group: x.name }));
       }),
     );
+    // The third break: every nation with nothing else on the day plays a friendly, against the nation nearest in the ranking that
+    // is free too (a nation with a qualifier, a Nations League game or an invitational that day rests)
+    if (tag === 'I3a' || tag === 'I3b') {
+      const free = I.openRanked().filter((t) => !busy.has(t.id) && !W.isUserNation(t.id));
+      for (let i = 0; i + 1 < free.length; i += 2) {
+        const j = Math.min(free.length - 1, i + 1 + (U.chance(0.35) ? 2 : 0)); // (now and then a slightly stronger or weaker side)
+        const a = free[i];
+        let b = free[j];
+        if (busy.has(b.id) || b === a) b = free[i + 1];
+        busy.add(a.id);
+        busy.add(b.id);
+        fx.push(
+          U.chance(0.5)
+            ? mkFx(a.id, b.id, 'Friendly', { kind: 'friendly' })
+            : mkFx(b.id, a.id, 'Friendly', { kind: 'friendly' }),
+        );
+      }
+    }
     return fx;
   };
 

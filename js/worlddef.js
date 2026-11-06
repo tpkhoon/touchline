@@ -662,8 +662,13 @@
     if (c.cont != null) ordered(c.cont, WD.CONT_STAGES, 'the continental cups, stage');
     if (c.world != null) ordered(c.world, WD.WORLD_STAGES, 'the Intercontinental Cup, stage');
     if (c.intl != null) {
-      if (!Array.isArray(c.intl) || c.intl.length !== 2 || !c.intl.every(round) || c.intl[1] - c.intl[0] < 2)
-        e.push(`${at}: two international breaks, at least two league rounds apart`);
+      if (
+        !Array.isArray(c.intl) ||
+        ![2, 3].includes(c.intl.length) ||
+        !c.intl.every(round) ||
+        c.intl.some((r, i) => i && r - c.intl[i - 1] < 2)
+      )
+        e.push(`${at}: two or three international breaks, at least two league rounds apart`);
     }
     return e;
   };
@@ -1554,7 +1559,7 @@
       if (c.cup) swap(D.CUP_AFTER, Object.fromEntries(c.cup.map((r) => [r, 'DC'])));
       if (c.cont) swap(D.CC_AFTER, Object.fromEntries(Object.entries(c.cont).map(([st, r]) => [r, st])));
       if (c.world) swap(D.CWC_AFTER, Object.fromEntries(Object.entries(c.world).map(([st, r]) => [r, st])));
-      if (c.intl) swap(D.INTL_AFTER, { [c.intl[0]]: ['I1a', 'I1b'], [c.intl[1]]: ['I2a', 'I2b'] });
+      if (c.intl) swap(D.INTL_AFTER, Object.fromEntries(c.intl.map((r, i) => [r, [`I${i + 1}a`, `I${i + 1}b`]])));
     }
     if (patch.agents) D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...patch.agents);
     if (patch.regionals) D.AREAS.splice(0, D.AREAS.length, ...patch.regionals.map(areaRow));

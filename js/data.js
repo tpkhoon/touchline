@@ -1653,7 +1653,10 @@
   // and the European champion joins in the final). [competition id] by role.
   FM.D.IC_BRACKET = { first: ['AF', 'AC'], americas: ['CL', 'NC'], final: 'CC' };
   // Every international break has two matchdays
-  FM.D.INTL_AFTER = { 7: ['I1a', 'I1b'], 15: ['I2a', 'I2b'] };
+  // The international breaks (the league round each follows, on the 22-round scale; two match days each): the first two carry the
+  // qualifiers and the Nations League, the third (late in the season, as the June window) friendlies and the invitational
+  // tournaments
+  FM.D.INTL_AFTER = { 7: ['I1a', 'I1b'], 15: ['I2a', 'I2b'], 20: ['I3a', 'I3b'] };
   // Wages were tuned against a 43-day season; longer calendars pay the same season total
   FM.D.WAGE_WEEKS = 43;
 
