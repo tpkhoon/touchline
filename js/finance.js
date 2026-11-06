@@ -349,6 +349,17 @@
       next = U.clamp(F.wageBudget(c) + dir * step, 0.3 * F.revenue(c), top);
     u.wageBudget = next >= top - 1 ? null : next;
   };
+  // Set a budget to an amount, as the sliders do: the same limits as adjustBudget (a wage budget at the board's limit is the board's
+  // again)
+  F.setBudget = (c, kind, value) => {
+    if (kind === 'transfer') {
+      c.budget = U.clamp(Math.round(value), 0, Math.max(0, c.balance));
+      return;
+    }
+    const top = F.wageLimit(c),
+      next = U.clamp(value, 0.3 * F.revenue(c), top);
+    S().user.wageBudget = next >= top - 1 ? null : next;
+  };
   // Administration: debts beyond half a season's revenue (and at least £8M)
   F.adminThreshold = (c) => -Math.max(8e6, 0.5 * F.revenue(c));
   // Title sponsors. The top leagues and the domestic cups carry a sponsor's name ("Corvid Energy English Premier Division") for a

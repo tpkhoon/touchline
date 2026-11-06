@@ -187,7 +187,7 @@
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)} · valued at ${U.money(p.value)}</span></div>${C.crest(buyer, 26)}</div>
       <div class="warnline" style="margin-top:10px">${esc(buyer.name)} offer <b>${esc(M.describeDeal(n.data.fee, n.data.deal))}</b></div>
       <div class="h3" style="margin-top:12px">Your asking fee</div>
-      <div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="0" value="${g.fee}" data-input="negFee" class="numin"><b id="negFee" style="min-width:74px;text-align:right">${U.money(g.fee)}</b></div>
+      <div class="row" style="gap:8px;margin-top:6px"><input type="range" min="0" max="${Math.ceil(Math.max(p.value * 3, g.fee * 1.5, 2e5) / 1e5) * 1e5}" step="1e5" value="${g.fee}" data-input="negFee" aria-label="Asking fee" style="flex:1;min-width:0;height:44px"><b id="negFee" style="min-width:74px;text-align:right">${U.money(g.fee)}</b></div>
       <div class="row" style="gap:4px;margin-top:6px">${steps.map((st) => `<button class="btn sm" style="flex:1" data-act="negStep" data-v="${st}">${st > 0 ? '+' : '−'}${U.money(Math.abs(st))}</button>`).join('')}</div>
       <div class="h3" style="margin-top:12px">How they pay</div>${chips('inst', [
         [1, 'Up front'],
@@ -221,6 +221,11 @@
     UI._neg.fee = Math.max(0, UI._neg.fee + +d.v);
     UI.bidNegSheet();
   };
+  // (the sheet is drawn again when the slider is let go, so the add-on amounts follow the fee)
+  document.addEventListener('change', (e) => {
+    const el = e.target;
+    if (el && el.type === 'range' && el.dataset && el.dataset.input === 'negFee' && UI._neg) UI.bidNegSheet();
+  });
   UI.acts.negFee = (d, el) => {
     UI._neg.fee = Math.max(0, Math.round(+el.value || 0));
     const b = document.getElementById('negFee');
@@ -548,11 +553,23 @@
       step = F.budgetStep(c),
       wb = F.wageBudget(c),
       own = !!u.wageBudget && wb < F.wageLimit(c);
-    const ctl = (kind, label, val, note) =>
-      `<div class="row" style="margin-top:12px;gap:8px"><div class="grow"><div class="small b">${label}</div><div class="tiny dim">${note}</div></div><button class="btn sm" style="min-width:44px;min-height:44px" data-act="budgetStep" data-k="${kind}" data-d="-1" aria-label="Lower the ${label.toLowerCase()}">−</button><b style="min-width:72px;text-align:center">${val}</b><button class="btn sm" style="min-width:44px;min-height:44px" data-act="budgetStep" data-k="${kind}" data-d="1" aria-label="Raise the ${label.toLowerCase()}">+</button></div>`;
+    // a slider: the figure follows the thumb at once and the state is saved a moment after it stops (a tap used to save the whole
+    // game and draw the screen again)
+    const ctl = (kind, label, val, note, min, max, now) =>
+      `<div style="margin-top:12px"><div class="row" style="gap:8px"><div class="grow"><div class="small b">${label}</div></div><b id="bud-${kind}" style="min-width:72px;text-align:right">${val}</b></div><input type="range" data-input="budgetSlide" data-k="${kind}" min="${Math.round(min)}" max="${Math.max(Math.round(max), Math.round(min))}" step="${step}" value="${Math.round(now)}" aria-label="${label}" style="width:100%;height:44px" ${max <= min ? 'disabled' : ''}><div class="tiny dim" id="bud-${kind}-note">${note}</div></div>`;
     return `<div class="card"><div class="h3">Budgets</div>
-      ${ctl('transfer', 'Transfer budget', U.money(c.budget), `Fees you can spend, up to the cash in the bank (${U.money(Math.max(0, c.balance))}). Steps of ${U.money(step)}.`)}
-      ${ctl('wage', 'Wage budget', U.money(wb), own ? `Your own ceiling on the yearly wage bill (${U.money(F.wageBill(c))} now); a deal past it is refused. Raise it to the board's limit to clear it.` : `The board's limit (${Math.round(F.LIMIT.freeze * 100)}% of revenue); lower it to keep a margin. The wage bill is ${U.money(F.wageBill(c))} a year.`)}</div>`;
+      ${ctl('transfer', 'Transfer budget', U.money(c.budget), `Fees you can spend, up to the cash in the bank (${U.money(Math.max(0, c.balance))}).`, 0, Math.max(0, c.balance), c.budget)}
+      ${ctl('wage', 'Wage budget', U.money(wb), own ? `Your own ceiling on the yearly wage bill (${U.money(F.wageBill(c))} now); a deal past it is refused. Slide to the right to clear it.` : `The board's limit (${Math.round(F.LIMIT.freeze * 100)}% of revenue); lower it to keep a margin. The wage bill is ${U.money(F.wageBill(c))} a year.`, 0.3 * F.revenue(c), F.wageLimit(c), wb)}</div>`;
+  };
+  UI.acts.budgetSlide = (d, el) => {
+    const c = W.userClub();
+    if (!c) return;
+    FM.Finance.setBudget(c, d.k, +el.value);
+    const v = d.k === 'transfer' ? c.budget : FM.Finance.wageBudget(c);
+    const b = document.getElementById('bud-' + d.k);
+    if (b) b.textContent = U.money(v);
+    clearTimeout(UI._budT);
+    UI._budT = setTimeout(() => UI.save(), 1200);
   };
   UI.acts.budgetStep = (d) => {
     const c = W.userClub();

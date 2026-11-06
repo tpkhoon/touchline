@@ -137,10 +137,42 @@
   };
   const stepBtns = (field, steps) =>
     `<div class="row" style="gap:4px;margin-top:6px;flex-wrap:wrap">${steps.map((st) => `<button class="btn sm" style="flex:1;padding:7px 2px;font-size:12px" data-act="ngStep" data-f="${field}" data-v="${st}">${st > 0 ? '+' : '−'}${U.money(Math.abs(st)).replace('$', '')}</button>`).join('')}</div>`;
-  const numIn = (field, val, id) =>
-    `<div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="0" step="50" value="${val}" data-input="ngNum" data-f="${field}" class="numin"><b id="${id}" style="min-width:74px;text-align:right">${U.money(val)}</b></div>`;
-  const plainIn = (field, val, min, max, unit) =>
-    `<div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="${min}" max="${max}" step="1" value="${val}" data-input="ngNum" data-f="${field}" class="numin"><b style="min-width:74px;text-align:right">${unit}</b></div>`;
+  // Sliders for the money terms: the figure follows the thumb, and the sheet is drawn again when it is let go (a drag that
+  // redrew the sheet would drop the thumb). Each slider runs from nothing to a sensible ceiling for that term (always above the
+  // value it holds), in round steps.
+  const niceStep = (max) => {
+    const raw = Math.max(1, max / 200),
+      p = Math.pow(10, Math.floor(Math.log10(raw))),
+      m = raw / p;
+    return Math.max(1, p * (m < 2 ? 1 : m < 5 ? 2 : 5));
+  };
+  const ceilFor = (field, val) => {
+    const o = UI._offer,
+      p = P(o.pid),
+      t = o.terms || {},
+      w = Math.max(t.wage || 0, p.wage || 0, 1000);
+    const need =
+      (!['fee', 'loanFee'].includes(field) && Co.wageNeeded(p, club(), t, o.mode === 'renew' ? 'renew' : 'transfer')) ||
+      0;
+    const base = {
+      fee: Math.max(FM.Transfers.userAsk(p) * 2.5, 1e5),
+      loanFee: Math.max(p.value * 0.3, 1e5),
+      wage: Math.max(p.wage * 3, need * 2, 5000),
+      bonus: w * 52,
+      app: w * 1.5,
+      goal: w * 3,
+      release: Math.max(p.value * 8, 1e6),
+    }[field];
+    return Math.max(base || 1000, val);
+  };
+  const slideIn = (field, val, max, step, fmt, id, min = 0) =>
+    `<div class="row" style="gap:8px;margin-top:6px"><input type="range" min="${min}" max="${Math.ceil(max / step) * step}" step="${step}" value="${val}" data-input="ngNum" data-f="${field}" data-fmt="${fmt}" ${id ? `data-l="${id}"` : ''} aria-label="${field}" style="flex:1;min-width:0;height:44px"><b ${id ? `id="${id}"` : ''} style="min-width:78px;text-align:right">${fmt === 'years' ? val + (val === 1 ? ' year' : ' years') : fmt === 'pct' ? '+' + val + '%' : U.money(val)}</b></div>`;
+  const numIn = (field, val, id) => {
+    const max = ceilFor(field, val);
+    return slideIn(field, val, max, niceStep(max), 'money', id);
+  };
+  const plainIn = (field, val, min, max) =>
+    slideIn(field, val, max, 1, field === 'years' ? 'years' : 'pct', 'ngl_' + field, min);
   const custom = (field, val) => numIn(field, val, 'ng_' + field);
   UI.offerSheet = function (msg) {
     const o = UI._offer,
@@ -364,16 +396,27 @@
     obj[k] = Math.max(0, obj[k] + +d.v);
     UI.offerSheet();
   };
+  document.addEventListener('change', (e) => {
+    const el = e.target;
+    if (el && el.type === 'range' && el.dataset && el.dataset.input === 'ngNum' && UI._offer) UI.offerSheet();
+  });
   UI.acts.ngNum = (d, el) => {
     const o = UI._offer;
-    if (d.f === 'years') o.terms.years = U.clamp(Math.round(+el.value || 1), 1, 6);
-    else if (d.f === 'rise') o.terms.rise = U.clamp(Math.round(+el.value || 0), 0, 50) / 100;
-    else {
+    let shown;
+    if (d.f === 'years') {
+      o.terms.years = U.clamp(Math.round(+el.value || 1), 1, 6);
+      shown = o.terms.years + (o.terms.years === 1 ? ' year' : ' years');
+    } else if (d.f === 'rise') {
+      o.terms.rise = U.clamp(Math.round(+el.value || 0), 0, 50) / 100;
+      shown = '+' + Math.round(o.terms.rise * 100) + '%';
+    } else {
       const [obj, k] = field(o, d.f);
       obj[k] = Math.max(0, Math.round(+el.value || 0));
-      const b = document.getElementById({ fee: 'ngFee', wage: 'ngWage', loanFee: 'ngLoanFee' }[d.f] || 'ng_' + d.f);
-      if (b) b.textContent = U.money(obj[k]);
+      shown = U.money(obj[k]);
     }
+    const lab = document.getElementById(el.dataset.l || '');
+    if (lab) lab.textContent = shown;
+    if (el.type === 'range') return; // (the sheet is drawn again when the slider is let go: see the change listener below)
     clearTimeout(UI._ngT);
     UI._ngT = setTimeout(() => {
       const pos = el.selectionStart;

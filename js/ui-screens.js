@@ -986,7 +986,44 @@
                   : squadView())
     );
   };
-  const SQ_DEFAULT = () => ({ text: '', pos: [], age: 'any', nat: 'any', contract: 'any', foot: 'any', level: 'any' });
+  const SQ_DEFAULT = () => ({
+    text: '',
+    pos: [],
+    age: 'any',
+    nat: 'any',
+    reg: 'any',
+    contract: 'any',
+    foot: 'any',
+    level: 'any',
+  });
+  // Registration status of a player at your club, for the squad filter: what counts as a foreign, non-EU, Asian or ASEAN place,
+  // and who is homegrown (the league's own rules where the world uses them: FM.Reg)
+  const SQ_REG = {
+    any: ['Any status', () => true],
+    foreign: ['Counts as foreign / non-EU', (p, c) => !!FM.Reg.tag(p, c)],
+    nonEU: ['Non-EU', (p, c) => FM.Reg.nonEU(p, c)],
+    eu: ['EU passport', (p) => FM.Reg.isEU(p)],
+    asian: ['Foreign Asian', (p, c) => !W.holdsPassport(p, c.nat) && W.citizenships(p).some(FM.Reg.isAsian)],
+    asean: [
+      'Foreign ASEAN',
+      (p, c) => !W.holdsPassport(p, c.nat) && W.citizenships(p).some((n) => FM.Reg.ASEAN.has(n)),
+    ],
+    african: [
+      'Foreign African',
+      (p, c) =>
+        !W.holdsPassport(p, c.nat) &&
+        W.citizenships(p).some((n) => FM.D.NATIONS[n] && FM.D.NATIONS[n].region === 'AFR'),
+    ],
+    american: [
+      'Foreign South / North American',
+      (p, c) =>
+        !W.holdsPassport(p, c.nat) &&
+        W.citizenships(p).some((n) => FM.D.NATIONS[n] && ['SAM', 'NAM'].includes(FM.D.NATIONS[n].region)),
+    ],
+    homegrown: ['Homegrown', (p, c) => FM.Reg.homegrown(p, c.nat)],
+    notHome: ['Not homegrown', (p, c) => !FM.Reg.homegrown(p, c.nat)],
+    dual: ['Dual nationals', (p) => W.citizenships(p).length > 1],
+  };
   UI._sq = { sort: 'pos', filter: 'all', stat: false, alt: false, rev: false, more: false, ...SQ_DEFAULT() };
   // which sorts run low to high by themselves (the rest high to low); the arrow button turns either around
   const SQ_ASC = new Set(['fit', 'age', 'contract']);
@@ -1036,7 +1073,7 @@
       (q.filter !== 'all') +
       (q.text.trim() !== '') +
       (q.pos.length > 0) +
-      ['age', 'nat', 'contract', 'foot', 'level'].filter((k) => q[k] !== 'any').length
+      ['age', 'nat', 'reg', 'contract', 'foot', 'level'].filter((k) => q[k] !== 'any').length
     );
   };
   UI.acts.sqText = (d, el) => {
@@ -1138,12 +1175,16 @@
       ['any', 'Any nationality'],
       ['home', 'Homegrown nationals'],
       ['foreign', 'Foreign players'],
-    ])}${sel('contract', [
-      ['any', 'Any contract'],
-      ['now', 'Ends this season'],
-      ['next', 'Ends within a year'],
-      ['long', 'Three years or more'],
-    ])}</div>
+    ])}${sel(
+      'reg',
+      Object.entries(SQ_REG).map(([k, v]) => [k, v[0]]),
+    )}</div>
+      <div class="row" style="gap:6px;margin-top:6px">${sel('contract', [
+        ['any', 'Any contract'],
+        ['now', 'Ends this season'],
+        ['next', 'Ends within a year'],
+        ['long', 'Three years or more'],
+      ])}</div>
       <div class="row" style="gap:6px;margin-top:6px">${sel('level', [
         ['any', 'Any role'],
         ['xi', 'Starting XI'],
@@ -1186,6 +1227,7 @@
       if (!SQ_AGE[q.age][1](W.age(p))) return false;
       if (q.nat === 'home' && p.nat !== club().nat) return false;
       if (q.nat === 'foreign' && p.nat === club().nat) return false;
+      if (q.reg !== 'any' && !SQ_REG[q.reg][1](p, club())) return false;
       if (q.contract === 'now' && !(!p.loan && p.contract <= S().year)) return false;
       if (q.contract === 'next' && !(!p.loan && p.contract <= S().year + 1)) return false;
       if (q.contract === 'long' && !(!p.loan && p.contract >= S().year + 3)) return false;

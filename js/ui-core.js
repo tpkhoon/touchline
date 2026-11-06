@@ -21,6 +21,10 @@
     'M20 4 A19 19 0 1 1 19.99 4 Z', // round badge
     'M3 3 H37 V20 C37 33 28 40 20 44.5 C12 40 3 33 3 20 Z', // flat-topped heater
     'M6 2 H34 Q38 2 38 6 V31 Q38 35 34 37.5 L20 44.5 L6 37.5 Q2 35 2 31 V6 Q2 2 6 2 Z', // rounded plaque
+    'M20 1.5 L37 10 V32 L20 44.5 L3 32 V10 Z', // hexagon
+    'M20 1.5 L38 23 L20 44.5 L2 23 Z', // lozenge
+    'M20 1.5 C32 1.5 38 12 38 24 C38 36 30 44.5 20 44.5 C10 44.5 2 36 2 24 C2 12 8 1.5 20 1.5 Z', // oval
+    'M3 5 Q11 1.5 20 5 Q29 1.5 37 5 V24 C37 35 28 41 20 44.5 C12 41 3 35 3 24 Z', // scalloped-top shield
   ];
   const CREST_PATTERNS = [
     [(c) => `<path d="M20 2 L37 8 V16 H3 V8Z" fill="${c}"/>`, false], // top band
@@ -45,6 +49,27 @@
     [(c) => `<rect x="16" width="8" height="46" fill="${c}"/><rect y="17" width="40" height="8" fill="${c}"/>`, true], // cross
     [(c) => `<path d="M0 4 L20 20 L40 4 V13 L20 29 L0 13Z" fill="${c}"/>`, true], // chevron
     [(c) => `<rect y="35" width="40" height="11" fill="${c}"/>`, false], // bottom band
+    [(c) => `<path d="M-6 30 L30 -6 M-6 44 L44 -6 M6 52 L52 6" stroke="${c}" stroke-width="6" fill="none"/>`, true], // diagonal stripes
+    [
+      (c) =>
+        [0, 1, 2, 3]
+          .flatMap((r) =>
+            [0, 1, 2, 3]
+              .filter((k) => (r + k) % 2 === 0)
+              .map((k) => `<rect x="${k * 10}" y="${r * 11.5}" width="10" height="11.5" fill="${c}"/>`),
+          )
+          .join(''),
+      true,
+    ], // chequers
+    [(c) => `<path d="M0 6 L34 46 M40 6 L6 46" stroke="${c}" stroke-width="6" fill="none"/>`, true], // saltire
+    [(c) => `<path d="M0 0 H40 L0 46Z" fill="${c}"/>`, true], // split on the diagonal
+    [(c) => `<circle cx="20" cy="25" r="16" fill="none" stroke="${c}" stroke-width="4"/>`, true], // target
+    [(c) => `<path d="M0 8 L20 22 L40 8 V14 L20 28 L0 14Z M0 24 L20 38 L40 24 V30 L20 44 L0 30Z" fill="${c}"/>`, true], // double chevron
+    [
+      (c) =>
+        `<rect y="0" width="40" height="13" fill="${c}"/><rect y="13" width="40" height="2" fill="#fff" opacity=".5"/>`,
+      false,
+    ], // chief with a fine line
   ];
   // Emblems in the middle of a crest (no lettering): drawn around (20, 25), inside every shape
   const CREST_EMBLEMS = [
@@ -125,17 +150,28 @@
       h = U.hash(club.id),
       own = club.crest || [],
       shape = CREST_SHAPES[pick(own[0], CREST_SHAPES, h % CREST_SHAPES.length)],
-      [pattern, busy] =
-        CREST_PATTERNS[pick(own[1], CREST_PATTERNS, Math.floor(h / CREST_SHAPES.length) % CREST_PATTERNS.length)],
+      [pattern, busy] = CREST_PATTERNS[pick(own[1], CREST_PATTERNS, (h >>> 3) % CREST_PATTERNS.length)],
       emblem = CREST_EMBLEMS[pick(own[2], CREST_EMBLEMS, crestEmblem(club, h))];
     // every crest its own clip: a shared id breaks the clipping when the first copy sits in a hidden part of the page
     const id = `cl${++crestN}`;
+    // a depth to the badge: a soft light from the top left, a dark or light edge by the base colour, and (on about two crests in
+    // three) a fine inner border in the second colour; shapes and patterns come from different parts of the club's hash so they
+    // pair freely
+    const light = lum(c1) > 150,
+      edge = light ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.6)',
+      inner = Math.abs(lum(c1) - lum(c2)) > 60 ? c2 : edge,
+      bordered = (h >>> 5) % 3 !== 0;
     // the emblem in the second colour (or the colour that reads on the first), on a disc of the main colour over a
     // busy pattern so stripes never cross it; too small to see under 20 px
     const ink = Math.abs(lum(c1) - lum(c2)) > 60 ? c2 : U.ink(c1);
     const mark = size < 20 ? '' : `${busy ? `<circle cx="20" cy="25" r="9" fill="${c1}"/>` : ''}${emblem(ink, c1)}`;
     // drawn a touch inside the frame so the border is never cut off at the edge
-    return `<svg class="crest" data-club="${esc(club.id)}" width="${size}" height="${Math.round(size * 1.15)}" viewBox="0 0 40 46"><defs><clipPath id="${id}"><path d="${shape}"/></clipPath></defs><g transform="translate(1 1.15) scale(0.95)"><g clip-path="url(#${id})"><rect width="40" height="46" fill="${c1}"/>${pattern(c2)}${mark}</g><path d="${shape}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/></g></svg>`;
+    const gloss = size < 20 ? '' : `<rect width="40" height="46" fill="url(#${id}g)"/>`;
+    const border =
+      bordered && size >= 20
+        ? `<path d="${shape}" transform="translate(20 23) scale(.84) translate(-20 -23)" fill="none" stroke="${inner}" stroke-width="1" opacity=".85"/>`
+        : '';
+    return `<svg class="crest" data-club="${esc(club.id)}" width="${size}" height="${Math.round(size * 1.15)}" viewBox="0 0 40 46"><defs><clipPath id="${id}"><path d="${shape}"/></clipPath><linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient></defs><g transform="translate(1 1.15) scale(0.95)"><g clip-path="url(#${id})"><rect width="40" height="46" fill="${c1}"/>${pattern(c2)}${mark}${gloss}</g>${border}<path d="${shape}" fill="none" stroke="${edge}" stroke-width="1.5"/></g></svg>`;
   };
   C.stars = function (lo, hi = lo, pot = null) {
     const a = (Math.round(lo * 2) / 2 / 5) * 100,

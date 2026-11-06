@@ -604,6 +604,10 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | Sixteen more territories and regions to start a nation from (Galicia, the Canary Islands, Brittany, Corsica, Sicily, Sardinia, Frisia, Sark, the Falklands, Saint-Pierre and Miquelon, Wallis and Futuna, Zanzibar, Western Sahara, Tibet, Kurdistan, Northern Cyprus), beside Catalonia, the Basque Country, Jersey, Guernsey, Vatican City, Monaco and Greenland | Playtest round 24 |
 | Careers | A national team is a job: a manager with a country and no club is between clubs, not out of work, on the Home screen, the top bar and the offers screen | Playtest round 24 |
 | Careers | Clubs come for a manager who is doing well: a bigger club's approach (one at a time, a week to answer, a cool-down after) with Accept, which leaves your club, and Decline, which pleases the board | Playtest round 24 |
+| Squad | Status filter on the squad screen: foreign or non-EU places, non-EU, EU, foreign Asian, ASEAN, African or American, homegrown, not homegrown, dual nationals | Playtest round 24 |
+| Transfers | Sliders for contract and transfer negotiations (fee, wage, bonuses, release clause, wage rise, length, and your asking fee when selling) | Playtest round 24 |
+| Finance | Transfer and wage budgets as sliders that respond at once (no full save and redraw on each change) | Playtest round 24 |
+| UI | Better club crest generation: eight shapes, seventeen patterns, light, edge and inner border | Playtest round 24 |
 | Editor | Hosts in qualifying (option, per tournament): hosts are drawn into the qualifying groups and play every match without taking a place | Playtest round 24 |
 | Editor | Tournament hosts: choose up to four host nations for each tournament, or draw one to four; hosts qualify automatically, head the pots and play at home against non-hosts | Playtest round 24 |
 | UI | Short competition and tournament names for tight spaces (Home table label, cup pills, match hero), with the full name kept in the title | Playtest round 24 |
