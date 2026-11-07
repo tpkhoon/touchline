@@ -1221,7 +1221,7 @@
       c = p.clubId && S.clubs[p.clubId],
       age = W.age(p);
     if (!c || age < 18 || p.history) return;
-    const seasons = Math.min(16, age - 17),
+    const seasons = Math.min(24, age - 17),
       sp = W.spell(p);
     if (!sp) return;
     // the young came through here; an older player who arrived recently has earlier clubs for the seasons before
@@ -1366,6 +1366,124 @@
     p.career.spells.splice(-1, 0, ...spells);
     p.career.apps = p.history.reduce((t, r) => t + r.apps, 0) + extraApps;
     p.career.goals = p.history.reduce((t, r) => t + r.g, 0) + extraGoals;
+  };
+  // A player's whole career season by season, for the profile: the rows the game recorded (history, with this season's first) and a row
+  // for every other season since he was 16, so the table has no gaps and no "earlier" or "before" lines. A season the game has no record
+  // of is rebuilt from what it does know: the club of the spell it falls in (his youth club, or a club of his nation at his level
+  // before his first spell), and the games and goals the career totals and the spells have over the recorded rows, shared out by his age
+  // then. The same player always gets the same rows (they come from his id and the year, nothing is stored); a rebuilt row carries
+  // est: true and only games and goals. Returns the rows newest first.
+  W.fullHistory = function (p, history) {
+    const S = FM.S,
+      thisY = S.year,
+      rows = history.map((h) => ({ ...h }));
+    const sp = (p.career && p.career.spells) || [],
+      rec = new Set(rows.filter((h) => !h.now).map((h) => h.y));
+    const seed = (k) => (U.hash(p.id + ':' + k) % 1000) / 1000;
+    const age0 = W.age(p);
+    const growth = (k) =>
+      Math.max(0, Math.min(k, 23 - (age0 - k))) * 2 - Math.max(0, age0 - Math.max(30, age0 - k)) * 1.5;
+    const inSpell = (y) => sp.find((s) => S.clubs[s.c] && s.from <= y && y <= (s.to == null ? thisY : s.to));
+    const pool = Object.values(S.clubs)
+      .filter((x) => x.nat === p.nat && x.sim !== 'nation' && !x.parent && x.comp)
+      .sort((a, b) => a.rep - b.rep);
+    const pastClub = (y) => {
+      if (p.youth && S.clubs[p.youth] && y < p.born + 21) return S.clubs[p.youth].id;
+      if (!pool.length) return null;
+      const block = Math.floor((y - p.born) / 3),
+        want = p.ca - growth(thisY - y);
+      const at = pool.findIndex((x) => W.levelFor(x.rep) >= want),
+        mid = at < 0 ? pool.length - 1 : at;
+      return pool[U.clamp(mid + Math.floor(seed('b' + block) * 5) - 2, 0, pool.length - 1)].id;
+    };
+    const missing = [];
+    for (let y = p.born + 16; y < thisY; y++) {
+      if (rec.has(y)) continue;
+      const s = inSpell(y);
+      missing.push({ y, c: s ? s.c : pastClub(y), spell: !!s });
+    }
+    // games and goals to share out: per club, what its spells have over its recorded rows; the rest of the career before that
+    const sumBy = (list, f) => list.reduce((t, x) => t + (f(x) || 0), 0);
+    const left = { apps: {}, goals: {} };
+    for (const c of new Set(sp.map((s) => s.c))) {
+      const mine = sp.filter((s) => s.c === c),
+        had = rows.filter((h) => h.c === c);
+      left.apps[c] = Math.max(0, sumBy(mine, (s) => s.apps) - sumBy(had, (h) => h.apps));
+      left.goals[c] = Math.max(0, sumBy(mine, (s) => s.goals) - sumBy(had, (h) => h.g));
+    }
+    const share = (total, items, key) => {
+      // largest remainders, by his age in each season (the young play less) with a little variation
+      const wt = items.map((m) =>
+        m.w != null
+          ? m.w
+          : (YOUTH_SHARE[m.y - p.born] || (m.y - p.born >= 34 ? 0.8 : 1)) * (0.75 + 0.5 * seed(key + m.y)),
+      );
+      const sum = wt.reduce((t, x) => t + x, 0) || 1;
+      const raw = wt.map((x) => (x * total) / sum),
+        out = raw.map(Math.floor);
+      let rest = total - sumBy(out, (x) => x);
+      raw
+        .map((x, i) => [x - Math.floor(x), i])
+        .sort((a, b) => b[0] - a[0])
+        .forEach(([, i]) => rest-- > 0 && out[i]++);
+      return out;
+    };
+    const made = [];
+    const fill = (items, apps, goals) => {
+      if (!items.length || apps <= 0) return false;
+      const a = share(apps, items, 'a'),
+        g = share(
+          goals,
+          items.map((m, i) => ({ y: m.y, w: a[i] })),
+          'g',
+        );
+      items.forEach(
+        (m, i) => a[i] > 0 && made.push({ y: m.y, c: m.c, apps: a[i], g: p.pos === 'GK' ? 0 : g[i], est: true }),
+      );
+      return true;
+    };
+    let spare = { apps: 0, goals: 0 };
+    for (const c of Object.keys(left.apps)) {
+      const items = missing.filter((m) => m.spell && m.c === c);
+      if (!fill(items, left.apps[c], left.goals[c])) {
+        spare.apps += left.apps[c];
+        spare.goals += left.goals[c];
+      }
+    }
+    const done = {
+      apps: sumBy(rows, (h) => h.apps) + sumBy(made, (h) => h.apps),
+      goals: sumBy(rows, (h) => h.g) + sumBy(made, (h) => h.g),
+    };
+    const before = missing.filter((m) => !m.spell),
+      rest = {
+        apps: Math.max(0, (p.career.apps || 0) - done.apps),
+        goals: Math.max(0, (p.career.goals || 0) - done.goals),
+      };
+    // the games of the seasons before his first spell; with none to put them in they go to the seasons the spells already cover
+    if (!fill(before, rest.apps, rest.goals)) fill(missing, rest.apps, rest.goals);
+    // an older save whose career totals leave out his early seasons altogether (they were counted back sixteen seasons only): those
+    // seasons are estimated from his age and position, a young player playing less, and the career total follows the table
+    const gapYears = before.filter((m) => m.y - p.born >= 17 && !made.some((x) => x.y === m.y));
+    for (const m of gapYears.length >= 2 ? gapYears : []) {
+      const a = m.y - p.born;
+      const apps = Math.round(30 * (YOUTH_SHARE[a] || (a >= 34 ? 0.8 : 1)) * (0.7 + 0.6 * seed('e' + m.y)));
+      if (apps > 0)
+        made.push({
+          y: m.y,
+          c: m.c,
+          apps,
+          g:
+            p.pos === 'GK'
+              ? 0
+              : Math.round(apps * (HIST_RATES[p.pos] || HIST_RATES.CM)[0] * (0.7 + 0.6 * seed('f' + m.y))),
+          est: true,
+        });
+    }
+    const all = rows.concat(made);
+    return all
+      .map((r, i) => [r, i])
+      .sort((a, b) => b[0].y - a[0].y || a[1] - b[1])
+      .map((x) => x[0]);
   };
   // Your player: at your club or at your B team (whose players belong to you)
   // Your club or your B team (whose wages you pay): never an AI buyer, borrower or bidder

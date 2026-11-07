@@ -1903,9 +1903,19 @@
       ${UI.statsCard(p, avg)}`;
     const secAttrs = `<div class="card"><div class="row"><div class="h3 grow">Profile</div>${!own && v.k < 70 ? '<span class="pill warn">Approximate</span>' : ''}</div>${own || v.k >= 40 ? C.radar(p, !own && v.k < 70) : '<div class="lock">Profile hidden</div>'}${attrs()}</div>
       ${positionsCard(p, v, own)}${peerCard(p, v, own)}${profileCard(p)}`;
+    // (his totals follow the season-by-season table, which has a row for every season)
+    const fullRows = W.fullHistory(p, history),
+      careerApps = Math.max(
+        p.career.apps,
+        fullRows.reduce((t, h) => t + h.apps, 0),
+      ),
+      careerGoals = Math.max(
+        p.career.goals,
+        fullRows.reduce((t, h) => t + h.g, 0),
+      );
     const secCareer = `${UI.seasonsCard(p, history)}
       ${UI.careerCard(p, history)}
-      <div class="card"><div class="h3">Career</div><div class="row small" style="margin:8px 0"><span class="grow muted">Total</span><b>${U.plural(p.career.apps, 'game')} · ${p.pos === 'GK' ? gkSheets(p) : `${U.plural(p.career.goals, 'goal')}`}</b></div>
+      <div class="card"><div class="h3">Career</div><div class="row small" style="margin:8px 0"><span class="grow muted">Total</span><b>${U.plural(careerApps, 'game')} · ${p.pos === 'GK' ? gkSheets(p) : `${U.plural(careerGoals, 'goal')}`}</b></div>
         ${p.career.spells
           .map((sp, i) => ({ ...sp, first: i === 0 }))
           .reverse()
@@ -2076,29 +2086,14 @@
         ];
     const row = (h) => {
       const c = CL(h.c);
-      return `<tr><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.name) : '—'}</span></span></td>${cols.map(([, f]) => `<td>${f(h)}</td>`).join('')}</tr>`;
+      // (a season the game has no record of is rebuilt: games and goals only, the rest a dash)
+      const cell = ([head, f]) => (h.est ? (head === 'Apps' ? h.apps : head === 'G' && !gk ? h.g : '—') : f(h));
+      return `<tr${h.est ? ' class="dim"' : ''}><td class="l">${h.y}/${String((h.y + 1) % 100).padStart(2, '0')}${h.now ? ' <span class="tiny" style="color:var(--acc)" title="This season so far">now</span>' : ''}${h.est ? ' <span class="tiny" title="The game has no record of this season: the club and the numbers are worked out from his career">~</span>' : ''}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip ${c ? 'tap' : ''}" ${c ? `data-act="clubView" data-id="${c.id}"` : ''} style="max-width:110px">${c ? esc(c.name) : '—'}</span></span></td>${cols.map((col) => `<td>${cell(col)}</td>`).join('')}</tr>`;
     };
-    // The rows only go back as far as the game has a record: what the Career panel counts beyond them (earlier
-    // seasons at a club, and his career before that) comes as rows of its own, so the totals agree
-    const extra = [];
-    const spells = (p.career && p.career.spells) || [];
-    for (const club of new Set(spells.map((x) => x.c))) {
-      const sp = spells.filter((x) => x.c === club),
-        rows = history.filter((h) => h.c === club);
-      const apps = sp.reduce((t, x) => t + (x.apps || 0), 0) - rows.reduce((t, h) => t + h.apps, 0),
-        g = sp.reduce((t, x) => t + (x.goals || 0), 0) - rows.reduce((t, h) => t + h.g, 0);
-      if (apps > 0) extra.push({ c: club, apps, g: Math.max(0, g), earlier: true });
-    }
-    const shownApps = history.concat(extra).reduce((t, h) => t + h.apps, 0),
-      shownG = history.concat(extra).reduce((t, h) => t + h.g, 0);
-    if (p.career && p.career.apps > shownApps)
-      extra.push({ apps: p.career.apps - shownApps, g: Math.max(0, p.career.goals - shownG), before: true });
-    const extraRow = (h) => {
-      const c = h.c && CL(h.c);
-      return `<tr><td class="l dim">${h.before ? 'Before' : 'Earlier'}</td><td class="l"><span class="row" style="gap:6px">${c ? C.crest(c, 16) : ''}<span class="ellip dim" style="max-width:110px">${c ? esc(c.name) : 'Other clubs'}</span></span></td>${cols.map(([head]) => `<td>${head === 'Apps' ? h.apps : head === 'G' && !gk ? h.g : '—'}</td>`).join('')}</tr>`;
-    };
-    if (!history.length && !extra.length) return '';
-    const all = history.concat(extra);
+    // Every season since he was 16, one row each: those the game recorded and the others rebuilt from his spells and career totals
+    // (W.fullHistory), so there are no "earlier" or "before" lines
+    const all = W.fullHistory(p, history);
+    if (!all.length) return '';
     const total = ([head, , key, dec]) => {
       if (head === 'Apps') return all.reduce((t, h) => t + h.apps, 0);
       if (head === 'G') return all.reduce((t, h) => t + h.g, 0);
@@ -2113,24 +2108,7 @@
     };
     return `<div class="card"><div class="h3">Season by season</div>
       <div style="overflow-x:auto"><table class="t" style="margin-top:8px"><tr><th class="l">Season</th><th class="l">Club</th>${cols.map(([h]) => `<th>${h}</th>`).join('')}</tr>
-      ${history
-        .map((h, i) => {
-          // the seasons at a club the rows do not go back to come right after its last row, not at the foot of the table
-          const last = history.findLastIndex((x) => x.c === h.c) === i;
-          return (
-            row(h) +
-            (last
-              ? extra
-                  .filter((x) => x.earlier && x.c === h.c)
-                  .map(extraRow)
-                  .join('')
-              : '')
-          );
-        })
-        .join('')}${extra
-        .filter((x) => !x.earlier || !history.some((h) => h.c === x.c))
-        .map(extraRow)
-        .join('')}
+      ${all.map(row).join('')}
       <tr style="font-weight:700"><td class="l">Total</td><td></td>${cols.map((c) => `<td>${total(c)}</td>`).join('')}</tr></table></div>
       <div class="tiny dim" style="margin-top:6px">Scroll across for every column. Level is his ability that season, in stars, so the numbers read against it. Minutes, shots, chances, tackles, expected goals and keeper numbers are counted in fully simulated matches; a dash is a season without them.</div></div>`;
   };
