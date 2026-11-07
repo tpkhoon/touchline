@@ -814,13 +814,12 @@
         ? `${md} · MD ${FM.Season.gamesPlayed(club.id)}/${lc.fixtures.length} played`
         : md;
     // (the real date of the day, beside what kind of day it is)
-    const dt = cal && cal.dn != null && cal.type !== 'pre' ? FM.W.dateText(cal.dn) + ' · ' : '';
-    // (the day of the season, counted in days: day 1 is the first day of pre-season)
-    const dayTag = cal ? `Day ${FM.Season.dayNo(cal)} · ` : '';
+    // (the date today: after a sim by days that stopped on a quiet day it is that day's, before the next day with something on)
+    const dt = cal && cal.dn != null && cal.type !== 'pre' ? FM.W.dateText(FM.Season.dnToday()) + ' · ' : '';
     const nt = !club && S.user.nation && S.nteams && S.nteams[S.user.nation];
     $('#topbar').innerHTML = club
-      ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dayTag}${dt}${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><button class="money" data-act="goFinances" aria-label="Finances: balance ${esc(U.money(club.balance))}">${U.money(club.balance)}</button><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
-      : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dayTag}${dt}${md} · ${nt ? `<span style="color:var(--acc)">${esc(nt.name)} manager</span>` : '<span style="color:var(--warn)">Out of work</span>'}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
+      ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><button class="money" data-act="goFinances" aria-label="Finances: balance ${esc(U.money(club.balance))}">${U.money(club.balance)}</button><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
+      : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${md} · ${nt ? `<span style="color:var(--acc)">${esc(nt.name)} manager</span>` : '<span style="color:var(--warn)">Out of work</span>'}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
     const html =
       !club && ['squad', 'scout', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();

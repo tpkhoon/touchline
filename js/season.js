@@ -30,10 +30,13 @@
   };
   // Days by the calendar, not by matchdays: the day of the season it is (day 1 is the first day of pre-season) and, as a clock for the
   // sim, the day number of the calendar entry now (every entry has a date, W.dateCalendar: dn)
+  // (S.dnNow: the date between two days with something on, when a sim by days has stopped on a quiet day; otherwise it is the date of
+  // the day the calendar is at)
   Sea.dnToday = () => {
     const S = FM.S,
       cal = S.calendar || [],
       e = cal[Math.min(S.day, cal.length - 1)];
+    if (S.dnNow != null && e && e.dn != null && S.dnNow < e.dn) return S.dnNow;
     return e && e.dn != null ? e.dn : S.day;
   };
   Sea.dayNo = (cal) => {
@@ -1219,13 +1222,29 @@
     };
     hand();
     // (the days asked for are days of the calendar: sim 7 days and it goes on for a week, however many matchdays that is)
-    const dn0 = Sea.dnToday();
+    const dn0 = Sea.dnToday(),
+      exact = !opt.until; // (a number of days goes on for exactly that many; the "until" choices jump from event to event)
     do {
-      yield [n, Sea.dayLabel()];
-      const fx = employed0 && Sea.userFixture();
-      if (fx) Sea.applyUserMatch(FM.quickSim(fx, !!fx.ko));
-      summary = Sea.advance(null);
-      n = Math.max(n, Sea.dnToday() - dn0, 1);
+      const entry = S.calendar[S.day],
+        cur = Sea.dnToday();
+      if (exact && entry && entry.dn != null && entry.dn > cur) {
+        // nothing is on today: the day goes by, and the date moves on by one
+        yield [n, 'A day with nothing on'];
+        S.dnNow = cur + 1 >= entry.dn ? null : cur + 1;
+        n++;
+        summary = null;
+      } else {
+        yield [n, Sea.dayLabel()];
+        const fx = employed0 && Sea.userFixture();
+        if (fx) Sea.applyUserMatch(FM.quickSim(fx, !!fx.ko));
+        summary = Sea.advance(null);
+        if (exact) {
+          // the day is played, and the date moves on by one (a second entry on the same date is part of the same day)
+          const nx = S.calendar[S.day];
+          if (!(nx && nx.dn === cur)) n++;
+          if (!summary && nx && nx.dn != null && cur + 1 < nx.dn) S.dnNow = cur + 1;
+        } else n = Math.max(n, Sea.dnToday() - dn0, 1);
+      }
       if (!summary) hand();
       winChange = !summary && employed0 && !opt.auto && opt.until !== 'season' && Sea.windowOpen() !== win0;
       deadline = !summary && employed0 && !opt.auto && opt.until !== 'season' && !dd0 && FM.Market.isDeadline();
@@ -1274,6 +1293,7 @@
   // userMatch: finished FM.Match for the user's fixture (or null if none today)
   Sea.advance = function (userMatch) {
     const S = FM.S;
+    S.dnNow = null; // (the date is that of the day played; a sim by days sets it again afterwards)
     const today = Sea.today();
     if (today && today.type === 'pre') {
       const plan = S.user.preseason[today.idx];

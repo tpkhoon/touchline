@@ -552,7 +552,7 @@
           `<button class="chip ${sel.u === k ? 'on' : ''}" data-act="simPick" data-u="${k}">${label.replace('until ', 'Until ')}</button>`,
       )
       .join('');
-    return `<div class="tiny dim" style="margin-bottom:8px;line-height:1.5">Sim forward by days of the calendar (the top bar counts them): it goes on to the first day with something on it that reaches the number you choose. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer (unless you sim without stopping), and you can stop it yourself while it runs.</div>
+    return `<div class="tiny dim" style="margin-bottom:8px;line-height:1.5">Sim forward by days of the calendar: exactly the number you choose, even if nothing is on some of them (a day with no match or event just goes by). The Until choices go from one thing to the next. Your own matches are played for you as instant results. It stops early for a decision, a transfer window opening or closing, deadline day, the end of the season or a new job offer (unless you sim without stopping), and you can stop it yourself while it runs.</div>
       <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
       <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${until}</div>
       <div class="row" style="gap:8px;margin-bottom:12px"><input type="number" id="sim-days" min="1" max="120" value="${sel.u ? '' : +sel.n || 7}" placeholder="days" inputmode="numeric" style="width:90px" data-input="simType"><span class="dim small grow">days (1 to 120)</span></div>
