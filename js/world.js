@@ -1212,6 +1212,152 @@
         .filter((x) => x.nat === nat && x.sim !== 'nation' && !x.parent && x.comp)
         .sort((a, b) => a.rep - b.rep));
   };
+  // ---------- A realistic past season ----------
+  // The numbers of a season he played before the game began, worked out the way a season goes: the games he was fit for (injuries come
+  // by his own proneness and his age, mostly small, now and then a long one), the games he played of those (his place in the team),
+  // minutes (starts and substitute appearances), and what he did with them per 90 minutes for his position, raised or lowered by how
+  // far above or below his club's level he was, by his finishing or vision, and by a good or bad run of form that carries from one
+  // season to the next. Goals, assists, cards and the rest are counts drawn by chance (a striker's seventeen one year and nine the
+  // next), so no two careers have the same shape. The rates are the match engine's own, measured over a played season of the
+  // whole world (a regular striker scores 0.42 a game, a centre-back 0.08). Returns the row, as the played seasons write them.
+  const P90 = {
+    //     goals  assists shots kp   tackles ints  yellows
+    ST: [0.4, 0.075, 3.0, 0.6, 0.48, 0.35, 0.078],
+    W: [0.21, 0.12, 1.85, 1.1, 0.9, 0.55, 0.103],
+    WM: [0.145, 0.13, 1.2, 1.2, 1.6, 0.9, 0.142],
+    AM: [0.215, 0.155, 1.8, 1.35, 1.05, 0.72, 0.104],
+    CM: [0.13, 0.14, 1.15, 1.18, 2.2, 1.3, 0.143],
+    DM: [0.075, 0.095, 0.8, 0.8, 2.8, 1.75, 0.226],
+    WB: [0.08, 0.105, 0.62, 0.95, 1.76, 1.1, 0.213],
+    FB: [0.065, 0.09, 0.6, 0.85, 2.1, 1.43, 0.215],
+    CB: [0.08, 0.062, 0.79, 0.59, 2.65, 1.8, 0.25],
+    GK: [0, 0, 0, 0, 0, 0, 0.011],
+  };
+  // goals by ability above the club's level (a point is worth 4% to a striker, less further back); the rating at that level
+  const Q90 = { ST: 0.04, W: 0.022, AM: 0.014, WM: 0.016, CM: 0.01, DM: 0.012, WB: 0.014, FB: 0.014, CB: 0.014, GK: 0 };
+  const RTG = { ST: 6.86, W: 6.82, AM: 6.87, CM: 6.93, WM: 6.82, DM: 6.77, CB: 6.68, FB: 6.67, WB: 6.65, GK: 6.66 };
+  const poisson = (m) => {
+    if (!(m > 0)) return 0;
+    if (m > 30) return Math.max(0, Math.round(m + U.gauss(0, Math.sqrt(m))));
+    const L = Math.exp(-m);
+    let k = 0,
+      pr = 1;
+    do {
+      k++;
+      pr *= Math.random();
+    } while (pr > L);
+    return k - 1;
+  };
+  // o: { y, a (his age), k (seasons ago), club, then (his ability then), rel (against the club's level), share (his place in the team
+  // when fit), games (the club's matches, all competitions), cap, form: { v } (carried from season to season) }
+  W.pastSeason = function (p, o) {
+    const { y, a, k, club, then, rel, share, games, cap, form } = o;
+    const gk = p.pos === 'GK',
+      r = P90[p.pos] || P90.CM,
+      at = p.attrs || {};
+    // games lost to injury: most seasons a few, one in four or five a real spell out, rarely most of the year
+    const inj = (p.hid && p.hid.inj) || 11;
+    const risk = U.clamp(0.2 + 0.012 * (inj - 11) + 0.01 * Math.max(0, a - 28), 0.06, 0.5) * (gk ? 0.6 : 1);
+    const lost = Math.random() < risk ? 0.1 + Math.pow(Math.random(), 1.6) * 0.5 : Math.random() * 0.08;
+    const apps = U.clamp(Math.round(games * Math.min(0.95, share * 1.12) * (1 - lost) * U.rand(0.93, 1.05)), 0, cap);
+    // starts and substitute appearances: a regular starts nearly every game and is taken off now and then; the fringe come on late
+    const startFrac = U.clamp((share - 0.12) / 0.75, 0.05, 0.97),
+      mins = Math.min(
+        apps * 90,
+        Math.round(
+          apps *
+            (gk
+              ? U.rand(87, 90) // (a keeper plays the whole match or none of it)
+              : startFrac * U.rand(70, 80) + (1 - startFrac) * U.rand(20, 32)),
+        ),
+      );
+    const m90 = mins / 90;
+    form.v = 0.45 * form.v + U.gauss(0, 0.18);
+    const fm = Math.exp(form.v),
+      qs = Q90[p.pos] || 0.014,
+      q = U.clamp(Math.exp(qs * rel), 0.45, 2.2),
+      qa = U.clamp(Math.exp(qs * 0.5 * rel), 0.6, 1.7),
+      fin = U.clamp(0.6 + (at.finishing || 11) / 30, 0.7, 1.35),
+      cre = U.clamp(0.6 + (at.vision || 11) / 30, 0.7, 1.35);
+    const g = gk ? 0 : poisson(m90 * r[0] * q * fin * fm),
+      as = gk ? 0 : poisson(m90 * r[1] * qa * cre * fm);
+    // the rating: his position's usual at his club's level, better the better he is than that, and the goals and assists he made
+    const dp = m90 > 0 ? ((g + as) / m90 - (r[0] + r[1])) * 0.5 : 0;
+    const rate = U.clamp((RTG[p.pos] || 6.8) + 0.03 * rel + (gk ? 0 : dp) + U.gauss(0, apps < 8 ? 0.3 : 0.1), 5.6, 8.1);
+    const row = {
+      y,
+      c: club.id,
+      ca: Math.round(then),
+      apps,
+      g,
+      a: as,
+      r: apps ? +rate.toFixed(2) : 0,
+      mins,
+      motm: poisson(apps * 0.025 * Math.max(0.2, 1 + rel * 0.07)),
+      yc: poisson(m90 * r[6] * U.rand(0.7, 1.3)),
+      rc: poisson(m90 * 0.006),
+    };
+    if (k > 3) for (const f of ['mins', 'motm', 'yc', 'rc']) delete row[f]; // (older seasons: the headline numbers only, to keep the world light)
+    if (k <= 3 && !gk) {
+      // the last three seasons carry the full detail; the earlier ones the headline numbers (the table shows a dash)
+      row.sh = poisson(m90 * r[2] * Math.sqrt(q) * Math.sqrt(fm) * U.rand(0.9, 1.1));
+      row.kp = poisson(m90 * r[3] * Math.sqrt(qa) * U.rand(0.85, 1.15));
+      row.tk = poisson(m90 * r[4] * U.rand(0.85, 1.15));
+      row.ic = poisson(m90 * r[5] * U.rand(0.85, 1.15));
+    }
+    if (gk) {
+      // a keeper's goals against and clean sheets follow his side's strength, then his own quality a little
+      const rep = club.rep || 60,
+        pcs = U.clamp(0.27 + (rep - 65) * 0.005 + rel * 0.004, 0.1, 0.55),
+        ga = poisson(m90 * U.clamp(1.25 - (rep - 65) * 0.012 - rel * 0.01, 0.55, 2.1));
+      row.cs = U.clamp(Math.round(apps * pcs + U.gauss(0, Math.sqrt(Math.max(1, apps * pcs * (1 - pcs))))), 0, apps);
+      row.ga = ga;
+      if (k <= 3) {
+        const pct = U.clamp(0.69 + rel * 0.004 + U.gauss(0, 0.02), 0.58, 0.8);
+        row.sv = Math.round((ga * pct) / (1 - pct));
+        row.xga = Math.round(ga * U.rand(0.85, 1.15) * 10) / 10;
+      }
+    }
+    return row;
+  };
+  // Seasons played before the game began, written again with the model above, for a save made with the old numbers (whose goals ran
+  // high for attackers and low for defenders, whose minutes were flat and whose seasons never had an injury). The clubs, the years and
+  // his ability then stay as they were; the games, goals and the rest are drawn again, and the spells and career totals move by the
+  // difference, so they still agree with the rows. Rows are told apart by their year (before the world's first season) and are marked
+  // so they are only done once.
+  W.reworkPast = function (p) {
+    const S = FM.S,
+      y0 = (S.intro && S.intro.year) || (S.archive && S.archive[0] && S.archive[0].year) || S.year;
+    if (p.hv || !y0 || !p.history || !p.history.length) return;
+    const form = { v: U.gauss(0, 0.15) },
+      out = [];
+    for (const h of p.history) {
+      const club = S.clubs[h.c];
+      if (h.y >= y0 || !club || !p.career) {
+        out.push(h);
+        continue;
+      }
+      const a = h.y - p.born,
+        then = h.ca || p.ca,
+        rel = then - W.levelFor(club.rep),
+        comp = club.comp && S.comps[club.comp],
+        cap = ((comp && comp.fixtures && comp.fixtures.length) || 38) + Math.round(3 + club.rep * 0.12),
+        share = U.clamp(0.64 + rel * 0.03, 0.1, 0.9) * (YOUTH_SHARE[a] || (a >= 34 ? 0.8 : 1)),
+        row = W.pastSeason(p, { y: h.y, a, k: y0 - h.y, club, then, rel, share, games: cap - 1, cap, form });
+      // the spell he was in and his career follow the change
+      const sp = p.career.spells.find((s) => s.c === h.c && s.from <= h.y && h.y <= (s.to == null ? 9999 : s.to));
+      if (sp) {
+        sp.apps = Math.max(0, (sp.apps || 0) - h.apps + row.apps);
+        sp.goals = Math.max(0, (sp.goals || 0) - h.g + row.g);
+      }
+      p.career.apps = Math.max(0, p.career.apps - h.apps + row.apps);
+      p.career.goals = Math.max(0, p.career.goals - h.g + row.g);
+      if (row.apps > 0) out.push(row);
+    }
+    p.history = out;
+    p.hv = 1; // (done: the past of this player is only written again once)
+  };
+
   // His whole career before today: a season of numbers for every year since he was 17 (at most sixteen), at the clubs his ability
   // would have found him: the last three in full, the earlier ones with the headline numbers. A teenager plays little, a player
   // in his prime most of the games, and the clubs climb with his ability. The spells, his career totals and the rows agree.
@@ -1255,9 +1401,8 @@
         k -= len;
       }
     }
-    const lvl = W.levelFor(c.rep),
-      rate = HIST_RATES[p.pos] || HIST_RATES.CM,
-      gk = p.pos === 'GK';
+    const lvl = W.levelFor(c.rep);
+    const form = { v: U.gauss(0, 0.15) }; // (a run of good or bad seasons carries on from one year to the next)
     const rows = [];
     // where he ranks in his position at his club decides his games: a starter plays most of the matches, the next man in about half,
     // then a rotation place, then the fringe (the players of his own group at the club, by ability)
@@ -1280,50 +1425,10 @@
         if (then >= lvl + 6) share = Math.max(share, 0.86); // a class above his club's level: always in the team
       } else share = U.clamp(0.64 + rel * 0.03, 0.1, 0.9);
       share *= YOUTH_SHARE[a] || (a >= 34 ? 0.8 : 1);
-      const apps = U.clamp(Math.round(U.gauss(games * share, games * 0.09)), 0, cap);
-      const finish = (0.6 + p.attrs.finishing / 25) * (1 + U.clamp(rel * 0.012, -0.25, 0.25));
-      const g = Math.round(apps * rate[0] * finish * U.rand(0.6, 1.4));
-      const as = Math.round(apps * rate[1] * U.rand(0.6, 1.4));
-      const ga = gk ? Math.round(apps * U.rand(1.0, 1.5)) : 0;
-      const row = {
-        y,
-        c: club.id,
-        ca: Math.round(then),
-        apps,
-        g,
-        a: as,
-        r: apps
-          ? +U.clamp(
-              6.62 + U.clamp(rel * 0.04, -0.5, 0.9) + U.gauss(0, 0.12) + (g + as) / Math.max(1, apps) / 6,
-              5.8,
-              7.9,
-            ).toFixed(2)
-          : 0,
-        mins: apps * Math.round(share >= 0.7 ? U.rand(78, 90) : U.rand(55, 80)),
-        motm: Math.round(apps * 0.02 * Math.max(0, 1 + rel * 0.08) * U.rand(0, 2)),
-        yc: Math.round(
-          apps * ({ CB: 0.16, DM: 0.2, CM: 0.12, FB: 0.12, WB: 0.12, GK: 0.02 }[p.pos] || 0.07) * U.rand(0.4, 1.6),
-        ),
-        rc: Math.random() < 0.04 ? 1 : 0,
-      };
-      if (k > 3) for (const f of ['mins', 'motm', 'yc', 'rc']) delete row[f]; // (older seasons: the headline numbers only, to keep the world light)
-      if (k <= 3 && !gk) {
-        // the last three seasons carry the full detail; the earlier ones the headline numbers (the table shows a dash)
-        row.sh = Math.round(apps * rate[2] * U.rand(0.7, 1.3));
-        row.kp = Math.round(apps * rate[3] * U.rand(0.7, 1.3));
-        row.tk = Math.round(apps * rate[4] * U.rand(0.7, 1.3));
-        row.ic = Math.round(apps * rate[5] * U.rand(0.7, 1.3));
-      }
-      if (gk) {
-        row.cs = Math.round(apps * U.rand(0.22, 0.38));
-        row.ga = ga;
-        if (k <= 3) {
-          row.sv = Math.round(ga * U.rand(2, 3.2));
-          row.xga = Math.round(ga * U.rand(0.85, 1.15) * 10) / 10;
-        }
-      }
-      rows.push(row);
+      const row = W.pastSeason(p, { y, a, k, club, then, rel, share, games, cap, form });
+      if (row.apps > 0) rows.push(row);
     }
+    p.hv = 1; // (written with the realistic model: W.pastSeason)
     p.history = rows.filter((r) => r.apps > 0); // (a season without a game is no row, as in a played world)
     // spells: a stint at each earlier club (consecutive seasons there), then the current one
     const stints = [];
@@ -1346,7 +1451,9 @@
       extraGoals = 0;
     if (!exact && sp.apps > mineApps) {
       extraApps = sp.apps - mineApps;
-      extraGoals = Math.round(extraApps * (mineApps ? mineGoals / mineApps : rate[0] * 0.8));
+      extraGoals = Math.round(
+        extraApps * (mineApps ? mineGoals / mineApps : (HIST_RATES[p.pos] || HIST_RATES.CM)[0] * 0.8),
+      );
     }
     sp.apps = mineApps + extraApps;
     sp.goals = mineGoals + extraGoals;

@@ -606,6 +606,7 @@ Every feature from the game design document, with what is playable in the protot
 | Careers | Clubs come for a manager who is doing well: a bigger club's approach (one at a time, a week to answer, a cool-down after) with Accept, which leaves your club, and Decline, which pleases the board | Playtest round 24 |
 | International | A third international break late in the season: friendlies for every free nation and the invitational tournaments, after the two windows that carry the qualifiers and the Nations League (a third break to move in the editor's calendar) | Playtest round 24 |
 | Editor | Family ties for nations of your own: a parent nation and a share of players with a second nationality there (Greenland and Denmark), a few players with family in neighbours for a country with no ties | Playtest round 24 |
+| Players | Realistic past seasons for a player's history: injuries, starts and substitute appearances, goals, assists, cards and detail per 90 minutes at the match engine's rates by position and quality, with form that carries on; older saves have them drawn again once | Playtest round 24 |
 | UI | Sim forward goes on for exactly the number of days chosen, quiet days included, and the top bar's date moves a day at a time | Playtest round 24 |
 | Squad | A "Loan · club" pill on players on loan at your club, in the squad list | Playtest round 24 |
 | Tactics | A substitute goalkeeper is optional on a bench you pick; with none, an outfield player goes in goal if the keeper must come off | Playtest round 24 |

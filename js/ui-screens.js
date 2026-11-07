@@ -1799,6 +1799,9 @@
     return `<div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px">${cell(W.age(p), 'Age')}${cell(p.clubId && p.no ? '#' + p.no : '—', 'Shirt')}${cell(esc(p.foot), 'Foot')}${cell(own || v.k >= 30 ? p.contract || '—' : '?', 'Contract')}</div>`;
   };
   function playerHTML(p) {
+    // a past written with the old numbers is drawn again with the realistic model, the first time he is looked at (once, and only for
+    // the seasons before the world began)
+    FM.W.reworkPast(p);
     const v = FM.Scouting.view(p),
       c = p.clubId && CL(p.clubId),
       own = v.own;

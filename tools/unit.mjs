@@ -833,6 +833,48 @@ try {
   );
 }
 
+// the past seasons of a player (W.pastSeason): rates of the match engine, injuries, minutes, and totals that agree
+{
+  const W = FM.W;
+  const club = { id: 'c_x', rep: 70 };
+  const mk = (pos) => ({ pos, hid: { inj: 11 }, attrs: { finishing: 12, vision: 12 } });
+  const run = (pos, n = 600, rel = 0) => {
+    const p = mk(pos),
+      form = { v: 0 };
+    let g = 0,
+      m = 0,
+      apps = 0,
+      yc = 0;
+    const per = [];
+    for (let i = 0; i < n; i++) {
+      const r = W.pastSeason(p, { y: 2020, a: 26, k: 2, club, then: 60, rel, share: 0.86, games: 46, cap: 50, form });
+      g += r.g;
+      m += (r.mins || 0) / 90;
+      apps += r.apps;
+      yc += r.yc || 0;
+      per.push(r.apps);
+    }
+    return { g90: g / m, apps: apps / n, per, mpa: (m * 90) / apps, yc90: yc / m };
+  };
+  const st = run('ST'),
+    cb = run('CB');
+  ok(st.g90 > 0.34 && st.g90 < 0.5, `a regular striker's past goals per 90 are ${st.g90.toFixed(2)}, not about 0.42`);
+  ok(cb.g90 > 0.05 && cb.g90 < 0.11, `a centre-back's past goals per 90 are ${cb.g90.toFixed(2)}, not about 0.08`);
+  ok(cb.yc90 > 0.18 && cb.yc90 < 0.34, 'a centre-back collects about a yellow card every four games');
+  ok(
+    st.apps > 30 && st.apps < 44,
+    `a regular starter plays ${st.apps.toFixed(0)} games a season in the past, not about 38`,
+  );
+  ok(
+    Math.min(...st.per) < 22 && Math.max(...st.per) <= 50,
+    'a season now and then lost to injury, never past the club cap',
+  );
+  ok(st.mpa > 65 && st.mpa < 82, 'minutes per appearance of a regular are about 70 to 80');
+  ok(run('ST', 400, 8).g90 > st.g90 * 1.2, 'a striker well above his club level scores more');
+  const gk = run('GK', 200);
+  ok(gk.mpa > 86, 'a keeper plays the whole match');
+}
+
 console.log(
   fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
 );
