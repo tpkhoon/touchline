@@ -28,6 +28,19 @@
       today = k >= 0 && comp.fixtures[k] ? comp.fixtures[k] : [];
     return W.roundsBefore(comp, r) + (today.some((f) => f.res && (f.h === clubId || f.a === clubId)) ? 1 : 0);
   };
+  // Days by the calendar, not by matchdays: the day of the season it is (day 1 is the first day of pre-season) and, as a clock for the
+  // sim, the day number of the calendar entry now (every entry has a date, W.dateCalendar: dn)
+  Sea.dnToday = () => {
+    const S = FM.S,
+      cal = S.calendar || [],
+      e = cal[Math.min(S.day, cal.length - 1)];
+    return e && e.dn != null ? e.dn : S.day;
+  };
+  Sea.dayNo = (cal) => {
+    const first = (FM.S.calendar || [])[0],
+      dn = cal && cal.dn != null ? cal.dn : Sea.dnToday();
+    return first && first.dn != null ? dn - first.dn + 1 : FM.S.day + 1;
+  };
   // "Matchday 12" for our league (or the first league with a game that day)
   Sea.matchdayLabel = function (cal) {
     const c = W.employed() && W.userClub(),
@@ -1142,10 +1155,14 @@
     // Out of work: stop for any offer that wasn't on the table when the wait began (the window doesn't matter); in a job, for a
     // club that comes for you
     const newOffer = () => (W.employed() ? S.user.poach || [] : S.user.offers || []).some((o) => !seen.has(o.id));
+    // (counted in days of the calendar, not in calendar entries: a week between two league rounds is seven days)
+    const dn0 = Sea.dnToday();
+    let k = 0;
     do {
       yield [n, Sea.dayLabel()];
       summary = Sea.advance(null);
-      n++;
+      k++;
+      n = Math.max(n, Sea.dnToday() - dn0, 1);
       winChange = !summary && employed0 && Sea.windowOpen() !== win0;
       deadline = !summary && employed0 && !dd0 && FM.Market.isDeadline(); // stop for deadline day
     } while (
@@ -1158,7 +1175,7 @@
       W.employed() === employed0 &&
       !newOffer() &&
       Sea.today() &&
-      n < (W.employed() ? 12 : 21) &&
+      k < (W.employed() ? 12 : 21) &&
       !Sea.pendingDecision()
     );
     return {
@@ -1169,7 +1186,7 @@
       deadline,
       pending: !summary && Sea.pendingDecision(),
       pendingText: !summary && Sea.pendingText(),
-      cap: !summary && n >= (W.employed() ? 12 : 21),
+      cap: !summary && k >= (W.employed() ? 12 : 21),
       stopped: !summary && Sea.stopRequested,
       newOffer: newOffer(),
     };
@@ -1201,12 +1218,14 @@
       for (const k in d) handled[k] += d[k];
     };
     hand();
+    // (the days asked for are days of the calendar: sim 7 days and it goes on for a week, however many matchdays that is)
+    const dn0 = Sea.dnToday();
     do {
       yield [n, Sea.dayLabel()];
       const fx = employed0 && Sea.userFixture();
       if (fx) Sea.applyUserMatch(FM.quickSim(fx, !!fx.ko));
       summary = Sea.advance(null);
-      n++;
+      n = Math.max(n, Sea.dnToday() - dn0, 1);
       if (!summary) hand();
       winChange = !summary && employed0 && !opt.auto && opt.until !== 'season' && Sea.windowOpen() !== win0;
       deadline = !summary && employed0 && !opt.auto && opt.until !== 'season' && !dd0 && FM.Market.isDeadline();
