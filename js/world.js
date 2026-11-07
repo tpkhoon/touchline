@@ -2376,7 +2376,9 @@
     };
     // players you put on the bench yourself (Tactics > Bench) come first
     for (const pid of tactic.bench || []) add(rest.find((p) => p.id === pid));
-    if (!bench.some((p) => p.pos === 'GK')) add(rest.find((p) => p.pos === 'GK'));
+    // (a substitute keeper is picked when you have not chosen the bench yourself; a bench you set can go without one)
+    if (!(tactic.bench && tactic.bench.length) && !bench.some((p) => p.pos === 'GK'))
+      add(rest.find((p) => p.pos === 'GK'));
     // cover for each area: the best of the rest who can play there, by his own position or one he has learned
     for (const t of ['CB', 'FB', 'CM', 'W', 'ST'])
       add(rest.find((p) => p.pos !== 'GK' && !bench.includes(p) && W.fitAt(p, t) >= 0.85));

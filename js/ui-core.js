@@ -329,7 +329,13 @@
       tags.push(
         '<span class="pill bad" title="Left off the registered squad: out until the next window closes">Unregistered</span>',
       );
-    if (p.loan && W.ownPlayer(p)) tags.push(`<span class="pill acc">Loan</span>`);
+    // a player we have on loan names the club he belongs to
+    if (p.loan && W.ownPlayer(p)) {
+      const from = FM.S.clubs[p.loan.from];
+      tags.push(
+        `<span class="pill acc" title="${from ? `On loan from ${esc(from.name)} until the end of the season` : 'On loan'}">Loan${from ? ` · ${esc(from.short || from.name)}` : ''}</span>`,
+      );
+    }
     const uc = own && W.userClub();
     const nz = FM.Intl && FM.Intl.naturalFor ? FM.Intl.naturalFor(p) : null;
     if (nz)

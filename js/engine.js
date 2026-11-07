@@ -1516,9 +1516,9 @@
           return after >= min || after >= now;
         });
       };
-      const cands = sd.bench.filter(
-        (p) => !Object.hasOwn(sd.on, p.id) && (t === 'GK') === (p.pos === 'GK') && keeps(p),
-      );
+      let cands = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id) && (t === 'GK') === (p.pos === 'GK') && keeps(p));
+      // (a bench without a keeper: an outfield player takes the gloves when the keeper has to go off)
+      if (t === 'GK' && !cands.length) cands = sd.bench.filter((p) => !Object.hasOwn(sd.on, p.id) && keeps(p));
       const pIn = inPid
         ? sd.bench.find((p) => p.id === inPid && keeps(p))
         : cands.sort((a, b) => W.effAt(b, t) - W.effAt(a, t))[0];

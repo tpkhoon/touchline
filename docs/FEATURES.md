@@ -606,6 +606,8 @@ Every feature from the game design document, with what is playable in the protot
 | Careers | Clubs come for a manager who is doing well: a bigger club's approach (one at a time, a week to answer, a cool-down after) with Accept, which leaves your club, and Decline, which pleases the board | Playtest round 24 |
 | International | A third international break late in the season: friendlies for every free nation and the invitational tournaments, after the two windows that carry the qualifiers and the Nations League (a third break to move in the editor's calendar) | Playtest round 24 |
 | Editor | Family ties for nations of your own: a parent nation and a share of players with a second nationality there (Greenland and Denmark), a few players with family in neighbours for a country with no ties | Playtest round 24 |
+| Squad | A "Loan · club" pill on players on loan at your club, in the squad list | Playtest round 24 |
+| Tactics | A substitute goalkeeper is optional on a bench you pick; with none, an outfield player goes in goal if the keeper must come off | Playtest round 24 |
 | UI | A player's season-by-season table has a row for every season since he was 16: no "Earlier" or "Before" lines; seasons the game has no record of are rebuilt (dimmed, games and goals only) | Playtest round 24 |
 | UI | Open all / Fold all on the Nations tab and the World leagues view | Playtest round 24 |
 | UI | Switching tabs in a player profile keeps your place instead of scrolling to the top | Playtest round 24 |
