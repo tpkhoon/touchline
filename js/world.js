@@ -3244,12 +3244,14 @@
         opts.confeds &&
         (Object.keys(opts.confeds.names || {}).length ||
           Object.keys(opts.confeds.members || {}).length ||
-          Object.keys(opts.confeds.observers || {}).length)
+          Object.keys(opts.confeds.observers || {}).length ||
+          Object.keys(opts.confeds.subs || {}).length)
           ? JSON.parse(
               JSON.stringify({
                 names: opts.confeds.names || {},
                 members: opts.confeds.members || {},
                 observers: opts.confeds.observers || {},
+                subs: opts.confeds.subs || {},
               }),
             )
           : null,

@@ -1160,6 +1160,23 @@
       ${elig.length ? `<button class="btn sm block" style="margin-top:12px" data-act="ntSquad" data-tab="eligible">${elig.length} eligible player${elig.length === 1 ? '' : 's'} you could win over</button>` : ''}</div>`;
   };
   // A card that folds away behind its title (what the player chose is kept: UI._cupsOpen, as on the Cups screen)
+  // The World Championship's intercontinental play-offs (FM.Intl.icpoDay): the entrants, the semi-finals and the finals
+  const icpoCard = (q) => {
+    const ic = q && q.icpo;
+    if (!ic || ic.none || !ic.teams) return '';
+    const T_ = (id) => FM.S.nteams[id];
+    const score = (f) =>
+      f.res ? `${f.res.hg}–${f.res.ag}${f.res.pens ? ` (${f.res.pens[0]}–${f.res.pens[1]} pens)` : ''}` : 'v';
+    const row = (f) =>
+      `<div class="small" style="padding:4px 0">${C.flag(T_(f.h).code)} ${esc(T_(f.h).name)} <b>${score(f)}</b> ${C.flag(T_(f.a).code)} ${esc(T_(f.a).name)}</div>`;
+    const won = FM.Intl.icpoWinners(ic.tn);
+    return `<div class="card flat"><div class="row"><div class="h3 grow">Intercontinental play-offs</div><span class="tiny dim">${U.plural(ic.P, 'place')}</span></div>
+      <div class="tiny dim" style="margin:4px 0 6px;line-height:1.5">The best nation of each part of the world that did not qualify, and the next best to make ${ic.teams.length}. The top ${ic.P === 1 ? 'seed waits' : `${ic.P} seeds wait`} for the final; the rest play semi-finals.</div>
+      <div class="small b dim">Seeded</div><div class="small" style="padding:2px 0">${ic.seeds.map((id) => `${C.flag(T_(id).code)} ${esc(T_(id).name)}`).join(' · ')}</div>
+      <div class="small b dim" style="margin-top:6px">Semi-finals</div>${ic.sf.map(row).join('')}
+      ${ic.final ? `<div class="small b dim" style="margin-top:6px">Finals</div>${ic.final.map(row).join('')}` : ''}
+      ${won.length ? `<div class="small" style="margin-top:6px"><b>Through:</b> ${won.map((id) => `${C.flag(T_(id).code)} ${esc(T_(id).name)}`).join(' · ')}</div>` : ''}</div>`;
+  };
   const nfold = (id, summary, body, open, cls = 'card') =>
     `<details class="${cls} cupfold" data-cup="${id}" ${((UI._cupsOpen || {})[id] ?? open) ? 'open' : ''}><summary>${summary}</summary>${body}</details>`;
   const origIntl = UI.intlView;
@@ -1217,6 +1234,7 @@
         mineFirst = q.groups
           .slice()
           .sort((a, b) => (b.teams.includes(u.nation) ? 1 : 0) - (a.teams.includes(u.nation) ? 1 : 0));
+      top += icpoCard(q);
       top += `<div class="sec"><div class="h3">Qualifying · ${q.kind === 'world' ? 'World Championship' : 'continental championships'} ${q.year + 1}</div></div>
         <div class="small muted" style="margin:0 2px 8px">Group winners go through first, then the best runners-up by points per game; the last places are played for in single-match play-offs between the next best teams on the last matchday.</div>
         ${(() => {

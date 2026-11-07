@@ -4844,7 +4844,18 @@
           (v) =>
             `<label class="tiny" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="ed-iinc-${v.id}" ${v.kept ? 'checked' : ''}> Played in this world</label><div class="ng-names" style="margin-top:4px"><input type="text" id="ed-iname-${v.id}" maxlength="40" value="${esc(v.name)}">${
               v.pool
-                ? `<span class="tiny dim" style="max-width:150px;line-height:1.3">host rotates: ${esc(v.pool.map((c) => (D.NATIONS[c] || { name: c }).name).join(', '))}</span>`
+                ? `<span class="tiny dim" style="max-width:150px;line-height:1.3">host rotates: ${esc(
+                    (v.sub
+                      ? (
+                          I_()
+                            .subsWith(CF().subs)
+                            .find((x) => x.id === v.sub) || { members: v.pool }
+                        ).members
+                      : v.pool
+                    )
+                      .map((c) => (D.NATIONS[c] || { name: c }).name)
+                      .join(', '),
+                  )}</span>`
                 : `<select id="ed-ihost-${v.id}" style="max-width:150px">${nations
                     .map(
                       ([k, n]) =>
@@ -4879,6 +4890,7 @@
   const CF = () => {
     const c = (ED.def.confeds = ED.def.confeds || { names: {}, members: {} });
     c.observers = c.observers || {};
+    c.subs = c.subs || {};
     return c;
   };
   const I_ = () => FM.Intl;
@@ -4892,9 +4904,15 @@
     const c = CF(),
       n = Object.keys(c.members).length,
       k = Object.keys(c.names).filter((id) => !I_().CONFEDS[id]).length,
-      o = Object.keys(c.observers).length;
-    return k || n || o
-      ? [k ? `${k} added` : '', n ? `${U.plural(n, 'nation')} moved` : '', o ? `${U.plural(o, 'observer')}` : '']
+      o = Object.keys(c.observers).length,
+      sb = Object.keys(c.subs).length;
+    return k || n || o || sb
+      ? [
+          k ? `${k} added` : '',
+          n ? `${U.plural(n, 'nation')} moved` : '',
+          o ? `${U.plural(o, 'observer')}` : '',
+          sb ? `${U.plural(sb, 'sub-confederation')} changed` : '',
+        ]
           .filter(Boolean)
           .join(' · ')
       : 'Europe, South America, Africa, Asia and North America · add your own and move nations between them';
@@ -4948,8 +4966,116 @@
     UI.worldEditor();
     window.scrollTo(0, y);
   };
+  // ---------- Sub-confederations ----------
+  // The parts of a confederation with a union and a Nations Cup of their own (the Nordic, Balkan and Slavic unions, the West African
+  // union ...): rename one, change which confederation it is in, move nations in and out, or add one of your own. What is changed is
+  // kept as a difference from the game's (S.confeds.subs: { id: { name, parent, members } }).
+  const SB = () => (CF().subs = CF().subs || {});
+  const subsNow = () => I_().subsWith(SB());
+  const subOpen = () => {
+    const open = document.querySelector('details[data-sf][open]');
+    ED.sfOpen = open ? open.dataset.sf : ED.sfOpen;
+  };
+  const subRedraw = () => {
+    subOpen();
+    const y = window.scrollY;
+    UI.worldEditor();
+    window.scrollTo(0, y);
+  };
+  const subSet = (id, patch) => {
+    const cur = subsNow().find((x) => x.id === id);
+    if (!cur) return;
+    const next = { name: cur.name, parent: cur.parent, members: cur.members, ...patch };
+    // (what still matches the game's own is not kept)
+    const base = I_()
+      .subsWith({})
+      .find((x) => x.id === id);
+    if (base && base.name === next.name && base.parent === next.parent && base.members.join() === next.members.join())
+      delete SB()[id];
+    else SB()[id] = { name: next.name, parent: next.parent, members: next.members.slice() };
+  };
+  UI.acts.edSubName = (d, el) => {
+    const name = (el.value || '').trim();
+    if (name) subSet(d.id, { name });
+  };
+  UI.acts.edSubParent = (d, el) => {
+    subSet(d.id, { parent: el.value || null });
+    subRedraw();
+  };
+  UI.acts.edSubAdd = (d) => {
+    const sel = $('#ed-subadd-' + d.id);
+    const code = sel && sel.value;
+    const cur = subsNow().find((x) => x.id === d.id);
+    if (!code || !cur || cur.members.includes(code)) return;
+    subSet(d.id, { members: [...cur.members, code] });
+    subRedraw();
+  };
+  UI.acts.edSubRem = (d) => {
+    const cur = subsNow().find((x) => x.id === d.id);
+    if (!cur) return;
+    subSet(d.id, { members: cur.members.filter((c) => c !== d.code) });
+    subRedraw();
+  };
+  UI.acts.edSubReset = (d) => {
+    delete SB()[d.id];
+    subRedraw();
+  };
+  UI.acts.edNewSub = () => {
+    const v = (id) => (($('#ed-' + id) || {}).value || '').trim();
+    const id = v('sbid').toUpperCase(),
+      name = v('sbname'),
+      parent = v('sbparent') || null;
+    const errs = [];
+    if (!/^[A-Z0-9]{2,6}$/.test(id)) errs.push('The short name is 2 to 6 letters or digits');
+    else if (subsNow().some((x) => x.id === id)) errs.push(`There is already a sub-confederation called ${id}`);
+    if (!name) errs.push('A sub-confederation needs a name');
+    if (errs.length) {
+      ED.err = errs;
+      return UI.worldEditor();
+    }
+    SB()[id] = { name, parent, members: [] };
+    ED.err = [];
+    ED.sfOpen = id;
+    UI.worldEditor();
+  };
+  const subsView = () => {
+    const subs = subsNow(),
+      ids = cfIds(),
+      nations = cfNations().sort((a, b) => a[1].name.localeCompare(b[1].name));
+    const parentName = (p) => (p ? cfName(p) : 'Crosses two confederations');
+    return `<div class="ng-label">Sub-confederations <span class="tiny dim">· parts of a confederation with a union and a Nations Cup of their own</span></div>
+      ${subs
+        .map((sb) => {
+          const changed = !!SB()[sb.id];
+          return `<details class="card" data-sf="${esc(sb.id)}" style="margin:8px 0;padding:10px 12px" ${ED.sfOpen === sb.id ? 'open' : ''}><summary class="small b">${esc(sb.name)} <span class="tiny dim">· ${esc(parentName(sb.parent))} · ${U.plural(sb.members.length, 'nation')}${changed ? ' · changed' : ''}</span></summary>
+            <div class="row" style="gap:6px;margin-top:10px"><input type="text" maxlength="50" value="${esc(sb.name)}" data-input="edSubName" data-id="${esc(sb.id)}" style="flex:1;min-width:0"></div>
+            <div class="row" style="gap:8px;margin-top:8px;align-items:center"><span class="tiny dim grow">Part of</span><select data-input="edSubParent" data-id="${esc(sb.id)}" style="max-width:190px"><option value="" ${sb.parent ? '' : 'selected'}>Crosses two confederations</option>${ids.map((x) => `<option value="${esc(x)}" ${x === sb.parent ? 'selected' : ''}>${esc(cfName(x))}</option>`).join('')}</select></div>
+            ${
+              sb.members
+                .map((code) => {
+                  const n = D.NATIONS[code];
+                  return `<div class="row" style="gap:8px;margin-top:6px;align-items:center"><div class="grow small ellip">${C_flag(code)} ${esc(n ? n.name : code)}</div><button class="btn sm" style="min-height:44px" data-act="edSubRem" data-id="${esc(sb.id)}" data-code="${esc(code)}" aria-label="Take ${esc(n ? n.name : code)} out">Remove</button></div>`;
+                })
+                .join('') || '<div class="tiny dim" style="margin-top:8px">No nations yet.</div>'
+            }
+            <div class="row" style="gap:6px;margin-top:10px"><select id="ed-subadd-${esc(sb.id)}" style="flex:1;min-width:0"><option value="">Add a nation…</option>${nations
+              .filter(([code]) => !sb.members.includes(code))
+              .map(([code, n]) => `<option value="${esc(code)}">${esc(n.name)}</option>`)
+              .join(
+                '',
+              )}</select><button class="btn sm" style="min-height:44px" data-act="edSubAdd" data-id="${esc(sb.id)}">Add</button></div>
+            ${sb.members.length < 4 ? '<div class="tiny dim" style="margin-top:6px">Its Nations Cup needs four nations.</div>' : ''}
+            ${sb.custom ? `<div class="actions" style="margin-top:8px"><button class="btn sm danger" data-act="edSubReset" data-id="${esc(sb.id)}">Remove it</button></div>` : changed ? `<div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edSubReset" data-id="${esc(sb.id)}">Put the game’s back</button></div>` : ''}</details>`;
+        })
+        .join('')}
+      <div class="ng-label">A new sub-confederation</div>
+      <div class="ng-names" style="margin-top:0"><div style="flex:1"><input type="text" id="ed-sbname" maxlength="50" placeholder="Name, for example Alpine Football Union"></div><div style="flex:1;max-width:110px"><input type="text" id="ed-sbid" maxlength="6" placeholder="Short code" style="text-transform:uppercase"></div></div>
+      <select id="ed-sbparent" style="margin-top:8px"><option value="">Crosses two confederations</option>${ids.map((x) => `<option value="${esc(x)}">${esc(cfName(x))}</option>`).join('')}</select>
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewSub">＋ Add it</button></div>
+      <div class="tiny dim" style="margin-top:8px;line-height:1.5">A nation can be in several. Each sub-confederation holds a Nations Cup of its members (the Balkan and Slavic Nations Cups, the Nordic and West African ones ...), so moving a nation in or out changes who plays it; one you add is for grouping and for the new-nation screens, and has no cup unless the game gives it one.</div>`;
+  };
   UI.acts.edResetConfeds = () => {
-    ED.def.confeds = { names: {}, members: {}, observers: {} };
+    ED.def.confeds = { names: {}, members: {}, observers: {}, subs: {} };
     UI.worldEditor();
   };
   const confedsView = () => {
@@ -4976,9 +5102,10 @@
             }</details>`;
         })
         .join('')}
+      ${subsView()}
       <div class="ng-label">A new confederation</div>
       <div class="ng-names" style="margin-top:0"><div style="flex:1"><input type="text" id="ed-cfname" maxlength="40" placeholder="Name, for example Oceania"></div><div style="flex:1;max-width:110px"><input type="text" id="ed-cfid" maxlength="6" placeholder="Short code, for example OCE" style="text-transform:uppercase"></div></div>
-      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewConfed">＋ Add it</button>${Object.keys(c.names).length || Object.keys(c.members).length || Object.keys(c.observers).length ? '<button class="btn sm" data-act="edResetConfeds">Put the game’s back</button>' : ''}</div>
+      <div class="actions" style="margin-top:8px"><button class="btn sm" data-act="edNewConfed">＋ Add it</button>${Object.keys(c.names).length || Object.keys(c.members).length || Object.keys(c.observers).length || Object.keys(c.subs || {}).length ? '<button class="btn sm" data-act="edResetConfeds">Put the game’s back</button>' : ''}</div>
       <div class="tiny dim" style="margin-top:8px;line-height:1.5">Open one, then use the lists to move a nation in or out. Observer: a nation with observer status belongs to the confederation and plays its Nations League and friendlies, but is left out of the qualifying groups, the continental championship and the World Championship places until you take the status off. A confederation of four nations or more gets one place at the World Championship (taken from the biggest part of the world) and a championship of its own; a smaller one just plays its Nations League.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="intl" aria-label="Back">←</button></div>`;
   };

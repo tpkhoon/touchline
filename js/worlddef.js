@@ -2419,6 +2419,21 @@
           errors.push(`confederation ${id}: needs a name (up to 40 characters)`);
       for (const [id] of Object.entries(cf.names || {}))
         if (!/^[A-Za-z0-9]{2,6}$/.test(id)) errors.push(`confederation ${id}: the short name is 2–6 letters or digits`);
+      for (const [id, sb] of Object.entries(cf.subs || {})) {
+        const at = `sub-confederation ${id}`;
+        if (!/^[A-Za-z0-9]{2,6}$/.test(id)) errors.push(`${at}: the short name is 2–6 letters or digits`);
+        if (sb.name != null && (!String(sb.name).trim() || String(sb.name).length > 50))
+          errors.push(`${at}: needs a name (up to 50 characters)`);
+        if (!(FM.Intl && FM.Intl.SUB_NAMES && FM.Intl.SUB_NAMES[id]) && !String(sb.name || '').trim())
+          errors.push(`${at}: a sub-confederation of your own needs a name`);
+        if (sb.parent != null && !known.has(sb.parent) && !Object.hasOwn(cf.names || {}, sb.parent))
+          errors.push(`${at}: it belongs to a confederation that does not exist (${sb.parent})`);
+        if (sb.members != null) {
+          if (!Array.isArray(sb.members) || sb.members.length > 60)
+            errors.push(`${at}: its nations are a list of up to 60`);
+          else for (const c of sb.members) if (!D.NATIONS[c]) errors.push(`${at}: the game has no nation "${c}"`);
+        }
+      }
       for (const code of Object.keys(cf.observers || {}))
         if (!D.NATIONS[code]) errors.push(`observer ${code}: the game has no such nation`);
       for (const [code, id] of Object.entries(cf.members || {})) {

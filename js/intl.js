@@ -173,7 +173,16 @@
     { id: 'CAS', feeds: 'AS', name: 'Central Asian Nations Cup', pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'] },
     { id: 'BAL', name: 'Baltic Cup', pool: ['EST', 'LVA', 'LTU', 'FIN'] },
     { id: 'NOR', name: 'Nordic Nations Cup', pool: ['SWE', 'DEN', 'NOR', 'FIN', 'ISL'] },
-    { id: 'BLK', name: 'Balkan Cup', pool: ['SRB', 'CRO', 'BIH', 'ALB', 'MKD', 'MNE', 'SVN', 'BUL', 'ROU', 'GRE'] },
+    {
+      id: 'BLK',
+      name: 'Balkan Nations Cup',
+      pool: ['SRB', 'CRO', 'BIH', 'ALB', 'MKD', 'MNE', 'SVN', 'BUL', 'ROU', 'GRE'],
+    },
+    {
+      id: 'SLV',
+      name: 'Slavic Nations Cup',
+      pool: ['RUS', 'UKR', 'POL', 'CZE', 'SVK', 'SRB', 'CRO', 'BLR', 'BUL', 'SVN', 'BIH', 'MKD', 'MNE'],
+    },
     { id: 'CEU', name: 'Central European Cup', pool: ['CZE', 'SVK', 'HUN', 'POL', 'AUT', 'SVN'] },
     { id: 'CEL', name: 'Celtic Nations Cup', pool: ['SCO', 'WAL', 'IRL', 'NIR'] },
     { id: 'CAU', name: 'Caucasus Cup', pool: ['GEO', 'ARM', 'AZE', 'TUR'] },
@@ -186,6 +195,57 @@
     { id: 'AND', name: 'Andean Cup', pool: ['COL', 'ECU', 'PER', 'BOL', 'VEN', 'CHI'] },
     { id: 'PLA', name: 'River Plate Cup', pool: ['ARG', 'URU', 'PAR', 'BRA', 'CHI'] },
   ];
+  // ---------- Sub-confederations ----------
+  // Parts of a confederation with a union of their own (the Nordic, Balkan and Slavic unions of Europe, the West African and Southern
+  // African unions, the Southeast Asian federation ...): a name, the confederation it belongs to (null where it crosses two, as the Arab
+  // Football Union does) and its member nations. Each holds a Nations Cup, drawn from its members (the invitationals with a pool above:
+  // a sub-confederation has the id of its cup). A world can rename them, move nations in and out, and add its own (S.confeds.subs:
+  // { id: { name, parent, members } }, from the world editor); a nation can belong to several, as it does in real life.
+  I.SUB_NAMES = {
+    SEA: ['Southeast Asian Football Federation', 'ASIA'],
+    GLF: ['West Asian (Gulf) Football Federation', 'ASIA'],
+    EAS: ['East Asian Football Federation', 'ASIA'],
+    CAS: ['Central and South Asian Football Union', 'ASIA'],
+    CEA: ['East and Central African Football Council', 'AFR'],
+    SAF: ['Southern African Football Council', 'AFR'],
+    WAF: ['West African Football Union', 'AFR'],
+    NAF: ['North African Football Union', 'AFR'],
+    ARB: ['Arab Football Union', null],
+    BAL: ['Baltic Football Union', 'EUR'],
+    NOR: ['Nordic Football Union', 'EUR'],
+    BLK: ['Balkan Football Union', 'EUR'],
+    SLV: ['Slavic Football Union', 'EUR'],
+    CEU: ['Central European Football Union', 'EUR'],
+    CEL: ['Celtic Football Union', 'EUR'],
+    CAU: ['Caucasus Football Union', 'EUR'],
+    CCA: ['Central American and Caribbean Football Union', 'NAM'],
+    AND: ['Andean Football Union', 'SAM'],
+    PLA: ['River Plate Football Union', 'SAM'],
+  };
+  for (const v of I.INVITES) if (v.pool && I.SUB_NAMES[v.id]) v.sub = v.id;
+  const subsOf = () => (S() && S().confeds && S().confeds.subs) || {};
+  // Every sub-confederation of the world: { id, name, parent, members, custom }
+  I.subsWith = function (over) {
+    const out = I.INVITES.filter((v) => v.sub).map((v) => {
+      const o = over[v.id] || {};
+      return {
+        id: v.id,
+        name: o.name || I.SUB_NAMES[v.id][0],
+        parent: o.parent !== undefined ? o.parent : I.SUB_NAMES[v.id][1],
+        members: (o.members || v.pool).slice(),
+        custom: false,
+      };
+    });
+    for (const [id, o] of Object.entries(over))
+      if (!I.SUB_NAMES[id])
+        out.push({ id, name: o.name, parent: o.parent || null, members: (o.members || []).slice(), custom: true });
+    return out;
+  };
+  I.subs = () => I.subsWith(subsOf());
+  I.subMembers = (id) => (I.subs().find((x) => x.id === id) || { members: [] }).members;
+  I.subsOfNation = (code) => I.subs().filter((x) => x.members.includes(code));
+  // The nations of an invitational's pool (the members of its sub-confederation, as the world has them)
+  I.invitePool = (spec) => (spec.sub ? I.subMembers(spec.sub) : spec.pool);
   I.TNAME.KIR = 'Cherry Blossom Cup';
   I.TNAME.SEA = 'Southeast Asian Nations Cup';
   I.TNAME.KGC = 'Golden Elephant Cup';
@@ -1309,7 +1369,7 @@
       spec = I.INVITES[(((s.year * I.PER_SEASON + k) % n) + n) % n];
     const teamsOf = (codes) =>
       codes.map((c) => Object.values(s.nteams || {}).find((t) => t.code === c)).filter(Boolean);
-    const pool0 = spec.pool ? teamsOf(spec.pool) : null;
+    const pool0 = spec.pool ? teamsOf(I.invitePool(spec)) : null;
     if (pool0 && pool0.length < 4) return null;
     const host = pool0
       ? pool0[Math.floor((s.year * I.PER_SEASON + k) / n) % pool0.length]
@@ -1505,6 +1565,99 @@
     }
     return out;
   };
+  // ---------- The intercontinental play-offs ----------
+  // The last places at the World Championship (tn.playoff) are played for, as in real life, by the best nation of each part of the world
+  // that did not qualify (Europe settles its own in its pools' play-offs), a few more of the next best to make 3 for each place: the
+  // top seeds wait, the others play semi-finals in the third break, and each semi-final winner meets a seed in the final in the
+  // second day of it. Single matches on neutral ground, extra time and penalties; the winners of the finals are in. A world whose
+  // calendar has no third break (an older save, a definition with two) fills the places by ranking as it always did.
+  I.icpoTags = () => ((S().calendar || []).some((d) => d.tag === 'I3a') ? ['I3a', 'I3b'] : null);
+  I.icpoEntrants = function (tn) {
+    const P = tn.playoff || 0;
+    if (!P) return [];
+    const inSet = new Set(I.qualifiedFor(tn.id));
+    const pools = tn.pools.filter(([regions]) => !regions.includes('EUR'));
+    const cands = (regions) => I.qualRanked().filter((t) => regions.includes(I.region(t.code)) && !inSet.has(t.id));
+    const out = [];
+    for (const [regions] of pools) {
+      const c = cands(regions)[0];
+      if (c) out.push(c);
+    }
+    const rest = pools
+      .flatMap(([regions]) => cands(regions))
+      .filter((t) => !out.includes(t))
+      .sort((a, b) => b.coef - a.coef);
+    for (const t of rest) {
+      if (out.length >= 3 * P) break;
+      out.push(t);
+    }
+    return out.slice(0, 3 * P).sort((a, b) => b.coef - a.coef);
+  };
+  I.icpoDay = function (tag, busy) {
+    const s = S(),
+      q = s.quals,
+      tags = I.icpoTags(),
+      out = [];
+    if (!q || q.kind !== 'world' || !tags) return out;
+    const tn = I.tournsFor('world').find((x) => x.playoff);
+    if (!tn) return out;
+    const mk = (h, a, label) => {
+      busy.add(h.id || h);
+      busy.add(a.id || a);
+      return mkFx(h.id || h, a.id || a, `${I.TNAME[tn.id]} intercontinental play-off · ${label}`, {
+        kind: 'qual',
+        group: 'ICPO',
+        ko: true,
+        neutral: true,
+      });
+    };
+    if (!q.icpo) {
+      if (tag !== tags[0]) return out;
+      const ent = I.icpoEntrants(tn),
+        P = Math.floor(ent.length / 3);
+      if (!P) {
+        q.icpo = { tn: tn.id, none: true };
+        return out;
+      }
+      const e = ent.slice(0, 3 * P),
+        rest = e.slice(P);
+      q.icpo = {
+        tn: tn.id,
+        P,
+        teams: e.map((t) => t.id),
+        seeds: e.slice(0, P).map((t) => t.id),
+        sf: [...Array(P)].map((_, i) => mk(rest[i], rest[2 * P - 1 - i], 'semi-final')),
+        final: null,
+      };
+      FM.News.add({
+        type: 'world',
+        title: `${I.TNAME[tn.id]}: the intercontinental play-offs`,
+        body: `${U.plural(P, 'place')} left, ${U.plural(e.length, 'team')} for them. Seeded and waiting for the final: ${e
+          .slice(0, P)
+          .map((t) => t.name)
+          .join(', ')}. Semi-finals: ${q.icpo.sf.map((f) => `${T(f.h).name} v ${T(f.a).name}`).join(', ')}.`,
+        keep: true,
+      });
+      out.push(...q.icpo.sf);
+      return out;
+    }
+    const ic = q.icpo;
+    if (ic.none) return out;
+    if (tag === tags[0]) out.push(...ic.sf.filter((f) => !f.res));
+    if (tag === tags[1]) {
+      if (!ic.final && ic.sf.every((f) => f.res))
+        ic.final = ic.seeds.map((id, i) => mk(id, FM.Season.winnerOf(ic.sf[ic.P - 1 - i]), 'final'));
+      if (ic.final) out.push(...ic.final.filter((f) => !f.res));
+    }
+    return out;
+  };
+  // The nations that won the play-offs (empty until the finals are played)
+  I.icpoWinners = (tnId) => {
+    const ic = S().quals && S().quals.icpo;
+    return ic && ic.tn === tnId && ic.final && ic.final.every((f) => f.res)
+      ? ic.final.map((f) => FM.Season.winnerOf(f))
+      : [];
+  };
   I.qualifiedFor = (tnId) => {
     const tn = I.tournsFor(S().quals ? S().quals.kind : 'world').find((x) => x.id === tnId);
     return tn
@@ -1540,13 +1693,18 @@
         s.tourns.forEach((t) => I.tournKo(t).forEach((f) => byId.set(f.id, f)));
         s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
       }
-      if (cal.type !== 'tourn' && invitesOf(s).length) {
-        const byId = new Map(
-          invitesOf(s)
-            .flatMap((inv) => [...(inv.sf || []), inv.third, inv.final])
-            .filter(Boolean)
-            .map((f) => [f.id, f]),
-        );
+      if (cal.type !== 'tourn') {
+        const ic = (s.quals && s.quals.icpo) || {},
+          byId = new Map(
+            [
+              ...invitesOf(s).flatMap((inv) => [...(inv.sf || []), inv.third, inv.final]),
+              ...Object.values((s.quals && s.quals.pos) || {}).flat(),
+              ...(ic.sf || []),
+              ...(ic.final || []),
+            ]
+              .filter(Boolean)
+              .map((f) => [f.id, f]),
+          );
         s.intlDay.fx = s.intlDay.fx.map((f) => byId.get(f.id) || f);
       }
       return s.intlDay.fx;
@@ -1587,6 +1745,8 @@
     }
     // the qualifying play-offs, on the last matchday
     if (s.quals && tag === 'I2b') fx.push(...I.playoffDay(busy));
+    // the World Championship's intercontinental play-offs, in the third break
+    if (s.quals) fx.push(...I.icpoDay(tag, busy));
     // The season's invitational, in the second window
     fx.push(...I.inviteDay(tag, busy));
     // The manager's friendly, on the first matchday his nation is free (and the opponent too)
@@ -1694,6 +1854,9 @@
       : [];
     s.tourns = tns.map((tn) => {
       let teams = (tn.confed ? I.confedTeams() : I.qualifiedFor(tn.id)).map(T).filter(Boolean);
+      // (the winners of the intercontinental play-offs, when they were played)
+      if (tn.playoff)
+        for (const id of I.icpoWinners(tn.id)) if (T(id) && !teams.some((t) => t.id === id)) teams.push(T(id));
       const gids = guests.map((t) => t.id);
       if (tn.guests) teams = teams.concat(guests.filter((g) => !teams.includes(g)));
       else if (naTn === tn) teams = teams.filter((t) => !gids.includes(t.id));

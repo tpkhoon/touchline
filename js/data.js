@@ -3889,6 +3889,41 @@
       tier: 4,
       feeders: { SC1: 4, WA1: 4, IE1: 4, NI1: 4 },
     },
+    // The Balkan and Slavic club cups (tier 5: the places below the regional cups' in each league, as the Arab Cup has them): the
+    // clubs of the Balkan nations, and the clubs of the Slavic nations. Their nations have cups of their own (the Balkan and Slavic
+    // Nations Cups, js/intl.js) and the same two sub-confederations (the Balkan and Slavic Football Unions).
+    {
+      id: 'BK',
+      region: 'Europe',
+      name: 'Balkan Club Cup',
+      short: 'BKC',
+      prize: 1e6,
+      tier: 5,
+      feeders: { RS1: 2, HR1: 3, RO1: 3, GR1: 2, BG1: 2, BA1: 2, AL1: 1, MK1: 1, ME1: 1, SI1: 1, XK1: 1, TR1: 2 },
+    },
+    {
+      id: 'SV',
+      region: 'Europe',
+      name: 'Slavic Club Cup',
+      short: 'SLC',
+      prize: 1e6,
+      tier: 5,
+      feeders: {
+        RU1: 4,
+        UA1: 3,
+        PL1: 3,
+        CZ1: 3,
+        SK1: 2,
+        BY1: 3,
+        RS1: 2,
+        HR1: 2,
+        SI1: 1,
+        BG1: 2,
+        BA1: 1,
+        ME1: 1,
+        MK1: 1,
+      },
+    },
   ];
   // How each league splits clubs level on points, in order (the real rules): gd = goal difference, gf = goals
   // scored, wins = number of wins, h2h = head-to-head among the clubs level (points, then goal difference, then goals).

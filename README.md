@@ -16,7 +16,7 @@ Leagues are described by nation and level here, since their names are generated:
 
 Your own league and the leagues just above and below it always run in the full engine.
 
-Around the leagues: B teams and U21/U18 sides, 117 domestic cups, 22 continental cups (a Champions Cup for each of Europe, South America, Asia, Africa and North America, with a second-tier Shield or Trophy in Europe, South America, Asia and Africa), a World Club Championship, international football with 211 national teams and qualifiers, a live match engine, and the story-driven world around it.
+Around the leagues: B teams and U21/U18 sides, 117 domestic cups, 24 continental cups (a Champions Cup for each of Europe, South America, Asia, Africa and North America, with a second-tier Shield or Trophy in Europe, South America, Asia and Africa), a World Club Championship, international football with 211 national teams and qualifiers, a live match engine, and the story-driven world around it.
 
 ## Contents
 
