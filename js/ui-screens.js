@@ -1212,7 +1212,7 @@
     const foreign = sq.filter((p) => p.nat !== club().nat).length;
     const expiring = sq.filter((p) => !p.loan && p.contract <= S().year).length;
     const extra = (p) =>
-      `${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${q.sort === 'pa' ? ` · potential ${C.starText(p.pa, p.pos)}` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
+      `${p.loan && p.loan.from && CL(p.loan.from) ? ` · <span style="color:var(--acc)">on loan from ${esc(CL(p.loan.from).name)}</span>` : ''}${q.sort === 'wage' ? ` · ${U.money(p.wage)}/wk` : ''}${q.sort === 'pa' ? ` · potential ${C.starText(p.pa, p.pos)}` : ''}${starters.has(p.id) ? ' · <span style="color:var(--acc)">XI</span>' : ''}${q.alt ? altLine(p) : ''}${q.stat ? UI.standout(p) : ''}${p.form.length ? ' · ' + U.avg(p.form.slice(-5)).toFixed(1) + ' avg' : ''}`;
     const benchIds = new Set(
       W.pickXI(club().id, S().user.tactic)
         .bench.filter(Boolean)
@@ -1276,7 +1276,16 @@
       <input type="text" placeholder="Search your squad…" value="${esc(q.text)}" data-input="sqText" aria-label="Search your squad" style="width:100%;min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin-bottom:4px">
       ${UI.posFilter(q.pos, 'sqPos', 'sqPosGroup', true)}
       <div class="row" style="margin:6px 0 8px;gap:6px"><button class="btn sm" data-act="sqSheet">Sort &amp; filter${sqActive() ? ` (${sqActive()})` : ''}</button><span class="tiny dim grow">${sqActive() ? `${list.length} of ${U.plural(sq.length, 'player')}` : `Sorted by ${SQ_SORT[q.sort][0].toLowerCase()}`}</span>${sqActive() ? `<button class="btn sm" data-act="sqReset">Clear</button>` : ''}</div>
-      ${list.length ? body : '<div class="empty">No players match these filters.</div>'}`;
+      ${list.length ? body : '<div class="empty">No players match these filters.</div>'}
+      ${(() => {
+        // your players out on loan stay on the squad screen, with the club they are at
+        const out = Object.values(S().players).filter(
+          (p) => p.loan && p.loan.from === club().id && p.clubId && p.clubId !== club().id && !p.retired,
+        );
+        return out.length
+          ? `<div class="sec"><div class="h3">Out on loan</div><span class="dim small">${out.length}</span></div><div class="card flat list" style="padding:4px 12px">${out.map((p) => C.playerRow(p, p.season && p.season.apps ? ` · ${U.plural(p.season.apps, 'game')} so far` : '', `<span class="pill acc" title="Loaned out to ${esc(CL(p.clubId).name)}">Loaned out</span>`)).join('')}</div>`
+          : '';
+      })()}`;
   }
   // a change made inside the sheet shows in the sheet too
   ['sqSort', 'sqFilter', 'sqSet', 'sqSel', 'sqPos', 'sqPosGroup', 'sqStat', 'sqAlt', 'sqRev', 'sqReset'].forEach(

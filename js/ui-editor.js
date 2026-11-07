@@ -223,6 +223,19 @@
     if (toTitle) UI.title();
     else UI.newCareer();
   };
+  // A confirmation after the changes are applied: what was changed (the first few lines of the editor's list of changes), on a sheet
+  // that stays until it is closed, with what happens next
+  const appliedSheet = (title, lead, lines) => {
+    const shown = lines.slice(0, 12);
+    UI.sheet(
+      `<div class="small" style="line-height:1.5">${esc(lead)}</div>${
+        shown.length
+          ? `<div class="card flat" style="margin-top:10px;padding:6px 12px">${shown.map((t) => `<div class="tiny" style="padding:4px 0;border-top:1px solid var(--line)">${esc(t)}</div>`).join('')}${lines.length > shown.length ? `<div class="tiny dim" style="padding:4px 0">…and ${U.plural(lines.length - shown.length, 'more change')}</div>` : ''}</div>`
+          : '<div class="tiny dim" style="margin-top:8px">No changes from the game’s own world.</div>'
+      }<button class="btn pri block" style="margin-top:14px;min-height:44px" data-act="closeSheet">OK</button>`,
+      { title },
+    );
+  };
   // Hand the edited world back: the new-career screen now builds the world from it
   UI.acts.edUse = () => {
     if (ED.live) return liveApply();
@@ -232,6 +245,7 @@
       return UI.worldEditor();
     }
     const res = { ...s.chk, def: ED.def, adapter: 'editor', adapterName: 'World editor', notes: [] };
+    const made = changesList().map((x) => x.text);
     dropNations(); // (the nations the world adds go into the data with the rest of its patch)
     DB.stage(res);
     UI._ng().db = res;
@@ -239,6 +253,11 @@
     UI._ngDataChanged();
     ED = null;
     UI.newCareer();
+    appliedSheet(
+      'World ready',
+      `Your changes are in: ${U.plural(made.length, 'change')}. The new career builds its world from them when you start it.`,
+      made,
+    );
   };
   // ---------- Opened on a career in progress ----------
   // The same editor, on the world you are playing (Settings → Edit the world → Full world editor). Names, colours, grounds,
@@ -372,10 +391,16 @@
     if (Object.keys(pending.rules).length || pending.patch) S.pendingEdit = pending;
     FM.W.rosterVer++;
     UI.save();
+    const made = changesList().map((x) => x.text);
     liveLeave();
     UI.toast(
       `Applied: ${U.plural(rep.clubs, 'club')}, ${U.plural(rep.leagues, 'league')}${S.pendingEdit ? '; formats and the calendar from next season' : ''}${hasDb ? '. This world came from a database, so its formats, cups and calendar stay as they are' : ''}`,
       5000,
+    );
+    appliedSheet(
+      'Changes applied',
+      `Your changes are in the world you are playing${S.pendingEdit ? '; league formats, cups and the calendar take hold from the new season' : ''}: ${U.plural(made.length, 'change')}.`,
+      made,
     );
   };
   UI.acts.edExport = async () => {

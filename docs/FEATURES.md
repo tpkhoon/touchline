@@ -606,6 +606,9 @@ Every feature from the game design document, with what is playable in the protot
 | Careers | Clubs come for a manager who is doing well: a bigger club's approach (one at a time, a week to answer, a cool-down after) with Accept, which leaves your club, and Decline, which pleases the board | Playtest round 24 |
 | International | A third international break late in the season: friendlies for every free nation and the invitational tournaments, after the two windows that carry the qualifiers and the Nations League (a third break to move in the editor's calendar) | Playtest round 24 |
 | Editor | Family ties for nations of your own: a parent nation and a share of players with a second nationality there (Greenland and Denmark), a few players with family in neighbours for a country with no ties | Playtest round 24 |
+| Squad | "On loan from {club}" on a loanee's line in the squad list, and an "Out on loan" list for your own players at other clubs | Playtest round 24 |
+| Players | A player's first club is the club that trained him: his seasons at 17 to 19 are there, in his history and spells | Playtest round 24 |
+| Editor | A confirmation sheet after the world editor's changes are applied (how many, and the first twelve) | Playtest round 24 |
 | International | Intercontinental play-offs for the last World Championship places, as in real life: the best non-qualifier of each part of the world plus the next best, seeds waiting, semi-finals and finals in the third break | Playtest round 24 |
 | International | Sub-confederations (Nordic, Balkan, Slavic, West African, Southeast Asian and 14 more) with members that can overlap and a Nations Cup each; editable in the world editor, which can add its own | Playtest round 24 |
 | Cups | A Slavic Nations Cup, a Balkan Club Cup and a Slavic Club Cup (the Balkan Cup for nations is now the Balkan Nations Cup) | Playtest round 24 |

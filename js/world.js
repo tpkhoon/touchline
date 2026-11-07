@@ -1328,12 +1328,13 @@
   W.reworkPast = function (p) {
     const S = FM.S,
       y0 = (S.intro && S.intro.year) || (S.archive && S.archive[0] && S.archive[0].year) || S.year;
-    if (p.hv || !y0 || !p.history || !p.history.length) return;
+    if (p.hv >= 2 || !y0 || !p.history || !p.history.length) return;
+    const redraw = !p.hv; // (version 1 had the realistic numbers already: only his first club is put right)
     const form = { v: U.gauss(0, 0.15) },
       out = [];
     for (const h of p.history) {
       const club = S.clubs[h.c];
-      if (h.y >= y0 || !club || !p.career) {
+      if (h.y >= y0 || !club || !p.career || !redraw) {
         out.push(h);
         continue;
       }
@@ -1355,7 +1356,38 @@
       if (row.apps > 0) out.push(row);
     }
     p.history = out;
-    p.hv = 1; // (done: the past of this player is only written again once)
+    // his first club is the club that trained him: the seasons up to 19 are moved there (the spells and rows follow)
+    const Y = (p.youth && S.clubs[p.youth]) || (p.trainedAt && S.clubs[p.trainedAt]);
+    if (Y && p.career) {
+      const sps = p.career.spells,
+        moved = { apps: 0, goals: 0, from: null, to: null };
+      for (const h of p.history) {
+        if (h.y >= y0 || h.y - p.born > 19 || h.c === Y.id) continue;
+        const spell = sps.find((s) => s.c === h.c && s.from <= h.y && h.y <= (s.to == null ? 9999 : s.to));
+        if (spell) {
+          spell.apps = Math.max(0, (spell.apps || 0) - h.apps);
+          spell.goals = Math.max(0, (spell.goals || 0) - h.g);
+        }
+        moved.apps += h.apps;
+        moved.goals += h.g;
+        moved.from = moved.from == null ? h.y : Math.min(moved.from, h.y);
+        moved.to = moved.to == null ? h.y : Math.max(moved.to, h.y);
+        h.c = Y.id;
+      }
+      if (moved.from != null) {
+        const first = sps[0];
+        if (first && first.c === Y.id && first.from <= moved.to + 1) {
+          first.from = Math.min(first.from, moved.from);
+          first.apps = (first.apps || 0) + moved.apps;
+          first.goals = (first.goals || 0) + moved.goals;
+        } else sps.unshift({ c: Y.id, from: moved.from, to: moved.to, apps: moved.apps, goals: moved.goals });
+        // a spell the youth seasons emptied (nothing left in it, inside those years) is gone
+        p.career.spells = sps.filter(
+          (s, i) => i === 0 || !(s.c !== Y.id && !s.apps && s.to != null && s.to - p.born <= 19),
+        );
+      }
+    }
+    p.hv = 2; // (done: the past of this player is only written again once)
   };
 
   // His whole career before today: a season of numbers for every year since he was 17 (at most sixteen), at the clubs his ability
@@ -1370,20 +1402,30 @@
     const seasons = Math.min(24, age - 17),
       sp = W.spell(p);
     if (!sp) return;
-    // the young came through here; an older player who arrived recently has earlier clubs for the seasons before
+    // the club that trained him is his first club: his seasons at 17 to 19 are there (W.assignYouth: p.youth, or p.trainedAt)
+    const Y = (p.youth && S.clubs[p.youth]) || (p.trainedAt && S.clubs[p.trainedAt]) || null,
+      youthN = Y ? Math.min(seasons, 3) : 0,
+      from0 = sp.from;
+    // the young came through here (or at the club that trained them, and moved on); an older player who arrived recently has
+    // earlier clubs for the seasons before
     let here = Math.min(seasons, Math.max(0, S.year - sp.from));
     if (age < 22) {
       here = seasons;
       sp.from = Math.min(sp.from, S.year - seasons);
+    }
+    if (Y && Y.id !== c.id) {
+      here = Math.min(here, seasons - youthN); // (the seasons here begin after the youth years elsewhere)
+      if (age < 22) sp.from = Math.min(from0, S.year - here);
     }
     // how far his ability then differs from now: he was weaker if he was still growing (about two points a year before 23) and
     // stronger if he has declined since (about a point and a half a year after 30), so a veteran's best seasons are behind him
     const growth = (k) => Math.max(0, Math.min(k, 23 - (age - k))) * 2 - Math.max(0, age - Math.max(30, age - k)) * 1.5;
     // the clubs of the earlier seasons, in stints of two to five years that climb with his ability then
     const clubAt = {};
-    if (here < seasons) {
+    for (let k = seasons; Y && k > seasons - youthN; k--) clubAt[k] = Y;
+    if (here < seasons - youthN) {
       const pool = clubsOfNation(c.nat);
-      let k = seasons,
+      let k = seasons - youthN,
         last = null;
       while (k > here) {
         const len = Math.min(k - here, 2 + Math.floor(Math.random() * 4));
@@ -1428,7 +1470,7 @@
       const row = W.pastSeason(p, { y, a, k, club, then, rel, share, games, cap, form });
       if (row.apps > 0) rows.push(row);
     }
-    p.hv = 1; // (written with the realistic model: W.pastSeason)
+    p.hv = 2; // (written with the realistic model, and starting at the club that trained him: W.pastSeason)
     p.history = rows.filter((r) => r.apps > 0); // (a season without a game is no row, as in a played world)
     // spells: a stint at each earlier club (consecutive seasons there), then the current one
     const stints = [];
@@ -1495,7 +1537,8 @@
       .filter((x) => x.nat === p.nat && x.sim !== 'nation' && !x.parent && x.comp)
       .sort((a, b) => a.rep - b.rep);
     const pastClub = (y) => {
-      if (p.youth && S.clubs[p.youth] && y < p.born + 21) return S.clubs[p.youth].id;
+      const yc = (p.youth && S.clubs[p.youth]) || (p.trainedAt && S.clubs[p.trainedAt]);
+      if (yc && y < p.born + 21) return yc.id;
       if (!pool.length) return null;
       const block = Math.floor((y - p.born) / 3),
         want = p.ca - growth(thisY - y);
