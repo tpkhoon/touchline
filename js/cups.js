@@ -319,6 +319,8 @@
     ['SUPAF', 'African Super Cup', 'AF', 'AX'],
     ['SUPAS', 'Asian Super Cup', 'AC', 'A2'],
     ['SUPNA', 'North American Super Cup', 'NC', 'N2'],
+    // (a champions' match between two leagues, named by their ids: the American champion against the Mexican one)
+    ['SUPCP', 'Campeones Cup', 'US1', 'MX1'],
   ];
   Cu.ensureSupers = function (st) {
     const mk = (id, name, nat, short, prize) => {
@@ -346,8 +348,13 @@
         if (a && b && a === b) b = le.runnerUp;
       } else {
         const def = Cu.SUPER_CONT.find((x) => x[0] === c.id);
-        a = def && Cu.lastChampion(def[2]);
-        b = def && Cu.lastChampion(def[3]);
+        // (a continental cup's last winner, or for a league named by its id the champion of the season before)
+        const champ = (id) =>
+          st.comps[id] && st.comps[id].type === 'league'
+            ? last && last.comps && last.comps[id] && last.comps[id].champion
+            : Cu.lastChampion(id);
+        a = def && champ(def[2]);
+        b = def && champ(def[3]);
       }
       if (a && b && a !== b && st.clubs[a] && st.clubs[b]) {
         c.clubs = [a, b];
@@ -492,7 +499,7 @@
       type: 'cup',
       euro: d.kind,
       nat: '',
-      region: 'Europe',
+      region: d.region || 'Europe',
       name: d.name,
       short: d.short,
       clubs: [],

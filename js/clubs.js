@@ -31,24 +31,14 @@
     ['Aldcaster Wednesday', 'ALD', 'Aldcaster', '#003090', '#FDBE11', 'fallen', 61, 'Aldcaster Ground', 32259],
     ['Tethaven United', 'TTH', 'Tethaven', '#D71920', '#FFFFFF', 'youth', 60, 'Lewcastle Park', 32384],
     ['Grenwold Town', 'GRT', 'Grenwold', '#3A64A3', '#FFFFFF', 'historic', 59, 'Welgate Lane', 30311],
-    [
-      "North Litworth St. Mary's",
-      'LIT',
-      'North Litworth',
-      '#EE2737',
-      '#FFFFFF',
-      'fan',
-      58,
-      'North Litworth Ground',
-      32050,
-    ],
+    ['Aberwyn Borough', 'LIT', 'Aberwyn', '#EE2737', '#FFFFFF', 'fan', 58, 'Stadiwm Aberwyn', 32050],
     ['Haspool United', 'HAS', 'Haspool', '#E11B22', '#FFFFFF', 'historic', 57, 'Wendon Lane', 34742],
     ['Everwich Rangers', 'EVR', 'Everwich', '#0000FF', '#FFFFFF', 'oil', 57, 'Herbrook Lane', 29409],
     ['Yardale Rangers', 'YAR', 'Yardale', '#122F67', '#FFFFFF', 'historic', 56, 'Wickingham Park', 26850],
     ['Tuthurst Rovers', 'TUT', 'Tuthurst', '#FFF200', '#00A650', 'youth', 56, 'Ketwick Lane', 27359],
     ['Langley United', 'LAU', 'Langley', '#6CABDD', '#FFFFFF', 'fan', 55, 'Torbridge Field', 32609],
     ['Reystow Harriers', 'REY', 'Reystow', '#FBEE23', '#ED2127', 'selling', 55, 'Wynmere Road', 22200],
-    ['Chipchester Harriers', 'CHI', 'Chipchester', '#D6001C', '#FFFFFF', 'oil', 54, 'Chipchester Park', 12600],
+    ['Neatgwyn Wanderers', 'CHI', 'Neatgwyn', '#D6001C', '#FFFFFF', 'oil', 54, 'Neatgwyn Park', 12600],
     ['South Bexwell Corinthians', 'BEX', 'South Bexwell', '#E03A3E', '#FFFFFF', 'fallen', 54, 'Holney Lane', 30089],
     ['Redworth Athletic', 'REA', 'Redworth', '#F18A01', '#000000', 'fan', 53, 'Stratdon Park', 25586],
     ['Stratsey Harriers', 'STH', 'Stratsey', '#FFFFFF', '#121212', 'youth', 53, 'Stratsey Ground', 21088],
@@ -106,7 +96,7 @@
     ['Sutwood Borough', 'SUT', 'Sutwood', '#004494', '#FFFFFF', 'fallen', 46, 'The Camthorpe Stadium', 24161],
     ['Worpool Works', 'WOR', 'Worpool', '#D71921', '#FFFFFF', 'youth', 45, 'Worpool Park', 23287],
     ['Wedcastle-on-Sea City', 'WED', 'Wedcastle-on-Sea', '#1D59AF', '#FFFFFF', 'selling', 45, 'Radport Road', 25138],
-    ['Camshall North End', 'CAE', 'Camshall', '#0B4EA2', '#FFFFFF', 'fan', 45, 'Gainley Road', 10841],
+    ['Rhydydd Rovers', 'CAE', 'Rhydydd', '#0B4EA2', '#FFFFFF', 'fan', 45, 'Rhydydd Ground', 10841],
     ['Tunhurst Town', 'TUN', 'Tunhurst', '#8E1B3A', '#FFB81C', 'fallen', 44, 'Tunhurst Ground', 25136],
     ['Shafport United', 'SHP', 'Shafport', '#F68712', '#FFFFFF', 'fan', 44, 'Highurst Field', 16616],
     ['Clifholm City', 'CLF', 'Clifholm', '#0055A4', '#FFFFFF', 'selling', 44, 'Astoncaster Park', 15314],
@@ -143,7 +133,7 @@
     ['CD Nava', 'NAV', 'Nava', '#FFFFFF', '#0B3F8C', 'youth', 54, 'Estadio Nerjero', 12454],
     ['Atlético Montino', 'MOA', 'Montino', '#C8102E', '#FFFFFF', 'selling', 54, 'Estadio Calpedo', 19336],
     ['Real Olmero', 'OLR', 'Olmero', '#E30613', '#FFFFFF', 'historic', 53, 'Estadio La Salama', 29371],
-    ['Club Marbejo', 'MRB', 'Marbejo', '#FFFFFF', '#00843D', 'historic', 53, 'Campo de Marbejo', 22222],
+    ['Atlético Albal', 'MRB', 'Albal', '#FFFFFF', '#00843D', 'historic', 53, 'Estadio Municipal de Albal', 22222],
     ['Club Pedera', 'PED', 'Pedera', '#FFE400', '#0045A7', 'fan', 53, 'Campo de Pedera', 20724],
     ['Sorar CF', 'SOR', 'Sorar', '#FFFFFF', '#05642C', 'fan', 58, 'Campo de Sorar', 31388],
     ['Deportivo Sorana', 'SOD', 'Sorana', '#FFFFFF', '#000000', 'oil', 51, 'Estadio Salamena', 15500],
@@ -204,7 +194,7 @@
     ['AJ Chaange', 'AJC', 'Chaange', '#E30613', '#FFFFFF', 'oil', 78, 'Stade de la Lanières', 18523],
     ['RC Joylieu', 'JOY', 'Joylieu', '#FFFFFF', '#DA291C', 'fallen', 74, 'Complexe Damières', 59186],
     ['US Mirières', 'USM', 'Mirières', '#E01E13', '#1B2C5A', 'selling', 74, 'Complexe Lavlieu', 50186],
-    ['ES Bourcourt', 'ESB', 'Bourcourt', '#CE1126', '#000000', 'oil', 70, 'Stade Municipal de Bourcourt', 36178],
+    ['AS Cassbourg', 'ESB', 'Cassbourg', '#CE1126', '#000000', 'oil', 70, 'Stade de la Vilault', 36178],
     ['Stade Valange', 'VAL', 'Valange', '#E2001A', '#000000', 'youth', 70, 'Stade Grenières', 29778],
     ['Étoile de Cassens', 'ETO', 'Cassens', '#FFD100', '#E30613', 'fan', 69, 'Stade de la Belgnan', 38223],
     ['Stade Thobourg', 'THO', 'Thobourg', '#0056A6', '#FFFFFF', 'oil', 66, 'Complexe Ponon', 29230],
@@ -265,7 +255,7 @@
     ['Glasham City', 'GLA', 'Glasham', '#C8102E', '#FFFFFF', 'fan', 39, 'Spaldmere Green', 6134],
     ['North Yeothorpe Albion', 'YTH', 'Yeothorpe', '#E2001A', '#FFFFFF', 'youth', 38, 'Folbury Park', 10153],
     ['South Lamere Rovers', 'LMR', 'South Lamere', '#E2001A', '#FFFFFF', 'fan', 38, 'Petley Park', 5327],
-    ['Milcaster Athletic', 'MIA', 'Milcaster', '#0033A0', '#FFFFFF', 'historic', 39, 'Camstow Lane', 11582],
+    ['Moldy City', 'MIA', 'Moldy', '#0033A0', '#FFFFFF', 'historic', 39, 'Machogg Road', 11582],
     ['AFC Evercliff', 'EVA', 'Evercliff', '#000000', '#FFFFFF', 'historic', 39, 'The Exwold Stadium', 9052],
     ['Prescaster United', 'PRU', 'Prescaster', '#FFD700', '#000000', 'fan', 35, 'Dunchester Road', 5000],
     ['Harwood United', 'HAR', 'Harwood', '#FFFFFF', '#000000', 'selling', 41, 'Wendford Park', 30500],
@@ -490,7 +480,6 @@
     ['TTH', 'CAO', 'Tethaven–Caldale Derby'],
     ['TET', 'TOU', 'Chelington Derby'],
     ['RYE', 'ROU', 'Ryeworth–Rodwood Derby'],
-    ['LIT', 'LIN', 'North Litworth Derby'],
     ['GRT', 'TUT', 'Grenwold–Tuthurst Derby'],
     ['ALD', 'LAU', 'Aldcaster–Langley Derby'],
     ['BEX', 'BES', 'South Bexwell Derby'],
@@ -524,7 +513,6 @@
     ['VIK', 'SPB', 'Marieningen–Burgingen Derby'],
     ['QUI', 'LUN', 'Quimcourt–Lunens Derby'],
     ['USM', 'ETO', 'Mirières–Cassens Derby'],
-    ['ESB', 'AJC', 'Bourcourt–Chaange Derby'],
     ['VAL', 'LUR', 'Valange–Luneau Derby'],
     ['JOY', 'CLE', 'Joylieu–Clerières Derby'],
     ['THO', 'VAR', 'Thobourg–Valac Derby'],
@@ -565,7 +553,6 @@
     ['ASE', 'PIN', 'Aspenhaven–Pineridge Derby'],
     ['MAP', 'BEA', 'Mapleford–Bearville Derby'],
     ['GOR', 'CHM', 'Goldenville–Cherryford Derby'],
-    ['LAK', 'SPR', 'Lakegrove–Springridge Derby'],
     ['MAT', 'MAC', 'Matsuhara Derby'],
     ['AKI', 'SHF', 'Akisaki–Shinsaki Derby'],
     ['HIG', 'HIS', 'Higashino Derby'],
@@ -897,27 +884,17 @@
     ['Cherryford Mustangs', 'CHM', 'Cherryford', '#FEDD00', '#000000', 'historic', 62, 'Cherryford Field', 20371],
     ['Millgrove Lumberjacks', 'MIL', 'Millgrove', '#071B2C', '#B19B69', 'youth', 62, 'Millgrove Stadium', 18500],
     ['Fort Summiton Pioneers', 'FOS', 'Fort Summiton', '#6CACE4', '#041E42', 'oil', 62, 'Cypresshills Park', 28743],
-    ['Lakegrove Union Club', 'LAK', 'Lakegrove', '#80000A', '#A19060', 'fan', 61, 'Lakegrove Field', 42500],
+    ['East Belton United', 'LAK', 'East Belton', '#80000A', '#A19060', 'fan', 61, 'Granton Park', 42500],
     ['Fort Summiton Revolution', 'FRT', 'Fort Summiton', '#FFFFFF', '#BA0C2F', 'oil', 60, 'Canyonburg Field', 25000],
     ['Fortview Foundry United', 'FOF', 'Fortview', '#ECE83A', '#1F1646', 'fan', 60, 'Eagleview Field', 30000],
     ['Springridge SC', 'SPR', 'Springridge', '#633492', '#FDE192', 'fan', 60, 'Whitefalls Field', 25500],
-    [
-      'Eaglefield Beach United',
-      'EAG',
-      'Eaglefield Beach',
-      '#FFFFFF',
-      '#00245E',
-      'youth',
-      60,
-      'Cypressville Field',
-      22120,
-    ],
+    ['Hamfield Northern', 'EAG', 'Hamfield', '#FFFFFF', '#00245E', 'youth', 60, 'Hamfield Stadium', 22120],
     ['Bluehills City FC', 'BLU', 'Bluehills', '#00482B', '#D69A00', 'fan', 59, 'Bluehills Stadium', 25218],
     ['Hickoryridge Stallions', 'HIC', 'Hickoryridge', '#585958', '#8CD2F4', 'fan', 58, 'Aspenhaven Field', 19400],
     ['Cedarville FC', 'CED', 'Cedarville', '#1B1F23', '#6E4C9F', 'oil', 58, 'Bayfalls Field', 35000],
     ['Bearville FC', 'BEA', 'Bearville', '#B30838', '#013A81', 'youth', 58, 'Bearville Stadium', 20213],
     ['Pineridge Express', 'PIN', 'Pineridge', '#E81F3E', '#2A4076', 'youth', 58, 'Cedardale Field', 20500],
-    ['Whitedale Ironworks SC', 'WHI', 'Whitedale', '#1A85C8', '#000000', 'fan', 57, 'Whitedale Arena', 38000],
+    ['Granbridge Northern', 'WHI', 'Granbridge', '#1A85C8', '#000000', 'fan', 57, 'Lakfield Centre', 38000],
     ['AC Aspenhaven', 'ASE', 'Aspenhaven', '#FF6B00', '#101820', 'fan', 57, 'Bluehills Park', 22039],
     ['Goldenburg Pioneers', 'GOP', 'Goldenburg', '#91B0D5', '#002F65', 'fan', 57, 'Goldenburg Field', 18467],
     ['Canyonhaven Rockets', 'CAN', 'Canyonhaven', '#DD004A', '#0A1E2C', 'fan', 57, 'Canyonhaven Arena', 22423],
@@ -1292,7 +1269,7 @@
     ['Geralnup Jets', 'GEJ', 'Geralnup', '#6CACE4', '#0B1F4B', 'giant', 57, 'Geralnup Stadium'],
     ['Wodoville FC', 'WOF', 'Wodoville', '#0B1F4B', '#FFFFFF', 'giant', 55, 'Wodoville Stadium'],
     ['Geralnup Victory', 'GEV', 'Geralnup', '#E30613', '#000000', 'fan', 53, 'Narcannon Park'],
-    ['Mount Bundawa Wanderers', 'MOB', 'Mount Bundawa', '#FFDD00', '#0B1F4B', 'youth', 52, 'Gymby Field'],
+    ['Otabay United', 'MOB', 'Otabay', '#FFDD00', '#0B1F4B', 'youth', 52, 'Otabay Stadium'],
     [
       'Mount Bundaooka Jets',
       'MOT',
@@ -1304,7 +1281,7 @@
       'Mount Bundaooka Sportsground',
     ],
     ['Cofflea Rovers', 'CFF', 'Cofflea', '#0B1F4B', '#00A3E0', 'oil', 51, 'Cofflea Stadium'],
-    ['Nowlea Rovers', 'NOW', 'Nowlea', '#E30613', '#FFFFFF', 'fan', 50, 'Nowlea Sportsground'],
+    ['Blenfield Rovers', 'NOW', 'Blenfield', '#E30613', '#FFFFFF', 'fan', 50, 'Blenfield Stadium'],
     ['West Tamford Strikers', 'TAM', 'Tamford', '#FFDD00', '#000000', 'fan', 49, 'Narby Reserve'],
     ['Sporting Balnup', 'BAS', 'Balnup', '#000000', '#FFFFFF', 'selling', 48, 'Balnup Oval'],
     ['Portcannon Athletic', 'PRT', 'Portcannon', '#003DA5', '#E30613', 'fan', 48, 'Wagbin Field'],
@@ -1328,7 +1305,7 @@
     ['Lisbridge United', 'LIS', 'Lisbridge', '#E30613', '#FFFFFF', 'historic', 51, 'Glentown Road'],
     ['Lisbridge Wanderers', 'LIW', 'Lisbridge', '#00843D', '#FFFFFF', 'giant', 51, 'Glengarvan Road'],
     ['Inter Oranglass', 'ORA', 'Oranglass', '#E30613', '#FFFFFF', 'fan', 48, 'Monlough Park'],
-    ['Corard United', 'COU', 'Lisbridge', '#E30613', '#000000', 'fan', 47, 'Lisbridge Park'],
+    ['Castle Rodwell United', 'COU', 'Castle Rodwell', '#E30613', '#000000', 'fan', 47, 'Pensea Green'],
     ['Newree Gaels', 'NEW', 'Lisbridge', '#E30613', '#FFFFFF', 'fan', 47, 'Rosglass Street'],
     ['Port Carrickree Gaels', 'POC', 'Port Carrickree', '#003DA5', '#FFFFFF', 'fan', 44, 'Limdara Road'],
     ['Athgarvan Bohs', 'ATH', 'Athgarvan', '#8A1538', '#FFFFFF', 'fan', 43, 'Athgarvan Lawn'],
@@ -1337,7 +1314,7 @@
     ['Castle Kilough Bohs', 'CAK', 'Castle Kilough', '#FFFFFF', '#000000', 'fallen', 44, 'Castle Kilough Park'],
   ];
   FM.D.CLUBS_WA1 = [
-    ['Talbach Cymru', 'TAL', 'Talbach', '#00843D', '#FFFFFF', 'oil', 49, 'Stadiwm Talbach'],
+    ['Oxstead Borough', 'TAL', 'Oxstead', '#00843D', '#FFFFFF', 'oil', 49, 'Oxstead Ground'],
     ['Llangnant Athletic', 'LLA', 'Llangnant', '#FFFFFF', '#000000', 'fan', 42, 'Llangnant Park'],
     ['Lower Dolgwyn Cymru', 'DOC', 'Dolgwyn', '#FFFFFF', '#003DA5', 'fan', 41, 'Dolgfa Field'],
     ['Lower Clyngwyn Rovers', 'CLY', 'Clyngwyn', '#E30613', '#FFFFFF', 'fan', 41, 'Parc Dolgydd'],
@@ -1399,7 +1376,7 @@
     ['Telim Athletic', 'BAM', 'Telim', '#F26522', '#FFFFFF', 'youth', 42, 'Sinei Hub', 2700],
     ['Baylang Police', 'BND', 'Baylang', '#D2232A', '#006A4E', 'fan', 40, 'Serlim Hub', 3000],
     ['Tensa Rovers', 'LTJ', 'Tensa', '#E30613', '#000000', 'historic', 38, 'Serei Stadium', 3900],
-    ['Bayong Rovers', 'KAM', 'Bayong', '#F26522', '#0033A0', 'fan', 38, 'Bayong Sports Hub', 3500],
+    ['Shintoygawa Cometa', 'KAM', 'Shintoygawa', '#F26522', '#0033A0', 'fan', 38, 'Haruyama Arena', 3500],
     ['Lorlang United', 'TMN', 'Lorlang', '#ED1C24', '#FFFFFF', 'historic', 37, 'Kamlang Hub', 2700],
     ['Pulgap Police', 'TES', 'Pulgap', '#1F3A93', '#FFFFFF', 'fan', 36, 'Marlang Stadium', 4000],
     ['Pulgap Athletic', 'LTS', 'Pulgap', '#F26522', '#000000', 'fan', 35, 'Hourang Hub', 4300],
@@ -1435,7 +1412,7 @@
     ['Damai Mas Utara', 'TEP', 'Damai Mas', '#FFD100', '#000000', 'historic', 48, 'Damai Utama Arena', 42000],
     ['UiTM Karang Jaya', 'SUP', 'Karang Jaya', '#FFD100', '#000000', 'historic', 47, 'Stadium Karang Jaya', 40000],
     ['Seri Jaya FC', 'SRI', 'Seri Jaya', '#FFD100', '#1E90FF', 'fan', 46, 'Stadium Seri Jaya', 20000],
-    ['Karang Baru FA', 'SIT', 'Karang Baru', '#E30613', '#FFD100', 'fan', 45, 'Stadium Jaya Utama', 45000],
+    ['Delima Jaya Athletic', 'SIT', 'Delima Jaya', '#E30613', '#FFD100', 'fan', 45, 'Bayu Sari Arena', 45000],
     ['Mutiara Jaya Selatan', 'PUT', 'Mutiara Jaya', '#E30613', '#FFFFFF', 'fan', 44, 'Rimba Baru Arena', 40000],
     ['UiTM Pelita Sari', 'PUA', 'Pelita Sari', '#E30613', '#FFFFFF', 'fan', 43, 'Stadium Pelita Sari', 22000],
     [
@@ -3542,6 +3519,3174 @@
     ['SK Ängelsta', 'ANB', 'Ängelsta', '#6A1B9A', '#FFD100', 'fan', 40, 'Ängelsta Arena', 8000],
     ['SK Rödby', 'ROG', 'Rödby', '#001F5B', '#0057B8', 'historic', 39, 'Rödby Arena', 9500],
   ];
+  FM.D.CLUBS_DZ2 = [
+    ['CR Berouk', 'CRR', 'Berouk', '#0057B8', '#FFD100', 'fan', 44, 'Stade de Berouk', 17500],
+    ['USM Bejouk', 'USD', 'Bejouk', '#6A1B9A', '#FFFFFF', 'fan', 43, 'Stade Namiya', 15500],
+    ['Masouk FC', 'MAM35', 'Masouk', '#FFFFFF', '#6A1B9A', 'fan', 42, 'Complexe Sportif Masouk', 13000],
+    ['MC Milara', 'MCC', 'Milara', '#00843D', '#FFD100', 'historic', 41, 'Stade Cherène', 13000],
+    ['RC Tlemouda', 'TLE', 'Tlemouda', '#FFD100', '#6A1B9A', 'youth', 40, 'Stade Timara', 13500],
+    ['MO Beni Aflène', 'MOO', 'Aflène', '#0057B8', '#6A1B9A', 'fan', 39, 'Stade Gharouda', 16000],
+    ['AS Beni Skikala', 'BEA24', 'Beni Skikala', '#6A1B9A', '#FFFFFF', 'selling', 38, 'Stade Mosida', 14000],
+    ['MO Ain Namiya', 'MMO', 'Namiya', '#FFD100', '#6A1B9A', 'fan', 38, 'Stade Municipal de Namiya', 15500],
+    ['CR Beni Gharala', 'CCR', 'Gharala', '#001F5B', '#6CACE4', 'fan', 37, 'Stade Municipal de Gharala', 15500],
+    ['CA Hassiya', 'CAB25', 'Hassiya', '#E30613', '#6CACE4', 'selling', 36, 'Complexe Sportif Hassiya', 12500],
+    ['AS Mosara', 'MOW', 'Mosara', '#0057B8', '#6CACE4', 'fan', 35, 'Complexe Sportif Mosara', 11000],
+    ['MO Relane', 'MOX', 'Relane', '#000000', '#FFFFFF', 'fan', 34, 'Stade Municipal de Relane', 14000],
+    ['JS Masina', 'JSS', 'Masina', '#E30613', '#6A1B9A', 'youth', 34, 'Complexe Sportif Masina', 14000],
+    ['MC Timène', 'MMC', 'Timène', '#001F5B', '#FFD100', 'fallen', 33, 'Stade Sedouda', 10500],
+    ['ES Gharouk', 'GHB', 'Gharouk', '#FFD100', '#0057B8', 'fallen', 32, 'Stade Tlemina', 9500],
+    ['RC Timina', 'TIM', 'Timina', '#0057B8', '#001F5B', 'fallen', 32, 'Complexe Sportif Timina', 10500],
+  ];
+  FM.D.CLUBS_AR2 = [
+    ['Club Deportivo Franez', 'FRK', 'Franez', '#0057B8', '#001F5B', 'fan', 58, 'Estadio Quirano', 21500],
+    ['Nacional Lavón', 'NAY', 'Lavón', '#E30613', '#00843D', 'fan', 57, 'Cancha de Lavón', 21500],
+    ['Racing de Molini', 'MOY', 'Molini', '#FFD100', '#6CACE4', 'selling', 57, 'Estadio Garero', 20000],
+    ['Club Deportivo Cabrez', 'CAC26', 'Cabrez', '#FFFFFF', '#FFD100', 'fan', 56, 'Estadio Busto', 19500],
+    ['Gimnasia de Cabrui', 'CAD27', 'Cabrui', '#000000', '#001F5B', 'fan', 55, 'Estadio Municipal de Cabrui', 21000],
+    ['Sportivo Molui', 'MOZ', 'Molui', '#FFD100', '#0057B8', 'fan', 55, 'Cancha de Molui', 20000],
+    ['Club de Regatas Domini', 'REJ', 'Domini', '#6CACE4', '#000000', 'fan', 54, 'Cancha de Domini', 22000],
+    ['Dorrilla FC', 'DOP', 'Dorrilla', '#0057B8', '#FFFFFF', 'historic', 54, 'Estadio Castar', 22500],
+    ['Atlético Domano', 'DOQ', 'Domano', '#E30613', '#6A1B9A', 'fan', 53, 'Cancha de Domano', 20500],
+    ['Defensores de Quirano', 'QUD', 'Quirano', '#E30613', '#FFFFFF', 'fallen', 53, 'Cancha de Quirano', 22000],
+    ['Racing de Pelleda del Sur', 'PEQ', 'Pelleda del Sur', '#6A1B9A', '#E30613', 'fan', 52, 'Estadio Sarar', 18500],
+    ['Sportivo Franas', 'FRL', 'Franas', '#FFFFFF', '#000000', 'fan', 51, 'Cancha de Franas', 20500],
+    ['Club Deportivo Mirez', 'MIE', 'Mirez', '#001F5B', '#000000', 'selling', 50, 'Estadio Ferar', 19000],
+    [
+      'Atlético Coronel Herar',
+      'COL',
+      'Coronel Herar',
+      '#6CACE4',
+      '#00843D',
+      'historic',
+      50,
+      'Cancha de Coronel Herar',
+      18500,
+    ],
+    ['Club Deportivo Arras', 'ARP', 'Arras', '#FFD100', '#00843D', 'historic', 49, 'Estadio Rodilla', 17000],
+    ['Club Atlético Urqo', 'URB', 'Urqo', '#FFFFFF', '#00843D', 'fan', 49, 'Estadio Frano', 18000],
+    ['Estudiantes de Bustia', 'BUQ', 'Bustia', '#6A1B9A', '#000000', 'fan', 47, 'Estadio Castón', 15500],
+    [
+      'Independiente Rodano',
+      'ROH',
+      'Rodano',
+      '#FFD100',
+      '#FFFFFF',
+      'historic',
+      47,
+      'Estadio Municipal de Rodano',
+      16000,
+    ],
+  ];
+  FM.D.CLUBS_AT2 = [
+    ['Fortuna Grüningen', 'GRL', 'Grüningen', '#0057B8', '#E30613', 'fallen', 50, 'Waldstadion Grüningen', 20500],
+    ['Teutonia Westerdorf', 'WES', 'Westerdorf', '#E30613', '#FFFFFF', 'fan', 50, 'Stadion am Heidsee', 18500],
+    ['FSV Neu Immhafen', 'NEU', 'Immhafen', '#E30613', '#00843D', 'fan', 49, 'Westerhorst-Stadion', 18000],
+    ['VfB Unter Immbach', 'UNA', 'Immbach', '#E30613', '#00843D', 'historic', 49, 'Stadion Thalfeld', 20500],
+    ['Rot-Weiß Heidtal', 'ROJ', 'Heidtal', '#6A1B9A', '#00843D', 'youth', 48, 'Heidtal-Arena', 17500],
+    [
+      'Concordia Kalfurt am See',
+      'CON',
+      'Kalfurt am See',
+      '#E30613',
+      '#00843D',
+      'selling',
+      47,
+      'Waldstadion Kalfurt am See',
+      19500,
+    ],
+    ['VfL Heidau', 'HEC', 'Heidau', '#001F5B', '#000000', 'selling', 46, 'Dillhorst-Stadion', 17500],
+    ['Concordia Kalberg', 'COP', 'Kalberg', '#6A1B9A', '#FFD100', 'historic', 46, 'Sportpark Marienfurt', 17000],
+    ['FSV Bruchweiler', 'BRM', 'Bruchweiler', '#00843D', '#6CACE4', 'selling', 46, 'Kalheim-Stadion', 19000],
+    ['TuS Oberkirchen', 'TUB', 'Oberkirchen', '#0057B8', '#FFFFFF', 'selling', 44, 'Stadion am Grünweiler', 14500],
+    ['Union Steinkirchen', 'STU', 'Steinkirchen', '#6CACE4', '#FFD100', 'fan', 43, 'Bachtal-Stadion', 16500],
+    ['Fortuna Heidwald', 'HEE', 'Heidwald', '#FFFFFF', '#000000', 'fan', 43, 'Grünfeld-Stadion', 16000],
+    ['FC Neu Lütkirchen', 'NEK', 'Lütkirchen', '#FFFFFF', '#E30613', 'youth', 42, 'Stadion Wieshafen', 17000],
+    ['SC Branau 1901', 'BRP', 'Branau', '#6A1B9A', '#000000', 'selling', 42, 'Sportpark Gründorf', 15500],
+    ['VfL Unter Branhausen', 'UNR', 'Branhausen', '#E30613', '#FFD100', 'fan', 41, 'Stadion am Wiesberg', 14500],
+    ['FC Waldstadt', 'WAL', 'Waldstadt', '#00843D', '#000000', 'fan', 40, 'Waldstadion Waldstadt', 13000],
+  ];
+  FM.D.CLUBS_BY2 = [
+    ['Khimik Rasovichy', 'KHC', 'Rasovichy', '#000000', '#E30613', 'fallen', 38, 'Haradski Stadyen Rasovichy', 12500],
+    [
+      'Slavia Novy Chashchyna',
+      'NOP',
+      'Novy Chashchyna',
+      '#0057B8',
+      '#00843D',
+      'fan',
+      38,
+      'Stadyen Novy Chashchyna',
+      14000,
+    ],
+    ['FC Nesvava', 'NEM', 'Nesvava', '#E30613', '#6CACE4', 'fallen', 37, 'Stadyen Dinamo Nesvava', 15000],
+    ['Shakhtyor Vilava', 'SHK', 'Vilava', '#FFD100', '#E30613', 'fan', 35, 'Stadyen Molshchyna', 14000],
+    ['Khimik Dokovichy', 'KHK', 'Dokovichy', '#000000', '#FFFFFF', 'historic', 35, 'Stadyen Dinamo Dokovichy', 10500],
+    ['Neman Kasovka', 'NEN', 'Kasovka', '#FFD100', '#001F5B', 'fan', 34, 'Stadyen Hlybovichy', 10500],
+    ['Naftan Molovka', 'NAZ', 'Molovka', '#6CACE4', '#E30613', 'selling', 34, 'Stadyen Molovka', 10000],
+    [
+      'FK Vyalikaya Dokilovichy',
+      'VYA',
+      'Dokilovichy',
+      '#FFFFFF',
+      '#0057B8',
+      'youth',
+      33,
+      'Haradski Stadyen Dokilovichy',
+      11500,
+    ],
+    ['FC Chasyn', 'CHC26', 'Chasyn', '#0057B8', '#E30613', 'historic', 32, 'Haradski Stadyen Chasyn', 13000],
+    ['Spartak Babka', 'SPP', 'Babka', '#FFFFFF', '#00843D', 'youth', 32, 'Stadyen Dinamo Babka', 9000],
+    ['Energetik Hlybensk', 'ENB', 'Hlybensk', '#001F5B', '#FFD100', 'historic', 31, 'Stadyen Hlybensk', 10500],
+    ['Vedrich Hlybets', 'VEJ', 'Hlybets', '#6A1B9A', '#000000', 'historic', 30, 'Haradski Stadyen Hlybets', 8500],
+    ['Naftan Doka', 'NAA24', 'Doka', '#6A1B9A', '#6CACE4', 'historic', 28, 'Stadyen Doka', 9500],
+    ['Spartak Chasichy', 'SPQ', 'Chasichy', '#001F5B', '#6A1B9A', 'selling', 28, 'Lahovka Arena', 9500],
+    ['FK Chashchyna', 'CNB', 'Chashchyna', '#001F5B', '#0057B8', 'historic', 27, 'Haradski Stadyen Chashchyna', 9000],
+    ['Svetka FK', 'SVE', 'Svetka', '#E30613', '#FFD100', 'youth', 26, 'Stadyen Svetka', 6000],
+  ];
+  FM.D.CLUBS_BE2 = [
+    ['KV Veenlo', 'VEK', 'Veenlo', '#FFD100', '#001F5B', 'historic', 55, 'Stade Sneekhoven', 22000],
+    ['Royal Union Hoornlo', 'ROY', 'Hoornlo', '#0057B8', '#000000', 'fallen', 54, 'Stade Communal de Hoornlo', 22500],
+    ['Koninklijke Wagezand', 'KOD', 'Wagezand', '#FFD100', '#6CACE4', 'fan', 54, 'Veenwaard Stadion', 21500],
+    ['Sporting Zuidzand', 'ZUA', 'Zuidzand', '#000000', '#00843D', 'selling', 53, 'Stade Communal de Zuidzand', 19000],
+    ['SK Bergvoort', 'BEB25', 'Bergvoort', '#00843D', '#001F5B', 'fallen', 52, 'Stedelijk Stadion Bergvoort', 18000],
+    ['Standard Grootstad', 'STV', 'Grootstad', '#0057B8', '#6CACE4', 'youth', 51, 'Stedelijk Stadion Grootstad', 21500],
+    [
+      'Standard Kleinstad',
+      'STW',
+      'Kleinstad',
+      '#6CACE4',
+      '#00843D',
+      'youth',
+      51,
+      'Gemeentelijk Stadion Kleinstad',
+      21500,
+    ],
+    ['Sporting Devenhorst', 'DEV', 'Devenhorst', '#E30613', '#000000', 'historic', 49, 'Stade Westrade', 17500],
+    ['KAA Alkhoven', 'KAX', 'Alkhoven', '#000000', '#E30613', 'youth', 49, 'Stade Kleinbeek', 18500],
+    ['KSC Laaghorst', 'KSC', 'Laaghorst', '#FFD100', '#00843D', 'fallen', 49, 'Stade Oostveen', 17000],
+    [
+      'Excelsior Vlaarkerk',
+      'EXA',
+      'Vlaarkerk',
+      '#6CACE4',
+      '#001F5B',
+      'historic',
+      48,
+      'Stade Communal de Vlaarkerk',
+      19500,
+    ],
+    [
+      'Excelsior Laaghoven',
+      'EXR',
+      'Laaghoven',
+      '#FFFFFF',
+      '#E30613',
+      'historic',
+      47,
+      'Gemeentelijk Stadion Laaghoven',
+      16500,
+    ],
+    ['KRC Devenbrug', 'KRF', 'Devenbrug', '#00843D', '#0057B8', 'historic', 47, 'Hooghout Stadion', 18500],
+    ['Sporting Zuidlo', 'ZUO', 'Zuidlo', '#6CACE4', '#FFD100', 'fallen', 45, 'Stade Haarwijk', 18500],
+    ['Royal Wagehoven', 'ROL', 'Wagehoven', '#E30613', '#0057B8', 'fan', 44, 'Stedelijk Stadion Wagehoven', 16500],
+    ['Union Nieuw Leidvoort', 'NIC', 'Leidvoort', '#FFFFFF', '#E30613', 'fallen', 44, 'Stade Oudrade', 14500],
+  ];
+  FM.D.CLUBS_BG2 = [
+    ['FK Dobets', 'DOS', 'Dobets', '#FFD100', '#6A1B9A', 'historic', 39, 'Gradski stadion Dobets', 12500],
+    ['Dinamo Svitsa', 'DIJ', 'Svitsa', '#000000', '#00843D', 'fan', 38, 'Stadion Svitsa', 12500],
+    ['Minyor Shovo', 'MIN', 'Shovo', '#00843D', '#6CACE4', 'fan', 38, 'Stadion Pazovtsi', 11500],
+    ['Dinamo Sevgrad', 'DIK', 'Sevgrad', '#E30613', '#6A1B9A', 'historic', 37, 'Stadion Sevgrad', 14000],
+    ['Spartak Dolna Lovovo', 'SAE28', 'Lovovo', '#000000', '#FFD100', 'selling', 36, 'Gradski stadion Lovovo', 15000],
+    ['Yantra Razgrad', 'YAD', 'Razgrad', '#000000', '#FFD100', 'historic', 35, 'Stadion Razgrad', 10500],
+    ['Dinamo Dolna Vrovo', 'DMA', 'Vrovo', '#FFFFFF', '#001F5B', 'fan', 35, 'Razgrad Arena', 11000],
+    ['Septemvri Nova Slika', 'SEQ', 'Slika', '#00843D', '#6A1B9A', 'fan', 34, 'Gradski stadion Slika', 11000],
+    ['Minyor Blino', 'MIF', 'Blino', '#FFFFFF', '#FFD100', 'selling', 34, 'Stadion Blino', 10500],
+    ['FC Viditsa', 'VIZ', 'Viditsa', '#6CACE4', '#FFD100', 'historic', 33, 'Stadion Mongrad', 13000],
+    ['Minyor Vrevo', 'MIV', 'Vrevo', '#FFFFFF', '#6A1B9A', 'youth', 33, 'Silovtsi Arena', 9500],
+    ['Balkan Veliko Petovtsi', 'BAL34', 'Veliko Petovtsi', '#000000', '#FFD100', 'fan', 32, 'Kyovtsi Arena', 12500],
+    ['Dinamo Sligrad', 'DIS', 'Sligrad', '#001F5B', '#E30613', 'historic', 31, 'Stadion Kyovo', 10000],
+    ['Lokomotiv Tutovtsi', 'LOD', 'Tutovtsi', '#00843D', '#000000', 'historic', 31, 'Stadion Varino', 11000],
+    ['Metalurg Stara Pazets', 'MEG', 'Pazets', '#000000', '#6CACE4', 'selling', 30, 'Stadion Petgrad', 10500],
+    ['Spartak Svevo', 'SPS', 'Svevo', '#FFFFFF', '#E30613', 'selling', 29, 'Stadion Svevo', 11000],
+    ['Lokomotiv Gabka', 'LOE', 'Gabka', '#000000', '#6A1B9A', 'fan', 28, 'Gradski stadion Gabka', 10000],
+    ['Septemvri Hasitsa', 'SEI', 'Hasitsa', '#0057B8', '#00843D', 'fallen', 28, 'Stadion Hasitsa', 11500],
+  ];
+  FM.D.CLUBS_CL2 = [
+    ['UD Cuenanes', 'CUC', 'Cuenanes', '#E30613', '#6CACE4', 'historic', 46, 'Estadio Tarifena', 19000],
+    ['Quintosa CF', 'QUE', 'Quintosa', '#E30613', '#000000', 'historic', 45, 'Estadio Municipal de Quintosa', 19000],
+    ['CD Lermejo', 'LEA', 'Lermejo', '#00843D', '#FFD100', 'fallen', 44, 'Estadio Beneda', 14500],
+    ['Racing San Guadara', 'GUE', 'Guadara', '#00843D', '#0057B8', 'historic', 44, 'Estadio La Jarandete', 16000],
+    ['Atlético Cabrilla', 'CLD', 'Cabrilla', '#00843D', '#000000', 'fan', 43, 'Nuevo Estadio Cabrilla', 15500],
+    ['Atlético San Quintilla', 'QLA', 'San Quintilla', '#000000', '#FFD100', 'selling', 42, 'Estadio Valera', 17000],
+    ['Atlético Valdemanes', 'VAQ', 'Valdemanes', '#001F5B', '#FFFFFF', 'selling', 42, 'Estadio Soredo', 15000],
+    ['Calatón CF', 'CAE28', 'Calatón', '#0057B8', '#000000', 'fan', 40, 'Estadio Municipal de Calatón', 14000],
+    [
+      'Deportivo San Palomar',
+      'PAB25',
+      'San Palomar',
+      '#000000',
+      '#6A1B9A',
+      'selling',
+      40,
+      'Nuevo Estadio San Palomar',
+      15500,
+    ],
+    ['Unión Liorilla', 'LIM', 'Liorilla', '#6A1B9A', '#000000', 'youth', 39, 'Estadio Municipal de Liorilla', 13500],
+    ['Juventud Rondeda', 'ROK', 'Rondeda', '#6A1B9A', '#0057B8', 'fan', 38, 'Estadio Municipal de Rondeda', 15000],
+    ['Atlético Peñeda', 'PEU', 'Peñeda', '#E30613', '#6CACE4', 'fan', 37, 'Estadio Fragino', 13000],
+    ['UD Albara', 'ALY46', 'Albara', '#001F5B', '#000000', 'fan', 37, 'Estadio La Lucilla', 12000],
+    ['Racing Club Nueva Quintara', 'NUC', 'Nueva Quintara', '#6A1B9A', '#FFFFFF', 'fan', 37, 'Estadio Úbedino', 13500],
+    ['UD Fuentino', 'FUH', 'Fuentino', '#6A1B9A', '#FFD100', 'fallen', 35, 'Estadio Segovosa', 10500],
+    ['Real Club Olmedo', 'OLF', 'Olmedo', '#00843D', '#001F5B', 'historic', 35, 'Estadio La Piedero', 14000],
+  ];
+  FM.D.CLUBS_CS2 = [
+    ['Ningzhou Cranes', 'NIN', 'Ningzhou', '#0057B8', '#6A1B9A', 'fan', 47, 'Ningzhou Sports Centre', 16000],
+    ['Shantang FC', 'SHL', 'Shantang', '#FFD100', '#6CACE4', 'fan', 47, 'Shantang Sports Centre', 15500],
+    ['Huamen United', 'HUA', 'Huamen', '#00843D', '#E30613', 'fallen', 45, 'Taang Arena', 17500],
+    ['Fang FC', 'FAN', 'Fang', '#FFD100', '#000000', 'fan', 45, 'Fang Olympic Stadium', 18500],
+    ['Ningcheng Evergreen', 'NIG', 'Ningcheng', '#6A1B9A', '#0057B8', 'fallen', 44, 'Ningcheng Sports Centre', 16000],
+    ['Baotang FC', 'BAM35', 'Baotang', '#FFD100', '#000000', 'historic', 43, 'Gubin Arena', 18000],
+    ['Xinyang Steel', 'XIN', 'Xinyang', '#000000', '#FFFFFF', 'selling', 43, 'Xinyang Sports Centre', 15500],
+    ['Gyang United', 'GYC', 'Gyang', '#FFFFFF', '#E30613', 'selling', 41, 'Pingshan Arena', 13000],
+    ['Meibin Heavy Industries', 'MEJ', 'Meibin', '#6A1B9A', '#000000', 'fan', 41, 'Meibin Olympic Stadium', 13500],
+    ['Longang Evergreen', 'LOF', 'Longang', '#001F5B', '#FFFFFF', 'historic', 41, 'Longang Sports Centre', 16500],
+    ['Taining United', 'TAH31', 'Taining', '#6A1B9A', '#00843D', 'fan', 40, 'Taigang Stadium', 15000],
+    ['Meicheng United', 'MEK', 'Meicheng', '#000000', '#6A1B9A', 'fan', 39, 'Weyang Stadium', 16000],
+    ['Yunmen Evergreen', 'YUN', 'Yunmen', '#6CACE4', '#6A1B9A', 'historic', 39, 'Ruicheng Arena', 12000],
+    ['Dongang Heavy Industries', 'DOT', 'Dongang', '#00843D', '#001F5B', 'youth', 38, 'Dongang Sports Centre', 13500],
+    ['Ruizhou Sports', 'RUI', 'Ruizhou', '#000000', '#FFD100', 'fan', 37, 'Xincheng Stadium', 10500],
+    ['Xinshan Heavy Industries', 'XAA', 'Xinshan', '#E30613', '#00843D', 'fan', 36, 'Kaishan Stadium', 13500],
+  ];
+  FM.D.CLUBS_CO2 = [
+    ['Real Fresnejo', 'FRP', 'Fresnejo', '#000000', '#001F5B', 'fan', 45, 'Estadio Ganda', 18500],
+    [
+      'Atlético San Valdemares',
+      'VAT',
+      'Valdemares',
+      '#FFD100',
+      '#00843D',
+      'fan',
+      44,
+      'Ciudad Deportiva Valdemares',
+      15500,
+    ],
+    ['Unión Jarandero', 'JAR', 'Jarandero', '#E30613', '#6CACE4', 'fan', 44, 'Estadio Elchena', 17500],
+    ['Real Club Cuenera', 'CUD', 'Cuenera', '#E30613', '#6CACE4', 'selling', 43, 'Estadio Sorosa', 14500],
+    ['Deportivo Ribanes', 'RIF', 'Ribanes', '#E30613', '#FFD100', 'historic', 42, 'Estadio Albino', 13000],
+    ['Juventud Lucilla', 'LUF', 'Lucilla', '#0057B8', '#6CACE4', 'fan', 41, 'Ciudad Deportiva Lucilla', 14000],
+    [
+      'Deportivo Santa Valara',
+      'VAU',
+      'Santa Valara',
+      '#001F5B',
+      '#FFD100',
+      'historic',
+      40,
+      'Estadio Municipal de Santa Valara',
+      14000,
+    ],
+    ['Unión Palomar', 'PAC26', 'Palomar', '#0057B8', '#FFD100', 'fallen', 40, 'Campo de Palomar', 12500],
+    ['Real Club Bajo Castera', 'BAN36', 'Castera', '#FFD100', '#000000', 'historic', 39, 'Estadio Segovanes', 13500],
+    [
+      'Racing Valdemilla',
+      'VLA',
+      'Valdemilla',
+      '#E30613',
+      '#00843D',
+      'historic',
+      38,
+      'Estadio Municipal de Valdemilla',
+      14000,
+    ],
+    ['Alto Jarandara Balompié', 'ALZ47', 'Jarandara', '#E30613', '#0057B8', 'youth', 38, 'Campo de Jarandara', 13500],
+    ['Quintar CF', 'QUF', 'Quintar', '#0057B8', '#FFD100', 'youth', 37, 'Estadio Castedo', 11000],
+    ['Sporting Santa Sepúlvón', 'SET', 'Sepúlvón', '#6CACE4', '#E30613', 'fallen', 36, 'Estadio La Valón', 13000],
+    ['Real Unión Nerjeda', 'NEP', 'Nerjeda', '#000000', '#0057B8', 'fallen', 35, 'Campo de Nerjeda', 10500],
+    ['Osunejo CF', 'OSE', 'Osunejo', '#00843D', '#6A1B9A', 'historic', 35, 'Nuevo Estadio Osunejo', 10000],
+    ['Racing Quintiel', 'QUL', 'Quintiel', '#001F5B', '#6CACE4', 'fan', 33, 'Estadio Benaviel', 13500],
+  ];
+  FM.D.CLUBS_HR2 = [
+    ['Liptica Sokol', 'LIQ', 'Liptica', '#FFD100', '#E30613', 'youth', 47, 'Stadion Radovac', 19000],
+    ['Partizan Jasava', 'PAD27', 'Jasava', '#6CACE4', '#6A1B9A', 'fan', 45, 'Kraina Arena', 16500],
+    ['NK Hradice', 'HRB', 'Hradice', '#0057B8', '#001F5B', 'fan', 44, 'Gradski Stadion Hradice', 18000],
+    ['Torpedo Petik', 'TOK', 'Petik', '#00843D', '#000000', 'youth', 44, 'Stadion Mir Petik', 15000],
+    ['Metalac Kosovice', 'MEM', 'Kosovice', '#FFD100', '#0057B8', 'historic', 43, 'Gradski Stadion Kosovice', 14500],
+    ['Union Rybec', 'RYD', 'Rybec', '#E30613', '#001F5B', 'fan', 42, 'Dolnava Arena', 14500],
+    ['Železničar Lubgrad', 'ZEJ', 'Lubgrad', '#001F5B', '#FFD100', 'youth', 40, 'Kosin Arena', 14000],
+    ['Belovac Sokol', 'BEC26', 'Belovac', '#FFD100', '#001F5B', 'selling', 38, 'Belovac Park', 13500],
+    ['Mladost Lubovo', 'MLC', 'Lubovo', '#FFFFFF', '#6A1B9A', 'historic', 37, 'Stadion Mir Lubovo', 14000],
+    ['MFK Slaik', 'SLH', 'Slaik', '#FFD100', '#00843D', 'historic', 37, 'Kosovac Arena', 15500],
+  ];
+  FM.D.CLUBS_CY2 = [
+    ['GS Thesánia', 'THK', 'Thesánia', '#6A1B9A', '#0057B8', 'historic', 41, 'Stadio Nikia', 16500],
+    ['Apollon Trouli', 'TRO', 'Trouli', '#E30613', '#FFD100', 'historic', 40, 'Stadio Kypos', 14500],
+    ['AO Ioanópetra', 'IOA', 'Ioanópetra', '#FFFFFF', '#6CACE4', 'selling', 39, 'Dimotiko Stadio Ioanópetra', 16000],
+    ['Doxa Argópetra', 'ARQ', 'Argópetra', '#FFFFFF', '#6CACE4', 'fan', 39, 'Ethniko Stadio Argópetra', 14000],
+    ['Panathlitikos Xanaki', 'XAI', 'Xanaki', '#6A1B9A', '#FFD100', 'fan', 38, 'Stadio Larouli', 11500],
+    ['Panathlitikos Xanina', 'XAB', 'Xanina', '#6CACE4', '#6A1B9A', 'historic', 37, 'Ethniko Stadio Xanina', 15000],
+    ['AO Trópoli', 'TRC', 'Trópoli', '#FFFFFF', '#00843D', 'historic', 36, 'Argikos Arena', 15000],
+    ['PAE Lamina', 'LAW', 'Lamina', '#FFD100', '#000000', 'fallen', 36, 'Dimotiko Stadio Lamina', 14000],
+    ['AE Trikos', 'TRD', 'Trikos', '#00843D', '#FFD100', 'youth', 35, 'Stadio Marouli', 10000],
+    ['Niki Pelaki', 'PEV', 'Pelaki', '#E30613', '#00843D', 'selling', 34, 'Ethniko Stadio Pelaki', 11000],
+    ['Niki Naxida', 'NAB25', 'Naxida', '#000000', '#FFD100', 'fan', 34, 'Ethniko Stadio Naxida', 14000],
+    ['PAE Kypópetra', 'KYA', 'Kypópetra', '#00843D', '#0057B8', 'fallen', 33, 'Dimotiko Stadio Kypópetra', 9000],
+    ['GS Palaiá Koria', 'PAE28', 'Palaiá Koria', '#00843D', '#000000', 'historic', 33, 'Stadio Pelouli', 9500],
+    ['GS Kalánia', 'KAZ', 'Kalánia', '#0057B8', '#000000', 'selling', 32, 'Stadio Argia', 8500],
+    ['Panathlitikos Laros', 'LAX', 'Laros', '#E30613', '#000000', 'fan', 31, 'Ethniko Stadio Laros', 11000],
+    ['Doxa Agikos', 'AGI', 'Agikos', '#001F5B', '#FFFFFF', 'fan', 30, 'Kavás Arena', 9000],
+  ];
+  FM.D.CLUBS_CZ2 = [
+    ['Spartak Olomov', 'SPU', 'Olomov', '#0057B8', '#00843D', 'fan', 50, 'Letní stadion Olomov', 19000],
+    ['FC Mladín', 'MLN', 'Mladín', '#000000', '#6CACE4', 'fan', 50, 'Letní stadion Mladín', 18500],
+    ['Viktoria Prostice', 'PRD', 'Prostice', '#FFFFFF', '#000000', 'historic', 50, 'Stadion u Douboná', 17000],
+    ['TJ Sedice', 'SEU', 'Sedice', '#FFD100', '#00843D', 'fallen', 49, 'Letní stadion Sedice', 16500],
+    ['Slavoj Olomená', 'OLO', 'Olomená', '#0057B8', '#001F5B', 'fallen', 48, 'Stadion u Strany', 15500],
+    ['SK Olomín', 'OLG', 'Olomín', '#E30613', '#6A1B9A', 'selling', 47, 'Aréna Pelhená', 17000],
+    ['TJ Branice', 'BRQ', 'Branice', '#6A1B9A', '#0057B8', 'fan', 47, 'Stadion Sedice', 19500],
+    ['Sokol Hradov', 'HRV', 'Hradov', '#6A1B9A', '#FFD100', 'fan', 46, 'Stadion Pelhená', 18000],
+    ['Sokol Pardov', 'PAF29', 'Pardov', '#00843D', '#FFD100', 'fan', 45, 'Městský stadion Pardov', 19000],
+    ['Sparta Vsetíná', 'VSA', 'Vsetíná', '#0057B8', '#00843D', 'youth', 44, 'Stadion u Bohov', 18000],
+    ['FK Lysoná', 'LYA', 'Lysoná', '#6A1B9A', '#6CACE4', 'selling', 44, 'Stadion Jabená', 14500],
+    ['FK Nymava', 'NYA', 'Nymava', '#000000', '#FFD100', 'fan', 43, 'Stadion u Karany', 15500],
+    ['FK Doubedov', 'DOV', 'Doubedov', '#6A1B9A', '#FFD100', 'historic', 42, 'Letní stadion Doubedov', 15500],
+    ['1. FC Prostoná', 'PRG', 'Prostoná', '#6CACE4', '#000000', 'selling', 42, 'Aréna Vsetínany', 17500],
+    ['Sokol Prostov', 'PRV', 'Prostov', '#000000', '#FFD100', 'fan', 40, 'Letní stadion Prostov', 14500],
+    ['Spartak Pardice', 'SPW', 'Pardice', '#000000', '#001F5B', 'fan', 40, 'Stadion Trenov', 12000],
+  ];
+  FM.D.CLUBS_DK2 = [
+    ['Brorud IL', 'BRR', 'Brorud', '#00843D', '#6CACE4', 'youth', 53, 'Åløkke Stadion', 20500],
+    ['FC Ringsund', 'RIG', 'Ringsund', '#000000', '#E30613', 'selling', 52, 'Frerud Stadion', 19500],
+    ['Havrud Fotball', 'HAA24', 'Havrud', '#6CACE4', '#000000', 'youth', 52, 'Askdal Park', 18500],
+    ['Langø Boldklub', 'LAY', 'Langø', '#FFD100', '#001F5B', 'selling', 50, 'Langø Idrætsanlæg', 19500],
+    ['Marlund IL', 'MAN36', 'Marlund', '#E30613', '#000000', 'historic', 50, 'Vestgård Park', 21500],
+    ['FC Nylund', 'NYL', 'Nylund', '#0057B8', '#E30613', 'fallen', 49, 'Kilsund Park', 16500],
+    ['Kiløkke IF', 'KIH', 'Kiløkke', '#001F5B', '#E30613', 'historic', 47, 'Storløkke Stadion', 18000],
+    ['BK Havsund', 'HAB25', 'Havsund', '#0057B8', '#6A1B9A', 'fan', 47, 'Ålgård Idrætspark', 20000],
+    ['Nynæs BK', 'NYN', 'Nynæs', '#6A1B9A', '#001F5B', 'historic', 45, 'Langløkke Stadion', 15000],
+    ['Kilrud IF', 'KIJ', 'Kilrud', '#6CACE4', '#000000', 'historic', 45, 'Dalvang Stadion', 14500],
+    ['Vestby FK', 'VEM', 'Vestby', '#000000', '#E30613', 'historic', 42, 'Stordal Stadion', 14500],
+    ['BK Bjørngård', 'BJB', 'Bjørngård', '#6A1B9A', '#001F5B', 'historic', 42, 'Bjørngård Arena', 16500],
+  ];
+  FM.D.CLUBS_EC2 = [
+    ['Orihejo Balompié', 'ORD', 'Orihejo', '#000000', '#0057B8', 'fallen', 46, 'Nuevo Estadio Orihejo', 16500],
+    ['Racing Club Lucador', 'LUG', 'Lucador', '#0057B8', '#6CACE4', 'historic', 43, 'Estadio Calatedo', 17500],
+    ['Pedino CF', 'PEW', 'Pedino', '#E30613', '#00843D', 'fan', 42, 'Estadio Plaseda', 17500],
+    ['Frageda Atlético', 'FDA', 'Frageda', '#6A1B9A', '#FFD100', 'historic', 42, 'Estadio La Navador', 13500],
+    ['Sporting Cabrador', 'CAF29', 'Cabrador', '#0057B8', '#FFFFFF', 'fan', 40, 'Estadio Municipal de Cabrador', 16500],
+    ['Deportivo Bajo Piedino', 'BJC', 'Piedino', '#6CACE4', '#FFFFFF', 'fallen', 39, 'Estadio Cervara', 15500],
+    ['Racing Arroera', 'ARS', 'Arroera', '#6A1B9A', '#E30613', 'selling', 38, 'Estadio Elchara', 14000],
+    [
+      'Atlético Santa Plasanes',
+      'PLF',
+      'Plasanes',
+      '#001F5B',
+      '#FFD100',
+      'fan',
+      37,
+      'Estadio Municipal de Plasanes',
+      12500,
+    ],
+    ['Real Club Escalador', 'ESH', 'Escalador', '#FFD100', '#6A1B9A', 'fan', 36, 'Estadio La Alcalanes', 13500],
+    ['UD Torre Gandino', 'TON', 'Torre Gandino', '#00843D', '#FFD100', 'fallen', 35, 'Campo de Torre Gandino', 14500],
+  ];
+  FM.D.CLUBS_EG2 = [
+    ['Al Nasr', 'ALA48', 'Talta', '#FFD100', '#6A1B9A', 'fan', 45, 'Talta Stadium', 17500],
+    ['Al Najah', 'AAE', 'Manor', '#FFFFFF', '#E30613', 'youth', 44, 'Manor Sports City', 17500],
+    ['Al Amal', 'ALB49', 'Nag Ismor', '#FFD100', '#001F5B', 'selling', 44, 'Nag Ismor Stadium', 15000],
+    ['Al Hilal', 'ALC50', 'Benor', '#FFFFFF', '#0057B8', 'historic', 43, 'Mahiyah Stadium', 14000],
+    ['Petro Kafr Assya', 'PEX', 'Kafr Assya', '#6A1B9A', '#000000', 'youth', 43, 'Kafr Assya Stadium', 15000],
+    ['Al Zahra', 'ALD51', 'Sueta', '#00843D', '#0057B8', 'selling', 42, 'Sueta Stadium', 13500],
+    ['Dakat Club', 'DAN', 'Dakat', '#00843D', '#E30613', 'fan', 42, 'Dakat Sports City', 15500],
+    ['Al Wahda', 'ALE52', 'Zagta', '#E30613', '#0057B8', 'fan', 41, 'Zagta Sports City', 13000],
+    ['Al Qenoura', 'ALF53', 'Qenoura', '#6CACE4', '#FFD100', 'selling', 41, 'Faut Stadium', 16000],
+    ['Al Nahda', 'ALG54', 'Suut', '#6CACE4', '#E30613', 'fallen', 40, 'Suut Stadium', 16500],
+    ['Al Nour', 'ANC', 'Minan', '#001F5B', '#FFD100', 'historic', 40, 'Maror Arena', 17000],
+    ['Kafr Sidag Club', 'KAA24', 'Kafr Sidag', '#0057B8', '#000000', 'historic', 39, 'Ismta Stadium', 15000],
+    ['Kafr Manor Club', 'KAB25', 'Kafr Manor', '#FFFFFF', '#000000', 'selling', 39, 'Idkia Arena', 16000],
+    ['Minut SC', 'MIT', 'Minut', '#000000', '#00843D', 'fan', 38, 'Minut Stadium', 15500],
+    ['Al Beni Luxoura SC', 'ABF', 'Luxoura', '#FFD100', '#001F5B', 'fan', 37, 'Luxoura Sports City', 13500],
+    ['Talor Club', 'TAJ32', 'Talor', '#001F5B', '#0057B8', 'historic', 36, 'Talor Military Academy Stadium', 11000],
+    ['Petro Dakut', 'PEO', 'Dakut', '#FFFFFF', '#00843D', 'fan', 35, 'Minat Arena', 12500],
+    ['Kafr Minor SC', 'KFR', 'Kafr Minor', '#FFFFFF', '#0057B8', 'selling', 35, 'Aswut Arena', 11000],
+    ['Al Ittihad', 'ALI', 'Abu Talag', '#6A1B9A', '#FFFFFF', 'fan', 35, 'Abu Talag Stadium', 11500],
+    ['Maran SC', 'MAP37', 'Maran', '#E30613', '#001F5B', 'historic', 33, 'Maran Military Academy Stadium', 12500],
+  ];
+  FM.D.CLUBS_FI2 = [
+    ['Vanha Siivaara FC', 'VAV', 'Siivaara', '#6CACE4', '#0057B8', 'fan', 39, 'Kauniemi Urheilupuisto', 16000],
+    ['Liekka Pallo', 'LIX', 'Liekka', '#FFD100', '#000000', 'fan', 38, 'Kernen Stadion', 13000],
+    ['FC Seikka', 'SEV', 'Seikka', '#FFD100', '#001F5B', 'fan', 37, 'Kuojoki Urheilupuisto', 15000],
+    ['Pienikotkka JK', 'PIH', 'Pienikotkka', '#FFD100', '#E30613', 'fan', 35, 'Kerniemi Urheilupuisto', 11000],
+    ['Tarmo Imalahti', 'TAK33', 'Imalahti', '#6A1B9A', '#E30613', 'youth', 35, 'Piesaari Urheilupuisto', 11000],
+    ['FC Ouslahti', 'OUA', 'Ouslahti', '#FFD100', '#FFFFFF', 'fan', 32, 'Ouslahti Stadion', 12000],
+    ['FC Ousvaara', 'OUB', 'Ousvaara', '#6CACE4', '#00843D', 'fallen', 32, 'Kuovaara Areena', 12500],
+    ['Pyry Kajkylä', 'PYR', 'Kajkylä', '#00843D', '#001F5B', 'fan', 31, 'Karsaari Areena', 11000],
+    ['Vanhavirlahti FC', 'VAI', 'Vanhavirlahti', '#000000', '#6A1B9A', 'fan', 29, 'Lapla Urheilupuisto', 8500],
+    ['Sisu Savkoski', 'SIS', 'Savkoski', '#E30613', '#6CACE4', 'fan', 27, 'Virsaari Urheilupuisto', 11000],
+  ];
+  FM.D.CLUBS_GH2 = [
+    ['Takase Porcupines', 'TAL34', 'Takase', '#FFD100', '#00843D', 'youth', 41, 'Takase Sports Stadium', 16000],
+    ['Real Old Sekase', 'SEW', 'Sekase', '#6CACE4', '#000000', 'selling', 39, 'Yenmasi Arena', 12500],
+    ['New Kase Heroes', 'KAC26', 'Kase', '#0057B8', '#E30613', 'historic', 39, 'Kase Sports Stadium', 12500],
+    ['Dunora Heroes', 'DUC', 'Dunora', '#6A1B9A', '#001F5B', 'fan', 37, 'Sekondi Stadium', 15000],
+    ['Akofu Porcupines', 'AKE', 'Akofu', '#0057B8', '#FFFFFF', 'historic', 37, 'Akofu Sports Stadium', 15000],
+    ['Bolondi Heroes', 'BOV', 'Bolondi', '#E30613', '#000000', 'fan', 37, 'Bolondi Park', 12000],
+    ['Lower Nkora Stars', 'NKO', 'Nkora', '#6CACE4', '#00843D', 'fan', 36, 'Kukam Arena', 11000],
+    ['Dunho Porcupines', 'DUO', 'Dunho', '#0057B8', '#E30613', 'fallen', 36, 'Dunho Cultural Stadium', 15000],
+    ['Real Kadi', 'KAD27', 'Kadi', '#6A1B9A', '#E30613', 'historic', 33, 'Kadi Park', 11000],
+    ['Old Temasi Stars', 'TEM', 'Temasi', '#001F5B', '#FFFFFF', 'fan', 33, 'Base Stadium', 12000],
+    ['Real Old Dunondi', 'DUD', 'Dunondi', '#001F5B', '#FFD100', 'youth', 32, 'Adondi Arena', 12500],
+    ['Dunmasi Mighty United', 'DSI', 'Dunmasi', '#6CACE4', '#001F5B', 'selling', 32, 'Dunmasi Sports Stadium', 13000],
+    ['Nkomale Stars', 'NKE', 'Nkomale', '#FFD100', '#E30613', 'historic', 32, 'Yenumu Stadium', 9500],
+    ['Takra Hearts of Oak', 'TAM35', 'Takra', '#FFFFFF', '#6CACE4', 'selling', 31, 'Takra Park', 9000],
+    ['Boladi Lions', 'BOI', 'Boladi', '#00843D', '#6A1B9A', 'historic', 30, 'Boladi Park', 10500],
+    ['Union Kumu', 'KUM', 'Kumu', '#FFD100', '#00843D', 'historic', 29, 'Kumu Park', 10500],
+  ];
+  FM.D.CLUBS_GR2 = [
+    ['AE Patópetra', 'PAG30', 'Patópetra', '#FFFFFF', '#0057B8', 'fan', 53, 'Mesia Arena', 18500],
+    ['PAE Naxópoli', 'NAI', 'Naxópoli', '#6A1B9A', '#FFD100', 'historic', 52, 'Stadio Agos', 19500],
+    ['AO Kavikos', 'KAE28', 'Kavikos', '#001F5B', '#0057B8', 'fan', 51, 'Ethniko Stadio Kavikos', 18500],
+    ['Trina FC', 'TRG', 'Trina', '#6A1B9A', '#E30613', 'historic', 49, 'Dimotiko Stadio Trina', 19500],
+    ['AO Mesás', 'MEN', 'Mesás', '#001F5B', '#FFFFFF', 'historic', 48, 'Patánia Arena', 19500],
+    ['Maros FC', 'MAQ38', 'Maros', '#6A1B9A', '#E30613', 'fan', 47, 'Stadio Larópoli', 20000],
+    ['AO Thesikos', 'THN', 'Thesikos', '#6CACE4', '#E30613', 'youth', 46, 'Ethniko Stadio Thesikos', 16500],
+    ['Apollon Agópetra', 'AGO', 'Agópetra', '#FFD100', '#FFFFFF', 'selling', 45, 'Ethniko Stadio Agópetra', 19000],
+    [
+      'Kato Alexida FC',
+      'KAF29',
+      'Kato Alexida',
+      '#FFFFFF',
+      '#001F5B',
+      'historic',
+      43,
+      'Dimotiko Stadio Kato Alexida',
+      17000,
+    ],
+    [
+      'Apollon Ágios Lamópoli',
+      'AGS',
+      'Ágios Lamópoli',
+      '#FFD100',
+      '#00843D',
+      'selling',
+      42,
+      'Dimotiko Stadio Ágios Lamópoli',
+      15000,
+    ],
+  ];
+  FM.D.CLUBS_HU2 = [
+    ['Veszeszeg VSC', 'VEP', 'Veszeszeg', '#00843D', '#FFFFFF', 'fan', 49, 'Dabeháza Aréna', 19500],
+    ['Barekert Futball Club', 'BAP37', 'Barekert', '#00843D', '#6A1B9A', 'fallen', 49, 'Orsahegy Stadion', 16000],
+    [
+      'Gyönetelek Futball Club',
+      'GYD',
+      'Gyönetelek',
+      '#6CACE4',
+      '#001F5B',
+      'selling',
+      49,
+      'Gyönetelek Városi Stadion',
+      19500,
+    ],
+    ['Győró SC', 'GRM', 'Győró', '#6CACE4', '#E30613', 'historic', 49, 'Fehéraszeg Stadion', 20500],
+    ['Veszelak TE', 'VEQ', 'Veszelak', '#000000', '#FFFFFF', 'selling', 47, 'Gyöneszeg Stadion', 19500],
+    ['Kálefalva SC', 'KVB', 'Kálefalva', '#6CACE4', '#001F5B', 'fallen', 46, 'Kálefalva Városi Stadion', 16500],
+    ['Veszafalva VSC', 'VET', 'Veszafalva', '#6CACE4', '#FFD100', 'selling', 46, 'Veszafalva Városi Stadion', 15000],
+    ['FC Hajdehegy', 'HAC26', 'Hajdehegy', '#E30613', '#000000', 'fan', 45, 'Hajdehegy Sportpálya', 17000],
+    ['Tiszaháza FC', 'TIS', 'Tiszaháza', '#0057B8', '#6A1B9A', 'fan', 44, 'Nagény Aréna', 15000],
+    ['Nagykert FC', 'NAC26', 'Nagykert', '#00843D', '#FFD100', 'historic', 43, 'Nagykert Sportpálya', 14000],
+    ['Felsőorsekert FC', 'FEL', 'Felsőorsekert', '#000000', '#0057B8', 'fan', 43, 'Rácekert Stadion', 16000],
+    ['FC Orsény', 'ORE', 'Orsény', '#000000', '#FFFFFF', 'historic', 41, 'Barény Aréna', 13000],
+    ['Gyönehegy SE', 'GYY', 'Gyönehegy', '#FFFFFF', '#000000', 'fallen', 41, 'Pászád Aréna', 16500],
+    ['Kálaháza Sport Egylet', 'KZA', 'Kálaháza', '#00843D', '#001F5B', 'selling', 41, 'Nagyháza Stadion', 15500],
+    ['Rácafalva Sport Egylet', 'RAQ', 'Rácafalva', '#6CACE4', '#0057B8', 'selling', 40, 'Fehérafalva Stadion', 17000],
+    ['Rácehegy SC', 'RAU', 'Rácehegy', '#6CACE4', '#E30613', 'selling', 39, 'Rácehegy Sportpálya', 13000],
+  ];
+  FM.D.CLUBS_IN2 = [
+    ['FC Aursaran', 'AUC', 'Aursaran', '#FFFFFF', '#FFD100', 'selling', 42, 'Aursaran Sports Complex', 13500],
+    ['FC Patpally', 'PAH31', 'Patpally', '#000000', '#6CACE4', 'fan', 42, 'Patpally Municipal Stadium', 14500],
+    ['Bandhar Wanderers', 'BAQ38', 'Bandhar', '#00843D', '#E30613', 'selling', 41, 'Naghalli Sports Park', 13500],
+    ['Hubgarh FC', 'HUB', 'Hubgarh', '#6CACE4', '#E30613', 'fan', 40, 'Satwala Sports Park', 15000],
+    ['Lucganj City', 'LUJ', 'Lucganj', '#001F5B', '#0057B8', 'fallen', 39, 'Lucganj Sports Complex', 14500],
+    ['Old Aurgaon FC', 'AUN', 'Old Aurgaon', '#E30613', '#6CACE4', 'historic', 38, 'Old Aurgaon Sports Complex', 12500],
+    ['Meerpet United', 'MEP', 'Meerpet', '#E30613', '#001F5B', 'selling', 37, 'Silpally Stadium', 13000],
+    [
+      'Port Silgarh United',
+      'POX',
+      'Port Silgarh',
+      '#FFD100',
+      '#001F5B',
+      'fallen',
+      35,
+      'Port Silgarh Municipal Stadium',
+      13500,
+    ],
+    ['Nagkheda United', 'NAD27', 'Nagkheda', '#FFFFFF', '#0057B8', 'selling', 35, 'Nagkheda Municipal Stadium', 14000],
+    ['Sporting Indowala', 'INC', 'Indowala', '#0057B8', '#00843D', 'historic', 34, 'Patnbad Arena', 14000],
+    ['FC Kolgaon', 'KOE', 'Kolgaon', '#FFFFFF', '#FFD100', 'fallen', 33, 'Ajmsaran Stadium', 10000],
+    ['Sporting Banabad', 'BAR39', 'Banabad', '#000000', '#E30613', 'historic', 32, 'Banabad Sports Complex', 11500],
+  ];
+  FM.D.CLUBS_IR2 = [
+    ['Shahrdari Shahr Rasdar', 'SHS', 'Rasdar', '#E30613', '#6A1B9A', 'fan', 45, 'Azadi Rasdar Stadium', 16500],
+    ['Havadar Orumfahan', 'HAD27', 'Orumfahan', '#E30613', '#001F5B', 'historic', 44, 'Azadi Orumfahan Stadium', 17500],
+    ['Sanat Tabtan', 'SAF29', 'Tabtan', '#6A1B9A', '#00843D', 'fan', 44, 'Azadi Tabtan Stadium', 16500],
+    ['Havadar Ahvfahan', 'HAE28', 'Ahvfahan', '#001F5B', '#FFD100', 'youth', 43, 'Azadi Ahvfahan Stadium', 17500],
+    ['Esteghlal Biriz', 'ESL', 'Biriz', '#FFD100', '#001F5B', 'fallen', 42, 'Biriz Takhti Stadium', 14500],
+    ['Sanat Rasvin', 'SAG30', 'Rasvin', '#FFFFFF', '#6CACE4', 'youth', 42, 'Azadi Rasvin Stadium', 15500],
+    ['Mes Sirjan', 'MSI', 'Sirjan', '#00843D', '#0057B8', 'fan', 41, 'Azadi Sirjan Stadium', 16500],
+    ['Pas Qazfahan', 'PAJ32', 'Qazfahan', '#6A1B9A', '#00843D', 'fan', 40, 'Mashraz Sports Complex', 12500],
+    ['Shahin Mashabad', 'SHT', 'Mashabad', '#001F5B', '#000000', 'fallen', 39, 'Azadi Mashabad Stadium', 13500],
+    ['Naft Bandar Birshahr', 'NAE28', 'Birshahr', '#001F5B', '#6CACE4', 'fan', 39, 'Birshahr Takhti Stadium', 14000],
+    ['Esteghlal Mashshahr', 'ESM', 'Mashshahr', '#001F5B', '#6CACE4', 'youth', 39, 'Orumraz Sports Complex', 16500],
+    ['Sanat Yazfahan', 'SAH31', 'Yazfahan', '#E30613', '#000000', 'youth', 37, 'Qazaz Stadium', 13000],
+    ['Sanat Qazaz', 'SAJ32', 'Qazaz', '#00843D', '#001F5B', 'youth', 37, 'Azadi Qazaz Stadium', 12500],
+    [
+      'Mohammedan Dasht Reydan',
+      'MOA24',
+      'Dasht Reydan',
+      '#00843D',
+      '#FFFFFF',
+      'fan',
+      37,
+      'Azadi Dasht Reydan Stadium',
+      12500,
+    ],
+    ['Sanat Shahr Kermud', 'SAK33', 'Kermud', '#FFD100', '#000000', 'fan', 36, 'Azadi Kermud Stadium', 11500],
+    ['Sepahan Bushriz', 'SEX', 'Bushriz', '#00843D', '#FFFFFF', 'fan', 35, 'Mashshahr Stadium', 11000],
+    ['Paykan Orumijan', 'PAO', 'Orumijan', '#000000', '#E30613', 'fan', 35, 'Azadi Orumijan Stadium', 13500],
+    ['Pas Bushjan', 'PAK33', 'Bushjan', '#6CACE4', '#6A1B9A', 'selling', 34, 'Azadi Bushjan Stadium', 9500],
+  ];
+  FM.D.CLUBS_IE2 = [
+    ['Trambridge Rovers', 'TRH', 'Trambridge', '#6CACE4', '#00843D', 'historic', 46, 'Trambridge Lawn', 15000],
+    ['Balglass Wanderers', 'BAS40', 'Balglass', '#001F5B', '#0057B8', 'historic', 45, 'Ballydrum Road', 17500],
+    ['Newmullen Rovers', 'NEQ', 'Newmullen', '#6CACE4', '#00843D', 'historic', 44, 'Orangar Road', 16000],
+    ['Lower Tubmore City', 'TUC', 'Lower Tubmore', '#6A1B9A', '#E30613', 'fallen', 42, 'Lower Tubmore Park', 15500],
+    [
+      'Port Glendara City',
+      'POY',
+      'Port Glendara',
+      '#0057B8',
+      '#000000',
+      'selling',
+      42,
+      'Port Glendara Showgrounds',
+      15000,
+    ],
+    [
+      'Wickmullen Shamrocks',
+      'WID',
+      'Wickmullen',
+      '#6CACE4',
+      '#000000',
+      'historic',
+      40,
+      'Wickmullen Showgrounds',
+      16500,
+    ],
+    ['Malree Shamrocks', 'MAR39', 'Malree', '#0057B8', '#E30613', 'youth', 38, 'Malree Oval', 13500],
+    ['Upper Casard Shamrocks', 'CAG30', 'Casard', '#FFD100', '#FFFFFF', 'fan', 37, 'Casard Park', 12000],
+    ['Enndrum Town', 'ENN', 'Enndrum', '#000000', '#0057B8', 'youth', 36, 'Clonree Road', 12500],
+    ['Port Mullmullen City', 'PRH', 'Port Mullmullen', '#E30613', '#FFFFFF', 'historic', 35, 'Dromkenny Street', 10000],
+  ];
+  FM.D.CLUBS_IL2 = [
+    ['Hapoel Ashya', 'HAF29', 'Ashya', '#0057B8', '#00843D', 'youth', 42, 'Ganayim Stadium', 15000],
+    ['Hapoel Kiryat Kiron', 'HAG30', 'Kiryat Kiron', '#6A1B9A', '#0057B8', 'fan', 40, 'Petahat Arena', 16500],
+    ['Maccabi Dimon', 'MAS40', 'Dimon', '#FFFFFF', '#000000', 'selling', 40, 'Sderia Arena', 16000],
+    [
+      'FC Kiryat Kirot',
+      'KIM',
+      'Kiryat Kirot',
+      '#E30613',
+      '#00843D',
+      'fallen',
+      39,
+      'Kiryat Kirot Municipal Stadium',
+      13500,
+    ],
+    ['Hapoel Kirel', 'HEF', 'Kirel', '#6CACE4', '#001F5B', 'selling', 39, 'Yavon Arena', 16500],
+    ['Maccabi Netanat', 'MAT41', 'Netanat', '#0057B8', '#000000', 'selling', 37, 'Netanel Arena', 13000],
+    ['Ironi Tirel', 'IRO', 'Tirel', '#0057B8', '#FFFFFF', 'selling', 36, 'Tirel Municipal Stadium', 14500],
+    ['Hapoel Modot United', 'HAH31', 'Modot', '#FFD100', '#6CACE4', 'fan', 36, 'Modot Municipal Stadium', 13500],
+    ['Hapoel Orim', 'HAJ32', 'Orim', '#FFFFFF', '#0057B8', 'fan', 36, 'Rishot Arena', 11500],
+    ['Bnei Ashel', 'BNA', 'Ashel', '#001F5B', '#000000', 'fan', 35, 'Rehovit Stadium', 13000],
+    ['Bnei Kfarar', 'BNI', 'Kfarar', '#6A1B9A', '#FFD100', 'historic', 33, 'Hadon Arena', 10500],
+    ['Maccabi Ashot', 'MAU42', 'Ashot', '#00843D', '#E30613', 'fan', 33, 'Kiria Stadium', 12500],
+    ['Maccabi Tirya', 'MBD', 'Tirya', '#00843D', '#FFD100', 'fallen', 32, 'Tirya Municipal Stadium', 10000],
+    ['Hapoel Telat United', 'HAK33', 'Telat', '#001F5B', '#6CACE4', 'fan', 31, 'Zichayim Arena', 11000],
+    ['Beitar Telot', 'BED27', 'Telot', '#001F5B', '#0057B8', 'fan', 30, 'Sports Park Telot', 11500],
+    ['Bnei Kfarel', 'BNK', 'Kfarel', '#E30613', '#00843D', 'fan', 30, 'Batya Arena', 9000],
+  ];
+  FM.D.CLUBS_KE2 = [
+    ['Port Kisuni United', 'POA24', 'Kisuni', '#E30613', '#0057B8', 'fan', 35, 'Kisuni Sports Ground', 13500],
+    ['Katali Bandari', 'KAG30', 'Katali', '#E30613', '#6CACE4', 'fan', 34, 'Katali Showground', 10500],
+    ['Nanongo Posta', 'NAF29', 'Nanongo', '#0057B8', '#FFFFFF', 'historic', 34, 'Nanongo Sports Ground', 9500],
+    ['Burongo Posta', 'BUT', 'Burongo', '#FFD100', '#6A1B9A', 'fan', 34, 'Wanali Grounds', 10000],
+    ['Lake Kibaka Prisons', 'LAZ', 'Kibaka', '#00843D', '#0057B8', 'selling', 32, 'Kibaka Showground', 8500],
+    ['Lake Kisese Stars', 'LAA24', 'Lake Kisese', '#6A1B9A', '#FFD100', 'fan', 32, 'Lake Kisese Sports Ground', 11500],
+    ['Mount Masindi Prisons', 'MOB25', 'Masindi', '#00843D', '#001F5B', 'historic', 32, 'Nakali Stadium', 11500],
+    ['AFC Mount Kibali', 'MOC26', 'Kibali', '#E30613', '#0057B8', 'historic', 31, 'Kibali Grounds', 11000],
+    ['Port Mwese United', 'POB25', 'Port Mwese', '#E30613', '#000000', 'historic', 30, 'Port Mwese Showground', 11500],
+    ['Mwumba Heroes', 'MWU', 'Mwumba', '#00843D', '#001F5B', 'fan', 30, 'Katini Grounds', 9500],
+    ['Lower Makali Prisons', 'MAV43', 'Makali', '#000000', '#001F5B', 'fan', 29, 'Makali Municipal Stadium', 8500],
+    ['Upper Masese Homeboyz', 'MAW44', 'Masese', '#FFFFFF', '#FFD100', 'historic', 29, 'Masese Sports Ground', 11500],
+    ['AFC Loduni', 'LOG', 'Loduni', '#6CACE4', '#FFD100', 'fan', 29, 'Loduni Showground', 9000],
+    ['Rukuni Posta', 'RUK', 'Rukuni', '#E30613', '#000000', 'fan', 28, 'Rukuni Showground', 8500],
+    ['Mbalongo United', 'MBF', 'Mbalongo', '#FFD100', '#00843D', 'fan', 27, 'Mbalongo Sports Ground', 10000],
+    ['Kiboro Allstars', 'KIP', 'Kiboro', '#6CACE4', '#FFD100', 'historic', 26, 'Malere Grounds', 9000],
+    ['Mount Korumba Stars', 'MNC', 'Mount Korumba', '#001F5B', '#E30613', 'youth', 26, 'Mutini Stadium', 7500],
+    ['Samali Allstars', 'SAL34', 'Samali', '#E30613', '#001F5B', 'fan', 25, 'Samali Municipal Stadium', 8500],
+    ['Makere FC', 'MRA', 'Makere', '#FFD100', '#00843D', 'fan', 24, 'Samoro Grounds', 5500],
+    ['Lake Gatia Posta', 'LKE', 'Lake Gatia', '#E30613', '#FFFFFF', 'fan', 24, 'Oyumba Grounds', 6500],
+  ];
+  FM.D.CLUBS_MY2 = [
+    ['Pelita Mas Harimau', 'PEY', 'Pelita Mas', '#6CACE4', '#001F5B', 'youth', 46, 'Stadium Pelita Mas', 16000],
+    ['Permata Sari United', 'PEZ', 'Permata Sari', '#E30613', '#6CACE4', 'historic', 45, 'Stadium Indah Mas', 16000],
+    ['FC Permata Jaya', 'PTA', 'Permata Jaya', '#FFD100', '#001F5B', 'selling', 43, 'Stadium Permata Jaya', 17000],
+    ['PDRM Rimba Mas', 'PDR', 'Rimba Mas', '#6A1B9A', '#000000', 'fan', 43, 'Stadium Bandaraya Rimba Mas', 17000],
+    ['FC Bayu Mas', 'BAT41', 'Bayu Mas', '#00843D', '#0057B8', 'historic', 42, 'Stadium Bayu Mas', 14000],
+    ['FC Indah Jaya', 'INH', 'Indah Jaya', '#FFFFFF', '#E30613', 'historic', 41, 'Stadium Mutiara Baru', 15000],
+    ['Selasih Utama City', 'SEZ', 'Selasih Utama', '#6A1B9A', '#001F5B', 'fan', 40, 'Cempaka Utama Arena', 14500],
+    [
+      'Permata Utama FC',
+      'PEA24',
+      'Permata Utama',
+      '#6A1B9A',
+      '#000000',
+      'selling',
+      39,
+      'Stadium Bandaraya Permata Utama',
+      13000,
+    ],
+    ['Sri Seri Mas', 'SRA', 'Seri Mas', '#FFD100', '#000000', 'historic', 38, 'Stadium Seri Mas', 15000],
+    [
+      'Damai Sari United',
+      'DAP',
+      'Damai Sari',
+      '#001F5B',
+      '#0057B8',
+      'historic',
+      37,
+      'Stadium Bandaraya Damai Sari',
+      13000,
+    ],
+    ['Pelita Jaya FA', 'PEB25', 'Pelita Jaya', '#FFFFFF', '#0057B8', 'fan', 37, 'Stadium Majlis Pelita Jaya', 14000],
+    ['Melati Sari Utara', 'MEQ', 'Melati Sari', '#6A1B9A', '#0057B8', 'historic', 35, 'Stadium Melati Baru', 14000],
+    ['Seri Utama Selatan', 'SEA24', 'Seri Utama', '#6A1B9A', '#FFD100', 'fan', 34, 'Stadium Cempaka Indah', 13000],
+    ['Seri Baru FC', 'SBF', 'Seri Baru', '#E30613', '#6A1B9A', 'fan', 34, 'Stadium Bandaraya Seri Baru', 10000],
+  ];
+  FM.D.CLUBS_MX2 = [
+    ['Universidad de Tecetzin', 'UNB', 'Tecetzin', '#000000', '#6CACE4', 'youth', 59, 'Estadio Mixelán', 23500],
+    [
+      'Universidad de Cuauchitlán',
+      'UND',
+      'Cuauchitlán',
+      '#00843D',
+      '#FFD100',
+      'selling',
+      59,
+      'Estadio La Jilopan',
+      23500,
+    ],
+    ['Club Papanatlán', 'PAL34', 'Papanatlán', '#0057B8', '#001F5B', 'fan', 58, 'Estadio Ahutlán', 23500],
+    ['Club Deportivo Coatepec', 'COQ', 'Coatepec', '#FFFFFF', '#6CACE4', 'fan', 58, 'Estadio Chaletzin', 23000],
+    ['Yauco Atlético', 'YAU', 'Yauco', '#001F5B', '#FFD100', 'fan', 57, 'Estadio Olímpico de Yauco', 22500],
+    [
+      'Club Deportivo Zacatl',
+      'ZAJ',
+      'Zacatl',
+      '#00843D',
+      '#001F5B',
+      'selling',
+      57,
+      'Estadio Olímpico de Zacatl',
+      22500,
+    ],
+    ['Deportivo Coatichitlán', 'CAH31', 'Coatichitlán', '#FFD100', '#001F5B', 'historic', 55, 'Estadio Cuerepa', 22000],
+    ['Toros de Ocotahua', 'TOS', 'Ocotahua', '#6CACE4', '#001F5B', 'fan', 55, 'Estadio Olímpico de Ocotahua', 22500],
+    [
+      'Halcones de Cuautzin',
+      'HAL34',
+      'Cuautzin',
+      '#00843D',
+      '#6A1B9A',
+      'fallen',
+      54,
+      'Estadio Municipal de Cuautzin',
+      20000,
+    ],
+    ['Ocotopa FC', 'OCC', 'Ocotopa', '#FFD100', '#6CACE4', 'fan', 54, 'Estadio Municipal de Ocotopa', 19500],
+    ['Azucareros de Xaletepec', 'AZU', 'Xaletepec', '#FFFFFF', '#000000', 'fan', 53, 'Estadio Huitepec', 22500],
+    ['Lobos Tampec', 'LOH', 'Tampec', '#6A1B9A', '#FFFFFF', 'selling', 51, 'Estadio Cuaupa', 19500],
+    ['Club Deportivo Uruchitlán', 'URC', 'Uruchitlán', '#000000', '#0057B8', 'youth', 51, 'Estadio Xalopa', 21500],
+    ['Urupan FC', 'URN', 'Urupan', '#001F5B', '#FFD100', 'historic', 51, 'Estadio Municipal de Urupan', 18500],
+    ['Venados de Ocotepa', 'VEU', 'Ocotepa', '#00843D', '#6A1B9A', 'fallen', 50, 'Estadio Ahutepec', 18000],
+    ['Club Yaucatl', 'YAL', 'Yaucatl', '#FFFFFF', '#00843D', 'selling', 49, 'Estadio Tampec', 18500],
+  ];
+  FM.D.CLUBS_MA2 = [
+    ['US Mekali', 'MEU', 'Mekali', '#000000', '#6A1B9A', 'fan', 51, 'Stade Municipal de Mekali', 18500],
+    ['Olympique Oular', 'OLH', 'Oular', '#FFD100', '#E30613', 'fan', 50, 'Stade Mekia', 18000],
+    ['Union Sportive Ain Mekek', 'SPX', 'Mekek', '#000000', '#6A1B9A', 'fallen', 49, 'Grand Stade de Mekek', 16000],
+    ['Chabab Ben Tifad', 'CHD27', 'Tifad', '#0057B8', '#FFFFFF', 'historic', 49, 'Stade Benane', 17500],
+    ['US Ain Midat', 'AIB', 'Midat', '#00843D', '#FFFFFF', 'fallen', 48, 'Grand Stade de Midat', 19000],
+    ['SC Oued Tetine', 'OUE', 'Oued Tetine', '#00843D', '#6A1B9A', 'youth', 48, 'Grand Stade de Oued Tetine', 16000],
+    ['Chabab Ain Tetat', 'CHE28', 'Ain Tetat', '#FFFFFF', '#6A1B9A', 'fan', 47, 'Grand Stade de Ain Tetat', 19000],
+    ['US Oujek', 'OUJ', 'Oujek', '#FFFFFF', '#6A1B9A', 'youth', 47, 'Stade Mekoun', 16000],
+    [
+      'US Sidi Safane',
+      'SIJ',
+      'Sidi Safane',
+      '#FFD100',
+      '#000000',
+      'selling',
+      45,
+      'Stade Municipal de Sidi Safane',
+      17500,
+    ],
+    ['Union Khaat', 'KHD', 'Khaat', '#6CACE4', '#00843D', 'fallen', 44, 'Stade Tifia', 15000],
+    ['SC Beria', 'BEE28', 'Beria', '#6CACE4', '#000000', 'selling', 44, 'Complexe Sportif Beria', 18500],
+    ['Union Sportive Ifrane', 'SPY', 'Ifrane', '#FFD100', '#FFFFFF', 'fallen', 44, 'Grand Stade de Ifrane', 17500],
+    ['Olympique Oujali el Jadida', 'OLJ', 'Oujali el Jadida', '#E30613', '#FFFFFF', 'youth', 43, 'Stade Tifoun', 14500],
+    ['Olympique Oujat', 'OOU', 'Oujat', '#0057B8', '#6CACE4', 'fan', 42, 'Stade Municipal de Oujat', 17000],
+    ['Chabab Sidi Khaouan', 'CHF29', 'Khaouan', '#000000', '#001F5B', 'fallen', 40, 'Stade Oulali', 16500],
+    ['Union Sportive Ifrira', 'SIQ', 'Ifrira', '#00843D', '#6A1B9A', 'selling', 39, 'Grand Stade de Ifrira', 11500],
+  ];
+  FM.D.CLUBS_NG2 = [
+    ['Ogbadan Lions', 'OGB', 'Ogbadan', '#001F5B', '#6A1B9A', 'fan', 50, 'Onderri Arena', 17000],
+    ['Osha Pillars FC', 'OSH', 'Osha', '#00843D', '#E30613', 'historic', 50, 'Osha Independence Stadium', 20500],
+    ['Shooting Maozo', 'SHV', 'Maozo', '#E30613', '#FFFFFF', 'fan', 49, 'Maozo Independence Stadium', 18500],
+    ['Umuna United', 'UMB', 'Umuna', '#FFD100', '#000000', 'fallen', 49, 'Kanerri Stadium', 20500],
+    ['Owa Warriors', 'OWA', 'Owa', '#FFFFFF', '#6CACE4', 'historic', 47, 'Ondede Stadium', 17000],
+    ['Awkure Rovers', 'AWC', 'Awkure', '#E30613', '#0057B8', 'fallen', 46, 'Awkure Township Stadium', 18500],
+    ['Old Oworin Pillars', 'OWO', 'Oworin', '#6A1B9A', '#001F5B', 'youth', 46, 'Abgun Arena', 15500],
+    ['Iluko Giants', 'ILU', 'Iluko', '#6CACE4', '#0057B8', 'fan', 46, 'Maorin Stadium', 15500],
+    ['Shooting New Nserri', 'SNG', 'Nserri', '#FFFFFF', '#6CACE4', 'fan', 46, 'Nserri Township Stadium', 14500],
+    ['Badwa United', 'BAU42', 'Badwa', '#E30613', '#FFFFFF', 'fan', 45, 'Badara Stadium', 15500],
+    ['Kadibo Stars', 'KAH31', 'Kadibo', '#FFD100', '#000000', 'fan', 45, 'Kadibo Sports Complex', 18500],
+    ['Owano Pillars FC', 'ONO', 'Owano', '#E30613', '#00843D', 'fan', 44, 'Badibo Arena', 16000],
+    ['Owibo Wolves', 'OWI', 'Owibo', '#6A1B9A', '#E30613', 'fan', 43, 'Owibo Township Stadium', 17000],
+    ['Union Mairi', 'MRI', 'Mairi', '#FFD100', '#0057B8', 'historic', 42, 'Awkibo Arena', 14000],
+    ['Sagara Giants', 'SAM35', 'Sagara', '#6A1B9A', '#FFD100', 'historic', 42, 'Ikure Stadium', 13000],
+    [
+      'Lower Akegun Heartland',
+      'AKF',
+      'Akegun',
+      '#FFD100',
+      '#00843D',
+      'historic',
+      42,
+      'Akegun Independence Stadium',
+      15000,
+    ],
+    ['Old Saguko Eagles', 'SAN36', 'Saguko', '#FFD100', '#FFFFFF', 'fan', 40, 'Josozo Stadium', 15000],
+    ['Nsano United', 'NSA', 'Nsano', '#E30613', '#6A1B9A', 'fan', 40, 'Nsano Independence Stadium', 15000],
+    ['New Ilozo Eagles', 'ILO', 'Ilozo', '#6A1B9A', '#001F5B', 'fan', 39, 'Ilozo Sports Complex', 12500],
+    ['Union Edede', 'EDA', 'Edede', '#FFD100', '#FFFFFF', 'selling', 38, 'Edede Independence Stadium', 12500],
+  ];
+  FM.D.CLUBS_NI2 = [
+    ['Harthorpe United', 'HAM35', 'Harthorpe', '#FFD100', '#001F5B', 'fan', 36, 'Malby Park', 13000],
+    ['Old Fenwich Ironworks', 'FEA', 'Fenwich', '#0057B8', '#FFD100', 'fallen', 35, 'Fenwich Ground', 14500],
+    ['Watborough Villa', 'WAK', 'Watborough', '#000000', '#0057B8', 'youth', 35, 'Branholm Green', 14000],
+    ['Flitsey Athletic', 'FLA', 'Flitsey', '#E30613', '#000000', 'youth', 32, 'The Asholm Stadium', 8500],
+    ['Great Melchester Foundry', 'GRQ', 'Melchester', '#0057B8', '#FFD100', 'fan', 32, 'The Norford Stadium', 12000],
+    ['Merwold Foundry', 'MEV', 'Merwold', '#00843D', '#FFFFFF', 'youth', 31, 'Oakley Green', 13000],
+    ["Reaby St. Mary's", 'REK', 'Reaby', '#6A1B9A', '#00843D', 'fan', 29, 'Yeofield Field', 8500],
+    ['Lower Kesley Hotspur', 'KES', 'Kesley', '#0057B8', '#FFD100', 'fan', 29, 'Bromchester Lane', 7500],
+    ['Oxham Works', 'OXH', 'Oxham', '#6A1B9A', '#6CACE4', 'fan', 28, 'Oxham Park', 9500],
+    ['Upper Oakthorpe Town', 'OAK', 'Oakthorpe', '#E30613', '#00843D', 'fan', 27, 'Chalhaven Green', 9500],
+    ['Whitford & Hallam', 'WHA', 'Whitford', '#FFFFFF', '#0057B8', 'fan', 26, 'Torbrook Green', 10000],
+    ['Epmouth Albion', 'EPM', 'Epmouth', '#0057B8', '#000000', 'historic', 25, 'Densea Lane', 5500],
+  ];
+  FM.D.CLUBS_PY2 = [
+    ['Club Atlético Villa Molez', 'MOD27', 'Villa Molez', '#FFFFFF', '#001F5B', 'fallen', 42, 'Estadio Pueseda', 16500],
+    ['Franini FC', 'FRI', 'Franini', '#FFD100', '#00843D', 'selling', 42, 'Estadio Lezero', 13500],
+    ['Feria FC', 'FEB', 'Feria', '#E30613', '#FFFFFF', 'fallen', 42, 'Estadio Monumental Belui', 13000],
+    ['Nacional Alverano', 'NAG30', 'Alverano', '#FFD100', '#0057B8', 'fallen', 41, 'Estadio Urqeda', 14500],
+    ['Atlético Pelleda', 'PDA', 'Pelleda', '#00843D', '#0057B8', 'fan', 41, 'Estadio Mirez', 15500],
+    ['Club Sportivo Lavini', 'LAB25', 'Lavini', '#6A1B9A', '#FFD100', 'selling', 39, 'Cancha de Lavini', 12000],
+    ['Nacional Torini', 'NTO', 'Torini', '#0057B8', '#000000', 'fan', 39, 'Cancha de Torini', 14500],
+    ['Club de Regatas Ferilla', 'REL', 'Ferilla', '#6CACE4', '#000000', 'fan', 38, 'Cancha de Ferilla', 13000],
+    ['Atlético Herón', 'HEG', 'Herón', '#6CACE4', '#E30613', 'fan', 37, 'Estadio Puesano', 15000],
+    ['Castui FC', 'CUI', 'Castui', '#0057B8', '#001F5B', 'historic', 36, 'Cancha de Castui', 11000],
+    ['Club Sportivo Arrona', 'ANE', 'Arrona', '#6A1B9A', '#6CACE4', 'fan', 36, 'Estadio Sarilla', 12500],
+    ['Atlético Orto', 'ORT', 'Orto', '#FFD100', '#000000', 'fan', 35, 'Cancha de Orto', 14000],
+    [
+      'Club Atlético Unión Quirar',
+      'QAA',
+      'Quirar',
+      '#FFD100',
+      '#6CACE4',
+      'historic',
+      35,
+      'Estadio Monumental Quiria',
+      14500,
+    ],
+    [
+      'Racing de Ferón del Sur',
+      'FOD',
+      'Ferón del Sur',
+      '#E30613',
+      '#001F5B',
+      'fan',
+      34,
+      'Estadio Municipal de Ferón del Sur',
+      12500,
+    ],
+    ['Gimnasia de Hereda', 'HEJ', 'Hereda', '#FFD100', '#6CACE4', 'selling', 33, 'Estadio Monumental Heras', 11000],
+    ['Club de Regatas Ortilla', 'RAV', 'Ortilla', '#6A1B9A', '#6CACE4', 'fallen', 33, 'Estadio Alverez', 12000],
+  ];
+  FM.D.CLUBS_PE2 = [
+    ['Oñatador Balompié', 'ONB', 'Oñatador', '#00843D', '#FFFFFF', 'historic', 44, 'Campo de Oñatador', 17500],
+    ['CD Alto Bailete', 'ALH55', 'Bailete', '#6CACE4', '#E30613', 'youth', 43, 'Nuevo Estadio Bailete', 15500],
+    ['Real Club Villa Montera', 'MOE28', 'Montera', '#6A1B9A', '#000000', 'fan', 42, 'Estadio La Sora', 15000],
+    ['Villón CF', 'VIA24', 'Villón', '#000000', '#001F5B', 'youth', 41, 'Nuevo Estadio Villón', 15500],
+    ['Unión Cerro Gandanes', 'CEE', 'Cerro Gandanes', '#6CACE4', '#6A1B9A', 'youth', 40, 'Estadio Fragón', 13000],
+    ['Santa Moralilla Balompié', 'MOF29', 'Moralilla', '#001F5B', '#6A1B9A', 'fan', 39, 'Estadio La Lucera', 14500],
+    ['Real Valedo', 'VAO', 'Valedo', '#FFFFFF', '#6A1B9A', 'fan', 38, 'Estadio La Segovino', 15000],
+    ['Real Fresnón', 'FRQ', 'Fresnón', '#0057B8', '#6A1B9A', 'fallen', 38, 'Estadio La Osunejo', 11500],
+    ['Juventud Liorana', 'LIY', 'Liorana', '#001F5B', '#FFFFFF', 'selling', 37, 'Estadio Bailino', 11500],
+    ['Atlético Lermanes', 'LES', 'Lermanes', '#000000', '#FFFFFF', 'fallen', 36, 'Campo de Lermanes', 12500],
+    ['Atlético Nueva Fresna', 'NUD', 'Fresna', '#001F5B', '#FFD100', 'fan', 36, 'Estadio Municipal de Fresna', 12000],
+    ['Atlético Albar', 'ALJ56', 'Albar', '#0057B8', '#6CACE4', 'fan', 36, 'Estadio La Calatedo', 14500],
+    ['Juventud Bailares', 'BAV43', 'Bailares', '#FFD100', '#E30613', 'selling', 34, 'Estadio Cabrera', 14000],
+    ['Deportivo Cuenana', 'CUF', 'Cuenana', '#00843D', '#6A1B9A', 'fan', 33, 'Estadio La Medares', 11000],
+    ['Sporting Fragana', 'FNA', 'Fragana', '#00843D', '#E30613', 'youth', 33, 'Ciudad Deportiva Fragana', 14000],
+    ['Olmera CF', 'OLL', 'Olmera', '#E30613', '#6CACE4', 'youth', 32, 'Estadio La Benavete', 9500],
+  ];
+  FM.D.CLUBS_QA2 = [
+    ['Al Saqr', 'ALK57', 'Salra', '#000000', '#0057B8', 'fan', 45, 'Salra Sports City', 17500],
+    ['Al Bahr', 'ABG', 'Irbya', '#6A1B9A', '#001F5B', 'fan', 43, 'Prince Ramah Stadium', 16000],
+    ['Al Sahab', 'ASJ', 'Muhayn', '#6A1B9A', '#000000', 'fan', 42, 'Muhayn Stadium', 13500],
+    ['Wadi Musra Club', 'WAM', 'Wadi Musra', '#000000', '#FFD100', 'selling', 40, 'Prince Nakra Stadium', 14000],
+    ['Al Wahat', 'AWD', 'Khasayn', '#00843D', '#001F5B', 'fan', 38, 'Dhar Arena', 13500],
+    ['Rifiq SC', 'RIH', 'Rifiq', '#6CACE4', '#0057B8', 'historic', 37, 'Prince Nizar Stadium', 15500],
+    ['Musayn SC', 'MUS', 'Musayn', '#6CACE4', '#000000', 'fan', 35, 'Jerar Stadium', 11000],
+    ['Al Falah', 'ALL58', 'Shinayn', '#000000', '#001F5B', 'historic', 34, 'Prince Falar Stadium', 13500],
+  ];
+  FM.D.CLUBS_RO2 = [
+    ['Petrolul Fagești', 'PUD', 'Fagești', '#6A1B9A', '#00843D', 'fan', 46, 'Arena Zalău', 19500],
+    ['Dinamo Driu', 'DIM', 'Driu', '#000000', '#00843D', 'fallen', 44, 'Stadionul Orășenesc Driu', 18000],
+    ['AFC Mare Drița', 'MAX45', 'Drița', '#FFFFFF', '#000000', 'fan', 44, 'Complexul Sportiv Drița', 17500],
+    ['Gloria Camiu', 'GLO', 'Camiu', '#000000', '#6A1B9A', 'selling', 44, 'Arena Oreni', 14000],
+    ['Progresul Mare Timița', 'PRL', 'Timița', '#6A1B9A', '#00843D', 'youth', 43, 'Stadionul Orășenesc Timița', 13500],
+    ['Victoria Mare Hunești', 'MAY46', 'Mare Hunești', '#00843D', '#6CACE4', 'selling', 42, 'Stadionul Tulești', 17500],
+    ['FC Nou Breni', 'NOQ', 'Breni', '#E30613', '#FFFFFF', 'fallen', 42, 'Complexul Sportiv Breni', 13500],
+    ['Electroputere Miova', 'ELE', 'Miova', '#FFFFFF', '#E30613', 'fallen', 41, 'Complexul Sportiv Miova', 12500],
+    ['Victoria Nou Coneni', 'NOS', 'Coneni', '#FFD100', '#FFFFFF', 'historic', 41, 'Stadionul Timiu', 13000],
+    ['Gloria Argești', 'GLB', 'Argești', '#6A1B9A', '#FFD100', 'historic', 41, 'Complexul Sportiv Argești', 14500],
+    ['Bacești FC', 'BAW44', 'Bacești', '#FFD100', '#0057B8', 'fan', 40, 'Stadionul Zalești', 12500],
+    ['AFC Drana', 'DRB', 'Drana', '#001F5B', '#FFD100', 'fan', 39, 'Stadionul Orășenesc Drana', 14000],
+    ['Progresul Miești', 'PRM', 'Miești', '#FFFFFF', '#00843D', 'fan', 39, 'Stadionul Orești', 14000],
+    ['ACS Brești', 'ACS', 'Brești', '#001F5B', '#FFFFFF', 'selling', 39, 'Stadionul Vatău', 15000],
+    ['Rapid Satești', 'RAW', 'Satești', '#6CACE4', '#FFFFFF', 'selling', 38, 'Arena Crești', 12000],
+    ['ACS Romești', 'ACR', 'Romești', '#00843D', '#0057B8', 'historic', 37, 'Stadionul Orășenesc Romești', 15500],
+    ['Rapid Timău', 'RAX', 'Timău', '#000000', '#6A1B9A', 'youth', 37, 'Stadionul Tulova', 11500],
+    ['AFC Vatești', 'VAW', 'Vatești', '#000000', '#FFD100', 'selling', 36, 'Complexul Sportiv Vatești', 11500],
+    ['Olimpia Mieni', 'OLP', 'Mieni', '#001F5B', '#FFFFFF', 'youth', 36, 'Arena Brești', 10500],
+    ['AFC Zaleni', 'ZAK', 'Zaleni', '#E30613', '#6A1B9A', 'selling', 36, 'Complexul Sportiv Zaleni', 12500],
+    ['Viitorul Pitița', 'VIB25', 'Pitița', '#000000', '#001F5B', 'fallen', 35, 'Stadionul Orășenesc Pitița', 11000],
+    ['Dinamo Mare Criu', 'DIP', 'Criu', '#FFFFFF', '#6A1B9A', 'fan', 33, 'Stadionul Petești', 13000],
+  ];
+  FM.D.CLUBS_RU2 = [
+    ['FK Kalburg', 'KAJ32', 'Kalburg', '#0057B8', '#001F5B', 'fan', 47, 'Stadion imeni Orlovo', 20000],
+    ['FC Nizhne-Tomino', 'NID', 'Tomino', '#FFFFFF', '#E30613', 'fallen', 47, 'Tsentralny Stadion Tomino', 17000],
+    ['FC Staro-Orlsk', 'STX', 'Orlsk', '#00843D', '#FFD100', 'fan', 45, 'Stadion Orlsk', 14500],
+    ['FK Novotulovsk', 'NOT', 'Novotulovsk', '#FFFFFF', '#6A1B9A', 'historic', 45, 'Stadion Novotulovsk', 14500],
+    ['Krylia Murovsk', 'KRG', 'Murovsk', '#0057B8', '#6A1B9A', 'youth', 44, 'Tsentralny Stadion Murovsk', 14000],
+    [
+      'Avangard Murbor-na-Mere',
+      'AVB',
+      'Murbor-na-Mere',
+      '#FFD100',
+      '#0057B8',
+      'selling',
+      44,
+      'Stadion imeni Perka',
+      17500,
+    ],
+    ['Avangard Lugovsk', 'AVC', 'Lugovsk', '#0057B8', '#FFD100', 'historic', 43, 'Stadion Dinamo Lugovsk', 13500],
+    ['Khimik Kemensk', 'KIQ', 'Kemensk', '#FFFFFF', '#000000', 'historic', 42, 'Stadion imeni Tulovo', 17500],
+    ['Sibir Podka', 'SIR', 'Podka', '#001F5B', '#6A1B9A', 'fan', 42, 'Stadion Dinamo Podka', 15500],
+    ['Neftyanik Ryazensk', 'NET', 'Ryazensk', '#00843D', '#6A1B9A', 'selling', 41, 'Stadion Ryazensk', 14000],
+    ['Trud Nizhne-Sortovo', 'TRJ', 'Sortovo', '#0057B8', '#000000', 'youth', 40, 'Stadion Dinamo Sortovo', 14500],
+    ['Zenit Kinbor', 'ZEM', 'Kinbor', '#6CACE4', '#6A1B9A', 'fan', 40, 'Stadion Tomburg', 12500],
+    ['FK Sarino', 'SAP37', 'Sarino', '#6A1B9A', '#FFFFFF', 'fan', 39, 'Stadion Dinamo Sarino', 13500],
+    ['Spartak Ustgorsk', 'SPZ', 'Ustgorsk', '#E30613', '#6A1B9A', 'historic', 38, 'Stadion imeni Lipensk', 11500],
+    ['Neftyanik Sortka', 'NEV', 'Sortka', '#6A1B9A', '#0057B8', 'youth', 37, 'Stadion Sortka', 12500],
+    ['Avangard Lugovo', 'ART', 'Lugovo', '#001F5B', '#E30613', 'youth', 37, 'Lugorsk Arena', 13000],
+    ['Trud Lugsk', 'TRK', 'Lugsk', '#001F5B', '#FFFFFF', 'fan', 36, 'Stadion Dinamo Lugsk', 15000],
+    ['Novo-Tulensk FK', 'NVO', 'Tulensk', '#FFD100', '#6A1B9A', 'historic', 35, 'Stadion Dinamo Tulensk', 14000],
+  ];
+  FM.D.CLUBS_SC2 = [
+    ['Dalbridge Hearts Athletic', 'DAQ', 'Dalbridge', '#FFFFFF', '#E30613', 'historic', 51, 'Selkock Road', 21500],
+    ['Peebrie Academical', 'PEC26', 'Peebrie', '#001F5B', '#00843D', 'historic', 50, 'Peebrie Muir', 20000],
+    ['Dunshiels Wanderers', 'DUS', 'Dunshiels', '#6A1B9A', '#FFD100', 'historic', 48, 'Craigshiels Green', 17500],
+    ['Kinie Burgh', 'KIV', 'Kinie', '#6CACE4', '#E30613', 'fallen', 47, 'Cumbray Green', 16000],
+    ['Hawick Hearts Athletic', 'HAN36', 'Hawick', '#000000', '#6CACE4', 'fallen', 46, 'Moffland Park', 19000],
+    ['Moffbridge Burgh', 'MOG30', 'Moffbridge', '#00843D', '#FFD100', 'fan', 44, 'Moffbridge Muir', 17000],
+    ['Glenmore Rovers', 'GLE', 'Glenmore', '#0057B8', '#FFD100', 'youth', 44, 'Dunbridge Road', 16500],
+    ['Moffdee Victoria', 'MOH31', 'Moffdee', '#FFFFFF', '#6A1B9A', 'fan', 43, 'Balkirk Brae', 16500],
+    ['Inter Aberdee', 'INT', 'Aberdee', '#0057B8', '#FFFFFF', 'selling', 41, 'Aberdee Gardens', 16500],
+    ['Easter Tullishiels Town', 'EAS', 'Tullishiels', '#6A1B9A', '#0057B8', 'fan', 41, 'Rosloch Road', 16500],
+  ];
+  FM.D.CLUBS_RS2 = [
+    [
+      'Torpedo Gornji Hradice',
+      'TOP',
+      'Gornji Hradice',
+      '#FFD100',
+      '#0057B8',
+      'youth',
+      51,
+      'Stadion Mir Gornji Hradice',
+      21000,
+    ],
+    ['FC Ostin', 'OSF', 'Ostin', '#FFD100', '#00843D', 'fallen', 51, 'Kraany Arena', 20500],
+    ['Rudar Vysin', 'RUF', 'Vysin', '#6A1B9A', '#FFD100', 'historic', 49, 'Stadion Mirice', 18000],
+    ['Lokomotiva Dolnica', 'DOW', 'Dolnica', '#0057B8', '#00843D', 'historic', 49, 'Stadion Mir Dolnica', 18000],
+    ['Sloga Gorovo', 'SLJ', 'Gorovo', '#000000', '#FFD100', 'historic', 48, 'Stadion Polin', 17000],
+    [
+      'Partizan Gornji Kamovo',
+      'PAM35',
+      'Gornji Kamovo',
+      '#000000',
+      '#E30613',
+      'fallen',
+      47,
+      'Stadion Mir Gornji Kamovo',
+      17000,
+    ],
+    ['Spartak Velovac', 'SPA24', 'Velovac', '#001F5B', '#000000', 'fan', 47, 'Stadion Kamovac', 16000],
+    ['FC Kamice', 'KAK33', 'Kamice', '#6CACE4', '#00843D', 'youth', 45, 'Kamice Park', 17000],
+    ['FC Liptik', 'LIZ', 'Liptik', '#6A1B9A', '#00843D', 'historic', 45, 'Stadion Belik', 15500],
+    ['SK Borpol', 'BOW', 'Borpol', '#0057B8', '#E30613', 'fallen', 45, 'Gradski Stadion Borpol', 14500],
+    ['Rapid Polik', 'RIK', 'Polik', '#001F5B', '#FFD100', 'youth', 43, 'Polik Park', 16000],
+    ['Union Hradpol', 'HRL', 'Hradpol', '#FFFFFF', '#E30613', 'fan', 43, 'Gradski Stadion Hradpol', 16000],
+    ['Dinamo Mirek', 'DMI', 'Mirek', '#FFD100', '#0057B8', 'historic', 42, 'Mirovo Arena', 18000],
+    ['FK Novava', 'NOX', 'Novava', '#FFFFFF', '#0057B8', 'fallen', 42, 'Stadion Mir Novava', 15500],
+    ['MFK Zelec', 'ZEQ', 'Zelec', '#0057B8', '#FFD100', 'fan', 41, 'Stadion Mir Zelec', 14500],
+    [
+      'Spartak Stara Drain',
+      'SST',
+      'Stara Drain',
+      '#00843D',
+      '#6CACE4',
+      'fallen',
+      41,
+      'Gradski Stadion Stara Drain',
+      14500,
+    ],
+  ];
+  FM.D.CLUBS_SK2 = [
+    ['Slovan Valovce', 'VAX', 'Valovce', '#000000', '#E30613', 'historic', 42, 'Futbalový štadión Valovce', 14500],
+    ['FK Zvovce', 'ZVO', 'Zvovce', '#00843D', '#000000', 'fan', 40, 'Mestský štadión Zvovce', 14500],
+    ['Jednota Barovce', 'JEC', 'Barovce', '#6A1B9A', '#FFD100', 'fan', 40, 'Štadión pod Price', 12500],
+    ['Spartak Rimovce', 'SPB25', 'Rimovce', '#6CACE4', '#001F5B', 'fan', 38, 'Futbalový štadión Rimovce', 12500],
+    ['FK Piany', 'PIJ', 'Piany', '#6A1B9A', '#0057B8', 'youth', 38, 'Štadión pod Brezovce', 12500],
+    ['Slovan Brezany', 'BRY', 'Brezany', '#FFFFFF', '#0057B8', 'historic', 38, 'Štadión pod Popany', 13500],
+    ['TJ Stará Dubice', 'SRB', 'Dubice', '#0057B8', '#FFD100', 'fallen', 36, 'Krovce Aréna', 11500],
+    ['ŠK Lipany', 'SKK', 'Lipany', '#001F5B', '#6A1B9A', 'historic', 36, 'Futbalový štadión Lipany', 15000],
+    ['MFK Horné Zvice', 'HON', 'Zvice', '#FFD100', '#6A1B9A', 'fallen', 36, 'Futbalový štadión Zvice', 14500],
+    ['Dukla Gelovce', 'DUE', 'Gelovce', '#001F5B', '#FFD100', 'historic', 34, 'Dubovce Aréna', 10000],
+    ['Tatran Nové Spišovce', 'TAN36', 'Spišovce', '#FFFFFF', '#6A1B9A', 'fan', 34, 'Štadión Spišany', 12000],
+    ['MFK Stará Senice', 'STZ', 'Stará Senice', '#000000', '#6CACE4', 'fan', 33, 'Mestský štadión Stará Senice', 11000],
+    ['Krany FK', 'KRH', 'Krany', '#001F5B', '#00843D', 'fan', 32, 'Mestský štadión Krany', 9000],
+    ['Strojár Trenany', 'STA24', 'Trenany', '#6A1B9A', '#001F5B', 'fan', 32, 'Štadión pod Kežany', 9000],
+    ['Spartak Prany', 'SPC26', 'Prany', '#FFD100', '#FFFFFF', 'historic', 31, 'Mestský štadión Prany', 8500],
+    ['FK Sobice', 'SOP', 'Sobice', '#6A1B9A', '#001F5B', 'fallen', 30, 'Štadión Gelice', 11000],
+  ];
+  FM.D.CLUBS_SI2 = [
+    ['Rudar Bovava', 'RUG', 'Bovava', '#FFFFFF', '#001F5B', 'fan', 41, 'Športni park Bovava', 14500],
+    ['Dinamo Škofica', 'DSK', 'Škofica', '#6CACE4', '#000000', 'fan', 40, 'Mestni stadion Škofica', 15000],
+    ['Rudar Celba', 'RAZ', 'Celba', '#6CACE4', '#001F5B', 'fan', 38, 'Stadion Kosina', 11500],
+    ['Partizan Ribina', 'PRI', 'Ribina', '#000000', '#00843D', 'fan', 37, 'Trbava Arena', 12000],
+    ['NK Ajdica', 'AJD', 'Ajdica', '#000000', '#FFFFFF', 'fan', 37, 'Športni park Ajdica', 11000],
+    ['NK Nova Hrava', 'NVA', 'Hrava', '#000000', '#FFD100', 'fan', 37, 'Mestni stadion Hrava', 15000],
+    ['Sava Ptava', 'SAQ38', 'Ptava', '#001F5B', '#6A1B9A', 'selling', 35, 'Mestni stadion Ptava', 10000],
+    ['Rudar Nova Idrica', 'RUN', 'Idrica', '#0057B8', '#001F5B', 'fan', 35, 'Stadion pod Tolica', 11500],
+    ['Bor Litica', 'BLI', 'Litica', '#6A1B9A', '#001F5B', 'youth', 35, 'Športni park Litica', 13500],
+    ['Rudar Sezba', 'RUH', 'Sezba', '#00843D', '#E30613', 'youth', 34, 'Stadion Litina', 13000],
+    ['Svoboda Litava', 'SVA', 'Litava', '#6CACE4', '#E30613', 'historic', 33, 'Športni park Litava', 10000],
+    ['Dinamo Nova Slovba', 'DNO', 'Nova Slovba', '#6CACE4', '#001F5B', 'historic', 32, 'Stadion Žalica', 13500],
+    [
+      'Sava Nova Škofava',
+      'SAR39',
+      'Nova Škofava',
+      '#FFFFFF',
+      '#6A1B9A',
+      'youth',
+      31,
+      'Športni park Nova Škofava',
+      12500,
+    ],
+    ['Bor Žalica', 'BOX', 'Žalica', '#00843D', '#E30613', 'fallen', 31, 'Mestni stadion Žalica', 12500],
+    ['ND Zgornja Kosina', 'NDD', 'Kosina', '#6CACE4', '#E30613', 'fan', 29, 'Mestni stadion Kosina', 11000],
+    ['NK Ljutba', 'LJU', 'Ljutba', '#0057B8', '#6A1B9A', 'fallen', 29, 'Stadion Lenica', 10000],
+  ];
+  FM.D.CLUBS_ZA2 = [
+    ['Marabela Swallows', 'MSW', 'Marabela', '#0057B8', '#001F5B', 'historic', 46, 'Marabela Sports Complex', 18000],
+    ['Phalston Arrows', 'PHA', 'Phalston', '#FFFFFF', '#FFD100', 'fan', 44, 'Phalston Oval', 15000],
+    ['Nelsberg United', 'NEX', 'Nelsberg', '#6A1B9A', '#001F5B', 'fallen', 43, 'Ulunstad Stadium', 14500],
+    ['Upper Pongston & District', 'POC26', 'Pongston', '#FFD100', '#00843D', 'fan', 42, 'Pongston Oval', 15000],
+    ['Houtula & Hallam', 'HOU', 'Houtula', '#000000', '#0057B8', 'fan', 42, 'Houtula Oval', 15000],
+    ['Houtburg City', 'HOP', 'Houtburg', '#6A1B9A', '#E30613', 'fan', 41, 'Volrus Stadium', 14500],
+    ['Marabdal Trinity', 'MAZ47', 'Marabdal', '#00843D', '#FFFFFF', 'fan', 41, 'Sasolkop Stadium', 15000],
+    ['Ladeburg City', 'LAC26', 'Ladeburg', '#6CACE4', '#FFD100', 'fan', 41, 'Maraberg Park', 16500],
+    ['Volfontein Chiefs', 'VOA', 'Volfontein', '#E30613', '#FFD100', 'historic', 40, 'Kwavlei Park', 13500],
+    ['AFC Krubela', 'KRJ', 'Krubela', '#0057B8', '#000000', 'selling', 39, 'Kwadal Park', 12000],
+    ['Kwakop Stars', 'KWA', 'Kwakop', '#6A1B9A', '#00843D', 'fan', 37, 'Ulunrus Park', 11000],
+    ['Thabkop Swallows', 'THQ', 'Thabkop', '#0057B8', '#E30613', 'historic', 37, 'Thabkop Sports Complex', 15000],
+    ['Ulunrus Foundry', 'ULC', 'Ulunrus', '#000000', '#6CACE4', 'fan', 36, 'Ulunrus Sports Complex', 13000],
+    ['Upper Nelsula Vale', 'NEY', 'Nelsula', '#FFD100', '#001F5B', 'historic', 35, 'Phalula Park', 13000],
+    ['Ladekop Stars', 'LAD27', 'Ladekop', '#6A1B9A', '#6CACE4', 'fan', 35, 'Ulunkop Park', 14500],
+    ['Ulunfontein Stars', 'ULN', 'Ulunfontein', '#6CACE4', '#E30613', 'fan', 33, 'Ulunfontein Oval', 9000],
+  ];
+  FM.D.CLUBS_CH2 = [
+    ['SV Dillfurt', 'DIQ', 'Dillfurt', '#00843D', '#001F5B', 'fan', 53, 'Stadion am Eichberg', 18000],
+    ['VfL Westertal', 'WEB', 'Westertal', '#FFD100', '#6A1B9A', 'historic', 52, 'Westertal-Arena', 22000],
+    ['Teutonia Felstal', 'FAE', 'Felstal', '#00843D', '#FFD100', 'historic', 51, 'Rheinsee-Stadion', 18000],
+    ['SpVgg Bergburg 1936', 'BEF29', 'Bergburg', '#00843D', '#6A1B9A', 'historic', 49, 'Elshof-Stadion', 17500],
+    ['Groß Heidstadt 1899', 'GRS', 'Heidstadt', '#0057B8', '#6A1B9A', 'historic', 48, 'Zellkirchen-Stadion', 17500],
+    ['SpVgg Felsweiler', 'FEF', 'Felsweiler', '#E30613', '#000000', 'fallen', 47, 'Stadion Dillstadt', 19500],
+    ['TSV Felsau', 'FEU', 'Felsau', '#000000', '#0057B8', 'selling', 45, 'Stadion am Immhausen', 17000],
+    ['VfB Hirschdorf', 'HIE', 'Hirschdorf', '#001F5B', '#FFFFFF', 'fallen', 45, 'Stadion am Bachausen', 19000],
+    [
+      'Sportfreunde Freikirchen',
+      'FRR',
+      'Freikirchen',
+      '#E30613',
+      '#FFFFFF',
+      'fan',
+      43,
+      'Waldstadion Freikirchen',
+      18000,
+    ],
+    ['FC Langstein 1887', 'LIA24', 'Langstein', '#FFD100', '#0057B8', 'fan', 42, 'Lütingen-Stadion', 13000],
+  ];
+  FM.D.CLUBS_TZ2 = [
+    ['Bukobuta Stars', 'BUV', 'Bukobuta', '#001F5B', '#000000', 'fan', 37, 'Morowera Sports Ground', 11000],
+    ['Darmba United', 'DAS', 'Darmba', '#001F5B', '#E30613', 'fallen', 36, 'Arushmba Sports Ground', 12000],
+    ['Singituma FC', 'SIU', 'Singituma', '#E30613', '#6A1B9A', 'fan', 36, 'Singituma Uhuru Ground', 11500],
+    ['Arushwera Stars', 'ARU', 'Arushwera', '#001F5B', '#FFD100', 'historic', 35, 'Iringsa Sports Ground', 14000],
+    ['FC Songena', 'SOQ', 'Songena', '#E30613', '#0057B8', 'historic', 35, 'Songena Uhuru Ground', 10000],
+    ['Kibogoma Royals', 'KIW', 'Kibogoma', '#000000', '#E30613', 'fan', 34, 'Kibogoma Uhuru Ground', 9500],
+    ['Tangatuma Works', 'TAP37', 'Tangatuma', '#00843D', '#0057B8', 'historic', 32, 'Kibokili Stadium', 12000],
+    ['Kibota Dynamo', 'KTA', 'Kibota', '#0057B8', '#FFFFFF', 'historic', 32, 'Songekili Stadium', 13000],
+    ['Kiboga FC', 'KGA', 'Kiboga', '#001F5B', '#000000', 'fan', 31, 'Kiboga Uhuru Ground', 9000],
+    ['Old Mbeyta Dynamo', 'MBG', 'Mbeyta', '#6CACE4', '#FFFFFF', 'fan', 30, 'Dodya Stadium', 12000],
+    ['Young Mwanza', 'YOB', 'Mwanza', '#000000', '#0057B8', 'fan', 30, 'Mwanza National Stadium', 9500],
+    ['New Tabowera Sporting', 'TAQ38', 'Tabowera', '#E30613', '#0057B8', 'youth', 29, 'Tabowera Uhuru Ground', 8500],
+    ['Tangya Warriors', 'TYA', 'Tangya', '#00843D', '#001F5B', 'youth', 29, 'Tangya Uhuru Ground', 9500],
+    ['Arushza Bohemians', 'AZA', 'Arushza', '#6A1B9A', '#0057B8', 'selling', 28, 'Arushza National Stadium', 11500],
+    ['Arushta United', 'ATC', 'Arushta', '#000000', '#6A1B9A', 'historic', 27, 'Arushta National Stadium', 7500],
+    ['Kibowera City', 'KIX', 'Kibowera', '#000000', '#FFD100', 'youth', 27, 'Kibowera National Stadium', 8000],
+  ];
+  FM.D.CLUBS_TN2 = [
+    ['ES Keloune', 'KEL', 'Keloune', '#E30613', '#6A1B9A', 'historic', 43, 'Stade Municipal de Keloune', 15000],
+    ['Kelar FC', 'KEB', 'Kelar', '#000000', '#6CACE4', 'fan', 42, 'Complexe Sportif Kelar', 17000],
+    ['JS Monoune', 'JJS', 'Monoune', '#FFD100', '#FFFFFF', 'selling', 42, 'Stade Municipal de Monoune', 16000],
+    ['US Siline', 'SIW', 'Siline', '#E30613', '#001F5B', 'selling', 40, 'Stade de Siline', 15000],
+    ['AS Kaès', 'KAL34', 'Kaès', '#6A1B9A', '#0057B8', 'fan', 39, 'Stade Gaboune', 13500],
+    ['Étoile de Bejès', 'BEG30', 'Bejès', '#00843D', '#6CACE4', 'selling', 39, 'Complexe Sportif Bejès', 14000],
+    ['Stade Tabouane', 'TAR39', 'Tabouane', '#6A1B9A', '#FFD100', 'fan', 38, 'Stade Hamouane', 14000],
+    ['ES Nabsa', 'NAH31', 'Nabsa', '#6A1B9A', '#FFFFFF', 'fallen', 38, 'Complexe Sportif Nabsa', 12000],
+    ['AS Kasia', 'KAM35', 'Kasia', '#00843D', '#FFFFFF', 'fan', 36, 'Complexe Sportif Kasia', 13000],
+    ['EO Ain Mahsa', 'EOO', 'Mahsa', '#FFFFFF', '#6CACE4', 'fan', 35, 'Stade Kasa', 13000],
+    ['Étoile de Sidi Kelar', 'SIX', 'Sidi Kelar', '#E30613', '#001F5B', 'fan', 35, 'Stade Silouane', 12500],
+    ['Olympique Naboune', 'OLQ', 'Naboune', '#6A1B9A', '#6CACE4', 'fan', 33, 'Stade Siline', 10000],
+    ['JS Monsa', 'JSM', 'Monsa', '#0057B8', '#000000', 'fan', 33, 'Stade Municipal de Monsa', 10000],
+    ['JS Oued Zarès', 'JSO', 'Oued Zarès', '#000000', '#0057B8', 'fan', 32, 'Stade Bejar', 9500],
+  ];
+  FM.D.CLUBS_UA2 = [
+    ['Veres Verkhnia Lyuivtsi', 'VEV', 'Lyuivtsi', '#6A1B9A', '#0057B8', 'fan', 47, 'Mis’kyi Stadion Lyuivtsi', 17000],
+    ['FC Kreychi', 'KRK', 'Kreychi', '#FFFFFF', '#6A1B9A', 'historic', 46, 'Stadion imeni Zhovske', 17500],
+    ['Shakhtar Nova Kovychi', 'SHW', 'Kovychi', '#FFD100', '#FFFFFF', 'historic', 46, 'Stadion Kovychi', 19500],
+    ['FC Sumske', 'SUF', 'Sumske', '#0057B8', '#6A1B9A', 'selling', 45, 'Stadion imeni Okhyne', 17500],
+    ['FK Malska', 'MKA', 'Malska', '#000000', '#FFD100', 'selling', 45, 'Stadion Malska', 17500],
+    ['Naftovyk Nyzhnia Rovets', 'NAJ32', 'Rovets', '#000000', '#FFFFFF', 'fan', 43, 'Staivtsi Arena', 16000],
+    ['Shakhtar Lyuove', 'SHX', 'Lyuove', '#00843D', '#6A1B9A', 'fallen', 43, 'Olimpiiskyi Lyuove', 16000],
+    ['Torpedo Khmivske', 'TDO', 'Khmivske', '#001F5B', '#E30613', 'fan', 42, 'Bilets Arena', 17000],
+    ['Podillia Khmivka', 'POD27', 'Khmivka', '#00843D', '#E30613', 'fan', 42, 'Stadion Nemyne', 13500],
+    ['Lokomotyv Yavivske', 'LYV', 'Yavivske', '#0057B8', '#000000', 'historic', 40, 'Hanyne Arena', 12500],
+    ['Chornomorets Druychi', 'CHG30', 'Druychi', '#001F5B', '#6CACE4', 'fan', 39, 'Mis’kyi Stadion Druychi', 12500],
+    ['FK Stara Ternets', 'STB25', 'Ternets', '#6A1B9A', '#E30613', 'fan', 38, 'Olimpiiskyi Ternets', 11500],
+    ['Veres Okhychi', 'VEO', 'Okhychi', '#6CACE4', '#00843D', 'historic', 37, 'Stadion Horychi', 14500],
+    ['Akademiia Nyzhnia Zapivtsi', 'AKG', 'Zapivtsi', '#000000', '#6CACE4', 'fan', 37, 'Olimpiiskyi Zapivtsi', 12000],
+    [
+      'Dynamo Nyzhnia Kalopil',
+      'NYB',
+      'Nyzhnia Kalopil',
+      '#6CACE4',
+      '#00843D',
+      'fan',
+      37,
+      'Stadion imeni Yavivtsi',
+      11500,
+    ],
+    ['Avanhard Verkhnia Trosychi', 'AVV', 'Trosychi', '#FFD100', '#0057B8', 'youth', 37, 'Polychi Arena', 15000],
+  ];
+  FM.D.CLUBS_AE2 = [
+    ['Al Wafaa', 'ALM59', 'Bahra', '#FFD100', '#6CACE4', 'selling', 45, 'Bahra Stadium', 18500],
+    ['Hiliq Club', 'HIF', 'Hiliq', '#FFFFFF', '#000000', 'selling', 44, 'Hiliq Sports City', 18500],
+    ['Jerayr SC', 'JER', 'Jerayr', '#E30613', '#FFD100', 'youth', 44, 'Jerayr Sports City', 15000],
+    ['Ain Karah SC', 'AIK', 'Ain Karah', '#6CACE4', '#E30613', 'historic', 43, 'Prince Zaliyah Stadium', 17000],
+    ['Al Asad', 'AAS', 'Quriyah', '#6A1B9A', '#FFFFFF', 'historic', 42, 'Sohayn Stadium', 13500],
+    ['Al Watan', 'ALN60', 'Jahiyah', '#FFFFFF', '#E30613', 'youth', 41, 'Salib Stadium', 12500],
+    ['Al Aqayn SC', 'AAQ', 'Aqayn', '#000000', '#001F5B', 'fallen', 40, 'Aqayn Sports City', 15000],
+    ['Al Jabal', 'ALP61', 'Jeran', '#0057B8', '#FFFFFF', 'youth', 39, 'Jeran Sports City', 15500],
+    ['Al Nimr', 'ANI', 'Musiq', '#6A1B9A', '#E30613', 'fan', 39, 'Musiq Stadium', 13500],
+    ['Muhar SC', 'MUD', 'Muhar', '#00843D', '#001F5B', 'fan', 38, 'Samiq Arena', 14500],
+    ['Salayr Club', 'SAS40', 'Salayr', '#001F5B', '#00843D', 'fan', 38, 'Prince Samayr Stadium', 15000],
+    ['Salah Club', 'SAT41', 'Salah', '#001F5B', '#6CACE4', 'historic', 37, 'Salah Stadium', 12000],
+    ['Al Wadi Irbar SC', 'ALQ62', 'Irbar', '#00843D', '#000000', 'fan', 36, 'Diwan Arena', 12000],
+    ['Karan Club', 'KAN36', 'Karan', '#E30613', '#001F5B', 'fallen', 36, 'Prince Hidayr Stadium', 15000],
+    ['Al Rayyan', 'ALR63', 'Zaliyah', '#0057B8', '#FFFFFF', 'fan', 34, 'Madiyah Stadium', 10500],
+    ['Al Ain Faliq SC', 'AAF', 'Ain Faliq', '#000000', '#6CACE4', 'historic', 33, 'Aqayr Arena', 11000],
+  ];
+  FM.D.CLUBS_US2 = [
+    ['Redbluff Heat', 'REM', 'Redbluff', '#0057B8', '#6A1B9A', 'fan', 60, 'Redbluff Field', 22000],
+    [
+      'Walnutview Park Blaze',
+      'WAW',
+      'Walnutview Park',
+      '#001F5B',
+      '#FFFFFF',
+      'historic',
+      60,
+      'Walnutview Park Field',
+      22000,
+    ],
+    ['Cherrycreek Union Club', 'CHH31', 'Cherrycreek', '#6CACE4', '#00843D', 'fallen', 59, 'Cherrycreek Arena', 20500],
+    ['Whiteford FC', 'WHD', 'Whiteford', '#FFD100', '#6CACE4', 'fan', 59, 'Whiteford Arena', 22500],
+    ['AC Springview', 'SPD27', 'Springview', '#001F5B', '#00843D', 'historic', 58, 'Rockport Stadium', 21500],
+    ['Maplecreek City FC', 'MAA48', 'Maplecreek', '#FFD100', '#0057B8', 'fallen', 58, 'Redford Field', 24000],
+    ['Mesadale Lumberjacks', 'MLE', 'Mesadale', '#E30613', '#6CACE4', 'selling', 57, 'Portwood Field', 22000],
+    ['Prairiecreek Stallions', 'PRK', 'Prairiecreek', '#6A1B9A', '#0057B8', 'fallen', 57, 'Bluehills Field', 21500],
+    ['Rocksprings Lumberjacks', 'ROM', 'Rocksprings', '#000000', '#FFFFFF', 'fan', 56, 'Silverhills Stadium', 22000],
+    ['Bearview Union Club', 'BEH31', 'Bearview', '#6A1B9A', '#E30613', 'fan', 55, 'Bearview Arena', 23500],
+    ['Whiteville FC', 'WHE', 'Whiteville', '#0057B8', '#00843D', 'historic', 55, 'Whiteville Field', 21000],
+    ['Cypressport Revolution', 'CYP', 'Cypressport', '#0057B8', '#6CACE4', 'fan', 55, 'Mapleville Field', 21500],
+    ['El Aspenhills Fire', 'ELL', 'El Aspenhills', '#6CACE4', '#00843D', 'fan', 54, 'Prairiegrove Field', 18500],
+    ['Real Cherryton', 'CHJ32', 'Cherryton', '#000000', '#FFD100', 'fan', 53, 'Cherryton Stadium', 20500],
+    ['Port Riverfalls SC', 'POE28', 'Port Riverfalls', '#6A1B9A', '#000000', 'fan', 53, 'Port Riverfalls Arena', 21500],
+    ['Sunhills City FC', 'SUG', 'Sunhills', '#6CACE4', '#6A1B9A', 'selling', 53, 'Sunhills Stadium', 22000],
+    ['Cedarhaven Express', 'CEF', 'Cedarhaven', '#00843D', '#6CACE4', 'fallen', 53, 'Cedarhaven Stadium', 19500],
+    [
+      'Willowsprings City FC',
+      'WIE',
+      'Willowsprings',
+      '#00843D',
+      '#0057B8',
+      'historic',
+      53,
+      'Willowsprings Stadium',
+      18500,
+    ],
+    [
+      'Port Bluehaven FC',
+      'POF29',
+      'Port Bluehaven',
+      '#6A1B9A',
+      '#000000',
+      'youth',
+      51,
+      'Port Bluehaven Stadium',
+      17000,
+    ],
+    ['Elkcreek Foundry United', 'ELK', 'Elkcreek', '#000000', '#6CACE4', 'youth', 51, 'Beargrove Field', 20500],
+    ['Rockfield Fire', 'RLD', 'Rockfield', '#0057B8', '#6CACE4', 'fan', 51, 'Rockfield Field', 20000],
+    ['Lakeview Union Club', 'LAE28', 'Lakeview', '#000000', '#6A1B9A', 'historic', 50, 'Bearbluff Stadium', 17500],
+    ['Cherryfalls Revolution', 'CLS', 'Cherryfalls', '#000000', '#FFFFFF', 'selling', 49, 'Riverhills Field', 19000],
+    ['Fortcreek Rapids', 'FOE', 'Fortcreek', '#FFD100', '#001F5B', 'historic', 49, 'Fortcreek Stadium', 21000],
+  ];
+  FM.D.CLUBS_UY2 = [
+    [
+      'Racing de Presidente Domia',
+      'PRJ',
+      'Presidente Domia',
+      '#00843D',
+      '#E30613',
+      'historic',
+      45,
+      'Estadio Ortez',
+      18500,
+    ],
+    ['Nacional Urqeda', 'NAK33', 'Urqeda', '#6CACE4', '#00843D', 'historic', 44, 'Cancha de Urqeda', 17000],
+    ['Club Deportivo Miras', 'MIS', 'Miras', '#001F5B', '#E30613', 'fan', 44, 'Estadio Municipal de Miras', 14500],
+    ['Urqez FC', 'URZ', 'Urqez', '#6CACE4', '#6A1B9A', 'historic', 43, 'Estadio Laveda', 15500],
+    [
+      'Club Sportivo Sarona',
+      'SNA',
+      'Sarona',
+      '#E30613',
+      '#0057B8',
+      'historic',
+      41,
+      'Estadio Municipal de Sarona',
+      13500,
+    ],
+    ['Atlético Presidente Arrui', 'PTE', 'Presidente Arrui', '#FFFFFF', '#6CACE4', 'fan', 40, 'Estadio Franini', 16500],
+    ['Nacional Dorrona', 'NAL34', 'Dorrona', '#FFFFFF', '#E30613', 'fallen', 40, 'Estadio Municipal de Dorrona', 12500],
+    ['Club Atlético Unión Lezui', 'LEB', 'Lezui', '#6A1B9A', '#000000', 'fallen', 39, 'Cancha de Lezui', 15500],
+    ['Independiente Domón', 'DOY', 'Domón', '#6CACE4', '#FFFFFF', 'historic', 39, 'Estadio Arrero', 15000],
+    ['Racing de Bustón', 'BUW', 'Bustón', '#E30613', '#6A1B9A', 'fan', 38, 'Estadio Monumental Cabrui', 13000],
+    ['Nacional Arrero', 'NAM35', 'Arrero', '#E30613', '#6A1B9A', 'selling', 37, 'Estadio Rodo', 13000],
+    ['Estudiantes de Lavo', 'LAO', 'Lavo', '#FFD100', '#000000', 'fan', 35, 'Estadio Monumental Belini', 10500],
+    ['Defensores de Ortero', 'ORO', 'Ortero', '#6A1B9A', '#00843D', 'historic', 34, 'Estadio Lezón', 12500],
+    ['Club Atlético Miro', 'MIG', 'Miro', '#00843D', '#001F5B', 'youth', 34, 'Estadio Monumental Arras', 9500],
+  ];
+  FM.D.CLUBS_UZ2 = [
+    ['Chirush United', 'CHK33', 'Chirush', '#FFFFFF', '#6A1B9A', 'fan', 39, 'Chirush Markaziy Stadium', 13000],
+    ['Tashbad United', 'TAS40', 'Tashbad', '#000000', '#6A1B9A', 'youth', 37, 'Kokez Arena', 13500],
+    ['Bekchik United', 'BEJ32', 'Bekchik', '#0057B8', '#000000', 'fan', 37, 'Bekchik Markaziy Stadium', 14000],
+    ['FK Gulkent', 'GUG', 'Gulkent', '#FFD100', '#00843D', 'fan', 36, 'Gulkent Markaziy Stadium', 11500],
+    ['Nukbad FK', 'NUF', 'Nukbad', '#6CACE4', '#00843D', 'fallen', 35, 'Olimpiya Nukbad', 12500],
+    ['Andkent United', 'ANF', 'Andkent', '#FFFFFF', '#000000', 'historic', 35, 'Andkent Markaziy Stadium', 13500],
+    ['Namiz City', 'NAN36', 'Namiz', '#00843D', '#FFD100', 'selling', 34, 'Namiz Markaziy Stadium', 10000],
+    ['Sport Club Shakhez', 'SHZ', 'Shakhez', '#E30613', '#00843D', 'youth', 33, 'Shakhez Markaziy Stadium', 11500],
+    ['Khivchik FK', 'KHF', 'Khivchik', '#E30613', '#0057B8', 'fan', 32, 'Tashabad Arena', 11500],
+    ['Neftchi Nukqand', 'NEZ', 'Nukqand', '#6A1B9A', '#000000', 'historic', 32, 'Andchik Stadium', 10500],
+    ['FK Bekara', 'BEK33', 'Bekara', '#000000', '#E30613', 'historic', 31, 'Bekara Markaziy Stadium', 11000],
+    ['Khiviz City', 'KHZ', 'Khiviz', '#FFD100', '#001F5B', 'fan', 30, 'Nukchik Arena', 10500],
+    ['Marara FK', 'MRC', 'Marara', '#FFFFFF', '#E30613', 'youth', 29, 'Marara Markaziy Stadium', 10000],
+    [
+      'FK Eski Olmabad',
+      'ESN',
+      'Eski Olmabad',
+      '#6CACE4',
+      '#000000',
+      'historic',
+      27,
+      'Eski Olmabad Markaziy Stadium',
+      11000,
+    ],
+  ];
+  FM.D.CLUBS_AR3 = [
+    ['Racing de Rodia', 'ROP', 'Rodia', '#FFD100', '#E30613', 'youth', 42, 'Estadio Municipal de Rodia', 15500],
+    ['Nacional Quiras', 'NAP37', 'Quiras', '#6A1B9A', '#E30613', 'fan', 42, 'Estadio Cabrano', 16000],
+    ['Club Atlético Unión Belia', 'BIB', 'Belia', '#FFFFFF', '#FFD100', 'fan', 42, 'Cancha de Belia', 13500],
+    ['Atlético Molas', 'MOJ32', 'Molas', '#6CACE4', '#0057B8', 'fan', 41, 'Estadio Urqón', 15000],
+    ['Arreda FC', 'ADB', 'Arreda', '#6CACE4', '#E30613', 'fan', 41, 'Estadio Municipal de Arreda', 13000],
+    ['Club Atlético Unión Garona', 'GAC', 'Garona', '#00843D', '#FFD100', 'fallen', 40, 'Cancha de Garona', 15500],
+    ['Racing de Velo', 'VEW', 'Velo', '#000000', '#E30613', 'fan', 39, 'Cancha de Velo', 14000],
+    ['Racing de Castona', 'CAJ32', 'Castona', '#6A1B9A', '#FFD100', 'fallen', 38, 'Estadio Alvero', 11000],
+    [
+      'Club Deportivo Sarilla',
+      'SSA',
+      'Sarilla',
+      '#00843D',
+      '#000000',
+      'fan',
+      38,
+      'Estadio Municipal de Sarilla',
+      13500,
+    ],
+    ['Independiente Lavez', 'LAF29', 'Lavez', '#FFD100', '#0057B8', 'fan', 37, 'Estadio Molar', 11500],
+    ['Unión de Cabria', 'CIA', 'Cabria', '#FFD100', '#00843D', 'youth', 37, 'Estadio Municipal de Cabria', 12500],
+    [
+      'Club Atlético Santa Puesui',
+      'PUG',
+      'Santa Puesui',
+      '#6CACE4',
+      '#000000',
+      'youth',
+      36,
+      'Estadio Municipal de Santa Puesui',
+      11500,
+    ],
+    ['Independiente Garón', 'GAD', 'Garón', '#0057B8', '#E30613', 'fan', 36, 'Estadio Escez', 15000],
+    [
+      'Club de Regatas Alverar',
+      'RAA24',
+      'Alverar',
+      '#000000',
+      '#6A1B9A',
+      'historic',
+      35,
+      'Estadio Municipal de Alverar',
+      12000,
+    ],
+    ['Club Atlético Puesona', 'PUH', 'Puesona', '#FFD100', '#FFFFFF', 'fan', 34, 'Estadio Municipal de Puesona', 9500],
+    [
+      'Atlético Coronel Pellero',
+      'COT',
+      'Coronel Pellero',
+      '#000000',
+      '#6A1B9A',
+      'youth',
+      34,
+      'Estadio Monumental Lavero',
+      11500,
+    ],
+    ['Gimnasia de Herona', 'HNA', 'Herona', '#6A1B9A', '#FFFFFF', 'historic', 33, 'Estadio Escui', 9500],
+    [
+      'General Bustilla FC',
+      'GEA',
+      'General Bustilla',
+      '#6CACE4',
+      '#FFD100',
+      'selling',
+      32,
+      'Estadio Municipal de General Bustilla',
+      9500,
+    ],
+  ];
+  FM.D.CLUBS_AT3 = [
+    ['Fortuna Klein Rotdorf 1913', 'KLB', 'Rotdorf', '#00843D', '#6A1B9A', 'fan', 43, 'Rotbach-Stadion', 15000],
+    ['Fortuna Oberdorf', 'OBA', 'Oberdorf', '#6A1B9A', '#6CACE4', 'youth', 43, 'Waldstadion Oberdorf', 17000],
+    ['Concordia Furtbach', 'COW', 'Furtbach', '#000000', '#00843D', 'selling', 41, 'Stadion am Rheinhorst', 13500],
+    ['Fortuna Rotburg', 'ROQ', 'Rotburg', '#FFD100', '#00843D', 'historic', 40, 'Felstal-Stadion', 15500],
+    ['VfB Klein Dillau', 'KLC', 'Dillau', '#00843D', '#E30613', 'fallen', 40, 'Stadion am Lindau', 13000],
+    ['FC Hohenau', 'HOQ', 'Hohenau', '#6CACE4', '#00843D', 'youth', 39, 'Stadion am Marienbach', 15500],
+    [
+      'TSV Unter Schwarzweiler',
+      'UER',
+      'Schwarzweiler',
+      '#0057B8',
+      '#E30613',
+      'fan',
+      39,
+      'Waldstadion Schwarzweiler',
+      12500,
+    ],
+    ['Union Rotfurt 1931', 'RRT', 'Rotfurt', '#6A1B9A', '#FFFFFF', 'fallen', 37, 'Waldstadion Rotfurt', 11500],
+    ['Fortuna Furthof', 'FUK', 'Furthof', '#6CACE4', '#6A1B9A', 'fallen', 36, 'Sportpark Mühlingen', 12500],
+    ['SV Hohen Wiesburg', 'HOT', 'Hohen Wiesburg', '#00843D', '#000000', 'fan', 36, 'Hohen Wiesburg-Arena', 14500],
+    ['Hansa Niedertal', 'HAP37', 'Niedertal', '#0057B8', '#6CACE4', 'youth', 36, 'Sportpark Zellheim', 13500],
+    ['FSV Goldkirchen', 'GOC', 'Goldkirchen', '#000000', '#001F5B', 'historic', 35, 'Zellhafen-Stadion', 12000],
+    [
+      'Concordia Unter Westertal',
+      'COX',
+      'Unter Westertal',
+      '#0057B8',
+      '#E30613',
+      'youth',
+      35,
+      'Stadion am Zellfurt',
+      14000,
+    ],
+    [
+      'Blau-Weiß Ober Altfeld',
+      'BLB',
+      'Ober Altfeld',
+      '#00843D',
+      '#E30613',
+      'selling',
+      34,
+      'Waldstadion Ober Altfeld',
+      11500,
+    ],
+    ['SV Lütingen', 'LUT', 'Lütingen', '#00843D', '#6A1B9A', 'historic', 33, 'Sportpark Kalbach', 13500],
+    ['FC Hirscheim 1907', 'HIM', 'Hirscheim', '#000000', '#FFFFFF', 'historic', 31, 'Stadion am Waldburg', 12500],
+  ];
+  FM.D.CLUBS_BE3 = [
+    ['KV Oud Maasbrug', 'OUC', 'Maasbrug', '#FFFFFF', '#FFD100', 'fallen', 43, 'Stedelijk Stadion Maasbrug', 16500],
+    ['Sporting Hoogbeek', 'HOX', 'Hoogbeek', '#6A1B9A', '#FFFFFF', 'fallen', 43, 'Stade Communal de Hoogbeek', 16000],
+    [
+      'KSC Nieuw Leidveen',
+      'KSA',
+      'Nieuw Leidveen',
+      '#0057B8',
+      '#6CACE4',
+      'fan',
+      42,
+      'Stade Communal de Nieuw Leidveen',
+      15500,
+    ],
+    ['KSC Kleinzand', 'KSK', 'Kleinzand', '#6CACE4', '#001F5B', 'historic', 42, 'Stade Wagewaard', 14000],
+    [
+      'Koninklijke Leidhout',
+      'KOF',
+      'Leidhout',
+      '#FFFFFF',
+      '#FFD100',
+      'historic',
+      40,
+      'Stedelijk Stadion Leidhout',
+      16000,
+    ],
+    ['KRC Hoornhoven', 'KRL', 'Hoornhoven', '#E30613', '#001F5B', 'historic', 40, 'Hoogbeek Stadion', 12000],
+    ['Racing Sneekwijk', 'SNE', 'Sneekwijk', '#FFFFFF', '#0057B8', 'fallen', 39, 'Oostdam Stadion', 12500],
+    [
+      'Excelsior Klein Grootdam',
+      'EOR',
+      'Grootdam',
+      '#00843D',
+      '#FFD100',
+      'youth',
+      38,
+      'Stade Communal de Grootdam',
+      16000,
+    ],
+    ['Racing Haardijk', 'HAQ38', 'Haardijk', '#6CACE4', '#000000', 'fan', 37, 'Stedelijk Stadion Haardijk', 12500],
+    [
+      'Koninklijke Tilvoort',
+      'KKE',
+      'Tilvoort',
+      '#FFD100',
+      '#6A1B9A',
+      'fallen',
+      36,
+      'Stedelijk Stadion Tilvoort',
+      11500,
+    ],
+    [
+      'Koninklijke Oostdam',
+      'KOO',
+      'Oostdam',
+      '#FFFFFF',
+      '#6CACE4',
+      'historic',
+      35,
+      'Gemeentelijk Stadion Oostdam',
+      14500,
+    ],
+    [
+      'Koninklijke Zuidvoort',
+      'KOZ',
+      'Zuidvoort',
+      '#001F5B',
+      '#6CACE4',
+      'historic',
+      35,
+      'Gemeentelijk Stadion Zuidvoort',
+      10500,
+    ],
+    ['KAA Bredwijk', 'KAP37', 'Bredwijk', '#FFFFFF', '#FFD100', 'fan', 34, 'Stedelijk Stadion Bredwijk', 11500],
+    ['Standard Alkveen', 'SRD', 'Alkveen', '#FFFFFF', '#0057B8', 'historic', 34, 'Westlo Stadion', 13000],
+    ['KFC Oosthout', 'KFA', 'Oosthout', '#6CACE4', '#E30613', 'selling', 33, 'Stade Tilburg', 10500],
+    ['SK Nieuwdam', 'NIH', 'Nieuwdam', '#FFD100', '#00843D', 'fan', 32, 'Stade Communal de Nieuwdam', 9500],
+  ];
+  FM.D.CLUBS_BR3 = [
+    ['Esporte Clube Capú', 'CAK33', 'Capú', '#0057B8', '#FFFFFF', 'fallen', 55, 'Estádio Itão', 21500],
+    ['Sport Club Capipe', 'CAL34', 'Capipe', '#0057B8', '#000000', 'youth', 54, 'Estádio Pindoguá', 19500],
+    ['Nacional Marape', 'NMA', 'Marape', '#6A1B9A', '#FFD100', 'fan', 53, 'Estádio Municipal de Marape', 20000],
+    ['Esporte Clube Guama', 'GMA', 'Guama', '#6A1B9A', '#00843D', 'fallen', 53, 'Estádio Jacaraguá', 20500],
+    [
+      'Associação Atlética Tabope',
+      'TPE',
+      'Tabope',
+      '#6CACE4',
+      '#001F5B',
+      'selling',
+      52,
+      'Estádio Municipal de Tabope',
+      20000,
+    ],
+    ['Jabotamirim EC', 'JAE', 'Jabotamirim', '#E30613', '#0057B8', 'fan', 52, 'Arena Aracatuba', 19500],
+    ['Vassaçu do Sul EC', 'VAY', 'Vassaçu do Sul', '#6CACE4', '#FFD100', 'fallen', 51, 'Estádio Jacaraba', 21000],
+    [
+      'Sport Club Tabara da Serra',
+      'TAT41',
+      'Tabara da Serra',
+      '#00843D',
+      '#6CACE4',
+      'selling',
+      51,
+      'Estádio Municipal de Tabara da Serra',
+      21500,
+    ],
+    ['Sport Club Itiba', 'ITI', 'Itiba', '#FFFFFF', '#FFD100', 'fan', 51, 'Estádio Municipal de Itiba', 21000],
+    ['Clube de Regatas Parama', 'REP', 'Parama', '#00843D', '#6A1B9A', 'historic', 49, 'Estádio Arapipe', 18000],
+    ['Sport Clube Parara', 'PPA', 'Parara', '#6A1B9A', '#0057B8', 'youth', 49, 'Estádio Novo Jacarina', 19500],
+    ['Sport Clube Jabotara', 'JAG', 'Jabotara', '#00843D', '#E30613', 'fallen', 49, 'Estádio Ubatuba', 19000],
+    ['União Ibiguá', 'IBI', 'Ibiguá', '#0057B8', '#6CACE4', 'historic', 48, 'Estádio Novo Tijai', 20500],
+    ['Sport Club Itão', 'ITC', 'Itão', '#6CACE4', '#FFFFFF', 'fan', 47, 'Estádio Marina', 18500],
+    [
+      'Esporte Clube Jabotoma',
+      'JMA',
+      'Jabotoma',
+      '#FFFFFF',
+      '#0057B8',
+      'youth',
+      47,
+      'Estádio Municipal de Jabotoma',
+      16500,
+    ],
+    ['Atlético Itajópolis', 'ITS', 'Itajópolis', '#00843D', '#6CACE4', 'youth', 47, 'Estádio Pindão', 19000],
+    ['Atlético Aracatoma', 'AMD', 'Aracatoma', '#6CACE4', '#E30613', 'youth', 46, 'Arena Tijú', 18500],
+    ['Sociedade Esportiva Tabai', 'TTA', 'Tabai', '#00843D', '#6A1B9A', 'fan', 44, 'Estádio Nhanaba', 14000],
+    [
+      'São Jabotina EC',
+      'SAU42',
+      'São Jabotina',
+      '#0057B8',
+      '#FFD100',
+      'fan',
+      44,
+      'Estádio Municipal de São Jabotina',
+      18000,
+    ],
+    [
+      'Urucoguá Futebol Clube',
+      'URD',
+      'Urucoguá',
+      '#001F5B',
+      '#6A1B9A',
+      'selling',
+      43,
+      'Estádio Municipal de Urucoguá',
+      13500,
+    ],
+  ];
+  FM.D.CLUBS_CL3 = [
+    ['Almaza Balompié', 'ALS64', 'Almaza', '#00843D', '#001F5B', 'fan', 44, 'Estadio La Sorilla', 18500],
+    ['Fuentera CF', 'FUM', 'Fuentera', '#6CACE4', '#000000', 'selling', 43, 'Ciudad Deportiva Fuentera', 15000],
+    ['Juventud Lermara', 'LEC', 'Lermara', '#FFD100', '#FFFFFF', 'selling', 41, 'Estadio Quintena', 13000],
+    ['Real Unión Pedanes', 'PED27', 'Pedanes', '#001F5B', '#0057B8', 'fan', 41, 'Nuevo Estadio Pedanes', 14500],
+    ['Sporting Alto Cuenejo', 'ATD', 'Cuenejo', '#E30613', '#FFD100', 'historic', 40, 'Estadio Benón', 13500],
+    ['Deportivo Pozón', 'POG30', 'Pozón', '#FFD100', '#000000', 'fan', 39, 'Estadio Plasanes', 13000],
+    ['Real Unión Tarifero', 'TAO', 'Tarifero', '#6CACE4', '#001F5B', 'fan', 38, 'Estadio Municipal de Tarifero', 15500],
+    ['Deportivo Pededa', 'PEE28', 'Pededa', '#00843D', '#E30613', 'fan', 37, 'Campo de Pededa', 14500],
+    [
+      'Bajo Roblera Balompié',
+      'BAX45',
+      'Roblera',
+      '#FFD100',
+      '#00843D',
+      'selling',
+      36,
+      'Estadio Municipal de Roblera',
+      13000,
+    ],
+    ['Atlético Morala', 'MOK33', 'Morala', '#00843D', '#6A1B9A', 'historic', 35, 'Campo de Morala', 13000],
+    ['Unión Villino', 'VIC26', 'Villino', '#6A1B9A', '#6CACE4', 'historic', 34, 'Ciudad Deportiva Villino', 14000],
+    ['UD Marbete', 'MTE', 'Marbete', '#0057B8', '#E30613', 'fan', 34, 'Estadio Municipal de Marbete', 10000],
+    ['CD Villete', 'VID27', 'Villete', '#6A1B9A', '#E30613', 'fallen', 33, 'Nuevo Estadio Villete', 11500],
+    ['Roblanes CF', 'ROR', 'Roblanes', '#FFFFFF', '#6A1B9A', 'fan', 33, 'Estadio Alcaledo', 9000],
+  ];
+  FM.D.CLUBS_CS3 = [
+    ['Kaichuan Lions', 'KLI', 'Kaichuan', '#E30613', '#6CACE4', 'historic', 43, 'Ningzhou Arena', 14000],
+    ['Longshan Sports', 'LOS', 'Longshan', '#FFFFFF', '#FFD100', 'fan', 43, 'Pingning Stadium', 17000],
+    ['Huazhou United', 'HUU', 'Huazhou', '#001F5B', '#00843D', 'historic', 42, 'Linhai Arena', 15000],
+    ['Changzhou United', 'CHL34', 'Changzhou', '#001F5B', '#0057B8', 'fan', 40, 'Taihai Stadium', 13500],
+    ['Xingang Tigers', 'XIG', 'Xingang', '#FFD100', '#6CACE4', 'fallen', 39, 'Dongcheng Arena', 15500],
+    ['Ningyang Steel', 'NNG', 'Ningyang', '#FFFFFF', '#FFD100', 'historic', 38, 'Ningyang Sports Centre', 14500],
+    ['Shanmen Lions', 'SLL', 'Shanmen', '#6CACE4', '#000000', 'fan', 36, 'Shanmen Sports Centre', 10000],
+    ['Changang City', 'CHM35', 'Changang', '#0057B8', '#001F5B', 'fan', 36, 'Tayang Stadium', 12000],
+    ['Ruimen Phoenix', 'RET', 'Ruimen', '#FFFFFF', '#001F5B', 'fan', 36, 'Ancheng Stadium', 15000],
+    ['Ruitang FC', 'RUJ', 'Ruitang', '#0057B8', '#E30613', 'fan', 34, 'Anhai Stadium', 10500],
+    ['Yuntang FC', 'YUG', 'Yuntang', '#000000', '#6CACE4', 'fan', 33, 'Ruyang Stadium', 11500],
+    ['Anmen FC', 'ANM', 'Anmen', '#6A1B9A', '#E30613', 'youth', 32, 'Ruyuan Stadium', 13000],
+  ];
+  FM.D.CLUBS_CZ3 = [
+    ['Dukla Bohany', 'DUF', 'Bohany', '#001F5B', '#FFD100', 'fan', 43, 'Stadion u Mladany', 16500],
+    ['Dukla Jabená', 'DLA', 'Jabená', '#6CACE4', '#FFFFFF', 'selling', 42, 'Městský stadion Jabená', 15000],
+    ['Spartak Nový Doubice', 'SPE28', 'Nový Doubice', '#000000', '#00843D', 'fan', 42, 'Stadion Lysice', 15000],
+    ['Strov Slovan', 'STC26', 'Strov', '#FFFFFF', '#FFD100', 'fan', 41, 'Stadion u Mladov', 13000],
+    ['TJ Olomice', 'OCE', 'Olomice', '#FFFFFF', '#000000', 'youth', 41, 'Aréna Prostoná', 15000],
+    ['Spartak Rokín', 'SRO', 'Rokín', '#00843D', '#0057B8', 'fallen', 39, 'Stadion u Straná', 16000],
+    ['Spartak Holice', 'SPF29', 'Holice', '#001F5B', '#00843D', 'historic', 38, 'Aréna Doubava', 13500],
+    ['FC Vysodov', 'VYB', 'Vysodov', '#6CACE4', '#6A1B9A', 'historic', 38, 'Letní stadion Vysodov', 12500],
+    ['Železárny Liboná', 'ZEY', 'Liboná', '#FFFFFF', '#6CACE4', 'historic', 37, 'Městský stadion Liboná', 15000],
+    ['Dynamo Prostodov', 'POH31', 'Prostodov', '#FFFFFF', '#FFD100', 'fan', 37, 'Stadion u Vysedov', 15500],
+    ['FC Dolní Prostice', 'DOI', 'Dolní Prostice', '#0057B8', '#00843D', 'historic', 35, 'Stadion u Strava', 14000],
+    ['Sparta Rokydov', 'ROV', 'Rokydov', '#E30613', '#000000', 'historic', 34, 'Letní stadion Rokydov', 12500],
+    ['Sokol Kostená', 'KOS', 'Kostená', '#000000', '#FFD100', 'selling', 34, 'Letní stadion Kostená', 9500],
+    ['1. FC Rychoná', 'RYF', 'Rychoná', '#001F5B', '#0057B8', 'historic', 34, 'Stadion u Holany', 11000],
+    ['1. FC Pelhov', 'PEF29', 'Pelhov', '#FFD100', '#6CACE4', 'selling', 33, 'Stadion u Mladec', 11000],
+    ['Dukla Strice', 'DST', 'Strice', '#FFFFFF', '#FFD100', 'youth', 32, 'Stadion Vsetínov', 9000],
+  ];
+  FM.D.CLUBS_DK3 = [
+    ['FC Langfors', 'LAG30', 'Langfors', '#FFD100', '#00843D', 'fan', 44, 'Langfors Idrætsanlæg', 15000],
+    ['Dalby IL', 'DAY', 'Dalby', '#FFD100', '#001F5B', 'fan', 42, 'Holborg Idrætspark', 13000],
+    ['Solnæs IF', 'SOT', 'Solnæs', '#FFD100', '#E30613', 'fan', 40, 'Havik Stadion', 13000],
+    ['IK Lillevang', 'LIB25', 'Lillevang', '#000000', '#00843D', 'historic', 40, 'Strandø Idrætspark', 16000],
+    ['FC Strandø', 'SNB', 'Strandø', '#FFD100', '#6CACE4', 'youth', 39, 'Holdal Stadion', 16000],
+    ['Hedvik IL', 'HEM', 'Hedvik', '#00843D', '#001F5B', 'fallen', 39, 'Vestrud Stadion', 13500],
+    ['IK Langnæs', 'LNS', 'Langnæs', '#FFFFFF', '#6CACE4', 'historic', 37, 'Dyrvang Idrætspark', 13000],
+    ['Nordvik Fotball', 'NOY', 'Nordvik', '#6A1B9A', '#FFD100', 'historic', 36, 'Strandvang Idrætspark', 13000],
+    ['Strandstad IF', 'SAV43', 'Strandstad', '#001F5B', '#FFFFFF', 'selling', 35, 'Dalund Idrætspark', 14000],
+    [
+      'Vesterfjordsund Boldklub',
+      'VNA',
+      'Vesterfjordsund',
+      '#001F5B',
+      '#E30613',
+      'fan',
+      34,
+      'Vesterfjordsund Idrætsanlæg',
+      12000,
+    ],
+    ['Holøkke FK', 'HOY', 'Holøkke', '#000000', '#FFFFFF', 'selling', 32, 'Dalnæs Park', 10500],
+    ['FC Østerbrorud', 'SUJ', 'Østerbrorud', '#001F5B', '#E30613', 'historic', 31, 'Østerbrorud Arena', 11000],
+  ];
+  FM.D.CLUBS_FR3 = [
+    ['Étoile de Blancourt', 'BLT', 'Blancourt', '#FFD100', '#0057B8', 'fallen', 49, 'Stade Thomont', 17000],
+    ['Stade Château-Courens', 'CAM35', 'Courens', '#000000', '#6A1B9A', 'historic', 49, 'Complexe Fonange', 19000],
+    ['ES Aubgnan', 'AUE', 'Aubgnan', '#00843D', '#0057B8', 'youth', 48, 'Stade de la Arières', 17000],
+    ['Stade Beauac', 'BEL34', 'Beauac', '#001F5B', '#FFD100', 'fan', 47, 'Stade Dieulac', 17000],
+    ['Étoile Durcourt', 'DUG', 'Durcourt', '#6CACE4', '#FFD100', 'youth', 47, 'Stade Paueau', 16500],
+    ['US Beauange', 'BEM35', 'Beauange', '#6CACE4', '#000000', 'fan', 46, 'Stade de la Dieubourg', 19500],
+    ['Racing Bourange', 'BOY', 'Bourange', '#6A1B9A', '#00843D', 'fan', 45, 'Stade Municipal de Bourange', 18500],
+    ['Sporting Blanbourg', 'BLG', 'Blanbourg', '#001F5B', '#000000', 'fallen', 44, 'Stade Nanens', 15500],
+    ['Union Pauville', 'PAN36', 'Pauville', '#6CACE4', '#E30613', 'fallen', 43, 'Parc des Sports de Pauville', 17000],
+    [
+      'ES Sainte-Vilange',
+      'SAI',
+      'Sainte-Vilange',
+      '#001F5B',
+      '#6A1B9A',
+      'fallen',
+      43,
+      'Parc des Sports de Sainte-Vilange',
+      16000,
+    ],
+    ['AS Sainte-Beauay', 'SAW44', 'Sainte-Beauay', '#001F5B', '#000000', 'historic', 42, 'Stade Joyac', 16500],
+    ['ES Valault', 'VLB', 'Valault', '#FFD100', '#001F5B', 'youth', 41, 'Complexe Fonault', 12500],
+    ['US Rocon', 'ROX', 'Rocon', '#00843D', '#6A1B9A', 'fan', 40, 'Stade Beleau', 17000],
+    ['AS Cassange', 'CGE', 'Cassange', '#6A1B9A', '#0057B8', 'selling', 39, 'Complexe Valières', 14000],
+    ['AJ Mirens', 'MNS', 'Mirens', '#FFD100', '#001F5B', 'fallen', 38, 'Stade Monmont', 14500],
+    ['AS Belange', 'BGE', 'Belange', '#6A1B9A', '#000000', 'historic', 38, 'Stade Bourault', 14000],
+  ];
+  FM.D.CLUBS_GR3 = [
+    ['Seria FC', 'SIY', 'Seria', '#FFD100', '#001F5B', 'historic', 44, 'Ethniko Stadio Seria', 17500],
+    ['AE Kavópetra', 'KKA', 'Kavópetra', '#FFD100', '#001F5B', 'selling', 43, 'Dimotiko Stadio Kavópetra', 15000],
+    ['AE Pelouli', 'PLI', 'Pelouli', '#6CACE4', '#0057B8', 'fan', 42, 'Dimotiko Stadio Pelouli', 16000],
+    ['Ethnikos Pirás', 'PIR', 'Pirás', '#001F5B', '#6CACE4', 'fallen', 41, 'Stadio Maros', 14000],
+    ['Pirouli FC', 'PII', 'Pirouli', '#FFD100', '#00843D', 'historic', 40, 'Stadio Lamás', 13500],
+    ['Niki Kavaki', 'KKI', 'Kavaki', '#001F5B', '#000000', 'historic', 39, 'Stadio Kavos', 13500],
+    ['PAE Maránia', 'MIH', 'Maránia', '#6A1B9A', '#001F5B', 'historic', 38, 'Stadio Piros', 13000],
+    ['AO Pataki', 'PAP37', 'Pataki', '#FFD100', '#6CACE4', 'fan', 36, 'Stadio Alexikos', 14000],
+    ['Ethnikos Lamos', 'LAH31', 'Lamos', '#6A1B9A', '#E30613', 'historic', 36, 'Ethniko Stadio Lamos', 13500],
+    ['Mesikos FC', 'MEW', 'Mesikos', '#000000', '#6CACE4', 'youth', 36, 'Dimotiko Stadio Mesikos', 12500],
+    ['AO Chalaki', 'CKI', 'Chalaki', '#6A1B9A', '#000000', 'fan', 34, 'Dimotiko Stadio Chalaki', 13000],
+    ['GS Nikaki', 'NIJ', 'Nikaki', '#FFFFFF', '#6A1B9A', 'fan', 34, 'Ethniko Stadio Nikaki', 9500],
+    ['AO Argás', 'ARV', 'Argás', '#00843D', '#E30613', 'youth', 33, 'Stadio Argouli', 11000],
+    ['Doxa Thesouli', 'THU', 'Thesouli', '#FFFFFF', '#E30613', 'fallen', 32, 'Stadio Argópetra', 9500],
+  ];
+  FM.D.CLUBS_HU3 = [
+    ['Mezefalva FC', 'MEZ', 'Mezefalva', '#6CACE4', '#000000', 'historic', 43, 'Dabád Stadion', 14000],
+    ['Bakény VSC', 'BAY46', 'Bakény', '#E30613', '#FFFFFF', 'selling', 42, 'Bakény Sportpálya', 14000],
+    ['Rácó SC', 'RAB25', 'Rácó', '#001F5B', '#00843D', 'historic', 42, 'Ráceszeg Stadion', 15000],
+    ['Fehéralak AC', 'FEH', 'Fehéralak', '#001F5B', '#E30613', 'fallen', 41, 'Fehéralak Városi Stadion', 15000],
+    ['Pászád AC', 'PAQ38', 'Pászád', '#000000', '#00843D', 'youth', 40, 'Pászád Városi Stadion', 16500],
+    ['FC Kisveszeg', 'KIY', 'Kisveszeg', '#FFFFFF', '#6A1B9A', 'fan', 40, 'Gyönó Aréna', 15000],
+    ['Fehéreszeg SC', 'FEG', 'Fehéreszeg', '#001F5B', '#6A1B9A', 'fallen', 39, 'Kálény Stadion', 15500],
+    ['Egyetértés Pászény', 'PNY', 'Pászény', '#FFFFFF', '#0057B8', 'selling', 38, 'Tiszaváros Stadion', 12500],
+    ['Egyetértés Kisvó', 'KIZ', 'Kisvó', '#001F5B', '#00843D', 'historic', 38, 'Veszakert Stadion', 14000],
+    ['Szarvaháza Sport Egylet', 'SZA', 'Szarvaháza', '#00843D', '#FFFFFF', 'fan', 36, 'Rácelak Stadion', 13500],
+    ['Dabaváros SE', 'DAT', 'Dabaváros', '#6CACE4', '#FFFFFF', 'fan', 36, 'Dabaváros Városi Stadion', 14000],
+    ['Rácatelek FC', 'RAC26', 'Rácatelek', '#0057B8', '#000000', 'fan', 34, 'Rácatelek Városi Stadion', 13500],
+    ['Szarveháza SE', 'SZS', 'Szarveháza', '#6A1B9A', '#0057B8', 'historic', 34, 'Csajeháza Stadion', 12000],
+    ['Dabó FC', 'DAW', 'Dabó', '#000000', '#FFFFFF', 'historic', 33, 'Kálak Stadion', 11500],
+    ['Nagygyönaváros SE', 'NAQ38', 'Nagygyönaváros', '#0057B8', '#FFD100', 'fan', 32, 'Hajdafalva Aréna', 11000],
+    ['Hajdelak Futball Club', 'HAR39', 'Hajdelak', '#0057B8', '#001F5B', 'historic', 32, 'Dunaháza Stadion', 12500],
+  ];
+  FM.D.CLUBS_ID3 = [
+    ['Persi Cirebaya', 'PSB', 'Cirebaya', '#E30613', '#6A1B9A', 'fan', 40, 'Tasirang Stadium', 16500],
+    ['PS Tangkalan', 'PSD', 'Tangkalan', '#001F5B', '#0057B8', 'fan', 38, 'Bogorang Sports Park', 11500],
+    ['Bhakti Kedijaya', 'BHE', 'Kedijaya', '#0057B8', '#6CACE4', 'historic', 38, 'Purawati Arena', 14000],
+    ['Bhakti Tangiri', 'BHF', 'Tangiri', '#FFD100', '#00843D', 'selling', 36, 'Purawati Stadium', 15000],
+    ['Bhakti Pamangan', 'BTI', 'Pamangan', '#E30613', '#001F5B', 'selling', 36, 'Kedipura Stadium', 15000],
+    ['Persi Semakalan', 'PSE', 'Semakalan', '#000000', '#FFFFFF', 'historic', 35, 'Cirerang Arena', 13000],
+    ['Banjaya Putra', 'BYB', 'Banjaya', '#000000', '#FFFFFF', 'fan', 35, 'Banjaya Provincial Stadium', 12500],
+    ['Persi Jembdongan', 'PJE', 'Jembdongan', '#001F5B', '#00843D', 'fan', 34, 'Bangiri Stadium', 14500],
+    [
+      'Persi Bogolembang',
+      'PEG30',
+      'Bogolembang',
+      '#6CACE4',
+      '#0057B8',
+      'fan',
+      34,
+      'Bogolembang Provincial Stadium',
+      12500,
+    ],
+    ['Persi Pamagiri', 'PEH31', 'Pamagiri', '#E30613', '#6A1B9A', 'fan', 33, 'Pamagiri Provincial Stadium', 13500],
+    ['Ciresari United', 'CIR', 'Ciresari', '#0057B8', '#00843D', 'fan', 32, 'Langbaya Arena', 10500],
+    ['PS Solalembang', 'PPB', 'Solalembang', '#0057B8', '#E30613', 'fallen', 31, 'Malasari Sports Park', 12500],
+    [
+      'Persi Semalembang',
+      'PEJ32',
+      'Semalembang',
+      '#6CACE4',
+      '#001F5B',
+      'selling',
+      30,
+      'Semalembang Provincial Stadium',
+      10000,
+    ],
+    ['Persi Tasikalan', 'PEK33', 'Tasikalan', '#E30613', '#000000', 'selling', 30, 'Purasari Stadium', 11500],
+    ['Langpura Putra', 'LAJ32', 'Langpura', '#6CACE4', '#00843D', 'fan', 29, 'Purarang Arena', 9000],
+    ['Semagiri FC', 'SEB25', 'Semagiri', '#00843D', '#000000', 'fan', 28, 'Solabaya Arena', 8000],
+  ];
+  FM.D.CLUBS_IR3 = [
+    ['Foolad Rasman', 'FOO', 'Rasman', '#FFFFFF', '#6A1B9A', 'fan', 43, 'Azadi Rasman Stadium', 14000],
+    ['Sanat Bandar Ardakan', 'SAX45', 'Ardakan', '#FFD100', '#0057B8', 'fan', 42, 'Qaztan Stadium', 16000],
+    ['Naft Yazjan', 'NFA', 'Yazjan', '#FFFFFF', '#E30613', 'historic', 41, 'Yazjan Takhti Stadium', 13000],
+    ['Sanat Hamshahr', 'SAY46', 'Hamshahr', '#00843D', '#001F5B', 'historic', 41, 'Hamshahr Takhti Stadium', 16500],
+    ['Sanat Ilamfahan', 'SAZ47', 'Ilamfahan', '#000000', '#6CACE4', 'fan', 40, 'Ilamfahan Takhti Stadium', 15000],
+    ['Sanat Kermabad', 'SKE', 'Kermabad', '#6CACE4', '#FFFFFF', 'fallen', 39, 'Gorijan Stadium', 16000],
+    ['Sirtan FC', 'SIZ', 'Sirtan', '#6CACE4', '#001F5B', 'historic', 38, 'Azadi Sirtan Stadium', 14500],
+    ['Foolad Ardabad', 'FOG', 'Ardabad', '#6A1B9A', '#0057B8', 'fan', 37, 'Kermraz Stadium', 13500],
+    ['Esteghlal Sirud', 'EAL', 'Sirud', '#FFFFFF', '#FFD100', 'historic', 36, 'Ahvabad Sports Complex', 13000],
+    ['Gol Zandan', 'GOZ', 'Zandan', '#6A1B9A', '#0057B8', 'fan', 35, 'Azadi Zandan Stadium', 13000],
+    ['Sepahan Bushabad', 'SBU', 'Bushabad', '#FFFFFF', '#0057B8', 'youth', 35, 'Azadi Bushabad Stadium', 12500],
+    ['Zob Shavin', 'ZOA', 'Shavin', '#001F5B', '#FFD100', 'selling', 34, 'Azadi Shavin Stadium', 12500],
+    ['Pas Orumriz', 'PAR39', 'Orumriz', '#FFFFFF', '#000000', 'fallen', 33, 'Azadi Orumriz Stadium', 12500],
+    ['Fajr Ahvijan', 'FAF', 'Ahvijan', '#6CACE4', '#E30613', 'fan', 33, 'Ahvijan Takhti Stadium', 9500],
+  ];
+  FM.D.CLUBS_IT3 = [
+    ['Audace Ponello', 'POJ32', 'Ponello', '#FFFFFF', '#00843D', 'selling', 50, 'Stadio Santezia', 19000],
+    ['Atletico Borale', 'BOA24', 'Borale', '#6A1B9A', '#FFFFFF', 'historic', 50, 'Stadio Modone', 18000],
+    ['Atletico Monago', 'MGO', 'Monago', '#00843D', '#001F5B', 'selling', 49, 'Stadio Roccone', 16000],
+    ['San Gubbona 1908', 'GUH', 'Gubbona', '#6CACE4', '#001F5B', 'fan', 48, 'Stadio Nuovo Moducci', 16500],
+    ['Fabrano 1908', 'FAG', 'Fabrano', '#6A1B9A', '#E30613', 'selling', 47, 'Arena Ferento', 16000],
+    ['Vis Fosale', 'VIE28', 'Fosale', '#E30613', '#6CACE4', 'fan', 47, 'Arena Galona', 17000],
+    ['Unione Padetto', 'PTO', 'Padetto', '#001F5B', '#E30613', 'fan', 46, 'Stadio Cestate', 16000],
+    ['Unione Borello', 'BOO', 'Borello', '#000000', '#FFFFFF', 'historic', 46, 'Stadio Galetto', 16000],
+    ['Pro Gubbano', 'GUO', 'Gubbano', '#001F5B', '#000000', 'historic', 45, 'Stadio Valona', 16500],
+    ['Audace Roccale', 'ROZ', 'Roccale', '#6A1B9A', '#0057B8', 'fan', 45, 'Stadio Comunale di Roccale', 18000],
+    ['Iuventa Casate', 'IUV', 'Casate', '#FFFFFF', '#FFD100', 'fan', 44, 'Stadio Nuovo Ferana', 19000],
+    ['US Serino', 'SEC26', 'Serino', '#001F5B', '#6CACE4', 'fan', 43, 'Stadio Nuovo Venento', 17000],
+    ['Audace Borara', 'BOB25', 'Borara', '#FFD100', '#6A1B9A', 'fallen', 43, 'Stadio Cestara', 14000],
+    ['FC Serana 1918', 'SED27', 'Serana', '#001F5B', '#6CACE4', 'selling', 43, 'Stadio Civico di Serana', 17000],
+    [
+      'Robur Villa Galone',
+      'RGA',
+      'Villa Galone',
+      '#E30613',
+      '#FFD100',
+      'historic',
+      41,
+      'Stadio Comunale di Villa Galone',
+      14000,
+    ],
+    ['ASD Gubbara', 'GRV', 'Gubbara', '#FFFFFF', '#0057B8', 'selling', 41, 'Stadio Nuovo Ferento', 14500],
+    ['Virtus Santa Vilana', 'VIF29', 'Santa Vilana', '#001F5B', '#6CACE4', 'historic', 41, 'Stadio Marago', 14500],
+    ['Polisportiva Santago', 'POK33', 'Santago', '#6A1B9A', '#E30613', 'fan', 40, 'Stadio Fosello', 12000],
+    [
+      'FC Castel Casello',
+      'CEL',
+      'Castel Casello',
+      '#00843D',
+      '#001F5B',
+      'fan',
+      40,
+      'Stadio Civico di Castel Casello',
+      13500,
+    ],
+    ['US Corona', 'CCO', 'Corona', '#FFFFFF', '#E30613', 'fan', 39, 'Stadio Nuovo Fabrento', 14000],
+  ];
+  FM.D.CLUBS_JP3 = [
+    ['Narimoto Verdant', 'NAR39', 'Narimoto', '#00843D', '#6CACE4', 'selling', 48, 'Narimoto Sports Complex', 18500],
+    ['Matszawa Athletic', 'MWA', 'Matszawa', '#E30613', '#6A1B9A', 'fallen', 47, 'Matszawa Sports Complex', 19500],
+    ['Shingawa Verdant', 'SWA', 'Shingawa', '#FFFFFF', '#00843D', 'historic', 46, 'Akazawa Arena', 16500],
+    ['Fujigawa Albatros', 'FUN', 'Fujigawa', '#0057B8', '#FFFFFF', 'fan', 46, 'Nishimoto Arena', 15500],
+    ['Takayama Fiore', 'TMA', 'Takayama', '#0057B8', '#6CACE4', 'fan', 46, 'Takayama Sports Complex', 15500],
+    ['Harusaki Athletic', 'HAS40', 'Harusaki', '#E30613', '#000000', 'selling', 44, 'Harusaki Athletic Stadium', 16000],
+    ['Saishima Bluewave', 'SMA', 'Saishima', '#6A1B9A', '#6CACE4', 'historic', 44, 'Saishima Athletic Stadium', 17500],
+    ['FC Takeyama Riverside', 'TAU42', 'Takeyama', '#FFD100', '#E30613', 'fan', 44, 'Takeyama Sports Complex', 18000],
+    ['Kurohara Mare', 'KUD', 'Kurohara', '#0057B8', '#00843D', 'selling', 43, 'Saimori Stadium', 15500],
+    ['Asasaki Riverside', 'ASI', 'Asasaki', '#6A1B9A', '#0057B8', 'selling', 43, 'Akihara Stadium', 16000],
+    ['Kurokami FC', 'KUI', 'Kurokami', '#000000', '#0057B8', 'historic', 43, 'Inazawa Stadium', 18000],
+    ['FC Narita', 'NTA', 'Narita', '#FFFFFF', '#FFD100', 'fan', 42, 'Narita Sports Complex', 14000],
+    ['Toyno United', 'TOY', 'Toyno', '#6CACE4', '#FFD100', 'fan', 41, 'Sakurashima Arena', 12500],
+    ['Yamahara Vento', 'YAE', 'Yamahara', '#001F5B', '#E30613', 'youth', 40, 'Yamahara Sports Complex', 15500],
+    ['Saihara Sport Club', 'SAA48', 'Saihara', '#E30613', '#FFFFFF', 'fallen', 40, 'Saihara Sports Complex', 13000],
+    ['Asaura Kingfishers', 'ASN', 'Asaura', '#0057B8', '#000000', 'fan', 39, 'Nagagawa Arena', 16000],
+    [
+      'FC Matsmoto Riverside',
+      'MAB49',
+      'Matsmoto',
+      '#000000',
+      '#E30613',
+      'historic',
+      39,
+      'Matsmoto Athletic Stadium',
+      14500,
+    ],
+    ['Fujizawa Blaze', 'FWA', 'Fujizawa', '#FFFFFF', '#6A1B9A', 'selling', 38, 'Fujizawa Athletic Stadium', 15000],
+    ['Yamahama Fiore', 'YAF', 'Yamahama', '#0057B8', '#6CACE4', 'youth', 38, 'Kitagawa Park', 14000],
+    ['Saisaki Riverside', 'SKI', 'Saisaki', '#6CACE4', '#FFD100', 'selling', 38, 'Saisaki Sports Complex', 12000],
+  ];
+  FM.D.CLUBS_MX3 = [
+    [
+      'Atlético Santa Zapa',
+      'ZAN',
+      'Santa Zapa',
+      '#00843D',
+      '#E30613',
+      'historic',
+      42,
+      'Estadio Municipal de Santa Zapa',
+      17000,
+    ],
+    ['Deportivo Pachetzin', 'PAS40', 'Pachetzin', '#FFFFFF', '#6CACE4', 'historic', 42, 'Estadio Ocotoco', 15500],
+    [
+      'Mineros de Tlaxelco',
+      'MTL',
+      'Tlaxelco',
+      '#6A1B9A',
+      '#000000',
+      'fallen',
+      41,
+      'Estadio Olímpico de Tlaxelco',
+      13500,
+    ],
+    ['Club Tecotlán', 'TEE', 'Tecotlán', '#FFFFFF', '#00843D', 'fan', 40, 'Estadio Olímpico de Tecotlán', 15000],
+    ['Halcones de Tecihua', 'HES', 'Tecihua', '#E30613', '#00843D', 'fan', 39, 'Estadio Olímpico de Tecihua', 12500],
+    [
+      'Club Tampichitlán',
+      'TAV43',
+      'Tampichitlán',
+      '#000000',
+      '#FFD100',
+      'fan',
+      39,
+      'Estadio Municipal de Tampichitlán',
+      13500,
+    ],
+    ['Club Coatachitlán', 'COY', 'Coatachitlán', '#6A1B9A', '#6CACE4', 'youth', 38, 'Estadio La Cuaupa', 14000],
+    ['Tepocán FC', 'TEF', 'Tepocán', '#0057B8', '#6CACE4', 'fan', 37, 'Estadio Olímpico de Tepocán', 12500],
+    ['Lobos Zapelco', 'LOZ', 'Zapelco', '#FFFFFF', '#FFD100', 'fallen', 36, 'Estadio Olímpico de Zapelco', 13000],
+    ['Unión Jilopan', 'JIB', 'Jilopan', '#6CACE4', '#E30613', 'fan', 35, 'Estadio Municipal de Jilopan', 12500],
+    ['Atlético Zapec', 'ZAZ', 'Zapec', '#6A1B9A', '#0057B8', 'historic', 34, 'Estadio Municipal de Zapec', 10000],
+    ['Mineros de Teotlán', 'MIJ', 'Teotlán', '#E30613', '#6A1B9A', 'fan', 33, 'Estadio Municipal de Teotlán', 13000],
+    ['Club Tecalco', 'TEG', 'Tecalco', '#6A1B9A', '#FFFFFF', 'selling', 33, 'Estadio Tepotlán', 10500],
+    ['Deportivo Tecec', 'TEH', 'Tecec', '#0057B8', '#001F5B', 'selling', 32, 'Estadio Olímpico de Tecec', 10500],
+  ];
+  FM.D.CLUBS_NL3 = [
+    ['Fortuna Zuidwijk', 'ZUK', 'Zuidwijk', '#FFD100', '#FFFFFF', 'selling', 48, 'De Bergveen', 20000],
+    ['Sportclub Hoogwijk', 'SPG30', 'Hoogwijk', '#6CACE4', '#FFD100', 'selling', 47, 'Hoogwijk Arena', 15500],
+    ['FC Oudwaard', 'ORF', 'Oudwaard', '#6A1B9A', '#FFD100', 'fan', 46, 'De Oudstad', 17000],
+    ['Fortuna Veenbeek', 'VEX', 'Veenbeek', '#FFD100', '#FFFFFF', 'youth', 44, 'Haarbrug Stadion', 14500],
+    [
+      'RKC Sint Grootvoort',
+      'SIA24',
+      'Sint Grootvoort',
+      '#6A1B9A',
+      '#6CACE4',
+      'historic',
+      44,
+      'Sint Grootvoort Arena',
+      17500,
+    ],
+    ['AFC Hoogvoort', 'HOZ', 'Hoogvoort', '#E30613', '#00843D', 'fan', 44, 'Gronbeek Stadion', 16500],
+    ['Sportclub Westvoort', 'SUK', 'Westvoort', '#0057B8', '#E30613', 'selling', 43, 'Nieuwdam Stadion', 15000],
+    ['Victoria Vlaarade', 'VLE', 'Vlaarade', '#0057B8', '#000000', 'youth', 42, 'Vlaarade Arena', 16000],
+    ['AFC Nieuwvoort', 'NIT', 'Nieuwvoort', '#001F5B', '#6CACE4', 'fallen', 42, 'Nieuwvoort Arena', 16000],
+    ['RKC Haarbrug', 'HAT41', 'Haarbrug', '#0057B8', '#6CACE4', 'fallen', 42, 'Haarbrug Arena', 16500],
+    ['DVC Sneeklo', 'DVA', 'Sneeklo', '#FFD100', '#FFFFFF', 'fan', 40, 'Sportpark Wagerade', 12500],
+    ['Vitesse Veendam', 'VIG30', 'Veendam', '#E30613', '#6A1B9A', 'fan', 40, 'Zwolhorst Stadion', 15500],
+    [
+      'Fortuna Oud Vlaarwaard',
+      'OUV',
+      'Oud Vlaarwaard',
+      '#000000',
+      '#E30613',
+      'youth',
+      39,
+      'Sportpark Hoornbrug',
+      13500,
+    ],
+    ['Vitesse Grootbrug', 'VIH31', 'Grootbrug', '#6A1B9A', '#FFFFFF', 'fallen', 39, 'Zaanrade Stadion', 13000],
+    ['RKC Nieuwbrug', 'NUG', 'Nieuwbrug', '#000000', '#001F5B', 'fan', 38, 'Sportpark Gronhorst', 14500],
+    ['Racing Nieuw Noordijk', 'NIW', 'Noordijk', '#6CACE4', '#000000', 'historic', 37, 'Oudkerk Stadion', 10500],
+    ['Bergdam Boys', 'BEN36', 'Bergdam', '#000000', '#E30613', 'fan', 37, 'Bergdam Arena', 13000],
+    ['Racing Nieuw Zwolhorst', 'NUW', 'Zwolhorst', '#FFD100', '#6CACE4', 'historic', 36, 'Sportpark Oudhout', 13500],
+  ];
+  FM.D.CLUBS_NI3 = [
+    ['Gilstead Victoria', 'GIL', 'Gilstead', '#0057B8', '#FFFFFF', 'fan', 43, 'Gilstead Park', 13500],
+    [
+      'Church Rodbridge Vale',
+      'CHN36',
+      'Church Rodbridge',
+      '#FFFFFF',
+      '#0057B8',
+      'historic',
+      42,
+      'Buckborough Park',
+      14000,
+    ],
+    ['Scarwold Railway', 'SCD', 'Scarwold', '#FFFFFF', '#FFD100', 'selling', 41, 'Evercaster Green', 16000],
+    ['Old Melwick Albion', 'MCK', 'Old Melwick', '#6CACE4', '#00843D', 'fallen', 40, 'Clifington Road', 15000],
+    ['North Milport Rovers', 'MIM', 'Milport', '#E30613', '#000000', 'youth', 39, 'Linwick Park', 15000],
+    ['Cheldon Villa', 'CHP37', 'Cheldon', '#FFFFFF', '#000000', 'fallen', 37, 'Hartwood Park', 14000],
+    ['Wynhurst Railway', 'WYN', 'Wynhurst', '#6CACE4', '#FFD100', 'historic', 36, 'Wynhurst Ground', 10500],
+    ['Todhaven Town', 'TOQ', 'Todhaven', '#000000', '#FFD100', 'historic', 35, 'Todhaven Ground', 10500],
+    ['Lower Horwich Rovers', 'HCH', 'Horwich', '#00843D', '#000000', 'selling', 35, 'The Lewcaster Stadium', 11500],
+    ['Athletic Club Helmouth', 'HEP', 'Helmouth', '#000000', '#001F5B', 'fan', 34, 'Helmouth Park', 9500],
+    ['Ludham Railway', 'LUH', 'Ludham', '#001F5B', '#6A1B9A', 'selling', 34, 'Clifcliff Park', 13000],
+    ['AFC Hatfield', 'HLA', 'Hatfield', '#000000', '#6A1B9A', 'fan', 31, 'Chalmere Road', 12500],
+  ];
+  FM.D.CLUBS_NO3 = [
+    ['Vestermarborg BK', 'VRG', 'Vestermarborg', '#E30613', '#000000', 'youth', 45, 'Hedrud Idrætspark', 17500],
+    ['Brovang FK', 'BRW', 'Brovang', '#000000', '#6CACE4', 'fan', 44, 'Lillerud Stadion', 17000],
+    ['Dalstad IF', 'DAX', 'Dalstad', '#001F5B', '#E30613', 'youth', 43, 'Dalstad Idrætsanlæg', 14500],
+    ['Brolund IF', 'BRX', 'Brolund', '#001F5B', '#FFFFFF', 'fan', 42, 'Brolund Arena', 16000],
+    ['Østerlangfors BK', 'SRS', 'Østerlangfors', '#00843D', '#001F5B', 'fan', 42, 'Østerlangfors Idrætsanlæg', 14500],
+    ['Lilleløkke IF', 'LII', 'Lilleløkke', '#00843D', '#0057B8', 'fallen', 41, 'Bjørndal Stadion', 14500],
+    ['Hedstrup IL', 'HEQ', 'Hedstrup', '#0057B8', '#FFFFFF', 'fan', 40, 'Hedstrup Arena', 12500],
+    ['Bergvang IF', 'BNB', 'Bergvang', '#0057B8', '#001F5B', 'historic', 39, 'Askrud Stadion', 12000],
+    ['Bergholm IF', 'BLM', 'Bergholm', '#6A1B9A', '#000000', 'fan', 38, 'Nordstad Stadion', 12000],
+    ['Ringvik Boldklub', 'RIL', 'Ringvik', '#6A1B9A', '#000000', 'fan', 38, 'Broø Stadion', 11500],
+    ['Langholm IF', 'LLM', 'Langholm', '#6CACE4', '#0057B8', 'fan', 36, 'Fjordrud Stadion', 15000],
+    ['Daldal BK', 'DBK', 'Daldal', '#FFD100', '#FFFFFF', 'fan', 35, 'Dalgård Park', 13500],
+    ['Langlund Fotball', 'LND', 'Langlund', '#000000', '#E30613', 'fan', 34, 'Langlund Idrætsanlæg', 12500],
+    ['BK Dalholm', 'DLM', 'Dalholm', '#000000', '#001F5B', 'fan', 34, 'Langby Stadion', 12000],
+  ];
+  FM.D.CLUBS_PL3 = [
+    ['Górnik Czara', 'GOD', 'Czara', '#001F5B', '#6A1B9A', 'historic', 46, 'Stadion Mławin', 18000],
+    ['Stal Tarnówka', 'TKA', 'Tarnówka', '#001F5B', '#0057B8', 'youth', 44, 'Stadion im. Rybnówka', 17000],
+    ['KS Gniin', 'GNI', 'Gniin', '#FFD100', '#000000', 'youth', 44, 'Stadion Kostewo', 18000],
+    [
+      'Gwardia Górny Piłowice',
+      'GWC',
+      'Górny Piłowice',
+      '#6A1B9A',
+      '#001F5B',
+      'fan',
+      43,
+      'Stadion Ludowy Górny Piłowice',
+      16500,
+    ],
+    ['Górnik Wła', 'GOK', 'Wła', '#6CACE4', '#FFFFFF', 'fan', 43, 'Arena Ostrówka', 14500],
+    ['Budowlani Siedlewo', 'BUZ', 'Siedlewo', '#6CACE4', '#6A1B9A', 'fan', 42, 'Arena Opolin', 13500],
+    ['GKS Jarosec', 'JAH', 'Jarosec', '#0057B8', '#E30613', 'historic', 42, 'Stadion Ludowy Jarosec', 15000],
+    ['MKS Dolny Płocowice', 'DOZ', 'Dolny Płocowice', '#6CACE4', '#6A1B9A', 'fallen', 40, 'Arena Brzezoka', 13000],
+    ['KS Jarosin', 'JAJ', 'Jarosin', '#00843D', '#FFFFFF', 'fallen', 39, 'Stadion Miejski im. Brodnice', 13000],
+    ['Włókniarz Chełmeno', 'WOJ', 'Chełmeno', '#00843D', '#001F5B', 'selling', 39, 'Stadion Miejski im. Białów', 16000],
+    ['Nowice Sokół', 'NOZ', 'Nowice', '#001F5B', '#00843D', 'fan', 39, 'Arena Słupa', 13000],
+    ['Stal Wielów', 'WIG', 'Wielów', '#6A1B9A', '#00843D', 'fan', 39, 'Arena Wielec', 12500],
+    ['Stal Nowy Włów', 'NOA24', 'Nowy Włów', '#000000', '#0057B8', 'fan', 37, 'Stadion im. Gorzów', 13000],
+    ['KS Kostin', 'KOK', 'Kostin', '#00843D', '#000000', 'fan', 36, 'Stadion Ludowy Kostin', 12500],
+    ['GKS Kalów', 'KAQ38', 'Kalów', '#E30613', '#FFD100', 'fan', 35, 'Arena Czareka', 14000],
+    ['Budowlani Ostreka', 'BUI', 'Ostreka', '#6A1B9A', '#001F5B', 'youth', 35, 'Stadion Miejski im. Lubeka', 10000],
+    ['KS Brzezesk', 'BRA24', 'Brzezesk', '#6A1B9A', '#E30613', 'fan', 34, 'Stadion Ludowy Brzezesk', 12000],
+    ['Polonia Brzezewo', 'BWO', 'Brzezewo', '#FFD100', '#6CACE4', 'youth', 33, 'Stadion im. Kostów', 12000],
+  ];
+  FM.D.CLUBS_PT3 = [
+    ['Atlético Cartada', 'CDA', 'Cartada', '#000000', '#6A1B9A', 'fan', 47, 'Estádio Torrares', 16000],
+    ['Atlético Vila Lamela', 'VIJ32', 'Vila Lamela', '#6A1B9A', '#6CACE4', 'fan', 47, 'Arena Serteira', 19000],
+    [
+      'Sporting Paivães do Mar',
+      'PDO',
+      'Paivães do Mar',
+      '#000000',
+      '#00843D',
+      'fan',
+      46,
+      'Estádio Nova Pombela',
+      17500,
+    ],
+    ['Atlético Vila Amarais', 'VAZ', 'Amarais', '#6A1B9A', '#00843D', 'fan', 45, 'Estádio Municipal de Amarais', 18000],
+    [
+      'Atlético Serra Portela',
+      'SEE28',
+      'Serra Portela',
+      '#00843D',
+      '#6A1B9A',
+      'youth',
+      44,
+      'Estádio Nova Castares',
+      14500,
+    ],
+    ['GD Cartela', 'GDA', 'Cartela', '#0057B8', '#000000', 'youth', 43, 'Estádio Nova Vendinha', 15500],
+    ['Vendela Futebol Clube', 'VEZ', 'Vendela', '#00843D', '#0057B8', 'fan', 42, 'Estádio Nazaral', 14000],
+    ['Sport Clube Estrela', 'ESQ', 'Estrela', '#E30613', '#0057B8', 'historic', 41, 'Estádio Leiral', 13000],
+    ['Sport Clube Avão', 'AVO', 'Avão', '#0057B8', '#E30613', 'selling', 40, 'Complexo Desportivo Avão', 14000],
+    [
+      'Sporting Lousão da Serra',
+      'LOJ',
+      'Lousão da Serra',
+      '#6CACE4',
+      '#001F5B',
+      'fallen',
+      40,
+      'Estádio Alentouro',
+      15500,
+    ],
+    ['Académico Argeira', 'ACC', 'Argeira', '#000000', '#001F5B', 'fan', 38, 'Estádio Covouro', 12000],
+    ['Tavira Atlético Clube', 'TAW44', 'Tavira', '#00843D', '#000000', 'youth', 36, 'Estádio Alentinha', 15000],
+  ];
+  FM.D.CLUBS_RO3 = [
+    ['Progresul Hunana', 'PRN', 'Hunana', '#001F5B', '#6CACE4', 'historic', 43, 'Arena Hunești', 17500],
+    ['Rapid Mare Droău', 'RAD27', 'Droău', '#000000', '#00843D', 'fallen', 42, 'Arena Slatana', 16000],
+    ['Electroputere Focana', 'ERE', 'Focana', '#6A1B9A', '#000000', 'historic', 40, 'Stadionul Timești', 14500],
+    ['Unirea Romova', 'UNC', 'Romova', '#001F5B', '#00843D', 'historic', 40, 'Stadionul Bacița', 12500],
+    ['Minerul Miiu', 'MUL', 'Miiu', '#FFD100', '#001F5B', 'fallen', 37, 'Arena Cameni', 12000],
+    ['CS Hunova', 'CSS', 'Hunova', '#6A1B9A', '#001F5B', 'fan', 36, 'Stadionul Pitița', 11000],
+    ['Conana FC', 'CFC', 'Conana', '#0057B8', '#000000', 'fan', 35, 'Complexul Sportiv Conana', 10000],
+    ['Mare Albău FC', 'MAC50', 'Albău', '#000000', '#001F5B', 'fan', 35, 'Arena Petiu', 10000],
+    ['Dinamo Pitești', 'DIT', 'Pitești', '#FFD100', '#E30613', 'fallen', 34, 'Arena Criu', 14000],
+    ['Metalul Focești', 'MFO', 'Focești', '#00843D', '#FFFFFF', 'fan', 32, 'Stadionul Satova', 12500],
+  ];
+  FM.D.CLUBS_RU3 = [
+    ['Dinamo Vladovo', 'DIU', 'Vladovo', '#0057B8', '#001F5B', 'fan', 43, 'Stadion Vladovo', 15500],
+    ['Krylia Kolov', 'KRM', 'Kolov', '#FFD100', '#0057B8', 'youth', 43, 'Stadion Kolov', 13500],
+    [
+      'FK Svetbor-na-Sine',
+      'SVR',
+      'Svetbor-na-Sine',
+      '#6CACE4',
+      '#E30613',
+      'historic',
+      42,
+      'Tsentralny Stadion Svetbor-na-Sine',
+      17500,
+    ],
+    ['FK Yargrad', 'YAG', 'Yargrad', '#E30613', '#FFFFFF', 'selling', 40, 'Ustgrad Arena', 12500],
+    ['Baltika Peskensk', 'BKA', 'Peskensk', '#FFD100', '#FFFFFF', 'fan', 40, 'Orlov Arena', 14000],
+    ['FC Nizhne-Kursov', 'NNA', 'Kursov', '#FFFFFF', '#FFD100', 'fan', 40, 'Stadion Dinamo Kursov', 12500],
+    ['Spartak Chelgrad', 'SPH31', 'Chelgrad', '#6A1B9A', '#6CACE4', 'youth', 39, 'Stadion Dinamo Chelgrad', 12000],
+    ['Akademiya Kinovsk', 'AYC', 'Kinovsk', '#E30613', '#0057B8', 'fan', 38, 'Stadion Kinovsk', 14000],
+    ['Akademiya Yelka', 'AKH', 'Yelka', '#6CACE4', '#E30613', 'selling', 38, 'Stadion Tulburg', 12500],
+    [
+      'FK Verkhne-Staroirka',
+      'VNE',
+      'Staroirka',
+      '#FFFFFF',
+      '#6A1B9A',
+      'historic',
+      37,
+      'Tsentralny Stadion Staroirka',
+      13000,
+    ],
+    ['Energiya Nizhne-Yarino', 'END', 'Yarino', '#6CACE4', '#001F5B', 'historic', 36, 'Kursbor Arena', 13000],
+    [
+      'Krylia Nizhneorlovo',
+      'KRN',
+      'Nizhneorlovo',
+      '#000000',
+      '#E30613',
+      'selling',
+      36,
+      'Stadion Dinamo Nizhneorlovo',
+      15000,
+    ],
+    ['CSKA Novo-Arzevo', 'CSK', 'Arzevo', '#0057B8', '#000000', 'fan', 35, 'Stadion Arzevo', 11000],
+    ['Baltika Zvonevo', 'BAZ47', 'Zvonevo', '#001F5B', '#FFD100', 'selling', 35, 'Stadion Zvonevo', 13000],
+    ['FK Smolinsk', 'SMO', 'Smolinsk', '#00843D', '#0057B8', 'youth', 35, 'Murbor Arena', 10000],
+    ['FC Bryevo-na-Mere', 'BVO', 'Bryevo-na-Mere', '#FFD100', '#6A1B9A', 'fan', 34, 'Stadion Bryevo-na-Mere', 11500],
+    ['Energiya Zarburg', 'EYA', 'Zarburg', '#E30613', '#6CACE4', 'selling', 32, 'Tulburg Arena', 10500],
+    ['Zenit Khabgrad', 'ZES', 'Khabgrad', '#FFFFFF', '#00843D', 'fan', 31, 'Tsentralny Stadion Khabgrad', 8500],
+  ];
+  FM.D.CLUBS_SA3 = [
+    ['Rifya Club', 'RIP', 'Rifya', '#E30613', '#FFD100', 'fallen', 43, 'Rifya Stadium', 17500],
+    ['Al Wadi Faliq', 'ALT65', 'Wadi Faliq', '#E30613', '#0057B8', 'fan', 43, 'Wadi Faliq Sports City', 14500],
+    ['Kutah Club', 'KUE', 'Kutah', '#6CACE4', '#FFFFFF', 'fan', 43, 'Prince Khasar Stadium', 13500],
+    ['Al Wadi Musah SC', 'ALU66', 'Musah', '#001F5B', '#00843D', 'youth', 42, 'Nakiyah Stadium', 17000],
+    ['Barayn Club', 'BYN', 'Barayn', '#000000', '#6CACE4', 'historic', 41, 'Ramiyah Arena', 17000],
+    ['Al Hawayn', 'AHA', 'Hawayn', '#001F5B', '#6CACE4', 'selling', 40, 'Hawayn Stadium', 15500],
+    ['Ain Aqiq Club', 'AIC', 'Aqiq', '#6CACE4', '#001F5B', 'historic', 40, 'Zarya Stadium', 13000],
+    ['Al Ramiq', 'ALV67', 'Ramiq', '#000000', '#00843D', 'historic', 40, 'Ramiq Stadium', 17000],
+    ['Al Madra SC', 'ALW68', 'Madra', '#000000', '#001F5B', 'historic', 39, 'Bahiq Arena', 16000],
+    ['Tafayr Club', 'TAX45', 'Tafayr', '#FFD100', '#001F5B', 'fan', 39, 'Khasan Stadium', 14500],
+    ['Barah Club', 'BAA48', 'Barah', '#001F5B', '#000000', 'historic', 37, 'Nizib Arena', 12000],
+    ['Al Ain Ibrya', 'ALX69', 'Ibrya', '#00843D', '#FFD100', 'historic', 37, 'Shinayr Arena', 11000],
+    ['Shiniyah SC', 'SHY', 'Shiniyah', '#E30613', '#000000', 'youth', 37, 'Shiniyah Stadium', 13000],
+    ['Ain Shinan SC', 'AIS', 'Ain Shinan', '#6CACE4', '#FFFFFF', 'selling', 36, 'Prince Nakar Stadium', 14500],
+    ['Al Khasayr', 'ALY70', 'Khasayr', '#FFD100', '#001F5B', 'fan', 34, 'Qura Stadium', 10500],
+    ['Shabab Madan', 'SHA24', 'Madan', '#6CACE4', '#FFFFFF', 'fan', 33, 'Madan Stadium', 9500],
+  ];
+  FM.D.CLUBS_SC3 = [
+    ['Cumbside Academical', 'CUM', 'Cumbside', '#FFFFFF', '#6CACE4', 'fan', 43, 'Pitmore Road', 15500],
+    ['Mid Peebton Town', 'MIP', 'Peebton', '#6A1B9A', '#E30613', 'historic', 41, 'Langwick Green', 13000],
+    ['Jedie Athletic', 'JEE', 'Jedie', '#FFD100', '#FFFFFF', 'fallen', 41, 'Jedie Muir', 16500],
+    ['Innesock Rovers', 'INN', 'Innesock', '#000000', '#0057B8', 'fallen', 40, 'Falrie Park', 13500],
+    ['Galkirk Burgh', 'GAL', 'Galkirk', '#6A1B9A', '#E30613', 'historic', 39, 'Galkirk Muir', 14500],
+    ['Torryrie Burgh', 'TIE', 'Torryrie', '#0057B8', '#6A1B9A', 'fan', 38, 'Lockmouth Road', 11500],
+    ['Upper Rosrie Victoria', 'ROA24', 'Rosrie', '#FFD100', '#00843D', 'youth', 35, 'Rosrie Park', 10000],
+    ['Tulliton City', 'TUD', 'Tulliton', '#E30613', '#6A1B9A', 'historic', 35, 'Jedwick Green', 14500],
+    ['Bannockside Victoria', 'BAB49', 'Bannockside', '#6A1B9A', '#E30613', 'historic', 34, 'Auchdee Green', 12500],
+    ['Upper Kinkirk Town', 'KIA24', 'Upper Kinkirk', '#6CACE4', '#FFFFFF', 'historic', 31, 'Upper Kinkirk Muir', 10500],
+  ];
+  FM.D.CLUBS_ZA3 = [
+    ['Ulunberg United', 'ULG', 'Ulunberg', '#000000', '#FFD100', 'fan', 43, 'Ulunberg Sports Complex', 15500],
+    ['Old Vredeston FC', 'VRA', 'Vredeston', '#E30613', '#000000', 'selling', 43, 'Kwadoorn Stadium', 15000],
+    ['Ulunula City', 'ULD', 'Ulunula', '#001F5B', '#FFFFFF', 'historic', 42, 'Volula Park', 13500],
+    ['Upper Sasoldoorn City', 'SRC', 'Sasoldoorn', '#000000', '#E30613', 'fallen', 40, 'Mbomkop Stadium', 13000],
+    ['Pongfontein Swallows', 'PIK', 'Pongfontein', '#E30613', '#FFFFFF', 'fallen', 40, 'Thabula Park', 17000],
+    ['Volrus City', 'VOS', 'Volrus', '#001F5B', '#E30613', 'fan', 40, 'Volrus Sports Complex', 14500],
+    ['Vredeberg Arrows', 'VRB', 'Vredeberg', '#FFD100', '#E30613', 'youth', 39, 'Vredeberg Oval', 13500],
+    ['Kwafontein City', 'KWN', 'Kwafontein', '#00843D', '#6CACE4', 'selling', 38, 'Kwafontein Sports Complex', 13000],
+    ['Upper Phalstad Swallows', 'PHD', 'Phalstad', '#6A1B9A', '#FFD100', 'fan', 37, 'Kwula Park', 15000],
+    ['Volston Chiefs', 'VON', 'Volston', '#000000', '#E30613', 'historic', 37, 'Thabdoorn Stadium', 13500],
+    ['Randstad City', 'RAE28', 'Randstad', '#00843D', '#0057B8', 'youth', 36, 'Thaberg Stadium', 11500],
+    ['Vredestad Arrows', 'VRD', 'Vredestad', '#FFFFFF', '#E30613', 'fan', 34, 'Bettdoorn Stadium', 11000],
+    ['Maraburg City', 'MAD51', 'Maraburg', '#E30613', '#FFD100', 'fallen', 34, 'Maraburg Sports Complex', 11500],
+    ['Nelston Trinity', 'NEA24', 'Nelston', '#E30613', '#000000', 'selling', 34, 'Vrededal Stadium', 12500],
+    ['Upper Sibodal United', 'SIB25', 'Sibodal', '#0057B8', '#00843D', 'fallen', 33, 'Sibodal Sports Complex', 12000],
+    ['Lower Kwastad City', 'KWD', 'Kwastad', '#FFD100', '#0057B8', 'fallen', 33, 'Kwastad Sports Complex', 9000],
+  ];
+  FM.D.CLUBS_KR3 = [
+    ['Munhwa Electric Tigers', 'MUE', 'Munhwa', '#00843D', '#001F5B', 'historic', 46, 'Gimwon Sports Complex', 15000],
+    ['Sinwon Stars', 'SIC26', 'Sinwon', '#FFFFFF', '#6A1B9A', 'historic', 45, 'Sinwon Stadium', 14500],
+    ['FC Buseong', 'BUA24', 'Buseong', '#FFD100', '#6CACE4', 'historic', 44, 'Mungu Arena', 17500],
+    ['Jinwon Chemical Dolphins', 'JID', 'Jinwon', '#6CACE4', '#001F5B', 'historic', 44, 'Jinju Arena', 15000],
+    ['Bowon Citizen', 'BOC26', 'Bowon', '#0057B8', '#6A1B9A', 'fan', 42, 'Bowon Stadium', 15000],
+    ['Daejeong United', 'DAZ', 'Daejeong', '#00843D', '#001F5B', 'fan', 42, 'Daejeong Stadium', 14000],
+    ['Chori Electric Tigers', 'CRI', 'Chori', '#0057B8', '#6CACE4', 'selling', 41, 'Daewon Sports Complex', 17500],
+    ['Pyeongri Dolphins', 'PYA', 'Pyeongri', '#0057B8', '#6CACE4', 'fan', 41, 'Chungcheon Arena', 12500],
+    ['Daegu Chemical Dolphins', 'DAA24', 'Daegu', '#000000', '#FFD100', 'selling', 40, 'Sinwon Sports Complex', 16000],
+    ['Jeonjeong Athletic', 'JEF', 'Jeonjeong', '#FFFFFF', '#001F5B', 'fan', 39, 'Chungjeong Arena', 12500],
+    ['Pyeongjin Motors FC', 'PYN', 'Pyeongjin', '#FFD100', '#6A1B9A', 'historic', 39, 'Pyeongjin Stadium', 15500],
+    ['Jinjin Copper Phoenix', 'JIE', 'Jinjin', '#6A1B9A', '#FFD100', 'fan', 37, 'Gyeongcheon Arena', 10500],
+    ['Gimri Electric Tigers', 'GIA', 'Gimri', '#0057B8', '#E30613', 'fallen', 37, 'Wolseong Sports Complex', 15500],
+    ['Dongjin Dolphins', 'DDO', 'Dongjin', '#001F5B', '#E30613', 'youth', 36, 'Bojeong Arena', 15000],
+    ['Haedong FC', 'HNG', 'Haedong', '#0057B8', '#E30613', 'selling', 35, 'Haedong Civic Stadium', 12000],
+    ['Seosan Steel Mariners', 'SEF29', 'Seosan', '#001F5B', '#FFD100', 'fan', 35, 'Choju Arena', 14500],
+  ];
+  FM.D.CLUBS_SE3 = [
+    ['Hudfors IF', 'HUD', 'Hudfors', '#FFFFFF', '#E30613', 'historic', 44, 'Hudfors Stadion', 16500],
+    ['Vö FF', 'VOO', 'Vö', '#FFFFFF', '#6CACE4', 'selling', 43, 'Sundsby Arena', 18000],
+    ['Sleipner Örnholm', 'SLN', 'Örnholm', '#6A1B9A', '#6CACE4', 'historic', 43, 'Örnholm Idrottspark', 13500],
+    ['Skelstad Boll', 'SKD', 'Skelstad', '#E30613', '#6CACE4', 'fan', 42, 'Solhamn Arena', 17000],
+    ['Vasalund Kalö', 'VAA24', 'Kalö', '#00843D', '#E30613', 'youth', 41, 'Kalö Idrottspark', 15000],
+    ['IF Södra Linsund', 'SOU', 'Södra Linsund', '#000000', '#001F5B', 'fan', 41, 'Sundsnäs IP', 16500],
+    ['Mohamn FF', 'MMN', 'Mohamn', '#6CACE4', '#00843D', 'youth', 40, 'Ulrvikvallen', 13500],
+    ['Brage Nynberg', 'BRB25', 'Nynberg', '#6A1B9A', '#6CACE4', 'fallen', 40, 'Nynberg Stadion', 16500],
+    ['GIF Västra Ulrby', 'GIF', 'Ulrby', '#6CACE4', '#FFFFFF', 'historic', 39, 'Solsund IP', 15500],
+    ['Sleipner Tranköping', 'SLR', 'Tranköping', '#FFFFFF', '#6A1B9A', 'youth', 37, 'Ronby Arena', 12500],
+    ['Brage Västra Norköping', 'BRC26', 'Norköping', '#0057B8', '#FFFFFF', 'fan', 36, 'Väsköping Arena', 15000],
+    ['Brage Södra Örnhamn', 'BRD27', 'Södra Örnhamn', '#001F5B', '#FFFFFF', 'fan', 36, 'Solnäs IP', 14000],
+    ['Sleipner Norhamn', 'SLP', 'Norhamn', '#0057B8', '#000000', 'selling', 35, 'Bornäs Arena', 12000],
+    ['IF Norstad', 'NOB25', 'Norstad', '#000000', '#E30613', 'fan', 34, 'Hudfors IP', 12500],
+    ['Nynfors BK', 'NYS', 'Nynfors', '#0057B8', '#FFFFFF', 'youth', 33, 'Söhamn Arena', 13000],
+    ['Brage Nya Falstad', 'BNY', 'Falstad', '#6CACE4', '#6A1B9A', 'historic', 32, 'Borholmvallen', 11500],
+  ];
+  FM.D.CLUBS_CH3 = [
+    ['FC Alt Eberbrück', 'ALZ71', 'Eberbrück', '#FFFFFF', '#00843D', 'youth', 43, 'Immau-Stadion', 17500],
+    ['Blau-Weiß Waldbach', 'BLC', 'Waldbach', '#6CACE4', '#FFD100', 'fan', 43, 'Waldbach-Arena', 18000],
+    ['VfL Elshafen', 'ELF', 'Elshafen', '#000000', '#FFFFFF', 'fan', 42, 'Waldstadion Elshafen', 14000],
+    ['Viktoria Branhof', 'BRE28', 'Branhof', '#00843D', '#6CACE4', 'selling', 42, 'Waldstadion Branhof', 13500],
+    ['Westerhorst 04', 'WET', 'Westerhorst', '#0057B8', '#6A1B9A', 'historic', 41, 'Elsingen-Stadion', 12500],
+    ['Arminia Holzbrück', 'ARW', 'Holzbrück', '#0057B8', '#001F5B', 'historic', 40, 'Holzbrück-Arena', 17000],
+    ['Alt Steinstadt 1899', 'AST', 'Steinstadt', '#E30613', '#6A1B9A', 'selling', 39, 'Stadion Heidheim', 14500],
+    ['Schwarz-Weiß Freisee', 'SCF', 'Freisee', '#E30613', '#00843D', 'historic', 39, 'Stadion Thalhorst', 15000],
+    ['Teutonia Groß Kirchberg', 'GRW', 'Kirchberg', '#000000', '#FFD100', 'fan', 38, 'Sportpark Greifheim', 15500],
+    ['TSV Niederhausen', 'NNI', 'Niederhausen', '#0057B8', '#000000', 'fallen', 36, 'Waldstadion Niederhausen', 14000],
+    ['Klein Waldstein SC 1927', 'KLW', 'Waldstein', '#00843D', '#E30613', 'fan', 36, 'Schwarzhausen-Stadion', 13500],
+    ['SV Alt Westerstadt', 'AWE', 'Alt Westerstadt', '#FFD100', '#6CACE4', 'historic', 36, 'Sportpark Goldhof', 11000],
+    ['FC Kirchkirchen 1932', 'KEC', 'Kirchkirchen', '#FFD100', '#6A1B9A', 'fan', 35, 'Waldstadion Kirchkirchen', 14500],
+    ['Bruchfurt 1899', 'BRF29', 'Bruchfurt', '#000000', '#001F5B', 'fan', 35, 'Stadion am Langhafen', 14500],
+    [
+      'Eintracht Bad Greifstein',
+      'BAC50',
+      'Greifstein',
+      '#FFD100',
+      '#00843D',
+      'youth',
+      34,
+      'Stadion am Neckaringen',
+      12500,
+    ],
+    ['Eintracht Goldfurt', 'GOT', 'Goldfurt', '#FFFFFF', '#00843D', 'historic', 34, 'Goldfurt-Arena', 11500],
+    ['Hohental 1899', 'HHO', 'Hohental', '#FFFFFF', '#E30613', 'fan', 33, 'Sportpark Haghorst', 10000],
+    ['Rot-Weiss Neckarbach', 'ROB25', 'Neckarbach', '#6A1B9A', '#001F5B', 'fallen', 33, 'Stadion am Felsau', 10500],
+  ];
+  FM.D.CLUBS_TH3 = [
+    ['Ratyai City', 'RAF29', 'Ratyai', '#0057B8', '#000000', 'fan', 41, 'Bangthong Arena', 14000],
+    ['Wangpur Rapids United', 'WAP', 'Wangpur', '#6A1B9A', '#000000', 'historic', 40, 'Wangra Arena', 12500],
+    ['Taknam FC', 'TFC', 'Taknam', '#FFD100', '#6CACE4', 'selling', 39, 'Phusai Arena', 16500],
+    ['Phunong United', 'PHB', 'Phunong', '#6CACE4', '#000000', 'fan', 37, 'Khaora Sports Park', 13000],
+    ['Thayai Athletic', 'THV', 'Thayai', '#E30613', '#6A1B9A', 'fallen', 37, 'Thakaeo Stadium', 11500],
+    [
+      'Sakmai Rapids United',
+      'SAB49',
+      'Sakmai',
+      '#6A1B9A',
+      '#FFFFFF',
+      'selling',
+      36,
+      'Sakmai Provincial Stadium',
+      13000,
+    ],
+    ['Phraburi FC', 'PHC', 'Phraburi', '#001F5B', '#00843D', 'historic', 35, 'Lamkaeo Stadium', 12000],
+    ['Chiangpur United', 'CHQ38', 'Chiangpur', '#000000', '#00843D', 'fallen', 34, 'Nonglek Sports Park', 9500],
+    ['Maethong United', 'MNG', 'Maethong', '#000000', '#E30613', 'selling', 34, 'Maethong Provincial Stadium', 10500],
+    ['Muang Pakra United', 'MUF', 'Pakra', '#FFD100', '#6A1B9A', 'fan', 33, 'Srinong Stadium', 13000],
+    ['Saksai United', 'SAC50', 'Saksai', '#E30613', '#FFFFFF', 'fan', 31, 'Bangkaeo Stadium', 9000],
+    ['Muang Nongsai United', 'MUG', 'Nongsai', '#0057B8', '#000000', 'selling', 30, 'Nakhonkaeo Stadium', 8000],
+  ];
+  FM.D.CLUBS_TR3 = [
+    ['Kaykale Belediyespor', 'KAR39', 'Kaykale', '#00843D', '#FFD100', 'fan', 47, 'Kaykale Şehir Stadyumu', 19500],
+    ['İncsaraygücü', 'INE', 'İncsaray', '#FFFFFF', '#FFD100', 'fan', 47, 'Kızköy Arena', 19500],
+    ['Kızehir İdman Yurdu', 'KZE', 'Kızehir', '#001F5B', '#0057B8', 'youth', 45, 'Kızehir Şehir Stadyumu', 14500],
+    ['Yeni Bayköyspor', 'BBE', 'Bayköy', '#001F5B', '#E30613', 'historic', 45, 'Karalar Arena', 17000],
+    ['Çanehir SK', 'CAN36', 'Çanehir', '#FFFFFF', '#001F5B', 'fan', 44, 'Çanehir Cumhuriyet Stadyumu', 17000],
+    ['Kızlar Gücü', 'KZB', 'Kızlar', '#000000', '#FFD100', 'selling', 43, 'Gülar Stadyumu', 15000],
+    [
+      'Küçük Sultandere Birlik',
+      'KUF',
+      'Küçük Sultandere',
+      '#FFFFFF',
+      '#6A1B9A',
+      'youth',
+      42,
+      'Kaypınar Stadyumu',
+      13500,
+    ],
+    ['Karalar İdman Yurdu', 'KAS40', 'Karalar', '#000000', '#0057B8', 'fallen', 42, 'Özköy Stadyumu', 16000],
+    ['Orhtepe Gençlik', 'ORG', 'Orhtepe', '#FFFFFF', '#FFD100', 'fallen', 42, 'Özehir Stadyumu', 14500],
+    ['Boztepegücü', 'BCU', 'Boztepe', '#6CACE4', '#001F5B', 'selling', 41, 'Boztepe Şehir Stadyumu', 16500],
+    ['Uşapınar FK', 'USG', 'Uşapınar', '#FFFFFF', '#001F5B', 'historic', 41, 'Durova Stadyumu', 16500],
+    ['Küçük Bayderespor', 'KUK', 'Küçük Baydere', '#E30613', '#001F5B', 'fan', 40, 'Uşakale Arena', 17000],
+    [
+      'Eski Dursarayspor',
+      'ESI',
+      'Eski Dursaray',
+      '#E30613',
+      '#FFFFFF',
+      'historic',
+      40,
+      'Eski Dursaray Şehir Stadyumu',
+      13000,
+    ],
+    ['Çamehir Gençlik', 'CAP37', 'Çamehir', '#001F5B', '#FFFFFF', 'historic', 38, 'Sarlar Stadyumu', 15500],
+    ['Eski Durpınarspor', 'EKI', 'Eski Durpınar', '#FFD100', '#FFFFFF', 'selling', 38, 'Gönehir Stadyumu', 15500],
+    ['Eskehirspor', 'ESS', 'Eskehir', '#6CACE4', '#6A1B9A', 'fan', 38, 'Boztepe Stadyumu', 14500],
+    ['Tekehir Gençlik', 'TEJ', 'Tekehir', '#000000', '#0057B8', 'historic', 37, 'Tekehir Şehir Stadyumu', 14000],
+    ['Çamköyspor', 'CCA', 'Çamköy', '#E30613', '#6A1B9A', 'fan', 36, 'Çamköy Cumhuriyet Stadyumu', 10500],
+  ];
+  FM.D.CLUBS_UA3 = [
+    ['FK Rovivske', 'ROC26', 'Rovivske', '#E30613', '#6A1B9A', 'historic', 43, 'Stadion Vinske', 17000],
+    ['Zorya Druka', 'ZOD', 'Druka', '#E30613', '#000000', 'youth', 42, 'Polivske Arena', 17000],
+    ['Hirnyk Nova Druivske', 'HIK', 'Druivske', '#6A1B9A', '#FFD100', 'historic', 41, 'Stadion Druivske', 12500],
+    ['Veres Shepopil', 'VSH', 'Shepopil', '#0057B8', '#001F5B', 'selling', 40, 'Mis’kyi Stadion Shepopil', 16000],
+    ['Lokomotyv Rovove', 'LOR', 'Rovove', '#E30613', '#0057B8', 'youth', 40, 'Stadion Rovove', 16000],
+    ['Kolos Okhske', 'KOG', 'Okhske', '#000000', '#6A1B9A', 'historic', 38, 'Stadion imeni Vinivtsi', 16000],
+    ['FC Polka', 'POL34', 'Polka', '#6CACE4', '#001F5B', 'fan', 37, 'Stadion Polka', 11000],
+    ['Polissia Polska', 'POM35', 'Polska', '#6CACE4', '#0057B8', 'fan', 37, 'Stadion Polska', 15000],
+    ['FK Nova Borets', 'NOC26', 'Nova Borets', '#6CACE4', '#FFD100', 'historic', 35, 'Horove Arena', 10000],
+    ['Spartak Zhovska', 'SPJ32', 'Zhovska', '#001F5B', '#0057B8', 'youth', 34, 'Mis’kyi Stadion Zhovska', 9500],
+    ['Hirnyk Kovivtsi', 'HYK', 'Kovivtsi', '#00843D', '#6A1B9A', 'selling', 33, 'Stadion Sumyska', 9500],
+    ['Kolos Radopil', 'KOJ', 'Radopil', '#0057B8', '#FFD100', 'historic', 32, 'Stadion Hluyne', 11000],
+  ];
+  FM.D.CLUBS_US3 = [
+    ['Real Millville', 'MIQ', 'Millville', '#6CACE4', '#000000', 'fan', 42, 'Millville Field', 16000],
+    ['Oakview Union Club', 'OAW', 'Oakview', '#0057B8', '#FFD100', 'selling', 42, 'Oakview Stadium', 13500],
+    ['Mapledale Express', 'MEX', 'Mapledale', '#0057B8', '#001F5B', 'fan', 42, 'Mapledale Field', 17000],
+    [
+      'Santa Riveridge Blaze',
+      'RIV',
+      'Santa Riveridge',
+      '#00843D',
+      '#FFD100',
+      'youth',
+      41,
+      'Santa Riveridge Arena',
+      17000,
+    ],
+    [
+      'Santa Millville City FC',
+      'MIU',
+      'Santa Millville',
+      '#000000',
+      '#FFD100',
+      'historic',
+      40,
+      'Hickoryhills Field',
+      14500,
+    ],
+    ['Lakeburg FC', 'LAK33', 'Lakeburg', '#6CACE4', '#000000', 'fallen', 39, 'Rockfalls Field', 15000],
+    ['El Greenridge Union Club', 'EEL', 'El Greenridge', '#E30613', '#001F5B', 'fan', 39, 'Bayview Park', 15000],
+    ['Cedarbluff Union Club', 'CEG', 'Cedarbluff', '#6CACE4', '#FFFFFF', 'youth', 39, 'Canyoncreek Field', 12000],
+    ['Sunburg Brewers', 'SUQ', 'Sunburg', '#000000', '#FFFFFF', 'fan', 37, 'Summitville Stadium', 11000],
+    ['Millfalls Rapids', 'MLF', 'Millfalls', '#E30613', '#0057B8', 'youth', 36, 'Millfalls Arena', 11000],
+    ['New Springton Mustangs', 'SPK33', 'Springton', '#0057B8', '#001F5B', 'youth', 36, 'Goldenford Field', 11500],
+    ['Bluesprings Rockets', 'BLD', 'Bluesprings', '#0057B8', '#6A1B9A', 'fan', 35, 'Redview Field', 13500],
+    ['Riverford Revolution', 'RRD', 'Riverford', '#6A1B9A', '#0057B8', 'fallen', 35, 'Riverford Stadium', 13000],
+    [
+      'Goldensprings Athletic',
+      'GOE',
+      'Goldensprings',
+      '#6A1B9A',
+      '#FFFFFF',
+      'selling',
+      34,
+      'Goldensprings Arena',
+      10500,
+    ],
+    ['Cypresston Ironworks SC', 'CYN', 'Cypresston', '#0057B8', '#001F5B', 'fan', 33, 'Goldendale Park', 9500],
+    ['AC Sunwood', 'SUU', 'Sunwood', '#6A1B9A', '#00843D', 'fan', 32, 'Sunwood Field', 9000],
+  ];
+  FM.D.CLUBS_VN3 = [
+    ['CLB Bac Giang', 'CLG', 'Bac Giang', '#E30613', '#FFD100', 'fan', 38, 'San Ninh Duong', 16000],
+    ['Sai Lang Tinh', 'SAD51', 'Lang Tinh', '#000000', '#00843D', 'historic', 38, 'San Lang Tinh', 16000],
+    ['Dong A Gia Dinh', 'DOA24', 'Gia Dinh', '#6CACE4', '#001F5B', 'historic', 36, 'San Thanh Lai', 15000],
+    ['Thep Khanh Tinh', 'THW', 'Khanh Tinh', '#FFD100', '#FFFFFF', 'youth', 36, 'San Khanh Tinh', 12000],
+    ['Hoang Anh Quang Nang', 'HOA24', 'Quang Nang', '#001F5B', '#E30613', 'fan', 35, 'San Quang Lac', 11000],
+    ['Tuy Son United', 'TUY', 'Tuy Son', '#FFFFFF', '#00843D', 'fan', 34, 'Khanh Dinh Stadium', 12500],
+    ['Thep Thai Phong', 'THX', 'Thai Phong', '#6A1B9A', '#0057B8', 'selling', 32, 'Tuy Tinh Stadium', 11000],
+    ['Sai Dong An', 'SDO', 'Dong An', '#0057B8', '#6A1B9A', 'fan', 32, 'San Dong An', 10500],
+    ['CLB Long Dinh', 'CLL', 'Long Dinh', '#0057B8', '#FFD100', 'fan', 30, 'San Nam Duong', 8000],
+    ['Dong A Lam Quan', 'DNG', 'Lam Quan', '#001F5B', '#00843D', 'youth', 30, 'San Cao Giang', 9000],
+    ['Cong An Quang Tinh', 'COZ', 'Quang Tinh', '#6A1B9A', '#E30613', 'fan', 29, 'Quang Tinh Stadium', 9500],
+    ['Yen An United', 'YEF', 'Yen An', '#6A1B9A', '#FFD100', 'youth', 29, 'Gia Tinh Stadium', 12000],
+  ];
+  FM.D.CLUBS_AR4 = [
+    ['Nacional Coronel Quiria', 'NCO', 'Coronel Quiria', '#FFFFFF', '#6A1B9A', 'fallen', 44, 'Estadio Bustano', 18000],
+    ['Sportivo Lavano', 'LNO', 'Lavano', '#6CACE4', '#6A1B9A', 'fan', 42, 'Estadio Monumental Domar', 15500],
+    ['Defensores de Santa Lavez', 'LLB', 'Santa Lavez', '#0057B8', '#6CACE4', 'fan', 41, 'Estadio Garo', 14500],
+    ['Club Atlético Unión Ferano', 'FEO', 'Ferano', '#6CACE4', '#E30613', 'fan', 40, 'Estadio Torano', 15500],
+    ['Independiente Lezano', 'LEO', 'Lezano', '#6A1B9A', '#000000', 'fan', 40, 'Estadio Monumental Velano', 16000],
+    ['Independiente Garero', 'GAG', 'Garero', '#0057B8', '#6A1B9A', 'fan', 39, 'Estadio Municipal de Garero', 15500],
+    ['Estudiantes de Velas', 'VVE', 'Velas', '#001F5B', '#00843D', 'fan', 39, 'Cancha de Velas', 12500],
+    ['Atlético Escas', 'ESV', 'Escas', '#001F5B', '#FFD100', 'fan', 38, 'Cancha de Escas', 13000],
+    ['Club Sportivo Urqar', 'URR', 'Urqar', '#000000', '#6A1B9A', 'fallen', 38, 'Cancha de Urqar', 12000],
+    ['Club Atlético Belón', 'BOD27', 'Belón', '#6A1B9A', '#6CACE4', 'fan', 37, 'Cancha de Belón', 12500],
+    [
+      'General Bustez FC',
+      'GEL',
+      'General Bustez',
+      '#6A1B9A',
+      '#001F5B',
+      'fan',
+      36,
+      'Estadio Municipal de General Bustez',
+      14000,
+    ],
+    ['Nacional Lavar', 'NLA', 'Lavar', '#6CACE4', '#00843D', 'fallen', 35, 'Estadio Monumental Rodona', 14000],
+    ['Atlético Franui', 'FUI', 'Franui', '#FFFFFF', '#6A1B9A', 'selling', 34, 'Cancha de Franui', 10000],
+    [
+      'Atlético Doctor Dorria',
+      'DOB25',
+      'Doctor Dorria',
+      '#000000',
+      '#6CACE4',
+      'fan',
+      34,
+      'Cancha de Doctor Dorria',
+      13500,
+    ],
+    ['Gimnasia de Dorrón', 'DOC26', 'Dorrón', '#00843D', '#FFFFFF', 'historic', 33, 'Estadio Belona', 11000],
+    ['Villa Lavia FC', 'LAL34', 'Villa Lavia', '#0057B8', '#E30613', 'fallen', 33, 'Estadio Alverini', 11000],
+  ];
+  FM.D.CLUBS_AT4 = [
+    ['SV Bruchberg', 'BRG30', 'Bruchberg', '#6A1B9A', '#000000', 'historic', 43, 'Waldstadion Bruchberg', 14500],
+    ['Teutonia Heidbach', 'HHE', 'Heidbach', '#6A1B9A', '#FFFFFF', 'youth', 42, 'Heidbach-Arena', 13000],
+    ['SV Altdorf 1907', 'ARX', 'Altdorf', '#6CACE4', '#E30613', 'fan', 42, 'Altdorf-Arena', 16500],
+    ['TSV Eichwald', 'EIC', 'Eichwald', '#FFFFFF', '#E30613', 'selling', 41, 'Stadion Althausen', 13000],
+    ['Viktoria Krondorf', 'KRP', 'Krondorf', '#FFFFFF', '#0057B8', 'fan', 40, 'Steinweiler-Stadion', 16500],
+    ['Sportfreunde Neu Hagtal', 'NEB25', 'Neu Hagtal', '#FFD100', '#00843D', 'selling', 39, 'Stadion Furtfurt', 15000],
+    ['Preußen Westerau', 'PRP', 'Westerau', '#FFFFFF', '#FFD100', 'fan', 38, 'Westerau-Arena', 12500],
+    ['Eintracht Eichbach', 'EIH', 'Eichbach', '#00843D', '#FFFFFF', 'youth', 38, 'Stadion am Neckarhof', 13000],
+    ['FC Kronheim', 'KRQ', 'Kronheim', '#FFFFFF', '#0057B8', 'historic', 37, 'Stadion am Rotau', 12000],
+    ['Teutonia Burgburg', 'BUB25', 'Burgburg', '#6A1B9A', '#6CACE4', 'selling', 37, 'Stadion am Hirschbach', 14500],
+    ['Borussia Klein Lindstadt', 'BOE28', 'Lindstadt', '#001F5B', '#FFD100', 'historic', 36, 'Lindstadt-Arena', 10500],
+    ['Union Unter Dornhafen', 'UDO', 'Dornhafen', '#6CACE4', '#FFFFFF', 'historic', 36, 'Hainbrück-Stadion', 11000],
+    ['Eintracht Haghafen', 'HET', 'Haghafen', '#001F5B', '#00843D', 'fan', 34, 'Waldstadion Haghafen', 10500],
+    ['SV Eberingen', 'EBE', 'Eberingen', '#E30613', '#0057B8', 'fallen', 33, 'Waldstadion Eberingen', 10500],
+    ['TSV Lütberg im Tal', 'LUK', 'Lütberg im Tal', '#00843D', '#000000', 'youth', 33, 'Lindau-Stadion', 9500],
+    ['Eintracht Unter Bruchof', 'UNE', 'Bruchof', '#E30613', '#FFFFFF', 'youth', 33, 'Stadion Neckardorf', 11500],
+  ];
+  FM.D.CLUBS_BE4 = [
+    ['KRC Klein Laagbeek', 'KKL', 'Laagbeek', '#6A1B9A', '#E30613', 'fan', 43, 'Hoogbrug Stadion', 15500],
+    ['Union Oud Sneekdijk', 'OSN', 'Sneekdijk', '#FFD100', '#6A1B9A', 'fan', 42, 'Nieuwrade Stadion', 14000],
+    [
+      'FC Klein Wagewijk',
+      'KLD',
+      'Wagewijk',
+      '#6A1B9A',
+      '#6CACE4',
+      'selling',
+      41,
+      'Gemeentelijk Stadion Wagewijk',
+      16500,
+    ],
+    ['KV Zaanbeek', 'ZAQ', 'Zaanbeek', '#6CACE4', '#E30613', 'historic', 41, 'Stade Maasvoort', 15500],
+    [
+      'Racing Oud Hoornwaard',
+      'OUH',
+      'Hoornwaard',
+      '#00843D',
+      '#FFD100',
+      'youth',
+      40,
+      'Stade Communal de Hoornwaard',
+      16500,
+    ],
+    ['Royal Bergkerk', 'RBE', 'Bergkerk', '#0057B8', '#6CACE4', 'fallen', 39, 'Stedelijk Stadion Bergkerk', 13000],
+    ['Racing Bredam', 'BRH31', 'Bredam', '#FFFFFF', '#E30613', 'fan', 39, 'Stade Communal de Bredam', 13500],
+    ['KAA Nieuw Tilwaard', 'KNI', 'Tilwaard', '#E30613', '#FFD100', 'fan', 38, 'Stedelijk Stadion Tilwaard', 13000],
+    ['KV Kleinveen', 'KLK', 'Kleinveen', '#000000', '#6A1B9A', 'historic', 37, 'Gemeentelijk Stadion Kleinveen', 15000],
+    ['KRC Oudlo aan Zee', 'KOP', 'Oudlo aan Zee', '#001F5B', '#E30613', 'selling', 37, 'Sneekzand Stadion', 13000],
+    ['Koninklijke Noordburg', 'KNO', 'Noordburg', '#0057B8', '#00843D', 'historic', 36, 'Stade Vlaarbrug', 15000],
+    ['KFC Laaghout', 'KFL', 'Laaghout', '#001F5B', '#E30613', 'fan', 35, 'Gemeentelijk Stadion Laaghout', 10500],
+    [
+      'FC Nieuw Grootrade',
+      'NGR',
+      'Nieuw Grootrade',
+      '#001F5B',
+      '#00843D',
+      'fan',
+      35,
+      'Stade Communal de Nieuw Grootrade',
+      13000,
+    ],
+    ['Union Wagewaard', 'WAQ', 'Wagewaard', '#001F5B', '#FFFFFF', 'historic', 33, 'Zuidlo Stadion', 11500],
+    ['FC Hoogbrug', 'HUG', 'Hoogbrug', '#6A1B9A', '#0057B8', 'selling', 32, 'Hoornkerk Stadion', 10500],
+    [
+      'Excelsior Groot Dijkhoven',
+      'EXG',
+      'Groot Dijkhoven',
+      '#000000',
+      '#FFFFFF',
+      'youth',
+      32,
+      'Noordbrug Stadion',
+      9000,
+    ],
+  ];
+  FM.D.CLUBS_BR4 = [
+    ['União Itapiba', 'IBA', 'Itapiba', '#00843D', '#FFFFFF', 'fan', 43, 'Complexo Santão', 16500],
+    ['Nacional Mogima', 'NMO', 'Mogima', '#0057B8', '#6CACE4', 'historic', 42, 'Complexo Ibia', 14000],
+    ['Clube Atlético Guariba', 'GBA', 'Guariba', '#001F5B', '#6A1B9A', 'youth', 42, 'Estádio Novo Tabara', 13000],
+    ['Esporte Clube Itajoba', 'IIT', 'Itajoba', '#FFFFFF', '#E30613', 'historic', 41, 'Complexo Pirama', 17500],
+    ['Nacional Ipatama', 'NIP', 'Ipatama', '#FFFFFF', '#FFD100', 'historic', 40, 'Estádio Municipal de Ipatama', 14000],
+    ['Ipara FC', 'IPB', 'Ipara', '#FFFFFF', '#FFD100', 'historic', 40, 'Estádio Municipal de Ipara', 13000],
+    ['Grêmio Capima', 'CMA', 'Capima', '#FFD100', '#6CACE4', 'fan', 40, 'Arena Capão', 16500],
+    ['Racing Uruceguá', 'UUA', 'Uruceguá', '#FFD100', '#6A1B9A', 'fan', 39, 'Complexo Santiba', 16000],
+    ['Carimirim FC', 'CIM', 'Carimirim', '#6A1B9A', '#E30613', 'youth', 38, 'Estádio Tijuguá', 12000],
+    ['Cambú Futebol Clube', 'CBU', 'Cambú', '#000000', '#6CACE4', 'fan', 37, 'Complexo Tabope', 12500],
+    ['Sport Clube Arapú', 'APU', 'Arapú', '#001F5B', '#FFD100', 'fan', 37, 'Estádio Novo Nhanope', 14500],
+    ['Sport Clube Capina', 'CAQ38', 'Capina', '#E30613', '#FFD100', 'youth', 37, 'Estádio Pirú', 15000],
+    ['Sport Club Capimirim', 'CAR39', 'Capimirim', '#00843D', '#6A1B9A', 'youth', 36, 'Estádio Novo Ubatão', 15000],
+    ['União Cambama', 'CAS40', 'Cambama', '#0057B8', '#6CACE4', 'historic', 35, 'Estádio Municipal de Cambama', 13000],
+    ['Clube Guiba', 'GUJ', 'Guiba', '#FFD100', '#E30613', 'fallen', 35, 'Estádio Tijão', 10500],
+    ['Sport Club Ipatia', 'IIA', 'Ipatia', '#000000', '#6A1B9A', 'fan', 34, 'Estádio Novo Pindina', 11000],
+    ['Sport Clube Ipatai', 'IPI', 'Ipatai', '#FFFFFF', '#00843D', 'selling', 34, 'Estádio Vassina', 13500],
+    ['Sport Clube Cariguá', 'CAT41', 'Cariguá', '#000000', '#E30613', 'fallen', 33, 'Estádio Guaçu', 9500],
+    ['Atlético Catamirim', 'CAU42', 'Catamirim', '#FFD100', '#0057B8', 'fan', 33, 'Complexo Itia', 10500],
+    ['Nacional Itapópolis', 'NAS40', 'Itapópolis', '#0057B8', '#6A1B9A', 'fan', 33, 'Estádio Tabotuba', 9000],
+  ];
+  FM.D.CLUBS_CL4 = [
+    ['Meda Balompié', 'MEA24', 'Meda', '#0057B8', '#E30613', 'youth', 43, 'Estadio Municipal de Meda', 16500],
+    ['Oñatilla Balompié', 'ONC', 'Oñatilla', '#6CACE4', '#E30613', 'fallen', 42, 'Nuevo Estadio Oñatilla', 14500],
+    ['Racing Alto Alcalete', 'ALA72', 'Alcalete', '#FFFFFF', '#6A1B9A', 'selling', 41, 'Estadio Escalena', 15500],
+    ['Sporting Pozero', 'PPO', 'Pozero', '#00843D', '#6CACE4', 'fan', 41, 'Estadio Municipal de Pozero', 16500],
+    ['Sepúlvar CF', 'SEG30', 'Sepúlvar', '#E30613', '#6CACE4', 'historic', 40, 'Ciudad Deportiva Sepúlvar', 12500],
+    ['Talar CF', 'TAY46', 'Talar', '#6A1B9A', '#FFFFFF', 'fan', 39, 'Campo de Talar', 11500],
+    ['Roblara CF', 'RRA', 'Roblara', '#E30613', '#6A1B9A', 'fan', 38, 'Estadio Valdemar', 12500],
+    ['Cordedo Balompié', 'COO', 'Cordedo', '#0057B8', '#FFD100', 'fallen', 38, 'Ciudad Deportiva Cordedo', 12000],
+    ['Atlético Benanes', 'BEP37', 'Benanes', '#E30613', '#0057B8', 'historic', 38, 'Estadio Sorador', 15500],
+    ['UD Oriha', 'ORJ', 'Oriha', '#00843D', '#6A1B9A', 'fan', 37, 'Nuevo Estadio Oriha', 15000],
+    ['Sporting Bajo Corvejo', 'BCO', 'Corvejo', '#6CACE4', '#0057B8', 'fan', 36, 'Estadio La Calatejo', 11500],
+    ['Juventud Osunón', 'OON', 'Osunón', '#6A1B9A', '#000000', 'fan', 35, 'Ciudad Deportiva Osunón', 14500],
+    ['SD Rondera', 'SDC', 'Rondera', '#6CACE4', '#00843D', 'fan', 34, 'Campo de Rondera', 13500],
+    ['Juventud Las Valdemera', 'LVA', 'Las Valdemera', '#6CACE4', '#00843D', 'fan', 33, 'Estadio Jarandete', 12500],
+    ['UD Bajo Úbeda', 'BAD51', 'Úbeda', '#FFD100', '#0057B8', 'historic', 32, 'Campo de Úbeda', 10000],
+    ['Real San Nerjanes', 'NEC26', 'San Nerjanes', '#6A1B9A', '#FFD100', 'fallen', 32, 'Campo de San Nerjanes', 8500],
+  ];
+  FM.D.CLUBS_CS4 = [
+    ['Qingyuan City', 'QIN', 'Qingyuan', '#E30613', '#FFD100', 'fan', 43, 'Qingyuan Sports Centre', 15500],
+    ['Pingyang Phoenix', 'PIL', 'Pingyang', '#000000', '#6A1B9A', 'youth', 43, 'Xintang Stadium', 16000],
+    ['Weicheng Lions', 'WEI', 'Weicheng', '#FFFFFF', '#00843D', 'fan', 40, 'Fyuan Stadium', 14000],
+    ['Fuzhou FC', 'FUZ', 'Fuzhou', '#E30613', '#00843D', 'fan', 40, 'Fuzhou Sports Centre', 17000],
+    ['Longchuan Cranes', 'LOM', 'Longchuan', '#6CACE4', '#FFD100', 'historic', 39, 'Longchuan Olympic Stadium', 16000],
+    ['Shaning City', 'SHB25', 'Shaning', '#6A1B9A', '#FFFFFF', 'historic', 38, 'Shaning Olympic Stadium', 13000],
+    ['Longyuan United', 'LUL', 'Longyuan', '#FFFFFF', '#0057B8', 'selling', 37, 'Shantang Stadium', 11000],
+    ['Shanbin Sports', 'SHC26', 'Shanbin', '#001F5B', '#E30613', 'youth', 35, 'Shanbin Olympic Stadium', 12000],
+    ['Longtang United', 'LOQ', 'Longtang', '#000000', '#E30613', 'historic', 35, 'Longtang Sports Centre', 10500],
+    ['Bayuan City', 'BCI', 'Bayuan', '#FFD100', '#000000', 'youth', 34, 'Kayuan Arena', 13500],
+    ['Qingzhou Tigers', 'QIU', 'Qingzhou', '#FFD100', '#00843D', 'fallen', 33, 'Angang Arena', 13000],
+    ['Fubin Sports', 'FUP', 'Fubin', '#00843D', '#FFFFFF', 'fan', 32, 'Fubin Sports Centre', 11000],
+  ];
+  FM.D.CLUBS_CZ4 = [
+    ['Slavoj Vsetínov', 'VSV', 'Vsetínov', '#001F5B', '#6A1B9A', 'selling', 43, 'Letní stadion Vsetínov', 15500],
+    ['Viktoria Velký Jabice', 'VEA24', 'Velký Jabice', '#000000', '#6CACE4', 'selling', 42, 'Aréna Sedany', 16000],
+    ['FC Kostava', 'KOQ', 'Kostava', '#FFD100', '#6A1B9A', 'fallen', 42, 'Letní stadion Kostava', 16500],
+    ['Slavoj Trenice', 'TCE', 'Trenice', '#001F5B', '#0057B8', 'fallen', 41, 'Městský stadion Trenice', 16000],
+    ['FK Karany', 'KNY', 'Karany', '#E30613', '#FFD100', 'fan', 40, 'Stadion u Nymice', 16000],
+    ['Dynamo Prostedov', 'PRQ', 'Prostedov', '#FFFFFF', '#E30613', 'historic', 40, 'Aréna Vsetínedov', 17000],
+    ['Holín Slovan', 'HIH', 'Holín', '#FFFFFF', '#0057B8', 'selling', 38, 'Aréna Mladená', 14500],
+    ['Dynamo Karice', 'KCE', 'Karice', '#000000', '#E30613', 'fan', 38, 'Městský stadion Karice', 14500],
+    ['Doubany Slovan', 'DNY', 'Doubany', '#E30613', '#FFFFFF', 'fallen', 37, 'Městský stadion Doubany', 14000],
+    ['Spartak Dolní Rokava', 'SPL34', 'Dolní Rokava', '#00843D', '#6CACE4', 'fan', 36, 'Stadion u Vsetíná', 15000],
+    ['FK Pardín', 'PAT41', 'Pardín', '#E30613', '#6CACE4', 'youth', 36, 'Aréna Sedice', 10500],
+    ['Sokol Sedená', 'SSE', 'Sedená', '#FFFFFF', '#E30613', 'youth', 35, 'Stadion u Rychodov', 10000],
+    ['Branín Slovan', 'BIC', 'Branín', '#00843D', '#FFFFFF', 'youth', 33, 'Letní stadion Branín', 10500],
+    ['Dynamo Vysov', 'VYV', 'Vysov', '#00843D', '#FFFFFF', 'fallen', 33, 'Stadion Kostec', 13000],
+    ['Sparta Vsetínodov', 'VOV', 'Vsetínodov', '#E30613', '#6CACE4', 'fallen', 33, 'Stadion u Branov', 13000],
+    ['Viktoria Holoná', 'HOB25', 'Holoná', '#00843D', '#6CACE4', 'fan', 32, 'Letní stadion Holoná', 9500],
+  ];
+  FM.D.CLUBS_DK4 = [
+    ['IK Lillevik', 'LLI', 'Lillevik', '#0057B8', '#00843D', 'historic', 43, 'Lillevik Idrætsanlæg', 17000],
+    ['Havgård IF', 'HRD', 'Havgård', '#6CACE4', '#000000', 'selling', 42, 'Hedlund Stadion', 15000],
+    ['FC Askstad', 'ASQ', 'Askstad', '#0057B8', '#E30613', 'selling', 41, 'Skovgård Stadion', 14500],
+    ['Holund IF', 'HOC26', 'Holund', '#000000', '#6CACE4', 'youth', 41, 'Holund Idrætsanlæg', 16000],
+    ['FC Bergstad', 'BEQ38', 'Bergstad', '#6A1B9A', '#E30613', 'youth', 38, 'Bergstad Arena', 12000],
+    ['Holvik BK', 'HOD27', 'Holvik', '#000000', '#0057B8', 'historic', 38, 'Havø Idrætspark', 16000],
+    ['Frevang Boldklub', 'FRU', 'Frevang', '#0057B8', '#FFD100', 'fallen', 37, 'Frelund Idrætspark', 11000],
+    ['FC Vesterfjordgård', 'VEB25', 'Vesterfjordgård', '#6CACE4', '#001F5B', 'selling', 37, 'Dalund Stadion', 15000],
+    ['Fremad Ringfors', 'RIQ', 'Ringfors', '#00843D', '#6A1B9A', 'historic', 35, 'Ringfors Idrætsanlæg', 11000],
+    ['BK Hedholm', 'HEV', 'Hedholm', '#000000', '#001F5B', 'fan', 33, 'Bergnæs Stadion', 12000],
+    ['Storholm IF', 'STD27', 'Storholm', '#6CACE4', '#0057B8', 'fan', 33, 'Bergborg Stadion', 10500],
+    ['Sydø FK', 'SYB', 'Sydø', '#000000', '#E30613', 'youth', 31, 'Solvik Park', 8500],
+  ];
+  FM.D.CLUBS_FR4 = [
+    ['Olympique de Joygnan', 'OLS', 'Joygnan', '#0057B8', '#E30613', 'youth', 43, 'Stade de la Vilbourg', 15000],
+    ['Racing Saint-Chamont', 'CNT', 'Chamont', '#FFD100', '#6A1B9A', 'fan', 42, 'Stade Municipal de Chamont', 13500],
+    ['AJ Marange', 'MGE', 'Marange', '#0057B8', '#001F5B', 'fan', 41, 'Stade de la Belieu', 12500],
+    ['Racing Rocault', 'RLT', 'Rocault', '#FFD100', '#E30613', 'youth', 41, 'Stade Municipal de Rocault', 13000],
+    ['SC Touray', 'TOT', 'Touray', '#0057B8', '#6A1B9A', 'fan', 40, 'Stade Montcourt', 16500],
+    ['Stade Mont-Paucourt', 'MOL34', 'Paucourt', '#001F5B', '#6CACE4', 'fan', 39, 'Stade Nanlac', 15000],
+    ['ES Château-Tourmont', 'CTO', 'Tourmont', '#6CACE4', '#6A1B9A', 'fallen', 39, 'Stade Tourières', 15500],
+    ['SC Lanlieu', 'LAM35', 'Lanlieu', '#001F5B', '#000000', 'historic', 38, 'Stade de la Arault', 16000],
+    ['Racing Beau-Luneau', 'BER39', 'Beau-Luneau', '#E30613', '#6CACE4', 'fan', 37, 'Stade Monbourg', 15000],
+    [
+      'Racing Saint-Lavlieu',
+      'LEU',
+      'Lavlieu',
+      '#FFFFFF',
+      '#000000',
+      'historic',
+      36,
+      'Stade Municipal de Lavlieu',
+      11500,
+    ],
+    ['RC Mirmont', 'MIW', 'Mirmont', '#00843D', '#6A1B9A', 'youth', 36, 'Stade Municipal de Mirmont', 14500],
+    ['Sporting Vendac', 'VAB25', 'Vendac', '#6CACE4', '#001F5B', 'historic', 35, 'Stade Pauay', 10000],
+    ['US Maron', 'MAE52', 'Maron', '#6CACE4', '#6A1B9A', 'historic', 35, 'Stade Tourac', 14000],
+    ['RC Dameau', 'DDA', 'Dameau', '#0057B8', '#6CACE4', 'fan', 33, 'Stade Sarville', 13000],
+    ['US Pont-Dieuville', 'PNT', 'Pont-Dieuville', '#E30613', '#6CACE4', 'fan', 33, 'Stade Casslac', 10500],
+    [
+      'AS Villeneuve-Joyville',
+      'VIK33',
+      'Joyville',
+      '#0057B8',
+      '#001F5B',
+      'historic',
+      32,
+      'Stade Municipal de Joyville',
+      13500,
+    ],
+  ];
+  FM.D.CLUBS_DE4 = [
+    ['FSV Bergsee', 'BBF', 'Bergsee', '#6CACE4', '#FFFFFF', 'historic', 44, 'Langberg-Stadion', 16500],
+    ['SV Hagheim', 'HAU42', 'Hagheim', '#E30613', '#00843D', 'fallen', 43, 'Holzhausen-Stadion', 18500],
+    [
+      'Preußen Klein Marienheim',
+      'PKL',
+      'Klein Marienheim',
+      '#0057B8',
+      '#6A1B9A',
+      'fallen',
+      42,
+      'Stadion Eichfeld',
+      13500,
+    ],
+    ['Schwarzhausen 1899', 'SCN', 'Schwarzhausen', '#FFD100', '#001F5B', 'selling', 41, 'Sportpark Branbrück', 14000],
+    ['Energie Wieswald', 'EIA', 'Wieswald', '#FFD100', '#6A1B9A', 'fan', 41, 'Dornstadt-Stadion', 13500],
+    ['TSV Ober Altingen', 'OBR', 'Ober Altingen', '#FFD100', '#6A1B9A', 'fan', 40, 'Waldstadion Ober Altingen', 13500],
+    ['FSV Felswald', 'FED', 'Felswald', '#FFD100', '#0057B8', 'fan', 39, 'Stadion am Niedersee', 12500],
+    ['SpVgg Furtkirchen', 'FUQ', 'Furtkirchen', '#001F5B', '#FFD100', 'fan', 39, 'Sportpark Ahrfurt', 13500],
+    ['Sportfreunde Steinfeld', 'SLQ', 'Steinfeld', '#FFD100', '#6A1B9A', 'fallen', 38, 'Greifkirchen-Stadion', 15000],
+    ['TSV Alt Hainfurt 1926', 'ALB73', 'Hainfurt', '#001F5B', '#FFD100', 'historic', 37, 'Hagdorf-Stadion', 11500],
+    ['Eintracht Elsbrück 1912', 'ECK', 'Elsbrück', '#001F5B', '#FFFFFF', 'fan', 37, 'Elsbrück-Arena', 14500],
+    ['Germania Rothof', 'ROD27', 'Rothof', '#FFD100', '#000000', 'fan', 36, 'Lindberg-Stadion', 14500],
+    [
+      'Unter Ahrkirchen 1899',
+      'UAH',
+      'Unter Ahrkirchen',
+      '#000000',
+      '#6CACE4',
+      'fan',
+      35,
+      'Unter Ahrkirchen-Arena',
+      14500,
+    ],
+    ['Preußen Ober Dillstadt', 'PRR', 'Ober Dillstadt', '#FFFFFF', '#0057B8', 'fan', 35, 'Ober Dillstadt-Arena', 14000],
+    ['Sportfreunde Grünwald 1918', 'GRX', 'Grünwald', '#6CACE4', '#FFD100', 'historic', 34, 'Stadion Furthorst', 13500],
+    ['SV Ober Schwarzdorf', 'OER', 'Schwarzdorf', '#FFFFFF', '#001F5B', 'fallen', 33, 'Stadion am Eichsee', 9000],
+    ['Viktoria Immfurt', 'IMA', 'Immfurt', '#6A1B9A', '#FFD100', 'fan', 33, 'Burghafen-Stadion', 9000],
+    ['Fortuna Kirchorst', 'KST', 'Kirchorst', '#000000', '#001F5B', 'historic', 32, 'Kirchorst-Arena', 9500],
+  ];
+  FM.D.CLUBS_ID4 = [
+    ['Bhakti Jembjaya', 'BHJ', 'Jembjaya', '#000000', '#FFFFFF', 'historic', 43, 'Solalembang Arena', 18000],
+    ['Bhakti Kedikalan', 'BHK', 'Kedikalan', '#FFD100', '#6A1B9A', 'selling', 41, 'Bogokalan Sports Park', 17500],
+    ['Bhakti Malamulan', 'BHM', 'Malamulan', '#FFFFFF', '#001F5B', 'fallen', 41, 'Malamulan Provincial Stadium', 14500],
+    ['PS Purajaya', 'PSF', 'Purajaya', '#E30613', '#0057B8', 'youth', 40, 'Purajaya Provincial Stadium', 16000],
+    ['Bhakti Kedingan', 'BKE', 'Kedingan', '#000000', '#FFD100', 'fan', 39, 'Kedingan Provincial Stadium', 14500],
+    [
+      'Ciremulan United',
+      'CIN',
+      'Ciremulan',
+      '#6A1B9A',
+      '#001F5B',
+      'historic',
+      38,
+      'Ciremulan Provincial Stadium',
+      15000,
+    ],
+    ['PS Cirerang', 'PSG', 'Cirerang', '#6CACE4', '#FFD100', 'fallen', 37, 'Cirerang Provincial Stadium', 14500],
+    ['Jembpura United', 'JEM', 'Jembpura', '#6A1B9A', '#FFFFFF', 'historic', 37, 'Jembpura Provincial Stadium', 11000],
+    ['Suradongan United', 'SUV', 'Suradongan', '#000000', '#E30613', 'historic', 36, 'Ciresari Sports Park', 15000],
+    ['PS Kediwati', 'PSK', 'Kediwati', '#6A1B9A', '#FFD100', 'fan', 34, 'Surarang Stadium', 11500],
+    ['Pamakalan FC', 'PAU42', 'Pamakalan', '#001F5B', '#E30613', 'selling', 32, 'Solamulan Sports Park', 11500],
+    ['PS Bansari', 'PSH', 'Bansari', '#FFD100', '#001F5B', 'historic', 32, 'Banwati Arena', 9500],
+  ];
+  FM.D.CLUBS_IR4 = [
+    ['Fajr Qomraz', 'FAH', 'Qomraz', '#6CACE4', '#00843D', 'historic', 43, 'Yazraz Sports Complex', 14500],
+    ['Shahin Mashraz', 'SHD27', 'Mashraz', '#00843D', '#0057B8', 'fan', 41, 'Mashraz Takhti Stadium', 17000],
+    ['Foolad Hamkan', 'FAK', 'Hamkan', '#6A1B9A', '#00843D', 'selling', 41, 'Ilamdar Stadium', 16500],
+    ['Kermvin FC', 'KEF', 'Kermvin', '#FFD100', '#6CACE4', 'fan', 40, 'Azadi Kermvin Stadium', 16000],
+    ['Nassaji Bandar Reybad', 'NJI', 'Bandar Reybad', '#00843D', '#FFD100', 'fallen', 39, 'Shatan Stadium', 13500],
+    ['Bandar Shaman FC', 'BSA', 'Bandar Shaman', '#E30613', '#FFD100', 'youth', 38, 'Birbad Stadium', 13000],
+    ['Esteghlal Semshahr', 'ESW', 'Semshahr', '#001F5B', '#6A1B9A', 'fallen', 37, 'Semshahr Takhti Stadium', 10500],
+    ['Foolad Ahvabad', 'FOJ', 'Ahvabad', '#00843D', '#E30613', 'historic', 36, 'Azadi Ahvabad Stadium', 13000],
+    ['Naft Tabad', 'NAT41', 'Tabad', '#0057B8', '#00843D', 'historic', 34, 'Qomdan Stadium', 13500],
+    ['Mes Zantan', 'MZA', 'Zantan', '#0057B8', '#6A1B9A', 'fallen', 34, 'Zantan Takhti Stadium', 9500],
+    ['Fajr Bandar Tabdar', 'FJR', 'Tabdar', '#00843D', '#6A1B9A', 'fan', 33, 'Tabdar Takhti Stadium', 9500],
+    ['Bargh Rasraz', 'BGH', 'Rasraz', '#FFFFFF', '#001F5B', 'historic', 32, 'Goriz Stadium', 12500],
+  ];
+  FM.D.CLUBS_IT4 = [
+    ['SSC Modento', 'MOM35', 'Modento', '#6A1B9A', '#6CACE4', 'fan', 43, 'Stadio Civico di Modento', 17500],
+    ['Iuventa Monte Cestara', 'IUA', 'Cestara', '#6A1B9A', '#6CACE4', 'youth', 43, 'Stadio Amalello', 18500],
+    ['Virtus Corento', 'COA24', 'Corento', '#6A1B9A', '#001F5B', 'historic', 42, 'Stadio Nuovo Padia', 16500],
+    ['Pro Porto Fabrucci', 'PON36', 'Fabrucci', '#FFD100', '#001F5B', 'fallen', 41, 'Arena Torana', 14500],
+    ['Unione Ferana', 'FEC', 'Ferana', '#FFFFFF', '#6A1B9A', 'fan', 41, 'Stadio Comunale di Ferana', 15500],
+    ['Sporting Padara', 'PAV43', 'Padara', '#000000', '#6A1B9A', 'fan', 39, 'Stadio Comunale di Padara', 16000],
+    ['AC Castel Maretto', 'CAV43', 'Maretto', '#6A1B9A', '#6CACE4', 'historic', 39, 'Stadio Ponate', 12000],
+    ['Audace Amalino', 'AMO', 'Amalino', '#FFD100', '#6A1B9A', 'fan', 38, 'Stadio Nuovo Orvia', 13000],
+    ['AC Ravale 1895', 'RAG30', 'Ravale', '#6CACE4', '#FFD100', 'selling', 38, 'Stadio Nuovo Casara', 12000],
+    ['Audace Albia', 'ALC74', 'Albia', '#6A1B9A', '#001F5B', 'youth', 37, 'Arena Leccento', 14000],
+    ['US Ravento 1949', 'RTO', 'Ravento', '#FFFFFF', '#001F5B', 'historic', 36, 'Stadio Arezello', 15000],
+    ['Pro Arezana al Monte 1936', 'ARY', 'Arezana al Monte', '#0057B8', '#FFD100', 'fan', 36, 'Stadio Roccino', 11000],
+    ['AC Porto Galago 1920', 'POP37', 'Galago', '#FFD100', '#00843D', 'fan', 35, 'Arena Frascino', 12500],
+    ['US Porto Sassia', 'PSJ', 'Sassia', '#6CACE4', '#0057B8', 'selling', 35, 'Stadio Gubbara', 11000],
+    ['AC Roccia 1953', 'RRO', 'Roccia', '#FFFFFF', '#0057B8', 'youth', 34, 'Stadio Ferino', 13000],
+    ['Corola Calcio 1900', 'COB25', 'Corola', '#000000', '#001F5B', 'historic', 34, 'Stadio Nuovo Valento', 11500],
+    [
+      'Castel Trenento Calcio',
+      'CTR',
+      'Castel Trenento',
+      '#6A1B9A',
+      '#001F5B',
+      'fallen',
+      33,
+      'Stadio Civico di Castel Trenento',
+      9500,
+    ],
+    ['Vis Fosia', 'VIL34', 'Fosia', '#E30613', '#FFD100', 'historic', 33, 'Arena Casago', 10000],
+  ];
+  FM.D.CLUBS_JP4 = [
+    ['Shinsakuramoto City', 'SCI', 'Shinsakuramoto', '#001F5B', '#00843D', 'historic', 43, 'Kitano Park', 16500],
+    ['Kitamori Sol', 'KII', 'Kitamori', '#000000', '#6A1B9A', 'fallen', 43, 'Takayama Park', 15500],
+    ['Toyura Lumina', 'TOV', 'Toyura', '#0057B8', '#6A1B9A', 'historic', 41, 'Toyura Athletic Stadium', 16500],
+    ['Takahama Kingfishers', 'TKI', 'Takahama', '#000000', '#E30613', 'fan', 41, 'Asano Stadium', 14000],
+    ['FC Ogakami', 'OGA', 'Ogakami', '#00843D', '#001F5B', 'selling', 40, 'Toyno Arena', 15000],
+    ['Ogahama Verde', 'OMA', 'Ogahama', '#001F5B', '#00843D', 'fan', 40, 'Shinzawa Arena', 13500],
+    ['Toyyama Kingfishers', 'TOW', 'Toyyama', '#0057B8', '#FFFFFF', 'fan', 39, 'Toykami Stadium', 15000],
+    ['FC Ogasaki', 'OGI', 'Ogasaki', '#00843D', '#FFD100', 'selling', 38, 'Nagahama Stadium', 14500],
+    ['Takamori Falcons', 'TFA', 'Takamori', '#0057B8', '#6CACE4', 'fan', 38, 'Okamoto Park', 11500],
+    ['Hokuura United', 'HUN', 'Hokuura', '#FFFFFF', '#000000', 'youth', 37, 'Inagawa Park', 14500],
+    ['Takemori Phoenix', 'TAZ47', 'Takemori', '#FFFFFF', '#0057B8', 'selling', 36, 'Asasaki Stadium', 13000],
+    ['Takahara Nova', 'TNO', 'Takahara', '#E30613', '#0057B8', 'fallen', 35, 'Inayama Arena', 12000],
+    ['Akashima Riverside', 'AKJ', 'Akashima', '#0057B8', '#6CACE4', 'youth', 34, 'Inano Park', 13000],
+    ['Okazawa Phoenix', 'OKC', 'Okazawa', '#FFD100', '#6CACE4', 'fan', 33, 'Takata Stadium', 11500],
+    ['Kawagawa Vortex', 'KVO', 'Kawagawa', '#0057B8', '#6CACE4', 'historic', 33, 'Minamisaki Park', 9000],
+    ['Matsno Nova', 'MNO', 'Matsno', '#000000', '#001F5B', 'fallen', 33, 'Matsno Athletic Stadium', 9000],
+  ];
+  FM.D.CLUBS_MX4 = [
+    [
+      'Halcones de Chalitepec',
+      'HAV43',
+      'Chalitepec',
+      '#FFD100',
+      '#001F5B',
+      'fan',
+      43,
+      'Estadio Olímpico de Chalitepec',
+      15500,
+    ],
+    ['Zorros de Mixotzin', 'ZOS', 'Mixotzin', '#6CACE4', '#00843D', 'historic', 43, 'Estadio Pachitzin', 15000],
+    ['Cooperativa Ocotochitlán', 'CVB', 'Ocotochitlán', '#000000', '#E30613', 'fan', 41, 'Estadio La Tulec', 14000],
+    [
+      'Atlético Ciudad Papanohua',
+      'CIU',
+      'Ciudad Papanohua',
+      '#001F5B',
+      '#FFD100',
+      'historic',
+      41,
+      'Estadio Yauhua',
+      13000,
+    ],
+    [
+      'Petroleros de Pachepa',
+      'PEL34',
+      'Pachepa',
+      '#00843D',
+      '#000000',
+      'fallen',
+      40,
+      'Estadio Municipal de Pachepa',
+      14500,
+    ],
+    ['Club Deportivo Tampan', 'TAA48', 'Tampan', '#FFFFFF', '#001F5B', 'fallen', 39, 'Estadio Tulipan', 13500],
+    ['Real Villa Tepoco', 'TCO', 'Villa Tepoco', '#E30613', '#6A1B9A', 'youth', 37, 'Estadio Tlaxelán', 11000],
+    ['Huilco Atlético', 'HUI', 'Huilco', '#6A1B9A', '#FFD100', 'fan', 37, 'Estadio La Ahec', 15500],
+    [
+      'Santos Zapotlán',
+      'SOV',
+      'Zapotlán',
+      '#FFFFFF',
+      '#001F5B',
+      'historic',
+      36,
+      'Estadio Municipal de Zapotlán',
+      13000,
+    ],
+    ['Real Puerto Chalehua', 'PUO', 'Puerto Chalehua', '#6A1B9A', '#001F5B', 'fan', 35, 'Estadio Chalepan', 12000],
+    [
+      'Halcones de Nueva Cuaulco',
+      'HNU',
+      'Nueva Cuaulco',
+      '#6CACE4',
+      '#000000',
+      'youth',
+      35,
+      'Estadio La Ahupan',
+      11500,
+    ],
+    ['Deportivo Tulaco', 'TUO', 'Tulaco', '#6A1B9A', '#0057B8', 'selling', 34, 'Estadio Pachaco', 9500],
+    ['Cementeros de Papanalco', 'CEM', 'Papanalco', '#00843D', '#0057B8', 'fan', 33, 'Estadio La Tepocán', 14000],
+    ['Atlético Ixtahua', 'IXT', 'Ixtahua', '#6CACE4', '#E30613', 'fan', 32, 'Estadio Olímpico de Ixtahua', 8500],
+  ];
+  FM.D.CLUBS_NL4 = [
+    ['FC Bredkerk', 'BRJ32', 'Bredkerk', '#001F5B', '#6A1B9A', 'fan', 42, 'Stadion Zwolbrug', 14500],
+    ['AFC Alkwijk', 'AJK', 'Alkwijk', '#FFFFFF', '#E30613', 'fan', 42, 'Sportpark Oostdam', 16500],
+    ['Sparta Leidam', 'LEE', 'Leidam', '#E30613', '#6CACE4', 'fan', 41, 'De Vlaarbrug', 14500],
+    ['SC Klein Sneekveen', 'KLS', 'Sneekveen', '#E30613', '#6CACE4', 'historic', 41, 'Tilrade Stadion', 14000],
+    ['Fortuna Oud Oudhoven', 'OUF', 'Oudhoven', '#FFD100', '#6A1B9A', 'historic', 41, 'De Hoogzand', 16000],
+    ['DVC Dijkdijk', 'DVD', 'Dijkdijk', '#6CACE4', '#000000', 'fan', 40, 'Sportpark Bredhoven', 13000],
+    ['AFC Nieuwrade', 'NDE', 'Nieuwrade', '#6A1B9A', '#000000', 'fan', 39, 'De Haarzand', 11500],
+    ['AFC Dijkbeek', 'DIW', 'Dijkbeek', '#FFD100', '#6A1B9A', 'historic', 38, 'Dijkbeek Arena', 13000],
+    ['Go Ahead Wagedijk', 'GOO', 'Wagedijk', '#000000', '#FFD100', 'fan', 38, 'Maaslo Stadion', 14000],
+    ['SC Maaswaard', 'MRD', 'Maaswaard', '#000000', '#6CACE4', 'selling', 38, 'Sportpark Nieuwvoort', 15000],
+    ['Oostkerk Boys', 'OOB', 'Oostkerk', '#00843D', '#FFD100', 'historic', 36, 'Weststad Stadion', 14500],
+    ['DVC Noordhout', 'DVN', 'Noordhout', '#6CACE4', '#0057B8', 'selling', 36, 'Sportpark Berghoven', 14000],
+    ['Racing Dijkerk', 'DIX', 'Dijkerk', '#000000', '#FFFFFF', 'fan', 36, 'Stadion Sneekhoven', 11000],
+    ['Fortuna Oudkerk', 'OUK', 'Oudkerk', '#000000', '#E30613', 'selling', 34, 'Stadion Nieuwhorst', 12500],
+    ['SC Bergzand', 'BNC', 'Bergzand', '#0057B8', '#FFFFFF', 'fan', 34, 'Stadion Maasvoort', 13000],
+    ['Sneekbeek Boys', 'SNK', 'Sneekbeek', '#00843D', '#FFFFFF', 'youth', 33, 'Bredrade Stadion', 9000],
+    ['Concordia Oudbeek', 'COC26', 'Oudbeek', '#E30613', '#000000', 'fan', 33, 'Sportpark Hoornwijk', 13500],
+    ['Victoria Groot Vlaarhorst', 'GRY', 'Vlaarhorst', '#6CACE4', '#001F5B', 'fallen', 33, 'Veenveen Stadion', 11500],
+  ];
+  FM.D.CLUBS_NO4 = [
+    ['Freborg BK', 'FRV', 'Freborg', '#00843D', '#0057B8', 'youth', 43, 'Dalby Idrætspark', 18000],
+    ['Fremad Askløkke', 'ASR', 'Askløkke', '#E30613', '#FFD100', 'selling', 43, 'Askløkke Idrætsanlæg', 18000],
+    ['FC Bjørnvang', 'BJG', 'Bjørnvang', '#E30613', '#6A1B9A', 'youth', 42, 'Bjørnvang Arena', 15000],
+    ['FC Nordøstrud', 'NUH', 'Nordøstrud', '#001F5B', '#FFD100', 'fan', 40, 'Nesvik Park', 14000],
+    ['Nyø IF', 'NYY', 'Nyø', '#001F5B', '#6A1B9A', 'selling', 40, 'Sydstrup Park', 12000],
+    ['Strandvang FK', 'STE28', 'Strandvang', '#00843D', '#E30613', 'historic', 39, 'Askdal Stadion', 13500],
+    ['BK Skovholm', 'SKB', 'Skovholm', '#00843D', '#FFD100', 'fan', 39, 'Nesløkke Park', 14000],
+    ['Nordlund FK', 'NNB', 'Nordlund', '#000000', '#FFD100', 'fan', 37, 'Fjordstad Stadion', 14000],
+    ['Bergstrup IL', 'BES40', 'Bergstrup', '#FFD100', '#FFFFFF', 'fan', 36, 'Gammelstad Park', 11500],
+    ['Ringvang Fotball', 'RIR', 'Ringvang', '#FFFFFF', '#6CACE4', 'historic', 36, 'Stornæs Stadion', 10500],
+    ['BK Gammelø', 'GAH', 'Gammelø', '#6CACE4', '#E30613', 'selling', 34, 'Gammelø Idrætsanlæg', 9500],
+    ['BK Hedvang', 'HEW', 'Hedvang', '#6CACE4', '#FFD100', 'selling', 33, 'Skovborg Park', 13000],
+    ['Strandal FK', 'STF29', 'Strandal', '#FFFFFF', '#0057B8', 'fan', 33, 'Dyrfors Park', 12500],
+    ['FC Nydal', 'NYD', 'Nydal', '#000000', '#6CACE4', 'historic', 32, 'Nydal Arena', 10500],
+  ];
+  FM.D.CLUBS_PL4 = [
+    ['MKS Rybnówka', 'RYG', 'Rybnówka', '#00843D', '#000000', 'historic', 43, 'Stadion Miejski im. Gorzów', 14000],
+    ['Stal Brodnin', 'BBR', 'Brodnin', '#0057B8', '#E30613', 'historic', 43, 'Stadion Ludowy Brodnin', 15500],
+    ['Włókniarz Dąbrec', 'WOZ', 'Dąbrec', '#6CACE4', '#000000', 'historic', 42, 'Stadion Miejski im. Czareka', 17500],
+    ['Białoka Sokół', 'BID', 'Białoka', '#FFD100', '#FFFFFF', 'historic', 40, 'Stadion Gorzów', 16500],
+    ['MKS Nowosk', 'NOD27', 'Nowosk', '#6CACE4', '#FFD100', 'historic', 40, 'Stadion im. Zamice', 16000],
+    ['Górnik Chełmów', 'GIK', 'Chełmów', '#6A1B9A', '#FFD100', 'historic', 40, 'Stadion Gniice', 14500],
+    ['Zagłębie Mławec', 'ZAT', 'Mławec', '#00843D', '#6A1B9A', 'youth', 40, 'Stadion Gniów', 14500],
+    ['GKS Rybna', 'RNA', 'Rybna', '#E30613', '#001F5B', 'historic', 38, 'Stadion Ludowy Rybna', 15000],
+    ['Górnik Chełma', 'GOF', 'Chełma', '#001F5B', '#FFD100', 'fan', 38, 'Stadion Ludowy Chełma', 15500],
+    ['MKS Jarosoka', 'JKA', 'Jarosoka', '#00843D', '#6A1B9A', 'historic', 37, 'Stadion im. Słupa', 14500],
+    [
+      'Budowlani Mławewo',
+      'BUC26',
+      'Mławewo',
+      '#00843D',
+      '#E30613',
+      'historic',
+      37,
+      'Stadion Miejski im. Brzezec',
+      14000,
+    ],
+    ['Ruch Ostrice', 'OSG', 'Ostrice', '#FFD100', '#0057B8', 'fallen', 36, 'Stadion Ludowy Ostrice', 12000],
+    ['Budowlani Nowy Radono', 'BNO', 'Nowy Radono', '#FFD100', '#6A1B9A', 'fan', 35, 'Stadion im. Lubec', 14500],
+    ['Znicz Kostec', 'KOT', 'Kostec', '#FFFFFF', '#6A1B9A', 'youth', 35, 'Stadion Miejski im. Siedlewo', 14000],
+    ['Włókniarz Opolec', 'WRZ', 'Opolec', '#000000', '#001F5B', 'fan', 34, 'Stadion im. Nowosk', 10500],
+    ['MKS Brodna', 'BNF', 'Brodna', '#FFD100', '#000000', 'fallen', 33, 'Stadion Słupewo', 10500],
+    ['MKS Tarna', 'TNA', 'Tarna', '#00843D', '#6CACE4', 'fan', 33, 'Stadion Białowice', 12000],
+    ['Gorzowice FC', 'GOG', 'Gorzowice', '#FFFFFF', '#6CACE4', 'historic', 32, 'Stadion Ludowy Gorzowice', 10500],
+  ];
+  FM.D.CLUBS_PT4 = [
+    [
+      'Sporting Tavirela do Vale',
+      'TLA',
+      'Tavirela do Vale',
+      '#000000',
+      '#FFD100',
+      'historic',
+      43,
+      'Estádio Alcobouro',
+      14500,
+    ],
+    ['SC Ferrais', 'FES', 'Ferrais', '#00843D', '#0057B8', 'historic', 42, 'Complexo Desportivo Ferrais', 17000],
+    ['Santa Mirinha FC', 'MHA', 'Mirinha', '#6CACE4', '#FFD100', 'youth', 41, 'Estádio Gaiinha', 14500],
+    ['Racing Nazarão', 'NAU42', 'Nazarão', '#6A1B9A', '#001F5B', 'historic', 40, 'Estádio Paiveiro', 16000],
+    ['Atlético Vila Vilais', 'VIM35', 'Vilais', '#000000', '#6CACE4', 'historic', 40, 'Estádio Ovarinha', 14000],
+    ['União Vendouro', 'VRO', 'Vendouro', '#E30613', '#FFD100', 'historic', 39, 'Complexo Desportivo Vendouro', 13500],
+    ['Atlético Moncorada', 'MDA', 'Moncorada', '#6CACE4', '#001F5B', 'fan', 37, 'Arena Ferrinha', 12000],
+    ['GD Matosães', 'GGA', 'Matosães', '#00843D', '#6A1B9A', 'fallen', 37, 'Estádio Municipal de Matosães', 11000],
+    ['Desportivo Moncorela', 'DED', 'Moncorela', '#FFD100', '#FFFFFF', 'selling', 36, 'Estádio Penela', 12000],
+    ['Associação Elva', 'ELG', 'Elva', '#E30613', '#6CACE4', 'historic', 35, 'Estádio Alentela', 14500],
+    ['Sporting São de Figura', 'SAE52', 'São de Figura', '#0057B8', '#FFD100', 'fan', 34, 'Estádio Estrada', 11500],
+    ['Esporte Clube Braganura', 'BRK33', 'Braganura', '#0057B8', '#6A1B9A', 'fallen', 34, 'Arena Leirouro', 10000],
+    ['Santa Castares EC', 'CEH', 'Castares', '#6CACE4', '#6A1B9A', 'fan', 32, 'Estádio Aveiro', 10000],
+    ['Sporting Moncorão', 'MON36', 'Moncorão', '#FFD100', '#E30613', 'fan', 31, 'Arena Lamela', 11000],
+  ];
+  FM.D.CLUBS_RO4 = [
+    ['Rapid Buzești', 'RAH31', 'Buzești', '#E30613', '#FFFFFF', 'historic', 43, 'Complexul Sportiv Buzești', 18000],
+    ['Electroputere Craău', 'ELH', 'Craău', '#6A1B9A', '#FFD100', 'selling', 42, 'Complexul Sportiv Craău', 16000],
+    ['AFC Tulești', 'TUI', 'Tulești', '#E30613', '#001F5B', 'fan', 41, 'Arena Mangiu', 13000],
+    ['Progresul Petău', 'PPE', 'Petău', '#00843D', '#6A1B9A', 'fan', 41, 'Complexul Sportiv Petău', 16500],
+    ['Olimpia Zalița', 'OIA', 'Zalița', '#00843D', '#0057B8', 'fan', 40, 'Arena Petana', 16000],
+    ['Victoria Drova', 'DRO', 'Drova', '#00843D', '#6CACE4', 'youth', 38, 'Stadionul Drești', 13000],
+    ['Gloria Focova', 'GIB', 'Focova', '#FFFFFF', '#6A1B9A', 'fan', 38, 'Stadionul Ploana', 16000],
+    [
+      'Sportul Nou Galana',
+      'SPM35',
+      'Nou Galana',
+      '#00843D',
+      '#0057B8',
+      'fan',
+      37,
+      'Stadionul Orășenesc Nou Galana',
+      11000,
+    ],
+    ['Progresul Satița', 'PRW', 'Satița', '#FFD100', '#000000', 'historic', 37, 'Stadionul Buzova', 11000],
+    ['AFC Albova', 'ALD75', 'Albova', '#6CACE4', '#00843D', 'fan', 36, 'Arena Ploana', 11500],
+    ['ACS Ploești', 'ACP', 'Ploești', '#0057B8', '#00843D', 'fan', 34, 'Arena Conova', 11000],
+    ['CS Mare Fagești', 'CCS', 'Mare Fagești', '#FFFFFF', '#FFD100', 'fan', 33, 'Stadionul Slatiu', 12500],
+    ['Electroputere Galova', 'ELJ', 'Galova', '#6CACE4', '#001F5B', 'youth', 33, 'Stadionul Orășenesc Galova', 10500],
+    ['FC Petești', 'PTI', 'Petești', '#FFD100', '#6CACE4', 'historic', 32, 'Complexul Sportiv Petești', 11500],
+  ];
+  FM.D.CLUBS_RU4 = [
+    [
+      'FK Vladino-na-Ladge',
+      'VLO',
+      'Vladino-na-Ladge',
+      '#E30613',
+      '#FFD100',
+      'historic',
+      43,
+      'Tsentralny Stadion Vladino-na-Ladge',
+      17000,
+    ],
+    ['Trud Perbor', 'TUE', 'Perbor', '#00843D', '#001F5B', 'fan', 42, 'Stadion Dinamo Perbor', 14000],
+    ['Torpedo Kemgorsk', 'TKE', 'Kemgorsk', '#00843D', '#6A1B9A', 'youth', 41, 'Stadion Dinamo Kemgorsk', 17000],
+    ['FK Tverka', 'TVE', 'Tverka', '#00843D', '#6A1B9A', 'fallen', 39, 'Tsentralny Stadion Tverka', 14000],
+    ['FC Podgorsk', 'POQ38', 'Podgorsk', '#E30613', '#001F5B', 'fan', 39, 'Stadion Khabov', 16000],
+    [
+      'Avangard Verkhne-Peskgorsk',
+      'AVF',
+      'Peskgorsk',
+      '#000000',
+      '#6A1B9A',
+      'fallen',
+      37,
+      'Stadion Dinamo Peskgorsk',
+      11000,
+    ],
+    ['FC Pergrad', 'PEM35', 'Pergrad', '#E30613', '#001F5B', 'fallen', 37, 'Kursgorsk Arena', 12500],
+    ['Zvezda Lugka', 'ZVA', 'Lugka', '#0057B8', '#001F5B', 'fan', 36, 'Stadion Dinamo Lugka', 13000],
+    ['Ural Novo-Yelino', 'URL', 'Yelino', '#FFFFFF', '#0057B8', 'fan', 35, 'Stadion imeni Murinsk', 13500],
+    ['Trud Chelovo', 'TRM', 'Chelovo', '#000000', '#00843D', 'historic', 34, 'Dmitov Arena', 11000],
+    ['Verkhne-Podovsk FK', 'VEC26', 'Podovsk', '#001F5B', '#0057B8', 'fallen', 33, 'Stadion imeni Arzka', 13000],
+    [
+      'Lokomotiv Srednekursovo',
+      'LIC26',
+      'Srednekursovo',
+      '#FFD100',
+      '#6CACE4',
+      'fan',
+      33,
+      'Stadion imeni Vladsk',
+      12000,
+    ],
+  ];
+  FM.D.CLUBS_SA4 = [
+    ['Shabab Ain Dahah', 'SHE28', 'Dahah', '#6CACE4', '#E30613', 'fan', 44, 'Zariyah Stadium', 14000],
+    ['Kerya SC', 'KEE', 'Kerya', '#FFD100', '#FFFFFF', 'fan', 42, 'Falan Stadium', 15000],
+    ['Shabab Ain Bahiq', 'SHF29', 'Ain Bahiq', '#00843D', '#FFFFFF', 'selling', 41, 'Karya Stadium', 14500],
+    ['Al Irbra SC', 'AIR', 'Irbra', '#FFFFFF', '#E30613', 'fallen', 40, 'Jahan Arena', 12500],
+    ['Al Kerayn', 'ALE76', 'Kerayn', '#FFFFFF', '#FFD100', 'fallen', 38, 'Kerayn Sports City', 14500],
+    ['Shabab Khasah', 'SHG30', 'Khasah', '#001F5B', '#FFD100', 'historic', 37, 'Kariyah Stadium', 11500],
+    ['Wadi Liwayn SC', 'WAS', 'Liwayn', '#00843D', '#000000', 'fan', 35, 'Dhiyah Stadium', 14500],
+    ['Al Ajlayn SC', 'AAJ', 'Ajlayn', '#FFD100', '#E30613', 'historic', 34, 'Muhar Arena', 13500],
+    ['Muhan SC', 'MSC', 'Muhan', '#6A1B9A', '#00843D', 'fan', 34, 'Prince Mafiyah Stadium', 12500],
+    ['Al Liwiq SC', 'ALF77', 'Liwiq', '#001F5B', '#0057B8', 'selling', 32, 'Rusib Arena', 10000],
+  ];
+  FM.D.CLUBS_SC4 = [
+    ['Mid Moffton Wanderers', 'MIX', 'Mid Moffton', '#6A1B9A', '#E30613', 'fan', 43, 'Mid Moffton Park', 16000],
+    ['Kirkwick Town', 'KCK', 'Kirkwick', '#0057B8', '#FFFFFF', 'fan', 41, 'Kirkwick Muir', 12500],
+    ['Kirkrie Burgh', 'KIB25', 'Kirkrie', '#6CACE4', '#E30613', 'fan', 40, 'Kirkrie Gardens', 12500],
+    ['Aberness City', 'ABS', 'Aberness', '#001F5B', '#00843D', 'selling', 40, 'Kirkock Park', 12500],
+    ['Wester Galmore Vale', 'WER', 'Galmore', '#6CACE4', '#E30613', 'fallen', 38, 'Inneston Green', 16000],
+    ['Upper Jedside City', 'JDE', 'Upper Jedside', '#000000', '#6CACE4', 'youth', 37, 'Monton Road', 14500],
+    ['Mid Balbridge Rovers', 'MIZ', 'Mid Balbridge', '#6CACE4', '#00843D', 'selling', 36, 'Torryrie Road', 12500],
+    ['Nairnbridge Burgh', 'NAV43', 'Nairnbridge', '#00843D', '#FFD100', 'youth', 35, 'Nairnbridge Park', 14500],
+    ['Calton Burgh', 'CAW44', 'Calton', '#000000', '#6A1B9A', 'historic', 33, 'Calton Gardens', 13000],
+    ['Kelmore Albion', 'KEG', 'Kelmore', '#0057B8', '#FFFFFF', 'fan', 32, 'Dunshiels Road', 11000],
+  ];
+  FM.D.CLUBS_ZA4 = [
+    ['Phalula Swallows', 'PHS', 'Phalula', '#E30613', '#6CACE4', 'historic', 43, 'Ladeberg Park', 17500],
+    ['Upper Ladestad City', 'LAN36', 'Ladestad', '#000000', '#00843D', 'fan', 42, 'Ladestad Oval', 15000],
+    ['Lower Volvlei North End', 'VOI', 'Volvlei', '#6CACE4', '#001F5B', 'fan', 41, 'Kwavlei Stadium', 16500],
+    ['Phalrus Celtic Rovers', 'PUS', 'Phalrus', '#6A1B9A', '#FFD100', 'fan', 40, 'Phaldoorn Stadium', 14000],
+    ['Nelsburg FC', 'NRG', 'Nelsburg', '#FFFFFF', '#00843D', 'youth', 39, 'Nelsburg Oval', 15500],
+    ['Lower Krukop Corinthians', 'KRR', 'Krukop', '#00843D', '#FFD100', 'fan', 39, 'Phalfontein Stadium', 16000],
+    ['Randrus Vale', 'RVA', 'Randrus', '#00843D', '#FFFFFF', 'fallen', 39, 'Siboston Park', 15500],
+    ['Old Bettdal FC', 'BET41', 'Bettdal', '#000000', '#E30613', 'historic', 37, 'Vredevlei Stadium', 15000],
+    ['Phalberg Corinthians', 'PHG', 'Phalberg', '#E30613', '#FFD100', 'fan', 36, 'Kwakop Stadium', 10000],
+    ['Kruvlei Bohemians', 'KRI', 'Kruvlei', '#00843D', '#FFFFFF', 'historic', 35, 'Kruvlei Oval', 14500],
+    ['New Randula Olympic', 'RAJ32', 'Randula', '#6A1B9A', '#000000', 'selling', 35, 'Randula Sports Complex', 13500],
+    ['Vredekop Swallows', 'VRP', 'Vredekop', '#001F5B', '#00843D', 'fan', 34, 'Vredekop Oval', 11000],
+    ['Sibokop City', 'SID27', 'Sibokop', '#00843D', '#6CACE4', 'historic', 33, 'Phalston Stadium', 11000],
+    ['Vredeburg Swallows', 'VRS', 'Vredeburg', '#0057B8', '#FFFFFF', 'selling', 32, 'Vredeburg Oval', 13500],
+  ];
+  FM.D.CLUBS_KR4 = [
+    ['Chungdong United', 'CNG', 'Chungdong', '#6CACE4', '#0057B8', 'historic', 43, 'Chungdong Stadium', 15000],
+    ['Banhwa Silk Dragons', 'BWA', 'Banhwa', '#FFFFFF', '#6CACE4', 'fallen', 42, 'Banhwa Civic Stadium', 17000],
+    ['FC Chunjin', 'CHR39', 'Chunjin', '#E30613', '#00843D', 'fan', 41, 'Chunjin Civic Stadium', 13000],
+    ['Chungwon Steel Mariners', 'CSA', 'Chungwon', '#001F5B', '#FFFFFF', 'youth', 40, 'Chungwon Civic Stadium', 13500],
+    ['Bojeong Steel Mariners', 'BOF29', 'Bojeong', '#00843D', '#6CACE4', 'fan', 40, 'Bojeong Civic Stadium', 15500],
+    ['Gimjin Dolphins', 'GIN', 'Gimjin', '#FFD100', '#E30613', 'fan', 39, 'Gimjin Stadium', 15500],
+    ['Chungseong FC', 'CHS40', 'Chungseong', '#FFFFFF', '#0057B8', 'fan', 39, 'Chungseong Civic Stadium', 14500],
+    ['Haecheon United', 'HAW44', 'Haecheon', '#FFD100', '#6CACE4', 'fan', 38, 'Haecheon Civic Stadium', 13000],
+    [
+      'Pyeongjeong Heavy Eagles',
+      'PYG',
+      'Pyeongjeong',
+      '#6CACE4',
+      '#E30613',
+      'fan',
+      37,
+      'Chocheon Sports Complex',
+      13000,
+    ],
+    ['Chundong Tigers', 'CTI', 'Chundong', '#000000', '#E30613', 'fan', 37, 'Chundong Civic Stadium', 11500],
+    ['Daeyang Motors FC', 'DAB25', 'Daeyang', '#00843D', '#0057B8', 'fan', 35, 'Haesan Sports Complex', 12000],
+    [
+      'Wolcheon Chemical Dolphins',
+      'WOM',
+      'Wolcheon',
+      '#6CACE4',
+      '#FFD100',
+      'fallen',
+      35,
+      'Wolcheon Civic Stadium',
+      11500,
+    ],
+    ['Bugu United', 'BUD27', 'Bugu', '#FFFFFF', '#000000', 'fan', 34, 'Buju Arena', 12000],
+    [
+      'Boseong Copper Phoenix',
+      'BOG30',
+      'Boseong',
+      '#00843D',
+      '#6A1B9A',
+      'historic',
+      34,
+      'Chunseong Sports Complex',
+      9500,
+    ],
+    ['Banseong FC', 'BAE52', 'Banseong', '#FFFFFF', '#6A1B9A', 'fan', 32, 'Banseong Stadium', 11500],
+    ['Haewon FC', 'HAX45', 'Haewon', '#6A1B9A', '#6CACE4', 'fan', 32, 'Gangsan Arena', 11000],
+  ];
+  FM.D.CLUBS_ES4 = [
+    ['Racing Zamena', 'ZAU', 'Zamena', '#0057B8', '#E30613', 'historic', 41, 'Estadio Medana', 14500],
+    ['Atlético Tarifedo', 'TAB49', 'Tarifedo', '#0057B8', '#6CACE4', 'fan', 41, 'Estadio La Albedo', 13000],
+    ['Atlético Benilla', 'BEU42', 'Benilla', '#FFFFFF', '#6CACE4', 'selling', 40, 'Ciudad Deportiva Benilla', 14000],
+    ['Bailanes CF', 'BCF', 'Bailanes', '#E30613', '#000000', 'fan', 39, 'Ciudad Deportiva Bailanes', 16000],
+    ['Atlético Cordar', 'COD27', 'Cordar', '#6A1B9A', '#FFFFFF', 'fallen', 39, 'Nuevo Estadio Cordar', 15500],
+    ['Atlético Úbedete', 'UBD', 'Úbedete', '#001F5B', '#FFFFFF', 'youth', 37, 'Nuevo Estadio Úbedete', 12500],
+    ['Racing Gandena', 'GAJ', 'Gandena', '#00843D', '#6A1B9A', 'youth', 37, 'Estadio La Arroeda', 11500],
+    ['Santa Hinojar CF', 'HIJ', 'Hinojar', '#FFD100', '#E30613', 'historic', 36, 'Estadio La Corvara', 13500],
+    ['UD Fresnena', 'FFR', 'Fresnena', '#FFD100', '#0057B8', 'fan', 36, 'Nuevo Estadio Fresnena', 14000],
+    [
+      'Juventud El Almazares',
+      'ELN',
+      'El Almazares',
+      '#0057B8',
+      '#6CACE4',
+      'fallen',
+      35,
+      'Estadio Municipal de El Almazares',
+      12000,
+    ],
+    ['Racing Aranjar', 'AAR', 'Aranjar', '#0057B8', '#FFFFFF', 'fan', 35, 'Estadio Nerjador', 12000],
+    ['Sporting Almazanes', 'AES', 'Almazanes', '#6A1B9A', '#FFFFFF', 'fallen', 34, 'Ciudad Deportiva Almazanes', 12000],
+    ['Racing Club Osunador', 'OSR', 'Osunador', '#FFFFFF', '#6CACE4', 'fallen', 33, 'Ciudad Deportiva Osunador', 10000],
+    ['Real Club Pededo', 'PEN36', 'Pededo', '#0057B8', '#001F5B', 'fallen', 33, 'Ciudad Deportiva Pededo', 12500],
+    ['Juventud Aranjara', 'ARA24', 'Aranjara', '#0057B8', '#000000', 'fallen', 32, 'Nuevo Estadio Aranjara', 11000],
+    ['Real Pedón', 'PEP37', 'Pedón', '#001F5B', '#FFD100', 'historic', 31, 'Estadio La Calateda', 8500],
+    ['CD Villara', 'VVI', 'Villara', '#0057B8', '#000000', 'youth', 31, 'Ciudad Deportiva Villara', 10000],
+    ['CD Villa Oñatete', 'ONE', 'Oñatete', '#0057B8', '#FFD100', 'fan', 30, 'Estadio Gandero', 9000],
+  ];
+  FM.D.CLUBS_SE4 = [
+    ['GIF Nynäs', 'GNY', 'Nynäs', '#6A1B9A', '#FFD100', 'historic', 43, 'Sigfors IP', 17500],
+    ['Vasalund Östra Sigberg', 'VAC26', 'Sigberg', '#6CACE4', '#0057B8', 'youth', 42, 'Falhamn Arena', 13000],
+    ['IFK Norby', 'IFK', 'Norby', '#00843D', '#6CACE4', 'selling', 41, 'Norby Stadion', 15000],
+    ['Gävstad FF', 'GAV', 'Gävstad', '#E30613', '#FFFFFF', 'historic', 41, 'Lidsundvallen', 12500],
+    ['FC Moby', 'MOP37', 'Moby', '#E30613', '#FFD100', 'youth', 40, 'Gävik Arena', 13500],
+    ['Vasalund Norberg', 'VNO', 'Norberg', '#E30613', '#6A1B9A', 'historic', 39, 'Norberg Idrottspark', 15500],
+    ['FC Ulrholm', 'ULR', 'Ulrholm', '#00843D', '#6A1B9A', 'fan', 38, 'Halby IP', 14500],
+    ['Nya Ronberg FK', 'NYC', 'Nya Ronberg', '#001F5B', '#6CACE4', 'fan', 38, 'Lidberg IP', 12500],
+    ['IFK Sigvik', 'IFS', 'Sigvik', '#FFFFFF', '#6CACE4', 'historic', 37, 'Väsnäs Arena', 12500],
+    ['Tranhamn FF', 'TRN', 'Tranhamn', '#0057B8', '#FFD100', 'selling', 36, 'Skelby Arena', 15000],
+    ['Sundsund FF', 'SUW', 'Sundsund', '#FFD100', '#000000', 'historic', 35, 'Skelvikvallen', 13500],
+    ['IFK Tranholm', 'IFT', 'Tranholm', '#FFFFFF', '#E30613', 'selling', 33, 'Mostadvallen', 9500],
+    ['Lidsund IF', 'LID27', 'Lidsund', '#6A1B9A', '#001F5B', 'fan', 32, 'Sigö IP', 12500],
+    ['Vasalund Örnfors', 'VOR', 'Örnfors', '#6A1B9A', '#FFD100', 'fallen', 32, 'Örnfors Stadion', 10000],
+  ];
+  FM.D.CLUBS_CH4 = [
+    ['Thalingen SC', 'THY', 'Thalingen', '#00843D', '#001F5B', 'selling', 42, 'Dillhof-Stadion', 16500],
+    ['Fortuna Hirschtal', 'HIP', 'Hirschtal', '#E30613', '#001F5B', 'fallen', 42, 'Hirschtal-Arena', 14000],
+    ['FSV Dornfurt 1945', 'DOD27', 'Dornfurt', '#00843D', '#E30613', 'fan', 41, 'Altingen-Stadion', 15000],
+    ['Teutonia Marienfeld', 'MLH', 'Marienfeld', '#0057B8', '#00843D', 'youth', 41, 'Schwarzbrück-Stadion', 16000],
+    ['Eintracht Steinbrück', 'STG30', 'Steinbrück', '#FFFFFF', '#6CACE4', 'youth', 39, 'Steinbrück-Arena', 16000],
+    [
+      'Eintracht Ober Westeringen',
+      'OBW',
+      'Westeringen',
+      '#000000',
+      '#001F5B',
+      'fan',
+      39,
+      'Waldstadion Westeringen',
+      12000,
+    ],
+    ['Rot-Weiss Bachorst', 'RWE', 'Bachorst', '#00843D', '#000000', 'historic', 38, 'Stadion am Greifurt', 13500],
+    ['Hansa Bachsee', 'HSA', 'Bachsee', '#0057B8', '#6CACE4', 'fallen', 38, 'Stadion am Westerdorf', 15500],
+    ['Eintracht Bad Steinwald', 'BST', 'Bad Steinwald', '#000000', '#FFFFFF', 'selling', 36, 'Lütsee-Stadion', 13500],
+    ['TSV Burgbrück 1894', 'BCK', 'Burgbrück', '#6CACE4', '#6A1B9A', 'fan', 36, 'Stadion Heidfeld', 14500],
+    ['Borussia Klein Mühltal', 'BKL', 'Mühltal', '#0057B8', '#6A1B9A', 'fallen', 36, 'Waldstadion Mühltal', 11500],
+    ['Eintracht Rotal', 'ROE28', 'Rotal', '#6A1B9A', '#FFFFFF', 'fan', 35, 'Langau-Stadion', 14500],
+    ['Rot-Weiß Dornbrück', 'ROF29', 'Dornbrück', '#0057B8', '#FFD100', 'historic', 34, 'Dornbrück-Arena', 12000],
+    ['FSV Eichstein', 'EIB', 'Eichstein', '#FFFFFF', '#000000', 'historic', 34, 'Eichstein-Arena', 14000],
+    ['VfL Greifingen', 'GRZ', 'Greifingen', '#E30613', '#001F5B', 'historic', 33, 'Stadion Kalhafen', 13500],
+    ['Fortuna Bad Mariental 1949', 'BAF53', 'Mariental', '#E30613', '#6A1B9A', 'fallen', 32, 'Mariental-Arena', 12500],
+  ];
+  FM.D.CLUBS_TH4 = [
+    ['Banam United', 'BAG54', 'Banam', '#FFFFFF', '#0057B8', 'fallen', 43, 'Phrapur Arena', 16500],
+    ['Kaochan Athletic', 'KAT41', 'Kaochan', '#000000', '#6CACE4', 'fallen', 42, 'Takburi Sports Park', 13500],
+    ['Takyai City', 'TCI', 'Takyai', '#E30613', '#0057B8', 'fan', 41, 'Khaosai Arena', 13000],
+    ['Takthong Port', 'TAC50', 'Takthong', '#001F5B', '#E30613', 'fallen', 39, 'Chiangthong Sports Park', 12500],
+    ['Sriyai Athletic', 'SRE', 'Sriyai', '#6A1B9A', '#FFD100', 'fan', 38, 'Phralek Sports Park', 14500],
+    ['Nakhonthong Port', 'NAW44', 'Nakhonthong', '#0057B8', '#FFFFFF', 'fan', 36, 'Nakhonlek Sports Park', 11500],
+    ['Ratpur Rapids United', 'RAK33', 'Ratpur', '#00843D', '#6A1B9A', 'fallen', 36, 'Kaonam Arena', 13500],
+    ['Muang Singkaeo United', 'MUJ', 'Singkaeo', '#0057B8', '#000000', 'fan', 35, 'Srira Sports Park', 13500],
+    ['Muang Sakra United', 'MSB', 'Sakra', '#00843D', '#FFFFFF', 'historic', 33, 'Maenong Arena', 13000],
+    ['Maeburi Port', 'MPO', 'Maeburi', '#001F5B', '#000000', 'fan', 31, 'Wangmai Sports Park', 10500],
+  ];
+  FM.D.CLUBS_TR4 = [
+    ['Tavsaray Gençlik', 'TAD51', 'Tavsaray', '#6CACE4', '#00843D', 'fan', 43, 'Tavsaray Şehir Stadyumu', 13500],
+    ['Akbahçegücü', 'AKK', 'Akbahçe', '#000000', '#E30613', 'fan', 43, 'Akbahçe Cumhuriyet Stadyumu', 15000],
+    ['Yeni İnclarspor', 'INR', 'İnclar', '#FFD100', '#6A1B9A', 'selling', 42, 'Alova Stadyumu', 15000],
+    ['Demlar Gençlik', 'DEH', 'Demlar', '#6A1B9A', '#FFFFFF', 'fan', 42, 'Demlar Şehir Stadyumu', 17000],
+    ['Sultanovagücü', 'SUX', 'Sultanova', '#E30613', '#00843D', 'historic', 41, 'Karaköy Stadyumu', 14500],
+    [
+      'Büyük Yalargücü',
+      'BUE28',
+      'Büyük Yalar',
+      '#E30613',
+      '#6CACE4',
+      'selling',
+      40,
+      'Büyük Yalar Cumhuriyet Stadyumu',
+      15000,
+    ],
+    ['Kızköy Birlik', 'KZK', 'Kızköy', '#0057B8', '#001F5B', 'historic', 39, 'Kızköy Cumhuriyet Stadyumu', 15000],
+    ['Esktepe Birlik', 'EPE', 'Esktepe', '#001F5B', '#0057B8', 'youth', 39, 'Esktepe Cumhuriyet Stadyumu', 16000],
+    ['Kızova Belediyespor', 'KZO', 'Kızova', '#001F5B', '#000000', 'fan', 38, 'Dursaray Stadyumu', 14000],
+    ['Demova Atletik', 'DEJ', 'Demova', '#FFFFFF', '#0057B8', 'fan', 38, 'Demova Cumhuriyet Stadyumu', 12000],
+    ['Eski Bozköy Gücü', 'ESX', 'Eski Bozköy', '#FFD100', '#00843D', 'fan', 36, 'Aksaray Stadyumu', 14000],
+    ['Karköy SK', 'KOY', 'Karköy', '#000000', '#6A1B9A', 'historic', 36, 'Karköy Şehir Stadyumu', 15000],
+    ['Uşakale SK', 'USH', 'Uşakale', '#E30613', '#00843D', 'youth', 35, 'Çamkale Arena', 12500],
+    [
+      'Yeni Sultanpınarspor',
+      'SOW',
+      'Sultanpınar',
+      '#FFD100',
+      '#6A1B9A',
+      'historic',
+      34,
+      'Sultanpınar Cumhuriyet Stadyumu',
+      12500,
+    ],
+    ['Uşabahçe Belediyespor', 'UCE', 'Uşabahçe', '#001F5B', '#00843D', 'fan', 34, 'Uşabahçe Şehir Stadyumu', 10500],
+    ['Kızkalespor', 'KZR', 'Kızkale', '#FFD100', '#0057B8', 'youth', 33, 'Gönkale Arena', 9500],
+    ['Çanova Gücü', 'CAX45', 'Çanova', '#6A1B9A', '#000000', 'selling', 33, 'Çanova Cumhuriyet Stadyumu', 9500],
+    [
+      'Büyük Dempınar Gençlik',
+      'BDE',
+      'Büyük Dempınar',
+      '#00843D',
+      '#000000',
+      'youth',
+      32,
+      'Büyük Dempınar Şehir Stadyumu',
+      9500,
+    ],
+  ];
+  FM.D.CLUBS_US4 = [
+    ['Prairieridge Fire', 'PGE', 'Prairieridge', '#001F5B', '#E30613', 'historic', 43, 'Aspenport Field', 15000],
+    ['Greengrove Brewers', 'GVE', 'Greengrove', '#00843D', '#6CACE4', 'fallen', 43, 'Oakview Field', 15000],
+    ['Mount Mapleville Stallions', 'MMB', 'Mapleville', '#FFD100', '#FFFFFF', 'fan', 41, 'Summitgrove Field', 14000],
+    ['Blueview Revolution', 'BLE', 'Blueview', '#00843D', '#FFFFFF', 'historic', 40, 'Blueview Stadium', 12500],
+    ['FC Porthills', 'PLS', 'Porthills', '#6A1B9A', '#0057B8', 'fan', 39, 'Bayford Field', 15500],
+    ['Willowcreek Stallions', 'WIH', 'Willowcreek', '#6CACE4', '#00843D', 'fan', 39, 'Springbluff Field', 16000],
+    ['Greensprings United', 'GRA24', 'Greensprings', '#FFFFFF', '#E30613', 'selling', 38, 'Walnutgrove Field', 14500],
+    ['FC Fortburg', 'FOK', 'Fortburg', '#0057B8', '#001F5B', 'fan', 37, 'Fortburg Field', 11000],
+    ['Harborview Rapids', 'HEY', 'Harborview', '#FFFFFF', '#E30613', 'youth', 37, 'Cypressgrove Field', 15500],
+    ['New Cypressview Blaze', 'CYW', 'Cypressview', '#00843D', '#6CACE4', 'historic', 35, 'Cypressview Field', 13000],
+    [
+      'East Riverburg Fury',
+      'RRG',
+      'East Riverburg',
+      '#000000',
+      '#6CACE4',
+      'fallen',
+      34,
+      'East Riverburg Stadium',
+      13000,
+    ],
+    [
+      'Silverport Beach Rapids',
+      'SRF',
+      'Silverport Beach',
+      '#6A1B9A',
+      '#000000',
+      'fan',
+      34,
+      'Silverport Beach Field',
+      14000,
+    ],
+    ['Inter Canyonburg', 'IER', 'Canyonburg', '#E30613', '#6A1B9A', 'fan', 33, 'Canyonburg Arena', 11000],
+    ['AC Rockgrove', 'RVE', 'Rockgrove', '#6CACE4', '#001F5B', 'fan', 32, 'Rockgrove Stadium', 11500],
+  ];
+  FM.D.CLUBS_VN4 = [
+    ['Lang Phong FC', 'LNA', 'Lang Phong', '#0057B8', '#000000', 'selling', 43, 'San Thai Bien', 17500],
+    ['Ha Lac United', 'HHA', 'Ha Lac', '#0057B8', '#FFFFFF', 'historic', 41, 'San Ha Lac', 16000],
+    ['Cong An Ha Hoa', 'COE28', 'Ha Hoa', '#E30613', '#6A1B9A', 'fallen', 39, 'Nam Bien Stadium', 12500],
+    ['Xi Mang Kon Nang', 'XII', 'Kon Nang', '#6A1B9A', '#FFD100', 'fan', 37, 'Bac Bien Stadium', 12500],
+    ['Tuy Bien FC', 'TBI', 'Tuy Bien', '#000000', '#FFD100', 'fan', 37, 'San Tuy Bien', 11500],
+    ['Thai Duong FC', 'THZ', 'Thai Duong', '#E30613', '#000000', 'fallen', 35, 'San Long Nang', 10500],
+    ['Sai Cao Lac', 'SAF53', 'Cao Lac', '#00843D', '#FFD100', 'historic', 34, 'San Cao Lac', 12500],
+    ['Cang Hai Lai', 'CAY46', 'Hai Lai', '#E30613', '#FFFFFF', 'historic', 32, 'Lam Duong Stadium', 10500],
+  ];
+  FM.D.CLUBS_OC1 = [
+    ['Timburn Football Club', 'TIC', 'Timburn', '#0057B8', '#FFD100', 'fan', 36, 'Timburn Park', 8000],
+    ['New Langport United', 'NBG', 'New Langport', '#E30613', '#001F5B', 'fan', 34, 'Riport Park', 7500],
+    ['South Thirwich Town', 'SOX', 'South Thirwich', '#00843D', '#6CACE4', 'fan', 31, 'South Thirwich Ground', 7000],
+    ['Lymewood Hotspur', 'LYB', 'Lymewood', '#FFD100', '#000000', 'fan', 30, 'Lymewood Park', 6500],
+    ['Market Scarport Rovers', 'MCG', 'Scarport', '#001F5B', '#6A1B9A', 'fan', 30, 'Fenington Green', 6500],
+    ['East Redborough Villa', 'EAB', 'Redborough', '#6CACE4', '#0057B8', 'fan', 29, 'Amesmouth Park', 6500],
+    ['Glasea Athletic', 'GLG', 'Glasea', '#000000', '#E30613', 'fan', 28, 'Glasea Ground', 6000],
+    ['Tamby Rovers', 'TBD', 'Tamby', '#6A1B9A', '#00843D', 'fan', 33, 'Tamby Sportsground', 7500],
+  ];
   FM.D.CLUB_INFO = Object.fromEntries(
     `BAY|BAY|Cats|1893
 CLI|CLI|Steelmen|1865
@@ -3566,14 +6711,14 @@ RYE|RYE|Harriers|1912
 ALD|ALD|Cutlers|1881
 TTH|TTH|Red Devils|1983
 GRT|GRT|Blues|1879
-LIT|LIT|Crimsons|1955
+LIT|ABF|Reds|1899
 HAS|HAS|Reds|1878
 EVR|EVR|Terriers|1956
 YAR|YAR|Lamplighters|1871
 TUT|TUT|Hornets|1979
 LAU|LAU|Seagulls|1947
 REY|REY|Terriers|1986
-CHI|CHI|Chargers|1966
+CHI|NEG|Druids|1934
 BEX|BEX|Reds|1867
 REA|REA|Foxes|1909
 STH|STH|Whites|1956
@@ -3595,7 +6740,7 @@ HUC|HUC|Imps|1917
 SUT|SUT|Lighthouses|1866
 WOR|WOR|Workmen|1932
 WED|WED|Brewers|1956
-CAE|CMS|Yeomen|1937
+CAE|RHY|Blues|1931
 TUN|TUN|Thistles|1904
 SHP|SHP|Drovers|1903
 CLF|CLF|Salmon|1978
@@ -3623,7 +6768,7 @@ SUE|SUE|Foresters|1880
 GLA|GLA|Red Devils|1916
 YTH|YTH|Seahawks|1890
 LMR|LMR|Pitmen|1921
-MIA|MIA|Blue Army|1901
+MIA|MCF|Valleymen|1863
 EVA|EVA|Pilgrims|1862
 PRU|PRU|Bees|1895
 HAR|HAR|Lions|1896
@@ -3664,7 +6809,7 @@ ARA|ARA|Jaguares|1887
 NAV|NAV|Campesinos|1904
 MOA|MOA|Rojos|1974
 OLR|OLR|Rojos|1888
-MRB|MRB|Linces|1898
+MRB|ATB|Blancos|1862
 PED|PDR|Leñadores|1916
 ARK|ARK|Urdinak|1921
 SOD|SRN|Potros|1887
@@ -3758,7 +6903,7 @@ LUN|LUN|Lynx|1898
 AJC|AJC|Lions|1969
 JOY|JOY|Mouettes|1904
 USM|USM|Gladiateurs|1899
-ESB|ESB|Renards|1935
+ESB|CAZ|Corbeaux|1964
 VAL|VAL|Rouges|1924
 ETO|ETO|Taureaux|1936
 THO|THO|Bleus|1908
@@ -3921,17 +7066,17 @@ GOR|GOR|Comets|1935
 CHM|CHM|Yellows|1907
 MIL|MIL|Lumberjacks|1921
 FOS|FOS|Lightning|1961
-LAK|LAK|Stallions|1952
+LAK|EAA|Maples|1940
 FRT|FRT|Pioneers|1963
 FOF|FOF|Ospreys|1977
 SPR|SPR|Rockets|1938
-EAG|EAG|Whites|1973
+EAG|HBB|Whites|1936
 BLU|BLU|Rockets|1914
 HIC|HIC|Eagles|1941
 CED|CED|Blacks|1975
 BEA|BEA|Fishermen|1985
 PIN|PIE|Reds|1927
-WHI|WHI|Ironmen|1979
+WHI|GRW|Maples|1913
 ASE|ASE|Oranges|1920
 GOP|GOP|Dragons|1948
 CAN|CAN|Gunners of the Shire|1928
@@ -4211,10 +7356,10 @@ WOD|WOD|Miners|1958
 GEJ|GEJ|Robins|1934
 WOF|WOF|Wolves|1918
 GEV|GEV|Reds|1945
-MOB|MOB|Magpies|1932
+MOB|OTA|Stags|1938
 MOT|MOT|Koalas|1901
 CFF|CFF|Sparrows|1972
-NOW|NOW|Stags|1942
+NOW|BLG|Penguins|1920
 TAM|TAM|Emus|1978
 BAS|BAS|Crocs|1988
 PRT|PRT|Blues|1954
@@ -4234,14 +7379,14 @@ ORR|ORR|Vörösök|1979
 LIS|LIS|Harps|1881
 LIW|LIW|Pitmen|1884
 ORA|ORA|Brewers|1950
-COU|COU|Clansmen|1941
+COU|CBJ|Grecians|1960
 NEW|NEW|Buzzards|1929
 POC|POC|Hurlers|1946
 ATH|ATH|Gaels|1939
 SLI|SLI|Corsairs|1883
 NWL|NWL|Blues|1891
 CAK|CAK|Rebels|1898
-TAL|TAL|Stags|1931
+TAL|OXS|Emeralds|1885
 LLA|LLA|Ravens|1900
 DOC|DOC|Potters|1930
 CLY|CLY|Quarrymen|1886
@@ -4294,7 +7439,7 @@ TAJ|TEM|Yellows|1928
 BAM|TLM|Oranges|2008
 BND|BYL|Sailors|1989
 LTJ|TER|Reds|1928
-KAM|BYN|Oranges|1977
+KAM|SFL|Oranges|1988
 TMN|LRL|Tigers|1918
 TES|PUP|Blues|1920
 LTS|PUA|Lions|1977
@@ -4308,7 +7453,7 @@ TEL|LAB|Biru|1943
 TEP|DAM|Elephants|1922
 SUP|UIK|Kuning|1906
 SRI|SEJ|Kuning|1941
-SIT|KAB|Harimau|1979
+SIT|DED|Helang|1939
 PUT|MUT|Eagles|1948
 PUA|UIP|Kancil|1958
 SMP|PUS|Rockets|2008
@@ -5543,7 +8688,1717 @@ TBB|TBB|Eagles|1939
 VIY|VIY|Bears|1932
 GRK|GRK|Rams|1967
 ANB|ANB|Pioneers|1966
-ROG|ROG|Rovers|1910`
+ROG|ROG|Rovers|1910
+CRR|CRB|Aigles|1959
+USD|USJ|Sahariens|1948
+MAM35|MSK|Blancs|1917
+MCC|MCM|Verts|1949
+TLE|TLE|Dromadaires|1983
+MOO|MOG|Bleus|1983
+BEA24|ABS|Grenats|1978
+MMO|MOJ|Fennecs|1986
+CAB25|HSS|Aigles|1982
+CCR|CRG|Fennecs|1914
+MOW|MSR|Bleus|1960
+MOX|MOZ|Aigles|1985
+JSS|JSA|Rouges|1948
+MMC|MTX|Marine|1933
+GHB|EGX|Aigles|1965
+TIM|TIM|Sahariens|1931
+FRK|FRB|Pioneros|1951
+NAY|NAL|Rojos|1910
+MOY|MOK|Cruzados|1910
+CAC26|CAC|Rayos|1932
+CAD27|GIC|Osos|1956
+MOZ|SPJ|Amarillos|1973
+REJ|RGA|Celestes|1935
+DOP|DOA|Cruzados|1917
+DOQ|DOD|Toros|1959
+QUD|DEQ|Pumas|1946
+PEQ|PEE|Granates|1942
+MIE|MIC|Azulones|1948
+FRL|SPQ|Albos|1970
+COL|COH|Ñandúes|1950
+ARP|AAS|Amarillos|1950
+URB|URO|Cruzados|1970
+BUQ|ESM|Granates|1946
+ROH|INE|Amarillos|1970
+GRL|FOG|Blauen|1928
+WES|TEW|Roten|1883
+NEU|FNI|Roten|1918
+UNA|UNE|Roten|1893
+CON|COO|Brauer|1934
+ROJ|RWH|Brauer|1920
+HEC|HEA|Dunkelblauen|1920
+COP|COC|Weinroten|1882
+BRM|FSB|Bären|1954
+TUB|TUA|Rothirsche|1912
+STU|STC|Himmelblauen|1904
+HEE|FOU|Weißen|1897
+NEK|FNL|Bergleute|1911
+BRP|BNA|Weinroten|1891
+WAL|WLD|Grünen|1878
+UNR|UNR|Roten|1924
+KHC|KHR|Chornyya|1945
+NOP|SNA|Siniya|1930
+NEM|NSV|Chyrvonyya|1963
+SHK|SKH|Zholtyya|1948
+KHK|KHD|Vauki|1935
+NEN|NEM|Zholtyya|1972
+NAZ|NMX|Blakitnyya|1938
+VYA|VYA|Belyya|1925
+CHC26|CSY|Siniya|1925
+SPP|SPX|Belyya|1911
+ENB|ENH|Cyomna-siniya|1941
+VEJ|VEI|Vishnyovyya|1961
+NAA24|NDX|Vishnyovyya|1934
+SPQ|SPY|Cyomna-siniya|1951
+CNB|CYN|Hrenadzery|1934
+SVE|SVF|Chyrvonyya|1983
+VEK|KVV|Geelen|1899
+ROY|HOB|Blauwen|1880
+KOD|KOW|Geelen|1920
+ZUA|ZUA|Bijen|1913
+BEB25|BEE|Valken|1901
+STV|STG|Blauwen|1950
+STW|STJ|Zwanen|1942
+DEV|DEV|Zwanen|1931
+KAX|KAC|Zwarten|1897
+KSC|KSC|Geelen|1933
+EXA|EXV|Hemelsblauwen|1917
+EXR|EXL|Zeemeeuwen|1917
+KRF|KRD|Groenen|1940
+ZUO|ZUS|Hemelsblauwen|1952
+ROL|WGH|Pioniers|1948
+NIC|NIC|Raven|1913
+DOS|DOE|Zhaltite|1914
+DIJ|SVD|Minyorite|1970
+MIN|MIY|Sokolite|1927
+DIK|DSX|Chervenite|1948
+SAE28|SDL|Chernite|1965
+YAD|YNT|Chernite|1981
+SEQ|SMV|Orlite|1921
+DMA|DOV|Belite|1982
+VIZ|VDT|Nebesnosinite|1967
+MIF|MYO|Metalurzite|1930
+MIV|MIV|Lavovete|1936
+BAL34|BKA|Sokolite|1934
+DIS|SLJ|Tamnosinite|1985
+LOD|LTX|Minyorite|1945
+MEG|MRG|Chernite|1916
+SPS|SPZ|Belite|1973
+LOE|LGX|Orlite|1972
+SEI|SVR|Sinite|1953
+CUC|CUU|Rojos|1941
+QUE|QUD|Corsarios|1896
+LEA|LER|Verdes|1925
+GUE|RSG|Verdes|1937
+CLD|CAJ|Verdes|1972
+QLA|ASQ|Negros|1916
+VAQ|VAG|Toros|1953
+CAE28|CTB|Azules|1949
+PAB25|DSP|Negros|1910
+LIM|LRA|Granates|1971
+ROK|JTA|Mineros|1952
+PEU|PNB|Rojos|1907
+ALY46|ABA|Azulones|1967
+NUC|NUQ|Granates|1918
+FUH|FUA|Granates|1954
+OLF|OLE|Verdes|1907
+NIN|NIG|Blues|1974
+SHL|SHT|Lions|1970
+HUA|HUA|Eagles|1931
+FAN|FAN|Tigers|1970
+BAM35|BTN|Yellows|1976
+NIG|NNA|Maroons|1951
+XIN|XIN|Steelmen|1956
+GYC|GYU|Whites|1972
+MEJ|MEI|Falcons|1938
+LOF|LOE|Navy|1978
+TAH31|TNA|Maroons|1964
+MEK|MEU|Blacks|1975
+YUN|YNM|Dragons|1949
+DOT|DNG|Greens|1913
+RUI|RUI|Blacks|1960
+XAA|XIH|Eagles|1918
+FRP|FRF|Negros|1912
+VAT|ASV|Amarillos|1920
+JAR|JAR|Rojos|1962
+CUD|CUD|Rojos|1932
+RIF|RIC|Halcones|1965
+LUF|JUG|Azules|1939
+VAU|DSV|Azulones|1949
+PAC26|PLE|Azules|1952
+BAN36|RCB|Amarillos|1919
+VLA|VAM|Cóndores|1899
+ALZ47|ALJ|Titanes|1957
+QUF|QTA|Azules|1915
+SET|SAD|Celestes|1956
+NEP|NEJ|Leñadores|1968
+OSE|OSN|Verdes|1959
+QUL|QUE|Azulones|1970
+LIQ|LIC|Bikovi|1985
+PAD27|PAJ|Pioniri|1913
+HRB|NKH|Rakete|1920
+TOK|TOP|Zeleni|1930
+MEM|MEB|Žuti|1941
+RYD|RYB|Bikovi|1927
+ZEJ|ZEA|Tamnoplavi|1924
+BEC26|BLV|Žuti|1984
+MLC|MLD|Sokolovi|1913
+SLH|MFL|Žuti|1925
+THK|GST|Kókkino Krasí|1926
+TRO|APT|Kókkinoi|1941
+IOA|AOI|Áspri|1977
+ARQ|DXA|Arkoúdes|1966
+XAI|PAX|Kometes|1930
+XAB|PTH|Ouránioi|1968
+TRC|ATX|Titánes|1921
+TRD|AER|Prásinoi|1976
+LAW|PLX|Psarádes|1933
+PEV|NIP|Kókkinoi|1941
+NAB25|NKI|Mávroi|1983
+KYA|PKX|Arkoúdes|1921
+PAE28|GSP|Spartiátes|1972
+KAZ|GSK|Korákia|1973
+AGI|DAX|Léontes|1967
+LAX|PLI|Kókkinoi|1911
+SPU|SBF|Medvědi|1960
+MLN|MLF|Kováři|1917
+PRD|VIP|Bílí|1927
+SEU|TJA|Žlutí|1917
+OLO|SLB|Modří|1983
+OLG|OLF|Býci|1913
+HRV|SKB|Vínoví|1937
+BRQ|TJB|Vínoví|1985
+PAF29|SOP|Horníci|1950
+VSA|SBJ|Modří|1971
+LYA|LYF|Vínoví|1971
+NYA|NYF|Černí|1964
+DOV|DOU|Vlci|1960
+PRG|POE|Nebesky modří|1986
+PRV|SBK|Rytíři|1952
+SPW|SBM|Lvi|1922
+BRR|BRD|Hjorter|1896
+RIG|RIG|Falke|1928
+HAA24|HAB|De Lyseblå|1921
+LAY|LAC|Rever|1903
+MAN36|MAM|De Røde|1899
+NYL|NYL|De Blå|1919
+KIH|KKI|Soldater|1904
+HAB25|HAC|De Blå|1896
+NYN|NYB|De Mørkerøde|1902
+KIJ|KLR|Ulve|1904
+VEM|VST|De Sorte|1952
+BJB|BBR|De Mørkerøde|1943
+ORD|ORB|Negros|1979
+LUG|LUA|Águilas|1919
+PEW|PDN|Tiburones|1940
+FDA|FRH|Tiburones|1976
+CAF29|CDO|Azules|1922
+BJC|DBP|Celestes|1942
+ARS|AOE|Granates|1975
+PLF|SAZ|Azulones|1954
+ESH|EAL|Cruzados|1930
+TON|UTG|Verdes|1986
+ALA48|NSR|Yellows|1914
+AAE|NJA|Whites|1974
+ALB49|AMC|Camels|1960
+ALC50|HIA|Tigers|1914
+PEX|PEF|Maroons|1961
+ALD51|ZAH|Greens|1946
+DAN|DAD|Gazelles|1965
+ALE52|WHD|Reds|1913
+ALF53|QEA|Sky Blues|1969
+ALG54|NHD|Sky Blues|1978
+ANC|NUR|Navy|1958
+KAA24|KAH|Sandstorm|1926
+KAB25|KAG|Gazelles|1961
+MIT|MIU|Lions|1926
+ABF|BEP|Yellows|1948
+TAJ32|TLO|Navy|1944
+PEO|PDX|Whites|1950
+KFR|KMS|Whites|1923
+ALI|ITT|Lions|1939
+MAP37|MAQ|Eagles|1970
+VAV|VAH|Taivaansiniset|1967
+LIX|LIK|Keltaiset|1948
+SEV|SKK|Keltaiset|1962
+PIH|PIJ|Ahmat|1948
+TAK33|TIX|Viininpunaiset|1913
+OUA|OSL|Sudet|1970
+OUB|OSV|Taivaansiniset|1985
+PYR|PYY|Vihreät|1951
+VAI|VNH|Mustat|1947
+SIS|SSU|Punaiset|1974
+TAL34|TAP|Elephants|1910
+SEW|SKC|Eagles|1979
+KAC26|KSE|Blues|1916
+DUC|DUH|Leopards|1978
+AKE|AKF|Eagles|1934
+BOV|BOH|Reds|1962
+NKO|NKO|Sky Blues|1983
+DUO|DUP|Elephants|1926
+KAD27|KDI|Buffaloes|1978
+TEM|TES|Navy|1989
+DUD|DNN|Navy|1977
+DSI|DUM|Sky Blues|1967
+NKE|NKM|Elephants|1969
+TAM35|TKR|Whites|1938
+BOI|BLD|Porcupines|1946
+KUM|KUU|Hearts|1952
+PAG30|AEP|Áspri|1916
+NAI|PAB|Gladiátores|1958
+KAE28|AKB|Ierakes|1960
+TRG|TRB|Spartiátes|1911
+MEN|AOA|Mple|1987
+MAQ38|MAV|Kókkino Krasí|1985
+THN|AOT|Ouránioi|1915
+AGO|APL|Kítrinoi|1975
+KAF29|KAE|Delfínia|1989
+AGS|APN|Kítrinoi|1948
+VEP|VEV|Sasok|1984
+BAP37|BAD|Zöldek|1989
+GYD|GYB|Égszínkékek|1979
+GRM|GYS|Égszínkékek|1979
+VEQ|VSZ|Feketék|1935
+KVB|KAJ|Halászok|1912
+VET|VEB|Égszínkékek|1925
+HAC26|HAJ|Vörösök|1933
+TIS|TIS|Kékek|1942
+NAC26|NAB|Úttörők|1978
+FEL|FEF|Feketék|1920
+ORE|ORC|Lovagok|1915
+GYY|GYH|Fehérek|1937
+KZA|KLH|Gladiátorok|1927
+RAQ|RAE|Égszínkékek|1969
+RAU|RAS|Égszínkékek|1942
+AUC|AUA|Whites|1923
+PAH31|PAD|Blacks|1921
+BAQ38|BND|Mariners|1969
+HUB|HUB|Sky Blues|1923
+LUJ|LCG|Navy|1960
+AUN|AUO|Reds|1937
+MEP|MRP|Peacocks|1947
+POX|POH|Yellows|1936
+NAD27|NGK|Whites|1928
+INC|INO|Blues|1956
+KOE|KOF|Warriors|1955
+BAR39|BBE|Blacks|1947
+SHS|SHX|Reds|1934
+HAD27|HAD|Reds|1940
+SAF29|SNB|Eagles|1990
+HAE28|HAG|Navy|1941
+ESL|ESN|Lions|1950
+SAG30|SRX|Sandstorm|1981
+MSI|MSX|Eagles|1961
+PAJ32|PAQ|Maroons|1962
+SHT|SBN|Sandstorm|1955
+NAE28|NAQ|Lions|1946
+ESM|ESQ|Navy|1985
+SAH31|SYX|Reds|1923
+SAJ32|SQX|Greens|1957
+MOA24|MMM|Greens|1982
+SAK33|SBP|Camels|1961
+SEX|SEZ|Greens|1957
+PAO|PKA|Camels|1927
+PAK33|PAW|Gazelles|1949
+TRH|TRC|Sky Blues|1919
+BAS40|BAZ|Tricolours|1950
+NEQ|NEA|Sky Blues|1925
+TUC|TUB|Clansmen|1922
+POY|POJ|Blues|1926
+WID|WIA|Hurlers|1876
+MAR39|MLR|Blues|1952
+CAG30|CSR|Clansmen|1896
+ENN|END|Blacks|1880
+PRH|PMC|Reds|1937
+HAF29|HPA|Blues|1938
+HAG30|HOE|Crimsons|1975
+MAS40|MCD|Knights|1978
+KIM|KIY|Tigers|1926
+HEF|HEC|Sky Blues|1982
+MAT41|MNX|Blues|1924
+IRO|IRO|Blues|1952
+HAH31|HMU|Yellows|1943
+HAJ32|HOX|Falcons|1952
+BNA|BNS|Navy|1974
+BNI|BNK|Crimsons|1921
+MBD|MAZ|Tigers|1956
+MAU42|MBE|Greens|1983
+HAK33|HTU|Navy|1974
+BED27|BIT|Eagles|1941
+BNK|BKX|Lions|1951
+POA24|PKU|Reds|1920
+KAG30|KTL|Reds|1950
+NAF29|NNN|Kifaru|1917
+BUT|BUE|Yellows|1961
+LAZ|LKP|Greens|1971
+LAA24|LAH|Maroons|1930
+MOB25|MMP|Greens|1965
+MOC26|AMK|Reds|1943
+POB25|PMU|Reds|1949
+MAV43|MKL|Blacks|1957
+MWU|MWH|Duma|1933
+MAW44|MSE|Whites|1938
+LOG|LDN|Simba|1982
+RUK|RUK|Twiga|1928
+KIP|KBR|Sky Blues|1929
+MBF|MBL|Yellows|1938
+MNC|MOX|Navy|1931
+SAL34|SML|Nyati|1982
+MRA|MKE|Yellows|1962
+LKE|LAJ|Nyati|1969
+PEY|PEG|Badak|1925
+PEZ|PRD|Merah|1987
+PTA|PEJ|Kuning|1927
+PDR|PDM|Marun|1917
+BAT41|BBF|Hijau|1953
+INH|INJ|Rusa|1930
+SEZ|SEH|Kancil|1928
+PEA24|PTA|Gajah|1942
+SRA|SRS|Harimau|1923
+DAP|DMA|Gajah|1918
+PEB25|PLT|Putih|1918
+MEQ|MLT|Marun|1936
+SEA24|SEC|Marun|1914
+SBF|SBQ|Enggang|1912
+UNB|UNB|Negros|1939
+UND|UND|Verdes|1939
+PAL34|PAG|Azules|1905
+COQ|CTP|Blancos|1929
+YAU|YAU|Alacranes|1930
+ZAJ|ZAB|Verdes|1930
+CAH31|COJ|Amarillos|1957
+TOS|TOO|Pioneros|1905
+HAL34|HAQ|Gallos|1898
+OCC|OCF|Amarillos|1894
+AZU|AZU|Blancos|1937
+LOH|LOA|Guindas|1916
+URC|URC|Negros|1941
+URN|URF|Azulones|1959
+VEU|VEO|Verdes|1939
+YAL|YAC|Pioneros|1909
+MEU|UMX|Faucons|1960
+OLH|OUL|Jaunes|1928
+SPX|SBR|Noirs|1915
+AIB|USQ|Verts|1955
+CHD27|CHP|Bleus|1963
+OUE|OUE|Lions|1963
+CHE28|CBE|Gazelles|1969
+OUJ|USV|Faucons|1925
+SIJ|USI|Jaunes|1981
+KHD|KHU|Ciel et Blancs|1919
+BEE28|BIA|Ciel et Blancs|1983
+SPY|SIV|Cèdres|1955
+OLJ|OUJ|Rouges|1955
+OOU|OUO|Bleus|1940
+CHF29|CSK|Noirs|1943
+SIQ|SBS|Verts|1921
+OGB|OGB|Lions|1968
+OSH|OSH|Greens|1967
+SHV|SBT|Reds|1932
+UMB|UMB|Yellows|1966
+OWA|OWA|Chiefs|1977
+AWC|AWR|Reds|1986
+OWO|OWO|Maroons|1969
+ILU|ILU|Sky Blues|1982
+SNG|SOT|Whites|1927
+BAU42|BDW|Reds|1953
+KAH31|KAK|Porcupines|1919
+ONO|OWP|Reds|1939
+OWI|OWI|Chiefs|1917
+MRI|MRI|Chiefs|1971
+SAM35|SGR|Porcupines|1968
+AKF|AKC|Warriors|1945
+SAN36|SGK|Yellows|1967
+NSA|NSA|Chiefs|1929
+ILO|ILO|Maroons|1913
+EDA|EDU|Wolves|1951
+HAM35|HRT|Kings|1953
+FEA|FEN|Ironmen|1933
+WAK|WAV|Dark Horses|1959
+FLA|FLI|Kings|1924
+GRQ|MLC|Owls|1930
+MEV|MRW|Greens|1957
+REK|RBY|Burgundies|1961
+KES|KEE|Blue Army|1961
+OXH|OXH|Workmen|1953
+OAK|OAU|Crimsons|1957
+WHA|WHH|Grecians|1936
+EPM|EPM|Bluebirds|1976
+MOD27|MBF|Albos|1960
+FRI|FRJ|Amarillos|1966
+FEB|FEA|Rojos|1982
+NAG30|NIO|Titanes|1974
+PDA|PLL|Verdes|1931
+LAB25|CSL|Granates|1943
+NTO|NTX|Azules|1972
+REL|RTA|Celestes|1950
+HEG|HER|Celestes|1987
+CUI|CTU|Azules|1970
+ORT|ORT|Amarillos|1952
+ANE|SBU|Zorros|1930
+QAA|QRR|Amarillos|1967
+FOD|RDF|Rojos|1956
+HEJ|GIH|Amarillos|1913
+RAV|REO|Toros|1931
+ONB|ONB|Verdes|1975
+ALH55|ATA|Cóndores|1979
+MOE28|MBJ|Alacranes|1937
+VIA24|VLA|Negros|1932
+CEE|CEG|Celestes|1971
+MOF29|SMB|Halcones|1924
+VAO|VLE|Blancos|1924
+FRQ|FNO|Azules|1949
+LES|LEA|Negros|1928
+LIY|JLX|Azulones|1941
+NUD|NUF|Azulones|1931
+ALJ56|AAA|Azules|1950
+BAV43|JBX|Amarillos|1947
+CUF|CUF|Rayos|1949
+FNA|FGA|Verdes|1990
+OLL|OME|Corsarios|1929
+ALK57|SBV|Blacks|1918
+ABG|BHR|Tigers|1916
+ASJ|ASX|Lions|1935
+WAM|WMA|Blacks|1946
+AWD|WHB|Camels|1922
+RIH|RIS|Foxes|1928
+MUS|MSY|Eagles|1977
+ALL58|FLH|Blacks|1978
+PUD|PEH|Grena|1946
+DIM|DRB|Negrii|1953
+MAX45|MRC|Albii|1927
+PRL|PRH|Șoimii|1976
+GLO|GLB|Negrii|1931
+MAY46|VCT|Minerii|1927
+NOQ|NOB|Vulturii|1913
+ELE|ELD|Albii|1971
+NOS|VRI|Leii|1966
+BAW44|BCS|Vulturii|1950
+GLB|GLC|Grena|1948
+DRB|DRC|Bleumarin|1948
+PRM|PRJ|Albii|1972
+ACS|ABX|Zimbrii|1949
+RAW|RPI|Vulturii|1970
+ACR|ACR|Verzii|1937
+RAX|RAF|Negrii|1945
+VAW|VTI|Negrii|1914
+OLP|OIM|Vulturii|1910
+ZAK|ZLN|Leii|1945
+VIB25|VTR|Negrii|1969
+DIP|DMC|Albii|1943
+KAJ32|KLB|Siniye|1914
+NID|NIH|Belye|1983
+STX|STL|Medvedi|1939
+NOT|NOC|Sokoly|1973
+KRG|KRM|Siniye|1971
+AVB|AVM|Zheltye|1937
+AVC|AVL|Orly|1949
+KIQ|KHB|Zhuravli|1979
+SIR|SIE|Medvedi|1976
+NET|NEB|Kosmonavty|1982
+TRJ|TRD|Sokoly|1979
+ZEM|ZNB|Golubye|1936
+SAP37|SNO|Vinnye|1980
+SPZ|SUX|Kosmonavty|1961
+NEV|NEE|Shakhtyory|1916
+ART|AVG|Temno-sinie|1964
+TRK|TRL|Temno-sinie|1915
+NVO|NVO|Kozaki|1910
+DAQ|DAG|Whites|1938
+PEC26|PEN|Navy|1910
+DUS|DUB|Maroons|1896
+KIV|KII|Sky Blues|1896
+HAN36|HAU|Clansmen|1895
+MOG30|MFF|Highlanders|1915
+GLE|GLE|Blues|1908
+MOH31|MBK|Whites|1948
+INT|ABB|Thistles|1893
+EAS|EAS|Foresters|1945
+TOP|TOG|Žuti|1915
+OSF|OST|Žuti|1954
+RUF|RUF|Vukovi|1976
+SLJ|SLG|Crni|1945
+DOW|LOF|Baroni|1929
+PAM35|PAV|Crni|1961
+SPA24|SBW|Orlovi|1942
+KAK33|KMC|Svetloplavi|1974
+LIZ|LPT|Bordo|1953
+BOW|BOC|Plavi|1919
+RIK|RPA|Komete|1948
+HRL|HRB|Beli|1980
+DMI|MRK|Žuti|1974
+NOX|NVV|Beli|1980
+ZEQ|MFZ|Gavranovi|1938
+SST|SSD|Zeleni|1957
+VAX|SLC|Levy|1971
+ZVO|ZVO|Vlci|1927
+JEC|JEB|Bordoví|1969
+SPB25|SBY|Svetlomodrí|1930
+PIJ|PNY|Bordoví|1948
+BRY|SOV|Rytieri|1913
+SRB|TSD|Modrí|1970
+SKK|LPN|Tmavomodrí|1921
+HON|MFH|Žltí|1985
+DUE|DUG|Tmavomodrí|1960
+TAN36|TTR|Levy|1915
+STZ|MFT|Rytieri|1968
+KRH|KFX|Tmavomodrí|1987
+STA24|SOA|Železiari|1959
+SPC26|SBZ|Žltí|1925
+SOP|SOB|Bordoví|1946
+RUG|RDA|Beli|1923
+DSK|SKD|Svetlomodri|1912
+RAZ|RUR|Svetlomodri|1972
+PRI|PIZ|Črni|1958
+AJD|NKD|Črni|1958
+NVA|NKN|Črni|1943
+SAQ38|SCB|Temnomodri|1916
+RUN|RUN|Modri|1946
+BLI|BLX|Jeleni|1964
+RUH|RDB|Zeleni|1943
+SVA|SVB|Jeleni|1978
+DNO|DNS|Svetlomodri|1939
+SAR39|SCC|Beli|1924
+BOX|BZX|Zeleni|1968
+NDD|NZK|Svetlomodri|1959
+LJU|NKL|Modri|1941
+MSW|MBM|Blues|1914
+PHA|PHA|Stars|1942
+NEX|NEU|Pirates|1969
+POC26|POP|Yellows|1951
+HOU|HOU|Blacks|1981
+HOP|HOD|Lions|1963
+MAZ47|MBN|Lions|1957
+LAC26|LAL|Chiefs|1924
+VOA|VOC|Reds|1985
+KRJ|KRB|Pirates|1939
+KWA|KWK|Maroons|1934
+THQ|TBK|Lions|1973
+ULC|ULF|Foundrymen|1928
+NEY|NSU|Swallows|1949
+LAD27|LDK|Arrows|1960
+ULN|ULS|Sky Blues|1984
+DIQ|DIS|Grünen|1950
+WEB|WES|Gelben|1938
+FAE|TEC|Grünen|1947
+BEF29|SCD|Grünen|1936
+GRS|GRC|Blauen|1935
+FEF|SCE|Schwarzbären|1917
+FEU|FEL|Schwarzen|1920
+HIE|HIB|Dunkelblauen|1933
+FRR|SCF|Roten|1931
+LIA24|LAP|Gelben|1887
+BUV|BKB|Eagles|1940
+DAS|DRM|Navy|1939
+SIU|SIM|Reds|1915
+ARU|ARU|Navy|1970
+SOQ|SOG|Reds|1939
+KIW|KBA|Elephants|1925
+TAP37|TNG|Greens|1934
+KGA|KOG|Navy|1925
+KTA|KID|Eagles|1944
+MBG|MYT|Sky Blues|1970
+YOB|YOM|Blacks|1960
+TAQ38|TBW|Reds|1920
+TYA|TGY|Cheetahs|1951
+AZA|AHZ|Lions|1924
+ATC|AHT|Buffaloes|1971
+KIX|KBW|Blacks|1963
+KEL|EKX|Fennecs|1951
+KEB|KEB|Noirs|1916
+JJS|JSB|Jaunes|1974
+SIW|USW|Rouges|1911
+KAL34|KAX|Grenats|1910
+BEG30|ETA|Fennecs|1959
+TAR39|TAE|Grenats|1970
+NAH31|ENX|Palmiers|1910
+KAM35|KSI|Verts|1920
+EOO|EOA|Blancs|1979
+SIX|ETS|Rouges|1925
+OLQ|NBN|Grenats|1960
+JSM|JSO|Gazelles|1978
+JSO|JOZ|Noirs|1935
+VEV|VEE|Lvy|1965
+KRK|KRA|Bili|1937
+SHW|SCG|Zhovti|1986
+SUF|SUB|Syni|1952
+MKA|MLB|Chorni|1954
+NAJ32|NFA|Chorni|1915
+SHX|SCJ|Zeleni|1948
+TDO|TOE|Temno-syni|1923
+POD27|POQ|Zeleni|1960
+LYV|LOG|Syni|1987
+CHG30|CNO|Temno-syni|1979
+STB25|FST|Vyshnevi|1978
+VEO|VOX|Charivnyky|1980
+AKG|AKN|Chorni|1918
+NYB|NYK|Blakytni|1979
+AVV|AVD|Zhovti|1966
+ALM59|WAB|Yellows|1923
+HIF|HIE|Lions|1923
+JER|JER|Reds|1974
+AIK|AIA|Horsemen|1974
+AAS|AAD|Hawks|1934
+ALN60|WAT|Sandstorm|1972
+AAQ|AQY|Blacks|1973
+ALP61|JAE|Falcons|1985
+ANI|NMR|Maroons|1978
+MUD|MHR|Eagles|1920
+SAS40|SLH|Navy|1942
+SAT41|SLK|Navy|1945
+ALQ62|AWI|Greens|1966
+KAN36|KCX|Reds|1973
+ALR63|RAY|Horsemen|1936
+AAF|AIF|Camels|1948
+REM|REB|Bison|1985
+CHH31|CHQ|Sky Blues|1939
+WAW|WAC|Navy|1974
+SPD27|SCK|Navy|1983
+WHD|WHC|Crush|1949
+MAA48|MBP|Stallions|1917
+ROM|ROL|Lumberjacks|1938
+MLE|MEL|Lumberjacks|1911
+PRK|PRL|Maroons|1920
+BEH31|BEK|Lightning|1986
+WHE|WHF|Blues|1924
+CYP|CYP|Blues|1982
+ELL|ASF|Sky Blues|1921
+CHJ32|CHV|Blacks|1958
+POE28|POX|Maroons|1982
+SUG|SUC|Comets|1923
+CEF|CEE|Greens|1918
+WIE|WIL|Greens|1936
+POF29|POY|Maroons|1957
+ELK|ELF|Foundrymen|1965
+RLD|ROA|Blues|1935
+CLS|CHY|Dragons|1934
+LAE28|LKV|Blacks|1951
+FOE|FOC|Rockets|1925
+PRJ|PRQ|Verdes|1970
+NAK33|NAX|Celestes|1972
+MIS|MRF|Gauchos|1924
+URZ|URE|Celestes|1931
+SNA|CSS|Rojos|1968
+PTE|PRI|Pumas|1934
+NAL34|NNB|Pioneros|1939
+LEB|LEC|Lobos|1973
+DOY|INP|Celestes|1941
+BUW|BST|Leones|1900
+NAM35|NAZ|Gladiadores|1903
+LAO|EIA|Amarillos|1905
+ORO|DFE|Granates|1918
+MIG|MIH|Verdes|1934
+CHK33|CIR|Lions|1928
+TAS40|TSH|Camels|1951
+BEJ32|BKC|Blues|1938
+GUG|GLK|Yellows|1915
+NUF|NUK|Leopards|1931
+ANF|ANU|Bulls|1967
+NAN36|NMZ|Greens|1931
+SHZ|SCS|Eagles|1965
+KHF|KHF|Reds|1946
+NEZ|NEN|Crimsons|1950
+BEK33|BKR|Blacks|1923
+KHZ|KHC|Yellows|1969
+MRC|MRR|Whites|1944
+ESN|ESW|Sky Blues|1947
+ROP|ROR|Amarillos|1935
+NAP37|NBA|Granates|1917
+BIB|BLI|Titanes|1967
+MOJ32|AMX|Celestes|1932
+ADB|ARD|Rayos|1912
+GAC|GAB|Verdes|1908
+CAJ32|RDC|Zorros|1935
+VEW|RDV|Negros|1967
+SSA|SLP|Verdes|1965
+LAF29|INI|Amarillos|1894
+CIA|CIA|Amarillos|1906
+PUG|SCL|Celestes|1930
+GAD|INT|Azules|1960
+PUH|PUO|Osos|1895
+RAA24|REL|Toros|1923
+COT|COP|Arrieros|1903
+HNA|GII|Granates|1960
+GEA|GEA|Celestes|1938
+KLB|FOK|Grünen|1913
+OBA|FTU|Weinroten|1938
+COW|CCO|Schwarzen|1951
+ROQ|FRX|Gelben|1936
+KLC|KLI|Pioniere|1921
+HOQ|HHN|Himmelblauen|1900
+UER|UTE|Blauen|1940
+RRT|RTF|Wölfe|1931
+FUK|FOE|Bären|1923
+HOT|HON|Grünen|1909
+HAP37|HNX|Blauen|1912
+GOC|FSG|Schwarzen|1903
+COX|CDI|Blauen|1891
+BLB|BWO|Ritter|1904
+LUT|LUT|Seeadler|1952
+HIM|HIF|Schwarzen|1907
+OUC|KVO|Brouwers|1954
+HOX|HGB|Bordeauxen|1914
+KSA|KNL|Blauwen|1924
+KSK|KSK|Hemelsblauwen|1917
+KOF|KNN|Witten|1906
+KRL|KRH|Rooien|1955
+SNE|SNE|Witten|1934
+EOR|EXK|Groenen|1935
+KKE|KOK|Geelen|1931
+HAQ38|HRD|Spechten|1879
+KOO|KOJ|Witten|1948
+KOZ|KOZ|Donkerblauwen|1908
+KAP37|KBX|Witten|1915
+SRD|STM|Witten|1910
+KFA|KFO|Wolven|1916
+NIH|NWD|Geelen|1900
+CAK33|ESS|Azuis|1907
+CAL34|CAQ|Azuis|1900
+NMA|NBB|Grenás|1937
+GMA|ESV|Tucanos|1963
+TPE|ATL|Pioneiros|1912
+JAE|JAG|Rubro-Negros|1947
+VAY|VSS|Celestes|1972
+TAT41|TAG|Verdões|1899
+ITI|ITI|Alvinegros|1941
+REP|REP|Verdões|1949
+PPA|PBB|Grenás|1931
+JAG|JAS|Falcões|1966
+IBI|UNJ|Corsários|1913
+ITC|ITS|Tubarões|1950
+JMA|ESX|Alvinegros|1901
+ITS|ITJ|Verdões|1899
+AMD|ARH|Jaguares|1899
+TTA|SOC|Verdões|1902
+SAU42|SCM|Azuis|1935
+URD|URG|Azuis-Marinho|1919
+ALS64|ALH|Mineros|1928
+FUM|FNA|Celestes|1934
+LEC|JUL|Amarillos|1919
+PED27|PDB|Azulones|1923
+POG30|PZN|Rayos|1957
+ATD|ALK|Rojos|1959
+TAO|TAH|Corsarios|1937
+PEE28|PDD|Verdes|1901
+MOK33|MBQ|Halcones|1947
+BAX45|BBG|Amarillos|1915
+VIC26|VNO|Granates|1957
+MTE|MBR|Azules|1931
+VID27|CVX|Toros|1937
+ROR|RLA|Leones|1925
+KLI|KAI|Reds|1921
+LOS|LOH|Whites|1972
+HUU|HUU|Tigers|1942
+CHL34|CHZ|Falcons|1970
+XIG|XIT|Yellows|1958
+NNG|NIJ|Steelmen|1928
+SLL|SNM|Sky Blues|1990
+CHM35|CGA|Pandas|1988
+RET|RUP|Whites|1958
+RUJ|RUG|Eagles|1948
+YUG|YUF|Blacks|1971
+ANM|ANM|Lions|1911
+DUF|DUC|Námořníci|1978
+DLA|DUJ|Nebesky modří|1918
+STC26|STV|Kováři|1983
+SPE28|SCN|Lišky|1967
+OCE|TJO|Bílí|1914
+SRO|SCP|Rybáři|1952
+SPF29|SCQ|Průkopníci|1966
+VYB|VYF|Průkopníci|1988
+ZEY|ZEB|Bílí|1917
+POH31|PTB|Rybáři|1959
+DOI|DOP|Vlci|1922
+ROV|SCT|Červení|1990
+KOS|SOD|Husité|1948
+RYF|RYF|Rytíři|1956
+PEF29|PLH|Lišky|1940
+DST|DUS|Průkopníci|1989
+LAG30|LAO|Bjørner|1899
+DAY|DLB|Kometer|1950
+SOT|SSI|Måker|1933
+SNB|SRB|De Gule|1935
+LIB25|ILX|De Sorte|1896
+HEM|HDV|Fiskere|1906
+LNS|ILS|De Hvide|1889
+NOY|NOD|De Mørkerøde|1921
+VNA|VEJ|Bjørner|1898
+SAV43|SST|Ravner|1933
+HOY|HKF|De Sorte|1944
+SUJ|SCU|Gladiatorer|1909
+BLT|ETB|Faucons|1906
+CAM35|CTC|Brasseurs|1883
+BEL34|BEQ|Lynx|1914
+AUE|ESY|Verts|1950
+DUG|ETD|Ciel et Blancs|1903
+BEM35|UBB|Loups|1943
+BOY|BON|Grenats|1886
+BLG|BLB|Chevaliers|1904
+PAN36|PVA|Faucons|1953
+SAI|ESZ|Marines|1904
+SAW44|ASB|Marines|1925
+VLB|EBA|Renards|1918
+ROX|URX|Verts|1923
+CGE|CSA|Grenats|1913
+MNS|AJB|Comètes|1940
+BGE|BNC|Grenats|1947
+SIY|SED|Kítrinoi|1919
+KKA|AEB|Kítrinoi|1983
+PLI|APA|Ouránioi|1912
+PIR|ETP|Kometes|1963
+PII|PIB|Kítrinoi|1960
+KKI|NII|Mple|1912
+MIH|PBC|Kókkino Krasí|1936
+PAP37|AOP|Psarádes|1987
+LAH31|ETK|Kókkino Krasí|1913
+MEW|MSI|Mávroi|1990
+CKI|ACX|Alepoúdes|1965
+ARV|AAX|Prásinoi|1990
+NIJ|GSN|Áspri|1981
+THU|DOT|Psarádes|1948
+MEZ|MEF|Medvék|1953
+BAY46|BBH|Vörösök|1937
+RAB25|RAC|Oroszlánok|1945
+PAQ38|PSZ|Oroszlánok|1976
+FEH|FEH|Sötétkékek|1917
+KIY|KSV|Fehérek|1987
+FEG|FHR|Oroszlánok|1940
+PNY|EGP|Fehérek|1962
+KIZ|EGY|Gladiátorok|1918
+SZA|SZA|Medvék|1974
+DAT|DBV|Úttörők|1936
+RAC26|RCT|Huszárok|1990
+SZS|SZS|Sasok|1964
+DAW|DAO|Feketék|1955
+NAQ38|NYG|Bikák|1972
+HAR39|HJD|Bányászok|1950
+PSB|PCX|Reds|1944
+PSD|PSN|Eagles|1914
+BHE|BKT|Eagles|1934
+BHF|BTX|Eagles|1966
+BTI|BPX|Reds|1943
+PSE|PEQ|Panthers|1945
+BYB|BNJ|Garuda|1982
+PJE|PJX|Tigers|1987
+PEG30|PEU|Sky Blues|1934
+PEH31|PEX|Reds|1920
+CIR|CRS|Blues|1932
+PPB|PSO|Blues|1950
+PEJ32|PEY|Sky Blues|1980
+PEK33|PEV|Reds|1982
+SEB25|SMA|Panthers|1953
+LAJ32|LGP|Panthers|1976
+FOO|FOO|Whites|1967
+SAX45|SCV|Yellows|1973
+NFA|NYX|Tigers|1930
+SAY46|SCX|Greens|1935
+SAZ47|SIH|Knights|1961
+SKE|SCY|Sky Blues|1941
+SIZ|SIJ|Sky Blues|1959
+FOG|FLA|Maroons|1923
+EAL|EEG|Whites|1947
+GOZ|GOZ|Horsemen|1974
+SBU|SEW|Whites|1931
+ZOA|ZOS|Navy|1940
+PAR39|PBD|Whites|1953
+FAF|FAX|Sky Blues|1937
+POJ32|AUP|Bianchi|1924
+MGO|MNC|Marinai|1944
+BOA24|BOD|Cavalieri|1950
+GUH|SCZ|Celesti|1906
+FAG|FAD|Granata|1913
+VIE28|VIG|Rossi|1907
+PTO|PBE|Blu|1880
+BOO|BOE|Falchi|1901
+GUO|PRR|Blu|1910
+ROZ|AUR|Granata|1939
+IUV|IUC|Bianchi|1921
+SEC26|UBD|Blu|1931
+BOB25|AUC|Gabbiani|1929
+SED27|SEE|Blu|1918
+RGA|ROE|Volpi|1928
+GRV|ASG|Bianchi|1893
+VIF29|VIH|Blu|1907
+POK33|PLF|Granata|1942
+CEL|CEL|Verdi|1908
+CCO|UCX|Pionieri|1934
+NAR39|NBC|Greens|1988
+MWA|MBS|Reds|1960
+SWA|SDA|Whites|1927
+FUN|FUB|Blues|1920
+TMA|TKY|Blues|1960
+HAS40|HBA|Reds|1973
+SMA|SDB|Crimsons|1981
+TAU42|TAQ|Yellows|1912
+KUD|KUM|Blues|1953
+ASI|ASJ|Crimsons|1964
+KUI|KUF|Blacks|1933
+NTA|NRT|Whites|1915
+YAE|YAV|Vento|1961
+TOY|TOY|Hawks|1920
+SAA48|SIQ|Reds|1940
+ASN|AAU|Blues|1927
+MAB49|MBT|Blacks|1977
+FWA|FUC|Lancers|1985
+YAF|YMH|Blues|1912
+SKI|SSK|Sky Blues|1988
+ZAN|SDC|Verdes|1959
+PAS40|PCH|Tuzos|1937
+MTL|MIT|Mineros|1945
+TEE|TEE|Blancos|1894
+HES|HCO|Rojos|1913
+TAV43|TAS|Osos|1900
+COY|CTD|Venados|1920
+TEF|TPO|Azules|1952
+LOZ|LBS|Toros|1970
+JIB|JLP|Celestes|1950
+ZAZ|ZPC|Guindas|1894
+MIJ|MNE|Mineros|1930
+TEG|TCL|Zorros|1955
+TEH|TCC|Azules|1911
+ZUK|FOZ|Geelen|1949
+SPG30|SDD|Bijen|1889
+ORF|OUF|Bordeauxen|1952
+VEX|FOV|Geelen|1925
+SIA24|RKS|Brouwers|1926
+HOZ|HGV|Rooien|1943
+SUK|SDE|Blauwen|1909
+VLE|VIJ|Blauwen|1938
+NIT|NWV|Herten|1954
+HAT41|RHX|Blauwen|1890
+DVA|DVS|Gladiatoren|1900
+VIG30|VTS|Rooien|1881
+OUV|FOD|Zwarten|1928
+NUG|RKN|Zwarten|1938
+VIH31|VTE|Zwanen|1902
+NIW|NIU|Hemelsblauwen|1931
+BEN36|BBX|Raven|1919
+NUW|NIW|Bijen|1915
+GIL|GIL|Blues|1955
+SCD|SCO|Knights|1917
+CHN36|CCA|Whites|1932
+MCK|MEC|Knights|1922
+MIM|MLP|Bees|1989
+CHP37|CHW|Magpies|1958
+WYN|WYN|Railwaymen|1965
+TOQ|TOT|Dark Horses|1974
+HCH|HOR|Emeralds|1914
+HEP|HED|Dark Horses|1980
+LUH|LUD|Railwaymen|1981
+HLA|HTF|Blackcats|1940
+VRG|VEF|De Røde|1927
+BRW|BOV|De Sorte|1934
+DAX|DAI|De Mørkeblå|1918
+BRX|BRE|Elge|1899
+SRS|SND|De Grønne|1884
+LII|LIL|De Grønne|1888
+HEQ|HEE|De Blå|1934
+BNB|BGV|De Blå|1927
+BLM|BGH|De Mørkerøde|1885
+RIL|RNG|Ravner|1926
+LLM|LAI|De Lyseblå|1942
+DBK|DLD|Løver|1914
+LND|LAQ|De Sorte|1891
+DLM|DLH|De Sorte|1929
+GOD|GOC|Lisy|1986
+TKA|STW|Granatowi|1947
+GNI|KSG|Żółci|1958
+GWC|GWR|Bordowi|1938
+BUZ|BUB|Błękitni|1969
+GOK|GOW|Błękitni|1981
+JAH|GJX|Niebiescy|1946
+DOZ|MKD|Rycerze|1946
+JAJ|KJX|Rycerze|1972
+WOJ|WKX|Zieloni|1964
+NOZ|NWC|Granatowi|1940
+WIG|STX|Bordowi|1923
+NOA24|STZ|Czarni|1964
+KOK|KKX|Rybacy|1921
+KAQ38|GKX|Rycerze|1969
+BUI|BUL|Bordowi|1987
+BRA24|KSZ|Bordowi|1923
+BWO|PLN|Żółci|1975
+CDA|CRT|Pretos|1911
+VIJ32|VLB|Tigres|1951
+PDO|PBF|Pioneiros|1894
+VAZ|AVB|Grenás|1900
+SEE28|SEQ|Verdes|1944
+GDA|GDC|Azuis|1893
+VEZ|VND|Verdes|1882
+ESQ|ETR|Rubro-Negros|1924
+AVO|AVC|Dragões|1944
+LOJ|LOJ|Celestes|1892
+ACC|ACB|Lobos|1884
+TAW44|TVR|Verdes|1901
+PRN|PRV|Zimbrii|1972
+RAD27|RAI|Negrii|1927
+ERE|ELG|Grena|1970
+UNC|UIR|Minerii|1929
+MUL|MIE|Minerii|1970
+CSS|HUN|Grena|1941
+CFC|CNN|Lupii|1975
+MAC50|MBV|Negrii|1967
+DIT|PTS|Minerii|1929
+MFO|MLU|Minerii|1966
+DIU|VLO|Siniye|1960
+KRM|KRL|Zheltye|1952
+SVR|SVE|Golubye|1990
+YAG|YAF|Krasnye|1977
+BKA|BBJ|Medvedi|1940
+NNA|NIQ|Kozaki|1971
+SPH31|SDF|Vinnye|1942
+AYC|AKK|Zhuravli|1965
+AKH|ADE|Zhuravli|1952
+VNE|VEK|Belye|1967
+END|ENN|Golubye|1936
+KRN|KIA|Chernye|1938
+CSK|CSN|Siniye|1948
+BAZ47|BLT|Temno-sinie|1940
+SMO|SMO|Metallurgi|1990
+BVO|BYE|Zheltye|1990
+EYA|ENZ|Krasnye|1948
+ZES|ZET|Gusary|1942
+RIP|RFY|Lions|1924
+ALT65|AWF|Reds|1949
+KUE|KUA|Sky Blues|1933
+BYN|BRY|Blacks|1961
+ALU66|AWM|Navy|1968
+AHA|HWY|Navy|1922
+AIC|AIB|Foxes|1939
+ALV67|RMQ|Blacks|1980
+ALW68|MDR|Blacks|1978
+TAX45|TFY|Tigers|1920
+BAA48|BBL|Navy|1981
+ALX69|AII|Greens|1940
+SHY|SIW|Horsemen|1965
+AIS|AIS|Sky Blues|1989
+ALY70|KHY|Yellows|1976
+SHA24|SDG|Sky Blues|1962
+CUM|CMB|Whites|1899
+MIP|MIB|Maroons|1891
+JEE|JEA|Yellows|1949
+INN|INN|Blacks|1883
+GAL|GAE|Foresters|1901
+TIE|TOH|Lairds|1898
+ROA24|RSR|Yellows|1933
+TUD|TUC|Reds|1893
+BAB49|BNO|Maroons|1888
+KIA24|KNK|Sky Blues|1912
+ULG|ULN|Blacks|1911
+VRA|VRA|Reds|1922
+ULD|ULC|Navy|1918
+SRC|SSC|Blacks|1989
+PIK|PNG|Reds|1915
+VOS|VLC|Lions|1951
+VRB|VRB|Yellows|1929
+PHD|PHL|Chiefs|1918
+KWN|KWA|Greens|1974
+VON|VOS|Rhinos|1965
+RAE28|RND|Greens|1949
+VRD|VDE|Pirates|1919
+MAD51|MUR|Pirates|1946
+NEA24|NEO|Reds|1919
+SIB25|SDH|Blues|1957
+KWD|KWL|Yellows|1984
+MUE|MUC|Hawks|1929
+SIC26|SNW|Whites|1967
+BUA24|BUM|Ravens|1953
+JID|JNW|Sky Blues|1975
+BOC26|BOW|Rockets|1980
+DAZ|DAN|Greens|1918
+CRI|CRI|Blues|1977
+PYA|PYD|Ravens|1932
+DAA24|DAP|Stags|1933
+JEF|JNJ|Lancers|1913
+PYN|PYM|Yellows|1972
+JIE|JIJ|Crimsons|1916
+GIA|GIE|Blues|1983
+DDO|DOG|Navy|1944
+HNG|HDN|Blues|1910
+SEF29|SSN|Steelmen|1911
+HUD|HUD|Vita|1877
+VOO|VOF|Vita|1883
+SLN|SLQ|Vinröda|1903
+SKD|SKE|Sjömännen|1934
+VAA24|VAK|Gröna|1939
+SOU|SDR|Örnarna|1921
+MMN|MHA|Älgarna|1913
+BRB25|BBM|Vinröda|1907
+GIF|GIV|Örnarna|1954
+SLR|SLR|Lejonen|1913
+BRC26|BVN|Blå|1915
+BRD27|BGE|Mörkblå|1893
+SLP|SLT|Älgarna|1939
+NOB25|NRS|Sjömännen|1911
+NYS|NYO|Blå|1877
+BNY|BNF|Ljusblå|1906
+ALZ71|FAE|Bergleute|1952
+BLC|BLE|Kicker|1889
+ELF|ELJ|Schwarzen|1929
+BRE28|VTA|Grünen|1950
+WET|WST|Blauen|1913
+ARW|ARJ|Blauen|1910
+AST|ALP|Roten|1890
+SCF|SWA|Fischer|1952
+GRW|TEG|Schwarzen|1913
+NNI|NIT|Ritter|1881
+KLW|KLL|Gladiatoren|1927
+KEC|KIC|Hirsche|1932
+AWE|ALW|Ritter|1910
+BRF29|BRJ|Pioniere|1914
+BAC50|EIH|Gelben|1899
+GOT|EIG|Stahlwerker|1888
+HHO|HHE|Weißen|1890
+ROB25|RWN|Kumpel|1878
+RAF29|RTY|Tigers|1959
+WAP|WNG|Crimsons|1957
+TFC|TKN|Foxes|1957
+PHB|PHN|Sky Blues|1928
+THV|THY|Crocodiles|1989
+SAB49|SKM|Crimsons|1929
+PHC|PHF|Navy|1918
+CHQ38|CHX|Blacks|1953
+MNG|MTH|Blacks|1912
+MUF|MUP|Yellows|1930
+SAC50|SDJ|Rockets|1945
+MUG|MNU|Dragons|1978
+KAR39|KAZ|Martılar|1985
+INE|ING|Beyazlar|1980
+KZE|KZI|Lacivertler|1970
+BBE|YEB|Şahinler|1975
+CAN36|CNH|Beyazlar|1986
+KZB|KZG|Şahinler|1931
+KUF|KUC|Martılar|1984
+KAS40|KLC|Siyahlar|1966
+ORG|ORG|Beyazlar|1923
+BCU|BZT|Gökler|1975
+USG|UAP|Beyazlar|1939
+KUK|KUB|Atmacalar|1927
+ESI|EDX|Kırmızılar|1950
+CAP37|CMH|Balıkçılar|1981
+EKI|EDN|Sarılar|1961
+ESS|EKE|Gökler|1920
+TEJ|TEH|Siyahlar|1961
+CCA|CMK|Kırmızılar|1969
+ROC26|ROV|Metalurhy|1989
+ZOD|ZOD|Chervoni|1978
+HIK|HRN|Charivnyky|1985
+VSH|VRS|Syni|1987
+LOR|LOQ|Chervoni|1927
+KOG|KOO|Lvy|1965
+POL34|PLK|Zubry|1920
+POM35|PBG|Blakytni|1916
+NOC26|NVA|Blakytni|1936
+SPJ32|SDK|Temno-syni|1986
+HYK|HIY|Zeleni|1974
+KOJ|KLO|Hirnyky|1913
+MIQ|MLL|Sky Blues|1969
+OAW|OAK|Blues|1920
+MEX|MLH|Blues|1953
+RIV|SRD|Greens|1969
+MIU|SMC|Pioneers|1910
+LAK33|LKB|Sky Blues|1958
+EEL|GRR|Reds|1928
+CEG|CDR|Sky Blues|1936
+SUQ|SUD|Eagles|1965
+MLF|MFA|Reds|1938
+SPK33|SGT|Pioneers|1963
+BLD|BLP|Blues|1923
+RRD|RIR|Stallions|1927
+GOE|GLD|Bison|1953
+CYN|CYI|Ironmen|1939
+SUU|SUW|Maroons|1911
+CLG|CBG|Reds|1981
+SAD51|SDM|Blacks|1965
+DOA24|DAQ|Sky Blues|1910
+THW|THH|Yellows|1924
+HOA24|HNG|Elephants|1926
+TUY|TSU|Cranes|1923
+THX|THT|Tigers|1910
+SDO|SDN|Blues|1953
+CLL|CLO|Buffaloes|1987
+DNG|DOQ|Phoenix|1961
+COZ|COQ|Buffaloes|1971
+YEF|YEU|Eagles|1966
+NCO|NBD|Pumas|1907
+LNO|SVO|Celestes|1900
+LLB|DEA|Matadores|1923
+FEO|FEC|Gladiadores|1944
+LEO|INL|Titanes|1949
+GAG|INH|Corsarios|1943
+VVE|EUD|Azulones|1941
+ESV|AEX|Azulones|1943
+URR|CSU|Negros|1953
+BOD27|BLF|Halcones|1958
+GEL|GNR|Leones|1893
+NLA|NLX|Celestes|1965
+FUI|FNU|Titanes|1957
+DOB25|DCT|Gauchos|1925
+DOC26|GIS|Verdes|1907
+LAL34|LVI|Azules|1949
+HHE|TEJ|Weinroten|1901
+BRG30|BRM|Falken|1906
+ARX|ALS|Kumpel|1907
+EIC|EIC|Gladiatoren|1891
+KRP|VKX|Weißen|1951
+NEB25|SFR|Gelben|1876
+PRP|PEW|Weißen|1949
+KRQ|KNH|Weißen|1888
+EIH|ENT|Seeadler|1901
+BUB25|TEI|Weinroten|1896
+BOE28|BOI|Dunkelblauen|1903
+UDO|UER|Himmelblauen|1894
+HET|ERA|Wölfe|1911
+EBE|EBE|Roten|1897
+LUK|LUI|Grünen|1924
+UNE|EIU|Löwen|1885
+KKL|KRK|Bordeauxen|1919
+OSN|UOS|Geelen|1924
+KLD|KLW|Kikkers|1890
+ZAQ|KVB|Hemelsblauwen|1887
+OUH|OUH|Groenen|1935
+RBE|BEW|Blauwen|1899
+BRH31|BRR|Beren|1947
+KLK|KVK|Zwarten|1909
+KNI|KNT|Ruiters|1939
+KOP|KOA|Donkerblauwen|1878
+KFL|KLX|Donkerblauwen|1898
+KNO|KOI|Kasteelheren|1947
+NGR|NUW|Donkerblauwen|1913
+WAQ|WAU|Donkerblauwen|1901
+HUG|HBR|Stieren|1892
+EXG|EXG|Zwarten|1920
+IBA|UNL|Bandeirantes|1927
+NMO|NCI|Azuis|1907
+GBA|GUC|Azuis-Marinho|1896
+IIT|EPA|Lobos|1945
+NIP|NIX|Alvinegros|1915
+IPB|IPF|Leões|1905
+CMA|GRD|Amarelos|1915
+UUA|URR|Águias|1907
+CIM|CRM|Grenás|1915
+CBU|CBU|Águias|1903
+APU|ARP|Gladiadores|1895
+CAQ38|CPN|Rubro-Negros|1942
+CAR39|CPM|Verdões|1952
+CAS40|UNM|Leões|1925
+IIA|IPS|Pretos|1953
+GUJ|GIB|Leões|1918
+CAT41|CIG|Pretos|1954
+IPI|IPT|Alvinegros|1919
+CAU42|CTM|Águias|1915
+NAS40|NBE|Lobos|1965
+MEA24|MEH|Azules|1935
+ONC|ONC|Marineros|1963
+ALA72|RAA|Blancos|1953
+PPO|PZB|Verdes|1971
+SEG30|SEV|Rojos|1918
+TAY46|TLA|Tiburones|1894
+RRA|RBL|Rojos|1898
+COO|CBX|Leñadores|1895
+BEP37|BNN|Rojos|1903
+ORJ|ORU|Pastores|1898
+BCO|SDP|Celestes|1909
+OON|JOX|Mineros|1920
+SDC|ROH|Celestes|1906
+LVA|JLV|Leñadores|1919
+BAD51|BBN|Zorros|1959
+NEC26|RSN|Granates|1925
+QIN|QIN|Reds|1970
+PIL|PIP|Blacks|1942
+WEI|WEI|Whites|1941
+FUZ|FUZ|Tigers|1922
+LOM|LOW|Sky Blues|1956
+SHB25|SDQ|Maroons|1979
+LUL|LOX|Phoenix|1976
+SHC26|SNF|Eagles|1968
+LOQ|LGT|Blacks|1973
+BCI|BYU|Eagles|1962
+QIU|QIT|Yellows|1915
+FUP|FBN|Pandas|1987
+VSV|SLU|Námořníci|1982
+VEA24|VOR|Černí|1958
+KOQ|KOB|Medvědi|1980
+TCE|SLW|Lvi|1939
+KNY|KNY|Rytíři|1922
+PRQ|PRW|Bílí|1966
+HIH|HLA|Bílí|1926
+KCE|KRI|Husité|1960
+DNY|DBN|Červení|1938
+SPL34|SDS|Zelení|1937
+PAT41|PBH|Vlci|1955
+SSE|SOE|Bílí|1971
+BIC|BSX|Kováři|1961
+VYV|VYD|Zelení|1962
+VOV|SDT|Červení|1963
+HOB25|VIQ|Zelení|1970
+LLI|IKL|De Blå|1927
+HRD|HVG|De Lyseblå|1893
+ASQ|AST|Løver|1878
+HOC26|HOI|De Sorte|1891
+BEQ38|BGS|De Mørkerøde|1949
+HOD27|HOJ|De Sorte|1932
+FRU|FRV|Bryggere|1936
+VEB25|VEM|De Lyseblå|1888
+RIQ|FRI|Hjorter|1919
+HEV|HDH|De Sorte|1920
+STD27|SRH|De Lyseblå|1927
+SYB|SYD|Løver|1904
+OLS|JOO|Chevaliers|1917
+CNT|CMO|Jaunes|1875
+MGE|AJM|Bleus|1888
+TOT|TOS|Bleus|1905
+RLT|RCL|Jaunes|1887
+MOL34|MBW|Marines|1900
+CTO|ECT|Cigognes|1891
+BER39|BEY|Rouges|1929
+LAM35|LNL|Brasseurs|1948
+LEU|LVL|Blancs|1893
+MIW|MRH|Corbeaux|1898
+VAB25|VEP|Mouettes|1924
+MAE52|UBF|Ciel et Blancs|1877
+DDA|DME|Bleus|1947
+PNT|UBG|Rouges|1905
+VIK33|VEU|Bleus|1899
+BBF|FBX|Himmelblauen|1934
+HAU42|HGH|Roten|1944
+PKL|PBJ|Schwarzbären|1915
+SCN|SDU|Gelben|1937
+EIA|ENW|Gelben|1903
+OBR|OBA|Gelben|1887
+FED|FFX|Gelben|1886
+FUQ|SGG|Dunkelblauen|1926
+SLQ|SDV|Gelben|1875
+ALB73|ALQ|Schmiede|1926
+ECK|EIT|Dunkelblauen|1912
+ROD27|GEM|Gelben|1928
+UAH|UAX|Schwarzen|1934
+PRR|PRX|Weißen|1919
+GRX|SDW|Himmelblauen|1918
+OER|OBS|Weißen|1893
+KST|FOJ|Schwarzen|1876
+IMA|VIN|Adler|1876
+BHJ|BHJ|Lions|1939
+BHK|BHC|Yellows|1959
+BHM|BHM|Whites|1956
+PSF|PSU|Reds|1928
+BKE|BHI|Blacks|1932
+CIN|CIE|Crimsons|1916
+PSG|PSR|Sky Blues|1914
+JEM|JEM|Panthers|1963
+SUV|SRE|Blacks|1970
+PSK|PSK|Tigers|1913
+PAU42|PMK|Navy|1939
+PSH|PSB|Yellows|1987
+FAH|FAQ|Knights|1971
+SHD27|SMD|Greens|1914
+FAK|FLD|Knights|1974
+KEF|KEC|Yellows|1934
+NJI|NJI|Tigers|1937
+BSA|BDA|Reds|1967
+FOJ|FAF|Camels|1944
+ESW|ETE|Navy|1955
+NAT41|NBF|Blues|1940
+MZA|MZX|Blues|1969
+FJR|FBT|Falcons|1926
+BGH|BRX|Whites|1986
+MOM35|MBX|Granata|1941
+IUA|IUM|Falchi|1920
+COA24|VRT|Comete|1917
+PON36|PRZ|Gialli|1946
+FEC|FEU|Marinai|1918
+PAV43|PBK|Neri|1879
+CAV43|ACC|Granata|1884
+AMO|AUE|Gialli|1888
+RAG30|RAV|Minatori|1895
+ALC74|AUG|Orsi|1923
+RTO|UBH|Bianchi|1949
+ARY|PBL|Azzurri|1936
+POP37|APG|Marinai|1920
+PSJ|UPS|Celesti|1942
+RRO|RCC|Orsi|1953
+COB25|CRL|Neri|1900
+CTR|CAW|Granata|1933
+VIL34|VFX|Pionieri|1899
+SCI|SDX|Wolves|1935
+KII|KIH|Rockets|1924
+TOV|TYR|Tigers|1945
+TKI|TKH|Blacks|1927
+OGA|OGA|Greens|1938
+OMA|OGV|Navy|1911
+TOW|TYY|Blues|1942
+OGI|OGF|Warriors|1913
+TFA|TKA|Vento|1929
+HUN|HKR|Whites|1947
+TAZ47|TKE|Whites|1974
+TNO|TAT|Aurora|1919
+AKJ|AKS|Warriors|1977
+OKC|OKP|Yellows|1926
+KVO|KWG|Cranes|1947
+MNO|MSN|Blacks|1983
+HAV43|HLC|Amarillos|1910
+ZOS|ZOM|Celestes|1938
+CVB|CPR|Negros|1940
+CIU|CIU|Azulones|1918
+PEL34|PBM|Petroleros|1927
+TAA48|TMA|Blancos|1955
+TCO|TPC|Zorros|1908
+HUI|HUI|Guindas|1907
+SOV|SZX|Blancos|1955
+PUO|PUC|Tuzos|1931
+HNU|HNE|Zorros|1900
+TUO|TUD|Guindas|1942
+CEM|CEM|Cementeros|1896
+IXT|IXT|Celestes|1902
+BRJ32|BRP|Donkerblauwen|1888
+AJK|ALX|Witten|1888
+LEE|SDY|Rooien|1876
+KLS|KLS|Ruiters|1943
+OUF|FOM|Geelen|1893
+DVD|DVD|Kasteelheren|1903
+NDE|NWR|Bordeauxen|1895
+DIW|DIJ|Brouwers|1953
+GOO|GOA|Zwarten|1930
+MRD|MSW|Zwarten|1921
+OOB|OOB|Zwanen|1939
+DVN|DVN|Brouwers|1930
+DIX|DIR|Zwanen|1892
+OUK|FOI|Arenden|1935
+BNC|BEZ|Wolven|1916
+SNK|SNK|Groenen|1891
+COC26|COX|Bijen|1951
+GRY|VGV|Hemelsblauwen|1893
+FRV|FRK|De Grønne|1948
+ASR|FMA|De Røde|1954
+BJG|FBR|De Røde|1930
+NUH|NOE|Svaner|1926
+NYY|NYC|Bjørner|1953
+STE28|SNH|Elge|1900
+SKB|SKF|De Grønne|1920
+NNB|NOL|Fiskere|1905
+BES40|BUP|De Gule|1899
+RIR|RIH|Bjørne|1941
+GAH|GAG|De Lyseblå|1916
+HEW|HEV|De Lyseblå|1888
+STF29|SDZ|De Hvide|1893
+NYD|NYD|Soldater|1883
+RYG|MKR|Zieloni|1980
+BBR|SEX|Rybacy|1928
+WOZ|WOA|Błękitni|1960
+BID|BIO|Sokoły|1918
+NOD27|MKN|Błękitni|1916
+GIK|GRL|Piwosze|1961
+ZAT|ZEM|Mewy|1972
+RNA|GKR|Komety|1927
+GOF|GON|Granatowi|1966
+JKA|MKJ|Zieloni|1918
+BUC26|BUW|Zieloni|1989
+OSG|RUO|Żółci|1977
+BNO|BUN|Lwy|1935
+KOT|ZNI|Kosynierzy|1974
+BNF|MKB|Żółci|1951
+WRZ|WOO|Sokoły|1962
+TNA|MKT|Zieloni|1934
+GOG|GOO|Biali|1917
+TLA|TAX|Pretos|1955
+FES|FEB|Pioneiros|1916
+MHA|SMF|Celestes|1904
+NAU42|NZR|Grenás|1933
+VIM35|AVV|Pretos|1915
+VRO|UAO|Rubro-Negros|1938
+MDA|MNF|Celestes|1880
+GGA|GDM|Gladiadores|1949
+DED|DER|Amarelos|1916
+ELG|ELL|Rubro-Negros|1886
+SAE52|SFA|Gladiadores|1946
+BRK33|ECB|Azuis|1881
+CEH|SFB|Lobos|1929
+MON36|MCO|Gladiadores|1914
+RAH31|RAB|Șoimii|1919
+ELH|ELN|Minerii|1948
+TUI|TUE|Pescarii|1949
+PPE|PBN|Vulturii|1937
+OIA|OLZ|Verzii|1911
+DRO|VDX|Vulturii|1957
+GIB|GLF|Albii|1918
+SPM35|SFD|Verzii|1922
+PRW|PSX|Galbenii|1913
+ALD75|ABO|Azurii|1956
+ACP|ACP|Albaștrii|1986
+CCS|CMF|Albii|1959
+ELJ|ELP|Azurii|1986
+PTI|PTE|Galbenii|1953
+VLO|VLI|Krasnye|1987
+TUE|TRG|Zelenye|1935
+TKE|TON|Gusary|1985
+TVE|TVE|Zelenye|1972
+POQ38|PBP|Krasnye|1959
+AVF|AVR|Chernye|1973
+PEM35|FPX|Volki|1940
+ZVA|ZVL|Siniye|1954
+URL|URN|Belye|1927
+TRM|TRH|Chernye|1914
+VEC26|VEQ|Temno-sinie|1916
+LIC26|LOY|Zhuravli|1972
+SHE28|SFE|Sky Blues|1969
+KEE|KES|Eagles|1970
+SHF29|SFF|Camels|1968
+AIR|IRB|Foxes|1928
+ALE76|KEG|Whites|1912
+SHG30|SFG|Tigers|1989
+WAS|WLA|Eagles|1968
+AAJ|AJY|Knights|1972
+MSC|MHN|Maroons|1913
+ALF77|LWQ|Knights|1922
+MIX|MIJ|Maroons|1946
+KCK|KIW|Blues|1920
+KIB25|KIJ|Sky Blues|1902
+ABS|ABC|Fishermen|1893
+WER|WEG|Sky Blues|1880
+JDE|JEU|Blacks|1907
+MIZ|MIQ|Highlanders|1951
+NAV43|NRN|Greens|1902
+CAW44|CAX|Blacks|1908
+KEG|KLM|Blues|1936
+PHS|PHS|Reds|1981
+LAN36|LDS|Blacks|1943
+VOI|VOA|Lions|1980
+PUS|PHC|Stars|1978
+NRG|NLS|Pirates|1938
+KRR|KRP|Greens|1933
+RVA|RAN|Lions|1986
+BET41|BTT|Chiefs|1913
+PHG|PHB|Reds|1990
+KRI|KRV|Greens|1931
+RAJ32|RAL|Maroons|1978
+VRP|VRD|Navy|1922
+SID27|SFH|Greens|1982
+VRS|VRC|Blues|1927
+CNG|CBF|Sky Blues|1971
+BWA|BNH|Whites|1923
+CHR39|CNB|Comets|1980
+CSA|CBH|Steelmen|1987
+BOF29|BJN|Steelmen|1914
+GIN|GID|Yellows|1948
+CHS40|CGS|Whites|1957
+HAW44|HCH|Rockets|1968
+PYG|PYH|Sky Blues|1938
+CTI|CND|Bears|1913
+DAB25|DYN|Greens|1938
+BUD27|BUI|Whites|1939
+WOM|WLC|Sky Blues|1916
+BOG30|BOM|Greens|1979
+BAE52|BSE|Whites|1952
+HAX45|HWN|Crimsons|1954
+ZAU|ZAM|Azules|1891
+TAB49|TAI|Azules|1927
+BEU42|BNL|Blancos|1950
+BCF|BIB|Rojos|1885
+COD27|CDB|Granates|1940
+UBD|UBJ|Águilas|1954
+GAJ|GDE|Verdes|1931
+HIJ|SFJ|Amarillos|1953
+FFR|FRU|Gladiadores|1911
+ELN|JUM|Azules|1935
+AAR|ARL|Marineros|1925
+AES|AZA|Cóndores|1884
+OSR|OSR|Blancos|1904
+ARA24|JAX|Venados|1902
+PEN36|PDE|Azules|1941
+PEP37|RPX|Azulones|1922
+VVI|VIZ|Rayos|1914
+ONE|ONE|Azules|1908
+GNY|GIN|Vinröda|1917
+VAC26|VAO|Ljusblå|1883
+IFK|IFN|Gröna|1918
+GAV|GVS|Röda|1935
+MOP37|MBY|Örnarna|1954
+VNO|VSL|Röda|1925
+ULR|ULR|Gröna|1944
+NYC|NYE|Mörkblå|1951
+IFS|IFS|Vita|1889
+TRN|TRJ|Älgarna|1888
+SUW|SUG|Vikingarna|1911
+IFT|IFT|Vita|1887
+LID27|LII|Vinröda|1947
+VOR|VAU|Vinröda|1891
+THY|THC|Kumpel|1901
+HIP|FNB|Fischer|1908
+DOD27|FDX|Grünen|1945
+MLH|TTA|Blauen|1918
+STG30|EIS|Weißen|1923
+OBW|EIO|Falken|1947
+RWE|RWB|Adler|1908
+HSA|HNA|Blauen|1899
+BST|EIB|Schwarzen|1894
+BCK|BUT|Himmelblauen|1894
+BKL|BSS|Ritter|1908
+ROE28|EIR|Weinroten|1954
+ROF29|RWD|Blauen|1949
+EIB|FSE|Brauer|1883
+GRZ|GRV|Roten|1900
+BAF53|FBM|Roten|1949
+KAT41|KCH|Blacks|1923
+BAG54|BNM|Whites|1928
+TCI|TYA|Stags|1979
+TAC50|TKT|Rockets|1927
+SRE|SRY|Crimsons|1975
+NAW44|NHO|Blues|1979
+RAK33|RTP|Greens|1968
+MUJ|MSU|Blues|1964
+MSB|MUD|Panthers|1986
+MPO|MBZ|Cobras|1986
+TAD51|TBC|Gökler|1963
+AKK|AKG|Kurtlar|1972
+INR|YEI|Sarılar|1942
+DEH|DML|Kaplanlar|1945
+SUX|SUJ|Kırmızılar|1912
+KZK|KZB|Mavililer|1984
+BUE28|BUY|Kırmızılar|1981
+KZO|KZO|Lacivertler|1927
+EPE|EKT|Lacivertler|1938
+DEJ|DEB|Beyazlar|1916
+ESX|EBG|Atmacalar|1934
+KOY|KBB|Akbabalar|1974
+USH|UAK|Kırmızılar|1928
+SOW|YNI|Sarılar|1910
+KZR|KZK|Akbabalar|1912
+UCE|UAB|Tilkiler|1952
+CAX45|CNV|Bordolar|1974
+BDE|BYK|Yeşiller|1953
+PGE|PBQ|Navy|1980
+GVE|GRQ|Wolves|1921
+MMB|MCE|Yellows|1950
+BLE|BLR|Greens|1961
+PLS|PBR|Maroons|1940
+WIH|WIS|Thunder|1923
+GRA24|GEE|Whites|1980
+FOK|FTB|Dragons|1962
+HEY|HRC|Dragons|1921
+CYW|CYB|Greens|1944
+RRG|RVR|Blacks|1948
+IER|CNY|Reds|1956
+SRF|SIZ|Voyagers|1989
+RVE|RCK|Sky Blues|1985
+LNA|LAW|Blues|1977
+HHA|HLU|Buffaloes|1930
+COE28|COL|Reds|1928
+XII|XMK|Maroons|1916
+TBI|TUY|Blacks|1946
+THZ|TDF|Reds|1914
+SAF53|SFK|Elephants|1940
+CAY46|CAY|Reds|1973
+TIC|TIC|Blues|1930
+NBG|NBG|Comets|1965
+SOX|SOX|Seahawks|1948
+LYB|LYB|Royals|1926
+MCG|MCG|Tykes|1955
+EAB|EAB|Sky Blues|1969
+GLG|GLG|Tykes|1915
+TBD|TBD|Maroons|1928`
       .split('\n')
       .map((l) => l.split('|'))
       .map(([code, abbr, nick, founded]) => [code, [abbr, nick, founded ? +founded : null]]),
@@ -5584,10 +10439,8 @@ ROG|ROG|Rovers|1910`
     ['GEJ', 'WOF', 'Geralnup–Wodoville Derby'],
     ['BAR', 'BAV', 'Barahegy Derby'],
     ['BAR', 'ZAF', 'Barahegy Derby'],
-    ['LIS', 'COU', 'Lisbridge Derby'],
     ['LIW', 'NEW', 'Lisbridge Derby'],
     ['ORA', 'LIW', 'Oranglass–Lisbridge Derby'],
-    ['TAL', 'LLA', 'Talbach–Llangnant Derby'],
     ['DOC', 'BAH', 'Dolgwyn–Bangorddu Derby'],
   );
 })();

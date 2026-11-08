@@ -35,7 +35,7 @@ flowchart TB
 
 ## Shipped
 
-The web prototype runs on a phone browser with no build step, covering 2001 fictional clubs in 139 leagues (the real structure under invented names) across 117 nations in three simulation tiers, and 117 national teams. Newest build first.
+The web prototype runs on a phone browser with no build step, covering 3711 fictional clubs in 253 leagues (the real structure under invented names) across 117 nations in three simulation tiers, and 117 national teams. Newest build first.
 
 ### Playtest feedback, round 24
 
@@ -92,6 +92,8 @@ The web prototype runs on a phone browser with no build step, covering 2001 fict
 - **Clubs differ within a league:** how foreign a club's squad is now follows its identity (oil-backed and giant clubs more, fan-owned and youth clubs fewer, a selling club holds young foreign prospects), its owner (sovereign and investors more; state, society, company and member-owned less) and a steady quirk of its own. The lean is scaled by the league's mean, so each league keeps its share: in a seeded world fan clubs carry 23% foreign players, oil-backed clubs 34%, and the top flights stay on target (`W.clubForeign`, `W.foreignFactor`).
 
 - **More second divisions:** the Netherlands, Portugal, Brazil, Turkey, Poland, Norway and Sweden now have a second tier (seven leagues, 124 fictional clubs), each linked to the division above by promotion and relegation.
+
+- **Real formats: lower divisions, cross-border clubs, youth competitions:** 113 more divisions from the real-formats sheets (47 second, 34 third and 32 fourth, 1,702 fictional clubs in the minimal tier, each a single table linked to the division above by promotion and relegation, with play-off places, ties against the division above, triple and quadruple round-robins and closed leagues for the American and Mexican lower leagues); 15 cross-border clubs (Welsh clubs in England, Canadian clubs in the American league, New Zealand clubs in Australia and others) that keep their home nation's players and cup; the Oceania Professional League, the Leagues Cup and the Campeones Cup; 26 national-team youth tournaments and 17 club youth cups played by results at the end of each season (Cups screen, Youth tab); the past cross-nation leagues and cups (Past tab). What is left is in [REAL_FORMATS.md](REAL_FORMATS.md).
 
 - **Profiles in tabs, history by ability, custom terms:** player profiles are tabs (Overview, Attributes, Career, Mood and deal) under a strip of age, shirt, foot and contract, and club profiles are tabs (Overview, Squad, Matches, History); each season of a player's history carries his ability that year (shown as a Level column in stars), a veteran being stronger in his early seasons and a youngster weaker; and the contract sheet has number boxes for the signing-on, appearance and goal fees, the release clause, the yearly rise and the length, beside the preset chips.
 
@@ -861,7 +863,7 @@ Priority order. Principle: make what the game already has remember what happened
 - [ ] Combine nations or regions into one in the editor (the home nations into Great Britain)
 - [ ] Tactical metas that differ in every save, with the optimal tempo shifting over the years
 - [ ] Staff traits (motivator, youth developer, tactician and more)
-- [ ] More second divisions for nations that have only a top flight
+- [x] More second divisions for nations that have only a top flight — done in the real formats pass: 113 divisions in the second, third and fourth tiers
 - [ ] AI clubs that plan their recruitment over the years; a regens rehaul
 - [ ] National youth pathways (academies, schools, universities, drafts)
 - [ ] Agents as characters with client networks and relationships

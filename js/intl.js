@@ -2199,6 +2199,7 @@
     const s = S();
     s.tourns = null;
     s.intlDay = null;
+    if (FM.YouthComps) FM.YouthComps.seasonEnd(); // (the youth tournaments of the season, by results)
   };
   I.findFixture = function (id) {
     const s = S();

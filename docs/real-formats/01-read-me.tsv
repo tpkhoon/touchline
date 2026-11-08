@@ -1,0 +1,88 @@
+Real-life competition formats for Touchline
+A first draft of how each league, domestic cup, continental club competition and national-team tournament in Touchline works in real life.
+Pegged to: the start of the 2026/27 season, or the 2026 season for calendar-year competitions.
+Drafted from general football knowledge, not yet checked source by source. Treat Medium and Low rows as leads to verify.
+How to use it
+1. Work through the Low rows first, then Medium. Check each against the competition’s official site or its current season page.
+2. Fill in the yellow columns: Source (a link) and Last verified (a date). These are the only columns meant for typing.
+3. Grey columns on the Leagues sheet are read from Touchline (commit d4878f1, 8 Nov 2026); the last two columns compare them with real life automatically.
+4. Repeat the check each summer: formats change most seasons.
+Confidence
+High: well established and stable.
+Medium: believed correct; worth a quick check.
+Low: uncertain or changes often; verify before relying on it.
+Notes on the columns
+Matches per club: the regular phase only (before any split or play-offs). For leagues with two tournaments (Apertura and Clausura), it is per tournament; the next column gives the season total.
+Touchline format: one table, a split, Apertura/Clausura, play-offs or conferences, as the game currently plays it.
+Regional sheet categories: A, top-flight clubs take part (Brazil); B, regional or island leagues that are the first stage of the national championship (New Zealand, Cape Verde); C, regional competitions for lower and amateur clubs only; D, none for top clubs today. Rows marked "not real" in the In Touchline column are regional cups the game generates that have no real-life equivalent for top clubs.
+Cross-border clubs: clubs that play in another nation's league (Monaco in France, Welsh clubs in England, Canadian clubs in MLS and others). Touchline currently has none: every club in a league belongs to that league's nation.
+Cross-nation leagues: leagues with clubs from more than one nation by design, active (MLS, the A-League, the OFC Pro League) and past (Royal League, Baltic League, African Football League, BeNe League, and the Soviet, Yugoslav and Czechoslovak leagues).
+Cross-nation cups: active club cups and super cups, national cups that admit clubs from other nations, and historical cross-nation cups. Rows marked "fictional" in the In Touchline column are cups the game has with no real equivalent.
+Fictional in Touchline: every competition in the game with no real equivalent (Fictional) or only a loose or irregular one (Partly fictional). The Domestic cups, Continental club and International sheets also have a "Touchline competition is" column.
+Youth tournaments and cups: national-team youth tournaments (worldwide, continental, regional and invitational) and club youth cups (international and national). Youth leagues are not included. Touchline currently has none of these: its U21 and U18 club sides play youth leagues, and its Under-21 national teams play friendlies.
+B teams: the Leagues sheet shows whether each senior league has B or reserve teams in real life, where they play instead if not, and how many Touchline has. Youth leagues are deliberately not included.
+Youth requirements: the Leagues sheet shows real rules that make clubs register or field young or homegrown players: homegrown quotas, a young player on the pitch, a season minimum of minutes for young players, young players in the squad, or incentives only. Many of these rules change often, so most are marked Medium or Low.
+Pro/rel play-offs: the Leagues sheet shows play-offs where a club from this league plays a club from the division above or below (e.g. the Bundesliga’s 16th v the 2. Bundesliga’s 3rd). Play-offs within one division, such as England’s Championship play-offs, are not counted here.
+Second tiers: real second divisions beyond those on the Leagues sheet. Seven were added to Touchline in November 2026 (the Netherlands, Portugal, Brazil, Turkey, Poland, Norway and Sweden): they are now on the Leagues sheet and marked Yes here.
+Third tiers: real third divisions. Touchline has only England’s, Spain’s and Germany’s (marked Yes); the rest are not in the game. Many third tiers are split into regional groups, so the club count covers all groups.
+Fourth tiers: real fourth divisions. Touchline has only England’s (League Two, marked Yes). Most fourth tiers are regional groups of semi-professional or amateur clubs, so club counts are approximate and most rows are Low confidence.
+Qualifying: how teams qualify for the main national-team tournaments, club competitions and domestic cups: the number and format of qualifying stages, who enters at which stage, how hosts are treated, and how Touchline does it.
+Tie rules: single or two legs by stage, away goals, extra time, penalties, replays and finals for the main tournaments and cups.
+International calendar: FIFA’s men’s windows for 2026–2030 (the merged four-match September/October window, then November, March and June), compared with Touchline’s two breaks.
+Guest nations: tournaments that invite nations from outside their confederation or region (the Copa América and Gold Cup above all).
+World Cup qualifying: every stage of each confederation’s qualifying, using the completed 2026 cycle as the template (teams per stage, format, dates, where the places go), the intercontinental play-off, and what is known about 2030.
+Summary
+Leagues	139
+Leagues: High confidence	43
+Leagues: Medium confidence	56
+Leagues: Low confidence	40
+Leagues where Touchline’s club count differs	45
+Leagues where Touchline’s matches per club differ	68
+Leagues verified so far (Last verified filled in)	0
+Domestic cups	117
+Domestic cups not currently active (inactive or irregular)	13
+Continental and regional club competitions	30
+National-team tournaments	33
+Leagues with clubs from other nations (real)	11
+Clubs playing in another nation's league	15
+Cross-nation leagues: active	3
+Cross-nation leagues: past	7
+Cross-nation cups: active club cups and super cups	10
+Cross-nation cups: national cups admitting foreign clubs	9
+Cross-nation cups: historical	14
+Touchline competitions that are fictional	60
+Touchline competitions that are partly fictional	18
+Youth: national-team tournaments and invitationals	26
+Youth: club and school cups and invitationals	19
+Leagues with B or reserve teams in real life (yes or allowed)	5
+Leagues with B teams in Touchline	3
+Leagues where Touchline and real life differ on B teams	2
+Leagues with a homegrown quota (real)	11
+Leagues requiring a young player on the pitch (real)	19
+Leagues with a minimum-minutes rule for young players (real)	10
+Leagues requiring young players in the squad (real)	13
+Leagues with an incentive only (real)	2
+Leagues with a youth requirement Touchline does not model	48
+Leagues with a pro/rel play-off against another division (real)	43
+Of those, leagues where Touchline has it	5
+Leagues where Touchline and real life differ on this play-off	38
+Second tiers listed	54
+Of those, now in Touchline	7
+Of those, with a cross-division play-off against the top flight	23
+Of those, with B or reserve teams	8
+Third tiers listed	37
+Of those, in Touchline	3
+Fourth tiers listed	33
+Of those, in Touchline (fourth tiers)	1
+Qualifying rows: national teams	16
+Qualifying rows: clubs	13
+Qualifying rows: domestic cups	6
+Tie-rule rows	29
+Real international matchdays per season (2026–2030)	10
+Touchline international matchdays per season	4
+Tournaments with guest nations	8
+World Cup qualifying stages listed	19
+Regional competition rows	40
+Regional: top-flight clubs take part (category A)	9
+Regional: first stage of the national championship (category B)	2
+Regional: Touchline generates cups with no real equivalent for top clubs	10

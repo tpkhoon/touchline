@@ -37,6 +37,7 @@
     'cups',
     'regional',
     'intl',
+    'youthcomps',
     'tiers',
     'contracts',
     'people',

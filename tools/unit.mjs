@@ -875,6 +875,60 @@ try {
   ok(gk.mpa > 86, 'a keeper plays the whole match');
 }
 
+// ---- lower divisions, cross-border clubs and youth tournaments (real-formats sheets 07, 08, 11, 12 to 14) ----
+{
+  const L = Object.fromEntries(D.LEAGUES.map((l) => [l.id, l]));
+  const codes = new Set();
+  let dup = 0;
+  for (const l of D.LEAGUES)
+    for (const r of D[l.clubs] || []) {
+      if (codes.has(r[1])) dup++;
+      codes.add(r[1]);
+    }
+  eq(dup, 0, 'no club code is used twice');
+  const bad = [];
+  for (const l of D.LEAGUES) {
+    ok((D[l.clubs] || []).length >= 4, `${l.id} has clubs`);
+    const pr = l.rules.promote,
+      rel = l.rules.relegate;
+    if (pr) {
+      const up = L[pr.to],
+        down = up && up.rules.relegate;
+      // the division above sends down as many as come up (one more when a play-off decides a further place)
+      const want = pr.auto + (pr.playoff ? 1 : 0);
+      if (!up || !down || down.to !== l.id || down.n !== want || !!down.playoff !== !!pr.tie) bad.push(l.id);
+      else if (up.nat !== l.nat) bad.push(l.id + ' (nation)');
+    }
+    if (rel && !(L[rel.to] && L[rel.to].rules.promote && L[rel.to].rules.promote.to === l.id))
+      bad.push(l.id + ' (down)');
+  }
+  eq(bad, [], 'every promotion has the matching relegation, in the same nation');
+  for (const [code, nat] of Object.entries(D.CLUB_NAT || {})) {
+    ok(D.NATIONS[nat] && codes.has(code), `cross-border club ${code} is a club and its nation ${nat} is a nation`);
+    const home = D.LEAGUES.find((l) => (D[l.clubs] || []).some((r) => r[1] === code));
+    ok(home && (home.nat === nat || (home.nats || []).includes(nat)), `the league of ${code} is open to ${nat}`);
+  }
+  const YC = FM.YouthComps;
+  const field = (n) => Array.from({ length: n }, (_, i) => ({ id: 't' + i, name: 'T' + i, nat: 'XXX', r: 60 - i }));
+  for (const [n, cfg] of [
+    [48, { fmt: 'groups', groups: [4, 2, 8] }],
+    [16, { fmt: 'groups', groups: [4, 2, 0] }],
+    [10, { fmt: 'rr' }],
+    [37, { fmt: 'ko' }],
+    [10, { fmt: 'groups', groups: [5, 1, 0] }],
+  ]) {
+    const r = YC.play(field(n), cfg);
+    ok(
+      r.winner && r.runnerUp && r.winner.id !== r.runnerUp.id,
+      `a youth competition of ${n} (${cfg.fmt}) has a winner and a runner-up`,
+    );
+  }
+  let top = 0;
+  for (let i = 0; i < 200; i++) if (YC.play(field(16), { fmt: 'groups', groups: [4, 2, 0] }).winner.id === 't0') top++;
+  ok(top > 200 / 16, 'the strongest side wins a youth tournament more often than a one in sixteen chance');
+  ok(YC.NATIONAL.length === 26 && YC.CLUBS.length === 17, 'the youth competitions are all listed');
+}
+
 console.log(
   fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
 );

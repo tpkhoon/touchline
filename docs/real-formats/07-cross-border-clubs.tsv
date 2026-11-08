@@ -1,0 +1,16 @@
+Touchline league ID	League (real)	League nation	Club	Home nation	Home nation in Touchline?	Division / status (2026/27)	Notes	Confidence	Source (to fill)	Last verified (to fill)
+FR1	Ligue 1	France	AS Monaco	Monaco	No (Monaco is not a Touchline nation)	Ligue 1	Monaco has no league of its own; the club has played in the French system since 1918	High		
+D2	EFL Championship	England	Swansea City	Wales	Yes	Championship in 2025/26 (check 2026/27)	Welsh clubs in the English pyramid also cannot qualify for Europe through Wales	Medium		
+D2	EFL Championship	England	Wrexham	Wales	Yes	Championship in 2025/26 (check 2026/27)	Promoted three times in a row (2023, 2024, 2025)	Medium		
+D3	EFL League One	England	Cardiff City	Wales	Yes	League One in 2025/26 (check 2026/27)	Relegated from the Championship in 2025	Medium		
+D4	EFL League Two	England	Newport County	Wales	Yes	League Two in 2025/26 (check 2026/27)		Medium		
+ES2	LaLiga Hypermotion (Segunda División)	Spain	FC Andorra	Andorra	No (Andorra is not a Touchline nation)	Segunda División in 2025/26 (check 2026/27)	Plays in the Spanish pyramid; promoted to the second tier in 2025	Medium		
+IE1	League of Ireland Premier Division	Ireland	Derry City	Northern Ireland	Yes	League of Ireland Premier Division	Has played in the League of Ireland since 1985	High		
+WA1	Cymru Premier	Wales	The New Saints (TNS)	England (ground in Oswestry, England; a Welsh-registered club)	Yes	Cymru Premier	The opposite case: an English-based club in the Welsh league	High		
+US1	Major League Soccer	United States	Toronto FC	Canada	Yes	MLS (Eastern Conference)		High		
+US1	Major League Soccer	United States	CF Montréal	Canada	Yes	MLS (Eastern Conference)		High		
+US1	Major League Soccer	United States	Vancouver Whitecaps FC	Canada	Yes	MLS (Western Conference)		High		
+AU1	A-League Men	Australia	Wellington Phoenix	New Zealand	Yes	A-League Men		High		
+AU1	A-League Men	Australia	Auckland FC	New Zealand	Yes	A-League Men	Joined in 2024/25	High		
+SG1	Singapore Premier League	Singapore	Albirex Niigata (S)	Singapore-registered satellite of Japan's Albirex Niigata	Yes (Japan)	Singapore Premier League	A Singapore club in law, but founded as a Japanese club's offshoot with mostly Japanese players	Medium		
+MY1	Malaysia Super League	Malaysia	DPMM FC	Brunei	No (Brunei is not a Touchline nation)	Malaysia Super League (from 2025/26; check)	Previously played in the Singapore Premier League	Low		

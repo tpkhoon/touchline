@@ -1897,8 +1897,10 @@
   W.natFor = function (club, ctx) {
     const mix = club.comp && D.NAT_MIX[club.comp];
     const f = ctx ? W.foreignFactor(club, ctx) : 1;
-    // (a cross-nation league has no mix of its own: each club's players come from its own nation, as in a league with no mix)
-    const cross = club.comp && FM.S.comps[club.comp] && FM.S.comps[club.comp].nats;
+    // (a cross-nation league's visiting club has no mix: its players come from its own nation, as in a league with no mix; the
+    // league's own clubs keep the mix, so a Welsh club in England's pyramid does not change how the English clubs are filled)
+    const lg = club.comp && FM.S.comps[club.comp],
+      cross = lg && lg.nats && lg.nats.length && club.nat !== lg.nat;
     if (mix && !cross) return W.pickEmigrant(club, mix, f);
     return Math.random() < U.clamp(1 - 0.12 * f, 0.5, 0.98)
       ? club.nat

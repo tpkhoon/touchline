@@ -3729,6 +3729,8 @@
       ['continental', 'Continental'],
       ['domestic', 'Domestic'],
       ['regional', 'Regional'],
+      ['youth', 'Youth'],
+      ['past', 'Past'],
       ['world', 'World cups'],
     ]
       .map(([k, l]) => `<button class="chip ${v === k ? 'on' : ''}" data-act="cupsView" data-v="${k}">${l}</button>`)
@@ -3915,6 +3917,8 @@
         }${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
+    if (v === 'youth') return tabs + FM.YouthComps.html(esc, C.flag);
+    if (v === 'past') return tabs + FM.YouthComps.pastHtml(esc);
     return (
       tabs +
       (((cards) =>

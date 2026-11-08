@@ -1,0 +1,80 @@
+Category	Touchline ID	Touchline name	Nation / region	Touchline competition is	Closest real equivalent	Notes	Confidence
+Leagues	all 139	(every league)	Worldwide	Real	Every Touchline league matches a real league	Formats often differ (see the Leagues sheet); Pakistan's real league is held irregularly	High
+Continental or regional club cup	CE	Atlantic Club Cup	Continental	Partly fictional	CONCACAF Caribbean Cup (closest equivalent)	No real 'Atlantic' cup exists; closest is the Caribbean Cup	Low
+Continental or regional club cup	WF	West African Club Cup	Continental	Fictional	No current equivalent (WAFU club competitions held irregularly)	Fictional/regional addition	Low
+Continental or regional club cup	EF	East and Southern African Club Cup	Continental	Partly fictional	CECAFA Kagame Cup (East/Central Africa; closest)	Held irregularly	Low
+Continental or regional club cup	AN	Andean Club Cup	Continental	Fictional	No current equivalent	Fictional/regional addition	Low
+Continental or regional club cup	N2	North American Shield	Continental	Fictional	None (no second-tier CONCACAF club competition; closest are the Central American and Caribbean Cups)	Fictional second-tier competition	Medium
+Continental or regional club cup	AA	Adriatic and Aegean Cup	Continental	Fictional	None (no current equivalent)	Fictional regional cup for the Balkans, Greece and Cyprus	Medium
+Continental or regional club cup	CT	Carpathian Cup	Continental	Fictional	None (no current equivalent)	Fictional regional cup for Central and Eastern Europe	Medium
+Continental or regional club cup	NR	Northern League Cup	Continental	Fictional	None today (closest: the Royal League, 2004–2007)	Fictional revival of a Scandinavian cross-nation cup	Medium
+Continental or regional club cup	HC	European Holders' Cup	Continental	Fictional	None today (closest: the UEFA Cup Winners' Cup, 1960–1999)	Fictional revival of a historical competition	Medium
+Continental or regional club cup	SM	European Summer Cup	Continental	Fictional	None today (closest: the UEFA Intertoto Cup, 1961–2008)	Fictional revival of a historical competition	Medium
+Continental or regional club cup	BK	Balkan Club Cup	Continental	Fictional	None (no current equivalent)	Fictional regional cup for Balkan clubs (added November 2026)	Medium
+Continental or regional club cup	SV	Slavic Club Cup	Continental	Fictional	None (no current equivalent)	Fictional regional cup for clubs from Slavic nations (added November 2026)	Medium
+Continental super cup	SUPAS	Asian Super Cup	Asia	Fictional	None (Asia has no continental super cup)		Medium
+Continental super cup	SUPNA	North American Super Cup	North and Central America	Fictional	None (closest: the Campeones Cup, MLS v Liga MX)		Medium
+National-team tournament	CCT	Continental Champions Trophy	International	Partly fictional	CONMEBOL–UEFA Finalissima (closest; FIFA Confederations Cup discontinued)		Low
+National-team tournament	NEH	Monsoon Cup	International	Partly fictional	SAFF Championship (closest; the Nehru Cup is discontinued)		Low
+National-team tournament	NOR	Nordic Nations Cup	International	Fictional	No current equivalent (Nordic Championship discontinued)		Low
+National-team tournament	BLK	Balkan Nations Cup	International	Fictional	No current equivalent (historic Balkan Cup)		Low
+National-team tournament	SLV	Slavic Nations Cup	International	Fictional	No current equivalent	Added to Touchline in November 2026	Low
+National-team tournament	CEU	Central European Cup	International	Fictional	No current equivalent (historic International Cup)		Low
+National-team tournament	CEL	Celtic Nations Cup	International	Fictional	No current equivalent (Nations Cup discontinued after 2011)		Low
+National-team tournament	CAU	Caucasus Cup	International	Fictional	No current equivalent		Low
+National-team tournament	CCA	Central American and Caribbean Cup	International	Fictional	No current equivalent (Copa Centroamericana and Caribbean Cup discontinued)		Low
+National-team tournament	AND	Andean Cup	International	Fictional	No current equivalent		Low
+National-team tournament	PLA	River Plate Cup	International	Fictional	No current equivalent (historic Lipton/Newton cups)		Low
+Domestic cup	CUPBOL	Bolivian Copa Nacional	Bolivia	Partly fictional	Copa de la División Profesional (check)	No stable national cup	Low
+Domestic cup	CUPCPV	Cape Verdean Taça Nacional	Cape Verde	Partly fictional	Cape Verdean Cup	Irregular	Low
+Domestic cup	CUPSLV	Salvadoran Copa Nacional	El Salvador	Partly fictional	Copa El Salvador / Copa Presidente	Held only in some seasons	Low
+Domestic cup	CUPGUA	Guatemalan Copa Nacional	Guatemala	Partly fictional	Copa de Guatemala	Held only in some seasons	Low
+Domestic cup	CUPHON	Honduran Copa Nacional	Honduras	Partly fictional	Copa Presidente / Honduran Cup	Held only in some seasons	Low
+Domestic cup	CUPIDN	Indonesian Cup	Indonesia	Partly fictional	Piala Indonesia	Not held every season	Low
+Domestic cup	CUPJAM	Jamaican Champions Cup	Jamaica	Partly fictional	JFF Champions Cup (check)	Irregular	Low
+Domestic cup	CUPMEX	Mexican Copa Nacional	Mexico	Fictional	No national cup (Copa MX discontinued after 2019/20)	Touchline gives Mexico a national cup that does not currently exist	High
+Domestic cup	CUPPAK	Pakistani Federation Cup	Pakistan	Partly fictional	No regular national cup (check)	Irregular	Low
+Domestic cup	CUPPAN	Panamanian Copa Nacional	Panama	Partly fictional	Copa de Panamá (Copa Rommel Fernández)	Held only in some seasons	Low
+Domestic cup	CUPPER	Peruvian Copa Nacional	Peru	Partly fictional	Copa Bicentenario / Copa de la Liga (check)	Peru's national cup has been held only in some seasons	Low
+Domestic cup	CUPTOG	Togolese Coupe Nationale	Togo	Partly fictional	Coupe du Togo	Irregular	Low
+Domestic cup	CUPVEN	Venezuelan Copa Nacional	Venezuela	Partly fictional	Copa Venezuela	Held only in some seasons	Low
+National super cup	SUPUSA	United States Super Cup	United States	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPCAN	Canada Super Cup	Canada	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPAUS	Australia Super Cup	Australia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPNZL	New Zealand Super Cup	New Zealand	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPSCO	Scotland Super Cup	Scotland	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPWAL	Wales Super Cup	Wales	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPAUT	Austria Super Cup	Austria	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPSUI	Switzerland Super Cup	Switzerland	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	High
+National super cup	SUPDEN	Denmark Super Cup	Denmark	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPSWE	Sweden Super Cup	Sweden	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPNOR	Norway Super Cup	Norway	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPCZE	Czechia Super Cup	Czechia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPSVK	Slovakia Super Cup	Slovakia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPSRB	Serbia Super Cup	Serbia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPBIH	Bosnia and Herzegovina Super Cup	Bosnia and Herzegovina	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPMNE	Montenegro Super Cup	Montenegro	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPLUX	Luxembourg Super Cup	Luxembourg	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPLVA	Latvia Super Cup	Latvia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPBOL	Bolivia Super Cup	Bolivia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPGUA	Guatemala Super Cup	Guatemala	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPSLV	El Salvador Super Cup	El Salvador	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPPAN	Panama Super Cup	Panama	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPJAM	Jamaica Super Cup	Jamaica	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPIND	India Super Cup	India	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPPAK	Pakistan Super Cup	Pakistan	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPPHI	Philippines Super Cup	Philippines	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Low
+National super cup	SUPIDN	Indonesia Super Cup	Indonesia	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+National super cup	SUPRSA	South Africa Super Cup	South Africa	Fictional	None (no national super cup today)	Touchline gives every nation a super cup (champions v cup winners)	Medium
+Regional cups	5 cups	Regional cups (Brazil)	Brazil	Partly fictional	See the Regional sheet	Real (state championships), but one fictional 'Northeast' championship combines several states	Medium
+Regional cups	4 cups	Regional cups (England)	England	Partly fictional	See the Regional sheet	Partly fictional: real county cups exist, but top clubs enter only youth sides	High
+Regional cups	4 cups	Regional cups (Spain)	Spain	Fictional	See the Regional sheet	Fictional for top clubs (the Copa Catalunya is the only partial equivalent)	High
+Regional cups	4 cups	Regional cups (Germany)	Germany	Fictional	See the Regional sheet	Fictional for top clubs (regional cups are for amateur clubs)	High
+Regional cups	4 cups	Regional cups (France)	France	Fictional	See the Regional sheet	Fictional for top clubs	High
+Regional cups	5 cups	Regional cups (Italy)	Italy	Fictional	See the Regional sheet	Fictional for top clubs	High
+Regional cups	4 cups	Regional cups (Portugal)	Portugal	Fictional	See the Regional sheet	Fictional for top clubs	High
+Regional cups	4 cups	Regional cups (Netherlands)	Netherlands	Fictional	See the Regional sheet	Fictional for top clubs	High
+Regional cups	6 cups	Regional cups (Argentina)	Argentina	Fictional	See the Regional sheet	Fictional for top clubs (regional leagues are amateur today)	High
+Regional cups	9 cups	Regional cups (United States)	United States	Fictional	See the Regional sheet	Fictional	High
+Regional cups	6 cups	Regional cups (Japan)	Japan	Fictional	See the Regional sheet	Fictional for top clubs	High
+Regional cups	4 cups	Regional cups (Saudi Arabia)	Saudi Arabia	Fictional	See the Regional sheet	Fictional (regional championships ended in 1976)	High
