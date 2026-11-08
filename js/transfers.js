@@ -961,6 +961,9 @@
   // room to grow) go to develop; some fringe seniors go to stay sharp or off the wage bill. The borrower must
   // be a smaller club where he'd start or rotate, and the parent keeps enough bodies in his position.
   T.LOANS_PER_DAY = 40;
+  // A 23 to 27-year-old with a Late Bloomer's growth still to come, or a hidden gem, who is not getting games: worth a loan
+  T.lateLoan = (p, a) =>
+    a >= 23 && a <= 27 && p.pa - p.ca >= 4 && (W.hasTrait(p, 'Late Bloomer') || FM.Season.isGem(p));
   T.aiLoans = function (full, share = 1) {
     const levels = new Map(); // club|group → starter level (a loan changes only the borrowing club's)
     const sizes = new Map(); // club → squad size (a loan changes only the two clubs it joins)
@@ -981,14 +984,20 @@
       const c = S.clubs[p.clubId],
         a = W.age(p);
       if (c.sim === 'minimal' || a < 18 || a > 29) return false;
+      if (T.lateLoan(p, a)) return true; // a late bloomer or a find who is not playing
       return a <= 22 ? p.pa - p.ca >= 5 && p.ca >= W.levelFor(c.rep) - 30 : p.ca < W.levelFor(c.rep) - 4;
     });
     const n = quota(T.LOANS_PER_DAY * W.dayScale() * (full.length / 110) * share);
     for (let i = 0; i < n && pool.length; i++) {
-      const k = pool.splice(Math.floor(Math.random() * pool.length), 1)[0],
+      // late bloomers and finds who are not playing are looked at first, now and then (a sharper eye than the usual draw)
+      const late = Math.random() < 0.4 ? pool.filter((p) => T.lateLoan(p, W.age(p))) : [];
+      const k = pool.splice(
+          pool.indexOf(late.length ? U.pick(late) : pool[Math.floor(Math.random() * pool.length)]),
+          1,
+        )[0],
         parent = S.clubs[k.clubId],
         g = D.POS_GROUP[k.pos];
-      if (W.age(k) > 22 && Math.random() < 0.5) continue; // much senior surplus stays put
+      if (W.age(k) > 22 && !T.lateLoan(k, W.age(k)) && Math.random() < 0.5) continue; // much senior surplus stays put
       const home = W.squad(parent.id).filter((p) => !p.loan);
       if (
         home.length <= W.squadTarget(parent) - 1 ||
