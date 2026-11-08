@@ -2527,6 +2527,7 @@
       Sea.rustPositions(p);
       Sea.shiftPotential(p); // young players' potential moves with how the season went
       Sea.mentorYear(p); // a year with a mentor: his habits rub off
+      Sea.lateYear(p); // visibility, breakouts and the step up (while the season's numbers are still his)
       FM.Market.promiseCheck(p); // was a promise of games kept?
       p.shotsPrev = p.shots; // (last season's shots stay for his shot map until he has taken enough this season)
       p.shots = undefined;

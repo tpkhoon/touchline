@@ -273,6 +273,92 @@
         clubId: p.clubId,
       });
   };
+  // ---------- Lower-league stars: visibility, breakouts and the step up ----------
+  // Visibility (0 to 100, hidden) is how likely a player is to be noticed, apart from how good he is: it follows his club's
+  // standing, his caps and honours; playing above his club's level lifts it a few points a year (the goals get talked about),
+  // and it falls only slowly. A good player in a small club starts out unseen, so he can be found late.
+  Sea.visTarget = (p, withForm) => {
+    const club = p.clubId && FM.S.clubs[p.clubId],
+      base =
+        (club ? club.rep : 30) * 0.55 +
+        Math.min(20, ((p.intl && p.intl.caps) || 0) * 0.8) +
+        Math.min(10, (p.honours || []).length * 3);
+    const over = club ? Math.max(0, p.ca - W.levelFor(club.rep)) : 0;
+    return U.clamp(Math.round(base + (withForm ? over * 1.5 : 0)), 3, 100);
+  };
+  Sea.vis = (p) => (p.vis != null ? p.vis : Sea.visTarget(p, false));
+  // A club's scouts have noticed him, this time (a free agent is on every list; a big club's network is wider)
+  Sea.noticed = (p, c) => {
+    if (!p.clubId) return true;
+    const reach =
+      0.18 + (c.rep >= 70 ? 0.1 : 0) + (FM.S.clubs[p.clubId] && FM.S.clubs[p.clubId].nat === c.nat ? 0.15 : 0);
+    return Math.random() < U.clamp(0.3 + (Sea.vis(p) / 100) * 0.55 + reach * 0.5, 0.25, 1);
+  };
+  // A hidden gem: clearly better than his club's level, and not yet known
+  Sea.isGem = (p) => {
+    const club = p.clubId && FM.S.clubs[p.clubId];
+    return !!club && !p.retired && W.age(p) <= 28 && p.ca >= W.levelFor(club.rep) + 5 && Sea.vis(p) < 45;
+  };
+  // Once a season: visibility follows form; a Late Bloomer may break out; a big step up is judged
+  Sea.lateYear = function (p) {
+    const S = FM.S,
+      a = W.age(p),
+      club = p.clubId && S.clubs[p.clubId];
+    const was = Sea.vis(p),
+      t = Sea.visTarget(p, true);
+    p.vis = U.clamp(
+      Math.round(t > was ? was + Math.min(10, (t - was) * 0.5) : was - Math.min(4, (was - t) * 0.25)),
+      3,
+      100,
+    );
+    // a breakout: the minutes arrive, or the body finally catches up (a few every year, mostly Late Bloomers)
+    const plays = p.season.apps >= 12 || (p.pos === 'GK' && p.season.apps >= 8);
+    if (!p.breakout && club && plays && a >= 20 && a <= 28) {
+      const lb = W.hasTrait(p, 'Late Bloomer');
+      if (Math.random() < (lb ? 0.18 : 0.012) * (p.hid.prof >= 13 ? 1.3 : 1)) {
+        const gain = Math.round(U.rand(2.5, 5.5));
+        if (p.pa < p.ca + gain + 2) p.pa = Math.min(99, p.ca + gain + 2);
+        Sea.applyGrowth(p, gain);
+        p.breakout = S.year;
+        p.vis = Math.min(100, p.vis + 12); // people notice
+        if (W.ownPlayer(p) || club.sim === 'full')
+          FM.News.add({
+            type: W.ownPlayer(p) ? 'club' : 'world',
+            title: `${W.name(p)} has come good`,
+            body: `At ${a}, after years in the shadows, ${W.short(p)} has had a season that has people talking: ${club.name} may not hold on to him for long.`,
+            pid: p.id,
+            clubId: club.id,
+          });
+      }
+    }
+    // the step up: a player who joined a club well above his old level settles, or does not
+    const su = p.stepUp;
+    if (su && !su.res && su.y < S.year) {
+      const trait =
+        (p.hid.prof - 10) / 12 +
+        (p.hid.temp != null ? (p.hid.temp - 10) / 20 : 0) +
+        (p.hid.big != null ? (p.hid.big - 10) / 20 : 0);
+      const ok = U.clamp(
+        0.55 + trait * 0.25 - su.gap * 0.012 - Math.max(0, a - 26) * 0.02 + Math.min(0.2, p.season.apps * 0.01),
+        0.1,
+        0.9,
+      );
+      su.res = Math.random() < ok ? 'settled' : 'struggled';
+      if (su.res === 'settled') Sea.applyGrowth(p, Math.round(U.rand(0.5, 2)));
+      else {
+        Sea.applyGrowth(p, -Math.round(U.rand(0.5, 2.5)));
+        p.morale = Math.max(20, p.morale - 8);
+      }
+      if (W.ownPlayer(p) && su.res === 'struggled')
+        FM.News.add({
+          type: 'club',
+          title: `${W.name(p)} is finding the step up hard`,
+          body: `${W.short(p)} came up from a lower level and has not found the pace of it. Some players take a year; some never do.`,
+          pid: p.id,
+          clubId: club && club.id,
+        });
+    }
+  };
   Sea.develop = function (p, frac) {
     const S = FM.S;
     const club = p.clubId && S.clubs[p.clubId];

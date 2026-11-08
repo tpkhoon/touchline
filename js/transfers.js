@@ -391,6 +391,14 @@
     to.balance -= cash;
     to.budget = Math.max(0, to.budget - cash - (fee - cash) * 0.5);
     S.seasonLog.net[toId] = (S.seasonLog.net[toId] || 0) - fee;
+    // a big step up (a club whose level is well above where he has been playing) is judged at the end of the season
+    const oldRep = from ? from.rep : p.lastRep != null ? p.lastRep : null;
+    if (oldRep != null && !flags.loan) {
+      const gap = W.levelFor(to.rep) - W.levelFor(oldRep);
+      if (gap >= 8) p.stepUp = { y: S.year, gap };
+      else delete p.stepUp;
+    }
+    p.lastRep = to.rep;
     W.startSpell(p, toId);
     W.spell(p).signed = true;
     W.spell(p).fee = fee; // remembered on the career timeline (0 = free transfer)
@@ -769,7 +777,8 @@
               (!p.clubId || S.clubs[p.clubId].rep < c.rep + (p.contract <= S.year || p.wantsOut ? 10 : 3)) &&
               !rivalSale(p, c) &&
               regOK(p) &&
-              mkt.price(p) * premium(p, c) * (dd ? 1.1 : 1) <= c.budget
+              mkt.price(p) * premium(p, c) * (dd ? 1.1 : 1) <= c.budget &&
+              FM.Season.noticed(p, c) // their scouts have seen him (hidden gems are found late)
             )
               pool.push(p);
           }
