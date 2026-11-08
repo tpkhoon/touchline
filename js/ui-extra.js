@@ -915,6 +915,7 @@
         ['moneyball', 'Undervalued'],
         ['wonderkid', 'Wonderkids'],
         ['ready', 'Ready now'],
+        ['gem', 'Overlooked'],
       ])}
       <button class="btn pri block" data-act="doAssign" style="margin-top:12px">Send ${esc(sc.fn)}</button>
       ${s.user.assignments.some((x) => x.scout === sc.id) ? `<button class="btn block" data-act="stopAssign" style="margin-top:8px">Stop current assignment</button>` : ''}`;

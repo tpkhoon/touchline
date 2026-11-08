@@ -666,6 +666,10 @@
     'Low Work Ethic': { icon: 'sleep', desc: 'Trains half-heartedly: develops more slowly.' },
     Versatile: { icon: 'shuffle', desc: 'Learns new positions quickly.' },
     Mentor: { icon: 'mentor', desc: 'Young teammates grow faster around him.' },
+    Journeyman: {
+      icon: 'shuffle',
+      desc: 'Has played for many clubs and signs short deals. Settles in quickly at a new one.',
+    },
     Homesick: { icon: 'house', desc: 'Unsettled at a club outside his own country.' },
     'Needs Game Time': { icon: 'chair', desc: 'Sulks quickly when left out of the side.' },
   };

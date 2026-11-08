@@ -294,6 +294,8 @@
       0.18 + (c.rep >= 70 ? 0.1 : 0) + (FM.S.clubs[p.clubId] && FM.S.clubs[p.clubId].nat === c.nat ? 0.15 : 0);
     return Math.random() < U.clamp(0.3 + (Sea.vis(p) / 100) * 0.55 + reach * 0.5, 0.25, 1);
   };
+  // The number of different clubs he has signed for (loans do not count)
+  Sea.permClubs = (p) => new Set(p.career.spells.filter((x) => !x.loan).map((x) => x.c)).size;
   // A hidden gem: clearly better than his club's level, and not yet known
   Sea.isGem = (p) => {
     const club = p.clubId && FM.S.clubs[p.clubId];
@@ -331,6 +333,18 @@
           });
       }
     }
+    // a journeyman: seven or more permanent clubs by his late twenties, and the habits that go with it
+    if (a >= 27 && !W.hasTrait(p, 'Journeyman') && Sea.permClubs(p) >= 7) {
+      p.traits.push('Journeyman');
+      if (W.ownPlayer(p))
+        FM.News.add({
+          type: 'club',
+          title: `${W.name(p)} has been around`,
+          body: `${U.plural(Sea.permClubs(p), 'club')} so far. He signs short deals and settles in fast; do not expect him to stay long.`,
+          pid: p.id,
+          clubId: p.clubId,
+        });
+    }
     // the step up: a player who joined a club well above his old level settles, or does not
     const su = p.stepUp;
     if (su && !su.res && su.y < S.year) {
@@ -339,7 +353,12 @@
         (p.hid.temp != null ? (p.hid.temp - 10) / 20 : 0) +
         (p.hid.big != null ? (p.hid.big - 10) / 20 : 0);
       const ok = U.clamp(
-        0.55 + trait * 0.25 - su.gap * 0.012 - Math.max(0, a - 26) * 0.02 + Math.min(0.2, p.season.apps * 0.01),
+        0.55 +
+          (W.hasTrait(p, 'Journeyman') ? 0.12 : 0) +
+          trait * 0.25 -
+          su.gap * 0.012 -
+          Math.max(0, a - 26) * 0.02 +
+          Math.min(0.2, p.season.apps * 0.01),
         0.1,
         0.9,
       );

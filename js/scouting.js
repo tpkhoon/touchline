@@ -365,7 +365,7 @@
     if (a.minStars) bits.push(`${a.minStars}★+ potential`);
     if (a.maxFee) bits.push(`under ${U.money(a.maxFee)}`);
     if (a.focus && a.focus !== 'any')
-      bits.push({ moneyball: 'undervalued', wonderkid: 'wonderkids', ready: 'ready-made' }[a.focus]);
+      bits.push({ moneyball: 'undervalued', wonderkid: 'wonderkids', ready: 'ready-made', gem: 'overlooked' }[a.focus]);
     return `${where} · ${bits.join(' · ')}`;
   };
 
@@ -406,6 +406,8 @@
             w *= c.season.apps ? Math.pow(c.season.rsum / c.season.apps / 6.5, 6) * (3e6 / (c.value + 1e6)) : 0.2;
           if (a.focus === 'wonderkid') w *= W.age(c) <= 19 ? Math.pow(Sc.scoutPA(scout, c) / 60, 6) : 0.05;
           if (a.focus === 'ready') w *= c.ca >= lvl - 2 ? 3 : 0.3;
+          // overlooked: better than his club's level and barely known (a sharp scout spots the signs more often)
+          if (a.focus === 'gem') w *= FM.Season.isGem(c) ? 2 + scout.judge / 4 : 0.2;
           return w;
         };
         const found = [];

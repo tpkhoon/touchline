@@ -406,7 +406,15 @@
     p.wage = wage || T.wageDemand(p, to);
     // (older players get shorter deals: a long one at a wage that fits a 29-year-old is a wage that outlives his ability)
     const age = W.age(p);
-    p.contract = S.year + (age >= 33 ? U.randi(1, 2) : age >= 30 ? U.randi(2, 3) : U.randi(3, 5));
+    p.contract =
+      S.year +
+      (W.hasTrait(p, 'Journeyman')
+        ? U.randi(1, 2)
+        : age >= 33
+          ? U.randi(1, 2)
+          : age >= 30
+            ? U.randi(2, 3)
+            : U.randi(3, 5));
     p.morale = Math.min(100, p.morale + 10);
     p.listed = false;
     p.wantsOut = false;

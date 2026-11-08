@@ -2260,6 +2260,12 @@
       return `Moved to ${club} in ${x.from} (fee undisclosed).`;
     });
     out.push(...(moves.length > 6 ? [moves[0], '…', ...moves.slice(-4)] : moves));
+    if (p.breakout)
+      out.push(
+        `A late bloomer: he came good in ${p.breakout}, at ${p.breakout - p.born}, after years out of the spotlight.`,
+      );
+    if (W.hasTrait(p, 'Journeyman'))
+      out.push(`A journeyman: ${U.plural(FM.Season.permClubs(p), 'club')} in a career spent moving on.`);
     const gk = p.pos === 'GK',
       cs = (p.history || []).reduce((t, h) => t + (h.cs || 0), 0) + (p.season.cs || 0);
     if (p.career.apps)
