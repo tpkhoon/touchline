@@ -1919,7 +1919,6 @@
         !(Array.isArray(r.torneos) && r.torneos.length === 2 && r.torneos.every((x) => String(x || '').trim()))
       )
         e.push(`${at}: two tournaments a year, each with a name`);
-      if (r.torneos && !r.playoffs) e.push(`${at}: two tournaments a year need a title play-off to finish each`);
     }
     if (r.squad != null) {
       if (typeof r.squad !== 'object' || Array.isArray(r.squad)) e.push(`${at}: squad rules are a list of settings`);

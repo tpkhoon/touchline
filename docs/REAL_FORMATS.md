@@ -12,7 +12,7 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 
 | Sheet (file in `docs/real-formats/`) | What it covers | Status |
 | --- | --- | --- |
-| 02 Leagues | 139 leagues: clubs, rounds, splits, tournaments, play-offs, promotion and relegation, B teams, youth rules | **Started.** Leagues with the right club count and a plain triple or quadruple round-robin now play it (16 leagues: Albania, Armenia, Azerbaijan, Croatia, Estonia, Georgia, Ireland, Kosovo, Latvia, Lithuania, Montenegro, Slovenia 36 matches; Canada 28; Hungary 33; Kuwait 27; Australia 26). Left: 45 leagues whose club count differs (40 need more clubs, 5 fewer), the split and tournament formats, the pro/rel play-offs (43 real, 5 in the game), B teams and youth rules. |
+| 02 Leagues | 139 leagues: clubs, rounds, splits, tournaments, play-offs, promotion and relegation, B teams, youth rules | **Done as far as the engine goes** (see "Leagues sheet" below). Club counts match the sheet in every league but Spain's third tier; the regular phase, splits, Apertura and Clausura play-offs, relegation play-offs against the division below (where the game has one), B teams and youth minimums follow the sheet. Left: Spain's third tier (two groups of 20), the pro/rel play-offs whose other division the game does not have, and a few low-confidence formats listed below. |
 | 03 Domestic cups | 117 cups: entrants, legs, replays, finals | **Started.** Legs, neutral finals and extra-time rules follow the sheet for 24 cups (see below); every cup winner's continental place is read from the sheet (`D.CUP_PLACE`, 98 cups). Left: group-stage cups, entry rounds by division, replays, Mexico's cup that does not exist, irregular cups, the other national cups. |
 | 04 Continental club | 30 continental and regional club competitions | **Started.** Final and knockout legs follow the sheet (North American and African Champions Cups single-match finals; Libertadores and Sudamericana extra time in the final only; two-legged finals in the Southeast Asian, Gulf and Central American cups; single matches in the Arab and East African cups). Left: the 36-club league phase, Asian league stage, qualifying rounds, Intercontinental Cup and Club World Cup details. |
 | 05 International | 33 national-team tournaments | **Started.** Sizes already follow the sheet for the confederation finals; the Gold Cup takes a guest and the Copa América plays extra time in the final only. Left: the sizes of the regional nations cups, two-legged ASEAN knockouts, Olympic and Asian Games football. |
@@ -31,15 +31,17 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 
 ## What the engine can and cannot do today
 
-- **Fixtures:** a league plays a double round-robin by default. `rules.rounds` now sets any number of matches: fewer than
-  a double round-robin (as before) or more, by playing the round-robin again (triple and quadruple). Not yet with a split,
-  zones or conferences.
-- **After the regular season:** `split` (groups that play again, points kept or halved), `torneos` (Apertura and Clausura),
-  `zones`, `conferences` and `playoffs` of four built-in kinds (`finals6`, `liguilla`, `zones`, MLS). A title play-off is
-  four single-match stages at most. A generic "top N knockout" with byes and two legs would unlock most of the Apertura
-  and Clausura rows in the sheet and is the next engine piece.
+- **Fixtures:** a league plays a double round-robin by default. `rules.rounds` sets any number of rounds: fewer than a double
+  round-robin, or more, by playing it again (triple and quadruple). Not with zones or conferences.
+- **After the regular season:** `split` (groups that play again, points kept or halved), `torneos` (Apertura and Clausura, with or
+  without a play-off), `zones`, `conferences` and `playoffs`: the four built-in kinds (`finals6`, `liguilla`, `zones`, MLS) and two
+  generic ones: `ko` (the top n of a table, byes up to a whole bracket, one or two legs per round or for the final, once at the end
+  or after each tournament) and `groups4` (cuadrangulares). A title play-off fits in four days (`M1` to `M4`, second legs `N1` to `N4`),
+  so a knockout is at most sixteen clubs.
+- **Relegation play-offs:** `relegate.playoff` against the division below (a number of ties); promotion play-offs inside a division
+  (`promote.playoff`).
 - **Club counts:** a league is as large as its club list; changing it means writing fictional clubs (`js/clubs.js`,
-  `tools/newleagues.mjs`) or removing some.
+  `tools/newleagues.mjs`, `tools/realclubs.mjs`) or removing some.
 - **Tiers below the top flight:** every nation on sheets 12 to 14 now has the divisions the sheets list, down to a fourth tier
   (England, Spain and Germany had theirs). Each is one table of fictional clubs, `tools/newtiers.mjs` makes them (the table of
   nations, club counts, promoted places and kinds is at the top of the tool). A real division of regional groups is one group
@@ -62,6 +64,49 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
   entrants chosen as the real competition does as far as the game knows, seeded by the strength of their young players, groups
   and knockouts or a round-robin with goals from the strength gap. No matches are shown or played by you, there is no qualifying
   and no over-age players. Winners are kept in the save and listed on the Cups screen (Youth tab).
+
+## Leagues sheet (02): what was done
+
+- **Club counts:** every league now has the sheet's number of clubs except Spain's third tier. 145 fictional clubs were added in 39
+  leagues (names, towns and grounds from the name library, reputation at the weak end of the league's band, `tools/realclubs.mjs`),
+  and the weakest 8 went from Bosnia (2), Honduras (2), Moldova (2), Malaysia (1) and Singapore (1). Netherlands' second tier now holds
+  four Jong teams (B teams of the four strongest Eredivisie clubs) and Portugal's two B teams, in place of their weakest clubs.
+- **Regular phase:** each league's matches per club follow the sheet: triple and quadruple round-robins (`rules.rounds`), a short
+  Panama and Uruguay tournament (`rounds` with `torneos` plays half the rounds in each tournament, the second with the home matches
+  reversed), Belgium's plain 34 matches (its split was dropped: the 2026/27 play-offs are abolished).
+- **Splits** (`rules.split`): Bulgaria (30, then 6 / 4 / 6), Cyprus and Israel (26, then 6 double / 8 single), Czechia (single rounds,
+  6 / 4 / 6), Egypt (21 clubs once, then 7 / 14), Ecuador (30, then 6 / 5 / 5), Greece (26, then 4 / 4 / 6). Austria, Denmark, Finland,
+  Iceland, Northern Ireland, Romania, Scotland, Serbia, Slovakia, Switzerland, Wales and South Korea already had theirs.
+- **Apertura and Clausura** (`rules.torneos`), each with a champion: Colombia (single round-robin each, then cuadrangulares: the top
+  eight in two groups of four, group winners in a two-legged final), Costa Rica (top 4, two legs), El Salvador (top 8, two legs, a
+  single final), Guatemala (top 8, two legs), Honduras (top 4, two legs), Panama (top 4), Paraguay (no play-off: the leader of each
+  tournament is its champion). Peru and Uruguay play one play-off at the end (`once`): the two tournament winners and the leaders of the
+  season table, two legs, the best seed with a bye where there are three. Argentina has its 30 clubs (two zones of 15), Mexico is as it was.
+- **Relegation play-offs against the division below** (`relegate.playoff`: `true` is one tie, a number is that many, each club further up
+  the table meeting the next club of the lower division): Germany and France as before, and now Portugal (16th v Liga 2 3rd), Netherlands
+  (16th v Eerste Divisie 3rd, in place of its promotion play-offs), Norway (14th v OBOS-ligaen 3rd), Sweden (14th v Superettan 3rd),
+  South Korea (10th and 11th v K League 2 2nd and 3rd) and Vietnam (13th v V.League 2 2nd). 11 of the sheet's 43 play-offs have their
+  other division in the game; the rest need a division the game does not have (Albania, Austria's, Belarus, Bulgaria, Croatia ...).
+- **Youth and homegrown minimums** (`FM.Reg.RULES`, `youthMin` / `hgMin`): the "young player on the pitch / in the squad / minutes"
+  rows are an under-21 (or under-23) minimum with the scope that fits (`pitch`, `xi`, `squad` or `registered`); Belgium joins England,
+  Italy and Germany with a 25-man list of 8 homegrown; Portugal and Japan have a smaller homegrown minimum. They apply to a league whose
+  rules are the real ones (`rules.reg === 'real'`).
+
+### Left or simplified (leagues sheet)
+
+- **Spain's third tier** has two groups of 20 in real life; the game has one division of 20. It needs a division with two tables.
+- **Europe play-off knockouts** (Czechia 7th to 10th, Bulgaria, Greece) are small round-robins, not the real knockouts. Cyprus's, Israel's
+  and Greece's rows are as the sheet gives them; their points-halving is the game's earlier setting where it had one.
+- **Uruguay's Intermedio** (two groups of 8 between the two tournaments) is not played: 30 matches, the sheet says 37.
+- **Costa Rica's grand final** between the two tournament champions when they differ, and the **points average** relegation of Argentina,
+  Colombia, Paraguay and Uruguay, play out as ordinary relegation from the season's table.
+- **Venezuela, Bolivia, Cameroon, DR Congo, Cape Verde, New Zealand, Moldova's second phase** (formats the sheet marks as varying or
+  unclear) keep their plain league.
+- **Closed leagues** (Australia, Canada, USA, India, Singapore, the Philippines) have no relegation, as before.
+- **Play-offs with a division the game lacks** and **B teams by league** beyond Germany's third tier, Spain, the Netherlands and Portugal:
+  the lower divisions are not in the game yet (see the second-to-fourth-tier sheets).
+- **Cycles** (a 13-club league such as Malaysia has byes, a club that finishes level on points is split by the tiebreakers in
+  `docs/COMPETITION_RULES.md`) are as before.
 
 ## Changes made from sheets 03 to 19 (November 2026)
 

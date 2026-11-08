@@ -1445,6 +1445,16 @@
       out.push(
         'Each tournament ends with knockouts for the top eight of each zone (round of 16 to the final). Each has a champion.',
       );
+    if (t === 'ko') {
+      const P = r.playoffs;
+      out.push(
+        `${P.once ? 'After both tournaments' : r.torneos ? 'Each tournament ends with' : 'The season ends with'} a knockout for ${P.pool === 'winners' ? 'the two tournament winners and the leaders of the season table' : `the top ${P.n || 4}`}${P.legs === 2 ? ', every round over two legs' : P.finalLegs === 2 ? ', the final over two legs' : ''}; ${(P.n || 4) & ((P.n || 4) - 1) ? 'the best seeds have byes. ' : ''}${P.once ? 'The winner is champion.' : r.torneos ? 'Each has a champion.' : 'The winner is champion.'}`,
+      );
+    }
+    if (t === 'groups4')
+      out.push(
+        `Each tournament ends with the top eight in two groups of four (each plays the others once); the group winners meet in the final${r.playoffs.legs === 2 ? ' over two legs' : ''}. Each has a champion.`,
+      );
     return out;
   };
   UI.leagueRules = function (l) {

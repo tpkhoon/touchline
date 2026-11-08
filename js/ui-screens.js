@@ -2954,7 +2954,8 @@
         .flat()
         .some((f) => f.res);
     const tv = torn ? (UI._torneoView === undefined ? (started2 ? 1 : 0) : UI._torneoView) : null;
-    const finals = R.playoffs && R.playoffs.type === 'finals6';
+    const finals = R.playoffs && R.playoffs.type === 'finals6',
+      kp = W.koPlan(comp); // (a generic title play-off: the top n of the table)
     let tables, shown;
     if (byConf) {
       tables = confNames
@@ -2968,7 +2969,7 @@
         .join('');
       shown = comp.ko && comp.ko[0];
     } else if (torn && tv !== 'all') {
-      const cut = comp.zones ? 8 : 6;
+      const cut = comp.zones ? 8 : kp ? kp.n : 6;
       tables = comp.zones
         ? ['A', 'B']
             .map((z) =>
@@ -2981,7 +2982,7 @@
             .join('')
         : tableHTML(
             W.torneoTable(comp, tv),
-            (i) => (i < 6 ? (i === 0 ? 'zone-up' : 'zone-po') : i < 10 ? 'zone-po' : ''),
+            (i) => (i < cut ? (i === 0 ? 'zone-up' : 'zone-po') : i < 10 && !kp ? 'zone-po' : ''),
             torn[tv].name,
           );
       shown = comp.ko && comp.ko[tv];
@@ -2996,8 +2997,10 @@
         )
         .join('');
     } else {
-      tables = tableHTML(t, (i) => (finals && i < 6 && i > 0 ? 'zone-po' : zone(i)));
-      if (finals || torn) shown = comp.ko && comp.ko[0];
+      tables = tableHTML(t, (i) =>
+        (finals && i < 6) || (kp && !torn && i < kp.n) ? (i > 0 ? 'zone-po' : zone(i)) : zone(i),
+      );
+      if (finals || torn || kp) shown = comp.ko && comp.ko[0];
     }
     const chip = (on, act, v, label) =>
       `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-v="${v}">${label}</button>`;
@@ -3016,10 +3019,12 @@
         ? [`● Conference leader`, `● Playoffs (top ${R.mls.playoff})`]
         : [`● Supporters' Shield`, `● ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`]
       : torn && tv !== 'all'
-        ? [
-            comp.zones ? '● Knockouts (top 8 of each zone)' : '● Direct to the quarter-finals (top 6)',
-            ...(comp.zones ? [] : ['● Play-in (7–10)']),
-          ]
+        ? kp
+          ? [`● Play-off (top ${kp.n})`]
+          : [
+              comp.zones ? '● Knockouts (top 8 of each zone)' : '● Direct to the quarter-finals (top 6)',
+              ...(comp.zones ? [] : ['● Play-in (7–10)']),
+            ]
         : finals
           ? ['● Champion', '● Finals (top 6)']
           : null;
@@ -3030,13 +3035,12 @@
   }
   // A title playoff bracket: the seeds, then each round's ties
   UI.koBracket = function (comp, M) {
-    const type = W.koType(comp),
-      rows = [];
-    for (const k of ['M1', 'M2', 'M3', 'M4']) {
+    const rows = [];
+    for (const k of ['M1', 'N1', 'M2', 'N2', 'M3', 'N3', 'M4', 'N4']) {
       const ties = M[k] || [];
       if (!ties.length) continue;
       rows.push(
-        `<div class="small b dim" style="margin:10px 0 2px">${esc(FM.Season.KO_ROUNDS[type][k]).toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
+        `<div class="small b dim" style="margin:10px 0 2px">${esc(FM.Season.koLabel(comp, k)).toUpperCase()}</div>${ties.map((f) => fxLine(f)).join('')}`,
       );
     }
     const seeds = Object.entries(M.seeds)

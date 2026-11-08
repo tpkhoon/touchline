@@ -50,20 +50,27 @@ group, whatever the points. Points carry over unless noted.
 | League | Regular season | Split | After the split |
 | --- | --- | --- | --- |
 | Scottish Premiership | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
-| Belgian Pro League | 30 matches | Top 6 / the rest | The top 6 play 10 more with the points halved; the rest finish |
+| Bulgarian First League | 30 matches | Top 6 / middle 4 / bottom 6 | 5, 3 and 5 matches, points kept |
+| Cyprus First Division | 26 matches | Top 6 / bottom 8 | 10 and 7 matches, points kept |
+| Israeli Premier League | 26 matches | Top 6 / bottom 8 | 10 and 7 matches, points kept |
+| Egyptian Premier League | 21 clubs, 20 matches | Top 7 / bottom 14 | 6 and 13 matches, points kept |
+| Ecuadorian Serie A | 30 matches | Top 6 / 5 / 5 | 5 and 4 matches, points kept |
 | Danish Superliga | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
 | Austrian Bundesliga | 22 matches | Top 6 / bottom 6 | 10 matches each, points halved (rounded up) |
 | Swiss Super League | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
-| Czech First League | 30 matches | Top 6 / middle 4 / bottom 6 | 10, 6 and 10 matches, points kept |
+| Czech First League | 30 matches | Top 6 / middle 4 / bottom 6 | 5, 3 and 5 matches, points kept |
 | Serbian SuperLiga | 30 matches | Top 8 / bottom 8 | 7 matches each, points kept |
-| Super League Greece | 26 matches | Top 6 / bottom 8 | 10 and 7 matches, points halved |
+| Super League Greece | 26 matches | Top 4 / 5th–8th / bottom 6 | 6, 6 and 5 matches, points halved |
 | K League 1 | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
 | Cymru Premier | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
 
+The Belgian Pro League plays a plain 34 matches in 2026/27 (the play-offs are abolished). The Romanian and Israeli splits are as in the table of `docs/real-formats/02-leagues.tsv`.
+
 ### Two tournaments a year
 
-Liga MX (Apertura and Clausura) and Argentina (Apertura and Clausura) have two champions a year, each tournament its
-own table and its own knockout. The season's table is the two together; it decides the continental places after the
+Liga MX, Argentina, Colombia, Costa Rica, El Salvador, Guatemala, Honduras, Panama and Paraguay (Apertura and Clausura)
+have two champions a year, each tournament its own table and its own knockout (Paraguay has none: the leader of each
+tournament is its champion); Peru and Uruguay have the two tournaments and one play-off at the end. The season's table is the two together; it decides the continental places after the
 champions.
 
 - **Mexico:** 18 clubs play each other once in each tournament (17 matches). The top six go straight to the
@@ -74,6 +81,16 @@ champions.
   quarter-finals, semi-finals and a final at a neutral ground, all single matches.
 
 ### Title playoffs
+
+- **Top-n knockout (`ko`):** the top n of a tournament's table (or of the table, for a league with one tournament); with n
+  between powers of two the best seeds have a bye, and each round the best surviving seed meets the worst. A round is one match
+  hosted by the better seed or two legs (the lower seed hosts the first); the final can have its own number of legs. Costa Rica
+  top 4, two legs; El Salvador top 8, two legs, a single final; Guatemala top 8, two legs; Honduras top 4, two legs; Panama top 4,
+  two-legged semi-finals and a single final.
+- **Cuadrangulares (`groups4`, Colombia):** the top eight of each tournament in two groups of four (seeds 1, 4, 5, 8 and 2, 3, 6, 7),
+  each playing the others once; the two group winners play a two-legged final.
+- **Peru and Uruguay (`ko` with `once`):** after the Clausura, the two tournament winners and the leaders of the season table
+  (four in Peru, three in Uruguay, with a bye for the best seed) play two-legged rounds; the winner is champion.
 
 - **MLS (USA):** see the American league above: seven a conference, the top seed skipping Round One, ending in the
   MLS Cup; the best record wins the Supporters' Shield.
@@ -89,8 +106,10 @@ champions.
 
 ### Relegation play-offs
 
-Germany (Bundesliga and 2. Bundesliga) and France (Ligue 1): the club above the automatic places plays the best
-non-promoted club of the division below over two legs. Italy, Spain and England have none in the real top flights;
+Germany (Bundesliga and 2. Bundesliga), France (Ligue 1), Portugal, the Netherlands, Norway, Sweden, South Korea and Vietnam:
+the club above the automatic places plays the best non-promoted club of the division below over two legs (South Korea has two
+ties: 10th and 11th against the 2nd and 3rd of K League 2; Vietnam's 13th meets V.League 2's 2nd; the Dutch 16th meets the 3rd of
+the Eerste Divisie in place of its promotion play-offs). Italy, Spain and England have none in the real top flights;
 Serie B's play-out has nowhere to send the loser (there is no Serie C in the game).
 
 ## Southeast Asia and South Africa

@@ -2702,9 +2702,19 @@
     comp.clubs.forEach((id) => (comp.table[id] = blankRow(comp.deductions?.[id] ? -comp.deductions[id] : 0)));
     comp.deductions = {};
     let rounds = R.conferences ? W.conferenceRounds(comp) : R.zones ? W.zoneRounds(comp) : W.roundRobin(comp.clubs);
-    if (R.rounds)
+    if (R.torneos && R.rounds && !R.conferences && !R.zones && !R.split) {
+      // two tournaments of an equal length that is not a whole round-robin (Panama and Uruguay play 18 and 15 matches): each
+      // takes the first rounds of the schedule, the second with the home matches reversed
+      const per = Math.floor(R.rounds / 2),
+        one = W.roundRobin(comp.clubs);
+      while (one.length < per) one.push(...W.roundRobin(comp.clubs));
+      rounds = one.slice(0, per).concat(one.slice(0, per).map((rd) => rd.map(([h, a]) => [a, h])));
+    } else if (R.rounds) {
+      // formats longer than a double round-robin (a triple or quadruple one: Hungary 33, Croatia and Ireland 36 ...) play it again
+      if (!R.conferences && !R.zones && !R.split)
+        while (rounds.length < R.rounds) rounds = rounds.concat(W.roundRobin(comp.clubs));
       rounds = rounds.slice(0, R.rounds); // formats shorter than a double round-robin
-    else if (R.legs === 1 && !R.zones && !R.conferences && !R.split)
+    } else if (R.legs === 1 && !R.zones && !R.conferences && !R.split)
       rounds = rounds.slice(0, Math.ceil(rounds.length / 2)); // once each
     comp.groupOf = null;
     comp.groups = null;
@@ -2924,6 +2934,36 @@
   const KO_STAGES = ['M1', 'M2', 'M3', 'M4'];
   // the kind of title playoff a league has: 'mls', 'finals6', 'liguilla' or 'zones' (none: null)
   W.koType = (c) => (c.rules.playoffs && c.rules.playoffs.type) || (c.rules.mls ? 'mls' : null);
+  // The generic title play-off: rules.playoffs { type: 'ko', n, legs, finalLegs, once, pool } is a knockout of the top n of the
+  // table (the best seeds take byes up to a whole bracket); { type: 'groups4', legs } is Colombia's cuadrangulares (the top
+  // eight in two groups of four, the group winners in a final). A round is played on one of the four days M1..M4 (the last
+  // round on M4), its second leg on N1..N4. once: a league with two tournaments plays it once, after the second, from the
+  // tournament winners and the season's table (pool 'winners'). Returns null for any other league.
+  W.koPlan = function (c) {
+    const P = c.rules.playoffs;
+    if (!P || (P.type !== 'ko' && P.type !== 'groups4')) return null;
+    const lastLegs = (P.finalLegs || P.legs) === 2 ? 2 : 1;
+    if (P.type === 'groups4')
+      return { groups: true, n: 8, r: 4, size: 8, keys: KO_STAGES.slice(), legs: [1, 1, 1, lastLegs] };
+    const n = Math.max(2, Math.min(P.n || 4, c.clubs.length)),
+      r = Math.ceil(Math.log2(n)),
+      keys = [],
+      legs = [];
+    for (let i = 0; i < r; i++) {
+      keys.push('M' + (5 - r + i));
+      legs.push(i === r - 1 ? lastLegs : P.legs === 2 ? 2 : 1);
+    }
+    return { n, r, size: 2 ** r, keys, legs };
+  };
+  // the days a title play-off needs for second legs (those of any league that plays them)
+  W.koStages = function () {
+    const need = new Set();
+    for (const c of W.leagues()) {
+      const p = W.koPlan(c);
+      if (p) p.keys.forEach((k, i) => p.legs[i] === 2 && need.add(k));
+    }
+    return KO_STAGES.flatMap((k) => (need.has(k) ? [k, 'N' + k.slice(1)] : [k]));
+  };
   W.buildCalendar = function () {
     const S = FM.S,
       rounds = Math.max(...W.leagues().map((c) => c.fixtures.length));
@@ -2998,7 +3038,8 @@
         (EURO[r] = EURO[r] || []).push(id);
       }
     }
-    const mid = W.leagues().filter((c) => W.koType(c) && c.torneos);
+    const mid = W.leagues().filter((c) => W.koType(c) && c.torneos && !c.rules.playoffs.once),
+      koDays = W.koStages();
     const cal = [];
     for (let i = 0; i < D.PRESEASON_DAYS; i++) cal.push({ type: 'pre', idx: i });
     // The super cups, in one day before the first league round
@@ -3022,7 +3063,7 @@
       cal.push({ type: 'league', round: r });
       // the first tournament's knockouts follow its last round
       if (mid.some((c) => c.onDay[r] === c.torneoHalf - 1))
-        for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 0 });
+        for (const m of koDays) cal.push({ type: 'playoff', stage: m, torneo: 0 });
       for (const id of EURO[r] || []) cal.push({ type: 'cup', comps: [id] });
       let st = CC[r];
       if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF)1$/, '$1');
@@ -3047,9 +3088,9 @@
     // Title playoffs (the MLS Cup, A-League finals, the Liguilla, Argentina's knockouts): four days, the last tournament's at the
     // end of the season (a league with one tournament uses days with no tournament set)
     if (W.leagues().some((c) => W.koType(c) && !c.torneos))
-      for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m });
+      for (const m of koDays) cal.push({ type: 'playoff', stage: m });
     if (W.leagues().some((c) => W.koType(c) && c.torneos))
-      for (const m of KO_STAGES) cal.push({ type: 'playoff', stage: m, torneo: 1 });
+      for (const m of koDays) cal.push({ type: 'playoff', stage: m, torneo: 1 });
     if (legs)
       cal.push(
         { type: 'playoff', stage: 'SF1' },

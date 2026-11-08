@@ -2074,7 +2074,7 @@
       sim: 'light',
       clubs: 'CLUBS_PT1',
       repBand: [83, 53],
-      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'PT2', n: 2 } },
+      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'PT2', n: 2, playoff: true } },
     },
     {
       id: 'NL1',
@@ -2085,7 +2085,7 @@
       sim: 'light',
       clubs: 'CLUBS_NL1',
       repBand: [81, 54],
-      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'NL2', n: 2 } },
+      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'NL2', n: 2, playoff: true } },
     },
     {
       id: 'AR1',
@@ -2200,7 +2200,7 @@
           halve: false,
         },
         qualify: { to: 'AC', n: 2 },
-        relegate: { to: 'KR2', n: 1 },
+        relegate: { to: 'KR2', n: 1, playoff: 2 },
       },
     },
     {
@@ -2301,8 +2301,8 @@
         split: {
           after: 30,
           groups: [6, 4, 6],
-          rounds: ['double', 'double', 'double'],
-          names: ['Championship', 'Europe play-off', 'Relegation'],
+          rounds: ['single', 'single', 'single'],
+          names: ['Championship group', 'Europe play-off', 'Relegation group'],
           halve: false,
         },
       },
@@ -2320,9 +2320,9 @@
         relegate: { to: 'GR2', n: 1 },
         split: {
           after: 26,
-          groups: [6, 8],
-          rounds: ['double', 'single'],
-          names: ['Play-offs', 'Play-outs'],
+          groups: [4, 4, 6],
+          rounds: ['double', 'double', 'single'],
+          names: ['Championship play-offs', 'Europe play-offs', 'Play-outs'],
           halve: true,
         },
       },
@@ -2336,7 +2336,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO1',
       repBand: [63, 46],
-      rules: { relegate: { to: 'NO2', n: 2 } },
+      rules: { relegate: { to: 'NO2', n: 2, playoff: true } },
     },
     {
       id: 'PL1',
@@ -2439,7 +2439,7 @@
       clubs: 'CLUBS_AU1',
       repBand: [58, 46],
       nats: ['NZL'],
-      rules: { playoffs: { type: 'finals6' }, qualify: { to: 'AC', n: 2 } },
+      rules: { rounds: 26, playoffs: { type: 'finals6' }, qualify: { to: 'AC', n: 2 } },
     },
     {
       id: 'HU1',
@@ -2450,7 +2450,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_HU1',
       repBand: [62, 45],
-      rules: { relegate: { to: 'HU2', n: 2 } },
+      rules: { relegate: { to: 'HU2', n: 2 }, rounds: 33 },
     },
     {
       id: 'IE1',
@@ -2462,7 +2462,7 @@
       clubs: 'CLUBS_IE1',
       repBand: [52, 41],
       nats: ['NIR'],
-      rules: { relegate: { to: 'IE2', n: 1, playoff: true } },
+      rules: { relegate: { to: 'IE2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'WA1',
@@ -2518,7 +2518,7 @@
       clubs: 'CLUBS_SG1',
       repBand: [46, 34],
       nats: ['JPN'],
-      rules: { qualify: { to: 'AC', n: 1 } },
+      rules: { qualify: { to: 'AC', n: 1 }, rounds: 27 },
     },
     {
       id: 'MY1',
@@ -2540,7 +2540,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_VN1',
       repBand: [52, 40],
-      rules: { qualify: { to: 'AC', n: 1 }, relegate: { to: 'VN2', n: 2 } },
+      rules: { qualify: { to: 'AC', n: 1 }, relegate: { to: 'VN2', n: 1, playoff: true } },
     },
     {
       id: 'ID1',
@@ -2584,7 +2584,17 @@
       sim: 'minimal',
       clubs: 'CLUBS_EG1',
       repBand: [62, 40],
-      rules: { relegate: { to: 'EG2', n: 2 }, qualify: { to: 'AF', n: 2 } },
+      rules: {
+        relegate: { to: 'EG2', n: 2 },
+        qualify: { to: 'AF', n: 2 },
+        split: {
+          after: 21,
+          groups: [7, 14],
+          rounds: ['single', 'single'],
+          names: ['Championship group', 'Relegation group'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'TN1',
@@ -2633,7 +2643,7 @@
         split: {
           after: 26,
           groups: [6, 8],
-          rounds: ['double', 'double'],
+          rounds: ['double', 'single'],
           names: ['Championship group', 'Relegation group'],
           halve: false,
         },
@@ -2649,7 +2659,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_HR1',
       repBand: [60, 42],
-      rules: { relegate: { to: 'HR2', n: 1, playoff: true }, qualify: { to: 'CC', n: 1 } },
+      rules: { relegate: { to: 'HR2', n: 1, playoff: true }, rounds: 36, qualify: { to: 'CC', n: 1 } },
     },
     {
       id: 'SE1',
@@ -2660,7 +2670,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE1',
       repBand: [62, 42],
-      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'SE2', n: 2 } },
+      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'SE2', n: 2, playoff: true } },
     },
     {
       id: 'RO1',
@@ -2692,7 +2702,17 @@
       sim: 'minimal',
       clubs: 'CLUBS_EC1',
       repBand: [58, 40],
-      rules: { relegate: { to: 'EC2', n: 2 }, qualify: { to: 'CL', n: 2 } },
+      rules: {
+        relegate: { to: 'EC2', n: 2 },
+        qualify: { to: 'CL', n: 2 },
+        split: {
+          after: 30,
+          groups: [6, 5, 5],
+          rounds: ['single', 'single', 'single'],
+          names: ['Championship group', 'Group B', 'Group C'],
+          halve: false,
+        },
+      },
     },
     {
       id: 'UY1',
@@ -2703,7 +2723,13 @@
       sim: 'minimal',
       clubs: 'CLUBS_UY1',
       repBand: [58, 40],
-      rules: { relegate: { to: 'UY2', n: 2 }, qualify: { to: 'CL', n: 2 } },
+      rules: {
+        relegate: { to: 'UY2', n: 2 },
+        qualify: { to: 'CL', n: 2 },
+        rounds: 30,
+        torneos: ['Apertura', 'Clausura'],
+        playoffs: { type: 'ko', n: 3, legs: 2, once: true, pool: 'winners' },
+      },
     },
     {
       id: 'CO1',
@@ -2714,7 +2740,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_CO1',
       repBand: [60, 40],
-      rules: { relegate: { to: 'CO2', n: 2 }, qualify: { to: 'CL', n: 4 } },
+      rules: {
+        relegate: { to: 'CO2', n: 2 },
+        qualify: { to: 'CL', n: 4 },
+        torneos: ['Apertura', 'Clausura'],
+        playoffs: { type: 'groups4', legs: 2 },
+      },
     },
     {
       id: 'CA1',
@@ -2725,7 +2756,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_CA1',
       repBand: [42, 32],
-      rules: { qualify: { to: 'NC', n: 1 } },
+      rules: { rounds: 28, qualify: { to: 'NC', n: 1 } },
     },
     {
       id: 'AE1',
@@ -2791,7 +2822,7 @@
       sim: 'light',
       clubs: 'CLUBS_KR2',
       repBand: [49, 41],
-      rules: { relegate: { to: 'KR3', n: 1 }, promote: { to: 'KR1', auto: 1 } },
+      rules: { relegate: { to: 'KR3', n: 1 }, promote: { to: 'KR1', auto: 1, tie: true } },
     },
     {
       id: 'TH2',
@@ -2824,7 +2855,7 @@
       sim: 'light',
       clubs: 'CLUBS_VN2',
       repBand: [41, 34],
-      rules: { relegate: { to: 'VN3', n: 2 }, promote: { to: 'VN1', auto: 2 } },
+      rules: { relegate: { to: 'VN3', n: 2 }, promote: { to: 'VN1', auto: 1, tie: true } },
     },
     {
       id: 'IN1',
@@ -2857,7 +2888,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_PE1',
       repBand: [50, 38],
-      rules: { relegate: { to: 'PE2', n: 1 }, qualify: { to: 'CL', n: 1 } },
+      rules: {
+        relegate: { to: 'PE2', n: 1 },
+        qualify: { to: 'CL', n: 1 },
+        torneos: ['Apertura', 'Clausura'],
+        playoffs: { type: 'ko', n: 4, legs: 2, once: true, pool: 'winners' },
+      },
     },
     {
       id: 'PY1',
@@ -2868,7 +2904,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_PY1',
       repBand: [50, 38],
-      rules: { relegate: { to: 'PY2', n: 2 }, qualify: { to: 'CL', n: 1 } },
+      rules: {
+        relegate: { to: 'PY2', n: 2 },
+        qualify: { to: 'CL', n: 1 },
+        rounds: 44,
+        torneos: ['Apertura', 'Clausura'],
+      },
     },
     {
       id: 'SN1',
@@ -3020,7 +3061,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SI1',
       repBand: [47, 35],
-      rules: { relegate: { to: 'SI2', n: 1, playoff: true } },
+      rules: { relegate: { to: 'SI2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'BA1',
@@ -3031,7 +3072,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_BA1',
       repBand: [44, 34],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'AL1',
@@ -3042,7 +3083,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AL1',
       repBand: [42, 32],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'MK1',
@@ -3053,7 +3094,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_MK1',
       repBand: [41, 32],
-      rules: {},
+      rules: { rounds: 33 },
     },
     {
       id: 'ME1',
@@ -3064,7 +3105,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_ME1',
       repBand: [40, 31],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'BG1',
@@ -3078,10 +3119,10 @@
       rules: {
         relegate: { to: 'BG2', n: 2 },
         split: {
-          after: 26,
-          groups: [6, 8],
-          rounds: ['single', 'single'],
-          names: ['Championship group', 'Relegation group'],
+          after: 30,
+          groups: [6, 4, 6],
+          rounds: ['single', 'single', 'single'],
+          names: ['Championship group', 'Europe play-off group', 'Relegation group'],
           halve: false,
         },
       },
@@ -3134,7 +3175,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_GE1',
       repBand: [43, 33],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'IL1',
@@ -3150,7 +3191,7 @@
         split: {
           after: 26,
           groups: [6, 8],
-          rounds: ['double', 'double'],
+          rounds: ['double', 'single'],
           names: ['Championship play-off', 'Relegation play-off'],
           halve: false,
         },
@@ -3229,7 +3270,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_CR1',
       repBand: [44, 33],
-      rules: { qualify: { to: 'NC', n: 2 } },
+      rules: {
+        qualify: { to: 'NC', n: 2 },
+        rounds: 44,
+        torneos: ['Apertura', 'Clausura'],
+        playoffs: { type: 'ko', n: 4, legs: 2 },
+      },
     },
     {
       id: 'JM1',
@@ -3251,7 +3297,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_HN1',
       repBand: [43, 32],
-      rules: { qualify: { to: 'NC', n: 2 } },
+      rules: {
+        qualify: { to: 'NC', n: 2 },
+        rounds: 36,
+        playoffs: { type: 'ko', n: 4, legs: 2 },
+        torneos: ['Apertura', 'Clausura'],
+      },
     },
     {
       id: 'PA1',
@@ -3262,7 +3313,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_PA1',
       repBand: [41, 31],
-      rules: { qualify: { to: 'NC', n: 2 } },
+      rules: {
+        qualify: { to: 'NC', n: 2 },
+        rounds: 36,
+        torneos: ['Apertura', 'Clausura'],
+        playoffs: { type: 'ko', n: 4, legs: 2, finalLegs: 1 },
+      },
     },
     {
       id: 'UZ1',
@@ -3306,7 +3362,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_EE1',
       repBand: [40, 31],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'LV1',
@@ -3317,7 +3373,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_LV1',
       repBand: [39, 30],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'LT1',
@@ -3328,7 +3384,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_LT1',
       repBand: [39, 30],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'AM1',
@@ -3339,7 +3395,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AM1',
       repBand: [40, 31],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'AZ1',
@@ -3350,7 +3406,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AZ1',
       repBand: [42, 32],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'KZ1',
@@ -3372,7 +3428,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_MD1',
       repBand: [38, 30],
-      rules: {},
+      rules: { rounds: 28 },
     },
     {
       id: 'XK1',
@@ -3383,7 +3439,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_XK1',
       repBand: [38, 30],
-      rules: {},
+      rules: { rounds: 36 },
     },
     {
       id: 'LU1',
@@ -3438,7 +3494,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_KW1',
       repBand: [40, 31],
-      rules: {},
+      rules: { rounds: 27 },
     },
     {
       id: 'PK1',
@@ -3548,7 +3604,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_GT1',
       repBand: [41, 31],
-      rules: {},
+      rules: { rounds: 44, torneos: ['Apertura', 'Clausura'], playoffs: { type: 'ko', n: 8, legs: 2 } },
     },
     {
       id: 'SV1',
@@ -3559,7 +3615,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SV1',
       repBand: [38, 30],
-      rules: {},
+      rules: { rounds: 44, torneos: ['Apertura', 'Clausura'], playoffs: { type: 'ko', n: 8, legs: 2, finalLegs: 1 } },
     },
     {
       id: 'TT1',
@@ -3581,7 +3637,7 @@
       sim: 'light',
       clubs: 'CLUBS_NL2',
       repBand: [56, 42],
-      rules: { relegate: { to: 'NL3', n: 1 }, promote: { to: 'NL1', auto: 2 } },
+      rules: { relegate: { to: 'NL3', n: 1 }, promote: { to: 'NL1', auto: 2, tie: true } },
     },
     {
       id: 'PT2',
@@ -3592,7 +3648,7 @@
       sim: 'light',
       clubs: 'CLUBS_PT2',
       repBand: [57, 43],
-      rules: { relegate: { to: 'PT3', n: 2 }, promote: { to: 'PT1', auto: 2 } },
+      rules: { relegate: { to: 'PT3', n: 2 }, promote: { to: 'PT1', auto: 2, tie: true } },
     },
     {
       id: 'BR2',
@@ -3636,7 +3692,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO2',
       repBand: [52, 40],
-      rules: { relegate: { to: 'NO3', n: 2 }, promote: { to: 'NO1', auto: 2 } },
+      rules: { relegate: { to: 'NO3', n: 2 }, promote: { to: 'NO1', auto: 2, tie: true } },
     },
     {
       id: 'SE2',
@@ -3647,7 +3703,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE2',
       repBand: [52, 39],
-      rules: { relegate: { to: 'SE3', n: 1, playoff: true }, promote: { to: 'SE1', auto: 2 } },
+      rules: { relegate: { to: 'SE3', n: 1, playoff: true }, promote: { to: 'SE1', auto: 2, tie: true } },
     },
     {
       id: 'DZ2',

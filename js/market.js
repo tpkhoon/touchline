@@ -378,7 +378,8 @@
     });
   };
   function agentChoice(n, k, p) {
-    if (!p || p.clubId !== W.userClub().id) return { msg: 'He is no longer at the club.' };
+    const uc = W.userClub();
+    if (!p || !uc || p.clubId !== uc.id) return { msg: 'He is no longer at the club.' };
     if (k === 'promise') {
       p.promise = { year: S().year, share: 0.3 };
       p.morale = Math.min(100, p.morale + 8);

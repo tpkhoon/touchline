@@ -1404,6 +1404,12 @@
         const f = [t.leg1, t.leg2].find((x) => x && x.id === id);
         if (f) return f;
       }
+      // a league's title play-off (generic knockouts with two legs): the first leg of a second leg
+      if (c.type === 'league' && c.ko)
+        for (const m of c.ko) {
+          const f = m && ['M1', 'M2', 'M3', 'M4'].flatMap((k) => m[k] || []).find((x) => x.id === id);
+          if (f) return f;
+        }
       if (c.type === 'continental' || c.type === 'world') {
         const f = [...Cu.koList(c), ...Cu.qualList(c)].find((x) => x.id === id);
         if (f) return f;

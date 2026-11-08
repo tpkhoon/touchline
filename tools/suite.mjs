@@ -49,9 +49,11 @@ function checkTables(entry, label) {
       t.every((r) => r.p === r.w + r.d + r.l),
       `${label} ${id}: a row where played ≠ won + drawn + lost`,
     );
+    // (a split league that halves its points after the split no longer adds up from results; skip it)
+    const halved = (FM.D.LEAGUES.find((l) => l.id === id)?.rules?.split || {}).halve;
     check(
       'competitions',
-      t.every((r) => r.pts >= 3 * r.w + r.d - 12 && r.pts <= 3 * r.w + r.d + 12), // (points deductions are small)
+      halved || t.every((r) => r.pts >= 3 * r.w + r.d - 12 && r.pts <= 3 * r.w + r.d + 12), // (points deductions are small)
       `${label} ${id}: points do not follow from results`,
     );
     check('competitions', sum((r) => r.gf) === sum((r) => r.ga), `${label} ${id}: goals for ≠ goals against`);
