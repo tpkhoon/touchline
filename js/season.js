@@ -2105,6 +2105,27 @@
           const from = FM.Cups.skipFor(comp.id, d);
           qualified[d.id] = (qualified[d.id] || []).concat(ids.slice(from, from + k));
         }
+    // a domestic cup's winner who has no continental place takes the one his cup carries (D.CUP_PLACE), in place of the lowest
+    // club of his nation in that cup: the number of places stays what the league sends
+    for (const c of W.domesticCups()) {
+      const to = (D.CUP_PLACE || {})[c.id],
+        w = c.winner,
+        list = to && qualified[to];
+      if (
+        !list ||
+        !w ||
+        !S.clubs[w] ||
+        Sea.clubBanned(w, S.year + 1) ||
+        (S.clubs[w].policy && S.clubs[w].policy.maxAge)
+      )
+        continue;
+      if (Object.values(qualified).some((a) => a.includes(w))) continue;
+      let k = -1;
+      list.forEach((id, i) => {
+        if (S.clubs[id] && S.clubs[id].nat === S.clubs[w].nat) k = i;
+      });
+      if (k >= 0) list[k] = w;
+    }
     qualified.HC = FM.Cups.holdersFor(qualified, entry);
     for (const k of Object.keys(qualified)) qualified[k] = qualified[k].filter((id) => !Sea.clubBanned(id, S.year + 1)); // (a cup winner under sanction too)
     S.qualified = qualified;

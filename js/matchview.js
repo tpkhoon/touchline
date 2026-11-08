@@ -132,7 +132,7 @@
       ${MV.predictedXI(opp, key)}
       ${MV.conditions(fx, me, opp, nt)}
       ${MV.restLine(fx, me, nt)}
-      ${f1 && f1.res ? `<div class="warnline" style="margin-bottom:8px">Second leg. First leg: ${esc(CL(f1.h).name)} ${f1.res.hg}–${f1.res.ag} ${esc(CL(f1.a).name)}${W.rule(fx.comp, 'awayGoals') ? ' · away goals count' : ''}. Level on aggregate after 90 minutes → ${W.rule(fx.comp, 'extraTime') === false ? 'penalties' : 'extra time'}${W.rule(fx.comp, 'awayGoals') ? ' (unless away goals decide it)' : ''}.</div>` : fx.leg === 1 ? '<div class="warnline" style="margin-bottom:8px">First leg — no extra time tonight. The tie is decided in the return match.</div>' : ''}
+      ${f1 && f1.res ? `<div class="warnline" style="margin-bottom:8px">Second leg. First leg: ${esc(CL(f1.h).name)} ${f1.res.hg}–${f1.res.ag} ${esc(CL(f1.a).name)}${W.rule(fx.comp, 'awayGoals') ? ' · away goals count' : ''}. Level on aggregate after 90 minutes → ${W.rule(fx.comp, 'extraTime') === false || FM.Cups.noExtraTime(fx) ? 'penalties' : 'extra time'}${W.rule(fx.comp, 'awayGoals') ? ' (unless away goals decide it)' : ''}.</div>` : fx.leg === 1 ? '<div class="warnline" style="margin-bottom:8px">First leg — no extra time tonight. The tie is decided in the return match.</div>' : ''}
       <div class="card"><div class="row"><div class="h3 grow">Your XI · ${myTactic.formation}</div><button class="btn sm" data-act="${nt ? 'goNation' : 'goTactics'}">${nt ? 'Squad' : 'Tactics'}</button></div>
         <div class="small muted" style="margin-top:8px;line-height:1.7">${xi
           .filter(Boolean)

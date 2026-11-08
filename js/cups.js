@@ -35,6 +35,24 @@
   };
   // A fixture that settles a tie (single matches and second legs; not first legs)
   Cu.decides = (f) => f.leg !== 1;
+  // A tie that goes straight to penalties when level (no extra time). Real cups differ by round: a domestic cup's opts.etFrom is
+  // the last stage with extra time (clubs left: 2 = the final only, 16 = from the round of 16); a continental cup with etFinalOnly
+  // (the Copa Libertadores) plays extra time in its final alone, and so does the South American Nations Cup (the Copa América).
+  // A competition that never has extra time sets play.extraTime = false instead.
+  Cu.noExtraTime = (f) => {
+    if (f.intl) return f.tid === 'SA' && !!f.ko && !f.final;
+    const c = S() && S().comps && S().comps[f.comp];
+    if (!c) return false;
+    if (c.type === 'cup') {
+      const o = Cu.optsOf(c);
+      return o.etFrom != null && f.n != null && f.n > o.etFrom;
+    }
+    if (c.type === 'continental') {
+      const d = D.CONTINENTALS.find((x) => x.id === c.id) || {};
+      return !!d.etFinalOnly && !/^Final/.test(f.po || '');
+    }
+    return false;
+  };
 
   // qualified: { CC: [clubIds], ... } from last season's tables, or null in the first season
   // A domestic cup's entrants: every club in that nation's leagues, whatever its simulation tier (the clubs of a nation simulated by scores
@@ -808,6 +826,7 @@
           po: `${last.name} · 2nd leg`,
           final: last.n === 2,
           neutral: false,
+          n: f.n,
         }));
         return last.ties2;
       }
@@ -837,7 +856,7 @@
       const [x, y] = twoLegs && rep(sh[i]) > rep(sh[i + 1]) ? [sh[i + 1], sh[i]] : [sh[i], sh[i + 1]];
       ties.push(
         twoLegs
-          ? { id: FM.nextId('f'), comp: c.id, h: x, a: y, res: null, ko: false, leg: 1, po: `${name} · 1st leg` }
+          ? { id: FM.nextId('f'), comp: c.id, h: x, a: y, res: null, ko: false, leg: 1, po: `${name} · 1st leg`, n }
           : {
               id: FM.nextId('f'),
               comp: c.id,
@@ -848,6 +867,7 @@
               po: name,
               final: n === 2,
               neutral,
+              n,
             },
       );
     }

@@ -259,7 +259,7 @@
       this.o = o;
       this.comp = o.comp;
       this.knockout = !!o.knockout;
-      this.extraTime = W.rule(o.comp, 'extraTime') !== false; // some cups go straight to penalties
+      this.extraTime = W.rule(o.comp, 'extraTime') !== false && !o.noET; // some cups go straight to penalties (all rounds, or all but the later ones: o.noET)
       this.neutral = !!o.neutral; // finals and tournaments: no home advantage
       // Second leg of a two-legged tie: goals already scored in leg 1 by [this home side, this away side]
       this.agg = o.agg || null;
@@ -1810,6 +1810,7 @@
   // first leg's score
   Match.tieOpts = function (fx) {
     const o = fx.wx ? { weather: D.WEATHER.find((w) => w[0] === fx.wx) } : {};
+    if (FM.Cups.noExtraTime(fx)) o.noET = true; // (a round that goes straight to penalties)
     if (fx.rotate) o.rotate = true; // a county cup tie: the big clubs field a reserve side
     if (!fx.first) return o;
     const f1 = FM.Cups.findFixture(fx.first);

@@ -72,7 +72,13 @@
       { id: 'SA', name: 'South American Nations Cup', size: 16, guests: { from: 'NAM', n: 6 }, pools: [[['SAM'], 10]] },
       { id: 'AF', name: 'African Nations Cup', size: 24, pools: [[['AFR'], 24]] },
       { id: 'AS', name: 'Asian Nations Cup', size: 24, pools: [[['ASIA'], 24]] },
-      { id: 'NA', name: 'North American Nations Cup', size: 16, pools: [[['NAM'], 16]] },
+      {
+        id: 'NA',
+        name: 'North American Nations Cup',
+        size: 16,
+        guests: { from: 'ASIA', n: 1, skip: 3 }, // the Gold Cup's guest (Qatar, Saudi Arabia)
+        pools: [[['NAM'], 15]],
+      },
       { id: 'OF', name: 'Oceania Nations Cup', size: 8, direct: true, pools: [[['OFC'], 8]] },
     ],
   };
@@ -156,8 +162,20 @@
     { id: 'GLF', feeds: 'AS', name: 'Gulf Nations Cup', pool: ['KSA', 'QAT', 'UAE', 'IRN', 'IRQ'] },
     { id: 'NEH', name: 'Monsoon Cup', host: 'IND' },
     { id: 'EAS', feeds: 'AS', name: 'East Asian Nations Cup', pool: ['JPN', 'KOR', 'CHN', 'AUS'] },
-    { id: 'CEA', feeds: 'AF', name: 'East African Nations Cup', pool: ['KEN', 'UGA', 'TAN', 'ETH'] },
-    { id: 'SAF', feeds: 'AF', name: 'Southern African Nations Cup', pool: ['RSA', 'ZAM', 'ZIM', 'MOZ', 'ANG'] },
+    {
+      id: 'CEA',
+      feeds: 'AF',
+      name: 'East African Nations Cup',
+      pool: ['KEN', 'UGA', 'TAN', 'ETH'],
+      outsiders: { from: 'AFR', n: 1 },
+    },
+    {
+      id: 'SAF',
+      feeds: 'AF',
+      name: 'Southern African Nations Cup',
+      pool: ['RSA', 'ZAM', 'ZIM', 'MOZ', 'ANG'],
+      outsiders: { from: 'AFR', n: 1 },
+    },
     {
       id: 'WAF',
       feeds: 'AF',
@@ -170,7 +188,13 @@
       name: 'Arab Nations Cup',
       pool: ['KSA', 'QAT', 'UAE', 'IRQ', 'JOR', 'EGY', 'MAR', 'TUN', 'ALG', 'KUW', 'OMA', 'BHR'],
     },
-    { id: 'CAS', feeds: 'AS', name: 'Central Asian Nations Cup', pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'] },
+    {
+      id: 'CAS',
+      feeds: 'AS',
+      name: 'Central Asian Nations Cup',
+      pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'],
+      outsiders: { from: 'ASIA', n: 1 },
+    },
     { id: 'BAL', name: 'Baltic Cup', pool: ['EST', 'LVA', 'LTU', 'FIN'] },
     { id: 'NOR', name: 'Nordic Nations Cup', pool: ['SWE', 'DEN', 'NOR', 'FIN', 'ISL'] },
     {
@@ -1401,6 +1425,14 @@
       }
     for (const t of pool) if (guests.length < 3 && !guests.includes(t)) guests.push(t);
     if (guests.length < 3) return null;
+    // a regional tournament that invites nations from outside its pool (the COSAFA Cup, the CECAFA Cup, the CAFA Nations Cup):
+    // the best-ranked nations of that part of the world that are free take the last places
+    if (pool0 && spec.outsiders) {
+      const out = I.openRanked()
+        .filter((t) => !pool0.includes(t) && !busy.has(t.id) && I.region(t.code) === spec.outsiders.from)
+        .slice(0, spec.outsiders.n);
+      guests.splice(3 - out.length, out.length, ...out);
+    }
     // seeded by rating: the best guest meets the host's side of the draw last
     const teams = [host, ...guests].sort((a, b) => b.coef - a.coef).map((t) => t.id);
     return {
@@ -1844,22 +1876,37 @@
       kind = I.tournamentFor(s.year),
       tns = I.tournsFor(kind);
     const hostsOf = (tn) => ((s.quals && s.quals.hosts) || {})[tn.id] || [];
-    // The South American championship invites the best of North America (they would otherwise be in their own)
-    const guestSpec = (tns.find((x) => x.guests) || {}).guests;
-    const naTn = guestSpec && tns.find((x) => x.pools.some(([r]) => r.includes(guestSpec.from)));
-    const guests = guestSpec
-      ? I.qualRanked()
-          .filter((t) => I.region(t.code) === guestSpec.from && !(naTn && hostsOf(naTn).includes(t.id)))
-          .slice(0, guestSpec.n)
-      : [];
+    // Tournaments with guests (the South American championship invites the best of North America, the North American one a
+    // nation from Asia): the guests leave the tournament of their own part of the world for it. spec.skip passes over that many
+    // of the best (the guests of the real Gold Cup were never the confederation's strongest)
+    const guestsBy = {},
+      leave = {},
+      taken = new Set();
+    for (const tn of tns.filter((x) => x.guests)) {
+      const spec = tn.guests,
+        home = tns.find((x) => x !== tn && x.pools.some(([r]) => r.includes(spec.from)));
+      const g = I.qualRanked()
+        .filter(
+          (t) =>
+            I.region(t.code) === spec.from &&
+            !taken.has(t.id) &&
+            !I.banned(t) &&
+            !(home && hostsOf(home).includes(t.id)),
+        )
+        .slice(spec.skip || 0, (spec.skip || 0) + spec.n);
+      g.forEach((t) => taken.add(t.id));
+      guestsBy[tn.id] = g;
+      if (home) g.forEach((t) => (leave[home.id] ||= new Set()).add(t.id));
+    }
     s.tourns = tns.map((tn) => {
       let teams = (tn.confed ? I.confedTeams() : I.qualifiedFor(tn.id)).map(T).filter(Boolean);
       // (the winners of the intercontinental play-offs, when they were played)
       if (tn.playoff)
         for (const id of I.icpoWinners(tn.id)) if (T(id) && !teams.some((t) => t.id === id)) teams.push(T(id));
-      const gids = guests.map((t) => t.id);
+      const guests = guestsBy[tn.id] || [],
+        out = leave[tn.id];
       if (tn.guests) teams = teams.concat(guests.filter((g) => !teams.includes(g)));
-      else if (naTn === tn) teams = teams.filter((t) => !gids.includes(t.id));
+      if (out) teams = teams.filter((t) => !out.has(t.id));
       if (teams.length < tn.size) {
         const used = new Set(teams.map((t) => t.id));
         const inPools = (t) => tn.pools.some(([r]) => r.includes(I.region(t.code)));
@@ -1868,7 +1915,7 @@
           (t) =>
             !used.has(t.id) &&
             (tn.confed || (tn.playoff ? I.region(t.code) !== 'EUR' && inPools(t) : inPools(t))) &&
-            !(naTn === tn && gids.includes(t.id)),
+            !(out && out.has(t.id)),
         );
         teams = teams.concat(extra.slice(0, tn.size - teams.length));
       }
@@ -2028,7 +2075,14 @@
 
   // ---------- Playing a match ----------
   I.sim = function (fx) {
-    const m = new FM.Match({ h: fx.h, a: fx.a, comp: 'INTL', knockout: !!fx.ko, neutral: !!fx.neutral });
+    const m = new FM.Match({
+      h: fx.h,
+      a: fx.a,
+      comp: 'INTL',
+      knockout: !!fx.ko,
+      neutral: !!fx.neutral,
+      noET: FM.Cups.noExtraTime(fx),
+    });
     while (!m.finished) m.step();
     return m;
   };

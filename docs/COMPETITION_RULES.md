@@ -7,7 +7,7 @@ How each competition in the game follows its real-life rules, and where it simpl
 
 - **Points:** 3 for a win, 1 for a draw, 0 for a defeat in every league and group.
 - **Away goals:** counted nowhere. UEFA, CONMEBOL, the AFC and CAF dropped them (2021–22), as did every domestic cup.
-- **Knockouts:** a tie level after 90 minutes goes to extra time and then penalties. The first leg of a two-legged
+- **Knockouts:** a tie level after 90 minutes goes to extra time and then penalties (the Copa Argentina, Copa do Brasil and, outside the final, the Copa Libertadores, Sudamericana and Copa América go straight to penalties). The first leg of a two-legged
   tie has no extra time; the second leg is decided on aggregate, then extra time and penalties.
 - **Substitutions:** five per team, nine on the bench.
 
@@ -178,6 +178,22 @@ home draw), the finals at a neutral ground unless noted.
 | Copa do Brasil | Two legs from the quarter-finals, including the final |
 | Copa Argentina | Every tie at a neutral ground |
 | U.S. Open Cup | Final at the better club's ground |
+| Copa del Rey, Coppa Italia, Taça de Portugal, Belgian, Bulgarian, Danish and Slovenian cups, Singapore Cup | Two-legged semi-finals |
+| Canadian Championship, Copa Colombia | Every round two-legged, including the final |
+| Copa Argentina, Copa do Brasil | Every tie that is level goes straight to penalties (no extra time) |
+| Coupe de France | Extra time from the round of 32 only |
+| Albania, Azerbaijan, Belarus, Bosnia, Malaysia, Montenegro, North Macedonia | Two-legged quarter-finals and semi-finals |
+| Angola, Armenia, Cyprus, Chile, Costa Rica, Moldova | Two-legged early or middle rounds, as the sheet lists them (marked "check" there) |
+
+A cup winner who has no continental place takes the one the cup carries (the Europa League for most of Europe, the Conference League
+for the smaller nations, the Copa Libertadores or Sudamericana, the Asian and African second cups, the CONCACAF Champions Cup),
+replacing the lowest club of his nation in that cup. Cups with no place in the game's continental cups give none.
+
+## Guest nations
+
+The South American Nations Cup invites six North American nations (the Copa América of 2024) and plays extra time in the final only.
+The North American Nations Cup invites one Asian nation (not the strongest: the fourth best ranked), who misses the Asian Nations
+Cup that year. The Southern African, East African and Central Asian invitationals take one nation from outside their region.
 
 ## Continental Champions Trophy
 
@@ -195,11 +211,15 @@ All have groups of four then knockouts, as the game's scaled-down format.
 | Competition | Quarter-finals / semi-finals | Final |
 | --- | --- | --- |
 | UEFA Champions League, Europa League, Conference League | Two legs | One match, neutral |
-| Copa Libertadores, Copa Sudamericana | Two legs | One match, neutral |
+| Copa Libertadores, Copa Sudamericana | Two legs, no extra time (penalties after the second leg); extra time only in the final | One match, neutral |
 | AFC Champions League Elite | Single matches at one centralised venue | One match, neutral |
 | AFC Champions League Two | Two legs | One match, neutral |
-| CAF Champions League, CAF Confederation Cup | Two legs | Two legs |
-| CONCACAF Champions Cup, North American Shield | Two legs | Two legs |
+| CAF Champions League | Two legs | One match, neutral |
+| CAF Confederation Cup | Two legs | Two legs |
+| CONCACAF Champions Cup | Two legs | One match, neutral |
+| North American Shield | Two legs | Two legs |
+| Southeast Asian, Gulf and Central American Cups | Two legs | Two legs |
+| Arab Cup, East African Cup | Single matches | One match, neutral |
 | Adriatic Cup, Carpathian Cup, Northern Cup (regional cups) | Two legs | One match, neutral |
 | European Holders' Cup (a knockout from the first round) | Semi-finals over two legs, other rounds single matches | One match, neutral |
 | European Summer Cup | Single matches | One match, neutral |
