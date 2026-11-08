@@ -363,6 +363,7 @@
         0.9,
       );
       su.res = Math.random() < ok ? 'settled' : 'struggled';
+      su.yr = S.year;
       if (su.res === 'settled') Sea.applyGrowth(p, Math.round(U.rand(0.5, 2)));
       else {
         Sea.applyGrowth(p, -Math.round(U.rand(0.5, 2.5)));
@@ -377,6 +378,26 @@
           clubId: club && club.id,
         });
     }
+  };
+  // One item a year on the people who came good or could not step up, among the clubs the game simulates in full
+  Sea.lateDigest = function () {
+    const S = FM.S;
+    const seen = (p) => p.clubId && !p.retired && S.clubs[p.clubId] && S.clubs[p.clubId].sim !== 'minimal';
+    const line = (p) =>
+      `${D.NATIONS[p.nat] ? D.NATIONS[p.nat].flag + ' ' : ''}${W.name(p)}, ${W.age(p)}, ${S.clubs[p.clubId].name}`;
+    const all = Object.values(S.players).filter(seen);
+    const top = (list) => list.sort((a, b) => b.ca - a.ca).slice(0, 4);
+    const bloom = top(all.filter((p) => p.breakout === S.year));
+    const flop = top(all.filter((p) => p.stepUp && p.stepUp.yr === S.year && p.stepUp.res === 'struggled'));
+    const ok = top(all.filter((p) => p.stepUp && p.stepUp.yr === S.year && p.stepUp.res === 'settled'));
+    if (bloom.length)
+      FM.News.add({ type: 'world', title: 'Late bloomers of the year', body: bloom.map(line).join('\n') });
+    if (ok.length || flop.length)
+      FM.News.add({
+        type: 'world',
+        title: 'The step up: who made it and who did not',
+        body: [...ok.map((p) => line(p) + ': settled'), ...flop.map((p) => line(p) + ': struggled')].join('\n'),
+      });
   };
   Sea.develop = function (p, frac) {
     const S = FM.S;

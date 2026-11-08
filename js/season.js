@@ -2577,6 +2577,7 @@
       }
       W.refresh(p);
     });
+    Sea.lateDigest(); // the season's late bloomers and step-ups, in one item
     // AI squad trimming: release surplus players; ageing free agents retire; cap the free-agent pool
     Object.values(S.clubs).forEach((c) => {
       if (W.isUser(c.id)) return;

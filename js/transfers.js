@@ -449,7 +449,12 @@
       day: S.day,
       age: W.age(p),
     });
-    FM.Stories.transfer(p, from, to, fee, { ...flags, intl, gem });
+    FM.Stories.transfer(p, from, to, fee, {
+      ...flags,
+      intl,
+      gem,
+      stops: W.hasTrait(p, 'Journeyman') ? FM.Season.permClubs(p) : 0,
+    });
     T.closeBids(p, to.name);
     if (W.isUser(toId) || (from && W.isUser(from.id))) FM.Market.reactions(p, from, to, fee, flags);
   };
