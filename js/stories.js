@@ -1024,13 +1024,21 @@
 
   St.transfer = function (p, from, to, fee, f = {}) {
     const involvesUser = W.isUser(to.id) || (from && W.isUser(from.id));
-    if (!involvesUser && fee < 4e6 && !(from && from.sim === 'minimal') && !(f.intl && fee >= 1e6) && !f.veteran)
+    if (
+      !involvesUser &&
+      fee < 4e6 &&
+      !(from && from.sim === 'minimal') &&
+      !(f.intl && fee >= 1e6) &&
+      !f.veteran &&
+      !f.gem
+    )
       return;
     const land = (c) => D.NATIONS[c.nat].name;
     let title = fee
       ? `${W.name(p)} completes ${U.money(fee)} move to ${to.name}`
       : `${to.name} sign ${W.name(p)} on a free`;
     if (f.marquee) title = `${to.name} raid ${land(from)} for ${W.name(p)} in ${U.money(fee)} deal`;
+    if (f.gem && !f.marquee) title = `${to.name} take ${W.name(p)} from ${from.name}: a find from the lower leagues`;
     if (f.veteran) title = `Veteran ${W.name(p)} seals move to ${land(to)}'s ${to.name}`;
     const body = `${describe(p)} ${from ? `joins from ${from.name}${f.intl ? ` (${land(from)})` : ''}` : 'was a free agent'}.${f.veteran ? ' One last adventure abroad.' : f.intl ? ` A new country, a new league: ${D.NATIONS[from.nat].flag} → ${D.NATIONS[to.nat].flag}` : ''}`;
     FM.News.add({

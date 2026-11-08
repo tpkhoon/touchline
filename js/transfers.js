@@ -359,6 +359,10 @@
       from = p.clubId && S.clubs[FM.Youth.owner(p.clubId)], // a B-team player is sold by the parent club
       to = S.clubs[toId];
     p.team = undefined; // a new club: he starts in its first-team squad
+    // a find from a small club: the seller asks for a share of his next fee (AI sellers only, when a bigger club takes him)
+    const gem = !!from && FM.Season.isGem(p);
+    if (gem && !flags.deal && !W.isUser(from.id) && !W.isUser(toId) && to.rep > from.rep + 10 && Math.random() < 0.6)
+      flags = { ...flags, deal: { inst: 1, addOn: 0, addApps: 0, sellOn: U.pick([0.1, 0.15, 0.2]) } };
     const deal = from ? flags.deal : null,
       cash = FM.Market.cashNow(fee, deal);
     if (from) {
@@ -445,7 +449,7 @@
       day: S.day,
       age: W.age(p),
     });
-    FM.Stories.transfer(p, from, to, fee, { ...flags, intl });
+    FM.Stories.transfer(p, from, to, fee, { ...flags, intl, gem });
     T.closeBids(p, to.name);
     if (W.isUser(toId) || (from && W.isUser(from.id))) FM.Market.reactions(p, from, to, fee, flags);
   };
@@ -801,7 +805,13 @@
             Math.pow(x.ca, 3) *
             (W.age(x) <= 25 ? 1.25 : W.age(x) >= 31 ? 0.6 : 1) *
             T.identityFit(c, x) *
-            (!x.clubId ? T.FREE_PULL / 2 : nationOf(x.clubId) === c.nat ? T.homePull(c) : c.rep >= 70 ? 1.3 : 1),
+            (!x.clubId
+              ? (T.FREE_PULL / 2) * (W.hasTrait(x, 'Journeyman') && c.rep < 65 ? 1.3 : 1)
+              : nationOf(x.clubId) === c.nat
+                ? T.homePull(c)
+                : c.rep >= 70
+                  ? 1.3
+                  : 1),
         );
         if (Math.random() < 0.15) {
           FM.Stories.rumour(p, c);
