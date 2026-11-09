@@ -2265,16 +2265,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_BE1',
       repBand: [68, 50],
-      rules: {
-        relegate: { to: 'BE2', n: 1 },
-        split: {
-          after: 30,
-          groups: [6, 10],
-          rounds: ['double', 'none'],
-          names: ['Championship playoff', 'Regular season'],
-          halve: true,
-        },
-      },
+      rules: { relegate: { to: 'BE2', n: 1 } },
     },
     {
       id: 'TR1',
