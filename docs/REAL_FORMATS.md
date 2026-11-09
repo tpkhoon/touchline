@@ -13,10 +13,10 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 | Sheet (file in `docs/real-formats/`) | What it covers | Status |
 | --- | --- | --- |
 | 02 Leagues | 139 leagues: clubs, rounds, splits, tournaments, play-offs, promotion and relegation, B teams, youth rules | **Done as far as the engine goes** (see "Leagues sheet" below). Club counts match the sheet in every league but Spain's third tier; the regular phase, splits, Apertura and Clausura play-offs, relegation play-offs against the division below (where the game has one), B teams and youth minimums follow the sheet. Left: Spain's third tier (two groups of 20), the pro/rel play-offs whose other division the game does not have, and a few low-confidence formats listed below. |
-| 03 Domestic cups | 117 cups: entrants, legs, replays, finals | **Started.** Legs, neutral finals and extra-time rules follow the sheet for 24 cups (see below); every cup winner's continental place is read from the sheet (`D.CUP_PLACE`, 98 cups). Left: group-stage cups, entry rounds by division, replays, Mexico's cup that does not exist, irregular cups, the other national cups. |
-| 04 Continental club | 30 continental and regional club competitions | **Started.** Final and knockout legs follow the sheet (North American and African Champions Cups single-match finals; Libertadores and Sudamericana extra time in the final only; two-legged finals in the Southeast Asian, Gulf and Central American cups; single matches in the Arab and East African cups). Left: the 36-club league phase, Asian league stage, qualifying rounds, Intercontinental Cup and Club World Cup details. |
-| 05 International | 33 national-team tournaments | **Started.** Sizes already follow the sheet for the confederation finals; the Gold Cup takes a guest and the Copa América plays extra time in the final only. Left: the sizes of the regional nations cups, two-legged ASEAN knockouts, Olympic and Asian Games football. |
-| 06 Regional | 40 regional competition rows | Reviewed, **no change**: the game's regional competitions are Brazil's state championships and generated regional cups, which stay as they are (the sheet lists them as fictional or partly fictional). Left: the Copa do Nordeste and Copa Verde, island and regional first stages (Cape Verde, New Zealand, India), real county, district and state cups. |
+| 03 Domestic cups | 117 cups: entrants, legs, replays, finals | **Done as far as the engine allows** (November 2026). Legs, neutral finals and extra-time rules follow the sheet for 24 cups; group stages added for 11 cups (Romania, Sweden, Turkey, Russia, Colombia, Kazakhstan, Uzbekistan, Singapore, the Philippines, India, Bangladesh); late entry for the top divisions of England, France, Italy, Japan, Scotland and Spain; every cup winner's continental place is read from the sheet (`D.CUP_PLACE`, 98 cups). Mexico's cup is kept (see below). Left: qualifying rounds for amateur clubs, Chile's regional groups, Brazil's seeded pots, Finland's occasional group stage, Peru's and the other irregular cups. |
+| 04 Continental club | 30 continental and regional club competitions | **Started.** Final and knockout legs follow the sheet (North American and African Champions Cups single-match finals; Libertadores and Sudamericana extra time in the final only; two-legged finals in the Southeast Asian, Gulf and Central American cups; single matches in the Arab and East African cups). The Intercontinental Cup already follows the sheet (African and Asian champions open, the Americas meet, the European champion joins the final). Left: the 36-club league phase, the Asian West and East league stages, the straight CONCACAF knockout, the Club World Cup (see below). |
+| 05 International | 33 national-team tournaments | **Done as far as the engine allows** (November 2026). Sizes already follow the sheet for the confederation finals; the Gold Cup takes a guest and the Copa América plays extra time in the final only; the Southeast Asian pool is all eleven ASEAN nations, the Gulf pool the eight Gulf federation members, the Central Asian pool the CAFA nations. Left: the sizes of the regional nations cups, two-legged ASEAN knockouts, Olympic and Asian Games football (see below). |
+| 06 Regional | 40 regional competition rows | Reviewed, **no change**: the game's regional competitions are Brazil's state championships and generated regional cups, which stay as they are (the sheet lists them as fictional or partly fictional). Left: the Copa do Nordeste and Copa Verde, island and regional first stages (Cape Verde, New Zealand, India), real county, district and state cups (see below). |
 | 07 Cross-border clubs | Clubs in another nation's league (Monaco, Welsh clubs in England ...) | **Done as far as the engine allows** (November 2026): 15 clubs renamed in their home nation's style and set in the host league; 12 keep their home nation (four Welsh clubs in England's three divisions below the top, a Northern Ireland club in the Irish league, the English-based club in Wales, three Canadian clubs in the American league, two New Zealand clubs in Australia, the Japanese satellite in Singapore); the 3 whose home is not a nation of the game (the principality in France, the mountain principality in Spain, the Bornean sultanate in Malaysia) keep the host's nationality. Left: the real clubs also enter the host's cups (see below) |
 | 08 Cross-nation leagues | MLS, A-League, OFC Pro League and past ones | **Done**: MLS and the A-League through the cross-border clubs above; the OFC Pro League added (eight clubs, one from each of seven Oceania nations and an Australian one; double round-robin; its play-off groups and finals left); the past leagues (Royal League, Baltic League, African Football League, BeNe League, Soviet, Yugoslav and Czechoslovak leagues) are listed on the Cups screen under Past |
 | 09 Cross-nation cups | Active and historical cups and super cups | **Done except the regional club cups**: the Leagues Cup (a summer knockout of six American and six Mexican clubs) and the Campeones Cup (the American champion against the Mexican one, a single match) added; the historical cups are listed under Past; the national cups with foreign clubs follow the engine's rule that a club plays its own nation's cup |
@@ -25,9 +25,9 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 | 12 to 14 Second, third and fourth tiers | Real divisions below the top flight | **Done as single tables** (November 2026): 47 more second divisions (54 listed, 7 were there), 34 more third (37, 3 were there) and 32 more fourth (33, 1 was there), 113 divisions of fictional clubs (1,702 clubs) in the minimal tier, each linked to the division above by promotion and relegation. Left: regional groups (a real division of three or more groups is one table of a group's size), the zones and tournaments of Argentina and Colombia, and the cross-division play-offs of more than one tie (see below) |
 | 15 Qualifying | How teams qualify for tournaments, clubs' cups and domestic cups | **Partly followed already:** the World Championship, European, African, Asian, North American and Oceania places, the qualifying groups and the play-offs. Added: the winner of a domestic cup takes a continental place. Left: every row on qualifying rounds before a club cup's main stage, a nation's Nations League route, and the real domestic-cup entry rounds. |
 | 16 Tie rules | Legs, extra time, penalties, replays, finals | **Started.** Engine support for straight-to-penalties by round (`etFrom`, `etFinalOnly`, `play.extraTime`), legs per round and neutral finals. No cup in the game has replays (the sheet lists them as abolished or "check"). |
-| 17 International calendar | FIFA windows 2026 to 2030 | The game has three breaks of two matchdays (six in a season) against the sheet's four windows (4 + 2 + 2 + 2). Left: the extra window and the real dates. |
-| 18 Guest nations | Tournaments that invite outside nations | **Started.** The Copa América already took six North American guests; the Gold Cup now takes one Asian guest, and the Southern African, East African and Central Asian cups take one outside nation each. Left: SAFF and the Gulf Cup (no guests in real life, as the sheet says for the Gulf), the CAF and CONMEBOL club guests. |
-| 19 World Cup qualifying | Every stage of each confederation's qualifying | Places by confederation already match the sheet (16, 9, 8, 6, 6, 1 and two intercontinental places). Left: the confederations' own rounds (AFC five rounds, CAF play-off, CONCACAF rounds, OFC round 1), and the six 2030 hosts qualifying automatically (the editor takes up to four). |
+| 17 International calendar | FIFA windows 2026 to 2030 | **Done** (November 2026): four windows of 4 + 2 + 2 + 2 matchdays, each named for its real window on the calendar (September and October, November, March, June). Left: real dates (the game's season has no calendar dates for the breaks). |
+| 18 Guest nations | Tournaments that invite outside nations | **Done.** The Copa América already took six North American guests; the Gold Cup takes one Asian guest, and the Southern African, East African and Central Asian cups take one outside nation each; the Gulf Cup takes none (its members are the eight Gulf federation nations, Iraq and Yemen included). The CONMEBOL club guests (Mexican clubs 1998 to 2016, Sudamericana mid-2000s) ended and are not in the game. |
+| 19 World Cup qualifying | Every stage of each confederation's qualifying | **Started.** Places by confederation already match the sheet (16, 9, 8, 6, 6, 1 and two intercontinental places). Groups of up to four now play home and away (the sheet's group stages), over the first six matchdays of the new calendar; the six 2030 hosts (two European, one African, three South American) qualify automatically. Left: the confederations' own staged rounds (see below). |
 
 ## What the engine can and cannot do today
 
@@ -131,18 +131,66 @@ two-legged finals; the Arab and East African Cups single-match knockouts.
 that year; guest selection now works for any tournament with `guests`. The COSAFA, CECAFA and CAFA invitationals take one nation
 from outside their pool (`outsiders`).
 
+## Added in the second pass (November 2026)
+
+**Calendar (17).** `D.INTL_AFTER` has four breaks: the first window of four matchdays (tags I1a to I1d, after round 7), the November
+window (I4a, I4b, round 11), the March window (I2a, I2b, round 15: the qualifying play-offs) and the June window (I3a, I3b, round 20:
+friendlies, the invitationals and the intercontinental play-offs), ten matchdays in all. A break day's matchday number is its place
+among the calendar's international days (`MD` in `js/intl.js`, so an older save or a world definition with fewer breaks still works);
+a window ends on its last day (`Intl.windowEnd`); the calendar and the Cups screen name the real window (`D.INTL_WINDOWS`). A world
+definition with four breaks gets these tags, one with two or three the older ones. sim-test's "no friendlies" check was stale (the
+third break has played them since it was added): it now checks that the user's nation is given none it did not book.
+
+**Home and away qualifying (19).** A qualifying group of up to four plays home and away (six matchdays, the first six of the ten); a
+bigger group (a world definition can set it) plays once. The Nations League groups still play once.
+
+**Group-stage cups (03).** `opts.groups = { n, size, up }` on a domestic cup: the early knockout rounds thin the field to n x size
+(a smaller field goes straight to the groups), the clubs are drawn into snake-seeded groups, each group plays once through, one round
+a cup day, and the `up` best of each group go into the knockouts. Sweden 16 groups of 4 (winners through), Romania 6 of 4, Turkey,
+Colombia and Uzbekistan 8 of 4, Russia and India 4 of 4, Kazakhstan 6 of 5, Bangladesh 3 of 4, Singapore and the Philippines 2 of 5
+(the top two through). The Cups screen shows the group tables and the club chips say "Group stage".
+
+**Late entry (03).** `opts.entry = { tier }` or `{ top }`: the clubs of that division and above (or that many of the strongest) wait
+while the rest play, and join once no more of the rest are left than they are. England (top two divisions), France, Japan, Scotland and
+Spain (the top flight) and Italy (the eight strongest). The sheet's exact rounds (third round proper, round of 64 ...) are approximated
+by this rule.
+
+**Replays (03, 16).** The sheet lists none in force (England abolished them from 2024-25, Scotland and Ireland "check"), so no replay
+engine was built; a replay would be a drawn tie that makes a second fixture on the next cup day (`domestic()` in `js/cups.js`).
+
+**Mexico's cup (03).** The sheet says Copa MX ended after 2019-20. The game keeps its Mexican cup: every nation has a domestic cup
+(`tools/check-docs.mjs` counts 117) and the Mexican cup winner plays the Campeon de Campeones super cup. It is a fictional cup, as the
+sheet notes.
+
+**Hosts of the World Championship (19).** `hostSpread` on the world tournament picks the hosts by part of the world: two European, one
+African and three South American (the 2030 hosts: Spain and Portugal, Morocco, Uruguay, Argentina and Paraguay), each drawn from the
+better ranked nations of its part. A world definition that sets two or more co-hosts, or fixes the hosts, keeps its own.
+
+**Pools (05, 18).** The Southeast Asian cup draws from the eleven ASEAN nations, the Gulf cup from the eight Gulf federation members
+(Iran no longer plays it), the Central Asian cup from the CAFA nations.
+
 ## Still to do from these sheets
 
-- **League phase (04):** the 36-club European league phase (8 matches, play-off round), the AFC Elite West/East league stages,
-  the Libertadores qualifying stages, the straight knockout of the CONCACAF Champions Cup. The game plays 16 clubs in four
-  groups.
-- **Domestic cups (03):** group-stage cups (Romania, Sweden, Turkey, Russia, Colombia, Kazakhstan, Uzbekistan, Singapore,
-  Philippines, India, Bangladesh), entry rounds by division, replays (none in the game), Mexico's cup that the sheet says
-  does not exist (the game keeps it), irregular cups, Italy's and Brazil's seeding.
-- **Intercontinental and Club World Cup (04):** the six-team Intercontinental Cup and 2029 Club World Cup details.
-- **International (05, 19):** sizes of the regional cups (ASEAN 10, Gulf 8 and the rest are four-team invitationals), two-legged
-  ASEAN knockouts, the confederations' own qualifying rounds, six automatic hosts in 2030.
-- **Calendar (17):** a fourth window (the game has three breaks of two matchdays) and real dates.
+- **League phase (04):** the 36-club European league phase (8 matches each against different opponents, a play-off round for 9th to
+  24th) needs 36 entrants a cup, so the places each league sends (`feeders`) and the coefficient allocation change: work on the league
+  rules, to be done with the leagues session. The game plays 16 clubs in four groups. The Asian league stage (two regions of 12) needs
+  the same and a split of the Asian clubs into regions. The Libertadores qualifying rounds exist for the main cups with eight qualifying
+  nations (`Cu.qualActive`) but are not the sheet's three fixed stages. The CONCACAF Champions Cup is a group cup in the game and a
+  straight knockout in the sheet (a continental with qualifying rounds and no groups, as the Club World Cup bracket works).
+- **Club World Cup (04):** the 2029 edition is 32 clubs in eight groups of four, then knockouts; the game plays its own World Club
+  Championship: its field and groups are not checked against the sheet.
+- **Domestic cups (03):** qualifying rounds of amateur clubs below the leagues' lowest division (the game's fields are the leagues'
+  clubs), Chile's regional groups, Brazil's seeded draws, Finland's occasional group stage, Peru and the other irregular cups.
+- **International (05, 19):** sizes of the regional cups (ASEAN 10, Gulf 8, Arab 16, Central Asian 8, East African 10, Southern African
+  14, West African 12): the invitationals are four-team tournaments played on the two days of the June window, so a bigger field needs
+  more days there or a tournament played by results; two-legged ASEAN knockouts need a third day. The confederations' staged
+  qualifying (the AFC first round and play-offs, the CAF play-off of four, CONCACAF's first round and its six groups of five, OFC round
+  one, the CONMEBOL league of 18 matchdays, the European play-off paths) needs rounds before the groups and groups drawn after them;
+  the game draws every group at the start of the season. Olympic and Asian Games football (Under-23).
+- **Regional (06):** the Copa do Nordeste and Copa Verde (a Brazilian club has one regional competition in the engine), the island
+  and regional first stages (Cape Verde, New Zealand, India), and the real county, district and state cups of the sheet's category C
+  (lower and amateur clubs, which the game's nations do not have).
+- **Verification:** every row remains unverified (the sheet's Source and Last verified columns).
 
 ## Left to do (other sheets)
 

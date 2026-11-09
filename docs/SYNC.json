@@ -1,10 +1,10 @@
 {
- "date": "2026-11-08",
+ "date": "2026-11-09",
  "docs": {
-  "ROADMAP.md": "2af90b069ca22dfb",
-  "FEATURES.md": "c0de30c6fcb6bbad",
+  "ROADMAP.md": "d7187fbe84551cff",
+  "FEATURES.md": "bc267e9fc6c11fd5",
   "GAME_DESIGN_DOCUMENT.md": "859400010d2544bf",
-  "README.md": "05f232aa9ef0bd97",
-  "CHANGELOG.md": "995d378589c76138"
+  "README.md": "bd7db871ec6303fd",
+  "CHANGELOG.md": "48f65bed40209098"
  }
 }

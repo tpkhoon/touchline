@@ -1,5 +1,5 @@
 // International football: national teams picked from the best players of each nationality, a coefficient ranking,
-// two international breaks a season (two matchdays each), qualifying groups in the season before a
+// four international windows a season (4 + 2 + 2 + 2 matchdays), qualifying groups in the season before a
 // tournament, and the summer finals played as calendar days at the end of the season —
 // a World Championship every 4 years, continental championships in the years between.
 // The human manager can also take a national team job and play these matches live.
@@ -56,6 +56,11 @@
         name: 'World Championship',
         size: 48,
         playoff: 2,
+        hostSpread: [
+          [0, 2],
+          [1, 1],
+          [3, 3],
+        ], // (the host places by part of the world: Europe 2, Africa 1, South America 3)
         pools: [
           [['EUR'], 16],
           [['AFR'], 9],
@@ -157,9 +162,19 @@
   // ranked nations of the rest of it (the Southeast Asian, Gulf and East Asian tournaments, which give those nations a calendar of their own)
   I.INVITES = [
     { id: 'KIR', name: 'Cherry Blossom Cup', host: 'JPN' },
-    { id: 'SEA', feeds: 'AS', name: 'Southeast Asian Nations Cup', pool: ['THA', 'VIE', 'IDN', 'MYS', 'PHI', 'SGP'] },
+    {
+      id: 'SEA',
+      feeds: 'AS',
+      name: 'Southeast Asian Nations Cup',
+      pool: ['THA', 'VIE', 'IDN', 'MYS', 'PHI', 'SGP', 'MYA', 'CAM', 'LAO', 'BRU', 'TLS'],
+    },
     { id: 'KGC', name: 'Golden Elephant Cup', host: 'THA' },
-    { id: 'GLF', feeds: 'AS', name: 'Gulf Nations Cup', pool: ['KSA', 'QAT', 'UAE', 'IRN', 'IRQ'] },
+    {
+      id: 'GLF',
+      feeds: 'AS',
+      name: 'Gulf Nations Cup',
+      pool: ['KSA', 'QAT', 'UAE', 'KUW', 'BHR', 'OMA', 'IRQ', 'YEM'],
+    }, // (the Gulf federation's members: no guests)
     { id: 'NEH', name: 'Monsoon Cup', host: 'IND' },
     { id: 'EAS', feeds: 'AS', name: 'East Asian Nations Cup', pool: ['JPN', 'KOR', 'CHN', 'AUS'] },
     {
@@ -192,7 +207,7 @@
       id: 'CAS',
       feeds: 'AS',
       name: 'Central Asian Nations Cup',
-      pool: ['UZB', 'KAZ', 'IRN', 'IND', 'PAK'],
+      pool: ['UZB', 'KAZ', 'IRN', 'TJK', 'KGZ', 'TKM', 'AFG'],
       outsiders: { from: 'ASIA', n: 1 },
     },
     { id: 'BAL', name: 'Baltic Cup', pool: ['EST', 'LVA', 'LTU', 'FIN'] },
@@ -1122,9 +1137,34 @@
       : I.tournamentFor(year) === 'continental'
         ? ['G1', 'G2', 'G3', 'R16', 'QF', 'SF', 'F']
         : ['G1', 'G2', 'G3', 'SF', 'F'];
-  const MD = { I1a: 0, I1b: 1, I2a: 2, I2b: 3, I3a: 4, I3b: 5 };
+  const MD_OLD = { I1a: 0, I1b: 1, I2a: 2, I2b: 3, I3a: 4, I3b: 5 };
+  // A break day's matchday number: its place among the calendar's international days (the breaks come in time order, whatever
+  // their tags), or the older fixed numbers when there is no calendar
+  const MD = new Proxy(MD_OLD, {
+    get(o, tag) {
+      const cal = S() && S().calendar;
+      if (cal) {
+        let n = 0;
+        for (const d of cal) {
+          if (d.type !== 'intl') continue;
+          if (d.tag === tag) return n;
+          n++;
+        }
+      }
+      return o[tag];
+    },
+  });
   // The tags the season's invitationals are played on: the third break when the calendar has one (an older save or a definition with two
   // breaks uses the second)
+  // The last day of a break (the tags of one break share their number: I1a to I1d are the first window)
+  I.windowName = (tag) => (FM.D.INTL_WINDOWS && tag && FM.D.INTL_WINDOWS['I' + tag[1] + 'a']) || '';
+  I.windowEnd = function (tag) {
+    const cal = (S() && S().calendar) || [];
+    const i = cal.findIndex((d) => d.type === 'intl' && d.tag === tag);
+    if (i < 0) return /b$/.test(tag);
+    const next = cal[i + 1];
+    return !(next && next.type === 'intl' && next.tag && next.tag[1] === tag[1]);
+  };
   const inviteTags = () => ((S().calendar || []).some((d) => d.tag === 'I3a') ? ['I3a', 'I3b'] : ['I2a', 'I2b']);
 
   // ---------- Season setup: qualifying groups for the coming summer ----------
@@ -1146,7 +1186,23 @@
         if (hostPool) {
           const fixed = (tn.hosts || []).map((c) => 'n_' + c).filter((id) => S().nteams[id] && !I.banned(id));
           if (fixed.length) q.hosts[tn.id] = fixed;
-          else {
+          else if (tn.hostSpread && (tn.hostCount || 1) <= 1) {
+            // the hosts are spread over several parts of the world (2030: Spain, Portugal and Morocco, with Uruguay, Argentina and
+            // Paraguay for the centenary), each drawn from the better ranked nations of its part: all six are in without qualifying
+            const picked = [];
+            for (const [pi, n] of tn.hostSpread) {
+              const pool = tn.pools[pi];
+              if (!pool) continue;
+              const cands = I.qualRanked().filter((t) => pool[0].includes(I.region(t.code)) && !picked.includes(t.id));
+              const top = cands.slice(0, Math.max(n + 1, Math.ceil(cands.length * 0.6)));
+              picked.push(
+                ...U.shuffle(top.slice())
+                  .slice(0, n)
+                  .map((t) => t.id),
+              );
+            }
+            if (picked.length) q.hosts[tn.id] = picked;
+          } else {
             const cands = I.qualRanked().filter((t) => hostPool[0].includes(I.region(t.code)));
             const top = cands.slice(0, Math.max(4, Math.ceil(cands.length * 0.6)));
             const n = Math.max(1, Math.min(4, tn.hostCount || 1, top.length));
@@ -1190,7 +1246,8 @@
           });
           groups.forEach((ids, gi) => {
             const rr = W.roundRobin(ids);
-            const rounds = ids.length === 2 ? rr : rr.slice(0, rr.length / 2); // pairs play home and away; bigger groups once each
+            // (the groups of up to four play home and away, as the sheets say of every confederation; a bigger group plays once each)
+            const rounds = ids.length <= 4 ? rr : rr.slice(0, rr.length / 2);
             const letter =
               gi < 26
                 ? String.fromCharCode(65 + gi)
@@ -1402,10 +1459,10 @@
     const busy = new Set(taken);
     Object.values(s.nteams || {}).forEach((t) => I.banned(t) && busy.add(t.id)); // (a nation under sanction takes no part)
     ((s.quals && s.quals.groups) || []).forEach((g) =>
-      [2, 3].forEach((md) => (g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
+      inviteTags().forEach((tag) => (g.rounds[MD[tag]] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
     );
     I.nlGroups().forEach((x) =>
-      [2, 3].forEach((md) => (x.g.rounds[md] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
+      inviteTags().forEach((tag) => (x.g.rounds[MD[tag]] || []).forEach(({ h, a }) => (busy.add(h), busy.add(a)))),
     );
     if (busy.has(host.id)) return null;
     const pool = pool0
@@ -2198,14 +2255,14 @@
 
   I.afterDay = function (cal) {
     const s = S();
-    if (cal.type === 'intl' && /b$/.test(cal.tag)) {
+    if (cal.type === 'intl' && I.windowEnd(cal.tag)) {
       I.youthWindow();
       FM.Stories.intlWindow(s.intlBreak);
       s.intlBreak = [];
       if (s.user && s.user.nation) I.clubBalance();
     }
     if (cal.type === 'intl' && /a$/.test(cal.tag) && s.user && s.user.nation) I.eligibilityFinds();
-    if (cal.type === 'intl' && cal.tag === 'I2a' && s.nl) I.nlFinish();
+    if (cal.type === 'intl' && MD[cal.tag] === 2 && s.nl) I.nlFinish();
     if (cal.type === 'tourn' && cal.stage === 'F' && s.tourns)
       s.tourns.forEach((t) => t.ko.final && t.ko.final.res && !t.winner && I.finishTournament(t));
   };

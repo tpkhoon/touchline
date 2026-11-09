@@ -664,7 +664,7 @@
     if (c.intl != null) {
       if (
         !Array.isArray(c.intl) ||
-        ![2, 3].includes(c.intl.length) ||
+        ![2, 3, 4].includes(c.intl.length) ||
         !c.intl.every(round) ||
         c.intl.some((r, i) => i && r - c.intl[i - 1] < 2)
       )
@@ -1559,7 +1559,19 @@
       if (c.cup) swap(D.CUP_AFTER, Object.fromEntries(c.cup.map((r) => [r, 'DC'])));
       if (c.cont) swap(D.CC_AFTER, Object.fromEntries(Object.entries(c.cont).map(([st, r]) => [r, st])));
       if (c.world) swap(D.CWC_AFTER, Object.fromEntries(Object.entries(c.world).map(([st, r]) => [r, st])));
-      if (c.intl) swap(D.INTL_AFTER, Object.fromEntries(c.intl.map((r, i) => [r, [`I${i + 1}a`, `I${i + 1}b`]])));
+      if (c.intl) {
+        // four breaks are the real windows in time order (4 + 2 + 2 + 2 matchdays); fewer are two matchdays each
+        const four = [
+          ['I1a', 'I1b', 'I1c', 'I1d'],
+          ['I4a', 'I4b'],
+          ['I2a', 'I2b'],
+          ['I3a', 'I3b'],
+        ];
+        swap(
+          D.INTL_AFTER,
+          Object.fromEntries(c.intl.map((r, i) => [r, c.intl.length === 4 ? four[i] : [`I${i + 1}a`, `I${i + 1}b`]])),
+        );
+      }
     }
     if (patch.agents) D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...patch.agents);
     if (patch.regionals) D.AREAS.splice(0, D.AREAS.length, ...patch.regionals.map(areaRow));

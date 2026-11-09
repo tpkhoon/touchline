@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-470 features are playable in the web prototype today. Build = the build that added it.
+473 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -480,6 +480,9 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Real cup formats: legs, neutral finals and extra-time rules per domestic cup from the real-formats sheet (two-legged semi-finals in Spain and Belgium, Canada and Colombia fully two-legged, Argentina and Brazil straight to penalties) | Real formats |
 | Competitions | A domestic cup's winner takes his cup's continental place in place of his nation's lowest club in that cup | Real formats |
 | Competitions | Continental finals and extra time per competition (single-match finals in North America and Africa, extra time in the final only in the Libertadores and Copa América) and guest nations in the Gold Cup and the regional invitationals | Real formats |
+| Competitions | Group-stage domestic cups (Sweden, Romania, Turkey, Colombia, Uzbekistan, Russia, India, Kazakhstan, Bangladesh, Singapore, the Philippines: the early rounds thin the field, snake-seeded groups play through, the best go on) and late entry for the top divisions (England, France, Italy, Japan, Scotland, Spain), with group tables on the Cups screen | Real formats |
+| International | Four international windows a season, ten matchdays (4 + 2 + 2 + 2) named for the real September and October, November, March and June windows; qualifying groups play home and away; the six 2030 World Championship hosts (two European, one African, three South American) qualify automatically | Real formats |
+| International | The Southeast Asian, Gulf and Central Asian nations cups draw from their real members (eleven ASEAN nations, the eight Gulf federation members with no guests, the CAFA nations) | Real formats |
 | Competitions | Real competition formats, first step: the workbook's sheets copied into the docs with a tracker, and 16 leagues playing their real triple or quadruple round-robin (36, 33, 28, 27 or 26 matches) | Playtest round 24 |
 | Competitions | Real competition formats, the leagues sheet: club counts for 44 leagues (145 clubs added, 8 removed), splits, Apertura and Clausura play-offs (a generic top-n knockout with byes and two legs, cuadrangulares), relegation play-offs for six more leagues, Jong and B teams in two second tiers, and youth and homegrown minimums for 40 leagues | Playtest round 24 |
 | Tactics | Bench swap: each bench player on the Tactics screen has a Swap button to change places with a starter (a goalkeeper only with a goalkeeper) or with a player outside the matchday squad; your bench is kept when the XI is rebuilt and Auto-pick or a formation change resets it | Quick features |
@@ -675,8 +678,8 @@ Design principle from here: don't make the game deeper by adding more screens �
 | History | Alternate-history setup and scenario creator | Alpha 2 |
 | Youth | University draft, graduates, scholarships, overseas trials | Alpha 2 |
 | Competitions | The 36-club European league phase, the AFC Elite league stage and the CONCACAF straight knockout (sheet 04) | Real formats |
-| Competitions | Group-stage domestic cups, entry rounds by division and the real-size regional nations cups (sheets 03, 05) | Real formats |
-| Calendar | A fourth international window and the real FIFA dates 2026 to 2030; six automatic hosts in 2030 (sheets 17, 19) | Real formats |
+| Competitions | Qualifying rounds of amateur clubs, Chile's regional groups and Brazil's seeded draws in the domestic cups; the real-size regional nations cups (sheets 03, 05) | Real formats |
+| Calendar | The real FIFA dates 2026 to 2030, and each confederation's staged World Cup qualifying rounds (sheets 17, 19) | Real formats |
 | Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): Spain's third tier as two groups of 20, the relegation play-offs whose other division the game lacks, the Intermedio and points-average relegation; domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; third and fourth divisions, cross-border clubs, cross-nation leagues and cups, regional competitions and youth tournaments | Alpha 2 |
 | Scouting | Lower-league stars, the rest: a measured loan rate for late finds over a real season, and calibration against real figures for age at breakthrough and clubs per career | Alpha 2 |
 | Legacy | Player career timeline: every club with dates, fee, appearances, goals, trophies, awards, injuries and caps — transfers never disappear | Alpha 2 |

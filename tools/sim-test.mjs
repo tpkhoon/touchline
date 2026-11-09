@@ -395,10 +395,10 @@ for (let s = 0; s < SEASONS; s++) {
     !FM.S.nteams || Object.keys(FM.S.nteams).length === FM.D.nationCodes().length,
     `season ${s + 1}: ${Object.keys(FM.S.nteams || {}).length} national teams for ${FM.D.nationCodes().length} nations`,
   );
-  // no international friendlies: the breaks are for qualifiers, the Nations League and the invitationals
+  // friendlies are played only in the third break, and never by the user's nation unless the manager booked one (none is here)
   check(
-    !(FM.S.intlLog || []).some((g) => /friendly/i.test(g.label || '')),
-    `season ${s + 1}: an international friendly was played`,
+    !(FM.S.intlLog || []).some((g) => /friendly/i.test(g.label || '') && (W.isUserNation(g.h) || W.isUserNation(g.a))),
+    `season ${s + 1}: the user's nation was given a friendly nobody booked`,
   );
   // a league's prize fund is shared by position (the champion more than the last club) and adds up to the fund
   {

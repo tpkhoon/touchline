@@ -4182,7 +4182,7 @@
       ${WD.CONT_STAGES.map((st) => mover('cont', st, c.cont[st], CONT_NAME[st])).join('')}
       <div class="ng-label">Intercontinental Cup <span class="tiny dim">· every season; the World Club Championship is played in the summer of every fourth</span></div>
       ${WD.WORLD_STAGES.map((st) => mover('world', st, c.world[st], WORLD_NAME[st])).join('')}
-      <div class="ng-label">International breaks <span class="tiny dim">· two matchdays each</span></div>
+      <div class="ng-label">International breaks <span class="tiny dim">· the first window has four matchdays, the others two</span></div>
       ${c.intl.map((r, i) => mover('intl', String(i), r, `Break ${i + 1}`)).join('')}
       <div class="ng-label">The season at a glance</div>${glance}
       <div class="tiny dim" style="margin-top:8px;line-height:1.5">${JSON.stringify(c) === JSON.stringify(cur) ? 'As the game has it.' : "Changed from the game's own calendar."} At most one cup day falls between two league rounds: a day that would fall with another moves to the next gap.</div>

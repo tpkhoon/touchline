@@ -1656,11 +1656,19 @@
   // (the Asian and African champions play first, the American champions play each other, the winners meet in the Challenger Cup,
   // and the European champion joins in the final). [competition id] by role.
   FM.D.IC_BRACKET = { first: ['AF', 'AC'], americas: ['CL', 'NC'], final: 'CC' };
-  // Every international break has two matchdays
   // The international breaks (the league round each follows, on the 22-round scale; two match days each): the first two carry the
   // qualifiers and the Nations League, the third (late in the season, as the June window) friendlies and the invitational
   // tournaments
-  FM.D.INTL_AFTER = { 7: ['I1a', 'I1b'], 15: ['I2a', 'I2b'], 20: ['I3a', 'I3b'] };
+  // (sheet 17: four windows of 4 + 2 + 2 + 2 matchdays: September and October, November, March, June; the tags keep their meaning
+  // whatever the order in time: I1 the first window, I2 the third (the qualifying play-offs), I3 the last, I4 the November window)
+  FM.D.INTL_AFTER = { 7: ['I1a', 'I1b', 'I1c', 'I1d'], 11: ['I4a', 'I4b'], 15: ['I2a', 'I2b'], 20: ['I3a', 'I3b'] };
+  // The real windows the breaks stand for, by the first tag of each (docs/real-formats/17): shown on the calendar
+  FM.D.INTL_WINDOWS = {
+    I1a: 'September and October window',
+    I4a: 'November window',
+    I2a: 'March window',
+    I3a: 'June window',
+  };
   // Wages were tuned against a 43-day season; longer calendars pay the same season total
   FM.D.WAGE_WEEKS = 43;
 
@@ -5734,13 +5742,15 @@
   // played over two legs, neutral = the rounds played at a neutral ground ('all' for every round). The rest are
   // single matches at the home of the club drawn first (the lower-division club, in the real draws), with extra
   // time and penalties. Away goals do not count anywhere: no competition has used them since 2021–22.
+  // entry = { tier } or { top }: the clubs of that division and above (or that many of the strongest) enter once no more of the others are left
+  // groups = { n, size, up }: a group stage (up to n groups of size clubs, the top `up` of each go through) after the early rounds
   // etFrom = the last stage with extra time (clubs left: 2 = the final only); play: { extraTime: false } = straight to
   // penalties in every round (the Copa Argentina, the Copa do Brasil).
   FM.D.DOMESTIC_CUPS = [
-    ['CUPENG', 'ENG', 'English National Cup', 'ENGC', { neutral: [4, 2] }], // semi-finals and final at the national stadium
-    ['CUPESP', 'ESP', 'Spanish Copa del Rey Fundador', 'ESPC', { legs: [4], neutral: [2] }], // two-legged semi-finals, a neutral final
+    ['CUPENG', 'ENG', 'English National Cup', 'ENGC', { neutral: [4, 2], entry: { tier: 2 } }], // semi-finals and final at the national stadium
+    ['CUPESP', 'ESP', 'Spanish Copa del Rey Fundador', 'ESPC', { legs: [4], neutral: [2], entry: { tier: 1 } }], // two-legged semi-finals, a neutral final
     ['CUPGER', 'GER', 'German Bundespokal Neu', 'GERC', { neutral: [2] }], // final in Berlin
-    ['CUPFRA', 'FRA', 'French Coupe Nationale', 'FRAC', { neutral: [2], etFrom: 32 }],
+    ['CUPFRA', 'FRA', 'French Coupe Nationale', 'FRAC', { neutral: [2], etFrom: 32, entry: { tier: 1 } }],
     [
       'CUPBRA',
       'BRA',
@@ -5748,21 +5758,27 @@
       'BRAC',
       { legs: [8, 4, 2], neutral: [], play: { extraTime: false } },
     ], // two legs from the later rounds, home-and-away final
-    ['CUPITA', 'ITA', 'Italian Coppa Nazionale', 'ITAC', { legs: [4], neutral: [2] }],
+    ['CUPITA', 'ITA', 'Italian Coppa Nazionale', 'ITAC', { legs: [4], neutral: [2], entry: { top: 8 } }],
     ['CUPPOR', 'POR', 'Portuguese Taça Nacional', 'PORC', { legs: [4], neutral: [2] }],
     ['CUPNED', 'NED', 'Dutch Kampioensbeker', 'NEDC', { neutral: [2] }],
     ['CUPARG', 'ARG', 'Argentine Copa de la Federación', 'ARGC', { neutral: 'all', play: { extraTime: false } }], // every tie at a neutral ground
     ['CUPUSA', 'USA', 'American Liberty Cup', 'USAC', { neutral: [] }], // the final at the better seed's ground
-    ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2] }],
+    ['CUPJPN', 'JPN', 'Japanese National Cup', 'JPNC', { neutral: [2], entry: { tier: 1 } }],
     ['CUPKSA', 'KSA', "Saudi King's Trophy", 'KSAC', { neutral: [2] }],
-    ['CUPSGP', 'SGP', 'Singaporean National Cup', 'SGPC', { legs: [4], neutral: [2] }],
+    [
+      'CUPSGP',
+      'SGP',
+      'Singaporean National Cup',
+      'SGPC',
+      { legs: [4], neutral: [2], groups: { n: 2, size: 5, up: 2 } },
+    ],
     ['CUPMYS', 'MYS', 'Malaysian Piala Kebangsaan', 'MYSC', { legs: [8, 4], neutral: [2] }],
     ['CUPVIE', 'VIE', 'Vietnamese Reunification Cup', 'VIEC', { neutral: [2] }],
     ['CUPIDN', 'IDN', 'Indonesian Cup', 'IDNC', { neutral: [2] }],
-    ['CUPPHI', 'PHI', 'Filipino Cup', 'PHIC', { neutral: [2] }],
+    ['CUPPHI', 'PHI', 'Filipino Cup', 'PHIC', { neutral: [2], groups: { n: 2, size: 5, up: 2 } }],
     ['CUPRSA', 'RSA', 'South African National Cup', 'RSAC', { neutral: [2] }],
     // the other nations: a cup for every nation with a league (the clubs of a nation whose league is simulated by scores only play it in the full engine)
-    ['CUPSCO', 'SCO', 'Scottish Challenge Shield', 'SCOC', { neutral: [2] }],
+    ['CUPSCO', 'SCO', 'Scottish Challenge Shield', 'SCOC', { neutral: [2], entry: { tier: 1 } }],
     ['CUPWAL', 'WAL', 'Welsh Challenge Cup', 'WALC', { neutral: [2] }],
     ['CUPIRL', 'IRL', 'Irish Federation Cup', 'IRLC', { neutral: [2] }],
     ['CUPMEX', 'MEX', 'Mexican Copa Nacional', 'MEXC', { neutral: [2] }],
@@ -5772,7 +5788,7 @@
     ['CUPMAR', 'MAR', 'Moroccan Coupe de la Fédération', 'MARC', { neutral: [2] }],
     ['CUPSRB', 'SRB', 'Serbian Savezni Kup', 'SRBC', { neutral: [2] }],
     ['CUPBEL', 'BEL', 'Belgian Federatiebeker', 'BELC', { legs: [4], neutral: [2] }],
-    ['CUPTUR', 'TUR', 'Turkish Federasyon Kupası', 'TURC', { neutral: [2] }],
+    ['CUPTUR', 'TUR', 'Turkish Federasyon Kupası', 'TURC', { neutral: [2], groups: { n: 8, size: 4, up: 2 } }],
     ['CUPCZE', 'CZE', 'Czech Pohár Federace', 'CZEC', { neutral: [2] }],
     ['CUPGRE', 'GRE', 'Greek Federation Kypello', 'GREC', { neutral: [2] }],
     ['CUPNOR', 'NOR', 'Norwegian Forbundspokal', 'NORC', { neutral: [2] }],
@@ -5788,17 +5804,23 @@
     ['CUPALG', 'ALG', 'Algerian Coupe Nationale', 'ALGC', { neutral: [2] }],
     ['CUPCYP', 'CYP', 'Cypriot Federation Kypello', 'CYPC', { legs: [16, 8], neutral: [2] }],
     ['CUPCRO', 'CRO', 'Croatian Savezni Kup', 'CROC', { neutral: [2] }],
-    ['CUPSWE', 'SWE', 'Swedish Nationella Cupen', 'SWEC', { neutral: [2] }],
-    ['CUPROU', 'ROU', 'Romanian Cupa Federației', 'ROUC', { neutral: [2] }],
+    ['CUPSWE', 'SWE', 'Swedish Nationella Cupen', 'SWEC', { neutral: [2], groups: { n: 16, size: 4, up: 1 } }],
+    ['CUPROU', 'ROU', 'Romanian Cupa Federației', 'ROUC', { neutral: [2], groups: { n: 6, size: 4, up: 2 } }],
     ['CUPECU', 'ECU', 'Ecuadorian Copa Nacional', 'ECUC', { neutral: [2] }],
     ['CUPURU', 'URU', 'Uruguayan Copa Nacional', 'URUC', { neutral: [2] }],
-    ['CUPCOL', 'COL', 'Colombian Copa Nacional', 'COLC', { legs: [16, 8, 4, 2], neutral: [] }],
+    [
+      'CUPCOL',
+      'COL',
+      'Colombian Copa Nacional',
+      'COLC',
+      { legs: [16, 8, 4, 2], neutral: [], groups: { n: 8, size: 4, up: 2 } },
+    ],
     ['CUPCAN', 'CAN', 'Canadian Championship', 'CANC', { legs: [16, 8, 4, 2], neutral: [] }],
     ['CUPUAE', 'UAE', "Emirati King's Trophy", 'UAEC', { neutral: [2] }],
     ['CUPIRN', 'IRN', 'Iranian Federation Cup', 'IRNC', { neutral: [2] }],
     ['CUPQAT', 'QAT', "Qatari King's Trophy", 'QATC', { neutral: [2] }],
     ['CUPCHN', 'CHN', 'Chinese Football Association Cup', 'CHNC', { neutral: [2] }],
-    ['CUPIND', 'IND', 'Indian National Cup', 'INDC', { neutral: [2] }],
+    ['CUPIND', 'IND', 'Indian National Cup', 'INDC', { neutral: [2], groups: { n: 4, size: 4, up: 2 } }],
     ['CUPCHI', 'CHI', 'Chilean Copa Nacional', 'CHIC', { legs: [16, 8, 4], neutral: [2] }],
     ['CUPPER', 'PER', 'Peruvian Copa Nacional', 'PERC', { neutral: [2] }],
     ['CUPPAR', 'PAR', 'Paraguayan Copa Nacional', 'PARC', { neutral: [2] }],
@@ -5824,7 +5846,7 @@
     ['CUPISL', 'ISL', 'Icelandic Bikarkeppni', 'ISLC', { neutral: [2] }],
     ['CUPGEO', 'GEO', 'Georgian Sakartvelos Tasi', 'GEOC', { neutral: [2] }],
     ['CUPISR', 'ISR', 'Israeli State Cup', 'ISRC', { neutral: [2] }],
-    ['CUPRUS', 'RUS', 'Russian National Cup', 'RUSC', { neutral: [2] }],
+    ['CUPRUS', 'RUS', 'Russian National Cup', 'RUSC', { neutral: [2], groups: { n: 4, size: 4, up: 2 } }],
     ['CUPBLR', 'BLR', 'Belarusian Union Cup', 'BLRC', { legs: [8, 4], neutral: [2] }],
     ['CUPNIR', 'NIR', 'Northern Irish Challenge Cup', 'NIRC', { neutral: [2] }],
     ['CUPVEN', 'VEN', 'Venezuelan Copa Nacional', 'VENC', { neutral: [2] }],
@@ -5833,7 +5855,7 @@
     ['CUPJAM', 'JAM', 'Jamaican Champions Cup', 'JAMC', { neutral: [2] }],
     ['CUPHON', 'HON', 'Honduran Copa Nacional', 'HONC', { neutral: [2] }],
     ['CUPPAN', 'PAN', 'Panamanian Copa Nacional', 'PANC', { neutral: [2] }],
-    ['CUPUZB', 'UZB', 'Uzbek National Cup', 'UZBC', { neutral: [2] }],
+    ['CUPUZB', 'UZB', 'Uzbek National Cup', 'UZBC', { neutral: [2], groups: { n: 8, size: 4, up: 2 } }],
     ['CUPNZL', 'NZL', 'New Zealand Chatham Cup', 'NZLC', { neutral: [2] }],
     ['CUPIRQ', 'IRQ', "Iraqi King's Trophy", 'IRQC', { neutral: [2] }],
     ['CUPEST', 'EST', 'Estonian Eesti Karikas', 'ESTC', { neutral: [2] }],
@@ -5841,7 +5863,7 @@
     ['CUPLTU', 'LTU', 'Lithuanian Lietuvos Taurė', 'LTUC', { neutral: [2] }],
     ['CUPARM', 'ARM', 'Armenian Hanrapetutyan Gavat', 'ARMC', { legs: [16], neutral: [2] }],
     ['CUPAZE', 'AZE', 'Azerbaijani Federasiya Kuboku', 'AZEC', { legs: [8, 4], neutral: [2] }],
-    ['CUPKAZ', 'KAZ', 'Kazakh Ulttyk Kubok', 'KAZC', { neutral: [2] }],
+    ['CUPKAZ', 'KAZ', 'Kazakh Ulttyk Kubok', 'KAZC', { neutral: [2], groups: { n: 6, size: 5, up: 2 } }],
     ['CUPMDA', 'MDA', 'Moldovan Cupa Federației', 'MDAC', { legs: [4], neutral: [2] }],
     ['CUPKOS', 'KOS', 'Kosovan Kupa e Pavarësisë', 'KOSC', { neutral: [2] }],
     ['CUPLUX', 'LUX', 'Luxembourg National Cup', 'LUXC', { neutral: [2] }],
@@ -5850,7 +5872,7 @@
     ['CUPBHR', 'BHR', "Bahraini King's Trophy", 'BHRC', { neutral: [2] }],
     ['CUPKUW', 'KUW', "Kuwaiti King's Trophy", 'KUWC', { neutral: [2] }],
     ['CUPPAK', 'PAK', 'Pakistani Federation Cup', 'PAKC', { neutral: [2] }],
-    ['CUPBAN', 'BAN', 'Bangladeshi National Cup', 'BANC', { neutral: [2] }],
+    ['CUPBAN', 'BAN', 'Bangladeshi National Cup', 'BANC', { neutral: [2], groups: { n: 3, size: 4, up: 2 } }],
     ['CUPZAM', 'ZAM', 'Zambian Heroes Cup', 'ZAMC', { neutral: [2] }],
     ['CUPZIM', 'ZIM', 'Zimbabwean Heroes Cup', 'ZIMC', { neutral: [2] }],
     ['CUPKEN', 'KEN', 'Kenyan Jamhuri Cup', 'KENC', { neutral: [2] }],

@@ -795,7 +795,7 @@
           : cal.type === 'pre'
             ? `Pre-season ${cal.idx + 1}/${FM.D.PRESEASON_DAYS}`
             : cal.type === 'intl'
-              ? 'International break'
+              ? 'International break' + (FM.Intl.windowName(cal.tag) ? ' · ' + FM.Intl.windowName(cal.tag) : '')
               : cal.type === 'tourn'
                 ? 'Summer finals'
                 : cal.stage === 'F'

@@ -1257,7 +1257,7 @@
         : c.type === 'pre'
           ? 'Pre-season'
           : c.type === 'intl'
-            ? 'International break'
+            ? 'International break' + (FM.Intl.windowName(c.tag) ? ' · ' + FM.Intl.windowName(c.tag) : '')
             : c.type === 'tourn'
               ? 'Summer finals'
               : 'Playoffs';

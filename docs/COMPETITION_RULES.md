@@ -150,13 +150,22 @@ Six more top flights, each one division in the game: the **Singapore Premier Lea
 - Played in the seasons with no qualifying: the year with no tournament and the year of the Continental Champions Trophy.
   Every confederation has one. Its nations are ranked into leagues of sixteen (League A the best), each of four groups of
   four (a last league with fewer nations has groups of three or four, a group of two plays home and away). Each nation plays
-  the others in its group once, on the first three matchdays of the breaks; the fourth matchday has no international. The
+  the others in its group once, on the first three matchdays of the breaks; the rest of the ten matchdays have none of it. The
   invitational tournament takes a place only when its nations have no Nations League match that day.
 - At the end the winner of each group goes up a league and the last club of each group goes down (the top league has nothing
   above it, the bottom nothing below); the next Nations League starts from that order. The champions are the best League A
   group winner (points per game, goal difference, goals, ranking).
 - The coefficient moves a little more than for a friendly (30 against 22), less than for a qualifier (35).
-- There are no international friendlies. In a qualifying year a nation whose pool has already qualified rests.
+- A nation with nothing to play rests. Friendlies are played only in the last window, by the nations with nothing else on the day.
+  In a qualifying year a nation whose pool has already qualified rests.
+
+## The international calendar
+
+Four windows a season, ten matchdays in all (the sheet's 4 + 2 + 2 + 2): September and October (four matchdays, after league round
+7), November (two, after round 11), March (two, after round 15: the qualifying play-offs) and June (two, after round 20: friendlies,
+the invitationals and the intercontinental play-offs). Qualifying groups of up to four play home and away over the first six
+matchdays; a bigger group plays once. The Nations League takes the first three. The summer finals are separate days at the end of
+the season. A world definition with four breaks keeps this order; one with two or three has two matchdays each.
 
 ## Confederations
 
@@ -204,6 +213,12 @@ home draw), the finals at a neutral ground unless noted.
 | Albania, Azerbaijan, Belarus, Bosnia, Malaysia, Montenegro, North Macedonia | Two-legged quarter-finals and semi-finals |
 | Angola, Armenia, Cyprus, Chile, Costa Rica, Moldova | Two-legged early or middle rounds, as the sheet lists them (marked "check" there) |
 
+Eleven cups have a group stage (Sweden 16 groups of four, Romania 6, Turkey, Colombia and Uzbekistan 8, Russia and India 4, Kazakhstan
+6 of five, Bangladesh 3, Singapore and the Philippines 2 of five): the early rounds thin the field to the groups' size, each group
+plays once through, one round a cup day, and the best of each group go into the knockouts. In England, France, Italy, Japan, Scotland
+and Spain the top clubs enter late: they wait while the rest play and join once no more of the rest are left than they are. No cup has
+replays (the sheet lists none in force). Mexico keeps a fictional cup although the real one has not been played since 2020.
+
 A cup winner who has no continental place takes the one the cup carries (the Europa League for most of Europe, the Conference League
 for the smaller nations, the Copa Libertadores or Sudamericana, the Asian and African second cups, the CONCACAF Champions Cup),
 replacing the lowest club of his nation in that cup. Cups with no place in the game's continental cups give none.
@@ -212,7 +227,9 @@ replacing the lowest club of his nation in that cup. Cups with no place in the g
 
 The South American Nations Cup invites six North American nations (the Copa América of 2024) and plays extra time in the final only.
 The North American Nations Cup invites one Asian nation (not the strongest: the fourth best ranked), who misses the Asian Nations
-Cup that year. The Southern African, East African and Central Asian invitationals take one nation from outside their region.
+Cup that year. The Southern African, East African and Central Asian invitationals take one nation from outside their region. The Gulf
+Cup takes none: its eight nations are the Gulf federation's members, Iraq and Yemen included. The six hosts of the 2030 World
+Championship (two European, one African, three South American) qualify without playing.
 
 ## Continental Champions Trophy
 
@@ -353,7 +370,7 @@ everything else keeps the world's:
 - **Fixtures:** a league that plays a plain round-robin can have a match put on a matchday by hand; the rest of the
   schedule is built around it.
 - **Calendar:** the days of pre-season, the domestic cup's rounds, each stage of the continental cups, the
-  Intercontinental Cup and the two international breaks can be moved (the World Club Championship keeps its summer days). A league day falls Friday to Sunday (some midweek in a long season), a
+  Intercontinental Cup and the four international windows can be moved (the World Club Championship keeps its summer days). A league day falls Friday to Sunday (some midweek in a long season), a
   cup day Tuesday to Thursday, and at most one cup day sits between two league rounds.
 
 - **Registration (a league):** the squad list and its homegrown places, work permits, non-EU limits and signings from abroad,

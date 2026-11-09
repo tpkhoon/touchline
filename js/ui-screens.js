@@ -3897,7 +3897,7 @@
     const dom = W.cups()
       .filter((c) => (v === 'domestic' && !c.euro) || (v === 'continental' && c.euro) || (v === 'mine' && inIt(c)))
       .map((c) => {
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? UI.ico('star') : UI.ico('trophy')} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${U.plural(c.clubs.length, 'club')} · ${(FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout'} · ${W.rule(c.id, 'extraTime') === false ? 'straight to penalties' : FM.Cups.optsOf(c).etFrom ? 'extra time in the later rounds' : 'extra time & penalties'}${c.prize ? ` · ${U.money(c.prize)} fund, paid down the rounds` : ''}</div>
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${c.euro ? UI.ico('star') : UI.ico('trophy')} ${esc(c.name)} ${c.euro ? '' : C.flag(c.nat)}</div>${c.winner ? `<span class="pill acc">Winners: ${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.euro ? 'Europe · ' : ''}${U.plural(c.clubs.length, 'club')} · ${(FM.Cups.optsOf(c).groups ? 'a group stage, then ' : '') + ((FM.Cups.optsOf(c).legs || []).length ? 'knockout with two-legged rounds' : 'single-leg knockout')} · ${W.rule(c.id, 'extraTime') === false ? 'straight to penalties' : FM.Cups.optsOf(c).etFrom ? 'extra time in the later rounds' : 'extra time & penalties'}${c.prize ? ` · ${U.money(c.prize)} fund, paid down the rounds` : ''}</div>
         ${
           // (the ties of another nation's cup are not listed: you see its round and who won, the ties are yours to follow only at home)
           !c.euro && club() && c.nat !== club().nat && !inIt(c)
@@ -3918,7 +3918,7 @@
                       .join('')}`,
                 )
                 .join('') || '<div class="small dim" style="margin-top:8px">The draw has not been made yet.</div>'
-        }${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
+        }${c.groups && c.groups.length ? groupsHtml(c) : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     if (v === 'youth') return tabs + FM.YouthComps.html(esc, C.flag);

@@ -76,6 +76,9 @@
             .sort((a, b) => b.rep - a.rep)
             .map((x) => x.id);
       c.rounds = [];
+      c.groups = c.late = undefined;
+      c.gsOn = !!Cu.optsOf(c).groups; // (a save from before the group stage plays its cup as a plain knockout)
+      c.gsRound = c.gsDay = c.gsDone = c.adv = c.gsAfter = undefined;
       c.winner = null;
       c.awards = null;
       c.runnerUp = null;
@@ -564,10 +567,45 @@
       euroN =
         def &&
         (c.euro === 'holders' ? Cu.euroNations().length : Object.values(def.feeders || {}).reduce((t, k) => t + k, 0)),
-      n = Math.max(2, euroN || Cu.entrants(c).length),
-      p = 2 ** Math.floor(Math.log2(n)),
-      legs = (Cu.optsOf(c).legs || []).filter((k) => k <= p).length;
-    return Math.log2(p) + (n === p ? 0 : 1) + legs;
+      o = Cu.optsOf(c),
+      ko = (m) => {
+        const p = 2 ** Math.floor(Math.log2(m)),
+          legs = (o.legs || []).filter((k) => k <= p).length;
+        return Math.log2(p) + (m === p ? 0 : 1) + legs;
+      };
+    let n = Math.max(2, euroN || Cu.entrants(c).length),
+      days = 0;
+    const gs = o.groups;
+    if (o.entry && n > 8) {
+      // (the clubs that enter late wait; the rest play until no more are left than they are, then everyone plays on)
+      const L = o.entry.top || Math.round(n * 0.12);
+      let m = n - L;
+      if (m > L) {
+        while (m > L) {
+          const p = 2 ** Math.floor(Math.log2(m));
+          days += 1 + (o.legs || []).filter((k) => k === p).length;
+          m = m === p ? m / 2 : p;
+        }
+        n = m + L;
+        days += 1; // (the round the late clubs' byes can add)
+      }
+    }
+    if (gs) {
+      // the early rounds that thin the field to the groups, the groups' own days, and the knockouts of those that go through
+      const size = gs.size || 4;
+      while (n > gs.n * size) {
+        const p = 2 ** Math.floor(Math.log2(n));
+        days += 1 + (o.legs || []).filter((k) => k === p).length;
+        n = n === p ? n / 2 : p;
+      }
+      const G = Math.min(gs.n, Math.floor(n / size));
+      if (G >= 1) {
+        const m = Math.ceil(n / G); // (the biggest group: a field that does not divide makes groups of one more)
+        days += m % 2 ? m : m - 1;
+        n = Math.max(2, G * (gs.up || 2));
+      }
+    }
+    return days + ko(n);
   };
   // The places a league's clubs skip for a lower continental cup: its main cup's, and those of the cups above this
   // one in the same region (the Conference League takes the places after the Europa League's)
@@ -806,6 +844,79 @@
     }
   };
 
+  // A domestic cup with a group stage (opts.groups = { n groups, size of a group, up = the places that go through }): the early
+  // knockout rounds thin the field to n x size (a small field goes straight to the groups), the clubs are drawn into groups by
+  // strength (a snake), each group plays once round a cup day, and the places that go through enter the knockouts (the byes
+  // even out an odd number). Returns the day's group fixtures, or null when the cup is not (or no longer) in its group stage.
+  Cu.groupPhase = function (c, gs, alive) {
+    if (c.gsDone) return null;
+    const size = gs.size || 4;
+    if (!c.groups) {
+      if (alive.length > gs.n * size) return null;
+      const G = Math.min(gs.n, Math.floor(alive.length / size));
+      if (G < 1) {
+        c.gsDone = true;
+        return null;
+      }
+      const seeded = alive.slice().sort((a, b) => rep(b) - rep(a)),
+        ids = [...Array(G)].map(() => []);
+      seeded.forEach((id, i) => {
+        const row = Math.floor(i / G),
+          col = i % G;
+        ids[row % 2 ? G - 1 - col : col].push(id);
+      });
+      c.groups = ids.map((cl, gi) => {
+        const name = String.fromCharCode(65 + (gi % 26)) + (gi >= 26 ? Math.floor(gi / 26) : ''),
+          rr = W.roundRobin(cl);
+        return {
+          name,
+          clubs: cl,
+          table: mkTable(cl),
+          fixtures: rr.slice(0, rr.length / 2).map((rd, r) =>
+            rd.map(([h, a]) => ({
+              id: FM.nextId('f'),
+              comp: c.id,
+              group: name,
+              round: r,
+              h,
+              a,
+              res: null,
+              po: `Group ${name} · MD${r + 1}`,
+            })),
+          ),
+        };
+      });
+      c.gsRound = -1;
+      FM.News.add({
+        type: 'world',
+        title: `${c.name}: the group draw`,
+        body: c.groups.map((g) => `Group ${g.name}: ${g.clubs.map((id) => S().clubs[id].name).join(', ')}`).join('\n'),
+        big: true,
+      });
+    }
+    const roundOf = (r) => c.groups.flatMap((g) => g.fixtures[r] || []);
+    if (c.gsRound >= 0) {
+      const cur = roundOf(c.gsRound);
+      if (c.gsDay === S().day || cur.some((f) => !f.res)) return cur;
+    }
+    const total = Math.max(...c.groups.map((g) => g.fixtures.length));
+    if (c.gsRound + 1 < total) {
+      c.gsRound++;
+      c.gsDay = S().day;
+      return roundOf(c.gsRound);
+    }
+    const adv = [];
+    c.groups.forEach((g) =>
+      Cu.groupTable(g)
+        .slice(0, gs.up || 2)
+        .forEach((r) => adv.push(r.id)),
+    );
+    c.adv = adv;
+    c.gsDone = true;
+    c.gsAfter = c.rounds.length;
+    return null;
+  };
+
   function domestic(c) {
     if (c.winner) return [];
     const last = c.rounds[c.rounds.length - 1];
@@ -833,7 +944,30 @@
       const decider = last.ties2 || last.ties;
       if ((last.ties2 ? last.day2 : last.day) === S().day || decider.some((f) => !f.res)) return decider;
     }
-    const alive = last ? last.byes.concat((last.ties2 || last.ties).map(winnerOf)) : c.clubs.slice();
+    let alive = last ? last.byes.concat((last.ties2 || last.ties).map(winnerOf)) : c.clubs.slice();
+    // the clubs that enter late (opts.entry: { tier } = the clubs of that division and above, { top } = that many of the strongest):
+    // they wait while the rest play, and join once no more of the rest are left than they are
+    const en = Cu.optsOf(c).entry;
+    if (en && !last && c.late === undefined) {
+      const late = c.clubs.filter((id, i) =>
+        en.top ? i < en.top : (S().comps[S().clubs[id].comp].tier || 1) <= en.tier,
+      );
+      c.late = late.length && c.clubs.length - late.length > late.length ? late : null;
+    }
+    if (c.late) {
+      if (!last) alive = alive.filter((id) => !c.late.includes(id));
+      if (alive.length <= c.late.length) {
+        alive = alive.concat(c.late);
+        c.lateIn = c.rounds.length;
+        c.late = null;
+      }
+    }
+    const gsOpt = Cu.optsOf(c).groups;
+    if (gsOpt && c.gsOn && !c.gsDone) {
+      const gf = Cu.groupPhase(c, gsOpt, alive);
+      if (gf) return gf;
+    }
+    if (c.adv && c.rounds.length === c.gsAfter) alive = c.adv.slice(); // (the clubs through the groups)
     if (alive.length < 2) return [];
     const n = alive.length,
       p = 2 ** Math.floor(Math.log2(n));
@@ -1295,7 +1429,7 @@
       const g = c.groups.find((x) => x.name === fx.group);
       FM.Season.updTable(g.table, fx, r);
       const w = r.hg > r.ag ? fx.h : r.ag > r.hg ? fx.a : null,
-        amt = (c.prize || 0) * 0.1;
+        amt = (c.prize || 0) * (c.type === 'cup' ? 0.01 : 0.1);
       if (w) pay(w, amt, c, 'group wins');
       else {
         pay(fx.h, amt / 3, c, 'group wins');
@@ -1384,7 +1518,10 @@
         out.push(...(c.fixtures || []).flat());
         if (c.playoff) out.push(...c.playoff.sf, ...(c.playoff.sf2 || []), c.playoff.final, c.playoff.final2);
       }
-      if (c.type === 'cup') (c.rounds || []).forEach((r) => out.push(...r.ties, ...(r.ties2 || [])));
+      if (c.type === 'cup') {
+        (c.rounds || []).forEach((r) => out.push(...r.ties, ...(r.ties2 || [])));
+        (c.groups || []).forEach((g) => out.push(...g.fixtures.flat()));
+      }
       if (c.type === 'regional') out.push(...FM.Regional.allFixtures(c));
       if (c.type === 'continental' || c.type === 'world')
         (c.groups || []).forEach((g) => out.push(...g.fixtures.flat()));
@@ -1430,10 +1567,25 @@
       }
       const last = c.rounds[c.rounds.length - 1];
       const tie = last && (last.ties2 || last.ties).find(mine);
-      const out1 = c.rounds.some((r) => (r.ties2 || r.ties).some((f) => f.res && mine(f) && winnerOf(f) !== clubId));
+      const inGroups = c.groups && c.groups.some((g) => g.clubs.includes(clubId)),
+        outGroups = inGroups && c.gsDone && c.adv && !c.adv.includes(clubId);
+      const out1 =
+        outGroups || c.rounds.some((r) => (r.ties2 || r.ties).some((f) => f.res && mine(f) && winnerOf(f) !== clubId));
       out.push({
         c,
-        text: out1 ? 'Knocked out' : tie ? last.name : last ? `Through to next round` : 'Awaiting draw',
+        text: out1
+          ? 'Knocked out'
+          : inGroups && !c.gsDone
+            ? 'Group stage'
+            : c.late && c.late.includes(clubId)
+              ? 'Waiting to enter'
+              : tie
+                ? last.name
+                : last
+                  ? `Through to next round`
+                  : inGroups
+                    ? 'Through the groups'
+                    : 'Awaiting draw',
         alive: !out1,
       });
     }
