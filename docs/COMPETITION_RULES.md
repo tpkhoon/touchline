@@ -40,7 +40,7 @@ tables in the continental cups use UEFA's rule: head-to-head first.
 ## League formats: splits, tournaments and title playoffs
 
 Where a real league does not simply play a double round-robin, the game follows its format. The data lives in
-`rules` in `js/data.js` (`split`, `torneos`, `zones`, `playoffs`, `conferences`, `mls`).
+`rules` in `js/data.js` (`split`, `torneos`, `zones`, `playoffs`, `conferences`, `mls`, `pools`, `intermedio`, `average`).
 
 ### Splits
 
@@ -64,7 +64,15 @@ group, whatever the points. Points carry over unless noted.
 | K League 1 | 33 matches | Top 6 / bottom 6 | 5 matches each, points kept |
 | Cymru Premier | 22 matches | Top 6 / bottom 6 | 10 matches each, points kept |
 
+The Czech, Bulgarian and Greek groups of four (7th to 10th, 7th to 10th and 5th to 8th) play no round-robin: they play a Europe play-off knockout (semi-finals and a final, Greece over two legs) that ranks them first and second among the four.
+
 The Belgian Pro League plays a plain 34 matches in 2026/27 (the play-offs are abolished). The Romanian and Israeli splits are as in the table of `docs/real-formats/02-leagues.tsv`.
+
+### Two groups, an Intermedio and points average
+
+- **Spain's third tier** is one division of 40 clubs in two groups (`pools`): each group plays its own double round-robin, has its own table, sends its top 2 up and its bottom 2 down.
+- **Uruguay's Intermedio** (`intermedio`): 7 matches between the 15-match tournaments, in two groups of 8 made from the Apertura table (1st, 4th, 5th ... against 2nd, 3rd, 6th ...). It counts for the season's table, not for either tournament.
+- **Points average** (`average`): Argentina, Colombia and Paraguay relegate by points a match over three seasons, Uruguay over two.
 
 ### Two tournaments a year
 

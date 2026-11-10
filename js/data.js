@@ -1983,7 +1983,7 @@
       sim: 'light',
       clubs: 'CLUBS_ES3',
       repBand: [46, 36],
-      rules: { relegate: { to: 'ES4', n: 2 }, promote: { to: 'ES2', auto: 3, playoff: [4, 7] } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'ES4', n: 2 }, promote: { to: 'ES2', auto: 2 } },
     },
     {
       id: 'DE1',
@@ -2038,7 +2038,7 @@
       sim: 'light',
       clubs: 'CLUBS_FR2',
       repBand: [58, 44],
-      rules: { relegate: { to: 'FR3', n: 2 }, promote: { to: 'FR1', auto: 2, tie: true } },
+      rules: { relegate: { to: 'FR3', n: 2, playoff: true }, promote: { to: 'FR1', auto: 2, tie: true } },
     },
     {
       id: 'BR1',
@@ -2105,6 +2105,7 @@
       clubs: 'CLUBS_AR1',
       repBand: [79, 53],
       rules: {
+        average: 3, // relegation by points average over 3 seasons
         relegate: { to: 'AR2', n: 2 },
         torneos: ['Apertura', 'Clausura'],
         zones: true,
@@ -2296,14 +2297,15 @@
       clubs: 'CLUBS_CZ1',
       repBand: [64, 46],
       rules: {
-        relegate: { to: 'CZ2', n: 1, playoff: true },
+        relegate: { to: 'CZ2', n: 1, playoff: 2 },
         split: {
           after: 30,
           groups: [6, 4, 6],
-          rounds: ['single', 'single', 'single'],
+          rounds: ['single', 'none', 'single'],
           names: ['Championship group', 'Europe play-off', 'Relegation group'],
           halve: false,
         },
+        playoffs: { type: 'ko', n: 4, from: 6, europe: true }, // the clubs placed 7th to 10th: semi-finals and a final
       },
     },
     {
@@ -2320,10 +2322,11 @@
         split: {
           after: 26,
           groups: [4, 4, 6],
-          rounds: ['double', 'double', 'single'],
+          rounds: ['double', 'none', 'single'],
           names: ['Championship play-offs', 'Europe play-offs', 'Play-outs'],
           halve: true,
         },
+        playoffs: { type: 'ko', n: 4, from: 4, legs: 2, europe: true }, // the clubs placed 5th to 8th: semi-finals and a final over two legs
       },
     },
     {
@@ -2615,7 +2618,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_TZ1',
       repBand: [44, 32],
-      rules: { relegate: { to: 'TZ2', n: 2 }, qualify: { to: 'AF', n: 1 } },
+      rules: { relegate: { to: 'TZ2', n: 2, playoff: true }, qualify: { to: 'AF', n: 1 } },
     },
     {
       id: 'DZ1',
@@ -2681,7 +2684,7 @@
       clubs: 'CLUBS_RO1',
       repBand: [58, 40],
       rules: {
-        relegate: { to: 'RO2', n: 2 },
+        relegate: { to: 'RO2', n: 2, playoff: 2 },
         split: {
           after: 30,
           groups: [6, 10],
@@ -2723,10 +2726,12 @@
       clubs: 'CLUBS_UY1',
       repBand: [58, 40],
       rules: {
-        relegate: { to: 'UY2', n: 2 },
+        average: 2, // relegation by points average over 2 seasons
+        relegate: { to: 'UY2', n: 3 },
         qualify: { to: 'CL', n: 2 },
         rounds: 30,
         torneos: ['Apertura', 'Clausura'],
+        intermedio: true, // two groups of 8 between the tournaments (7 more matches: 37 in all)
         playoffs: { type: 'ko', n: 3, legs: 2, once: true, pool: 'winners' },
       },
     },
@@ -2740,6 +2745,7 @@
       clubs: 'CLUBS_CO1',
       repBand: [60, 40],
       rules: {
+        average: 3, // relegation by points average over 3 seasons
         relegate: { to: 'CO2', n: 2 },
         qualify: { to: 'CL', n: 4 },
         torneos: ['Apertura', 'Clausura'],
@@ -2810,7 +2816,7 @@
       sim: 'light',
       clubs: 'CLUBS_JP2',
       repBand: [52, 43],
-      rules: { relegate: { to: 'JP3', n: 3 }, promote: { to: 'JP1', auto: 3 } },
+      rules: { relegate: { to: 'JP3', n: 3 }, promote: { to: 'JP1', auto: 2, playoff: [3, 6] } },
     },
     {
       id: 'KR2',
@@ -2904,6 +2910,7 @@
       clubs: 'CLUBS_PY1',
       repBand: [50, 38],
       rules: {
+        average: 3, // relegation by points average over 3 seasons
         relegate: { to: 'PY2', n: 2 },
         qualify: { to: 'CL', n: 1 },
         rounds: 44,
@@ -3029,7 +3036,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_UA1',
       repBand: [58, 42],
-      rules: { relegate: { to: 'UA2', n: 2, playoff: true } },
+      rules: { relegate: { to: 'UA2', n: 2, playoff: 2 } },
     },
     {
       id: 'SK1',
@@ -3082,7 +3089,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AL1',
       repBand: [42, 32],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'AL2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'MK1',
@@ -3093,7 +3100,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_MK1',
       repBand: [41, 32],
-      rules: { rounds: 33 },
+      rules: { relegate: { to: 'MK2', n: 1, playoff: true }, rounds: 33 },
     },
     {
       id: 'ME1',
@@ -3104,7 +3111,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_ME1',
       repBand: [40, 31],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'ME2', n: 1, playoff: 2 }, rounds: 36 },
     },
     {
       id: 'BG1',
@@ -3116,14 +3123,15 @@
       clubs: 'CLUBS_BG1',
       repBand: [48, 34],
       rules: {
-        relegate: { to: 'BG2', n: 2 },
+        relegate: { to: 'BG2', n: 2, playoff: true },
         split: {
           after: 30,
           groups: [6, 4, 6],
-          rounds: ['single', 'single', 'single'],
+          rounds: ['single', 'none', 'single'],
           names: ['Championship group', 'Europe play-off group', 'Relegation group'],
           halve: false,
         },
+        playoffs: { type: 'ko', n: 4, from: 6, europe: true }, // the clubs placed 7th to 10th: semi-finals and a final
       },
     },
     {
@@ -3174,7 +3182,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_GE1',
       repBand: [43, 33],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'GE2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'IL1',
@@ -3205,7 +3213,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_RU1',
       repBand: [58, 42],
-      rules: { relegate: { to: 'RU2', n: 2, playoff: true } },
+      rules: { relegate: { to: 'RU2', n: 2, playoff: 2 } },
     },
     {
       id: 'BY1',
@@ -3216,7 +3224,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_BY1',
       repBand: [45, 33],
-      rules: { relegate: { to: 'BY2', n: 2 } },
+      rules: { relegate: { to: 'BY2', n: 2, playoff: true } },
     },
     {
       id: 'NI1',
@@ -3258,7 +3266,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_BO1',
       repBand: [43, 33],
-      rules: {},
+      rules: { relegate: { to: 'BO2', n: 1, playoff: true } },
     },
     {
       id: 'CR1',
@@ -3361,7 +3369,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_EE1',
       repBand: [40, 31],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'EE2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'LV1',
@@ -3372,7 +3380,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_LV1',
       repBand: [39, 30],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'LV2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'LT1',
@@ -3383,7 +3391,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_LT1',
       repBand: [39, 30],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'LT2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'AM1',
@@ -3438,7 +3446,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_XK1',
       repBand: [38, 30],
-      rules: { rounds: 36 },
+      rules: { relegate: { to: 'XK2', n: 1, playoff: true }, rounds: 36 },
     },
     {
       id: 'LU1',
@@ -3449,7 +3457,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_LU1',
       repBand: [37, 29],
-      rules: {},
+      rules: { relegate: { to: 'LU2', n: 1, playoff: true } },
     },
     {
       id: 'JO1',
@@ -3548,7 +3556,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_KE1',
       repBand: [38, 30],
-      rules: { relegate: { to: 'KE2', n: 2 } },
+      rules: { relegate: { to: 'KE2', n: 2, playoff: true } },
     },
     {
       id: 'UG1',
@@ -3647,7 +3655,7 @@
       sim: 'light',
       clubs: 'CLUBS_PT2',
       repBand: [57, 43],
-      rules: { relegate: { to: 'PT3', n: 2 }, promote: { to: 'PT1', auto: 2, tie: true } },
+      rules: { relegate: { to: 'PT3', n: 2, playoff: true }, promote: { to: 'PT1', auto: 2, tie: true } },
     },
     {
       id: 'BR2',
@@ -3691,7 +3699,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO2',
       repBand: [52, 40],
-      rules: { relegate: { to: 'NO3', n: 2 }, promote: { to: 'NO1', auto: 2, tie: true } },
+      rules: { relegate: { to: 'NO3', n: 2, playoff: true }, promote: { to: 'NO1', auto: 2, tie: true } },
     },
     {
       id: 'SE2',
@@ -3702,7 +3710,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE2',
       repBand: [52, 39],
-      rules: { relegate: { to: 'SE3', n: 1, playoff: true }, promote: { to: 'SE1', auto: 2, tie: true } },
+      rules: { relegate: { to: 'SE3', n: 2, playoff: 2 }, promote: { to: 'SE1', auto: 2, tie: true } },
     },
     {
       id: 'DZ2',
@@ -3746,7 +3754,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_BY2',
       repBand: [38, 27],
-      rules: { promote: { to: 'BY1', auto: 2 } },
+      rules: { promote: { to: 'BY1', auto: 2, tie: true } },
     },
     {
       id: 'BE2',
@@ -3768,7 +3776,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_BG2',
       repBand: [39, 28],
-      rules: { promote: { to: 'BG1', auto: 2 } },
+      rules: { promote: { to: 'BG1', auto: 2, tie: true } },
     },
     {
       id: 'CL2',
@@ -3966,7 +3974,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_KE2',
       repBand: [35, 24],
-      rules: { promote: { to: 'KE1', auto: 2 } },
+      rules: { promote: { to: 'KE1', auto: 2, tie: true } },
     },
     {
       id: 'MY2',
@@ -4065,7 +4073,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_RO2',
       repBand: [45, 34],
-      rules: { rounds: 21, promote: { to: 'RO1', auto: 2 }, relegate: { to: 'RO3', n: 1 } },
+      rules: { rounds: 21, promote: { to: 'RO1', auto: 2, tie: true }, relegate: { to: 'RO3', n: 1 } },
     },
     {
       id: 'RU2',
@@ -4153,7 +4161,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_TZ2',
       repBand: [37, 26],
-      rules: { promote: { to: 'TZ1', auto: 2 } },
+      rules: { promote: { to: 'TZ1', auto: 2, tie: true } },
     },
     {
       id: 'TN2',
@@ -4208,7 +4216,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_UY2',
       repBand: [45, 34],
-      rules: { promote: { to: 'UY1', auto: 2 } },
+      rules: { promote: { to: 'UY1', auto: 3 } },
     },
     {
       id: 'UZ2',
@@ -4318,7 +4326,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_FR3',
       repBand: [49, 38],
-      rules: { promote: { to: 'FR2', auto: 2 }, relegate: { to: 'FR4', n: 2 } },
+      rules: { promote: { to: 'FR2', auto: 2, tie: true }, relegate: { to: 'FR4', n: 2 } },
     },
     {
       id: 'GR3',
@@ -4428,7 +4436,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO3',
       repBand: [45, 34],
-      rules: { promote: { to: 'NO2', auto: 2 }, relegate: { to: 'NO4', n: 2 } },
+      rules: { promote: { to: 'NO2', auto: 2, tie: true }, relegate: { to: 'NO4', n: 2 } },
     },
     {
       id: 'PL3',
@@ -4450,7 +4458,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_PT3',
       repBand: [48, 37],
-      rules: { promote: { to: 'PT2', auto: 2 }, relegate: { to: 'PT4', n: 2 } },
+      rules: { promote: { to: 'PT2', auto: 2, tie: true }, relegate: { to: 'PT4', n: 2 } },
     },
     {
       id: 'RO3',
@@ -4527,7 +4535,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE3',
       repBand: [44, 33],
-      rules: { promote: { to: 'SE2', auto: 1, tie: true }, relegate: { to: 'SE4', n: 2 } },
+      rules: { promote: { to: 'SE2', auto: 2, tie: true }, relegate: { to: 'SE4', n: 2 } },
     },
     {
       id: 'CH3',
@@ -4879,7 +4887,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_ES4',
       repBand: [41, 30],
-      rules: { promote: { to: 'ES3', auto: 2 } },
+      rules: { promote: { to: 'ES3', auto: 4 } },
     },
     {
       id: 'SE4',
@@ -4958,6 +4966,116 @@
       repBand: [36, 28],
       nats: ['FIJ', 'SOL', 'VAN', 'PNG', 'TAH', 'NCL', 'AUS'],
       rules: { rounds: 14 },
+    },
+    {
+      id: 'AL2',
+      nat: 'ALB',
+      name: 'Albanian Lidhja e Dytë',
+      short: 'AL2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_AL2',
+      repBand: [37, 26],
+      rules: { promote: { to: 'AL1', auto: 1, tie: true } },
+    },
+    {
+      id: 'BO2',
+      nat: 'BOL',
+      name: 'Bolivia Liga Nacional',
+      short: 'BO2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_BO2',
+      repBand: [38, 27],
+      rules: { promote: { to: 'BO1', auto: 1, tie: true } },
+    },
+    {
+      id: 'EE2',
+      nat: 'EST',
+      name: 'Estonian Teine Liiga',
+      short: 'EE2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_EE2',
+      repBand: [36, 25],
+      rules: { rounds: 36, promote: { to: 'EE1', auto: 1, tie: true } },
+    },
+    {
+      id: 'GE2',
+      nat: 'GEO',
+      name: 'Meridian Liga 2',
+      short: 'GE2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_GE2',
+      repBand: [38, 27],
+      rules: { rounds: 36, promote: { to: 'GE1', auto: 1, tie: true } },
+    },
+    {
+      id: 'XK2',
+      nat: 'KOS',
+      name: 'Kosovan Liga e Dytë',
+      short: 'XK2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_XK2',
+      repBand: [35, 24],
+      rules: { promote: { to: 'XK1', auto: 1, tie: true } },
+    },
+    {
+      id: 'LV2',
+      nat: 'LVA',
+      name: 'Latvian Zelta Līga',
+      short: 'LV2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_LV2',
+      repBand: [35, 24],
+      rules: { promote: { to: 'LV1', auto: 1, tie: true } },
+    },
+    {
+      id: 'LT2',
+      nat: 'LTU',
+      name: 'Lithuanian Aukso Lyga',
+      short: 'LT2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_LT2',
+      repBand: [35, 24],
+      rules: { promote: { to: 'LT1', auto: 1, tie: true } },
+    },
+    {
+      id: 'LU2',
+      nat: 'LUX',
+      name: 'Luxembourg Zweite Hauptliga',
+      short: 'LU2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_LU2',
+      repBand: [34, 23],
+      rules: { promote: { to: 'LU1', auto: 1, tie: true } },
+    },
+    {
+      id: 'ME2',
+      nat: 'MNE',
+      name: 'Lumen Druga Liga',
+      short: 'ME2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_ME2',
+      repBand: [36, 25],
+      rules: { promote: { to: 'ME1', auto: 1, tie: true } },
+    },
+    {
+      id: 'MK2',
+      nat: 'MKD',
+      name: 'North Macedonian Liga Dva',
+      short: 'MK2',
+      tier: 2,
+      sim: 'minimal',
+      clubs: 'CLUBS_MK2',
+      repBand: [37, 26],
+      rules: { promote: { to: 'MK1', auto: 1, tie: true } },
     },
   ];
   FM.D.CONTINENTALS = [
@@ -5727,6 +5845,16 @@
       note: '',
     },
   ];
+  FM.D.NAT_MIX.AL2 = { ...FM.D.NAT_MIX.AL1 };
+  FM.D.NAT_MIX.BO2 = { ...FM.D.NAT_MIX.BO1 };
+  FM.D.NAT_MIX.EE2 = { ...FM.D.NAT_MIX.EE1 };
+  FM.D.NAT_MIX.GE2 = { ...FM.D.NAT_MIX.GE1 };
+  FM.D.NAT_MIX.XK2 = { ...FM.D.NAT_MIX.XK1 };
+  FM.D.NAT_MIX.LV2 = { ...FM.D.NAT_MIX.LV1 };
+  FM.D.NAT_MIX.LT2 = { ...FM.D.NAT_MIX.LT1 };
+  FM.D.NAT_MIX.LU2 = { ...FM.D.NAT_MIX.LU1 };
+  FM.D.NAT_MIX.ME2 = { ...FM.D.NAT_MIX.ME1 };
+  FM.D.NAT_MIX.MK2 = { ...FM.D.NAT_MIX.MK1 };
   FM.D.facts = () => ({
     clubs: FM.D.LEAGUES.reduce((n, l) => n + FM.D[l.clubs].length, 0),
     leagues: FM.D.LEAGUES.length,

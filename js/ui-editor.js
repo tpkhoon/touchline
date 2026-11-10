@@ -1339,6 +1339,10 @@
     };
   };
   const setPair = (l, up, { n, mode, legs }) => {
+    if ((l.rules && l.rules.pools) || (up.rules && up.rules.pools)) {
+      ED.err = ['A league of two groups keeps its places for promotion and relegation: they are counted in each group'];
+      return;
+    }
     const was = [clone(l.rules || {}), clone(up.rules || {})];
     l.rules = l.rules || {};
     up.rules = up.rules || {};
@@ -1363,8 +1367,8 @@
   const tbKey = (l) => ((l.rules && l.rules.tiebreak) || D.TIEBREAK[l.id] || D.TIEBREAK_DEFAULT).join();
   const leagueFormat = (l) => {
     const r = l.rules || {},
-      fixed = r.split || r.zones || r.conferences || r.rounds || r.torneos;
-    const canSplit = !(r.zones || r.conferences || r.torneos || r.rounds || r.legs);
+      fixed = r.pools || r.split || r.zones || r.conferences || r.rounds || r.torneos;
+    const canSplit = !(r.pools || r.zones || r.conferences || r.torneos || r.rounds || r.legs);
     const n = clubsOf(l.id).length,
       sp = r.split;
     const splitBox = !canSplit
@@ -1476,7 +1480,7 @@
     const mls = sq.mls != null ? sq.mls : game.mls;
     const poType = (r.playoffs || {}).type;
     const poBuiltIn = (D.LEAGUES.find((x) => x.id === l.id) || { rules: {} }).rules.playoffs;
-    const fixedFormat = r.zones || r.conferences;
+    const fixedFormat = r.pools || r.zones || r.conferences;
     const n = clubsOf(l.id).length;
     const exp = (ED.def.expansion || {})[l.id];
     return `<div class="ng-label">Rules of this league <span class="tiny dim">· the world has ${worldRule('win')} points for a win and ${worldRule('subs')} substitutes</span></div>
@@ -1648,6 +1652,8 @@
     return out;
   };
   const structureBox = (l, r) => {
+    if (r.pools)
+      return `<div class="tiny dim" style="margin-top:6px;line-height:1.5">${esc(r.pools.join(' and '))}: separate tables that each play home and away. The places for promotion and relegation are counted in each group. A club that comes in joins the smaller group.</div>`;
     if (r.zones)
       return `<div class="tiny dim" style="margin-top:6px;line-height:1.5">The clubs split into two zones by reputation (best clubs spread across both). Each zone plays itself once and the other zone once, twice a year (${(r.torneos || []).join(' and ')}), and the top eight of each zone play off for the title. Needs at least sixteen clubs.</div>`;
     if (!r.conferences) return '';
@@ -1687,6 +1693,7 @@
   };
   UI.acts.edStructure = (d) =>
     tryRules((r, l) => {
+      if (r.pools) return; // (separate tables keep their own format)
       const was = r.zones ? 'zones' : r.conferences ? 'conf' : 'single';
       if (d.v === was) return;
       if (was === 'zones') {
@@ -4249,7 +4256,7 @@
         .sort((a, b) => a.name.localeCompare(b.name)),
       limit = WD.pinLimit(l, cl.length),
       round = Math.max(1, Math.min(limit, ED.sr || 1)),
-      blocked = r.zones || r.conferences || r.torneos || r.split;
+      blocked = r.pools || r.zones || r.conferences || r.torneos || r.split;
     const name = (id) => (cl.find((c) => c.id === id) || { name: id }).name;
     const here = sch.filter((p) => p.round === round);
     const busy = new Set(here.flatMap((p) => [p.h, p.a]));
@@ -4370,7 +4377,7 @@
         .sort((a, b) => a.name.localeCompare(b.name));
     const name = (id) => (cl.find((c) => c.id === id) || { name: id }).name;
     const limit = WD.pinLimit(l, cl.length);
-    const blocked = r.zones || r.conferences || r.torneos;
+    const blocked = r.pools || r.zones || r.conferences || r.torneos;
     const sel = (id) =>
       `<select id="${id}" style="flex:1;min-width:0">${cl.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>`;
     return `<div class="h1" style="margin-top:2vh">Fixed fixtures</div><div class="tag">${esc(l.name)} · ${U.plural(cl.length, 'club')} · ${limit} matchdays</div>
@@ -5419,11 +5426,12 @@
     };
     for (const l of leagues) {
       const r = l.rules || {};
-      if (r.relegate && r.relegate.to) link(l.id, r.relegate.to, r.relegate.n, 'down');
+      if (r.relegate && r.relegate.to) link(l.id, r.relegate.to, r.relegate.n * (r.pools ? r.pools.length : 1), 'down');
     }
     for (const l of leagues) {
       const r = l.rules || {};
-      if (r.promote && r.promote.to) link(r.promote.to, l.id, promoted(r.promote), 'up');
+      if (r.promote && r.promote.to)
+        link(r.promote.to, l.id, promoted(r.promote) * (r.pools ? r.pools.length : 1), 'up');
     }
     for (const [u, lw] of links) {
       const up = L.get(u).rules || {},

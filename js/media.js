@@ -118,7 +118,9 @@
   const lastN = (c, n) => (c.recent || []).slice(-n);
   const inTable = (c) => {
     const comp = FM.S.comps[c.comp];
-    return comp && comp.table[c.id] && comp.table[c.id].p >= 6 ? { pos: W.position(c.id), n: comp.clubs.length } : null;
+    return comp && comp.table[c.id] && comp.table[c.id].p >= 6
+      ? { pos: W.position(c.id), n: W.rivalsOf(comp, c.id).length }
+      : null;
   };
   M.PRESS_BANK = [
     // injuries

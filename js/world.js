@@ -2696,19 +2696,69 @@
       ),
     );
 
+  // A division of separate tables (rules.pools: Spain's third tier is two groups of 20): each club belongs to one pool for as long as
+  // it is in the division (comp.pool, club id -> pool number). The first season splits the division by where the clubs are (the north
+  // and the south); a club that arrives later joins the smaller pool.
+  W.poolsOf = function (comp) {
+    const k = comp.rules.pools.length;
+    comp.pool = comp.pool || {};
+    for (const id of Object.keys(comp.pool)) if (!comp.clubs.includes(id)) delete comp.pool[id];
+    const fresh = comp.clubs.filter((id) => comp.pool[id] === undefined);
+    const size = (g) => comp.clubs.filter((id) => comp.pool[id] === g).length;
+    if (fresh.length === comp.clubs.length) {
+      const lat = (id) => (D.GEO[id.replace(/^c_/, '')] || [0])[0];
+      fresh
+        .slice()
+        .sort((a, b) => lat(b) - lat(a))
+        .forEach((id, i) => (comp.pool[id] = Math.min(k - 1, Math.floor((i * k) / fresh.length))));
+    } else
+      for (const id of fresh) {
+        let best = 0;
+        for (let g = 1; g < k; g++) if (size(g) < size(best)) best = g;
+        comp.pool[id] = best;
+      }
+    return Array.from({ length: k }, (_, g) => comp.clubs.filter((id) => comp.pool[id] === g));
+  };
+  // the pools' rounds side by side (a pool of an odd size has a rest round)
+  W.poolRounds = function (pools) {
+    const rrs = pools.map((ids) => W.roundRobin(ids));
+    return Array.from({ length: Math.max(...rrs.map((r) => r.length)) }, (_, r) => rrs.flatMap((rr) => rr[r] || []));
+  };
+
   W.setupSeasonFixtures = function (comp) {
     const R = comp.rules || {};
     comp.table = {};
     comp.clubs.forEach((id) => (comp.table[id] = blankRow(comp.deductions?.[id] ? -comp.deductions[id] : 0)));
     comp.deductions = {};
-    let rounds = R.conferences ? W.conferenceRounds(comp) : R.zones ? W.zoneRounds(comp) : W.roundRobin(comp.clubs);
-    if (R.torneos && R.rounds && !R.conferences && !R.zones && !R.split) {
+    const pools = R.pools ? W.poolsOf(comp) : null;
+    let inter = null;
+    let rounds = pools
+      ? W.poolRounds(pools)
+      : R.conferences
+        ? W.conferenceRounds(comp)
+        : R.zones
+          ? W.zoneRounds(comp)
+          : W.roundRobin(comp.clubs);
+    if (pools) {
+      // a division of separate tables: each pool plays its own double round-robin (nothing else applies)
+    } else if (R.torneos && R.rounds && !R.conferences && !R.zones && !R.split) {
       // two tournaments of an equal length that is not a whole round-robin (Panama and Uruguay play 18 and 15 matches): each
       // takes the first rounds of the schedule, the second with the home matches reversed
       const per = Math.floor(R.rounds / 2),
         one = W.roundRobin(comp.clubs);
       while (one.length < per) one.push(...W.roundRobin(comp.clubs));
-      rounds = one.slice(0, per).concat(one.slice(0, per).map((rd) => rd.map(([h, a]) => [a, h])));
+      const back = one.slice(0, per).map((rd) => rd.map(([h, a]) => [a, h]));
+      if (R.intermedio) {
+        // Uruguay's Intermedio: between the two tournaments the clubs play in two groups (a single round-robin each), the groups
+        // made from the first tournament's table; its rounds are empty until the first tournament is over
+        const g = Math.ceil(comp.clubs.length / 2),
+          len = g % 2 ? g : g - 1;
+        inter = { from: per, len, done: false };
+        rounds = one.slice(0, per).concat(
+          Array.from({ length: len }, () => []),
+          back,
+        );
+      } else rounds = one.slice(0, per).concat(back);
     } else if (R.rounds) {
       // formats longer than a double round-robin (a triple or quadruple one: Hungary 33, Croatia and Ireland 36 ...) play it again
       if (!R.conferences && !R.zones && !R.split)
@@ -2718,7 +2768,10 @@
       rounds = rounds.slice(0, Math.ceil(rounds.length / 2)); // once each
     comp.groupOf = null;
     comp.groups = null;
+    comp.pools = null;
     comp.split = null;
+    comp.pools = pools;
+    comp.inter = inter;
     if (R.split) {
       // a regular season of `after` rounds (a third time round for the 33-game leagues), then the split
       while (rounds.length < R.split.after) {
@@ -2732,7 +2785,7 @@
     // a schedule made by hand (rules.schedule: every match with its matchday): used as it is when every club it names is in the
     // league and no match falls after the last matchday; otherwise the game's own schedule is made (with any fixed matches)
     let custom = false;
-    if (R.schedule && R.schedule.length && !R.conferences && !R.zones && !R.torneos && !R.split) {
+    if (R.schedule && R.schedule.length && !pools && !R.conferences && !R.zones && !R.torneos && !R.split) {
       const ids = new Set(comp.clubs);
       if (R.schedule.every((p) => ids.has(p.h) && ids.has(p.a) && p.round >= 1 && p.round <= rounds.length)) {
         rounds = rounds.map((_, i) => R.schedule.filter((p) => p.round === i + 1).map((p) => [p.h, p.a]));
@@ -2741,7 +2794,7 @@
     }
     // matches fixed by hand: those whose clubs are in the league and whose matchday exists (the rest of the pins give way
     // one at a time if no schedule can hold them all)
-    if (!custom && R.pins && R.pins.length && !R.conferences && !R.zones) {
+    if (!custom && R.pins && R.pins.length && !pools && !R.conferences && !R.zones) {
       const regular = R.split ? R.split.after : rounds.length;
       let pins = R.pins
         .filter((p) => comp.clubs.includes(p.h) && comp.clubs.includes(p.a) && p.round >= 1 && p.round <= regular)
@@ -2763,7 +2816,7 @@
     comp.torneos = R.torneos
       ? R.torneos.map((name) => ({ name, table: Object.fromEntries(comp.clubs.map((id) => [id, blankRow()])) }))
       : null;
-    comp.torneoHalf = comp.torneos ? Math.ceil(comp.fixtures.length / 2) : 0;
+    comp.torneoHalf = comp.torneos ? (inter ? inter.from + inter.len : Math.ceil(comp.fixtures.length / 2)) : 0;
     comp.playoff = null;
     comp.ko = null;
   };
@@ -2867,18 +2920,62 @@
       }
       i = j;
     }
-    return rows;
+    // a Europe play-off (a knockout of the clubs from rank `from`, rules.playoffs.europe) puts its winner and runner-up first among them
+    return comp.rules && comp.rules.playoffs && comp.rules.playoffs.europe && comp.ko ? W.euroOrder(comp, rows) : rows;
   };
-  // one tournament's table (Apertura / Clausura), and one zone of it (Argentina)
+  W.euroOrder = function (c, rows) {
+    const res = FM.Season.koResult(c, 0),
+      plan = W.koPlan(c);
+    if (!res || !plan) return rows;
+    const slot = rows.slice(plan.from, plan.from + plan.n),
+      first = [res.champion, res.runnerUp].map((id) => slot.find((r) => r.id === id)).filter(Boolean);
+    return [
+      ...rows.slice(0, plan.from),
+      ...first,
+      ...slot.filter((r) => !first.includes(r)),
+      ...rows.slice(plan.from + plan.n),
+    ];
+  };
+  // which tournament a round belongs to (0 or 1; -1 for the Intermedio between them, which is in neither tournament's table)
+  W.torneoOf = (comp, round) =>
+    comp.inter && round >= comp.inter.from && round < comp.inter.from + comp.inter.len
+      ? -1
+      : round >= comp.torneoHalf
+        ? 1
+        : 0;
+  // The Intermedio: once the first tournament is over, its table makes two groups (alternating, so each holds the same mix), and each
+  // group plays a single round-robin in the rounds set aside for it
+  W.doIntermedio = function (c) {
+    const t = W.torneoTable(c, 0),
+      groups = [[], []];
+    t.forEach((r, i) => groups[[0, 1, 1, 0][i % 4]].push(r.id));
+    const per = groups.map((ids) => W.roundRobin(ids));
+    for (let j = 0; j < c.inter.len; j++)
+      c.fixtures[c.inter.from + j] = per.flatMap((rds) =>
+        (rds[j] || []).map(([h, a]) => ({ id: FM.nextId('f'), comp: c.id, round: c.inter.from + j, h, a, res: null })),
+      );
+    c.inter.groups = groups;
+    c.inter.done = true;
+  };
+
   W.torneoTable = function (comp, t, zone) {
     const half = comp.torneoHalf,
-      fx = (t ? comp.fixtures.slice(half) : comp.fixtures.slice(0, half)).flat();
+      fx = (t ? comp.fixtures.slice(half) : comp.fixtures.slice(0, comp.inter ? comp.inter.from : half)).flat();
     const rows = W.sortedTable({ id: comp.id, rules: comp.rules, table: comp.torneos[t].table, fixtures: [fx] });
     return zone ? rows.filter((r) => comp.zones && comp.zones[r.id] === zone) : rows;
   };
+  // the clubs a club is ranked among: its whole league, or its own pool in a division of separate tables
+  W.rivalsOf = (comp, clubId) =>
+    comp.pools && comp.pool && comp.pool[clubId] !== undefined ? comp.pools[comp.pool[clubId]] : comp.clubs;
   W.position = (clubId) => {
-    const c = FM.S.clubs[clubId];
-    return W.sortedTable(FM.S.comps[c.comp]).findIndex((r) => r.id === clubId) + 1;
+    const c = FM.S.clubs[clubId],
+      comp = FM.S.comps[c.comp],
+      own = comp.pools ? new Set(W.rivalsOf(comp, clubId)) : null;
+    return (
+      W.sortedTable(comp)
+        .filter((r) => !own || own.has(r.id))
+        .findIndex((r) => r.id === clubId) + 1
+    );
   };
 
   W.leagues = () => Object.values(FM.S.comps).filter((c) => c.type === 'league');
@@ -2915,6 +3012,10 @@
     const k = W.roundOn(c, r);
     if (k < 0) return null;
     // a split league makes its post-split rounds once every regular-season match is in
+    if (c.inter && !c.inter.done && k >= c.inter.from) {
+      if (c.fixtures.slice(0, c.inter.from).every((rd) => rd.every((f) => f.res))) W.doIntermedio(c);
+      else return [];
+    }
     const sp = c.rules.split;
     if (sp && c.split && !c.split.done && k >= sp.after) {
       if (c.fixtures.slice(0, sp.after).every((rd) => rd.every((f) => f.res))) W.doSplit(c);
@@ -2953,7 +3054,8 @@
       keys.push('M' + (5 - r + i));
       legs.push(i === r - 1 ? lastLegs : P.legs === 2 ? 2 : 1);
     }
-    return { n, r, size: 2 ** r, keys, legs };
+    // (a Europe play-off takes the clubs from rank `from` on, not the top of the table, and does not decide the champion)
+    return { n, r, size: 2 ** r, keys, legs, from: P.from || 0, europe: !!P.europe };
   };
   // the days a title play-off needs for second legs (those of any league that plays them)
   W.koStages = function () {

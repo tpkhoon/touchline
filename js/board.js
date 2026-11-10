@@ -91,7 +91,7 @@
       id: comp.id,
       name: comp.name,
       rules: R,
-      n: comp.clubs.length,
+      n: W.rivalsOf(comp, club.id).length,
       exp: Sea().expectedPos(club),
       ccName: R.qualify && s.comps[R.qualify.to] ? s.comps[R.qualify.to].name : '',
     });
@@ -183,7 +183,7 @@
     // (no derby without a rival; a fallen giant expected near the top already has the league aim to meet)
     // (a weak squad is not asked to dominate: 2+ goals a game only where the club is expected in the top half)
     const comp = S().comps[club.comp],
-      weak = comp && Sea().expectedPos(club) > Math.ceil(comp.clubs.length / 2);
+      weak = comp && Sea().expectedPos(club) > Math.ceil(W.rivalsOf(comp, club.id).length / 2);
     if (
       idObj &&
       !(idObj.id === 'derby' && !club.rival) &&

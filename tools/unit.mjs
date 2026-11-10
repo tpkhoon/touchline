@@ -895,8 +895,11 @@ try {
       const up = L[pr.to],
         down = up && up.rules.relegate;
       // the division above sends down as many as come up (one more when a play-off decides a further place)
-      const want = pr.auto + (pr.playoff ? 1 : 0);
-      if (!up || !down || down.to !== l.id || down.n !== want || !!down.playoff !== !!pr.tie) bad.push(l.id);
+      // (a division of separate groups counts its places in each group)
+      const groups = (x) => (x.rules.pools ? x.rules.pools.length : 1);
+      const want = (pr.auto + (pr.playoff ? 1 : 0)) * groups(l);
+      if (!up || !down || down.to !== l.id || down.n * groups(up) !== want || !!down.playoff !== !!pr.tie)
+        bad.push(l.id);
       else if (up.nat !== l.nat) bad.push(l.id + ' (nation)');
     }
     if (rel && !(L[rel.to] && L[rel.to].rules.promote && L[rel.to].rules.promote.to === l.id))

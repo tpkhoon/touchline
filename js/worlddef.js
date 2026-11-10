@@ -1756,8 +1756,10 @@
       at = `league ${l.id}`,
       pins = r.pins;
     if (!Array.isArray(pins)) return [`${at}: fixed fixtures are a list`];
-    if (r.zones || r.conferences || r.torneos)
-      return [`${at}: fixtures cannot be fixed in a league with zones, conferences or two tournaments`];
+    if (r.pools || r.zones || r.conferences || r.torneos)
+      return [
+        `${at}: fixtures cannot be fixed in a league with zones, conferences, separate groups or two tournaments`,
+      ];
     const ids = def.clubs.filter((c) => c.league === l.id).map((c) => c.id),
       nm = (id) => (def.clubs.find((c) => c.id === id) || { name: id }).name,
       e = [],
@@ -1801,9 +1803,9 @@
       at = `league ${l.id}`,
       sch = r.schedule;
     if (!Array.isArray(sch)) return [`${at}: a schedule is a list of matches`];
-    if (r.zones || r.conferences || r.torneos || r.split)
+    if (r.pools || r.zones || r.conferences || r.torneos || r.split)
       return [
-        `${at}: a schedule cannot be made by hand in a league with zones, conferences, two tournaments or a split`,
+        `${at}: a schedule cannot be made by hand in a league with zones, conferences, separate groups, two tournaments or a split`,
       ];
     const ids = def.clubs.filter((c) => c.league === l.id).map((c) => c.id),
       nm = (id) => (def.clubs.find((c) => c.id === id) || { name: id }).name,
@@ -1844,6 +1846,34 @@
         !r.tiebreak.every((k) => ['h2h', 'wins', 'gd', 'gf'].includes(k))
       )
         e.push(`${at}: the tie-breakers are some of head-to-head, wins, goal difference and goals scored`);
+    }
+    if (r.pools != null) {
+      const n = def.clubs.filter((c) => c.league === l.id).length;
+      if (!Array.isArray(r.pools) || r.pools.length !== 2 || !r.pools.every((x) => String(x || '').trim()))
+        e.push(`${at}: separate groups are two groups, each with a name`);
+      if (r.zones || r.conferences || r.split || r.torneos || r.rounds || r.legs || r.playoffs || r.mls)
+        e.push(
+          `${at}: a league of two groups cannot also have zones, conferences, a split, tournaments or a title play-off`,
+        );
+      if (r.promote && r.promote.playoff) e.push(`${at}: a league of two groups has no promotion play-off`);
+      if (n && n < 8) e.push(`${at}: two groups need at least eight clubs`);
+    }
+    if (r.average != null) {
+      if (!(Number.isInteger(r.average) && r.average >= 2 && r.average <= 5))
+        e.push(`${at}: the points average runs over two to five seasons`);
+      else if (!r.relegate) e.push(`${at}: a points average needs a division below to relegate to`);
+      else if (r.relegate.playoff || r.pools || r.split)
+        e.push(`${at}: relegation by points average cannot go with a relegation play-off, groups or a split`);
+    }
+    if (r.intermedio != null) {
+      if (r.intermedio !== true && r.intermedio !== false) e.push(`${at}: the Intermedio is on or off`);
+      else if (
+        r.intermedio &&
+        (!Array.isArray(r.torneos) || !r.rounds || r.zones || r.conferences || r.split || r.pools)
+      )
+        e.push(
+          `${at}: an Intermedio goes between two tournaments of a set length, with no zones, conferences, split or groups`,
+        );
     }
     if (r.split) {
       const s = r.split,
@@ -1931,6 +1961,9 @@
         !(Array.isArray(r.torneos) && r.torneos.length === 2 && r.torneos.every((x) => String(x || '').trim()))
       )
         e.push(`${at}: two tournaments a year, each with a name`);
+      // (two tournaments need a title play-off to finish each, except Paraguay's, where the game has the leader of each win)
+      if (r.torneos && !r.playoffs && !(D.LEAGUES.find((x) => x.id === l.id) || { rules: {} }).rules.torneos)
+        e.push(`${at}: two tournaments a year need a title play-off to finish each`);
     }
     if (r.squad != null) {
       if (typeof r.squad !== 'object' || Array.isArray(r.squad)) e.push(`${at}: squad rules are a list of settings`);

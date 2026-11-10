@@ -65,7 +65,7 @@ const contId = D.CONTINENTALS[0].id;
 {
   const cal = WD.calendarNow();
   check(
-    cal.preseason === 3 && cal.cup.length === 6 && cal.cont.G1 === 2 && cal.intl.join() === '7,15,20',
+    cal.preseason === 3 && cal.cup.length === 6 && cal.cont.G1 === 2 && cal.intl.join() === '7,11,15,20',
     'the game calendar was misread',
   );
   check(WD.validateCalendar({ ...cal, preseason: 9 }).length > 0, 'nine days of pre-season was accepted');

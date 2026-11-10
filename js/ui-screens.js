@@ -2905,8 +2905,12 @@
       t = W.sortedTable(comp),
       R = comp.rules,
       n = t.length;
-    const zone = (i) =>
-      R.relegate && i >= n - R.relegate.n
+    // (relegation by points average: the clubs with the lowest average, not the bottom of this season's table)
+    const avg = R.average && R.relegate ? FM.Season.averageRows(comp, t) : null,
+      avgDown = avg ? new Set(avg.slice(0, R.relegate.n).map((r) => r.id)) : null;
+    const zone = (i) => (avg ? (avgDown.has(t[i].id) ? 'zone-down' : '') || zoneAbove(i) : zoneAbove(i));
+    const zoneAbove = (i) =>
+      R.relegate && !avg && i >= n - R.relegate.n
         ? 'zone-down'
         : R.promote && i < R.promote.auto
           ? 'zone-up'
@@ -2919,8 +2923,9 @@
                 : R.qualify && i < R.qualify.n
                   ? 'zone-po'
                   : '';
+    const each = R.pools ? ' in each group' : '';
     const legend = [
-      R.promote ? `● Promotion (${R.promote.auto})` : '● Champion',
+      R.promote ? `● Promotion (${R.promote.auto}${each})` : '● Champion',
       R.promote
         ? R.promote.playoff
           ? `● Playoffs (${R.promote.playoff.join('–')})`
@@ -2931,7 +2936,7 @@
           ? `● ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`
           : '',
       R.relegate
-        ? `● Relegation (${R.relegate.n})${R.relegate.playoff ? ` · play-off (${n - R.relegate.n})` : ''}`
+        ? `● Relegation (${R.relegate.n}${each})${R.relegate.playoff ? ` · play-off (${n - R.relegate.n})` : ''}`
         : '',
     ].filter(Boolean);
     const po = comp.playoff;
@@ -2968,6 +2973,11 @@
         )
         .join('');
       shown = comp.ko && comp.ko[0];
+    } else if (torn && tv === 'inter') {
+      // the Intermedio between the two tournaments: its two groups
+      tables = FM.Season.interTables(comp)
+        .map((rows, g) => tableHTML(rows, (i) => (i === 0 ? 'zone-up' : ''), `Intermedio · Group ${'AB'[g]}`))
+        .join('');
     } else if (torn && tv !== 'all') {
       const cut = comp.zones ? 8 : kp ? kp.n : 6;
       tables = comp.zones
@@ -2986,6 +2996,23 @@
             torn[tv].name,
           );
       shown = comp.ko && comp.ko[tv];
+    } else if (comp.pools && R.pools) {
+      // a division of separate tables: each pool's own places
+      tables = comp.pools
+        .map((ids, g) => {
+          const rows = t.filter((r) => ids.includes(r.id));
+          return tableHTML(
+            rows,
+            (i) =>
+              R.relegate && i >= rows.length - R.relegate.n
+                ? 'zone-down'
+                : R.promote && i < R.promote.auto
+                  ? 'zone-up'
+                  : '',
+            R.pools[g],
+          );
+        })
+        .join('');
     } else if (groups) {
       tables = comp.groups
         .map((ids, g) =>
@@ -2998,16 +3025,17 @@
         .join('');
     } else {
       tables = tableHTML(t, (i) =>
-        (finals && i < 6) || (kp && !torn && i < kp.n) ? (i > 0 ? 'zone-po' : zone(i)) : zone(i),
+        (finals && i < 6) || (kp && !kp.europe && !torn && i < kp.n) ? (i > 0 ? 'zone-po' : zone(i)) : zone(i),
       );
       if (finals || torn || kp) shown = comp.ko && comp.ko[0];
     }
+    if (kp && kp.europe) shown = comp.ko && comp.ko[0]; // (a Europe play-off sits beside the split's groups)
     const chip = (on, act, v, label) =>
       `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-v="${v}">${label}</button>`;
     const confChips = mls
       ? `<div class="row" style="gap:6px;margin:0 2px 6px">${chip(byConf, 'confView', 'conf', 'Conferences')}${chip(!byConf, 'confView', 'all', "Overall (Supporters' Shield)")}</div>`
       : torn
-        ? `<div class="row" style="gap:6px;margin:0 2px 6px">${torn.map((x, i) => chip(tv === i, 'torneoView', i, esc(x.name))).join('')}${chip(tv === 'all', 'torneoView', 'all', 'Season')}</div>`
+        ? `<div class="row" style="gap:6px;margin:0 2px 6px">${torn.map((x, i) => chip(tv === i, 'torneoView', i, esc(x.name)) + (i === 0 && comp.inter && comp.inter.done ? chip(tv === 'inter', 'torneoView', 'inter', 'Intermedio') : '')).join('')}${chip(tv === 'all', 'torneoView', 'all', 'Season')}</div>`
         : '';
     const splitNote = groups
       ? `<div class="tiny dim" style="margin:0 4px 8px">${comp.split && comp.split.done ? `Split after round ${R.split.after}` : `Splits after round ${R.split.after} into ${R.split.groups.join(' / ')}`}${R.split.halve ? ': points are halved' : ': points carry over'}.</div>`
@@ -3018,7 +3046,7 @@
       ? byConf
         ? [`● Conference leader`, `● Playoffs (top ${R.mls.playoff})`]
         : [`● Supporters' Shield`, `● ${s.comps[R.qualify.to].name} (top ${R.qualify.n})`]
-      : torn && tv !== 'all'
+      : torn && tv !== 'all' && tv !== 'inter'
         ? kp
           ? [`● Play-off (top ${kp.n})`]
           : [
@@ -3028,8 +3056,17 @@
         : finals
           ? ['● Champion', '● Finals (top 6)']
           : null;
+    const avgCard = avg
+      ? `<div class="card"><div class="h3">Points average</div><div class="tiny dim" style="margin-bottom:4px">Relegation goes by points a match over ${U.plural(R.average, 'season')}: the ${R.relegate.n} lowest go down.</div><table class="t"><tr><th class="l">Club</th><th>Seasons</th><th>Pts</th><th>P</th><th>Avg</th></tr>${avg
+          .slice(0, Math.min(avg.length, R.relegate.n + 4))
+          .map(
+            (r, i) =>
+              `<tr class="${i < R.relegate.n ? 'zone-down' : ''}"><td class="l">${esc(CL(r.id).name)}</td><td>${r.n}</td><td>${r.pts}</td><td>${r.p}</td><td>${r.avg.toFixed(3)}</td></tr>`,
+          )
+          .join('')}</table></div>`
+      : '';
     const bracket = shown ? UI.koBracket(comp, shown) : '';
-    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${UI.travelNote ? UI.travelNote(comp) : ''}${tables}${UI.expansionCard(comp)}
+    return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${UI.travelNote ? UI.travelNote(comp) : ''}${tables}${avgCard}${UI.expansionCard(comp)}
       <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
       ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}${UI.compHistoryCard ? `<div class="card flat">${UI.compHistoryCard(comp)}</div>` : ''}`;
   }
@@ -3049,10 +3086,11 @@
           `<div class="tiny dim" style="margin-top:4px">${cn === 'all' ? '' : `<b>${esc(cn)}</b>: `}${ids.map((id, i) => `${i + 1} ${esc(CL(id).name)}`).join(' · ')}</div>`,
       )
       .join('');
-    return `<div class="card"><div class="h3">Playoffs</div>${seeds}${rows.join('')}</div>`;
+    const eu = comp.rules.playoffs && comp.rules.playoffs.europe;
+    return `<div class="card"><div class="h3">${eu ? 'Europe play-off' : 'Playoffs'}</div>${seeds}${rows.join('')}</div>`;
   };
   UI.acts.torneoView = (d) => {
-    UI._torneoView = d.v === 'all' ? 'all' : +d.v;
+    UI._torneoView = d.v === 'all' || d.v === 'inter' ? d.v : +d.v;
     UI.render();
   };
   UI.acts.confView = (d) => {

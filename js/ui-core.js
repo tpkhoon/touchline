@@ -1425,7 +1425,11 @@
   // How a league's season runs, in lines: the plain double round-robin, or its conferences, split, tournaments and playoffs
   const formatLines = (n, r) => {
     const out = [];
-    if (r.conferences)
+    if (r.pools)
+      out.push(
+        `${U.plural(n, 'club')} in ${r.pools.length} separate groups (${r.pools.join(' and ')}) of ${Math.floor(n / r.pools.length)}: each club plays its group home and away, ${U.plural((Math.floor(n / r.pools.length) - 1) * 2, 'match', 'matches')}. The places for promotion and relegation are counted in each group.`,
+      );
+    else if (r.conferences)
       out.push(
         `${U.plural(n, 'club')} in two conferences (${Object.keys(r.conferences).join(' and ')}): ${U.plural(r.rounds, 'match', 'matches')}, most of them against the conference.`,
       );
@@ -1435,7 +1439,11 @@
       );
     else if (r.torneos)
       out.push(
-        `${U.plural(n, 'club')}, two tournaments a year (${r.torneos.join(' and ')}): each plays every other club once.`,
+        `${U.plural(n, 'club')}, two tournaments a year (${r.torneos.join(' and ')}): ${
+          r.rounds
+            ? `each of ${U.plural(Math.floor(r.rounds / 2), 'match', 'matches')}`
+            : 'each plays every other club once'
+        }${r.intermedio ? `, with an Intermedio between them: two groups of ${Math.ceil(n / 2)} playing each other once, made from the first tournament's table (${U.plural(Math.floor(r.rounds / 2) * 2 + (Math.ceil(n / 2) % 2 ? Math.ceil(n / 2) : Math.ceil(n / 2) - 1), 'match', 'matches')} in all)` : ''}.`,
       );
     else if (r.split) {
       const sp = r.split;
@@ -1461,7 +1469,13 @@
       out.push(
         'Each tournament ends with knockouts for the top eight of each zone (round of 16 to the final). Each has a champion.',
       );
-    if (t === 'ko') {
+    if (t === 'ko' && r.playoffs.europe) {
+      const P = r.playoffs,
+        k = P.n || 4;
+      out.push(
+        `The clubs placed ${U.ordinal((P.from || 0) + 1)} to ${U.ordinal((P.from || 0) + k)} play a knockout (${k === 4 ? 'semi-finals, then the final' : 'to the final'}${P.legs === 2 ? ', every round over two legs' : ''}) for a Europe place; the winner is ranked first of them, the runner-up second.`,
+      );
+    } else if (t === 'ko') {
       const P = r.playoffs;
       out.push(
         `${P.once ? 'After both tournaments' : r.torneos ? 'Each tournament ends with' : 'The season ends with'} a knockout for ${P.pool === 'winners' ? 'the two tournament winners and the leaders of the season table' : `the top ${P.n || 4}`}${P.legs === 2 ? ', every round over two legs' : P.finalLegs === 2 ? ', the final over two legs' : ''}; ${(P.n || 4) & ((P.n || 4) - 1) ? 'the best seeds have byes. ' : ''}${P.once ? 'The winner is champion.' : r.torneos ? 'Each has a champion.' : 'The winner is champion.'}`,
@@ -1483,7 +1497,7 @@
     const r = l.rules || {};
     const move = [];
     if (r.promote) {
-      move.push(`The top ${r.promote.auto} go up to the ${lname(r.promote.to)}.`);
+      move.push(`The top ${r.promote.auto}${r.pools ? ' of each group' : ''} go up to the ${lname(r.promote.to)}.`);
       if (r.promote.playoff)
         move.push(
           `Places ${r.promote.playoff[0]}–${r.promote.playoff[1]} play off for a further place (semi-finals over two legs, the final ${r.promote.finalLegs === 2 ? 'over two legs' : 'a single match'}).`,
@@ -1491,7 +1505,11 @@
     } else move.push(l.tier === 1 ? 'The top division: no promotion.' : 'No promotion from here.');
     if (r.relegate)
       move.push(
-        `The bottom ${r.relegate.n} go down to the ${lname(r.relegate.to)}${r.relegate.playoff ? `, and the club just above them plays a two-legged play-off against the ${lname(r.relegate.to)}'s third-placed side` : ''}.`,
+        `${r.average ? `The ${U.plural(r.relegate.n, 'club')} with the lowest points average over ${U.plural(r.average, 'season')}` : `The bottom ${r.relegate.n}${r.pools ? ' of each group' : ''}`} go down to the ${lname(r.relegate.to)}${
+          r.relegate.playoff
+            ? `, and ${r.relegate.playoff > 1 ? `the ${U.plural(r.relegate.playoff, 'club')} just above them play` : 'the club just above them plays'} a two-legged play-off against ${r.relegate.playoff > 1 ? `the ${lname(r.relegate.to)}'s next ${r.relegate.playoff} sides` : `the ${lname(r.relegate.to)}'s third-placed side`}`
+            : ''
+        }.`,
       );
     else move.push('No relegation from here.');
     const europe = [];

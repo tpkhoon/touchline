@@ -279,7 +279,7 @@
     if (type === 'liguilla') return { all: table.slice(0, 10) };
     if (type === 'ko' || type === 'groups4') {
       const plan = W.koPlan(c);
-      let ids = table.slice(0, plan.n);
+      let ids = table.slice(plan.from, plan.from + plan.n);
       if (c.rules.playoffs.pool === 'winners' && c.torneos) {
         // the tournament winners and then the season's table, in the order of the season's table
         const annual = W.sortedTable(c).map((r) => r.id);
@@ -426,6 +426,41 @@
     return [tie(h, a, { final: true })];
   };
   // The name of a round of a generic title play-off ('Quarter-final', 'Final', 'Group A'), by the day's key (M1..M4, N1..N4)
+  // The points average that decides relegation in Argentina, Colombia, Paraguay and Uruguay (rules.average: the number of seasons):
+  // each club's points a match over this season and the ones before it in this league, the lowest first. A club that has played
+  // fewer seasons is judged on those; a tie goes to the club lower in this season's table.
+  Sea.averageRows = function (comp, t = W.sortedTable(comp)) {
+    const seasons = comp.rules.average || 3,
+      sum = {};
+    const add = (r) => {
+      const s = (sum[r.id] = sum[r.id] || { id: r.id, pts: 0, p: 0, n: 0 });
+      s.pts += r.pts;
+      s.p += r.p;
+      s.n++;
+    };
+    t.forEach(add);
+    (seasons > 1 ? (FM.S.archive || []).slice(-(seasons - 1)) : []).forEach((e) => {
+      const c = e.comps && e.comps[comp.id];
+      if (c && c.table) c.table.forEach((r) => sum[r.id] && add(r));
+    });
+    const rank = Object.fromEntries(t.map((r, i) => [r.id, i]));
+    return Object.values(sum)
+      .map((s) => ({ ...s, avg: s.p ? s.pts / s.p : 0 }))
+      .sort((a, b) => a.avg - b.avg || rank[b.id] - rank[a.id]);
+  };
+  // The Intermedio's two group tables (the matches between the two tournaments only), each in order
+  Sea.interTables = function (c) {
+    if (!c.inter || !c.inter.done || !c.inter.groups) return [];
+    const fxs = c.fixtures.slice(c.inter.from, c.inter.from + c.inter.len).flat();
+    return c.inter.groups.map((ids) => {
+      const table = Object.fromEntries(
+          ids.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }]),
+        ),
+        mine = fxs.filter((f) => table[f.h] && table[f.a]);
+      for (const f of mine) if (f.res) Sea.updTable(table, f, f.res);
+      return W.sortedTable({ id: c.id, rules: c.rules, table, fixtures: [mine] });
+    });
+  };
   Sea.koLabel = function (c, key) {
     const plan = W.koPlan(c);
     if (!plan) return (Sea.KO_ROUNDS[W.koType(c)] || {})[key] || '';
@@ -714,7 +749,8 @@
     Sea.learnPositions(m);
     if (comp.type === 'league' && !fx.ko && !fx.leg) {
       Sea.updTable(comp.table, fx, res);
-      if (comp.torneos) Sea.updTable(comp.torneos[fx.round >= comp.torneoHalf ? 1 : 0].table, fx, res);
+      if (comp.torneos && W.torneoOf(comp, fx.round) >= 0)
+        Sea.updTable(comp.torneos[W.torneoOf(comp, fx.round)].table, fx, res);
       const e = (S.eraLog = S.eraLog || { g: 0, n: 0 });
       e.g += res.hg + res.ag;
       e.n++;
@@ -1095,7 +1131,7 @@
   Sea.expectedPos = function (club) {
     const comp = FM.S.comps[club.comp];
     return (
-      comp.clubs
+      W.rivalsOf(comp, club.id)
         .map((id) => FM.S.clubs[id])
         .sort((a, b) => b.rep - a.rep)
         .findIndex((c) => c.id === club.id) + 1
@@ -2063,7 +2099,9 @@
         .sort((a, b) => b.season.rsum / b.season.apps - a.season.rsum / a.season.apps)[0];
       // a playoff league's champion is whoever wins its final (a league with two tournaments has a champion of each, the
       // season's being the last); the best record takes the Shield
-      const kt = W.koType(comp),
+      // (a Europe play-off ranks the clubs it is played by and decides no title)
+      const euro = comp.rules.playoffs && comp.rules.playoffs.europe,
+        kt = euro ? null : W.koType(comp),
         nT = comp.torneos ? comp.torneos.length : 1,
         results = kt
           ? Array.from({ length: nT }, (_, i) => Sea.koResult(comp, i))
@@ -2074,8 +2112,12 @@
               })
             : [],
         lastRes = results.filter(Boolean).pop(),
-        champId = lastRes ? lastRes.champion : t[0].id,
-        runnerId = lastRes ? lastRes.runnerUp : t[1].id;
+        // (a division of separate tables: the better of the pools' leaders is its champion, the other its runner-up)
+        lead = comp.pools
+          ? comp.pools.map((ids) => t.find((r) => ids.includes(r.id))).sort((a, b) => b.pts - a.pts || b.gd - a.gd)
+          : [t[0], t[1]],
+        champId = lastRes ? lastRes.champion : lead[0].id,
+        runnerId = lastRes ? lastRes.runnerUp : lead[1].id;
       const playoffsOf = (M) =>
         Object.fromEntries(
           ['M1', 'M2', 'M3', 'M4'].map((k) => [
@@ -2121,6 +2163,14 @@
               },
             }
           : {}),
+        ...(comp.inter && comp.inter.done
+          ? {
+              inter: Sea.interTables(comp).map((tt) => ({
+                champion: tt[0].id,
+                table: tt.map((r) => ({ id: r.id, p: r.p, pts: r.pts, gd: r.gd })),
+              })),
+            }
+          : {}),
         // the whole table, every club's record: the archive behind club histories
         table: t.map((r) => ({ id: r.id, p: r.p, w: r.w, d: r.d, l: r.l, gf: r.gf, ga: r.ga, pts: r.pts, gd: r.gd })),
         toty: FM.Records.toty(comp.id), // the team of the season
@@ -2159,13 +2209,42 @@
               clubId: r.champion,
             });
         });
+      if (comp.inter && comp.inter.done) {
+        // the Intermedio: the better of its two group winners is its champion
+        const w = Sea.interTables(comp)
+          .map((tt) => tt[0])
+          .sort((a, b) => b.pts - a.pts || b.gf - b.ga - (a.gf - a.ga))[0];
+        if (w)
+          FM.News.add({
+            type: 'world',
+            title: `${S.clubs[w.id].name} win the Intermedio`,
+            body: `${comp.name}: ${S.clubs[w.id].name} finished first in their Intermedio group with ${U.plural(w.pts, 'point')}.`,
+            clubId: w.id,
+          });
+      }
+      if (euro) {
+        const er = Sea.koResult(comp, 0);
+        if (er)
+          FM.News.add({
+            type: 'world',
+            title: `${S.clubs[er.champion].name} win the Europe play-off`,
+            body: `${comp.name}: ${S.clubs[er.champion].name} beat ${S.clubs[er.runnerUp].name} in the final of the play-off for a place in Europe.`,
+            clubId: er.champion,
+          });
+      }
       W.nudgeRep(champ, 2);
       W.growClub(champ, 0.15); // a champion's support grows, and with it the most the club can become
       // Merit payments + reputation drift toward league standing
+      // (a division of separate tables ranks its clubs pool by pool: the first of each, then the second of each ...)
+      const ranked = comp.pools
+        ? Array.from({ length: Math.max(...comp.pools.map((p) => p.length)) }, (_, k) =>
+            comp.pools.map((ids) => t.filter((r) => ids.includes(r.id))[k]).filter(Boolean),
+          ).flat()
+        : t;
       const n = t.length,
         [repTop, repBot] = comp.repBand || { 1: [88, 60], 2: [62, 46], 3: [50, 38] }[comp.tier] || [60, 40];
-      const prizes = FM.Finance.leaguePrizes(comp, t);
-      t.forEach((r, i) => {
+      const prizes = FM.Finance.leaguePrizes(comp, ranked);
+      ranked.forEach((r, i) => {
         const c = S.clubs[r.id];
         if (c.sim === 'full') FM.Finance.prize(c, prizes[i], comp.name + ' prize money');
         W.driftRep(c, repTop - ((repTop - repBot) * i) / (n - 1));
@@ -2194,11 +2273,19 @@
         const from = FM.Cups.skipFor(comp.id, cc);
         qualified[cc.id] = (qualified[cc.id] || []).concat(open.slice(from, from + k));
       }
-      if (R.relegate) t.slice(-R.relegate.n).forEach((r) => moves.push([r.id, comp.id, R.relegate.to]));
+      // a division of separate tables (rules.pools) sends its places from each pool's own table
+      const tables = comp.pools && R.pools ? comp.pools.map((ids) => t.filter((r) => ids.includes(r.id))) : [t];
+      // (relegation by points average: the clubs with the lowest average over the last seasons go down, not the bottom of this one)
+      if (R.relegate)
+        (R.average
+          ? Sea.averageRows(comp, t).slice(0, R.relegate.n)
+          : tables.flatMap((pt) => pt.slice(-R.relegate.n))
+        ).forEach((r) => moves.push([r.id, comp.id, R.relegate.to]));
       if (R.promote) {
-        FM.Youth.promotable(comp, t)
-          .slice(0, R.promote.auto)
-          .forEach((r) => moves.push([r.id, comp.id, R.promote.to]));
+        for (const pt of tables)
+          FM.Youth.promotable(comp, pt)
+            .slice(0, R.promote.auto)
+            .forEach((r) => moves.push([r.id, comp.id, R.promote.to]));
         const fin = comp.playoff && (comp.playoff.final2 || comp.playoff.final);
         if (fin && fin.res) {
           const w = winnerOf(fin);

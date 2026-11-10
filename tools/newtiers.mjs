@@ -10,7 +10,11 @@
 //   n       clubs in the table (a real division of regional groups is modelled as one group of this size)
 //   auto    clubs promoted without a play-off (and relegated from the division above)
 //   mode    a = promotion and relegation only; p = plus a play-off among the next four places for one more place;
-//           t = plus one tie against the club above (the relegation play-off); c = closed league, no promotion or relegation
+//           t = plus one tie against the club above (the relegation play-off); t2 = plus two ties (Montenegro: 8th and 9th v
+//           2nd and 3rd); c = closed league, no promotion or relegation
+// The last ten second tiers (Albania, Bolivia, Estonia, Georgia, Kosovo, Latvia, Lithuania, Luxembourg, Montenegro, North Macedonia)
+// are not in the sheets' second-tier list: their sizes are the real divisions' as the author knows them, not from the sheet.
+//   --only AL2,BO2 ...   make just these divisions (the others are in the game already)
 //   rounds  matches per club when not the double round-robin (a triple or quadruple round-robin, a shortened season)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,7 +25,8 @@ const T2 = `DZ1 16 2 a|AR1 18 2 a|AT1 16 1 a|BY1 16 2 a|BE1 16 1 a|BG1 18 2 a|CL
 |CZ1 16 1 t|DK1 12 2 a|EC1 10 2 a 36|EG1 20 2 a|FI1 10 1 t 27|GH1 16 1 a|GR1 10 1 a|HU1 16 2 a|IN1 12 1 a|IR1 18 2 a|IE1 10 1 t 36
 |IL1 16 2 a|KE1 20 2 a|MY1 14 1 a|MX1 16 0 c|MA1 16 2 a|NG1 20 2 a|NI1 12 1 t 33|PY1 16 2 a|PE1 16 1 a|QA1 8 1 t 21|RO1 22 2 a 21
 |RU1 18 2 t|SC1 10 1 t 36|RS1 16 2 a|SK1 16 1 t|SI1 16 1 t|ZA1 16 1 t|CH1 10 1 t 36|TZ1 16 2 a|TN1 14 1 a|UA1 16 2 t|AE1 16 2 a
-|US1 24 0 c 30|UY1 14 2 a|UZ1 14 1 t`;
+|US1 24 0 c 30|UY1 14 2 a|UZ1 14 1 t
+|AL1 16 1 t|BO1 16 1 t|EE1 10 1 t 36|GE1 10 1 t 36|XK1 14 1 t|LV1 14 1 t|LT1 12 1 t|LU1 16 1 t|ME1 12 1 t2|MK1 16 1 t`;
 const T3 = `AR2 18 2 a|AT2 16 1 a|BE2 16 1 a|BR2 20 4 a 19|CL2 14 1 a|CS2 12 2 a|CZ2 16 2 a|DK2 12 2 a|FR2 16 2 a|GR2 14 2 a|HU2 16 2 a
 |ID2 16 2 a 14|IR2 14 2 a|IT2 20 3 a|JP2 20 2 p|MX2 14 0 c|NL2 18 1 a|NI2 12 1 a|NO2 14 2 a|PL2 18 2 p|PT2 12 2 a|RO2 10 1 a|RU2 18 2 a
 |SA2 16 2 a|SC2 10 1 t 36|ZA2 16 2 a|KR2 16 1 a|SE2 16 1 t|CH2 18 1 a|TH2 12 2 a|TR2 18 2 a|UA2 12 2 a|US2 16 0 c|VN2 12 2 a`;
@@ -43,10 +48,12 @@ const parse = (txt, tier) =>
       rounds: rounds ? +rounds : 0,
     }));
 // (the parent of a third tier is the second tier's id, of a fourth the third's: ids are the nation's two letters and the tier)
-const SPEC = [...parse(T2, 2), ...parse(T3, 3), ...parse(T4, 4)];
+const ALL = [...parse(T2, 2), ...parse(T3, 3), ...parse(T4, 4)];
+const args = parseArgs();
+const ONLY = args.only ? new Set(String(args.only).split(',')) : null;
+const SPEC = ONLY ? ALL.filter((s) => ONLY.has(s.id)) : ALL;
 export { SPEC };
 
-const args = parseArgs();
 const seed = +(args.seed || 41);
 const { FM } = loadSim(1);
 const D = FM.D;
@@ -97,8 +104,8 @@ for (const s of SPEC) {
     lg[s.id].relegateFromParent =
       s.mode === 'p'
         ? { to: s.id, n: s.auto + 1 }
-        : s.mode === 't'
-          ? { to: s.id, n: s.auto, playoff: true }
+        : s.mode === 't' || s.mode === 't2'
+          ? { to: s.id, n: s.auto, playoff: s.mode === 't2' ? 2 : true }
           : { to: s.id, n: s.auto };
   }
   byId[s.id] = lg[s.id];
@@ -177,6 +184,12 @@ const NAME_FIX = {
   IL2: 'Beacon Second League',
   SC2: 'Scottish League Division',
   EG2: 'Egyptian Second Division A',
+  AL2: 'Albanian Lidhja e Dytë',
+  EE2: 'Estonian Teine Liiga',
+  XK2: 'Kosovan Liga e Dytë',
+  LV2: 'Latvian Zelta Līga',
+  LT2: 'Lithuanian Aukso Lyga',
+  MK2: 'North Macedonian Liga Dva',
 };
 for (const [k, v] of Object.entries(NAME_FIX)) if (out.leagues[k]) out.leagues[k].name = v;
 

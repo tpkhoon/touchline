@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-473 features are playable in the web prototype today. Build = the build that added it.
+474 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -485,6 +485,7 @@ Every feature from the game design document, with what is playable in the protot
 | International | The Southeast Asian, Gulf and Central Asian nations cups draw from their real members (eleven ASEAN nations, the eight Gulf federation members with no guests, the CAFA nations) | Real formats |
 | Competitions | Real competition formats, first step: the workbook's sheets copied into the docs with a tracker, and 16 leagues playing their real triple or quadruple round-robin (36, 33, 28, 27 or 26 matches) | Playtest round 24 |
 | Competitions | Real competition formats, the leagues sheet: club counts for 44 leagues (145 clubs added, 8 removed), splits, Apertura and Clausura play-offs (a generic top-n knockout with byes and two legs, cuadrangulares), relegation play-offs for six more leagues, Jong and B teams in two second tiers, and youth and homegrown minimums for 40 leagues | Playtest round 24 |
+| Competitions | Real competition formats, the leagues sheet, the rest: Spain's third tier as two groups of 20 in one division, Uruguay's Intermedio (37 matches), relegation by points average (Argentina, Colombia, Paraguay, Uruguay), Europe play-off knockouts (Czechia, Bulgaria, Greece), relegation play-offs against every lower division the game has, France's and Japan's "check" play-offs, and ten more second tiers (Albania to North Macedonia) with theirs | Playtest round 24 |
 | Tactics | Bench swap: each bench player on the Tactics screen has a Swap button to change places with a starter (a goalkeeper only with a goalkeeper) or with a player outside the matchday squad; your bench is kept when the XI is rebuilt and Auto-pick or a formation change resets it | Quick features |
 | People | Agents, managers, chairmen and ambassadors who share a name with a player are plain text, no longer linked to that player's profile | Quick features |
 | Squad | Foreign-player pills: each of your players who counts against a foreign limit carries a pill on his squad row (Non-EU, Foreign, International in the MLS, Asian foreign, ASEAN foreign) with the limit in its tooltip | Quick features |
@@ -680,7 +681,7 @@ Design principle from here: don't make the game deeper by adding more screens �
 | Competitions | The 36-club European league phase, the AFC Elite league stage and the CONCACAF straight knockout (sheet 04) | Real formats |
 | Competitions | Qualifying rounds of amateur clubs, Chile's regional groups and Brazil's seeded draws in the domestic cups; the real-size regional nations cups (sheets 03, 05) | Real formats |
 | Calendar | The real FIFA dates 2026 to 2030, and each confederation's staged World Cup qualifying rounds (sheets 17, 19) | Real formats |
-| Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): Spain's third tier as two groups of 20, the relegation play-offs whose other division the game lacks, the Intermedio and points-average relegation; domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; third and fourth divisions, cross-border clubs, cross-nation leagues and cups, regional competitions and youth tournaments | Alpha 2 |
+| Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; third and fourth divisions, cross-border clubs, cross-nation leagues and cups, regional competitions and youth tournaments | Alpha 2 |
 | Scouting | Lower-league stars, the rest: a measured loan rate for late finds over a real season, and calibration against real figures for age at breakthrough and clubs per career | Alpha 2 |
 | Legacy | Player career timeline: every club with dates, fee, appearances, goals, trophies, awards, injuries and caps — transfers never disappear | Alpha 2 |
 | Legacy | Player biographies: academy prospect → debut → breakthrough → big move → awards → return to childhood club → retirement → coaching; the archive writes stories from them ("The $8M signing who became the club's greatest-ever striker") | Alpha 2 |

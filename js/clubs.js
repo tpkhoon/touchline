@@ -269,16 +269,9 @@
     ['Holshall Corinthians', 'HOC', 'Holshall', '#E2001A', '#FFFFFF', 'fan', 38, 'Kesney Park', 11300],
   ];
   FM.D.CLUBS_ES3 = [
+    ['Unión Rondiel', 'RON', 'Rondiel', '#FFFFFF', '#0046AD', 'fallen', 46, 'Estadio Oñatena', 22824],
     ['Deportivo Olmador B', 'OLB', 'Olmador', '#FFFFFF', '#FEBE10', 'youth', 45, 'Estadio La Salamosa', 6000, 'OLM'],
     ['Cervar CF B', 'CEB', 'Cervar', '#A50044', '#004D98', 'youth', 44, 'Estadio Alcaliel', 6000, 'CER'],
-    ['Real Cuenero B', 'CUB', 'Cuenero', '#EE2523', '#FFFFFF', 'youth', 42, 'Campo de Cuenero', 3250, 'CUE'],
-    ['Atlético Pozares', 'POZ', 'Pozares', '#FFFFFF', '#E2001A', 'fan', 37, 'Ciudad Deportiva Pozares', 7813],
-    ['Olmador CF B', 'OLA', 'Olmador', '#CB3524', '#272E61', 'youth', 42, 'Estadio Zafrilla', 2800, 'OLC'],
-    ['Deportivo Plasares B', 'PLB', 'Plasares', '#FFE667', '#005187', 'youth', 42, 'Estadio Marbedo', 5000, 'PLA'],
-    ['Alcaledo Balompié B', 'ALA', 'Alcaledo', '#FFFFFF', '#D81E05', 'youth', 40, 'Estadio La Hinojanes', 7000, 'ALB'],
-    ['Deportivo Montara B', 'MTA', 'Montara', '#8AC3EE', '#FFFFFF', 'youth', 40, 'Estadio Moralal', 4500, 'MOD'],
-    ['Deportivo Alcaledo B', 'ALL', 'Alcaledo', '#0BB363', '#FFFFFF', 'youth', 39, 'Estadio Olmosa', 3000, 'ALC'],
-    ['Unión Rondiel', 'RON', 'Rondiel', '#FFFFFF', '#0046AD', 'fallen', 46, 'Estadio Oñatena', 22824],
     [
       'Atlético Villa Mayorena',
       'MAY',
@@ -290,15 +283,72 @@
       'Estadio La Hinojares',
       15105,
     ],
+    ['Real Cuenero B', 'CUB', 'Cuenero', '#EE2523', '#FFFFFF', 'youth', 42, 'Campo de Cuenero', 3250, 'CUE'],
+    ['Olmador CF B', 'OLA', 'Olmador', '#CB3524', '#272E61', 'youth', 42, 'Estadio Zafrilla', 2800, 'OLC'],
+    ['Deportivo Plasares B', 'PLB', 'Plasares', '#FFE667', '#005187', 'youth', 42, 'Estadio Marbedo', 5000, 'PLA'],
+    ['Unión Navejo', 'NAU', 'Navejo', '#C8102E', '#FFFFFF', 'fallen', 42, 'Estadio La Ribón', 31179],
     ['Deportivo Sepúlval', 'SEP', 'Sepúlval', '#003DA5', '#FFFFFF', 'fan', 41, 'Estadio La Medero', 8400],
     ['Torrilla Balompié', 'TOB', 'Torrilla', '#C8102E', '#000000', 'historic', 41, 'Ciudad Deportiva Torrilla', 14591],
-    ['Juventud Fresnero', 'JVN', 'Fresnero', '#FFD700', '#003DA5', 'fan', 39, 'Estadio Rondino', 5100],
-    ['Unión Navejo', 'NAU', 'Navejo', '#C8102E', '#FFFFFF', 'fallen', 42, 'Estadio La Ribón', 31179],
+    ['Alcaledo Balompié B', 'ALA', 'Alcaledo', '#FFFFFF', '#D81E05', 'youth', 40, 'Estadio La Hinojanes', 7000, 'ALB'],
+    ['Deportivo Montara B', 'MTA', 'Montara', '#8AC3EE', '#FFFFFF', 'youth', 40, 'Estadio Moralal', 4500, 'MOD'],
     ['CD Castador', 'CAC', 'Castador', '#0033A0', '#FFFFFF', 'fallen', 40, 'Nuevo Estadio Castador', 30000],
     ['Atlético Elchanes', 'ELC', 'Elchanes', '#0057B8', '#FFFFFF', 'oil', 40, 'Estadio Gandejo', 4500],
+    ['Deportivo Alcaledo B', 'ALL', 'Alcaledo', '#0BB363', '#FFFFFF', 'youth', 39, 'Estadio Olmosa', 3000, 'ALC'],
+    ['Juventud Fresnero', 'JVN', 'Fresnero', '#FFD700', '#003DA5', 'fan', 39, 'Estadio Rondino', 5100],
     ['Club Osuneda', 'OSC', 'Osuneda', '#E2001A', '#FFFFFF', 'fan', 38, 'Estadio La Benero', 7840],
+    ['Atlético Pozares', 'POZ', 'Pozares', '#FFFFFF', '#E2001A', 'fan', 37, 'Ciudad Deportiva Pozares', 7813],
     ['Sporting Moralete', 'MOS', 'Moralete', '#000000', '#FFFFFF', 'fan', 37, 'Estadio Municipal de Moralete', 4000],
     ['Nueva Peñino Sporting Club', 'NUE', 'Peñino', '#C8102E', '#FFFFFF', 'fan', 37, 'Estadio Lermete', 7100],
+    ['Real Poziel', 'RPP', 'Poziel', '#FFD100', '#0057B8', 'fan', 36, 'Poziel Stadium', 4500],
+    ['Atlético Quintana', 'ATQ', 'Quintana', '#000000', '#FFD100', 'fan', 36, 'Quintana Stadium', 3000],
+    ['Racing Úbedanes', 'RUL', 'Úbedanes', '#00843D', '#FFFFFF', 'fan', 36, 'Campo de La Cabrino', 7000],
+    ['Unión Luceda', 'UNL', 'Luceda', '#00843D', '#0057B8', 'selling', 36, 'Estadio La Marbares', 5100],
+    ['Unión Valdón', 'UNV', 'Valdón', '#000000', '#FFD100', 'selling', 36, 'Valdón Stadium', 3000],
+    ['Club Pozeda', 'CPA', 'Pozeda', '#0057B8', '#FFD100', 'selling', 36, 'Pozeda Stadium', 2800],
+    ['Moraliel Balompié', 'MBL', 'Moraliel', '#FFD100', '#FFFFFF', 'fan', 36, 'Campo de Torrar', 4500],
+    ['Atlético Zamino', 'ATZ', 'Zamino', '#FFD100', '#00843D', 'fan', 36, 'Zamino Stadium', 5100],
+    ['Juventud Pedejo', 'JPP', 'Pedejo', '#0057B8', '#000000', 'fan', 36, 'Estadio La Almaziel', 6000],
+    ['Racing Elchana', 'REU', 'Elchana', '#0057B8', '#000000', 'fan', 36, 'Ciudad Deportiva Elchana', 2800],
+    [
+      'Juventud Calatero de Abajo',
+      'JCD',
+      'Calatero de Abajo',
+      '#FFD100',
+      '#FFFFFF',
+      'fan',
+      36,
+      'Calatero de Abajo Stadium',
+      4000,
+    ],
+    [
+      'Atlético Gandejo del Valle',
+      'ATF',
+      'Gandejo del Valle',
+      '#FFD100',
+      '#00843D',
+      'fan',
+      36,
+      'Campo de Tarifanes',
+      5100,
+    ],
+    [
+      'CD Peñal de Arriba',
+      'CPB',
+      'Peñal de Arriba',
+      '#0057B8',
+      '#E30613',
+      'selling',
+      36,
+      'Peñal de Arriba Stadium',
+      5000,
+    ],
+    ['Deportivo Rondón', 'DRN', 'Rondón', '#00843D', '#000000', 'fan', 36, 'Rondón Stadium', 3000],
+    ['UD Albosa', 'UAA', 'Albosa', '#FFD100', '#E30613', 'selling', 36, 'Albosa Stadium', 6000],
+    ['Fragero CF', 'FCC', 'Fragero', '#0057B8', '#FFFFFF', 'fan', 36, 'Estadio Benilla', 5100],
+    ['Unión Campo Almazón', 'UNK', 'Campo Almazón', '#000000', '#00843D', 'fan', 36, 'Estadio La Gandena', 4500],
+    ['Real Roblino', 'RRR', 'Roblino', '#0057B8', '#000000', 'fan', 36, 'Roblino Stadium', 6000],
+    ['Atlético Arroosa', 'ATJ', 'Arroosa', '#0057B8', '#FFFFFF', 'fan', 36, 'Campo de Escalal', 5000],
+    ['Real Lucosa', 'RLC', 'Lucosa', '#FFD100', '#0057B8', 'fan', 36, 'Lucosa Stadium', 4500],
   ];
   FM.D.CLUBS_DE2 = [
     ['Eintracht Burgingen', 'EIN', 'Burgingen', '#005CA9', '#FFFFFF', 'fallen', 58, 'Elstein-Stadion', 74475],
@@ -6875,6 +6925,252 @@
     ['Glasea Athletic', 'GLG', 'Glasea', '#000000', '#E30613', 'fan', 28, 'Glasea Ground', 6000],
     ['Tamby Rovers', 'TBD', 'Tamby', '#6A1B9A', '#00843D', 'fan', 33, 'Tamby Sportsground', 7500],
   ];
+  FM.D.CLUBS_AL2 = [
+    ['KF Mitush', 'KFF', 'Mitush', '#0057B8', '#FFD100', 'fan', 38, 'Stadiumi Beraj', 14500],
+    ['Naftëtari Krush', 'NAX45', 'Krush', '#6A1B9A', '#FFFFFF', 'fan', 37, 'Kompleksi Sportiv Krush', 12500],
+    ['Lokomotiva Kamec', 'KAU42', 'Kamec', '#FFFFFF', '#6A1B9A', 'fan', 36, 'Kompleksi Sportiv Kamec', 10500],
+    ['Bashkimi Shkush', 'BAH55', 'Shkush', '#00843D', '#FFD100', 'historic', 35, 'Stadiumi Mitaj', 10500],
+    ['KF Fushël', 'KKF', 'Fushël', '#FFD100', '#6A1B9A', 'youth', 34, 'Stadiumi Qytetit Fushël', 11000],
+    [
+      'Kodra Lushica FK',
+      'KOV',
+      'Kodra Lushica',
+      '#0057B8',
+      '#6A1B9A',
+      'fan',
+      33,
+      'Stadiumi Qytetit Kodra Lushica',
+      13500,
+    ],
+    ['Lokomotiva Mal Malër', 'MAF53', 'Malër', '#6A1B9A', '#FFFFFF', 'selling', 32, 'Stadiumi Ferovë', 11500],
+    ['Partizani Mal Fia', 'PAW44', 'Fia', '#FFD100', '#6A1B9A', 'fan', 32, 'Kompleksi Sportiv Fia', 13000],
+    ['Shqiponja Grush', 'SHH31', 'Grush', '#001F5B', '#6CACE4', 'fan', 31, 'Kompleksi Sportiv Grush', 13000],
+    ['Partizani Mitaj', 'PAX45', 'Mitaj', '#E30613', '#6CACE4', 'selling', 30, 'Durec Arena', 10000],
+    ['KF Mal Ferël', 'KFM', 'Ferël', '#0057B8', '#6CACE4', 'fan', 29, 'Korër Arena', 8500],
+    ['Dinamo Berani', 'DIY', 'Berani', '#000000', '#FFFFFF', 'fan', 28, 'Stadiumi Pogovë', 11500],
+    ['Bashkimi Pola', 'BAJ56', 'Pola', '#E30613', '#6A1B9A', 'youth', 28, 'Kompleksi Sportiv Pola', 11000],
+    ['Minatori Pogovë', 'MIA24', 'Pogovë', '#001F5B', '#FFD100', 'fallen', 27, 'Elbec Arena', 8000],
+    ['Partizani Lezovë', 'PNI', 'Lezovë', '#FFD100', '#0057B8', 'fallen', 26, 'Krush Arena', 7000],
+    ['Bashkimi Gja', 'BMI', 'Gja', '#0057B8', '#001F5B', 'fallen', 26, 'Kompleksi Sportiv Gja', 7500],
+  ];
+  FM.D.CLUBS_BO2 = [
+    ['Real Club Hinojares', 'HIQ', 'Hinojares', '#0057B8', '#001F5B', 'fan', 38, 'Campo de Hinojares', 12500],
+    ['Club Villa Gandosa', 'GAQ', 'Villa Gandosa', '#E30613', '#00843D', 'fan', 37, 'Estadio Ribiel', 12500],
+    [
+      'Unión Las Palomal',
+      'LAP37',
+      'Las Palomal',
+      '#FFD100',
+      '#6CACE4',
+      'selling',
+      37,
+      'Nuevo Estadio Las Palomal',
+      11000,
+    ],
+    ['Sporting Alto Benava', 'ALG78', 'Benava', '#FFFFFF', '#FFD100', 'fan', 36, 'Estadio Cervana', 10500],
+    [
+      'Racing Las Orihedo',
+      'LAQ38',
+      'Las Orihedo',
+      '#000000',
+      '#001F5B',
+      'fan',
+      35,
+      'Estadio Municipal de Las Orihedo',
+      12000,
+    ],
+    ['Sporting Úbededa', 'UBG', 'Úbededa', '#FFD100', '#0057B8', 'fan', 35, 'Campo de Úbededa', 11000],
+    ['Real Marbara', 'MAG54', 'Marbara', '#6CACE4', '#000000', 'fan', 33, 'Estadio La Palomero', 12500],
+    [
+      'Deportivo Castar de Abajo',
+      'CAZ47',
+      'Castar de Abajo',
+      '#0057B8',
+      '#FFFFFF',
+      'historic',
+      33,
+      'Estadio La Aranja',
+      13000,
+    ],
+    ['Real Villa Arroejo', 'ARB25', 'Villa Arroejo', '#E30613', '#6A1B9A', 'fan', 33, 'Estadio La Elchiel', 11500],
+    ['Atlético Nueva Cuenara', 'NUJ', 'Cuenara', '#E30613', '#FFFFFF', 'fallen', 32, 'Estadio La Sorón', 12500],
+    ['Estudiantes de Oñatana', 'OND', 'Oñatana', '#6A1B9A', '#E30613', 'fan', 31, 'Nuevo Estadio Oñatana', 9000],
+    ['Unión Guadejo', 'GUK', 'Guadejo', '#FFFFFF', '#000000', 'fan', 30, 'Estadio Salamino', 11000],
+    ['Sporting Fresnilla', 'FRW', 'Fresnilla', '#001F5B', '#000000', 'selling', 29, 'Estadio La Gandero', 10000],
+    ['Atlético Hinojosa', 'HIT', 'Hinojosa', '#6CACE4', '#00843D', 'historic', 28, 'Campo de Hinojosa', 9000],
+    [
+      'Real Club Salamana',
+      'SAG54',
+      'Salamana',
+      '#FFD100',
+      '#00843D',
+      'historic',
+      28,
+      'Estadio Municipal de Salamana',
+      7500,
+    ],
+    ['Racing Villa Osunero', 'OSJ', 'Villa Osunero', '#FFFFFF', '#00843D', 'fan', 28, 'Campo de Villa Osunero', 8500],
+  ];
+  FM.D.CLUBS_EE2 = [
+    ['Norma Alaraplvere', 'NOE28', 'Alaraplvere', '#6A1B9A', '#000000', 'fan', 36, 'Elvasaare Spordikeskus', 10500],
+    ['Lootus Elvamäe', 'LOO', 'Elvamäe', '#FFD100', '#FFFFFF', 'historic', 35, 'Tapala staadion', 10500],
+    ['FC Musküla', 'MUM', 'Musküla', '#0057B8', '#E30613', 'fallen', 33, 'Musküla Kesk staadion', 13000],
+    ['Norma Kundala', 'NOF29', 'Kundala', '#E30613', '#FFFFFF', 'fan', 32, 'Põlvru staadion', 10500],
+    ['FC Haapküla', 'HAY46', 'Haapküla', '#E30613', '#00843D', 'fan', 31, 'Haapküla Kesk staadion', 10000],
+    ['Dünamo Vana Antsaare', 'DUH', 'Antsaare', '#E30613', '#00843D', 'historic', 30, 'Rakru staadion', 12000],
+    ['Merkuur Pairu', 'MEB25', 'Pairu', '#E30613', '#00843D', 'selling', 28, 'Raplsaare staadion', 11000],
+    ['Norma Vana Tapaküla', 'NMB', 'Tapaküla', '#6A1B9A', '#00843D', 'youth', 28, 'Tapaküla Arena', 8500],
+    [
+      'Lootus Ülekundasaare',
+      'LOT',
+      'Ülekundasaare',
+      '#001F5B',
+      '#000000',
+      'selling',
+      26,
+      'Ülekundasaare Kesk staadion',
+      8500,
+    ],
+    ['Dünamo Lõuküla', 'DUJ', 'Lõuküla', '#6A1B9A', '#FFD100', 'historic', 25, 'Lõuküla Kesk staadion', 7500],
+  ];
+  FM.D.CLUBS_GE2 = [
+    ['Sheli FC', 'SHJ32', 'Sheli', '#00843D', '#6CACE4', 'selling', 39, 'Shuli Sporti', 16000],
+    ['FC Lanebi', 'LAR39', 'Lanebi', '#0057B8', '#FFFFFF', 'selling', 37, 'Lanebi Stadioni', 11500],
+    ['Sioni Cheli', 'SIE28', 'Cheli', '#6CACE4', '#FFD100', 'fan', 35, 'Cheli Stadioni', 13000],
+    ['Guria Merisi', 'GUN', 'Merisi', '#FFFFFF', '#000000', 'fan', 34, 'Tskaleli Sporti', 12000],
+    ['Mziuri Ochuli', 'MZI', 'Ochuli', '#FFFFFF', '#E30613', 'youth', 33, 'Arena Ochuli', 13000],
+    ['Dila Meruli', 'DIA24', 'Meruli', '#6A1B9A', '#000000', 'selling', 32, 'Arena Meruli', 11000],
+    ['Lokomotivi Jvarari', 'LOW', 'Jvarari', '#00843D', '#000000', 'fan', 30, 'Arena Jvarari', 8500],
+    ['Torpedo Tsineti', 'TOE', 'Tsineti', '#E30613', '#FFD100', 'fan', 30, 'Lanuri Sporti', 9500],
+    ['Sioni Baneti', 'SIF29', 'Baneti', '#000000', '#E30613', 'fallen', 28, 'Samari Stadioni', 8000],
+    ['Dinamo Dzeli', 'DIB25', 'Dzeli', '#0057B8', '#00843D', 'fan', 27, 'Dzeli Stadioni', 9500],
+  ];
+  FM.D.CLUBS_XK2 = [
+    ['Partizani Fushë Polër', 'PAY46', 'Polër', '#E30613', '#6CACE4', 'fallen', 35, 'Kompleksi Sportiv Polër', 14000],
+    ['Shqiponja Elbani', 'SHK33', 'Elbani', '#FFD100', '#E30613', 'fan', 33, 'Stadiumi Qytetit Elbani', 13000],
+    ['Lokomotiva Fushë Gjani', 'FUS', 'Gjani', '#000000', '#FFFFFF', 'historic', 33, 'Bulër Arena', 9500],
+    ['Lokomotiva Mal Bulush', 'MAH55', 'Bulush', '#FFD100', '#001F5B', 'fan', 32, 'Stadiumi Kukush', 9500],
+    ['Flamuri Elbush', 'FLB', 'Elbush', '#6CACE4', '#E30613', 'selling', 32, 'Stadiumi Qytetit Elbush', 9000],
+    ['Luftëtari Pejush', 'LUM', 'Pejush', '#FFFFFF', '#0057B8', 'youth', 31, 'Kompleksi Sportiv Pejush', 10500],
+    ['KF Durec', 'KFD', 'Durec', '#0057B8', '#E30613', 'historic', 30, 'Kompleksi Sportiv Durec', 12000],
+    ['KF Shkica', 'KFS', 'Shkica', '#FFFFFF', '#00843D', 'youth', 29, 'Kompleksi Sportiv Shkica', 8000],
+    ['Drita Prizël', 'DRI', 'Prizël', '#001F5B', '#FFD100', 'historic', 28, 'Stadiumi Sara', 9000],
+    ['FK Mal Lushovë', 'MLU', 'Lushovë', '#6A1B9A', '#000000', 'historic', 28, 'Kavër Arena', 7500],
+    ['Shqiponja Korec', 'SJA', 'Korec', '#6A1B9A', '#6CACE4', 'historic', 26, 'Stadiumi Pejër', 8500],
+    ['Ylli Kamël', 'YLL', 'Kamël', '#001F5B', '#6A1B9A', 'selling', 25, 'Stadiumi Qytetit Kamël', 8500],
+    ['Shqiponja Grec', 'SHL34', 'Grec', '#001F5B', '#0057B8', 'historic', 25, 'Stadiumi Korica', 8000],
+    ['KF Libaj', 'KFB', 'Libaj', '#E30613', '#FFD100', 'youth', 23, 'Kompleksi Sportiv Libaj', 4500],
+  ];
+  FM.D.CLUBS_LV2 = [
+    ['JFC Kuliņi', 'JFC', 'Kuliņi', '#FFD100', '#001F5B', 'historic', 35, 'Alūava stadions', 13000],
+    ['Auseklis Lej Dobēni', 'AUG', 'Dobēni', '#0057B8', '#000000', 'fallen', 34, 'Daieši stadions', 13500],
+    ['Auseklis Cēspils', 'AID', 'Cēspils', '#FFD100', '#6CACE4', 'fan', 34, 'Sigiņi Sporta Komplekss', 12500],
+    ['Vārpa Jelgava', 'VAP', 'Jelgava', '#000000', '#00843D', 'selling', 32, 'Pilsētas stadions Jelgava', 9500],
+    ['Elektrons Augš Ērgieši', 'ELP', 'Ērgieši', '#00843D', '#001F5B', 'fallen', 32, 'Aizene stadions', 9000],
+    ['Daugava Talspils', 'DAC26', 'Talspils', '#0057B8', '#6CACE4', 'youth', 30, 'Venēni Sporta Komplekss', 12000],
+    ['Daugava Augšdobava', 'DAD27', 'Augšdobava', '#6CACE4', '#00843D', 'youth', 30, 'Tukava Sporta Komplekss', 12000],
+    ['Spartaks Alūava', 'SPN36', 'Alūava', '#E30613', '#000000', 'historic', 28, 'Rēzava Sporta Komplekss', 8000],
+    ['Dinamo Vec Limene', 'DMO', 'Limene', '#000000', '#E30613', 'youth', 28, 'Alūene Sporta Komplekss', 9000],
+    ['Dinamo Smilieši', 'DIC26', 'Smilieši', '#FFD100', '#00843D', 'fallen', 28, 'Pilsētas stadions Smilieši', 7500],
+    ['Spartaks Lejrēzieši', 'SPP37', 'Lejrēzieši', '#6CACE4', '#001F5B', 'historic', 27, 'Valēni stadions', 10500],
+    ['Dinamo Gulieši', 'DID27', 'Gulieši', '#FFFFFF', '#E30613', 'historic', 26, 'Pilsētas stadions Gulieši', 7000],
+    ['FK Vec Limieši', 'VED27', 'Limieši', '#00843D', '#0057B8', 'historic', 25, 'Rūjene stadions', 8500],
+    ['Dinamo Venpils', 'DIE28', 'Venpils', '#6CACE4', '#FFD100', 'fallen', 23, 'Pilsētas stadions Venpils', 8500],
+  ];
+  FM.D.CLUBS_LT2 = [
+    ['Kovas Ukminai', 'KOW', 'Ukminai', '#E30613', '#0057B8', 'fan', 34, 'Ukminai Arena', 12000],
+    ['Banga Šiainai', 'BAK57', 'Šiainai', '#FFFFFF', '#E30613', 'fallen', 34, 'Igninai Sporto Centras', 10000],
+    [
+      'Spartakas Naujomažinai',
+      'SAH55',
+      'Naujomažinai',
+      '#FFD100',
+      '#6A1B9A',
+      'historic',
+      33,
+      'Miesto stadionas Naujomažinai',
+      9500,
+    ],
+    ['FK Birūnai', 'BIR', 'Birūnai', '#000000', '#00843D', 'fan', 32, 'Birūnai Arena', 10000],
+    ['FC Žemgariai', 'ZEU', 'Žemgariai', '#00843D', '#6CACE4', 'fan', 31, 'Maruva stadionas', 8500],
+    ['Granitas Mariūnai', 'GRB25', 'Mariūnai', '#E30613', '#6A1B9A', 'historic', 30, 'Plunava Sporto Centras', 10500],
+    [
+      'FK Naujouteūnai',
+      'NAY46',
+      'Naujouteūnai',
+      '#000000',
+      '#FFD100',
+      'selling',
+      28,
+      'Miesto stadionas Naujouteūnai',
+      11000,
+    ],
+    ['Kovas Telūnai', 'KOX', 'Telūnai', '#000000', '#FFD100', 'historic', 28, 'Miesto stadionas Telūnai', 7000],
+    ['Dinamo Alytinai', 'DIF29', 'Alytinai', '#00843D', '#6A1B9A', 'fan', 26, 'Alytinai Arena', 7500],
+    ['Kovas Pasiai', 'KAV43', 'Pasiai', '#FFFFFF', '#001F5B', 'fan', 26, 'Miesto stadionas Pasiai', 6500],
+    ['FK Palai', 'PAZ47', 'Palai', '#6CACE4', '#FFD100', 'historic', 25, 'Miesto stadionas Palai', 9000],
+    ['Granitas Jonai', 'GRC26', 'Jonai', '#FFFFFF', '#FFD100', 'selling', 25, 'Paneviai Sporto Centras', 6500],
+  ];
+  FM.D.CLUBS_LU2 = [
+    ['Concordia Groß Kalkirchen', 'COF29', 'Kalkirchen', '#FFFFFF', '#6A1B9A', 'youth', 34, 'Kalkirchen-Arena', 10000],
+    ['VfL Unter Goldorf', 'UNM', 'Goldorf', '#000000', '#FFD100', 'fan', 33, 'Stadion Ahrberg', 13000],
+    ['Oberhafen 1899', 'OBB', 'Oberhafen', '#001F5B', '#E30613', 'historic', 33, 'Sportpark Thalstein', 11000],
+    ['Westerfurt 1899', 'WEC', 'Westerfurt', '#00843D', '#000000', 'historic', 32, 'Stadion am Bransee', 11500],
+    ['SV Lindberg', 'LIE28', 'Lindberg', '#000000', '#6CACE4', 'selling', 31, 'Sportpark Bruchtal', 10500],
+    ['SV Freihafen', 'FRX', 'Freihafen', '#FFFFFF', '#E30613', 'selling', 30, 'Stadion Felsheim', 11500],
+    ['Alemannia Mühlhorst', 'ALH79', 'Mühlhorst', '#000000', '#6A1B9A', 'fan', 29, 'Sportpark Steinstadt', 10000],
+    ['Union Grünhafen', 'GRD27', 'Grünhafen', '#0057B8', '#00843D', 'fallen', 29, 'Sportpark Furthausen', 12000],
+    ['TSV Kirchau 1956', 'KIC26', 'Kirchau', '#E30613', '#6CACE4', 'historic', 28, 'Stadion Wiesau', 11000],
+    ['TSV Groß Eichausen', 'GRE28', 'Eichausen', '#E30613', '#000000', 'historic', 28, 'Stadion am Niederstadt', 11500],
+    ['SV Rheinfeld', 'RHA', 'Rheinfeld', '#00843D', '#FFD100', 'fallen', 26, 'Rheinfeld-Arena', 6500],
+    ['Alemannia Altberg', 'ALJ80', 'Altberg', '#00843D', '#0057B8', 'historic', 26, 'Waldstadion Altberg', 8000],
+    ['Eintracht Neu Dornstein', 'NED27', 'Dornstein', '#00843D', '#000000', 'fan', 25, 'Waldstadion Dornstein', 7000],
+    ['Viktoria Bruchbrück', 'BRL34', 'Bruchbrück', '#000000', '#FFD100', 'selling', 24, 'Stadion am Marienburg', 9000],
+    ['FC Niedersee', 'NIQ', 'Niedersee', '#001F5B', '#FFFFFF', 'selling', 24, 'Sportpark Burgburg', 7000],
+    ['Eintracht Lütberg', 'LUP', 'Lütberg', '#0057B8', '#000000', 'fan', 22, 'Bruchsee-Stadion', 6000],
+  ];
+  FM.D.CLUBS_ME2 = [
+    ['Lokomotiv Kosica', 'LOX', 'Kosica', '#000000', '#6A1B9A', 'selling', 36, 'Gradski Stadion Kosica', 13500],
+    ['Partizan Stari Belica', 'PAA48', 'Stari Belica', '#6A1B9A', '#000000', 'youth', 34, 'Stadion Hradovac', 11000],
+    ['MFK Nova Slaovice', 'NOG30', 'Nova Slaovice', '#6A1B9A', '#0057B8', 'fan', 34, 'Stadion Lubpol', 13000],
+    ['NK Ostek', 'OSK', 'Ostek', '#E30613', '#6CACE4', 'fan', 32, 'Stadion Belpol', 11000],
+    ['Železničar Malek', 'ZEW', 'Malek', '#001F5B', '#000000', 'fan', 32, 'Stadion Mir Malek', 9500],
+    ['Železničar Kamany', 'ZEX', 'Kamany', '#6A1B9A', '#FFFFFF', 'fan', 31, 'Stadion Slavava', 10500],
+    ['Partizan Ostec', 'PAB49', 'Ostec', '#6A1B9A', '#FFD100', 'fallen', 30, 'Stadion Ostica', 8000],
+    ['SK Ostice', 'OSL', 'Ostice', '#00843D', '#001F5B', 'historic', 29, 'Malina Arena', 11500],
+    ['Dinamo Lubik', 'DLU', 'Lubik', '#0057B8', '#6A1B9A', 'fan', 28, 'Gradski Stadion Lubik', 7500],
+    ['Spartak Plesovac', 'SPQ38', 'Plesovac', '#FFD100', '#6CACE4', 'fan', 27, 'Stadion Turek', 6500],
+    ['Metalac Hradek', 'MEC26', 'Hradek', '#00843D', '#E30613', 'fallen', 26, 'Gradski Stadion Hradek', 9000],
+    ['NK Turgrad', 'TUF', 'Turgrad', '#FFD100', '#000000', 'fan', 26, 'Novpol Arena', 10000],
+  ];
+  FM.D.CLUBS_MK2 = [
+    ['SK Ostovo', 'OSO', 'Ostovo', '#6A1B9A', '#0057B8', 'fallen', 37, 'Stadion Mir Ostovo', 13000],
+    ['Zora Tarin', 'TAA', 'Tarin', '#FFD100', '#000000', 'historic', 36, 'Tarin Park', 14500],
+    ['Radnički Rybina', 'RAL34', 'Rybina', '#000000', '#FFFFFF', 'selling', 36, 'Rybina Park', 12500],
+    ['Zora Kraina', 'KRT', 'Kraina', '#FFFFFF', '#E30613', 'selling', 34, 'Mirik Arena', 10000],
+    ['FC Kamica', 'KAW44', 'Kamica', '#6A1B9A', '#000000', 'fan', 34, 'Stadion Dolnica', 10000],
+    ['Zora Lubany', 'LUQ', 'Lubany', '#001F5B', '#FFFFFF', 'historic', 34, 'Belany Arena', 13500],
+    ['Metalac Novi Tarec', 'MED27', 'Novi Tarec', '#6A1B9A', '#00843D', 'fan', 33, 'Velany Arena', 12000],
+    ['SK Novi Radik', 'NOH31', 'Novi Radik', '#000000', '#6A1B9A', 'fan', 32, 'Liptica Arena', 12500],
+    ['Dinamo Nova Borovice', 'DNA', 'Nova Borovice', '#6CACE4', '#6A1B9A', 'historic', 32, 'Stadion Mikin', 9000],
+    ['Union Malica', 'MAJ56', 'Malica', '#00843D', '#001F5B', 'youth', 31, 'Stadion Kamice', 10500],
+    [
+      'SK Veliki Velovice',
+      'VEE28',
+      'Veliki Velovice',
+      '#000000',
+      '#FFD100',
+      'fan',
+      30,
+      'Gradski Stadion Veliki Velovice',
+      7500,
+    ],
+    ['Železničar Liptek', 'ZAV', 'Liptek', '#E30613', '#00843D', 'fan', 29, 'Stadion Kamica', 10500],
+    ['FK Kraice', 'KRV', 'Kraice', '#000000', '#001F5B', 'fan', 28, 'Stadion Mir Kraice', 11000],
+    ['Torpedo Bratin', 'TOX', 'Bratin', '#FFD100', '#00843D', 'fan', 27, 'Stadion Vysava', 8000],
+    ['AO Turin', 'TUG', 'Turin', '#E30613', '#6CACE4', 'fan', 27, 'Stadion Plesina', 9500],
+    ['FK Kamin', 'KAX45', 'Kamin', '#E30613', '#6CACE4', 'selling', 26, 'Stadion Slavina', 7000],
+  ];
   FM.D.CLUB_INFO = Object.fromEntries(
     `BAY|BAY|Cats|1893
 CLI|CLI|Steelmen|1865
@@ -6899,19 +7195,19 @@ RYE|RYE|Harriers|1912
 ALD|ALD|Cutlers|1881
 TTH|TTH|Red Devils|1983
 GRT|GRT|Blues|1879
-LIT|ABF|Reds|1899
+LIT|ABE|Reds|1899
 HAS|HAS|Reds|1878
 EVR|EVR|Terriers|1956
 YAR|YAR|Lamplighters|1871
 TUT|TUT|Hornets|1979
 LAU|LAU|Seagulls|1947
 REY|REY|Terriers|1986
-CHI|NEG|Druids|1934
+CHI|NEA|Druids|1934
 BEX|BEX|Reds|1867
 REA|REA|Foxes|1909
 STH|STH|Whites|1956
 KIN|KIN|Railwaymen|1869
-LIN|LIN|Shipbuilders|1904
+LIN|LIT|Shipbuilders|1904
 ROU|ROU|Stoats|1888
 REC|REC|Magpies|1956
 TOU|TOU|Panthers|1875
@@ -6934,40 +7230,40 @@ SHP|SHP|Drovers|1903
 CLF|CLF|Salmon|1978
 MAN|MNS|Vikings|1905
 SCA|SCA|Comets|1942
-DEN|DEN|Grecians|1889
+DEN|DEC|Grecians|1889
 FAL|FAC|Miners|1883
-DUW|DUW|Cats|1904
+DUW|DNB|Cats|1904
 ABH|ABH|Rockets|1890
-CAI|CAI|Bulldogs|1894
+CAI|CSI|Bulldogs|1894
 BES|BXW|Rams|1900
 DAA|DAA|Ironmen|1918
 DAR|DAR|Tinners|1906
-TAV|TAV|Pike|1909
+TAV|TVS|Pike|1909
 HOW|HOW|Workmen|1946
 DRT|DRT|Windmills|1924
 CSH|CSH|Warriors|1950
-HAO|HAO|Blades|1933
+HAO|HAD|Blades|1933
 RES|RES|Spartans|1866
 WIT|WIT|Minstrels|1887
-BUR|BRH|Kestrels|1945
-BED|BED|Red Devils|1946
-WOK|WOK|Blues|1886
+BUR|BUH|Kestrels|1945
+BED|BDT|Red Devils|1946
+WOK|WKH|Blues|1886
 SUE|SUE|Foresters|1880
-GLA|GLA|Red Devils|1916
+GLA|GLC|Red Devils|1916
 YTH|YTH|Seahawks|1890
 LMR|LMR|Pitmen|1921
-MIA|MCF|Valleymen|1863
+MIA|MLD|Valleymen|1863
 EVA|EVA|Pilgrims|1862
-PRU|PRU|Bees|1895
-HAR|HAR|Lions|1896
+PRU|PRC|Bees|1895
+HAR|HAU|Lions|1896
 PIC|PIC|Gulls|1902
-CUR|CUR|Rams|1901
+CUR|CEW|Rams|1901
 SHR|SRW|Norsemen|1901
 YEO|YEO|Ospreys|1910
 HYT|HYT|Crusaders|1901
-TAR|TRN|Red Devils|1867
-FOL|FOL|Railwaymen|1889
-HOC|HOC|Reds|1914
+TAR|TAT|Red Devils|1867
+FOL|FLB|Railwaymen|1889
+HOC|HLS|Reds|1914
 OLM|OLM|Marineros|1878
 CER|CER|Mineros|1890
 OLC|OLC|Rojos|1893
@@ -6997,7 +7293,7 @@ ARA|ARA|Jaguares|1887
 NAV|NAV|Campesinos|1904
 MOA|MOA|Rojos|1974
 OLR|OLR|Rojos|1888
-MRB|ATB|Blancos|1862
+MRB|ALL|Blancos|1862
 PED|PDR|Leñadores|1916
 ARK|ARK|Urdinak|1921
 SOD|SRN|Potros|1887
@@ -7005,30 +7301,30 @@ CES|CES|Els Blaus|1904
 JUF|JUF|Titanes|1968
 SEB|SEB|Blancos|1948
 MOR|MOR|Búhos|1912
-CBR|CAE|Blancos|1936
+CBR|CRE|Blancos|1936
 FUE|FUU|Rojos|1936
 LIA|LRR||1989
-SAC|SNT|Cuervos|1933
+SAC|SAV|Cuervos|1933
 JUB|JUB|Blancos|1918
 OLB|OLB||1911
 CEB|CEB||1929
 CUB|CUB||1979
-POZ|PZR|Pastores|1913
+POZ|POE|Pastores|1913
 OLA|OMA||1931
-PLB|PLS||1959
-ALA|AAL||1940
-MTA|MTA||1989
-ALL|AED||1921
+PLB|PLD||1959
+ALA|AED||1940
+MTA|MON||1989
+ALL|ALX||1921
 RON|RON|Titanes|1900
 MAY|MYR|Segadores|1897
-SEP|SEP|Lagartos|1932
+SEP|SEU|Lagartos|1932
 TOB|TOB|Alacranes|1885
-JVN|JUD|Zorros|1931
-NAU|NAU|Cruzados|1882
-CAC|CST|Guerreros|1884
+JVN|JVE|Zorros|1931
+NAU|NVJ|Cruzados|1882
+CAC|CTA|Guerreros|1884
 ELC|ELA|Faroleros|1943
 OSC|OSC|Cóndores|1939
-MOS|MLE|Delfines|1876
+MOS|MOQ|Delfines|1876
 NUE|NUP|Cementeros|1947
 DIL|DIL|Pioniere|1881
 TEU|TEU|Falken|1951
@@ -7059,15 +7355,15 @@ IMT|IMT|Raben|1917
 FOH|FOH|Rothirsche|1888
 IMM|IMM|Stiere|1900
 BRV|BRV|Blauen|1942
-COS|COS|Stahlwerker|1926
-ROF|ROF|Raben|1918
+COS|CNC|Stahlwerker|1926
+ROF|RTB|Raben|1918
 TEA|TEA|Gelben|1881
 FSF|FSF|Hirsche|1923
 EIM|EIM|Brauer|1922
 FOB|FOB|Wildschweine|1902
 SPH|SPH|Gladiatoren|1879
-VII|VTO||1903
-TTN|TTN||1983
+VII|VBB||1903
+TTN|TTO||1983
 MUB|MUV||2008
 FSD|FSD|Köhler|1892
 AHR|AHR|Lotsen|1894
@@ -7075,23 +7371,23 @@ KRO|KRO|Kumpel|1893
 HAK|HAK|Roten|1889
 BRT|BRT|Tuchmacher|1888
 EIE|EIE|Blauen|1930
-HIR|HIR|Seeadler|1886
+HIR|HRS|Seeadler|1886
 ALO|ALN|Gelben|1899
-KLA|KLA|Schwäne|1908
-SPV|SPG|Adler|1909
+KLA|KEI|Schwäne|1908
+SPV|SVG|Adler|1909
 BLA|BLA|Hirsche|1892
 UNH|UNH|Eisenmänner|1922
-GRB|GRB|Schwarzen|1883
+GRB|VGB|Schwarzen|1883
 HND|HND|Hüttenknappen|1871
 TED|TED|Ritter|1884
 SCR|SCR|Kreuzritter|1897
-BUG|BUO|Kormorane|1930
+BUG|BGD|Kormorane|1930
 QUI|QUI|Tisserands|1963
 LUN|LUN|Lynx|1898
 AJC|AJC|Lions|1969
 JOY|JOY|Mouettes|1904
 USM|USM|Gladiateurs|1899
-ESB|CAZ|Corbeaux|1964
+ESB|CAS|Corbeaux|1964
 VAL|VAL|Rouges|1924
 ETO|ETO|Taureaux|1936
 THO|THO|Bleus|1908
@@ -7108,10 +7404,10 @@ LNM|LNM|Pionniers|1913
 CLE|CLE|Verts|1880
 PAU|PAU|Pêcheurs|1948
 BEF|BEF|Marins|1921
-CHR|CHR|Renards|1894
-CEA|CEA|Gladiateurs|1912
-CTE|CTE|Sangliers|1954
-BEU|BEU|Forgerons|1908
+CHR|CHL|Renards|1894
+CEA|SCC|Gladiateurs|1912
+CTE|CEA|Sangliers|1954
+BEU|ACB|Forgerons|1908
 CAF|CAF|Sentinelles|1930
 DIA|DIA|Canonniers|1908
 VIE|VIE|Mineurs|1942
@@ -7121,7 +7417,7 @@ AJR|AJR|Cigognes|1878
 LNN|LNN|Cerfs|1883
 DUR|DUR|Blancs|1907
 SRR|SRR|Rouges|1952
-CHA|CHA|Loups|1880
+CHA|CAE|Loups|1880
 VIL|VIL|Jaguatiricas|1880
 GUA|GUA|Verdões|1899
 GUF|GUF|Ursos|1887
@@ -7165,7 +7461,7 @@ AUM|AUM|Neri|1916
 AUS|AUS|Rondinelle|1910
 GUS|GUS|Delfini|1903
 VIS|VIS|Cervi|1907
-SER|SER|Bianchi|1926
+SER|SEA|Bianchi|1926
 POL|POL|Ducali|1873
 CRC|CRC|Volpi|1895
 ADC|ADC|Leoni|1939
@@ -7178,7 +7474,7 @@ VAC|VLN|Cigni|1939
 SFX|SFX|Draghi|1893
 LIB|LIB|Bianchi|1888
 FOA|FOA|Marinai|1932
-PRS|PRS|Diavoli|1906
+PRS|PSM|Diavoli|1906
 VLT|VLT|Minatori|1884
 ASD|ASD|Pescatori|1881
 AUF|AUF|Orsi|1970
@@ -7193,7 +7489,7 @@ COV|COV|Amarelos|1913
 GOU|GOU|Panteras|1897
 ESP|ESP|Lampiões|1937
 MAR|MAR|Bravos|1961
-CAM|CAM|Veados|1889
+CAM|CAV|Veados|1889
 TOM|TOM|Pescadores|1898
 ESO|ESR|Lavradores|1864
 SES|SES|Dragões|1885
@@ -7236,13 +7532,13 @@ DOR|DOR|Leones|1917
 NAO|NAO|Leones|1944
 GAR|GAR|Mineros|1944
 URQ|URQ|Pumas|1972
-CAS|CAS|Halcones|1910
+CAS|CST|Halcones|1910
 DFN|DFN|Zorros|1971
 REQ|REQ|Pioneros|1925
 GAP|GAP|Cóndores|1907
 NCN|NCN|Arrieros|1903
 PEC|PEC|Panteras|1943
-FRC|FRC|Ferroviarios|1912
+FRC|FRN|Ferroviarios|1912
 TOR|TOR|Negros|1923
 COF|COF|Gallos|1949
 ARC|ARE|Ñandúes|1938
@@ -7254,28 +7550,28 @@ GOR|GOR|Comets|1935
 CHM|CHM|Yellows|1907
 MIL|MIL|Lumberjacks|1921
 FOS|FOS|Lightning|1961
-LAK|EAA|Maples|1940
+LAK|BEE|Maples|1940
 FRT|FRT|Pioneers|1963
 FOF|FOF|Ospreys|1977
 SPR|SPR|Rockets|1938
-EAG|HBB|Whites|1936
+EAG|HAM|Whites|1936
 BLU|BLU|Rockets|1914
 HIC|HIC|Eagles|1941
 CED|CED|Blacks|1975
 BEA|BEA|Fishermen|1985
 PIN|PIE|Reds|1927
-WHI|GRW|Maples|1913
+WHI|GRN|Maples|1913
 ASE|ASE|Oranges|1920
 GOP|GOP|Dragons|1948
 CAN|CAN|Gunners of the Shire|1928
-MAP|MAP|Maroons|2001
+MAP|MPL|Maroons|2001
 BLS|BLS|Greens|1979
 SUS|SUS|Sparrows|1960
 PNF|PNF|Whalers|1920
 SUM|SUM|Windmills|1961
 REN|REN|Storm|1968
 GRU|GRU|Brewers|1989
-PRA|PRA|Wrens|1968
+PRA|PRT|Wrens|1968
 NIS|NIS|Warriors|1932
 KIT|KIT|Albatros|1908
 SAK|SAK|Reds|1937
@@ -7316,7 +7612,7 @@ ZOC|ZOC|Rojos|1910
 HAL|HAL|Panteras|1954
 GAN|GAN|Knights|2004
 CHO|CHO|Greens|1921
-CHU|CHU|Magpies|1904
+CHU|CHA|Magpies|1904
 CHS|CHS|Shipwrights|1938
 SEO|SEO|Silkmen|1963
 CHT|CHT|Hawks|1988
@@ -7330,7 +7626,7 @@ TAK|TAK|Panthers|2004
 UBO|UBO|Navy|1999
 NON|NON|Elephants|1929
 NOA|NOA|Rockets|1952
-SIN|SIN|Tigers|1913
+SIN|SIP|Tigers|1913
 SAU|SAU|Lotus|1973
 UBU|UBU|Rockets|1925
 KHA|KHA|Reds|1952
@@ -7338,8 +7634,8 @@ KHP|KHP|Garudas|1978
 UBC|UBC|Knights|1946
 WAN|WAN|Ravens|1926
 PHU|PHU|Comets|2003
-SKL|SKL|Cobras|1961
-MUA|MNG|Naga|1984
+SKL|SLE|Cobras|1961
+MUA|MUG|Naga|1984
 TKP|TKP|Kings|1958
 MUU|MUU|Eagles|1949
 BAU|BAU|Warriors|1909
@@ -7353,10 +7649,10 @@ AWU|AWU|Eagles|2005
 SHU|SHU|Ospreys|1905
 ADN|ADN|Owls|1939
 OWR|OWR|Blues|1947
-SHO|SHO|Colliers|1919
-UMU|UMU|Blues|1925
+SHO|SHG|Colliers|1919
+UMU|UMW|Blues|1925
 IKU|IKU|Vikings|1964
-SHA|SHN|Yellows|1985
+SHA|SOO|Yellows|1985
 AKY|AKY|Wolves|1916
 ILA|ILA|Pike|1960
 AWP|AWP|Greens|1981
@@ -7370,14 +7666,14 @@ NAN|NAN|Bleus|2008
 SID|SID|Écureuils|1909
 SIB|SIB|Mousquetaires|1945
 TAZ|TAZ|Marins|2006
-NAM|NAM|Cigognes|1923
-SPI|SPV|Meuniers|1983
+NAM|NJH|Cigognes|1923
+SPI|SPE|Meuniers|1983
 SIO|SIO|Verts|1954
 NED|NED|Verts|1916
-CHB|CHB|Léopards|1989
+CHB|CTX|Léopards|1989
 NAH|NAH|Rouges|1974
-USO|USO|Gazelles|1964
-USA|USA|Lions|1973
+USO|UOE|Gazelles|1964
+USA|UAM|Lions|1973
 RAP|RAP|Crveni|1923
 NKJ|NKJ|Crni|1935
 ZOR|ZOR|Orlovi|1903
@@ -7407,7 +7703,7 @@ BEG|BEG|Geelen|1943
 NIF|NIF|Zwarten|1913
 OUD|OUD|Witten|1892
 KLN|KLN|Geelen|1889
-OOS|OOS|Pioniers|1942
+OOS|OOF|Pioniers|1942
 RSC|RSC|Rooien|1882
 KZX|KZX|Groenen|1912
 DEM|DEM|Akbabalar|1923
@@ -7439,7 +7735,7 @@ RYC|RYC|Horníci|1949
 SOS|SOS|Býci|1938
 ZLI|ZLI|Tuři|1940
 VSE|VSE|Komety|1965
-SPA|SPA|Racci|1915
+SPA|SVX|Racci|1915
 DUK|DUK|Rytíři|1957
 TRF|TRF|Modří|1935
 HLD|HLD|Medvědi|1932
@@ -7465,14 +7761,14 @@ HLV|HLV|De Hvide|1900
 IKB|IKB|Ørne|1871
 KIL|KIL|Ørnene|1891
 LNG|LNG|De Hvide|1877
-HAV|HAV|Svaner|1900
+HAV|HVD|Svaner|1900
 STN|STN|De Blå|1880
 FRM|FRM|Rever|1895
 FJO|FJO|Ulve|1910
-FRD|FRD|Hjortene|1892
+FRD|FEM|Hjortene|1892
 SNX|SNX|Gladiatorene|1880
-RIN|RIN|Pionerer|1898
-FRN|FRN|Vikinger|1897
+RIN|RIF|Pionerer|1898
+FRN|FRD|Vikinger|1897
 GAM|GAM|De Blå|1908
 KSJ|KSJ|Rybacy|1900
 RAD|RAD|Pionierzy|1939
@@ -7502,7 +7798,7 @@ NOR|NOF|De Røde|1927
 NOI|NOI|De Grønne|1953
 IKS|IKS|Pionerer|1900
 MAK|MAK|De Blå|1877
-NRD|NRD|Hvalene|1915
+NRD|NOD|Hvalene|1915
 ASK|ASK|De Røde|1899
 GOL|GOL|Weißen|1938
 OBE|OBE|Köhler|1872
@@ -7514,7 +7810,7 @@ RHE|RHE|Kumpel|1903
 GEF|GEF|Löwen|1930
 OBM|OBM|Falken|1931
 VKT|VKT|Seeadler|1934
-GEN|GEN|Raben|1866
+GEN|GRM|Raben|1866
 FSK|FSK|Pioniere|1893
 HOF|HOF|Löwen|1886
 BOR|BOR|Husaren|1872
@@ -7545,12 +7841,12 @@ GEJ|GEJ|Robins|1934
 WOF|WOF|Wolves|1918
 GEV|GEV|Reds|1945
 MOB|OTA|Stags|1938
-MOT|MOT|Koalas|1901
+MOT|MOB|Koalas|1901
 CFF|CFF|Sparrows|1972
-NOW|BLG|Penguins|1920
+NOW|BLE|Penguins|1920
 TAM|TAM|Emus|1978
 BAS|BAS|Crocs|1988
-PRT|PRT|Blues|1954
+PRT|POC|Blues|1954
 COM|COM|Vikings|1924
 BAR|BAR|Halászok|1932
 GYO|GYO|Úttörők|1944
@@ -7560,16 +7856,16 @@ SRT|SRT|Kékek|1966
 GYA|GYA|Medvék|1973
 BAV|BAV|Bordók|1910
 ORS|ORS|Bányászok|1951
-KAL|KAL|Rókák|1933
+KAL|KLD|Rókák|1933
 ZAF|ZAF|Gladiátorok|1919
 NGY|NGY|Sirályok|1931
 ORR|ORR|Vörösök|1979
 LIS|LIS|Harps|1881
 LIW|LIW|Pitmen|1884
 ORA|ORA|Brewers|1950
-COU|CBJ|Grecians|1960
+COU|CTL|Grecians|1960
 NEW|NEW|Buzzards|1929
-POC|POC|Hurlers|1946
+POC|PCG|Hurlers|1946
 ATH|ATH|Gaels|1939
 SLI|SLI|Corsairs|1883
 NWL|NWL|Blues|1891
@@ -7578,14 +7874,14 @@ TAL|OXS|Emeralds|1885
 LLA|LLA|Ravens|1900
 DOC|DOC|Potters|1930
 CLY|CLY|Quarrymen|1886
-ABE|ABE|Brewers|1878
+ABE|ABL|Brewers|1878
 CAH|CAH|Colliers|1947
-BLN|BLN|Dragons|1902
-BLW|BLW|Whalers|1952
-PEN|PEO|Miners|1926
+BLN|BAT|Dragons|1902
+BLW|BWY|Whalers|1952
+PEN|POU|Miners|1926
 TEN|TEN|Reds|1916
-BNG|BNG|Harpers|1892
-BAH|BGO|Drovers|1911
+BNG|BGO|Harpers|1892
+BAH|BDD|Drovers|1911
 JAN|JAH|Horsemen|1946
 SAH|MAW|Caravans|1973
 YAS|NAW|Dunes|2001
@@ -7605,43 +7901,43 @@ DHI|SHH|Knights|1898
 RIA|KER|Stallions|1946
 NAK|WAM|Dhows|1982
 ZAM|SIT|Desert Foxes|1970
-TAF|WAL|Yellows|1916
+TAF|WAI|Yellows|1916
 QAM|SIS|Yellows|1942
 ZAH|JWQ|Reds|1936
-AIN|RIF|Sandstorm|1966
-WAD|WAI|Camels|1986
+AIN|RIC|Sandstorm|1966
+WAD|WDI|Camels|1986
 TAT|SAY|Greens|1967
 RAS|IZZ|Greens|1997
-SHJ|SHS|Reds|1912
+SHJ|SSX|Reds|1912
 KAA|WAS|Hawks|1941
-TAH|SAB|Greens|1980
-WAI|AIK|Oryx|1920
-MAW|SHB|Nomads|1983
-QIM|SHL|Tigers|1930
+TAH|SWJ|Greens|1980
+WAI|AIH|Oryx|1920
+MAW|STX|Nomads|1983
+QIM|SAX|Tigers|1930
 NIM|BAQ|Falcons|1972
 AAD|RUS|Eagles|1948
-NOU|WDI|Desert Foxes|1967
+NOU|AWH|Desert Foxes|1967
 KHL|WRS|Lions|1999
 BAN|TEL|Sky Blues|1976
 TAJ|TEM|Yellows|1928
 BAM|TLM|Oranges|2008
 BND|BYL|Sailors|1989
 LTJ|TER|Reds|1928
-KAM|SFL|Oranges|1988
-TMN|LRL|Tigers|1918
-TES|PUP|Blues|1920
-LTS|PUA|Lions|1977
+KAM|SOY|Oranges|1988
+TMN|LOL|Tigers|1918
+TES|PLG|Blues|1920
+LTS|PUG|Lions|1977
 TAN|SRI|Biru Langit|1950
 BUK|PDP|Crocodiles|1933
 PUL|UIT|Helang|1940
 SIM|SEI|Buaya|1927
 SIP|PUL|Biru Langit|1986
-TEL|LAB|Biru|1943
+TEL|LAT|Biru|1943
 TEP|DAM|Elephants|1922
 SUP|UIK|Kuning|1906
 SRI|SEJ|Kuning|1941
-SIT|DED|Helang|1939
-PUT|MUT|Eagles|1948
+SIT|DEJ|Helang|1939
+PUT|MUJ|Eagles|1948
 PUA|UIP|Kancil|1958
 SMP|PUS|Rockets|2008
 BIN|THE|Reds|1979
@@ -7655,14 +7951,14 @@ SON|HOA|Naga|1904
 THT|THK|Reds|1949
 LKC|CLB|Yellows|1933
 LON|SLS|Buffaloes|1978
-THH|SAT|Hornbills|1913
+THH|STP|Hornbills|1913
 BAO|CLV|Phoenix|1934
 SOH|KOT|Warriors|1937
 KED|KED|Warriors|1930
 LAF|LAF|Oranges|1919
 PER|PER|Hornbills|1899
 PSP|PSP|Tigers|1955
-PES|PES|Buffaloes|1956
+PES|PRS|Buffaloes|1956
 LAG|LAG|Rockets|1937
 SUR|SUR|Sharks|1925
 BHS|BHS|Tigers|1931
@@ -7674,15 +7970,15 @@ PST|PST|Rockets|1972
 TAP|TAN|Dragons|1934
 PPX|PPX|Yellows|1943
 BHP|BHP|Greens|1970
-PSA|PSM|Eagles|1961
+PSA|PSW|Eagles|1961
 PUR|PUU|Yellows|1990
 BIF|BIN|Warriors|2008
 BIW|BIW|Whites|1982
-BAG|BAG|Elephants|1927
-PAS|PSY|Reds|2008
-BAW|BAW|Dragons|1934
+BAG|BGY|Elephants|1927
+PAS|PYA|Reds|2008
+BAW|BGL|Dragons|1934
 MAF|MAG|Eagles|1952
-PAF|PYA|Yellows|1942
+PAF|PFX|Yellows|1942
 CBY|CBY|Sharks|1953
 BIU|BIU|Sparks|1931
 PAM|PMG|Crimsons|1922
@@ -7698,28 +7994,28 @@ LAS|LAS|Falcons|1968
 SAS|SSL|Whites|1957
 MAB|MRA|Whites|1927
 THS|THS|Arrows|1971
-VRE|VRE|Colliers|1963
+VRE|VRC|Colliers|1963
 THF|THF|Whites|1930
 BET|BET|Weavers|1914
-ULU|ULU|Lions|1980
+ULU|ULB|Lions|1980
 ZFR|IDK|Lions|1922
 NJH|SAH|Nomads|1935
 NIL|DEL|Sky Blues|1917
 TAW|KAF|Oryx|1939
 SLM|TAW|Knights|1938
-ITT|PEA|Camels|1914
+ITT|PTR|Camels|1914
 FAU|LUX|Palms|1971
 KAF|ZFR|Tigers|1961
 DAM|QEN|Sultans|1986
 POT|MAH|Sandstorm|2008
 TAI|ABU|Reds|1965
 ITA|SUA|Sandstorm|1981
-SOF|BES|Foxes|1994
-BEI|PEM|Lions|1936
-ZOH|BEI|Divers|2003
-ITD|NIL|Dunes|1971
-HIL|KAD|Stallions|1934
-SUA|PTR|Tigers|1960
+SOF|BSC|Foxes|1994
+BEI|PMX|Lions|1936
+ZOH|BNI|Divers|2003
+ITD|ANX|Dunes|1971
+HIL|KFR|Stallions|1934
+SUA|PBQ|Tigers|1960
 MOE|KAS|Chacals|1928
 MNE|ESK|Rouges|1927
 VND|GAF|Rouges|1921
@@ -7732,34 +8028,34 @@ BOU|EOT|Gazelles|1945
 CHF|JSR|Palmiers|1902
 NAE|BEM|Faucons|1967
 ETM|SBG|Marins|1949
-NNC|KEL|Gazelles|1937
-NNE|JSM|Rouges|1988
+NNC|KEC|Gazelles|1937
+NNE|JMX|Rouges|1988
 TAB|TBN|Cheetahs|1932
-TAC|TAB|Reds|1897
+TAC|TAC|Reds|1897
 SAM|SMK|Sky Blues|1923
 RUV|RUV|Yellows|1995
-MRM|MRM|Buzzards|1974
-TBT|TAC|Miners|1937
-TBK|TAJ|Warriors|1923
+MRM|MRO|Buzzards|1974
+TBT|TBT|Miners|1937
+TBK|TBO|Warriors|1923
 MTW|MTW|Yellows|1970
 KIS|KBN|Elephants|1961
 KIG|KIG|Eagles|1935
-SOC|SON|Elephants|1986
+SOC|SGA|Elephants|1986
 SMM|SMM|Simbas|1913
 MRT|MRT|Reds|1898
-KBG|KBG|Eagles|1917
+KBG|KBO|Eagles|1917
 YOU|YOU|Blues|1964
 KIU|KIU|Stars|1961
 CHV|UST|Dromadaires|1901
 THR|ESH|Rouges|1932
 THI|ASO|Chacals|1938
-AJM|NAR|Fennecs|1899
+AJM|NMY|Fennecs|1899
 NAF|BOK|Fennecs|1928
 MIO|ASH|Sahariens|1928
-BEC|UBX|Blancs|1968
+BEC|USK|Blancs|1968
 SPC|MBB|Gazelles|1926
 MNV|MCT|Aigles|1927
-TRL|BRL|Lions|1959
+TRL|BFX|Lions|1959
 SAG|IRT|Lions|1961
 VLL|MOO|Bleus|1915
 FNR|BEJ|Verts|1943
@@ -7773,19 +8069,19 @@ ETH|ETH|Lárioi|1926
 PAK|PAK|Arkoúdes|1929
 KYP|KYP|Nautikoí|1925
 NII|NIM|Kítrinoi|1925
-PAE|PAE|Titánes|1973
+PAE|PIX|Titánes|1973
 PAL|PNT|Léontes|1968
 GXX|GXX|Gladiátores|1934
-PAT|PAH|Kaloyéroi|1917
-AKX|AKX|Psarádes|1942
-AEK|AEK|Spartiátes|1985
-AOM|AOM|Ippótes|1945
+PAT|PNA|Kaloyéroi|1917
+AKX|AOY|Psarádes|1942
+AEK|AEV|Spartiátes|1985
+AOM|AOA|Ippótes|1945
 AOB|AOB|Plavi|1899
 KAS|KAM|Pivari|1926
 TUR|TUR|Beli|1912
 RAO|RAO|Lavovi|1922
-RUD|RUD|Hajduci|2008
-PAP|PAP|Ribari|1985
+RUD|RUB|Hajduci|2008
+PAP|PAT|Ribari|1985
 MFP|MFP|Lisice|1968
 RAR|RAR|Sokolovi|2008
 MFV|MFV|Bikovi|1938
@@ -7804,8 +8100,8 @@ BRI|IFO|Björnarna|1911
 SND|SIG|Fiskarna|1923
 STK|IKT|Blå|1887
 SBX|NYA|Röda|1909
-DYY|NYN|Gruvarbetarna|1903
-SYD|LIF|Gröna|1903
+DYY|NYI|Gruvarbetarna|1903
+SYD|LNS|Gröna|1903
 MET|VIV|Minerii|1919
 STI|ALA|Lupii|1990
 ZEN|PET|Albaștrii|1929
@@ -7815,13 +8111,13 @@ MEL|DRE|Pescarii|1922
 DNJ|ACS|Pescarii|1966
 AOL|MEZ|Șoimii|1930
 DOU|MET|Vulturii|1921
-KAU|GLO|Zimbrii|1928
+KAU|GLB|Zimbrii|1928
 BRS|MTL|Lupii|1909
 RAN|ACZ|Albaștrii|1952
-KSP|MRE|Minerii|1911
-DOJ|PRG|Șoimii|1942
+KSP|CMS|Minerii|1911
+DOJ|PGR|Șoimii|1942
 RAB|MEA|Leii|1966
-LOK|ELE|Albaștrii|1939
+LOK|ELZ|Albaștrii|1939
 VLD|VAC|Alcarraza|1926
 ARO|ARO|Rayos|1925
 AOA|ARC|Lobos|1922
@@ -7829,73 +8125,73 @@ HIN|HIN|Negros|1950
 VAE|VLD|Búhos|1932
 POD|POD|Lobos|1898
 MAD|MAY|Potros|1942
-TLR|TLR|Águilas|2005
+TLR|TAL|Águilas|2005
 LIU|LIU|Vaqueros|1913
 GUD|GUD|Cóndores|1982
-GDR|GDR|Delfines|1913
-ATO|ATO|Blancos|1931
+GDR|GUE|Delfines|1913
+ATO|ALR|Blancos|1931
 LIR|LIA|Jaguares|1941
 ARN|ARN|Azules|1938
-SNT|SSO|Leñadores|1925
-ROB|ROB|Halcones|1967
+SNT|SAN|Leñadores|1925
+ROB|ROA|Halcones|1967
 ESU|ESO|Potros|1894
 DEO|DEO|Pampas|1921
-RGT|RGT|Arrieros|1909
+RGT|RET|Arrieros|1909
 PUF|PUF|Leones|1999
 RDD|RDD|Matadores|1921
 VEC|VEC|Ñandúes|1890
-SPL|SPL|Gladiadores|1893
+SPL|SLX|Gladiadores|1893
 INB|INB|Azules|1945
-CST|CTO|Delfines|1905
+CST|CNA|Delfines|1905
 SRN|SNI|Cruzados|1889
 RDL|RDL|Tamberos|1917
-ESE|ESE|Gladiadores|1948
+ESE|EUD|Gladiadores|1948
 DEE|DEE|Rayos|1922
-SIV|STI|Lobos|1968
+SIV|CSB|Lobos|1968
 GMN|GMN|Matadores|1900
-SVO|SPC|Halcones|1922
+SVO|SPO|Halcones|1922
 VAB|VAB|Panteras|1917
 POS|POZ|Toros|1921
-CAA|CAB|Rojos|1900
+CAA|CBR|Rojos|1900
 PEB|PED|Rojos|1916
 PZA|PZA|Pastores|1894
-CRA|CBR|Verdes|1911
+CRA|CRA|Verdes|1911
 GND|GND|Blancos|1908
-MAE|MAB|Gladiadores|1896
+MAE|MRB|Gladiadores|1896
 VAD|VAD|Mulas|1922
 ORI|ORL|Toros|1933
 BAI|BAI|Arrieros|1900
-FNT|FNT|Halcones|1904
+FNT|FUN|Halcones|1904
 CEV|CEV|Delfines|1903
 ELU|ELU|Titanes|1962
 NUM|NUM|Cóndores|1950
 LUC|LUS|Alcarraza|1966
-TAU|TAR|Jaguares|1961
-CNJ|CNJ|Leñadores|1954
-BAJ|BJO|Tejedores|1917
+TAU|TAU|Jaguares|1961
+CNJ|CUJ|Leñadores|1954
+BAJ|DBA|Tejedores|1917
 NUT|NUT|Mineros|1894
 BRB|KMF|Voyageurs|1973
 GRN|HMH|Reds|1931
-BON|CHL|Moose|1969
+BON|CEF|Moose|1969
 HOR|KMT|Reds|1957
 TIV|GLM|Greens|1922
 COD|GLY|Maples|1978
-CLW|SLE|Grizzlies|1942
+CLW|SAS|Grizzlies|1942
 HAY|DUA|Maples|1974
 BUA|AIN|Gazelles|1940
 IZZ|BAH|Knights|1989
 MAJ|YAS|Stallions|1989
 JAA|BAC|Pearls|1939
 WAT|SAC|Reds|1986
-JEA|SAA|Camels|1957
+JEA|SHB|Camels|1957
 YAQ|SHY|Eagles|1907
 SHQ|SHJ|Oranges|1948
-RIM|KUT|Nomads|1935
+RIM|KUS|Nomads|1935
 DHA|BUR|Horsemen|1954
-HUR|KAA|Lions|1978
+HUR|KRA|Lions|1978
 NAW|BUC|Falcons|1922
-FAA|SBX|Camels|1945
-SHB|SHR|Horsemen|1975
+FAA|SHM|Camels|1945
+SHB|SHA|Horsemen|1975
 MES|MES|Tigers|1911
 NAS|NAS|Camels|1915
 GOS|GOS|Gazelles|1929
@@ -7903,15 +8199,15 @@ FAJ|FAJ|Horsemen|1934
 PAY|PAY|Sultans|1932
 ZOB|ZOB|Yellows|1999
 NSS|NSS|Foxes|1915
-NFT|NFT|Eagles|1914
-PSY|PAS|Falcons|1916
+NFT|NAT|Eagles|1914
+PSY|PSY|Falcons|1916
 GOB|GOB|Knights|2007
 PYK|PYK|Sandstorm|1903
-MOH|MOH|Blues|1939
+MOH|MHM|Blues|1939
 SEY|SEY|Lions|2008
 BAB|BAB|Yellows|1941
-FAB|FAB|Lions|1985
-SHD|SHD|Hawks|1956
+FAB|FJR|Lions|1985
+SHD|SDS|Hawks|1956
 IHS|MUS|Whites|1988
 BHY|MUA|Reds|1997
 UMM|WAD|Reds|1977
@@ -7919,8 +8215,8 @@ ULI|SOH|Horsemen|1954
 GHA|SHZ|Sandstorm|1899
 RIY|SHQ|Lions|1944
 DIR|SHW|Caravans|1926
-AIM|ZAC|Yellows|1930
-BUU|SBA|Hawks|1926
+AIM|ZLR|Yellows|1930
+BUU|SHE|Hawks|1926
 ABC|DIW|Palms|1909
 ABA|AQA|Pearls|1928
 SHM|BUA|Lions|1932
@@ -7933,10 +8229,10 @@ HEN|MEY|Pines|1960
 BSH|RUY|Phoenix|1915
 LOP|CHG|Cranes|1966
 BEY|BAO|Magpies|1981
-WUJ|LIH|Whales|1932
+WUJ|LIN|Whales|1932
 BAF|CHF|Tigers|1914
 SHE|KAU|Lions|1983
-CHN|HAY|Eagles|1925
+CHN|HYN|Eagles|1925
 MEY|YUN|Dragons|1926
 CHD|DOS|Steelmen|1978
 XYA|YUE|Eagles|1928
@@ -7951,7 +8247,7 @@ TAE|TAA|Blues|1988
 TAG|TAF|Whales|1973
 KAB|KWS|Sharks|1975
 SAD|SKR|Pioneers|1982
-INI|INR|Lancers|1946
+INI|INS|Lancers|1946
 AMA|AKH|Blues|1979
 ASB|ASU|Foxes|1969
 FUA|FUF|Ravens|1918
@@ -7965,29 +8261,29 @@ JEO|JEO|Sharks|1925
 BOJ|BOJ|Rockets|2008
 PYE|PYE|Reds|1932
 WOA|WOC|Eagles|1951
-GYB|GYF|Dragons|1916
-BAD|BAN|Comets|1950
+GYB|GYN|Dragons|1916
+BAD|BNR|Comets|1950
 NAB|NAE|Foxes|1918
 SIC|SIU|Lancers|1977
 DOA|DOH|Tigers|1948
 CHJ|CHJ|Pioneers|1943
 BUB|BUU|Reds|1948
-MUN|MUN|Blacks|1923
+MUN|MUT|Blacks|1923
 JIA|JIN|Stags|1917
 WOG|WOP|Bears|1964
-MUC|MUG|Buffaloes|1914
+MUC|MUB|Buffaloes|1914
 RAT|RAU|Crocodiles|1927
 PAA|PKN|Pioneers|1936
 THC|THP|Yellows|1944
-BAK|BAP|Hornbills|2008
+BAK|BAE|Hornbills|2008
 KAO|KPR|Ravens|1916
-NOB|NNG|Greens|1974
-SII|SNG|Oranges|1996
+NOB|NOG|Greens|1974
+SII|SII|Oranges|1996
 PAB|PKP|Lions|1975
 MAG|MUX|Dragons|1940
 PAI|PAA|Warriors|1987
-BEK|BAF|Blues|1955
-BAE|BNR|Foxes|1966
+BEK|BAX|Blues|1955
+BAE|BCX|Foxes|1966
 UBB|UBR|Stags|1954
 PHR|PHR|Sharks|1925
 TAS|TKB|Reds|1982
@@ -7996,30 +8292,30 @@ PEE|PSI|Lotus|1914
 PSS|PSA|Blues|1944
 PSI|PEB|Garuda|1918
 KEA|KEP|Dragons|1929
-SOL|SOF|Naga|1921
+SOL|SLB|Naga|1921
 BOA|BOF|Garudas|1962
 KEN|KEU|Garuda|1924
 PUB|PUR|Greens|1930
 PPS|PSS|Crocodiles|1929
-PUN|PRN|Buffaloes|1930
+PUN|PUA|Buffaloes|1930
 SUB|SRJ|Eagles|1917
-PEP|PEP|Greens|1974
+PEP|PEG|Greens|1974
 PEF|PBX|Lions|1965
 PSC|PSC|Elephants|1935
 PAD|PML|Panthers|1915
-PUC|PRP|Panthers|2000
+PUC|PUP|Panthers|2000
 BHB|BHB|Sharks|1954
-PSM|PMX|Hornbills|1971
-BHI|BHK|Elephants|1930
+PSM|PSL|Hornbills|1971
+BHI|BTI|Elephants|1930
 THD|SNP|Cranes|1949
 THP|CLD|Oranges|1942
 CAD|THB|Sharks|1970
 KHB|CLN|Cranes|1916
 BAP|THN|Blues|1952
 BAQ|TLS|Phoenix|1989
-TEC|STD|Lotus|1954
-THG|SLL|Garudas|1956
-BIA|THI|Dragons|1957
+TEC|SAI|Lotus|1954
+THG|SAI|Garudas|1956
+BIA|TSF|Dragons|1957
 SOA|TEP|Reds|1968
 LAB|XIM|Elephants|1971
 DOG|THD|Yellows|1958
@@ -8035,7 +8331,7 @@ MAM|MDP|Lions|1927
 UJJ|UJA|Panthers|1955
 UJH|UJJ|Elephants|1958
 AMB|AMB|Monsoon|1936
-SAE|SUF|Blacks|1898
+SAE|SUG|Blacks|1898
 VAA|VDW|Whites|1928
 PIE|PIR|Marineros|1916
 PIO|PID|Alfareros|1915
@@ -8044,10 +8340,10 @@ ELA|ELC|Alacranes|1907
 RIB|RIB|Halcones|1904
 SEA|JUS|Leñadores|1898
 PLC|PLR|Segadores|1914
-CAG|CAA|Zorros|1921
+CAG|CAI|Zorros|1921
 GAA|GAU|Cruzados|1894
 ALF|ALO|Celestes|1932
-ARB|ARI|Búhos|1916
+ARB|ARL|Búhos|1916
 CAJ|CMP|Celestes|1967
 MAQ|MAO|Cuervos|1927
 ROA|SRC|Rojos|1967
@@ -8060,48 +8356,48 @@ FUC|FUS|Zorros|1917
 CAP|CLT|Linces|1905
 VAF|VAA|Celestes|1903
 CAQ|CLA|Águilas|1916
-TAX|SAE|Cóndores|1932
+TAX|SAN|Cóndores|1932
 PEG|PDL|Rojos|1934
 FRB|FES|Gladiadores|1929
-ALG|ALZ|Corsarios|1974
-LUA|LUC|Amarillos|1977
-BEB|BEC|Titanes|1929
-LAC|MED|Cóndores|1974
-TOA|JUT|Toreros|1944
-POB|POU|Gauchos|2007
-VIA|VLL|Corsarios|1952
-GAO|GAC|Alacranes|1934
+ALG|RCA|Corsarios|1974
+LUA|LUU|Amarillos|1977
+BEB|BVA|Titanes|1929
+LAC|MDE|Cóndores|1974
+TOA|JUU|Toreros|1944
+POB|PZT|Gauchos|2007
+VIA|VIJ|Corsarios|1952
+GAO|GAE|Alacranes|1934
 LAV|LVN|Pescadores|1937
 LAH|LAV|Cóndores|1906
-ARE|SPI|Hornero|1910
-CLA|INC|Corsarios|1905
+ARE|STI|Hornero|1910
+CLA|INE|Corsarios|1905
 URA|URI|Amarillos|1912
-URI|ESU|Marineros|1950
-ESC|ESC|Zorros|1949
+URI|ESD|Marineros|1950
+ESC|ECA|Zorros|1949
 HER|DEH|Azules|1978
 FRF|FRO|Toros|1929
 TOZ|TOC|Celestes|1973
-SAJ|SAO|Lobos|1987
-REB|RET|Leones|1940
-DAL|DAL|Panthères|1932
+SAJ|SRO|Lobos|1987
+REB|RGA|Leones|1940
+DAL|DAU|Panthères|1932
 DAU|USD|Lynx|1923
 LOU|LOU|Lions|1924
 OLY|YAO|Blancs|1989
 MAU|MNR|Sentinelles|1964
 ACA|ACD|Crocodiles|1967
-BOC|BOU|Gazelles|1930
+BOC|BNC|Gazelles|1930
 ZIG|UZX|Comètes|1953
 ZIR|ZIM|Bûcherons|1952
 TAA24|UTX|Éléphants|1972
-MAO|ETL|Mimosas|1948
-DAK|DAK|Forgerons|2002
+MAO|ETI|Mimosas|1948
+DAK|DAF|Forgerons|2002
 SUH|SUH|Trout|1920
 WAR|WAH|Reds|1934
 SEK|SEK|Yellows|1964
-AKR|APX|Yellows|1941
+AKR|AKU|Yellows|1941
 ADA|ADA|Leopards|1953
 ANO|ANO|Miners|1939
-TAB25|TAU|Greens|1970
+TAB25|TKM|Greens|1970
 SUC|SUU|Blues|1932
 WAB|WRA|Rams|1913
 EFF|EFF|Porcupines|1958
@@ -8111,15 +8407,15 @@ HOA|HOG|Elephants|1988
 YEA|YEH|Buffaloes|1975
 ACE|ACA|Comètes|1899
 KAD|KAO|Verts|1937
-SPE|SPE|Canonniers|1984
-LOL|LOS|Rouges|1926
+SPE|SPY|Canonniers|1984
+LOL|LSS|Rouges|1926
 DCK|DKL|Panthères|1960
-BOK|USU|Panthères|1925
+BOK|USC|Panthères|1925
 YAA|YMS|Mimosas|1955
 AIE|ACF|Écureuils|1913
 YAO|USY|Crocodiles|1929
 ASC|ASC|Buffles|1913
-DAO|DAF|Corbeaux|1990
+DAO|DLR|Corbeaux|1990
 ACY|ACY|Rouges|1934
 SAT|SSB|Hyènes|1900
 MSO|ETM|Rouges|1908
@@ -8130,7 +8426,7 @@ DAC|DAS|Rouges|1937
 GUC|GUU|Éléphants|1986
 SIK|SIK|Verts|1956
 KOU|KMB|Bleus|1925
-TOC|USL|Noirs|1977
+TOC|USQ|Noirs|1977
 BOD|BKD|Bleus|1952
 MAX|MSS|Aigles|1946
 ZIA|ETZ|Chacals|1928
@@ -8138,76 +8434,76 @@ NOC|UNK|Hippopotames|1930
 NAL|ETN|Buffles|1936
 ZIZ|ZIG|Rouges|1900
 PET|PTT|Antilopes|1944
-BOE|BOS|Éléphants|1984
-BOF|BOA|Aigles|1953
+BOE|BDN|Éléphants|1984
+BOF|BBL|Aigles|1953
 DIO|DIO|Buffles|1961
 YOP|YOP|Antilopes|1955
-KIC|KIS|Panthères|1949
+KIC|KIM|Panthères|1949
 ZIO|ZIF|Gazelles|1989
 LAJ|LAR|Hyènes|1940
 OUS|OUS|Crocodiles|1937
 OUO|OUA|Léopards|1936
 TAC26|TMD|Rouges|1915
 KAE|KYR|Rhinocéros|1934
-SED|SEA|Lions|1919
+SED|SSS|Lions|1919
 KAN|KND|Verts|1944
-MBU|MBD|Antilopes|1951
-SAV|USX|Faucons|1969
-BAT|BAE|Éléphants|1989
+MBU|MBO|Antilopes|1951
+SAV|USV|Faucons|1969
+BAT|BGU|Éléphants|1989
 DOB|DKD|Jaunes|1984
 YSO|YSS|Faucons|1984
 PIB|PEZ|Aigles|1947
-NOO|UNO|Faucons|1937
-NOD|NOU|Léopards|1939
+NOO|USU|Faucons|1937
+NOD|NOO|Léopards|1939
 NZU|USZ|Aigles|1954
 MAZ|MNB|Léopards|1910
 KOR|KOR|Hippopotames|1923
-TOD|TOA|Bleus|1920
+TOD|TDL|Bleus|1920
 MLB|MAX|Jaunes|1918
 MSA|MTK|Panthères|1923
-KID|USK|Verts|1966
+KID|UKX|Verts|1966
 LAL|LBD|Éléphants|1997
 DIE|DGR|Pythons|1912
 BYA|BOY|Baobabs|1924
 MBE|MBU|Hyènes|1920
 MRE|MBG|Rouges|1900
 BOH|BKM|Hippopotames|1920
-NZM|ETI|Rhinocéros|1950
+NZM|EOI|Rhinocéros|1950
 TUM|ETT|Panthères|1938
 TAD27|TMN|Chacals|1985
-BAX|BAM|Faucons|1929
-TIA|TOI|Pythons|1965
-MOP|MOP|Buffles|1921
+BAX|BMK|Faucons|1929
+TIA|TBI|Pythons|1965
+MOP|MPN|Buffles|1921
 ZIE|ZGN|Léopards|1953
 BAZ|BMT|Éléphants|1979
 MKO|MKO|Rouges|1944
 VIF|VLS|Verdes|1937
 GDD|GDV|Cabras|1904
-LAP|ESL|Onças|1928
-AMC|AMA|Pastores|1932
-VIG|VIA|Oleiros|1979
-POE|UIA|Cruzados|1985
-VIH|VIF|Cegonhas|1964
+LAP|ERT|Onças|1928
+AMC|AMR|Pastores|1932
+VIG|VIH|Oleiros|1979
+POE|UPD|Cruzados|1985
+VIH|VOU|Cegonhas|1964
 POO|PDC|Raposas|1932
 VAG|VAF|Rubro-Negros|1935
-BRC|BRS|Azuis|1983
-VIJ|UNV|Lavradores|1916
+BRC|BRJ|Azuis|1983
+VIJ|UIA|Lavradores|1916
 OSS|OSB|Águias|1912
 MIB|ASM|Marinheiros|1979
 AVA|RSA|Corsários|1958
-ALV|ALV|Amarelos|1986
-AVE|ESA|Tubarões|1949
-ACO|ACM|Corvos|1899
-GGD|GDL|Faroleiros|1941
-FER|FRR|Cabras|1941
+ALV|AVO|Amarelos|1986
+AVE|EOR|Tubarões|1949
+ACO|ACI|Corvos|1899
+GGD|GLX|Faroleiros|1941
+FER|FEO|Cabras|1941
 NAP|NVL|Mineiros|1939
-POF|POS|Corvos|1946
-COC|UNC|Amarelos|1934
+POF|PTA|Corvos|1946
+COC|UND|Amarelos|1934
 PRY|PRY|Lvy|1897
 BUC|BUK|Zubry|1913
 KOA|KOL|Metalurhy|1963
 STC|STT|Chorni|1922
-KRE|KRE|Sokoly|1902
+KRE|KRF|Sokoly|1902
 AKC|AKD|Haidamaky|1976
 HAA|HNY|Orly|1929
 KAG|KAN|Sokoly|1951
@@ -8215,20 +8511,20 @@ PRB|PRK|Zhovti|1913
 CHK|CHK|Syni|1938
 KAH|KMY|Charivnyky|1934
 NYZ|NYZ|Vovky|1927
-POG|POK|Hirnyky|1935
-POH|PON|Lvy|1975
-AVD|AVS|Vovky|1962
+POG|PDI|Hirnyky|1935
+POH|POI|Lvy|1975
+AVD|AVH|Vovky|1962
 CHL|CRN|Kozaky|1969
 ZEA|TJP|Levy|1908
 MLT|TJG|Červení|1914
-RUA|TJS|Žltí|2008
+RUA|TSX|Žltí|2008
 KRA|MFS|Sokoly|1935
 MST|SPD|Sokoly|1910
 SLB|MVX|Červení|1983
 DIN|JEN|Červení|1926
 ZEB|ISC|Medvede|1959
-ZER|LOO|Baníci|1918
-MEA|STO|Orly|1937
+ZER|LOA|Baníci|1918
+MEA|STJ|Orly|1937
 MTU|ISK|Rytieri|1935
 RAA|HUT|Železiari|1939
 SLE|VET|Jeleni|1928
@@ -8237,197 +8533,197 @@ PAG|NBX|Rudarji|1919
 NOV|NKS|Modri|1911
 PAH|KOV|Orli|1928
 NOE|ZLZ|Ribiči|1947
-LIP|RDR|Medvedi|1955
+LIP|RUA|Medvedi|1955
 SLO|SVA|Volkovi|1960
-LOA|PAI|Rdeči|1926
+LOA|PTI|Rdeči|1926
 HRA|NDZ|Sokoli|1989
-SGA|SLO|Bikovi|1935
+SGA|SLZ|Bikovi|1935
 ZEO|LOZ|Sokolovi|1902
-DOD|DOF|Bikovi|1919
+DOD|DLN|Bikovi|1919
 DOE|LOD|Plavi|1928
 ZEC|ZES|Vrane|1917
-DOF|LKM|Rakete|1944
+DOF|LOI|Rakete|1944
 ZAB|ZAU|Rudari|1987
 MAA24|KSM|Crveni|1972
-LOV|LOT|Pivari|1961
+LOV|LKO|Pivari|1961
 DID|DNJ|Zeleni|1945
 ZET|KFL|Të Bardhët|1897
 MEC|LOM|Kalorësit|1901
 ZAR|PAM|Skifterët|1933
-MAB25|PAT|Shqiponjat|1906
-HRY|SHV|Të Kuqit|1939
-DIH|MIP|Të Kaltrit|1904
+MAB25|PAZ|Shqiponjat|1906
+HRY|SON|Të Kuqit|1939
+DIH|MIA|Të Kaltrit|1904
 MIY|SQI|Skifterët|1943
-MLS|DRI|Dhelprat|1916
+MLS|DRV|Dhelprat|1916
 RYB|KFG|Të Gjelbrit|1920
-ZED|PTI|Të Gjelbrit|1961
+ZED|PNI|Të Gjelbrit|1961
 VEB|NKV|Sokolovi|1938
-SLD|SLV|Medvedi|1926
+SLD|SLR|Medvedi|1926
 VEY|ZOV|Pioniri|1913
 DIV|VED|Crveni|1899
-SPF|SMX|Crveni|1943
-HVA|HRA|Jeleni|1966
-ZIT|ZNT|Rakete|1914
-ZEE|ZEE|Zeleni|1945
-HRH|HRF|Žuti|1928
-LIV|LOV|Vitezovi|1984
+SPF|SPA|Crveni|1943
+HVA|HRF|Jeleni|1966
+ZIT|ZEI|Rakete|1914
+ZEE|ZEC|Zeleni|1945
+HRH|HRV|Žuti|1928
+LIV|LLX|Vitezovi|1984
 MAC26|MEM|Vitezovi|1923
-MAI|SAV|Baroni|1908
-RAC|RPD|Bikovi|1932
+MAI|SVI|Baroni|1908
+RAC|RTX|Bikovi|1932
 ZEF|ZED|Pivari|1913
 NVI|NOJ|Topionice|1939
-MLP|MLS|Lavovi|1927
+MLP|MLT|Lavovi|1927
 NOF|NVC|Zmajevi|1938
-OST|AOO|Crveni|1955
+OST|AOX|Crveni|1955
 NOL|KNX|Plavi|1926
-DRA|DRA|Plavi|1934
+DRA|DRF|Plavi|1934
 HRC|MIN|Lavovete|1899
 SLK|MNY|Metalurzite|1931
 KRD|MIS|Metalurzite|1934
 SCE|MEG|Chernite|1924
 MEB|PFK|Sokolite|1933
 DIB|HEB|Orlite|1921
-DIZ|SET|Lavovete|1914
-MEH|MOS|Orlite|1899
-ZLA|SPS|Chervenite|1951
-MLD|BAT|Vulcite|1960
+DIZ|SEE|Lavovete|1914
+MEH|MNI|Orlite|1899
+ZLA|SPQ|Chervenite|1951
+MLD|BLK|Vulcite|1960
 POJ|MIG|Sokolite|1946
 BEJ|KYE|Minyorite|1936
 LUB|PZV|Minyorite|1974
-SLZ|PAZ|Vulcite|1958
+SLZ|PZI|Vulcite|1958
 ASF|UUS|Rautamiehet|1920
 STD|SIR|Keltaiset|1926
 NEA|PYR|Siniset|1979
 ASM|PYJ|Vihreät|1902
 FRG|TRM|Karhut|1965
-STG|SAJ|Punaiset|1972
+STG|SVL|Punaiset|1972
 LAQ|MIF|Ahmat|1910
 MAD27|FFY|Sudet|1925
-STJ|KEF|Kalastajat|1980
-DYA|SEM|Siniset|1986
-VED|TAO|Hirvet|1909
+STJ|KRS|Kalastajat|1980
+DYA|SSA|Siniset|1986
+VED|TMO|Hirvet|1909
 NEB|IFH|Metsurit|1925
-SYA|HAH|Rauðir|1907
-SOE|HAM|Grænir|1919
+SYA|HMR|Rauðir|1907
+SOE|HAY|Grænir|1919
 SYE|HOT|Birnir|1924
 HOD|HTT|Hvítir|1930
 HEA|GRI|Hafernir|1980
 VBY|UMF|Hvítir|1897
-LIL|STK|Úlfar|1923
-NND|VII|Sjómenn|1990
-HEK|ROS|Selir|1934
+LIL|SYK|Úlfar|1923
+NND|VIG|Sjómenn|1990
+HEK|RTT|Selir|1934
 SOG|ROY|Rauðir|1986
-NEC|HMR|Úlfar|1931
+NEC|HMA|Úlfar|1931
 ALH|BOL|Ernir|1943
 TSK|GUR|Lomebi|1911
 SAW|TSK|Tsxenebi|1927
-MTB|GUM|Mgelebi|1945
+MTB|GIA|Mgelebi|1945
 OCH|MZI|Arcivebi|1913
 TSI|IBE|Lomebi|1980
 OCA|IME|Yvitlebi|1970
-WIA|TOK|Tsxenebi|1925
+WIA|TOD|Tsxenebi|1925
 MTI|SMG|Mgelebi|1937
 OCI|MEN|Arcivebi|1952
-OZI|LOL|Tsitlebi|1961
+OZI|LVI|Tsitlebi|1961
 BNE|BNE|Jackals|1926
 MBI|MAN|Lions|1900
 MAE28|MAE|Camels|1920
-REH|REH|Yellows|1900
+REH|REF|Yellows|1900
 HAP|HAP|Reds|1899
 BEM|BTR|Gazelles|1899
 EIL|EIL|Knights|1943
-HAB|HPL|Falcons|1909
-MAF29|MAI|Tigers|1911
-MNA|MCC|Hawks|1901
-HEL|HAA|Hawks|1977
-MAG30|MCA|Knights|1912
-RER|REF|Reds|1989
-HPE|HPO|Sabras|1929
+HAB|HPO|Falcons|1909
+MAF29|MBI|Tigers|1911
+MNA|MCA|Hawks|1901
+HEL|HAX|Hawks|1977
+MAG30|MBX|Knights|1912
+RER|RHV|Reds|1989
+HPE|HPX|Sabras|1929
 ZVE|ZVE|Orly|1913
 ARZ|ARZ|Krasnye|1928
 TRU|TRU|Neftyaniki|1922
 ZEV|ZEN|Kosmonavty|1938
 KRY|KRY|Orly|1911
 ZNA|ZNA|Shakhtyory|1991
-LIK|LIP|Kazaki|1923
-NIZ|NIZ|Sokoly|1927
-SHC|SHK|Zubry|1901
-ARF|AVA|Zheleznodorozhniki|1912
+LIK|LIF|Kazaki|1923
+NIZ|NZH|Sokoly|1927
+SHC|SHR|Zubry|1901
+ARF|AVN|Zheleznodorozhniki|1912
 ZEG|ZEV|Zhuravli|1918
-VER|VER|Zelenye|1950
+VER|VRK|Zelenye|1950
 LSK|LPG|Kozaki|1983
 OLI|OLP|Gusary|1960
 KIE|KIF|Kosmonavty|1942
-VOL|VOL|Neftyaniki|1972
-SPG|SPK|Zholtyya|1918
+VOL|VOM|Neftyaniki|1972
+SPG|SBX|Zholtyya|1918
 NAQ|NAF|Siniya|1916
 GRD|GRZ|Zholtyya|1983
-ORB|ORF|Siniya|1904
-KAJ|KSL|Hrenadzery|1905
-NAR|NAT|Rybaki|1933
-SAX|SPP|Arly|1933
-SPJ|SPF|Siniya|1969
-VEE|VEZ|Konnitsa|1910
-TOO|TRP|Vauki|1970
+ORB|ORO|Siniya|1904
+KAJ|KAV|Hrenadzery|1905
+NAR|NTA|Rybaki|1933
+SAX|SPA|Arly|1933
+SPJ|SPA|Siniya|1969
+VEE|VDR|Konnitsa|1910
+TOO|TPE|Vauki|1970
 SSK|SLF|Zubry|1948
-TRB|TRR|Miadzvedzi|1986
+TRB|TRK|Miadzvedzi|1986
 GAI|GAI|Royals|1918
 GAE|GAA|Crusaders|1901
 CLB|CLL|Sparrows|1918
-BRD|BRI|Comets|1902
+BRD|BRH|Comets|1902
 LED|LED|Dockers|2008
-CHQ|CCH|Seahawks|1902
-GRR|GRM|Royals|1947
-ELM|ELM|Dragons|1901
+CHQ|CFS|Seahawks|1902
+GRR|GNM|Royals|1947
+ELM|ELR|Dragons|1901
 BUX|BUX|Spartans|1981
-LIC|TOD|Ironmen|1989
-HEH|HEL|Skyhawks|1926
-THJ|THR|Scarlets|1970
-YES|YES|Rojos|1906
+LIC|TDB|Ironmen|1989
+HEH|HEC|Skyhawks|1926
+THJ|THT|Scarlets|1970
+YES|YED|Rojos|1906
 ALJ|ALG|Corsarios|1940
 NUA|NUE|Halcones|1913
 SAY|SLM|Águilas|1915
-SDA|COI|Leñadores|1918
+SDA|CVI|Leñadores|1918
 YEB|YEA|Venados|1930
 LID|LIR|Gauchos|1926
-VAS|VAE|Verdes|1929
+VAS|VDA|Verdes|1929
 MOC|MRL|Zorros|1925
-ALK|JUU|Búhos|1900
+ALK|JUD|Búhos|1900
 ELB|ELH|Alcarraza|1936
 ZAC|ZAO|Leones|1953
-BAA24|BAK|Cruzados|1933
-BAB25|BAX|Rojos|1935
+BAA24|BAJ|Cruzados|1933
+BAB25|BAJ|Rojos|1935
 COE|CRD|Rayos|1911
-COG|COD|Lobos|1909
+COG|COE|Lobos|1909
 MNB|MBA|Cóndores|1923
-COH|COE|Marineros|1907
+COH|CDE|Marineros|1907
 ALM|JUA|Pastores|1906
 BJO|BAJ|Osos|1916
 ELD|ELB|Blancos|1951
 BAC26|CBC|Leones|1942
 MMA|MNA|Corsarios|1937
-PID|PDA|Pastores|1986
+PID|PIO|Pastores|1986
 FUD|SFC|Segadores|1936
-ATA|JNT|Lagartos|1911
-OLE|OLO|Toros|1931
+ATA|JUO|Lagartos|1911
+OLE|OLN|Toros|1931
 ALN|ALM|Zorros|1922
-NER|NER|Amarillos|1934
+NER|NEB|Amarillos|1934
 NUB|NUC|Azules|1908
 OSA|OSM|Azules|1980
-QUB|QUC|Pumas|1948
-MOG|MOE|Águilas|1947
+QUB|QNT|Pumas|1948
+MOG|MOK|Águilas|1947
 OLN|OLD|Tiburones|1938
 BAD27|CBP|Tigres|1943
 NEE|NRJ|Panteras|1952
-VAH|JTU|Rojos|1926
-BAE28|BIL|Halcones|1917
-REE|SPW|Crocs|1908
-STL|MRS|Lions|1929
-FEN|MOL|Parrots|1992
-REF|SPN|Streamertails|1928
+VAH|JVX|Rojos|1926
+BAE28|BAI|Halcones|1917
+REE|SSH|Crocs|1908
+STL|MOH|Lions|1929
+FEN|MOE|Parrots|1992
+REF|SWP|Streamertails|1928
 YAB|SLD|Greens|1940
 WOB|LNF|Hummingbirds|1924
-HAC|CAV|Mongooses|1985
+HAC|CPX|Mongooses|1985
 WOC|FUL|Lions|1923
 CAV|MOY|Crocs|1958
 EXW|PMT|Stingrays|1944
@@ -8438,21 +8734,21 @@ SEH|JVN|Azules|1900
 LIE|JUE|Amarillos|1910
 LDA|LID|Verdes|1925
 POK|PZL|Halcones|1917
-PAJ|PAO|Gladiadores|1915
-POM|POB|Pastores|1975
-VIV|VIU|Rayos|1973
+PAJ|PLO|Gladiadores|1915
+POM|POM|Pastores|1975
+VIV|UVX|Rayos|1973
 CAW|CRO|Amarillos|1973
 BPO|RBP|Cóndores|2008
-YEC|YED|Potros|1938
+YEC|YST|Potros|1938
 YRO|JUY|Jaguares|1932
-ALP|ALU|Rojos|1932
-ALQ|ALR|Guerreros|1921
+ALP|AAZ|Rojos|1932
+ALQ|AAL|Guerreros|1921
 VAJ|RSV|Toros|1952
 CAX|CLP|Mulas|1952
-QUS|QNT|Rojos|1915
+QUS|QUN|Rojos|1915
 TAE28|RCS|Leñadores|1928
-ARH|SAG|Tiburones|1979
-QES|QUN|Alacranes|1932
+ARH|SAN|Tiburones|1979
+QES|QUT|Alacranes|1932
 LUD|LCL|Amarillos|1982
 GAB|GDI|Pastores|1916
 YAN|YAN|Tigers|1900
@@ -8462,14 +8758,14 @@ JIZ|JIZ|Reds|1924
 ANG|ANG|Lions|1987
 OLK|OLK|Leopards|1989
 NEF|NEY|Camels|1913
-NEI|NEF|Eagles|1943
+NEI|NET|Eagles|1943
 NHI|NEC|Tigers|1988
 AND|AND|Bulls|1917
-TER|TEF|Eagles|1982
-KHI|KHI|Wolves|1942
-GRF|PAL|Navy|1933
+TER|TNC|Eagles|1982
+KHI|KHV|Wolves|1942
+GRF|PLY|Navy|1933
 HEX|RTS|Penguins|1957
-CRE|PLY|Sky Blues|1979
+CRE|PLE|Sky Blues|1979
 FIA|FOX|Weka|1939
 LYM|WHA|Blues|1936
 ROS|PLB|Kiwis|1966
@@ -8485,40 +8781,40 @@ AWA|UMM|Gazelles|1913
 ALU|GHA|Caravans|1964
 ALX|MAJ|Knights|1947
 ALY|SOI|Camels|1961
-ARJ|SHM|Lions|1914
+ARJ|SMS|Lions|1914
 ULA|DAH|Sandstorm|1920
-ALZ|AWH|Blues|1929
+ALZ|WAB|Blues|1929
 ZUL|QRH|Reds|1984
 ALA24|UMD|Hawks|1922
 ALB25|KHS|Greens|1970
 SIG|NRM|Rohelised|1932
-SIE|NOV|Metsamehed|1921
-KUA|MEO|Sinised|1976
+SIE|NOM|Metsamehed|1921
+KUA|MTE|Sinised|1976
 TUK|FCI|Punased|1925
 ANY|KUN|Punased|1919
 VAK|DUT|Karud|1950
-JAU|KAV|Kaluriid|1931
+JAU|KLV|Kaluriid|1931
 PLU|NOP|Rohelised|1940
-ANA|TMP|Kotkad|1930
+ANA|TRX|Kotkad|1930
 RAK|JKR|Hundid|1924
 ALC26|VAV|Zvejnieki|1936
 ALD27|VAJ|Lāči|1991
-SIF|ELK|Alņi|1921
-NAT|SLN|Ērgļi|1983
+SIF|ELT|Alņi|1921
+NAT|SAL|Ērgļi|1983
 LIF|GAJ|Vanagi|1918
-SIH|SKS|Zilie|1914
+SIH|SPA|Zilie|1914
 SLC|RUJ|Jūrnieki|1961
 VEF|JEK|Vilki|1959
-SPM|DOB|Gulbji|1984
+SPM|DBS|Gulbji|1984
 RAE|ZIB|Bordo|1941
-ALE28|GRN|Ereliai|1929
-HAG|PAF|Žalieji|1927
-REZ|SKA|Lokiai|1913
-TUA|GRS|Vilkai|1915
-AAA|SEN|Raudonieji|2008
-HAU|KOS|Mėlynieji|1980
-HVB|ASR|Šernai|1986
-KUB|GNI|Gandrai|1923
+ALE28|GRS|Ereliai|1929
+HAG|PNV|Žalieji|1927
+REZ|SPA|Lokiai|1913
+TUA|GNI|Vilkai|1915
+AAA|SEQ|Raudonieji|2008
+HAU|KVS|Mėlynieji|1980
+HVB|AUN|Šernai|1986
+KUB|GIT|Gandrai|1923
 JEL|ROK|Vilkai|1917
 ALF29|UTI|Žirgai|1949
 WIB|LOR|Artsivner|1975
@@ -8526,14 +8822,14 @@ RUS|GAD|Dashtner|1904
 WIK|GVV|Sarer|2008
 OCB|SGX|Aryutsner|1914
 GOA|GOF|Aryutsner|1975
-WTB|LOI|Dashtner|1926
-LOC|LON|Gaylner|1937
+WTB|LMO|Dashtner|1926
+LOC|LRI|Gaylner|1937
 OZE|URA|Sarer|2008
-SAA24|ART|Artsivner|1939
-KUT|ARF|Gaylner|1974
-ESD|LOK|Qartallar|1911
+SAA24|AAT|Artsivner|1939
+KUT|ARH|Gaylner|1974
+ESD|LOY|Qartallar|1911
 BUY|QUB|Aslanlar|1899
-BUE|SAQ|Neftçilər|2001
+BUE|SDA|Neftçilər|2001
 DUA|GNX|Qırmızılar|1969
 BOL|QBX|Canavarlar|1947
 DEA|YUX|Pələnglər|1945
@@ -8548,86 +8844,86 @@ BIK|MUK|Zholbarystar|1938
 BEP|ZHE|Kulandar|1949
 NEH|YSL|Zholbarystar|1977
 NUK|ULY|Burkitter|1941
-YAC|SEU|Sarylar|1903
+YAC|SPA|Sarylar|1903
 TAF29|BYZ|Munaishylar|1981
 CHW|ZHU|Kaskyrlar|1925
 QAR|BTY|Munaishylar|1934
 NHA|BYS|Kyzyldar|1926
 JAS|CEO|Șoimii|2000
-MIC|SPM|Lupii|1913
-MAH31|SNC|Pescarii|1940
-PAQ|DAC|Minerii|2006
-RUB|LOC|Vulturii|1975
+MIC|SPE|Lupii|1913
+MAH31|SPA|Pescarii|1940
+PAQ|DCI|Minerii|2006
+RUB|LTI|Vulturii|1975
 TOF|UNF|Verzii|1968
-ZEH|SRA|Minerii|1920
-BRE|SPU|Zimbrii|1957
-PLE|FER|Ujqërit|1927
-KRB|SIP|Kalorësit|2008
+ZEH|SNS|Minerii|1920
+BRE|SPO|Zimbrii|1957
+PLE|FED|Ujqërit|1927
+KRB|SNJ|Kalorësit|2008
 DIC|BSA|Kalorësit|1908
 DIF|NAP|Minatorët|1926
 SLF|PTN|Të Verdhët|1974
 SLG|YLL|Shqiponjat|1961
 BOM|KFP|Luanët|1920
-RUR|NAI|Shqiponjat|1913
+RUR|NRI|Shqiponjat|1913
 PAV|KOD|Dhelprat|1937
 DOH|DRP|Skifterët|1924
 BUH|BUG|Adler|1910
 ENA|ENG|Dragoner|1914
-AIA|ALI|Blauen|1925
+AIA|AEM|Blauen|1925
 KIF|FKX|Adler|1929
-HEI|HEI|Rothirsche|1979
-TUS|TUS|Wikinger|1982
-HAH|HNS|Stiere|1918
+HEI|HEU|Rothirsche|1979
+TUS|TNX|Wikinger|1982
+HAH|HSA|Stiere|1918
 BAF29|SBH|Gladiatoren|1931
-FUF|FUT|Blauen|1960
-GRG|GRF|Kumpel|1927
+FUF|FUH|Blauen|1960
+GRG|GEI|Kumpel|1927
 ALG30|AJL|Sandstorm|1919
 JUA|AJA|Camels|1929
 ABB|MHY|Caravans|1915
 RAF|UMA|Divers|1915
 AUA|MDH|Reds|1961
-AAI|RUA|Tigers|1980
+AAI|RSB|Tigers|1980
 ALH31|NZY|Falcons|1987
 ASH|WSC|Knights|1973
 ASG|IBR|Eagles|1974
 ALJ32|WSS|Gazelles|1946
-BIS|SAX|Tigers|1984
-ALK33|JAA|Divers|1900
+BIS|SHA|Tigers|1984
+ALK33|JWY|Divers|1900
 ALL34|LWR|Reds|1901
 ALM35|BHY|Greens|1925
-ALN36|SLY|Hawks|1955
-ARL|WMC|Palms|1914
-BUL|SHC|Falcons|1966
-UMA|AAR|Yellows|1945
-AJE|WLS|Knights|1958
-AWB|FJR|Greens|1924
+ALN36|SYA|Hawks|1955
+ARL|WAC|Palms|1914
+BUL|SHA|Falcons|1966
+UMA|AJS|Yellows|1945
+AJE|WAW|Knights|1958
+AWB|FAR|Greens|1924
 ALP37|AIZ|Oryx|1922
 ALQ38|FLY|Sandstorm|1934
 RAG|WAJ|Knights|1946
 RIS|FAA|Hawks|1963
-RAH|SSX|Falcons|1982
+RAH|SHA|Falcons|1982
 ALR39|UMN|Desert Foxes|1962
 ALS40|WJS|Blues|1971
-ATB|HIL|Horsemen|1918
-QAS|SIX|Blues|1980
-ATU|HLN|Tigers|1961
+ATB|HLY|Horsemen|1918
+QAS|SHA|Blues|1980
+ATU|HLA|Tigers|1961
 ALT41|AMS|Knights|1919
-ALU42|MAF|Palms|1899
+ALU42|MFY|Palms|1899
 AAB|DIC|Greens|1932
 RAJ|FAS|Camels|1953
 ALV43|UMR|Blues|1987
 ALW44|UFC|Reds|1937
 RAL|AJI|Sandstorm|1970
-WAC|SIY|Camels|1933
+WAC|SYN|Camels|1933
 AYA|QRY|Stallions|1923
-JEB|KEA|Reds|1986
-HOE|SHG|Ibex|1978
-VIP|BLO|Snow Leopards|1993
-HOM|SHE|Greens|1972
-DAD|STU|Lions|1977
+JEB|KEY|Reds|1986
+HOE|SHA|Ibex|1978
+VIP|BLC|Snow Leopards|1993
+HOM|SHA|Greens|1972
+DAD|SHA|Lions|1977
 AUR|MND|Reds|1951
 AAM|MRD|Shaheens|1939
-KOB|MIM|Markhors|1966
+KOB|MMU|Markhors|1966
 BEQ|SSG|Markhors|1930
 BHC|AFG|Cheetahs|1988
 VIQ|DSK|Shaheens|1968
@@ -8635,236 +8931,236 @@ NAX|UTT|Kings|1995
 NEJ|DIN|Titans|1901
 VAM|UTP|Elephants|1930
 SAB25|NOT|Kingfishers|1926
-MOJ|PRB|Elephants|1934
+MOJ|PUB|Elephants|1934
 CHX|BGN|Reds|1945
 KOC|SYL|Sky Blues|1949
-JOD|SIF|Dolphins|1941
-GUR|BRC|Cobras|1912
-BHD|NOK|Leopards|1969
+JOD|SRG|Dolphins|1941
+GUR|BOT|Cobras|1912
+BHD|NPR|Leopards|1969
 BUN|ISO|Lions|1984
 BUM|MOW|Eagles|1928
 BUP|MNL|Hippos|1930
 WEA|MPM|Buffaloes|1964
 WEL|MPI|Buffaloes|1942
 BOP|ISM|Hippos|1976
-WAH|CHD|Pythons|1932
+WAH|CIM|Pythons|1932
 WIN|MWU|Lions|1936
-RYA|POM|Arrows|1924
+RYA|PMM|Arrows|1924
 WIF|MWW|Warriors|1937
-SHG|MAL|Crocs|1910
+SHG|MSD|Crocs|1910
 HOG|MRN|Whites|1901
-SHN|MSD|Elephants|1926
+SHN|MDU|Elephants|1926
 CHY|PLU|Whites|1983
-DAE|POT|Yellows|1927
-HOJ|MOM|Yellows|1924
+DAE|PZH|Yellows|1927
+HOJ|MMS|Yellows|1924
 SEJ|BIF|Rhinos|1964
 LAR|HWA|Lions|1980
 DRE|TSA|Chiefs|1971
-SHH|RUB|Hippos|1972
+SHH|RUG|Hippos|1972
 CAY|OYA|Tembo|1913
 CAZ|OYP|Duma|1928
 SPN|NYP|Yellows|1940
-BEV|LAE|Nyati|2002
-LIG|NAY|Greens|1913
-NOG|NYR|Chui|1982
+BEV|LKE|Nyati|2002
+LIG|NNR|Greens|1913
+NOG|NRX|Chui|1982
 WOE|GAT|Simba|1966
-SCC|KIE|Mamba|1927
+SCC|KSX|Mamba|1927
 DUB|MBH|Twiga|1927
-FAM|POG|Blues|1952
-HAJ|BUF|Leopards|2002
+FAM|POJ|Blues|1952
+HAJ|BSN|Leopards|2002
 FOC|WAK|Yellows|1928
 MAJ32|WAP|Hornbills|1904
 LEW|NAK|Cranes|1920
-WAE|WAF|Pythons|2008
-FLI|SSA|Hippos|1984
+WAE|WKB|Pythons|2008
+FLI|SSE|Hippos|1984
 BRH|BGB|Reds|1912
 SAC26|KAP|Kobs|1941
-PAW|MUB|Buffaloes|1920
-BRJ|BUH|Greens|1940
-MAK33|ALL|Yellows|1905
-WAY|UAM|Zebras|1930
+PAW|MBM|Buffaloes|1920
+BRJ|BBI|Greens|1940
+MAK33|ASI|Yellows|1905
+WAY|ASJ|Zebras|1930
 BPE|LEK|Lions|1930
-MAL34|MEK|Walyas|1974
+MAL34|MEP|Walyas|1974
 WEF|NEK|Geladas|1980
-CHZ|ADH|Yellows|1942
+CHZ|ADL|Yellows|1942
 DEB|LES|Falcons|1944
 WEN|JIM|Leopards|1944
 WEY|ETJ|Reds|1982
-BAG30|AKE|Hyenas|1968
+BAG30|AKL|Hyenas|1968
 BAH31|BNB|Bleus|1990
-DAF|DLR|Faucons|2008
-DAG|DAE|Hippopotames|1954
+DAF|SDX|Faucons|2008
+DAG|RDX|Hippopotames|1954
 BOQ|BBK|Aigles|1929
 KAK|KYD|Pythons|1956
 YOA|UYX|Éléphants|1984
-BAJ32|USC|Rouges|1933
-NOH|NOS|Buffles|1919
+BAJ32|USX|Rouges|1933
+NOH|NOE|Buffles|1919
 DIG|DIU|Léopards|1963
 DAH|UDX|Verts|1920
-PON|UNA|Verdes|1940
-POP|PTO|Amarelos|1907
-PAX|PVL|Pretos|1958
-POQ|POF|Azuis|1934
+PON|UPC|Verdes|1940
+POP|PCF|Amarelos|1907
+PAX|PVE|Pretos|1958
+POQ|PNH|Azuis|1934
 OVA|OVA|Corsários|1934
-VIU|VLR|Amarelos|1915
-DES|DES|Pioneiros|1964
-TOG|EPO|Verdes|1981
+VIU|VUR|Amarelos|1915
+DES|DET|Pioneiros|1964
+TOG|ESQ|Verdes|1981
 TOH|TOF|Tubarões|1935
-ACB|ACE|Pescadores|1939
+ACB|ACC|Pescadores|1939
 BEW|BEV|Titanes|1935
 BEZ|BEB|Segadores|1903
-ROE|JVE|Azules|1933
-COJ|CDA|Rojos|1907
+ROE|JNT|Azules|1933
+COJ|CAX|Rojos|1907
 BAK33|DBR|Rojos|1952
-CAA24|CAP|Mulas|1948
-PAZ|PLO|Gladiadores|1954
+CAA24|CPO|Mulas|1948
+PAZ|PNE|Gladiadores|1954
 ONA|ONT|Caudillos|1955
 SAD27|SMI|Rojos|1967
-FUG|ESD|Gladiadores|1926
-HID|HNJ|Jaguares|1934
-SDB|PND|Marineros|1978
+FUG|EAN|Gladiadores|1926
+HID|HIO|Jaguares|1934
+SDB|PDO|Marineros|1978
 CEC|CEU|Blancos|1904
-POU|PLM|Jaguares|1902
+POU|PAO|Jaguares|1902
 LUE|LUM|Gladiadores|1936
-ALX45|ALF|Mineros|1975
-ORC|ONA|Tiburones|1987
+ALX45|ALP|Mineros|1975
+ORC|ONC|Tiburones|1987
 CEO|CRR|Jaguares|1953
-LER|SAW|Pastores|1932
-FRJ|FRG|Leñadores|1941
-CTA|CTA|Rojos|1930
-ESF|ECA|Zorros|1982
-MOK|MOC|Azules|1975
-PEJ|PNA|Caudillos|1964
+LER|SAN|Pastores|1932
+FRJ|FRP|Leñadores|1941
+CTA|CAJ|Rojos|1930
+ESF|EER|Zorros|1982
+MOK|MCX|Azules|1975
+PEJ|PEV|Caudillos|1964
 WIL|LOP|Panthers|1986
-DAV|GAL|Reds|1944
+DAV|GSQ|Reds|1944
 HAM|CLU|Blues|1963
 CHA24|PLC|Cocricos|1941
 MEF|RIA|Blues|1946
 CHB25|RII|Ocelots|2008
 PAA24|PNR|Steelmen|1948
-TIB|SIC|Scarlet Ibis|1977
-HEB|TNN|Reds|1966
+TIB|SIJ|Scarlet Ibis|1977
+HEB|TUG|Reds|1966
 HAW|CUC|Hummingbirds|1922
-OOA|OOA|Lions|1958
-ZUI|ZUI|Hawks|1932
-NIB|NIB|Bulls|1923
-KER|KER|Rangers|1949
-WAJ|WAJ|Wolves|1926
-VEG|VEG|Miners|1896
-GRH|GRH|Falcons|1915
-RIJ|RIJ|Hornets|1940
-HEU|HEU|Stags|1963
-MBA|MBA|Foxes|1890
+OOA|OOS|Lions|1958
+ZUI|VZX|Hawks|1932
+NIB|VVN|Bulls|1923
+KER|VVK|Rangers|1949
+WAJ|HVV|Wolves|1926
+VEG|VVV|Miners|1896
+GRH|RKG|Falcons|1915
+RIJ|RKR|Hornets|1940
+HEU|VVH|Stags|1963
+MBA|RKM|Foxes|1890
 TOL|TOL|Cobras|1960
-AAC|AAC|Eagles|1928
-BBA|BBA|Bears|1912
-WIJ|WIJ|Rams|1956
+AAC|VVA|Eagles|1928
+BBA|BEI|Bears|1912
+WIJ|HVW|Rams|1956
 DUI|DUI|Pioneers|1916
-ELS|ELS|Rovers|1945
-VIW|VIW|Rovers|1919
+ELS|VVE|Rovers|1945
+VIW|VIA|Rovers|1919
 RIO|RIO|Sailors|1945
-SBA|SBA|Knights|1966
-MOM|MOM|Lions|1969
-COK|COK|Hawks|1954
-PRC|PRC|Bulls|1912
-VAN|VAN|Rangers|1903
-TOJ|TOJ|Wolves|1934
-RID|RID|Miners|1959
-CBA|CBA|Falcons|1902
-ARM|ARM|Hornets|1919
-BBB|BBB|Stags|1930
-LAT|LAT|Foxes|1942
-PIF|PIF|Cobras|1918
-SBB|SBB|Eagles|1937
-QUC|QUC|Bears|1913
-BOS|BOS|Bears|1961
-RIE|RIE|Rams|1959
-POV|POV|Pioneers|1929
-SEM|SEM|Rovers|1908
-CBB|CBB|Sailors|1902
-SBC|SBC|Knights|1928
-VIX|VIX|Lions|1891
-SBD|SBD|Hawks|1929
-CBC|CBC|Bulls|1954
-POW|POW|Rangers|1915
-TRI|TRI|Wolves|1957
-MBB|MBB|Miners|1932
-BBC|BBC|Falcons|1892
-ITB|ITB|Hornets|1960
-CBD|CBD|Stags|1959
-JAD|JAD|Foxes|1960
-PBA|PBA|Cobras|1959
-MOQ|MOQ|Eagles|1905
-PEM|PEM|Bears|1952
-SEN|SEN|Rams|1967
-AKD|AKD|Foxes|1922
-KAP|KAP|Cobras|1892
-YEE|YEE|Eagles|1891
-TBA|TBA|Bears|1928
+SBA|SNT|Knights|1966
+MOM|ADM|Lions|1969
+COK|COS|Hawks|1954
+PRC|PRN|Bulls|1912
+VAN|ESU|Rangers|1903
+TOJ|TOA|Wolves|1934
+RID|GDR|Miners|1959
+CBA|ACV|Falcons|1902
+ARM|ARI|Hornets|1919
+BBB|BAN|Stags|1930
+LAT|GDL|Foxes|1942
+PIF|PIV|Cobras|1918
+SBB|SAE|Eagles|1937
+QUC|QUS|Bears|1913
+BOS|AAB|Bears|1961
+RIE|SER|Rams|1959
+POV|ADP|Pioneers|1929
+SEM|ADS|Rovers|1908
+CBB|CAM|Sailors|1902
+SBC|SAA|Knights|1928
+VIX|VIN|Lions|1891
+SBD|SAO|Hawks|1929
+CBC|CAA|Bulls|1954
+POW|APV|Rangers|1915
+TRI|SET|Wolves|1957
+MBB|MTA|Miners|1932
+BBC|UNB|Falcons|1892
+ITB|ITA|Hornets|1960
+CBD|SEC|Stags|1959
+JAD|AAJ|Foxes|1960
+PBA|PAL|Cobras|1959
+MOQ|SEM|Eagles|1905
+PEM|APA|Bears|1952
+SEN|UNS|Rams|1967
+AKD|AKC|Foxes|1922
+KAP|KAL|Cobras|1892
+YEE|YES|Eagles|1891
+TBA|TAS|Bears|1928
 GUM|GUM|Rams|1930
 ORM|ORM|Pioneers|1944
-BOT|BOT|Rovers|1959
-CNA|CNA|Sailors|1924
-DEC|DEC|Knights|1950
+BOT|BZD|Rovers|1959
+CNA|CNX|Sailors|1924
+DEC|DEN|Knights|1950
 KZL|KZL|Lions|1928
-SBE|SBE|Hawks|1916
-AYB|AYB|Bulls|1933
-ESG|ESG|Rangers|1922
-KAQ|KAQ|Wolves|1921
-MBC|MBC|Miners|1901
-ULB|ULB|Falcons|1928
-DOK|DOK|Hornets|1899
-YLD|YLD|Stags|1966
-NOJ|NOJ|Falcons|1964
-WOH|WOH|Hornets|1905
-LIH|LIH|Stags|1934
-BRZ|BRZ|Foxes|1947
-STP|STP|Cobras|1957
-DAJ|DAJ|Eagles|1960
-KAT|KAT|Bears|1947
-ZAD|ZAD|Rams|1919
-JAW|JAW|Pioneers|1946
-MOV|MOV|Rovers|1941
-PIG|PIG|Sailors|1955
-SOJ|SOJ|Knights|1935
-OSB|OSB|Lions|1952
-CZA|CZA|Hawks|1963
-WIC|WIC|Bulls|1922
-RUE|RUE|Rangers|1895
-KAV|KAV|Wolves|1918
-RZE|RZE|Miners|1946
-FJE|FJE|Rangers|1925
-NOK|NOK|Wolves|1918
+SBE|SAT|Hawks|1916
+AYB|AYN|Bulls|1933
+ESG|ESN|Rangers|1922
+KAQ|KYL|Wolves|1921
+MBC|MAV|Miners|1901
+ULB|ULU|Falcons|1928
+DOK|DOG|Hornets|1899
+YLD|YLX|Stags|1966
+NOJ|MKS|Falcons|1964
+WOH|MKW|Hornets|1905
+LIH|KSL|Stags|1934
+BRZ|KSB|Foxes|1947
+STP|MSG|Cobras|1957
+DAJ|LKD|Eagles|1960
+KAT|GKK|Bears|1947
+ZAD|GKZ|Rams|1919
+JAW|GKJ|Pioneers|1946
+MOV|LKM|Rovers|1941
+PIG|KSP|Sailors|1955
+SOJ|LSX|Knights|1935
+OSB|KSO|Lions|1952
+CZA|KCG|Hawks|1963
+WIC|KSW|Bulls|1922
+RUE|KRN|Rangers|1895
+KAV|LKK|Wolves|1918
+RZE|MRX|Miners|1946
+FJE|ILF|Rangers|1925
+NOK|NRD|Wolves|1918
 SKO|SKO|Miners|1897
-HAX|HAX|Falcons|1966
-BRL|BRL|Hornets|1905
-VEH|VEH|Stags|1895
-SOM|SOM|Foxes|1936
-GRJ|GRJ|Cobras|1914
+HAX|HVN|Falcons|1966
+BRL|BRE|Hornets|1905
+VEH|VEF|Stags|1895
+SOM|SOF|Foxes|1936
+GRJ|GRF|Cobras|1914
 LYS|LYS|Eagles|1941
-STQ|STQ|Bears|1954
-ELV|ELV|Rams|1913
-AUB|AUB|Pioneers|1937
-BBD|BBD|Rovers|1902
+STQ|SRE|Bears|1954
+ELV|ILE|Rams|1913
+AUB|AUI|Pioneers|1937
+BBD|BED|Rovers|1902
 KVI|KVI|Sailors|1925
-HOV|HOV|Knights|1944
+HOV|ILH|Knights|1944
 TIN|TIN|Lions|1942
-BJA|BJA|Lions|1967
-NOM|NOM|Hawks|1932
+BJA|BJO|Lions|1967
+NOM|NOB|Hawks|1932
 SJO|SJO|Bulls|1940
-ABD|ABD|Rangers|1906
-SKA|SKA|Wolves|1933
-LIJ|LIJ|Miners|1911
-HAZ|HAZ|Falcons|1924
-STT|STT|Hornets|1909
-OSD|OSD|Stags|1937
+ABD|ALV|Rangers|1906
+SKA|SKS|Wolves|1933
+LIJ|LND|Miners|1911
+HAZ|FFH|Falcons|1924
+STT|FFS|Hornets|1909
+OSD|OSS|Stags|1937
 EKU|EKU|Foxes|1967
-FAC|FAC|Cobras|1952
-TBB|TBB|Eagles|1939
-VIY|VIY|Bears|1932
-GRK|GRK|Rams|1967
-ANB|ANB|Pioneers|1966
-ROG|ROG|Rovers|1910
+FAC|FFF|Cobras|1952
+TBB|FFT|Eagles|1939
+VIY|IVX|Bears|1932
+GRK|FFG|Rams|1967
+ANB|ANS|Pioneers|1966
+ROG|ROS|Rovers|1910
 CRR|CRB|Aigles|1959
 USD|USJ|Sahariens|1948
 MAM35|MSK|Blancs|1917
@@ -8880,43 +9176,43 @@ MOX|MOZ|Aigles|1985
 JSS|JSA|Rouges|1948
 MMC|MTX|Marine|1933
 GHB|EGX|Aigles|1965
-TIM|TIM|Sahariens|1931
-FRK|FRB|Pioneros|1951
+TIM|TIR|Sahariens|1931
+FRK|FRC|Pioneros|1951
 NAY|NAL|Rojos|1910
-MOY|MOK|Cruzados|1910
-CAC26|CAC|Rayos|1932
+MOY|MOL|Cruzados|1910
+CAC26|CAB|Rayos|1932
 CAD27|GIC|Osos|1956
-MOZ|SPJ|Amarillos|1973
-REJ|RGA|Celestes|1935
-DOP|DOA|Cruzados|1917
-DOQ|DOD|Toros|1959
+MOZ|SPM|Amarillos|1973
+REJ|RGT|Celestes|1935
+DOP|DOF|Cruzados|1917
+DOQ|DOA|Toros|1959
 QUD|DEQ|Pumas|1946
-PEQ|PEE|Granates|1942
+PEQ|PES|Granates|1942
 MIE|MIC|Azulones|1948
-FRL|SPQ|Albos|1970
+FRL|SPF|Albos|1970
 COL|COH|Ñandúes|1950
 ARP|AAS|Amarillos|1950
 URB|URO|Cruzados|1970
-BUQ|ESM|Granates|1946
-ROH|INE|Amarillos|1970
+BUQ|ESB|Granates|1946
+ROH|INR|Amarillos|1970
 GRL|FOG|Blauen|1928
 WES|TEW|Roten|1883
 NEU|FNI|Roten|1918
 UNA|UNE|Roten|1893
 CON|COO|Brauer|1934
 ROJ|RWH|Brauer|1920
-HEC|HEA|Dunkelblauen|1920
-COP|COC|Weinroten|1882
+HEC|HEI|Dunkelblauen|1920
+COP|COI|Weinroten|1882
 BRM|FSB|Bären|1954
-TUB|TUA|Rothirsche|1912
-STU|STC|Himmelblauen|1904
+TUB|TUS|Rothirsche|1912
+STU|STU|Himmelblauen|1904
 HEE|FOU|Weißen|1897
 NEK|FNL|Bergleute|1911
 BRP|BNA|Weinroten|1891
 WAL|WLD|Grünen|1878
 UNR|UNR|Roten|1924
 KHC|KHR|Chornyya|1945
-NOP|SNA|Siniya|1930
+NOP|SNC|Siniya|1930
 NEM|NSV|Chyrvonyya|1963
 SHK|SKH|Zholtyya|1948
 KHK|KHD|Vauki|1935
@@ -8924,30 +9220,30 @@ NEN|NEM|Zholtyya|1972
 NAZ|NMX|Blakitnyya|1938
 VYA|VYA|Belyya|1925
 CHC26|CSY|Siniya|1925
-SPP|SPX|Belyya|1911
+SPP|SPA|Belyya|1911
 ENB|ENH|Cyomna-siniya|1941
 VEJ|VEI|Vishnyovyya|1961
 NAA24|NDX|Vishnyovyya|1934
-SPQ|SPY|Cyomna-siniya|1951
+SPQ|SPA|Cyomna-siniya|1951
 CNB|CYN|Hrenadzery|1934
 SVE|SVF|Chyrvonyya|1983
 VEK|KVV|Geelen|1899
-ROY|HOB|Blauwen|1880
+ROY|HOO|Blauwen|1880
 KOD|KOW|Geelen|1920
-ZUA|ZUA|Bijen|1913
-BEB25|BEE|Valken|1901
+ZUA|ZUI|Bijen|1913
+BEB25|BES|Valken|1901
 STV|STG|Blauwen|1950
-STW|STJ|Zwanen|1942
+STW|STK|Zwanen|1942
 DEV|DEV|Zwanen|1931
-KAX|KAC|Zwarten|1897
+KAX|KAA|Zwarten|1897
 KSC|KSC|Geelen|1933
 EXA|EXV|Hemelsblauwen|1917
 EXR|EXL|Zeemeeuwen|1917
 KRF|KRD|Groenen|1940
 ZUO|ZUS|Hemelsblauwen|1952
 ROL|WGH|Pioniers|1948
-NIC|NIC|Raven|1913
-DOS|DOE|Zhaltite|1914
+NIC|NIL|Raven|1913
+DOS|DOB|Zhaltite|1914
 DIJ|SVD|Minyorite|1970
 MIN|MIY|Sokolite|1927
 DIK|DSX|Chervenite|1948
@@ -8959,69 +9255,69 @@ VIZ|VDT|Nebesnosinite|1967
 MIF|MYO|Metalurzite|1930
 MIV|MIV|Lavovete|1936
 BAL34|BKA|Sokolite|1934
-DIS|SLJ|Tamnosinite|1985
+DIS|SLQ|Tamnosinite|1985
 LOD|LTX|Minyorite|1945
 MEG|MRG|Chernite|1916
-SPS|SPZ|Belite|1973
+SPS|SPA|Belite|1973
 LOE|LGX|Orlite|1972
 SEI|SVR|Sinite|1953
 CUC|CUU|Rojos|1941
-QUE|QUD|Corsarios|1896
+QUE|QUC|Corsarios|1896
 LEA|LER|Verdes|1925
 GUE|RSG|Verdes|1937
-CLD|CAJ|Verdes|1972
+CLD|CRI|Verdes|1972
 QLA|ASQ|Negros|1916
-VAQ|VAG|Toros|1953
-CAE28|CTB|Azules|1949
+VAQ|VAE|Toros|1953
+CAE28|CTO|Azules|1949
 PAB25|DSP|Negros|1910
-LIM|LRA|Granates|1971
-ROK|JTA|Mineros|1952
-PEU|PNB|Rojos|1907
+LIM|LRL|Granates|1971
+ROK|JTU|Mineros|1952
+PEU|PND|Rojos|1907
 ALY46|ABA|Azulones|1967
 NUC|NUQ|Granates|1918
-FUH|FUA|Granates|1954
+FUH|FUT|Granates|1954
 OLF|OLE|Verdes|1907
-NIN|NIG|Blues|1974
-SHL|SHT|Lions|1970
+NIN|NIC|Blues|1974
+SHL|SHN|Lions|1970
 HUA|HUA|Eagles|1931
 FAN|FAN|Tigers|1970
 BAM35|BTN|Yellows|1976
-NIG|NNA|Maroons|1951
+NIG|NNG|Maroons|1951
 XIN|XIN|Steelmen|1956
 GYC|GYU|Whites|1972
 MEJ|MEI|Falcons|1938
 LOF|LOE|Navy|1978
-TAH31|TNA|Maroons|1964
+TAH31|TNN|Maroons|1964
 MEK|MEU|Blacks|1975
 YUN|YNM|Dragons|1949
 DOT|DNG|Greens|1913
 RUI|RUI|Blacks|1960
 XAA|XIH|Eagles|1918
-FRP|FRF|Negros|1912
+FRP|FRR|Negros|1912
 VAT|ASV|Amarillos|1920
 JAR|JAR|Rojos|1962
-CUD|CUD|Rojos|1932
-RIF|RIC|Halcones|1965
-LUF|JUG|Azules|1939
+CUD|CUR|Rojos|1932
+RIF|RID|Halcones|1965
+LUF|JUT|Azules|1939
 VAU|DSV|Azulones|1949
-PAC26|PLE|Azules|1952
+PAC26|PLM|Azules|1952
 BAN36|RCB|Amarillos|1919
 VLA|VAM|Cóndores|1899
 ALZ47|ALJ|Titanes|1957
 QUF|QTA|Azules|1915
-SET|SAD|Celestes|1956
+SET|SAN|Celestes|1956
 NEP|NEJ|Leñadores|1968
 OSE|OSN|Verdes|1959
 QUL|QUE|Azulones|1970
-LIQ|LIC|Bikovi|1985
+LIQ|LIP|Bikovi|1985
 PAD27|PAJ|Pioniri|1913
 HRB|NKH|Rakete|1920
 TOK|TOP|Zeleni|1930
-MEM|MEB|Žuti|1941
+MEM|MEK|Žuti|1941
 RYD|RYB|Bikovi|1927
-ZEJ|ZEA|Tamnoplavi|1924
+ZEJ|ZEE|Tamnoplavi|1924
 BEC26|BLV|Žuti|1984
-MLC|MLD|Sokolovi|1913
+MLC|MLO|Sokolovi|1913
 SLH|MFL|Žuti|1925
 THK|GST|Kókkino Krasí|1926
 TRO|APT|Kókkinoi|1941
@@ -9039,55 +9335,55 @@ PAE28|GSP|Spartiátes|1972
 KAZ|GSK|Korákia|1973
 AGI|DAX|Léontes|1967
 LAX|PLI|Kókkinoi|1911
-SPU|SBF|Medvědi|1960
+SPU|SPK|Medvědi|1960
 MLN|MLF|Kováři|1917
 PRD|VIP|Bílí|1927
-SEU|TJA|Žlutí|1917
-OLO|SLB|Modří|1983
-OLG|OLF|Býci|1913
-HRV|SKB|Vínoví|1937
+SEU|TJS|Žlutí|1917
+OLO|SLO|Modří|1983
+OLG|OLO|Býci|1913
+HRV|SKL|Vínoví|1937
 BRQ|TJB|Vínoví|1985
 PAF29|SOP|Horníci|1950
-VSA|SBJ|Modří|1971
+VSA|SPS|Modří|1971
 LYA|LYF|Vínoví|1971
 NYA|NYF|Černí|1964
 DOV|DOU|Vlci|1960
-PRG|POE|Nebesky modří|1986
-PRV|SBK|Rytíři|1952
-SPW|SBM|Lvi|1922
-BRR|BRD|Hjorter|1896
-RIG|RIG|Falke|1928
-HAA24|HAB|De Lyseblå|1921
-LAY|LAC|Rever|1903
-MAN36|MAM|De Røde|1899
+PRG|POS|Nebesky modří|1986
+PRV|SPX|Rytíři|1952
+SPW|SPP|Lvi|1922
+BRR|BRI|Hjorter|1896
+RIG|RIN|Falke|1928
+HAA24|HAV|De Lyseblå|1921
+LAY|LAB|Rever|1903
+MAN36|MAI|De Røde|1899
 NYL|NYL|De Blå|1919
 KIH|KKI|Soldater|1904
-HAB25|HAC|De Blå|1896
-NYN|NYB|De Mørkerøde|1902
+HAB25|HAB|De Blå|1896
+NYN|NYN|De Mørkerøde|1902
 KIJ|KLR|Ulve|1904
 VEM|VST|De Sorte|1952
 BJB|BBR|De Mørkerøde|1943
 ORD|ORB|Negros|1979
-LUG|LUA|Águilas|1919
+LUG|LUC|Águilas|1919
 PEW|PDN|Tiburones|1940
-FDA|FRH|Tiburones|1976
+FDA|FRG|Tiburones|1976
 CAF29|CDO|Azules|1922
 BJC|DBP|Celestes|1942
 ARS|AOE|Granates|1975
-PLF|SAZ|Azulones|1954
+PLF|SAN|Azulones|1954
 ESH|EAL|Cruzados|1930
 TON|UTG|Verdes|1986
 ALA48|NSR|Yellows|1914
 AAE|NJA|Whites|1974
-ALB49|AMC|Camels|1960
+ALB49|AMA|Camels|1960
 ALC50|HIA|Tigers|1914
-PEX|PEF|Maroons|1961
+PEX|PEO|Maroons|1961
 ALD51|ZAH|Greens|1946
-DAN|DAD|Gazelles|1965
+DAN|DAK|Gazelles|1965
 ALE52|WHD|Reds|1913
 ALF53|QEA|Sky Blues|1969
 ALG54|NHD|Sky Blues|1978
-ANC|NUR|Navy|1958
+ANC|NOL|Navy|1958
 KAA24|KAH|Sandstorm|1926
 KAB25|KAG|Gazelles|1961
 MIT|MIU|Lions|1926
@@ -9096,8 +9392,8 @@ TAJ32|TLO|Navy|1944
 PEO|PDX|Whites|1950
 KFR|KMS|Whites|1923
 ALI|ITT|Lions|1939
-MAP37|MAQ|Eagles|1970
-VAV|VAH|Taivaansiniset|1967
+MAP37|MAR|Eagles|1970
+VAV|VAN|Taivaansiniset|1967
 LIX|LIK|Keltaiset|1948
 SEV|SKK|Keltaiset|1962
 PIH|PIJ|Ahmat|1948
@@ -9108,7 +9404,7 @@ PYR|PYY|Vihreät|1951
 VAI|VNH|Mustat|1947
 SIS|SSU|Punaiset|1974
 TAL34|TAP|Elephants|1910
-SEW|SKC|Eagles|1979
+SEW|SKA|Eagles|1979
 KAC26|KSE|Blues|1916
 DUC|DUH|Leopards|1978
 AKE|AKF|Eagles|1934
@@ -9124,84 +9420,84 @@ TAM35|TKR|Whites|1938
 BOI|BLD|Porcupines|1946
 KUM|KUU|Hearts|1952
 PAG30|AEP|Áspri|1916
-NAI|PAB|Gladiátores|1958
-KAE28|AKB|Ierakes|1960
-TRG|TRB|Spartiátes|1911
-MEN|AOA|Mple|1987
-MAQ38|MAV|Kókkino Krasí|1985
+NAI|PAE|Gladiátores|1958
+KAE28|AKX|Ierakes|1960
+TRG|TRI|Spartiátes|1911
+MEN|AOM|Mple|1987
+MAQ38|MAF|Kókkino Krasí|1985
 THN|AOT|Ouránioi|1915
 AGO|APL|Kítrinoi|1975
-KAF29|KAE|Delfínia|1989
+KAF29|KAT|Delfínia|1989
 AGS|APN|Kítrinoi|1948
 VEP|VEV|Sasok|1984
-BAP37|BAD|Zöldek|1989
-GYD|GYB|Égszínkékek|1979
+BAP37|BAF|Zöldek|1989
+GYD|GYF|Égszínkékek|1979
 GRM|GYS|Égszínkékek|1979
 VEQ|VSZ|Feketék|1935
-KVB|KAJ|Halászok|1912
-VET|VEB|Égszínkékek|1925
+KVB|KAE|Halászok|1912
+VET|VEZ|Égszínkékek|1925
 HAC26|HAJ|Vörösök|1933
 TIS|TIS|Kékek|1942
-NAC26|NAB|Úttörők|1978
+NAC26|NAY|Úttörők|1978
 FEL|FEF|Feketék|1920
-ORE|ORC|Lovagok|1915
+ORE|ORF|Lovagok|1915
 GYY|GYH|Fehérek|1937
 KZA|KLH|Gladiátorok|1927
 RAQ|RAE|Égszínkékek|1969
 RAU|RAS|Égszínkékek|1942
 AUC|AUA|Whites|1923
-PAH31|PAD|Blacks|1921
+PAH31|PAF|Blacks|1921
 BAQ38|BND|Mariners|1969
 HUB|HUB|Sky Blues|1923
 LUJ|LCG|Navy|1960
 AUN|AUO|Reds|1937
 MEP|MRP|Peacocks|1947
-POX|POH|Yellows|1936
+POX|POQ|Yellows|1936
 NAD27|NGK|Whites|1928
 INC|INO|Blues|1956
 KOE|KOF|Warriors|1955
-BAR39|BBE|Blacks|1947
-SHS|SHX|Reds|1934
-HAD27|HAD|Reds|1940
-SAF29|SNB|Eagles|1990
-HAE28|HAG|Navy|1941
-ESL|ESN|Lions|1950
+BAR39|BBA|Blacks|1947
+SHS|SHS|Reds|1934
+HAD27|HAO|Reds|1940
+SAF29|SNA|Eagles|1990
+HAE28|HAA|Navy|1941
+ESL|ESL|Lions|1950
 SAG30|SRX|Sandstorm|1981
 MSI|MSX|Eagles|1961
 PAJ32|PAQ|Maroons|1962
-SHT|SBN|Sandstorm|1955
-NAE28|NAQ|Lions|1946
-ESM|ESQ|Navy|1985
+SHT|SHA|Sandstorm|1955
+NAE28|NAB|Lions|1946
+ESM|ESM|Navy|1985
 SAH31|SYX|Reds|1923
 SAJ32|SQX|Greens|1957
 MOA24|MMM|Greens|1982
-SAK33|SBP|Camels|1961
+SAK33|SAN|Camels|1961
 SEX|SEZ|Greens|1957
 PAO|PKA|Camels|1927
 PAK33|PAW|Gazelles|1949
-TRH|TRC|Sky Blues|1919
-BAS40|BAZ|Tricolours|1950
-NEQ|NEA|Sky Blues|1925
+TRH|TRR|Sky Blues|1919
+BAS40|BAW|Tricolours|1950
+NEQ|NER|Sky Blues|1925
 TUC|TUB|Clansmen|1922
-POY|POJ|Blues|1926
-WID|WIA|Hurlers|1876
+POY|POG|Blues|1926
+WID|WIC|Hurlers|1876
 MAR39|MLR|Blues|1952
 CAG30|CSR|Clansmen|1896
 ENN|END|Blacks|1880
 PRH|PMC|Reds|1937
-HAF29|HPA|Blues|1938
+HAF29|HPL|Blues|1938
 HAG30|HOE|Crimsons|1975
-MAS40|MCD|Knights|1978
+MAS40|MCC|Knights|1978
 KIM|KIY|Tigers|1926
-HEF|HEC|Sky Blues|1982
+HEF|HEL|Sky Blues|1982
 MAT41|MNX|Blues|1924
 IRO|IRO|Blues|1952
 HAH31|HMU|Yellows|1943
 HAJ32|HOX|Falcons|1952
 BNA|BNS|Navy|1974
 BNI|BNK|Crimsons|1921
-MBD|MAZ|Tigers|1956
-MAU42|MBE|Greens|1983
+MBD|MAC|Tigers|1956
+MAU42|MAC|Greens|1983
 HAK33|HTU|Navy|1974
 BED27|BIT|Eagles|1941
 BNK|BKX|Lions|1951
@@ -9217,52 +9513,52 @@ POB25|PMU|Reds|1949
 MAV43|MKL|Blacks|1957
 MWU|MWH|Duma|1933
 MAW44|MSE|Whites|1938
-LOG|LDN|Simba|1982
+LOG|LDU|Simba|1982
 RUK|RUK|Twiga|1928
 KIP|KBR|Sky Blues|1929
-MBF|MBL|Yellows|1938
-MNC|MOX|Navy|1931
+MBF|MBN|Yellows|1938
+MNC|MOU|Navy|1931
 SAL34|SML|Nyati|1982
-MRA|MKE|Yellows|1962
+MRA|MFX|Yellows|1962
 LKE|LAJ|Nyati|1969
-PEY|PEG|Badak|1925
-PEZ|PRD|Merah|1987
+PEY|PEM|Badak|1925
+PEZ|PRM|Merah|1987
 PTA|PEJ|Kuning|1927
 PDR|PDM|Marun|1917
-BAT41|BBF|Hijau|1953
+BAT41|BAM|Hijau|1953
 INH|INJ|Rusa|1930
 SEZ|SEH|Kancil|1928
-PEA24|PTA|Gajah|1942
+PEA24|PMA|Gajah|1942
 SRA|SRS|Harimau|1923
 DAP|DMA|Gajah|1918
 PEB25|PLT|Putih|1918
-MEQ|MLT|Marun|1936
-SEA24|SEC|Marun|1914
-SBF|SBQ|Enggang|1912
-UNB|UNB|Negros|1939
-UND|UND|Verdes|1939
-PAL34|PAG|Azules|1905
+MEQ|MTI|Marun|1936
+SEA24|SER|Marun|1914
+SBF|SBF|Enggang|1912
+UNB|UNV|Negros|1939
+UND|UNC|Verdes|1939
+PAL34|PAP|Azules|1905
 COQ|CTP|Blancos|1929
 YAU|YAU|Alacranes|1930
-ZAJ|ZAB|Verdes|1930
-CAH31|COJ|Amarillos|1957
+ZAJ|ZAC|Verdes|1930
+CAH31|COD|Amarillos|1957
 TOS|TOO|Pioneros|1905
-HAL34|HAQ|Gallos|1898
+HAL34|HAC|Gallos|1898
 OCC|OCF|Amarillos|1894
 AZU|AZU|Blancos|1937
-LOH|LOA|Guindas|1916
+LOH|LOT|Guindas|1916
 URC|URC|Negros|1941
 URN|URF|Azulones|1959
 VEU|VEO|Verdes|1939
 YAL|YAC|Pioneros|1909
 MEU|UMX|Faucons|1960
 OLH|OUL|Jaunes|1928
-SPX|SBR|Noirs|1915
-AIB|USQ|Verts|1955
-CHD27|CHP|Bleus|1963
+SPX|SPI|Noirs|1915
+AIB|USA|Verts|1955
+CHD27|CHB|Bleus|1963
 OUE|OUE|Lions|1963
-CHE28|CBE|Gazelles|1969
-OUJ|USV|Faucons|1925
+CHE28|CBA|Gazelles|1969
+OUJ|USO|Faucons|1925
 SIJ|USI|Jaunes|1981
 KHD|KHU|Ciel et Blancs|1919
 BEE28|BIA|Ciel et Blancs|1983
@@ -9270,23 +9566,23 @@ SPY|SIV|Cèdres|1955
 OLJ|OUJ|Rouges|1955
 OOU|OUO|Bleus|1940
 CHF29|CSK|Noirs|1943
-SIQ|SBS|Verts|1921
+SIQ|SPO|Verts|1921
 OGB|OGB|Lions|1968
 OSH|OSH|Greens|1967
-SHV|SBT|Reds|1932
-UMB|UMB|Yellows|1966
+SHV|SHO|Reds|1932
+UMB|UMU|Yellows|1966
 OWA|OWA|Chiefs|1977
 AWC|AWR|Reds|1986
 OWO|OWO|Maroons|1969
 ILU|ILU|Sky Blues|1982
 SNG|SOT|Whites|1927
 BAU42|BDW|Reds|1953
-KAH31|KAK|Porcupines|1919
+KAH31|KAD|Porcupines|1919
 ONO|OWP|Reds|1939
 OWI|OWI|Chiefs|1917
 MRI|MRI|Chiefs|1971
 SAM35|SGR|Porcupines|1968
-AKF|AKC|Warriors|1945
+AKF|AKE|Warriors|1945
 SAN36|SGK|Yellows|1967
 NSA|NSA|Chiefs|1929
 ILO|ILO|Maroons|1913
@@ -9303,9 +9599,9 @@ OXH|OXH|Workmen|1953
 OAK|OAU|Crimsons|1957
 WHA|WHH|Grecians|1936
 EPM|EPM|Bluebirds|1976
-MOD27|MBF|Albos|1960
-FRI|FRJ|Amarillos|1966
-FEB|FEA|Rojos|1982
+MOD27|MOC|Albos|1960
+FRI|FRF|Amarillos|1966
+FEB|FER|Rojos|1982
 NAG30|NIO|Titanes|1974
 PDA|PLL|Verdes|1931
 LAB25|CSL|Granates|1943
@@ -9314,15 +9610,15 @@ REL|RTA|Celestes|1950
 HEG|HER|Celestes|1987
 CUI|CTU|Azules|1970
 ORT|ORT|Amarillos|1952
-ANE|SBU|Zorros|1930
+ANE|SPO|Zorros|1930
 QAA|QRR|Amarillos|1967
 FOD|RDF|Rojos|1956
 HEJ|GIH|Amarillos|1913
 RAV|REO|Toros|1931
-ONB|ONB|Verdes|1975
-ALH55|ATA|Cóndores|1979
-MOE28|MBJ|Alacranes|1937
-VIA24|VLA|Negros|1932
+ONB|ONA|Verdes|1975
+ALH55|ATO|Cóndores|1979
+MOE28|MOT|Alacranes|1937
+VIA24|VLL|Negros|1932
 CEE|CEG|Celestes|1971
 MOF29|SMB|Halcones|1924
 VAO|VLE|Blancos|1924
@@ -9330,32 +9626,32 @@ FRQ|FNO|Azules|1949
 LES|LEA|Negros|1928
 LIY|JLX|Azulones|1941
 NUD|NUF|Azulones|1931
-ALJ56|AAA|Azules|1950
+ALJ56|AAR|Azules|1950
 BAV43|JBX|Amarillos|1947
-CUF|CUF|Rayos|1949
+CUF|CUD|Rayos|1949
 FNA|FGA|Verdes|1990
 OLL|OME|Corsarios|1929
-ALK57|SBV|Blacks|1918
+ALK57|SAQ|Blacks|1918
 ABG|BHR|Tigers|1916
 ASJ|ASX|Lions|1935
-WAM|WMA|Blacks|1946
-AWD|WHB|Camels|1922
+WAM|WMC|Blacks|1946
+AWD|WHT|Camels|1922
 RIH|RIS|Foxes|1928
 MUS|MSY|Eagles|1977
 ALL58|FLH|Blacks|1978
-PUD|PEH|Grena|1946
-DIM|DRB|Negrii|1953
-MAX45|MRC|Albii|1927
-PRL|PRH|Șoimii|1976
-GLO|GLB|Negrii|1931
+PUD|PEF|Grena|1946
+DIM|DRI|Negrii|1953
+MAX45|MRE|Albii|1927
+PRL|PRU|Șoimii|1976
+GLO|GLO|Negrii|1931
 MAY46|VCT|Minerii|1927
-NOQ|NOB|Vulturii|1913
-ELE|ELD|Albii|1971
+NOQ|NOU|Vulturii|1913
+ELE|ELM|Albii|1971
 NOS|VRI|Leii|1966
 BAW44|BCS|Vulturii|1950
-GLB|GLC|Grena|1948
-DRB|DRC|Bleumarin|1948
-PRM|PRJ|Albii|1972
+GLB|GLA|Grena|1948
+DRB|DRA|Bleumarin|1948
+PRM|PRB|Albii|1972
 ACS|ABX|Zimbrii|1949
 RAW|RPI|Vulturii|1970
 ACR|ACR|Verzii|1937
@@ -9366,53 +9662,53 @@ ZAK|ZLN|Leii|1945
 VIB25|VTR|Negrii|1969
 DIP|DMC|Albii|1943
 KAJ32|KLB|Siniye|1914
-NID|NIH|Belye|1983
-STX|STL|Medvedi|1939
-NOT|NOC|Sokoly|1973
+NID|NIZ|Belye|1983
+STX|STO|Medvedi|1939
+NOT|NOV|Sokoly|1973
 KRG|KRM|Siniye|1971
 AVB|AVM|Zheltye|1937
 AVC|AVL|Orly|1949
-KIQ|KHB|Zhuravli|1979
-SIR|SIE|Medvedi|1976
-NET|NEB|Kosmonavty|1982
-TRJ|TRD|Sokoly|1979
-ZEM|ZNB|Golubye|1936
+KIQ|KHI|Zhuravli|1979
+SIR|SBR|Medvedi|1976
+NET|NEF|Kosmonavty|1982
+TRJ|TRN|Sokoly|1979
+ZEM|ZNT|Golubye|1936
 SAP37|SNO|Vinnye|1980
 SPZ|SUX|Kosmonavty|1961
-NEV|NEE|Shakhtyory|1916
+NEV|NEN|Shakhtyory|1916
 ART|AVG|Temno-sinie|1964
 TRK|TRL|Temno-sinie|1915
 NVO|NVO|Kozaki|1910
-DAQ|DAG|Whites|1938
-PEC26|PEN|Navy|1910
-DUS|DUB|Maroons|1896
+DAQ|DAL|Whites|1938
+PEC26|PEA|Navy|1910
+DUS|DUW|Maroons|1896
 KIV|KII|Sky Blues|1896
-HAN36|HAU|Clansmen|1895
+HAN36|HAH|Clansmen|1895
 MOG30|MFF|Highlanders|1915
 GLE|GLE|Blues|1908
-MOH31|MBK|Whites|1948
-INT|ABB|Thistles|1893
+MOH31|MOV|Whites|1948
+INT|ABR|Thistles|1893
 EAS|EAS|Foresters|1945
 TOP|TOG|Žuti|1915
 OSF|OST|Žuti|1954
-RUF|RUF|Vukovi|1976
+RUF|RUD|Vukovi|1976
 SLJ|SLG|Crni|1945
-DOW|LOF|Baroni|1929
-PAM35|PAV|Crni|1961
-SPA24|SBW|Orlovi|1942
+DOW|LOK|Baroni|1929
+PAM35|PAG|Crni|1961
+SPA24|SPL|Orlovi|1942
 KAK33|KMC|Svetloplavi|1974
 LIZ|LPT|Bordo|1953
-BOW|BOC|Plavi|1919
-RIK|RPA|Komete|1948
-HRL|HRB|Beli|1980
+BOW|BOS|Plavi|1919
+RIK|RPD|Komete|1948
+HRL|HRA|Beli|1980
 DMI|MRK|Žuti|1974
 NOX|NVV|Beli|1980
 ZEQ|MFZ|Gavranovi|1938
 SST|SSD|Zeleni|1957
-VAX|SLC|Levy|1971
+VAX|SLN|Levy|1971
 ZVO|ZVO|Vlci|1927
 JEC|JEB|Bordoví|1969
-SPB25|SBY|Svetlomodrí|1930
+SPB25|SPA|Svetlomodrí|1930
 PIJ|PNY|Bordoví|1948
 BRY|SOV|Rytieri|1913
 SRB|TSD|Modrí|1970
@@ -9422,33 +9718,33 @@ DUE|DUG|Tmavomodrí|1960
 TAN36|TTR|Levy|1915
 STZ|MFT|Rytieri|1968
 KRH|KFX|Tmavomodrí|1987
-STA24|SOA|Železiari|1959
-SPC26|SBZ|Žltí|1925
+STA24|SOJ|Železiari|1959
+SPC26|SPA|Žltí|1925
 SOP|SOB|Bordoví|1946
-RUG|RDA|Beli|1923
+RUG|RDR|Beli|1923
 DSK|SKD|Svetlomodri|1912
 RAZ|RUR|Svetlomodri|1972
 PRI|PIZ|Črni|1958
 AJD|NKD|Črni|1958
 NVA|NKN|Črni|1943
-SAQ38|SCB|Temnomodri|1916
+SAQ38|SAV|Temnomodri|1916
 RUN|RUN|Modri|1946
 BLI|BLX|Jeleni|1964
-RUH|RDB|Zeleni|1943
+RUH|RDA|Zeleni|1943
 SVA|SVB|Jeleni|1978
 DNO|DNS|Svetlomodri|1939
-SAR39|SCC|Beli|1924
+SAR39|SAV|Beli|1924
 BOX|BZX|Zeleni|1968
 NDD|NZK|Svetlomodri|1959
 LJU|NKL|Modri|1941
-MSW|MBM|Blues|1914
+MSW|MAB|Blues|1914
 PHA|PHA|Stars|1942
 NEX|NEU|Pirates|1969
-POC26|POP|Yellows|1951
+POC26|PON|Yellows|1951
 HOU|HOU|Blacks|1981
-HOP|HOD|Lions|1963
-MAZ47|MBN|Lions|1957
-LAC26|LAL|Chiefs|1924
+HOP|HOC|Lions|1963
+MAZ47|MBD|Lions|1957
+LAC26|LAC|Chiefs|1924
 VOA|VOC|Reds|1985
 KRJ|KRB|Pirates|1939
 KWA|KWK|Maroons|1934
@@ -9459,24 +9755,24 @@ LAD27|LDK|Arrows|1960
 ULN|ULS|Sky Blues|1984
 DIQ|DIS|Grünen|1950
 WEB|WES|Gelben|1938
-FAE|TEC|Grünen|1947
-BEF29|SCD|Grünen|1936
-GRS|GRC|Blauen|1935
-FEF|SCE|Schwarzbären|1917
+FAE|TEF|Grünen|1947
+BEF29|SPV|Grünen|1936
+GRS|GRH|Blauen|1935
+FEF|SPG|Schwarzbären|1917
 FEU|FEL|Schwarzen|1920
-HIE|HIB|Dunkelblauen|1933
-FRR|SCF|Roten|1931
-LIA24|LAP|Gelben|1887
+HIE|HIR|Dunkelblauen|1933
+FRR|SPU|Roten|1931
+LIA24|LAE|Gelben|1887
 BUV|BKB|Eagles|1940
 DAS|DRM|Navy|1939
 SIU|SIM|Reds|1915
 ARU|ARU|Navy|1970
 SOQ|SOG|Reds|1939
-KIW|KBA|Elephants|1925
+KIW|KBG|Elephants|1925
 TAP37|TNG|Greens|1934
 KGA|KOG|Navy|1925
 KTA|KID|Eagles|1944
-MBG|MYT|Sky Blues|1970
+MBG|MBT|Sky Blues|1970
 YOB|YOM|Blacks|1960
 TAQ38|TBW|Reds|1920
 TYA|TGY|Cheetahs|1951
@@ -9484,12 +9780,12 @@ AZA|AHZ|Lions|1924
 ATC|AHT|Buffaloes|1971
 KIX|KBW|Blacks|1963
 KEL|EKX|Fennecs|1951
-KEB|KEB|Noirs|1916
-JJS|JSB|Jaunes|1974
-SIW|USW|Rouges|1911
-KAL34|KAX|Grenats|1910
-BEG30|ETA|Fennecs|1959
-TAR39|TAE|Grenats|1970
+KEB|KEL|Noirs|1916
+JJS|JSM|Jaunes|1974
+SIW|USL|Rouges|1911
+KAL34|KAC|Grenats|1910
+BEG30|ETL|Fennecs|1959
+TAR39|TAO|Grenats|1970
 NAH31|ENX|Palmiers|1910
 KAM35|KSI|Verts|1920
 EOO|EOA|Blancs|1979
@@ -9497,76 +9793,76 @@ SIX|ETS|Rouges|1925
 OLQ|NBN|Grenats|1960
 JSM|JSO|Gazelles|1978
 JSO|JOZ|Noirs|1935
-VEV|VEE|Lvy|1965
-KRK|KRA|Bili|1937
-SHW|SCG|Zhovti|1986
-SUF|SUB|Syni|1952
-MKA|MLB|Chorni|1954
-NAJ32|NFA|Chorni|1915
-SHX|SCJ|Zeleni|1948
-TDO|TOE|Temno-syni|1923
-POD27|POQ|Zeleni|1960
-LYV|LOG|Syni|1987
+VEV|VER|Lvy|1965
+KRK|KRE|Bili|1937
+SHW|SHK|Zhovti|1986
+SUF|SUF|Syni|1952
+MKA|MAL|Chorni|1954
+NAJ32|NFT|Chorni|1915
+SHX|SHL|Zeleni|1948
+TDO|TOK|Temno-syni|1923
+POD27|POK|Zeleni|1960
+LYV|LOV|Syni|1987
 CHG30|CNO|Temno-syni|1979
 STB25|FST|Vyshnevi|1978
 VEO|VOX|Charivnyky|1980
 AKG|AKN|Chorni|1918
 NYB|NYK|Blakytni|1979
 AVV|AVD|Zhovti|1966
-ALM59|WAB|Yellows|1923
-HIF|HIE|Lions|1923
+ALM59|WAF|Yellows|1923
+HIF|HIL|Lions|1923
 JER|JER|Reds|1974
-AIK|AIA|Horsemen|1974
+AIK|AIK|Horsemen|1974
 AAS|AAD|Hawks|1934
 ALN60|WAT|Sandstorm|1972
 AAQ|AQY|Blacks|1973
-ALP61|JAE|Falcons|1985
+ALP61|JAA|Falcons|1985
 ANI|NMR|Maroons|1978
 MUD|MHR|Eagles|1920
-SAS40|SLH|Navy|1942
-SAT41|SLK|Navy|1945
+SAS40|SLY|Navy|1942
+SAT41|SLH|Navy|1945
 ALQ62|AWI|Greens|1966
 KAN36|KCX|Reds|1973
 ALR63|RAY|Horsemen|1936
 AAF|AIF|Camels|1948
-REM|REB|Bison|1985
-CHH31|CHQ|Sky Blues|1939
-WAW|WAC|Navy|1974
-SPD27|SCK|Navy|1983
-WHD|WHC|Crush|1949
-MAA48|MBP|Stallions|1917
+REM|REH|Bison|1985
+CHH31|CHU|Sky Blues|1939
+WAW|WAL|Navy|1974
+SPD27|SPA|Navy|1983
+WHD|WHI|Crush|1949
+MAA48|MAP|Stallions|1917
 ROM|ROL|Lumberjacks|1938
 MLE|MEL|Lumberjacks|1911
-PRK|PRL|Maroons|1920
-BEH31|BEK|Lightning|1986
+PRK|PRA|Maroons|1920
+BEH31|BEU|Lightning|1986
 WHE|WHF|Blues|1924
 CYP|CYP|Blues|1982
 ELL|ASF|Sky Blues|1921
-CHJ32|CHV|Blacks|1958
-POE28|POX|Maroons|1982
+CHJ32|CHR|Blacks|1958
+POE28|POT|Maroons|1982
 SUG|SUC|Comets|1923
 CEF|CEE|Greens|1918
 WIE|WIL|Greens|1936
-POF29|POY|Maroons|1957
-ELK|ELF|Foundrymen|1965
-RLD|ROA|Blues|1935
+POF29|POB|Maroons|1957
+ELK|ELK|Foundrymen|1965
+RLD|ROF|Blues|1935
 CLS|CHY|Dragons|1934
-LAE28|LKV|Blacks|1951
+LAE28|LAK|Blacks|1951
 FOE|FOC|Rockets|1925
-PRJ|PRQ|Verdes|1970
-NAK33|NAX|Celestes|1972
-MIS|MRF|Gauchos|1924
+PRJ|PRD|Verdes|1970
+NAK33|NAU|Celestes|1972
+MIS|MRS|Gauchos|1924
 URZ|URE|Celestes|1931
 SNA|CSS|Rojos|1968
 PTE|PRI|Pumas|1934
-NAL34|NNB|Pioneros|1939
+NAL34|NNA|Pioneros|1939
 LEB|LEC|Lobos|1973
 DOY|INP|Celestes|1941
 BUW|BST|Leones|1900
-NAM35|NAZ|Gladiadores|1903
-LAO|EIA|Amarillos|1905
+NAM35|NAX|Gladiadores|1903
+LAO|EDI|Amarillos|1905
 ORO|DFE|Granates|1918
-MIG|MIH|Verdes|1934
+MIG|MIO|Verdes|1934
 CHK33|CIR|Lions|1928
 TAS40|TSH|Camels|1951
 BEJ32|BKC|Blues|1938
@@ -9576,24 +9872,24 @@ ANF|ANU|Bulls|1967
 NAN36|NMZ|Greens|1931
 SHZ|SCS|Eagles|1965
 KHF|KHF|Reds|1946
-NEZ|NEN|Crimsons|1950
+NEZ|NEH|Crimsons|1950
 BEK33|BKR|Blacks|1923
 KHZ|KHC|Yellows|1969
 MRC|MRR|Whites|1944
 ESN|ESW|Sky Blues|1947
 ROP|ROR|Amarillos|1935
-NAP37|NBA|Granates|1917
+NAP37|NAQ|Granates|1917
 BIB|BLI|Titanes|1967
-MOJ32|AMX|Celestes|1932
-ADB|ARD|Rayos|1912
-GAC|GAB|Verdes|1908
+MOJ32|MLS|Celestes|1932
+ADB|ARF|Rayos|1912
+GAC|GAO|Verdes|1908
 CAJ32|RDC|Zorros|1935
 VEW|RDV|Negros|1967
-SSA|SLP|Verdes|1965
+SSA|SLL|Verdes|1965
 LAF29|INI|Amarillos|1894
 CIA|CIA|Amarillos|1906
-PUG|SCL|Celestes|1930
-GAD|INT|Azules|1960
+PUG|SAN|Celestes|1930
+GAD|IDE|Azules|1960
 PUH|PUO|Osos|1895
 RAA24|REL|Toros|1923
 COT|COP|Arrieros|1903
@@ -9611,7 +9907,7 @@ FUK|FOE|Bären|1923
 HOT|HON|Grünen|1909
 HAP37|HNX|Blauen|1912
 GOC|FSG|Schwarzen|1903
-COX|CDI|Blauen|1891
+COX|COU|Blauen|1891
 BLB|BWO|Ritter|1904
 LUT|LUT|Seeadler|1952
 HIM|HIF|Schwarzen|1907
@@ -9631,103 +9927,103 @@ KAP37|KBX|Witten|1915
 SRD|STM|Witten|1910
 KFA|KFO|Wolven|1916
 NIH|NWD|Geelen|1900
-CAK33|ESS|Azuis|1907
-CAL34|CAQ|Azuis|1900
-NMA|NBB|Grenás|1937
-GMA|ESV|Tucanos|1963
+CAK33|ESC|Azuis|1907
+CAL34|CAP|Azuis|1900
+NMA|NAM|Grenás|1937
+GMA|ESG|Tucanos|1963
 TPE|ATL|Pioneiros|1912
-JAE|JAG|Rubro-Negros|1947
+JAE|JAE|Rubro-Negros|1947
 VAY|VSS|Celestes|1972
-TAT41|TAG|Verdões|1899
+TAT41|TAB|Verdões|1899
 ITI|ITI|Alvinegros|1941
 REP|REP|Verdões|1949
-PPA|PBB|Grenás|1931
+PPA|PAS|Grenás|1931
 JAG|JAS|Falcões|1966
-IBI|UNJ|Corsários|1913
+IBI|UNA|Corsários|1913
 ITC|ITS|Tubarões|1950
-JMA|ESX|Alvinegros|1901
+JMA|ESE|Alvinegros|1901
 ITS|ITJ|Verdões|1899
-AMD|ARH|Jaguares|1899
+AMD|ART|Jaguares|1899
 TTA|SOC|Verdões|1902
-SAU42|SCM|Azuis|1935
+SAU42|SAJ|Azuis|1935
 URD|URG|Azuis-Marinho|1919
-ALS64|ALH|Mineros|1928
-FUM|FNA|Celestes|1934
+ALS64|ALZ|Mineros|1928
+FUM|FNT|Celestes|1934
 LEC|JUL|Amarillos|1919
-PED27|PDB|Azulones|1923
+PED27|PDA|Azulones|1923
 POG30|PZN|Rayos|1957
-ATD|ALK|Rojos|1959
-TAO|TAH|Corsarios|1937
+ATD|ALU|Rojos|1959
+TAO|TAE|Corsarios|1937
 PEE28|PDD|Verdes|1901
-MOK33|MBQ|Halcones|1947
-BAX45|BBG|Amarillos|1915
+MOK33|MOX|Halcones|1947
+BAX45|BAJ|Amarillos|1915
 VIC26|VNO|Granates|1957
-MTE|MBR|Azules|1931
+MTE|MBE|Azules|1931
 VID27|CVX|Toros|1937
 ROR|RLA|Leones|1925
 KLI|KAI|Reds|1921
-LOS|LOH|Whites|1972
+LOS|LON|Whites|1972
 HUU|HUU|Tigers|1942
 CHL34|CHZ|Falcons|1970
 XIG|XIT|Yellows|1958
-NNG|NIJ|Steelmen|1928
+NNG|NIG|Steelmen|1928
 SLL|SNM|Sky Blues|1990
 CHM35|CGA|Pandas|1988
 RET|RUP|Whites|1958
-RUJ|RUG|Eagles|1948
+RUJ|RUF|Eagles|1948
 YUG|YUF|Blacks|1971
 ANM|ANM|Lions|1911
-DUF|DUC|Námořníci|1978
+DUF|DUB|Námořníci|1978
 DLA|DUJ|Nebesky modří|1918
 STC26|STV|Kováři|1983
-SPE28|SCN|Lišky|1967
+SPE28|SPN|Lišky|1967
 OCE|TJO|Bílí|1914
-SRO|SCP|Rybáři|1952
-SPF29|SCQ|Průkopníci|1966
+SRO|SPZ|Rybáři|1952
+SPF29|SPA|Průkopníci|1966
 VYB|VYF|Průkopníci|1988
-ZEY|ZEB|Bílí|1917
-POH31|PTB|Rybáři|1959
+ZEY|ZEA|Bílí|1917
+POH31|PTO|Rybáři|1959
 DOI|DOP|Vlci|1922
-ROV|SCT|Červení|1990
-KOS|SOD|Husité|1948
+ROV|SPA|Červení|1990
+KOS|SOA|Husité|1948
 RYF|RYF|Rytíři|1956
 PEF29|PLH|Lišky|1940
 DST|DUS|Průkopníci|1989
 LAG30|LAO|Bjørner|1899
 DAY|DLB|Kometer|1950
 SOT|SSI|Måker|1933
-SNB|SRB|De Gule|1935
+SNB|SRA|De Gule|1935
 LIB25|ILX|De Sorte|1896
 HEM|HDV|Fiskere|1906
 LNS|ILS|De Hvide|1889
-NOY|NOD|De Mørkerøde|1921
+NOY|NOK|De Mørkerøde|1921
 VNA|VEJ|Bjørner|1898
 SAV43|SST|Ravner|1933
 HOY|HKF|De Sorte|1944
-SUJ|SCU|Gladiatorer|1909
+SUJ|SRU|Gladiatorer|1909
 BLT|ETB|Faucons|1906
-CAM35|CTC|Brasseurs|1883
-BEL34|BEQ|Lynx|1914
-AUE|ESY|Verts|1950
+CAM35|CTE|Brasseurs|1883
+BEL34|BEC|Lynx|1914
+AUE|ESA|Verts|1950
 DUG|ETD|Ciel et Blancs|1903
-BEM35|UBB|Loups|1943
+BEM35|UBX|Loups|1943
 BOY|BON|Grenats|1886
-BLG|BLB|Chevaliers|1904
-PAN36|PVA|Faucons|1953
-SAI|ESZ|Marines|1904
+BLG|BLN|Chevaliers|1904
+PAN36|PVL|Faucons|1953
+SAI|ESS|Marines|1904
 SAW44|ASB|Marines|1925
-VLB|EBA|Renards|1918
+VLB|ESV|Renards|1918
 ROX|URX|Verts|1923
 CGE|CSA|Grenats|1913
-MNS|AJB|Comètes|1940
-BGE|BNC|Grenats|1947
+MNS|AMX|Comètes|1940
+BGE|BNG|Grenats|1947
 SIY|SED|Kítrinoi|1919
-KKA|AEB|Kítrinoi|1983
-PLI|APA|Ouránioi|1912
+KKA|AEK|Kítrinoi|1983
+PLI|APX|Ouránioi|1912
 PIR|ETP|Kometes|1963
-PII|PIB|Kítrinoi|1960
+PII|PIF|Kítrinoi|1960
 KKI|NII|Mple|1912
-MIH|PBC|Kókkino Krasí|1936
+MIH|PAH|Kókkino Krasí|1936
 PAP37|AOP|Psarádes|1987
 LAH31|ETK|Kókkino Krasí|1913
 MEW|MSI|Mávroi|1990
@@ -9736,7 +10032,7 @@ ARV|AAX|Prásinoi|1990
 NIJ|GSN|Áspri|1981
 THU|DOT|Psarádes|1948
 MEZ|MEF|Medvék|1953
-BAY46|BBH|Vörösök|1937
+BAY46|BAK|Vörösök|1937
 RAB25|RAC|Oroszlánok|1945
 PAQ38|PSZ|Oroszlánok|1976
 FEH|FEH|Sötétkékek|1917
@@ -9756,78 +10052,78 @@ PSD|PSN|Eagles|1914
 BHE|BKT|Eagles|1934
 BHF|BTX|Eagles|1966
 BTI|BPX|Reds|1943
-PSE|PEQ|Panthers|1945
+PSE|PEH|Panthers|1945
 BYB|BNJ|Garuda|1982
 PJE|PJX|Tigers|1987
-PEG30|PEU|Sky Blues|1934
+PEG30|PEQ|Sky Blues|1934
 PEH31|PEX|Reds|1920
 CIR|CRS|Blues|1932
 PPB|PSO|Blues|1950
-PEJ32|PEY|Sky Blues|1980
-PEK33|PEV|Reds|1982
-SEB25|SMA|Panthers|1953
-LAJ32|LGP|Panthers|1976
+PEJ32|PER|Sky Blues|1980
+PEK33|PER|Reds|1982
+SEB25|SGI|Panthers|1953
+LAJ32|LPU|Panthers|1976
 FOO|FOO|Whites|1967
-SAX45|SCV|Yellows|1973
+SAX45|SAW|Yellows|1973
 NFA|NYX|Tigers|1930
-SAY46|SCX|Greens|1935
-SAZ47|SIH|Knights|1961
-SKE|SCY|Sky Blues|1941
-SIZ|SIJ|Sky Blues|1959
+SAY46|SHX|Greens|1935
+SAZ47|SIX|Knights|1961
+SKE|SAN|Sky Blues|1941
+SIZ|SIF|Sky Blues|1959
 FOG|FLA|Maroons|1923
 EAL|EEG|Whites|1947
 GOZ|GOZ|Horsemen|1974
 SBU|SEW|Whites|1931
 ZOA|ZOS|Navy|1940
-PAR39|PBD|Whites|1953
+PAR39|POX|Whites|1953
 FAF|FAX|Sky Blues|1937
 POJ32|AUP|Bianchi|1924
-MGO|MNC|Marinai|1944
-BOA24|BOD|Cavalieri|1950
-GUH|SCZ|Celesti|1906
-FAG|FAD|Granata|1913
-VIE28|VIG|Rossi|1907
-PTO|PBE|Blu|1880
-BOO|BOE|Falchi|1901
-GUO|PRR|Blu|1910
+MGO|MNG|Marinai|1944
+BOA24|BOA|Cavalieri|1950
+GUH|SAG|Celesti|1906
+FAG|FAB|Granata|1913
+VIE28|VIF|Rossi|1907
+PTO|PAD|Blu|1880
+BOO|BOU|Falchi|1901
+GUO|PRG|Blu|1910
 ROZ|AUR|Granata|1939
 IUV|IUC|Bianchi|1921
-SEC26|UBD|Blu|1931
-BOB25|AUC|Gabbiani|1929
-SED27|SEE|Blu|1918
-RGA|ROE|Volpi|1928
+SEC26|USX|Blu|1931
+BOB25|AUB|Gabbiani|1929
+SED27|SEN|Blu|1918
+RGA|ROB|Volpi|1928
 GRV|ASG|Bianchi|1893
-VIF29|VIH|Blu|1907
-POK33|PLF|Granata|1942
+VIF29|VIU|Blu|1907
+POK33|PLS|Granata|1942
 CEL|CEL|Verdi|1908
 CCO|UCX|Pionieri|1934
-NAR39|NBC|Greens|1988
-MWA|MBS|Reds|1960
-SWA|SDA|Whites|1927
-FUN|FUB|Blues|1920
+NAR39|NAR|Greens|1988
+MWA|MAZ|Reds|1960
+SWA|SHV|Whites|1927
+FUN|FUA|Blues|1920
 TMA|TKY|Blues|1960
-HAS40|HBA|Reds|1973
-SMA|SDB|Crimsons|1981
-TAU42|TAQ|Yellows|1912
+HAS40|HAR|Reds|1973
+SMA|SAB|Crimsons|1981
+TAU42|TAR|Yellows|1912
 KUD|KUM|Blues|1953
-ASI|ASJ|Crimsons|1964
+ASI|ASR|Crimsons|1964
 KUI|KUF|Blacks|1933
 NTA|NRT|Whites|1915
 YAE|YAV|Vento|1961
 TOY|TOY|Hawks|1920
-SAA48|SIQ|Reds|1940
+SAA48|SIH|Reds|1940
 ASN|AAU|Blues|1927
-MAB49|MBT|Blacks|1977
-FWA|FUC|Lancers|1985
+MAB49|MAM|Blacks|1977
+FWA|FUB|Lancers|1985
 YAF|YMH|Blues|1912
 SKI|SSK|Sky Blues|1988
-ZAN|SDC|Verdes|1959
+ZAN|SAZ|Verdes|1959
 PAS40|PCH|Tuzos|1937
 MTL|MIT|Mineros|1945
-TEE|TEE|Blancos|1894
+TEE|TEC|Blancos|1894
 HES|HCO|Rojos|1913
-TAV43|TAS|Osos|1900
-COY|CTD|Venados|1920
+TAV43|TAH|Osos|1900
+COY|CTC|Venados|1920
 TEF|TPO|Azules|1952
 LOZ|LBS|Toros|1970
 JIB|JLP|Celestes|1950
@@ -9836,18 +10132,18 @@ MIJ|MNE|Mineros|1930
 TEG|TCL|Zorros|1955
 TEH|TCC|Azules|1911
 ZUK|FOZ|Geelen|1949
-SPG30|SDD|Bijen|1889
+SPG30|SPC|Bijen|1889
 ORF|OUF|Bordeauxen|1952
 VEX|FOV|Geelen|1925
 SIA24|RKS|Brouwers|1926
 HOZ|HGV|Rooien|1943
-SUK|SDE|Blauwen|1909
-VLE|VIJ|Blauwen|1938
+SUK|SPW|Blauwen|1909
+VLE|VII|Blauwen|1938
 NIT|NWV|Herten|1954
 HAT41|RHX|Blauwen|1890
 DVA|DVS|Gladiatoren|1900
 VIG30|VTS|Rooien|1881
-OUV|FOD|Zwarten|1928
+OUV|FOL|Zwarten|1928
 NUG|RKN|Zwarten|1938
 VIH31|VTE|Zwanen|1902
 NIW|NIU|Hemelsblauwen|1931
@@ -9855,77 +10151,77 @@ BEN36|BBX|Raven|1919
 NUW|NIW|Bijen|1915
 GIL|GIL|Blues|1955
 SCD|SCO|Knights|1917
-CHN36|CCA|Whites|1932
-MCK|MEC|Knights|1922
+CHN36|CCH|Whites|1932
+MCK|MEO|Knights|1922
 MIM|MLP|Bees|1989
-CHP37|CHW|Magpies|1958
+CHP37|CHV|Magpies|1958
 WYN|WYN|Railwaymen|1965
 TOQ|TOT|Dark Horses|1974
 HCH|HOR|Emeralds|1914
-HEP|HED|Dark Horses|1980
+HEP|HEA|Dark Horses|1980
 LUH|LUD|Railwaymen|1981
 HLA|HTF|Blackcats|1940
-VRG|VEF|De Røde|1927
+VRG|VEB|De Røde|1927
 BRW|BOV|De Sorte|1934
 DAX|DAI|De Mørkeblå|1918
-BRX|BRE|Elge|1899
-SRS|SND|De Grønne|1884
+BRX|BRL|Elge|1899
+SRS|SNG|De Grønne|1884
 LII|LIL|De Grønne|1888
-HEQ|HEE|De Blå|1934
+HEQ|HED|De Blå|1934
 BNB|BGV|De Blå|1927
 BLM|BGH|De Mørkerøde|1885
 RIL|RNG|Ravner|1926
 LLM|LAI|De Lyseblå|1942
 DBK|DLD|Løver|1914
-LND|LAQ|De Sorte|1891
+LND|LAL|De Sorte|1891
 DLM|DLH|De Sorte|1929
 GOD|GOC|Lisy|1986
-TKA|STW|Granatowi|1947
+TKA|STL|Granatowi|1947
 GNI|KSG|Żółci|1958
 GWC|GWR|Bordowi|1938
-BUZ|BUB|Błękitni|1969
+BUZ|BUO|Błękitni|1969
 GOK|GOW|Błękitni|1981
 JAH|GJX|Niebiescy|1946
 DOZ|MKD|Rycerze|1946
 JAJ|KJX|Rycerze|1972
 WOJ|WKX|Zieloni|1964
-NOZ|NWC|Granatowi|1940
-WIG|STX|Bordowi|1923
-NOA24|STZ|Czarni|1964
+NOZ|NOW|Granatowi|1940
+WIG|STW|Bordowi|1923
+NOA24|STC|Czarni|1964
 KOK|KKX|Rybacy|1921
 KAQ38|GKX|Rycerze|1969
 BUI|BUL|Bordowi|1987
 BRA24|KSZ|Bordowi|1923
 BWO|PLN|Żółci|1975
 CDA|CRT|Pretos|1911
-VIJ32|VLB|Tigres|1951
-PDO|PBF|Pioneiros|1894
-VAZ|AVB|Grenás|1900
-SEE28|SEQ|Verdes|1944
+VIJ32|VLA|Tigres|1951
+PDO|PAI|Pioneiros|1894
+VAZ|AVA|Grenás|1900
+SEE28|SEP|Verdes|1944
 GDA|GDC|Azuis|1893
 VEZ|VND|Verdes|1882
 ESQ|ETR|Rubro-Negros|1924
-AVO|AVC|Dragões|1944
-LOJ|LOJ|Celestes|1892
-ACC|ACB|Lobos|1884
+AVO|AVS|Dragões|1944
+LOJ|LOS|Celestes|1892
+ACC|ACE|Lobos|1884
 TAW44|TVR|Verdes|1901
-PRN|PRV|Zimbrii|1972
+PRN|PRH|Zimbrii|1972
 RAD27|RAI|Negrii|1927
-ERE|ELG|Grena|1970
+ERE|ELF|Grena|1970
 UNC|UIR|Minerii|1929
 MUL|MIE|Minerii|1970
 CSS|HUN|Grena|1941
 CFC|CNN|Lupii|1975
-MAC50|MBV|Negrii|1967
+MAC50|MAQ|Negrii|1967
 DIT|PTS|Minerii|1929
 MFO|MLU|Minerii|1966
 DIU|VLO|Siniye|1960
 KRM|KRL|Zheltye|1952
 SVR|SVE|Golubye|1990
 YAG|YAF|Krasnye|1977
-BKA|BBJ|Medvedi|1940
-NNA|NIQ|Kozaki|1971
-SPH31|SDF|Vinnye|1942
+BKA|BAP|Medvedi|1940
+NNA|NIH|Kozaki|1971
+SPH31|SCX|Vinnye|1942
 AYC|AKK|Zhuravli|1965
 AKH|ADE|Zhuravli|1952
 VNE|VEK|Belye|1967
@@ -9939,93 +10235,93 @@ EYA|ENZ|Krasnye|1948
 ZES|ZET|Gusary|1942
 RIP|RFY|Lions|1924
 ALT65|AWF|Reds|1949
-KUE|KUA|Sky Blues|1933
+KUE|KUT|Sky Blues|1933
 BYN|BRY|Blacks|1961
 ALU66|AWM|Navy|1968
 AHA|HWY|Navy|1922
-AIC|AIB|Foxes|1939
+AIC|AIA|Foxes|1939
 ALV67|RMQ|Blacks|1980
 ALW68|MDR|Blacks|1978
 TAX45|TFY|Tigers|1920
-BAA48|BBL|Navy|1981
+BAA48|BAZ|Navy|1981
 ALX69|AII|Greens|1940
-SHY|SIW|Horsemen|1965
+SHY|SIY|Horsemen|1965
 AIS|AIS|Sky Blues|1989
 ALY70|KHY|Yellows|1976
-SHA24|SDG|Sky Blues|1962
+SHA24|SHA|Sky Blues|1962
 CUM|CMB|Whites|1899
-MIP|MIB|Maroons|1891
+MIP|MIP|Maroons|1891
 JEE|JEA|Yellows|1949
 INN|INN|Blacks|1883
-GAL|GAE|Foresters|1901
-TIE|TOH|Lairds|1898
+GAL|GAL|Foresters|1901
+TIE|TOI|Lairds|1898
 ROA24|RSR|Yellows|1933
 TUD|TUC|Reds|1893
 BAB49|BNO|Maroons|1888
 KIA24|KNK|Sky Blues|1912
 ULG|ULN|Blacks|1911
-VRA|VRA|Reds|1922
+VRA|VRE|Reds|1922
 ULD|ULC|Navy|1918
-SRC|SSC|Blacks|1989
+SRC|SSO|Blacks|1989
 PIK|PNG|Reds|1915
-VOS|VLC|Lions|1951
-VRB|VRB|Yellows|1929
+VOS|VLR|Lions|1951
+VRB|VRA|Yellows|1929
 PHD|PHL|Chiefs|1918
 KWN|KWA|Greens|1974
 VON|VOS|Rhinos|1965
-RAE28|RND|Greens|1949
+RAE28|RDS|Greens|1949
 VRD|VDE|Pirates|1919
 MAD51|MUR|Pirates|1946
 NEA24|NEO|Reds|1919
-SIB25|SDH|Blues|1957
+SIB25|SBD|Blues|1957
 KWD|KWL|Yellows|1984
-MUE|MUC|Hawks|1929
+MUE|MUN|Hawks|1929
 SIC26|SNW|Whites|1967
-BUA24|BUM|Ravens|1953
+BUA24|BUF|Ravens|1953
 JID|JNW|Sky Blues|1975
 BOC26|BOW|Rockets|1980
-DAZ|DAN|Greens|1918
-CRI|CRI|Blues|1977
+DAZ|DAE|Greens|1918
+CRI|CHI|Blues|1977
 PYA|PYD|Ravens|1932
-DAA24|DAP|Stags|1933
+DAA24|DAC|Stags|1933
 JEF|JNJ|Lancers|1913
 PYN|PYM|Yellows|1972
 JIE|JIJ|Crimsons|1916
 GIA|GIE|Blues|1983
-DDO|DOG|Navy|1944
+DDO|DOD|Navy|1944
 HNG|HDN|Blues|1910
 SEF29|SSN|Steelmen|1911
 HUD|HUD|Vita|1877
 VOO|VOF|Vita|1883
-SLN|SLQ|Vinröda|1903
+SLN|SLP|Vinröda|1903
 SKD|SKE|Sjömännen|1934
 VAA24|VAK|Gröna|1939
 SOU|SDR|Örnarna|1921
 MMN|MHA|Älgarna|1913
-BRB25|BBM|Vinröda|1907
+BRB25|BAG|Vinröda|1907
 GIF|GIV|Örnarna|1954
-SLR|SLR|Lejonen|1913
+SLR|SLK|Lejonen|1913
 BRC26|BVN|Blå|1915
 BRD27|BGE|Mörkblå|1893
-SLP|SLT|Älgarna|1939
+SLP|SLC|Älgarna|1939
 NOB25|NRS|Sjömännen|1911
 NYS|NYO|Blå|1877
 BNY|BNF|Ljusblå|1906
 ALZ71|FAE|Bergleute|1952
-BLC|BLE|Kicker|1889
-ELF|ELJ|Schwarzen|1929
-BRE28|VTA|Grünen|1950
+BLC|BLW|Kicker|1889
+ELF|ELS|Schwarzen|1929
+BRE28|VTO|Grünen|1950
 WET|WST|Blauen|1913
-ARW|ARJ|Blauen|1910
-AST|ALP|Roten|1890
+ARW|ARM|Blauen|1910
+AST|ALF|Roten|1890
 SCF|SWA|Fischer|1952
 GRW|TEG|Schwarzen|1913
 NNI|NIT|Ritter|1881
 KLW|KLL|Gladiatoren|1927
 KEC|KIC|Hirsche|1932
 AWE|ALW|Ritter|1910
-BRF29|BRJ|Pioniere|1914
-BAC50|EIH|Gelben|1899
+BRF29|BRC|Pioniere|1914
+BAC50|EIA|Gelben|1899
 GOT|EIG|Stahlwerker|1888
 HHO|HHE|Weißen|1890
 ROB25|RWN|Kumpel|1878
@@ -10036,19 +10332,19 @@ PHB|PHN|Sky Blues|1928
 THV|THY|Crocodiles|1989
 SAB49|SKM|Crimsons|1929
 PHC|PHF|Navy|1918
-CHQ38|CHX|Blacks|1953
+CHQ38|CHP|Blacks|1953
 MNG|MTH|Blacks|1912
-MUF|MUP|Yellows|1930
-SAC50|SDJ|Rockets|1945
+MUF|MPU|Yellows|1930
+SAC50|SAK|Rockets|1945
 MUG|MNU|Dragons|1978
-KAR39|KAZ|Martılar|1985
-INE|ING|Beyazlar|1980
+KAR39|KAB|Martılar|1985
+INE|INC|Beyazlar|1980
 KZE|KZI|Lacivertler|1970
 BBE|YEB|Şahinler|1975
 CAN36|CNH|Beyazlar|1986
 KZB|KZG|Şahinler|1931
 KUF|KUC|Martılar|1984
-KAS40|KLC|Siyahlar|1966
+KAS40|KLA|Siyahlar|1966
 ORG|ORG|Beyazlar|1923
 BCU|BZT|Gökler|1975
 USG|UAP|Beyazlar|1939
@@ -10057,66 +10353,66 @@ ESI|EDX|Kırmızılar|1950
 CAP37|CMH|Balıkçılar|1981
 EKI|EDN|Sarılar|1961
 ESS|EKE|Gökler|1920
-TEJ|TEH|Siyahlar|1961
+TEJ|TEE|Siyahlar|1961
 CCA|CMK|Kırmızılar|1969
 ROC26|ROV|Metalurhy|1989
 ZOD|ZOD|Chervoni|1978
 HIK|HRN|Charivnyky|1985
 VSH|VRS|Syni|1987
-LOR|LOQ|Chervoni|1927
+LOR|LOO|Chervoni|1927
 KOG|KOO|Lvy|1965
 POL34|PLK|Zubry|1920
-POM35|PBG|Blakytni|1916
+POM35|POP|Blakytni|1916
 NOC26|NVA|Blakytni|1936
-SPJ32|SDK|Temno-syni|1986
+SPJ32|SPA|Temno-syni|1986
 HYK|HIY|Zeleni|1974
 KOJ|KLO|Hirnyky|1913
 MIQ|MLL|Sky Blues|1969
 OAW|OAK|Blues|1920
-MEX|MLH|Blues|1953
-RIV|SRD|Greens|1969
+MEX|MLE|Blues|1953
+RIV|SRB|Greens|1969
 MIU|SMC|Pioneers|1910
 LAK33|LKB|Sky Blues|1958
 EEL|GRR|Reds|1928
 CEG|CDR|Sky Blues|1936
-SUQ|SUD|Eagles|1965
+SUQ|SUB|Eagles|1965
 MLF|MFA|Reds|1938
 SPK33|SGT|Pioneers|1963
 BLD|BLP|Blues|1923
-RRD|RIR|Stallions|1927
+RRD|RIV|Stallions|1927
 GOE|GLD|Bison|1953
 CYN|CYI|Ironmen|1939
 SUU|SUW|Maroons|1911
 CLG|CBG|Reds|1981
-SAD51|SDM|Blacks|1965
-DOA24|DAQ|Sky Blues|1910
+SAD51|SAI|Blacks|1965
+DOA24|DAG|Sky Blues|1910
 THW|THH|Yellows|1924
 HOA24|HNG|Elephants|1926
 TUY|TSU|Cranes|1923
-THX|THT|Tigers|1910
-SDO|SDN|Blues|1953
+THX|TTP|Tigers|1910
+SDO|SAI|Blues|1953
 CLL|CLO|Buffaloes|1987
 DNG|DOQ|Phoenix|1961
 COZ|COQ|Buffaloes|1971
 YEF|YEU|Eagles|1966
-NCO|NBD|Pumas|1907
+NCO|NAI|Pumas|1907
 LNO|SVO|Celestes|1900
-LLB|DEA|Matadores|1923
+LLB|DES|Matadores|1923
 FEO|FEC|Gladiadores|1944
 LEO|INL|Titanes|1949
-GAG|INH|Corsarios|1943
-VVE|EUD|Azulones|1941
+GAG|ING|Corsarios|1943
+VVE|ETU|Azulones|1941
 ESV|AEX|Azulones|1943
 URR|CSU|Negros|1953
-BOD27|BLF|Halcones|1958
+BOD27|BLO|Halcones|1958
 GEL|GNR|Leones|1893
 NLA|NLX|Celestes|1965
 FUI|FNU|Titanes|1957
 DOB25|DCT|Gauchos|1925
 DOC26|GIS|Verdes|1907
-LAL34|LVI|Azules|1949
-HHE|TEJ|Weinroten|1901
-BRG30|BRM|Falken|1906
+LAL34|VLF|Azules|1949
+HHE|TEH|Weinroten|1901
+BRG30|BRS|Falken|1906
 ARX|ALS|Kumpel|1907
 EIC|EIC|Gladiatoren|1891
 KRP|VKX|Weißen|1951
@@ -10127,7 +10423,7 @@ EIH|ENT|Seeadler|1901
 BUB25|TEI|Weinroten|1896
 BOE28|BOI|Dunkelblauen|1903
 UDO|UER|Himmelblauen|1894
-HET|ERA|Wölfe|1911
+HET|EIH|Wölfe|1911
 EBE|EBE|Roten|1897
 LUK|LUI|Grünen|1924
 UNE|EIU|Löwen|1885
@@ -10136,7 +10432,7 @@ OSN|UOS|Geelen|1924
 KLD|KLW|Kikkers|1890
 ZAQ|KVB|Hemelsblauwen|1887
 OUH|OUH|Groenen|1935
-RBE|BEW|Blauwen|1899
+RBE|BEK|Blauwen|1899
 BRH31|BRR|Beren|1947
 KLK|KVK|Zwarten|1909
 KNI|KNT|Ruiters|1939
@@ -10147,13 +10443,13 @@ NGR|NUW|Donkerblauwen|1913
 WAQ|WAU|Donkerblauwen|1901
 HUG|HBR|Stieren|1892
 EXG|EXG|Zwarten|1920
-IBA|UNL|Bandeirantes|1927
+IBA|UNO|Bandeirantes|1927
 NMO|NCI|Azuis|1907
 GBA|GUC|Azuis-Marinho|1896
-IIT|EPA|Lobos|1945
+IIT|EPO|Lobos|1945
 NIP|NIX|Alvinegros|1915
 IPB|IPF|Leões|1905
-CMA|GRD|Amarelos|1915
+CMA|GRC|Amarelos|1915
 UUA|URR|Águias|1907
 CIM|CRM|Grenás|1915
 CBU|CBU|Águias|1903
@@ -10166,59 +10462,59 @@ GUJ|GIB|Leões|1918
 CAT41|CIG|Pretos|1954
 IPI|IPT|Alvinegros|1919
 CAU42|CTM|Águias|1915
-NAS40|NBE|Lobos|1965
-MEA24|MEH|Azules|1935
-ONC|ONC|Marineros|1963
+NAS40|NAC|Lobos|1965
+MEA24|MED|Azules|1935
+ONC|ONB|Marineros|1963
 ALA72|RAA|Blancos|1953
-PPO|PZB|Verdes|1971
+PPO|PZR|Verdes|1971
 SEG30|SEV|Rojos|1918
-TAY46|TLA|Tiburones|1894
+TAY46|TLR|Tiburones|1894
 RRA|RBL|Rojos|1898
 COO|CBX|Leñadores|1895
 BEP37|BNN|Rojos|1903
 ORJ|ORU|Pastores|1898
-BCO|SDP|Celestes|1909
+BCO|SBC|Celestes|1909
 OON|JOX|Mineros|1920
-SDC|ROH|Celestes|1906
+SDC|ROE|Celestes|1906
 LVA|JLV|Leñadores|1919
-BAD51|BBN|Zorros|1959
+BAD51|BAJ|Zorros|1959
 NEC26|RSN|Granates|1925
 QIN|QIN|Reds|1970
 PIL|PIP|Blacks|1942
 WEI|WEI|Whites|1941
 FUZ|FUZ|Tigers|1922
-LOM|LOW|Sky Blues|1956
-SHB25|SDQ|Maroons|1979
-LUL|LOX|Phoenix|1976
-SHC26|SNF|Eagles|1968
+LOM|LOC|Sky Blues|1956
+SHB25|SHA|Maroons|1979
+LUL|LOG|Phoenix|1976
+SHC26|SNB|Eagles|1968
 LOQ|LGT|Blacks|1973
-BCI|BYU|Eagles|1962
+BCI|BYN|Eagles|1962
 QIU|QIT|Yellows|1915
 FUP|FBN|Pandas|1987
-VSV|SLU|Námořníci|1982
+VSV|SLV|Námořníci|1982
 VEA24|VOR|Černí|1958
-KOQ|KOB|Medvědi|1980
-TCE|SLW|Lvi|1939
+KOQ|KOS|Medvědi|1980
+TCE|SLT|Lvi|1939
 KNY|KNY|Rytíři|1922
-PRQ|PRW|Bílí|1966
-HIH|HLA|Bílí|1926
+PRQ|PRV|Bílí|1966
+HIH|HLN|Bílí|1926
 KCE|KRI|Husité|1960
 DNY|DBN|Červení|1938
-SPL34|SDS|Zelení|1937
-PAT41|PBH|Vlci|1955
+SPL34|SPA|Zelení|1937
+PAT41|PAV|Vlci|1955
 SSE|SOE|Bílí|1971
 BIC|BSX|Kováři|1961
 VYV|VYD|Zelení|1962
-VOV|SDT|Červení|1963
-HOB25|VIQ|Zelení|1970
+VOV|SPA|Červení|1963
+HOB25|VHX|Zelení|1970
 LLI|IKL|De Blå|1927
 HRD|HVG|De Lyseblå|1893
 ASQ|AST|Løver|1878
 HOC26|HOI|De Sorte|1891
 BEQ38|BGS|De Mørkerøde|1949
-HOD27|HOJ|De Sorte|1932
+HOD27|HOB|De Sorte|1932
 FRU|FRV|Bryggere|1936
-VEB25|VEM|De Lyseblå|1888
+VEB25|VEE|De Lyseblå|1888
 RIQ|FRI|Hjorter|1919
 HEV|HDH|De Sorte|1920
 STD27|SRH|De Lyseblå|1927
@@ -10228,79 +10524,79 @@ CNT|CMO|Jaunes|1875
 MGE|AJM|Bleus|1888
 TOT|TOS|Bleus|1905
 RLT|RCL|Jaunes|1887
-MOL34|MBW|Marines|1900
+MOL34|MOP|Marines|1900
 CTO|ECT|Cigognes|1891
-BER39|BEY|Rouges|1929
+BER39|BEQ|Rouges|1929
 LAM35|LNL|Brasseurs|1948
 LEU|LVL|Blancs|1893
-MIW|MRH|Corbeaux|1898
+MIW|MRM|Corbeaux|1898
 VAB25|VEP|Mouettes|1924
-MAE52|UBF|Ciel et Blancs|1877
+MAE52|USX|Ciel et Blancs|1877
 DDA|DME|Bleus|1947
-PNT|UBG|Rouges|1905
-VIK33|VEU|Bleus|1899
+PNT|USX|Rouges|1905
+VIK33|VNE|Bleus|1899
 BBF|FBX|Himmelblauen|1934
 HAU42|HGH|Roten|1944
-PKL|PBJ|Schwarzbären|1915
-SCN|SDU|Gelben|1937
+PKL|PEU|Schwarzbären|1915
+SCN|SCZ|Gelben|1937
 EIA|ENW|Gelben|1903
 OBR|OBA|Gelben|1887
 FED|FFX|Gelben|1886
 FUQ|SGG|Dunkelblauen|1926
-SLQ|SDV|Gelben|1875
-ALB73|ALQ|Schmiede|1926
+SLQ|SDE|Gelben|1875
+ALB73|ALH|Schmiede|1926
 ECK|EIT|Dunkelblauen|1912
 ROD27|GEM|Gelben|1928
-UAH|UAX|Schwarzen|1934
-PRR|PRX|Weißen|1919
-GRX|SDW|Himmelblauen|1918
+UAH|UNJ|Schwarzen|1934
+PRR|PRJ|Weißen|1919
+GRX|SPO|Himmelblauen|1918
 OER|OBS|Weißen|1893
 KST|FOJ|Schwarzen|1876
-IMA|VIN|Adler|1876
+IMA|VIX|Adler|1876
 BHJ|BHJ|Lions|1939
-BHK|BHC|Yellows|1959
+BHK|BHK|Yellows|1959
 BHM|BHM|Whites|1956
 PSF|PSU|Reds|1928
 BKE|BHI|Blacks|1932
 CIN|CIE|Crimsons|1916
 PSG|PSR|Sky Blues|1914
 JEM|JEM|Panthers|1963
-SUV|SRE|Blacks|1970
+SUV|SRD|Blacks|1970
 PSK|PSK|Tigers|1913
 PAU42|PMK|Navy|1939
-PSH|PSB|Yellows|1987
+PSH|PSD|Yellows|1987
 FAH|FAQ|Knights|1971
-SHD27|SMD|Greens|1914
+SHD27|SMX|Greens|1914
 FAK|FLD|Knights|1974
-KEF|KEC|Yellows|1934
+KEF|KEF|Yellows|1934
 NJI|NJI|Tigers|1937
 BSA|BDA|Reds|1967
-FOJ|FAF|Camels|1944
+FOJ|FAD|Camels|1944
 ESW|ETE|Navy|1955
-NAT41|NBF|Blues|1940
+NAT41|NAF|Blues|1940
 MZA|MZX|Blues|1969
 FJR|FBT|Falcons|1926
 BGH|BRX|Whites|1986
-MOM35|MBX|Granata|1941
+MOM35|MOS|Granata|1941
 IUA|IUM|Falchi|1920
 COA24|VRT|Comete|1917
-PON36|PRZ|Gialli|1946
+PON36|PRP|Gialli|1946
 FEC|FEU|Marinai|1918
-PAV43|PBK|Neri|1879
-CAV43|ACC|Granata|1884
-AMO|AUE|Gialli|1888
+PAV43|PAB|Neri|1879
+CAV43|ACM|Granata|1884
+AMO|AUC|Gialli|1888
 RAG30|RAV|Minatori|1895
-ALC74|AUG|Orsi|1923
-RTO|UBH|Bianchi|1949
-ARY|PBL|Azzurri|1936
+ALC74|AUE|Orsi|1923
+RTO|USW|Bianchi|1949
+ARY|PRZ|Azzurri|1936
 POP37|APG|Marinai|1920
 PSJ|UPS|Celesti|1942
 RRO|RCC|Orsi|1953
 COB25|CRL|Neri|1900
 CTR|CAW|Granata|1933
 VIL34|VFX|Pionieri|1899
-SCI|SDX|Wolves|1935
-KII|KIH|Rockets|1924
+SCI|SHC|Wolves|1935
+KII|KIS|Rockets|1924
 TOV|TYR|Tigers|1945
 TKI|TKH|Blacks|1927
 OGA|OGA|Greens|1938
@@ -10310,7 +10606,7 @@ OGI|OGF|Warriors|1913
 TFA|TKA|Vento|1929
 HUN|HKR|Whites|1947
 TAZ47|TKE|Whites|1974
-TNO|TAT|Aurora|1919
+TNO|TAJ|Aurora|1919
 AKJ|AKS|Warriors|1977
 OKC|OKP|Yellows|1926
 KVO|KWG|Cranes|1947
@@ -10319,8 +10615,8 @@ HAV43|HLC|Amarillos|1910
 ZOS|ZOM|Celestes|1938
 CVB|CPR|Negros|1940
 CIU|CIU|Azulones|1918
-PEL34|PBM|Petroleros|1927
-TAA48|TMA|Blancos|1955
+PEL34|PEP|Petroleros|1927
+TAA48|TMP|Blancos|1955
 TCO|TPC|Zorros|1908
 HUI|HUI|Guindas|1907
 SOV|SZX|Blancos|1955
@@ -10329,11 +10625,11 @@ HNU|HNE|Zorros|1900
 TUO|TUD|Guindas|1942
 CEM|CEM|Cementeros|1896
 IXT|IXT|Celestes|1902
-BRJ32|BRP|Donkerblauwen|1888
-AJK|ALX|Witten|1888
-LEE|SDY|Rooien|1876
+BRJ32|BRD|Donkerblauwen|1888
+AJK|ALK|Witten|1888
+LEE|SPJ|Rooien|1876
 KLS|KLS|Ruiters|1943
-OUF|FOM|Geelen|1893
+OUF|FOD|Geelen|1893
 DVD|DVD|Kasteelheren|1903
 NDE|NWR|Bordeauxen|1895
 DIW|DIJ|Brouwers|1953
@@ -10347,29 +10643,29 @@ BNC|BEZ|Wolven|1916
 SNK|SNK|Groenen|1891
 COC26|COX|Bijen|1951
 GRY|VGV|Hemelsblauwen|1893
-FRV|FRK|De Grønne|1948
+FRV|FRB|De Grønne|1948
 ASR|FMA|De Røde|1954
 BJG|FBR|De Røde|1930
-NUH|NOE|Svaner|1926
-NYY|NYC|Bjørner|1953
-STE28|SNH|Elge|1900
-SKB|SKF|De Grønne|1920
-NNB|NOL|Fiskere|1905
+NUH|NOS|Svaner|1926
+NYY|NYB|Bjørner|1953
+STE28|SND|Elge|1900
+SKB|SKB|De Grønne|1920
+NNB|NDL|Fiskere|1905
 BES40|BUP|De Gule|1899
-RIR|RIH|Bjørne|1941
-GAH|GAG|De Lyseblå|1916
+RIR|RIG|Bjørne|1941
+GAH|GAB|De Lyseblå|1916
 HEW|HEV|De Lyseblå|1888
-STF29|SDZ|De Hvide|1893
+STF29|STQ|De Hvide|1893
 NYD|NYD|Soldater|1883
 RYG|MKR|Zieloni|1980
-BBR|SEX|Rybacy|1928
-WOZ|WOA|Błękitni|1960
+BBR|STD|Rybacy|1928
+WOZ|WOK|Błękitni|1960
 BID|BIO|Sokoły|1918
 NOD27|MKN|Błękitni|1916
-GIK|GRL|Piwosze|1961
+GIK|GON|Piwosze|1961
 ZAT|ZEM|Mewy|1972
 RNA|GKR|Komety|1927
-GOF|GON|Granatowi|1966
+GOF|GOI|Granatowi|1966
 JKA|MKJ|Zieloni|1918
 BUC26|BUW|Zieloni|1989
 OSG|RUO|Żółci|1977
@@ -10379,69 +10675,69 @@ BNF|MKB|Żółci|1951
 WRZ|WOO|Sokoły|1962
 TNA|MKT|Zieloni|1934
 GOG|GOO|Biali|1917
-TLA|TAX|Pretos|1955
-FES|FEB|Pioneiros|1916
+TLA|TAV|Pretos|1955
+FES|FEA|Pioneiros|1916
 MHA|SMF|Celestes|1904
 NAU42|NZR|Grenás|1933
 VIM35|AVV|Pretos|1915
 VRO|UAO|Rubro-Negros|1938
-MDA|MNF|Celestes|1880
+MDA|MNC|Celestes|1880
 GGA|GDM|Gladiadores|1949
 DED|DER|Amarelos|1916
-ELG|ELL|Rubro-Negros|1886
-SAE52|SFA|Gladiadores|1946
+ELG|ELV|Rubro-Negros|1886
+SAE52|SAO|Gladiadores|1946
 BRK33|ECB|Azuis|1881
-CEH|SFB|Lobos|1929
+CEH|SAN|Lobos|1929
 MON36|MCO|Gladiadores|1914
 RAH31|RAB|Șoimii|1919
-ELH|ELN|Minerii|1948
-TUI|TUE|Pescarii|1949
-PPE|PBN|Vulturii|1937
+ELH|ELE|Minerii|1948
+TUI|TUA|Pescarii|1949
+PPE|PRL|Vulturii|1937
 OIA|OLZ|Verzii|1911
 DRO|VDX|Vulturii|1957
 GIB|GLF|Albii|1918
-SPM35|SFD|Verzii|1922
+SPM35|SPO|Verzii|1922
 PRW|PSX|Galbenii|1913
 ALD75|ABO|Azurii|1956
 ACP|ACP|Albaștrii|1986
 CCS|CMF|Albii|1959
-ELJ|ELP|Azurii|1986
+ELJ|ELG|Azurii|1986
 PTI|PTE|Galbenii|1953
 VLO|VLI|Krasnye|1987
-TUE|TRG|Zelenye|1935
-TKE|TON|Gusary|1985
+TUE|TRP|Zelenye|1935
+TKE|TOE|Gusary|1985
 TVE|TVE|Zelenye|1972
-POQ38|PBP|Krasnye|1959
+POQ38|POF|Krasnye|1959
 AVF|AVR|Chernye|1973
 PEM35|FPX|Volki|1940
 ZVA|ZVL|Siniye|1954
 URL|URN|Belye|1927
-TRM|TRH|Chernye|1914
-VEC26|VEQ|Temno-sinie|1916
-LIC26|LOY|Zhuravli|1972
-SHE28|SFE|Sky Blues|1969
+TRM|TRC|Chernye|1914
+VEC26|VEH|Temno-sinie|1916
+LIC26|LOF|Zhuravli|1972
+SHE28|SBA|Sky Blues|1969
 KEE|KES|Eagles|1970
-SHF29|SFF|Camels|1968
+SHF29|SHD|Camels|1968
 AIR|IRB|Foxes|1928
-ALE76|KEG|Whites|1912
-SHG30|SFG|Tigers|1989
-WAS|WLA|Eagles|1968
+ALE76|KEA|Whites|1912
+SHG30|SHA|Tigers|1989
+WAS|WLS|Eagles|1968
 AAJ|AJY|Knights|1972
 MSC|MHN|Maroons|1913
 ALF77|LWQ|Knights|1922
-MIX|MIJ|Maroons|1946
+MIX|MIM|Maroons|1946
 KCK|KIW|Blues|1920
-KIB25|KIJ|Sky Blues|1902
+KIB25|KIE|Sky Blues|1902
 ABS|ABC|Fishermen|1893
 WER|WEG|Sky Blues|1880
 JDE|JEU|Blacks|1907
-MIZ|MIQ|Highlanders|1951
+MIZ|MIB|Highlanders|1951
 NAV43|NRN|Greens|1902
-CAW44|CAX|Blacks|1908
+CAW44|CAQ|Blacks|1908
 KEG|KLM|Blues|1936
 PHS|PHS|Reds|1981
 LAN36|LDS|Blacks|1943
-VOI|VOA|Lions|1980
+VOI|VOL|Lions|1980
 PUS|PHC|Stars|1978
 NRG|NLS|Pirates|1938
 KRR|KRP|Greens|1933
@@ -10451,12 +10747,12 @@ PHG|PHB|Reds|1990
 KRI|KRV|Greens|1931
 RAJ32|RAL|Maroons|1978
 VRP|VRD|Navy|1922
-SID27|SFH|Greens|1982
-VRS|VRC|Blues|1927
-CNG|CBF|Sky Blues|1971
+SID27|SBK|Greens|1982
+VRS|VRB|Blues|1927
+CNG|CHD|Sky Blues|1971
 BWA|BNH|Whites|1923
-CHR39|CNB|Comets|1980
-CSA|CBH|Steelmen|1987
+CHR39|CNJ|Comets|1980
+CSA|CHW|Steelmen|1987
 BOF29|BJN|Steelmen|1914
 GIN|GID|Yellows|1948
 CHS40|CGS|Whites|1957
@@ -10466,26 +10762,26 @@ CTI|CND|Bears|1913
 DAB25|DYN|Greens|1938
 BUD27|BUI|Whites|1939
 WOM|WLC|Sky Blues|1916
-BOG30|BOM|Greens|1979
+BOG30|BOC|Greens|1979
 BAE52|BSE|Whites|1952
 HAX45|HWN|Crimsons|1954
 ZAU|ZAM|Azules|1891
 TAB49|TAI|Azules|1927
 BEU42|BNL|Blancos|1950
-BCF|BIB|Rojos|1885
-COD27|CDB|Granates|1940
-UBD|UBJ|Águilas|1954
+BCF|BIL|Rojos|1885
+COD27|CDA|Granates|1940
+UBD|UBD|Águilas|1954
 GAJ|GDE|Verdes|1931
-HIJ|SFJ|Amarillos|1953
+HIJ|SAN|Amarillos|1953
 FFR|FRU|Gladiadores|1911
 ELN|JUM|Azules|1935
-AAR|ARL|Marineros|1925
+AAR|ARJ|Marineros|1925
 AES|AZA|Cóndores|1884
 OSR|OSR|Blancos|1904
 ARA24|JAX|Venados|1902
 PEN36|PDE|Azules|1941
-PEP37|RPX|Azulones|1922
-VVI|VIZ|Rayos|1914
+PEP37|PEY|Azulones|1922
+VVI|VIQ|Rayos|1914
 ONE|ONE|Azules|1908
 GNY|GIN|Vinröda|1917
 VAC26|VAO|Ljusblå|1883
@@ -10494,21 +10790,21 @@ GAV|GVS|Röda|1935
 MOP37|MBY|Örnarna|1954
 VNO|VSL|Röda|1925
 ULR|ULR|Gröna|1944
-NYC|NYE|Mörkblå|1951
+NYC|NYR|Mörkblå|1951
 IFS|IFS|Vita|1889
-TRN|TRJ|Älgarna|1888
-SUW|SUG|Vikingarna|1911
+TRN|TRH|Älgarna|1888
+SUW|SUD|Vikingarna|1911
 IFT|IFT|Vita|1887
 LID27|LII|Vinröda|1947
-VOR|VAU|Vinröda|1891
-THY|THC|Kumpel|1901
-HIP|FNB|Fischer|1908
+VOR|VSA|Vinröda|1891
+THY|THI|Kumpel|1901
+HIP|FNA|Fischer|1908
 DOD27|FDX|Grünen|1945
-MLH|TTA|Blauen|1918
+MLH|TTN|Blauen|1918
 STG30|EIS|Weißen|1923
 OBW|EIO|Falken|1947
 RWE|RWB|Adler|1908
-HSA|HNA|Blauen|1899
+HSA|HNS|Blauen|1899
 BST|EIB|Schwarzen|1894
 BCK|BUT|Himmelblauen|1894
 BKL|BSS|Ritter|1908
@@ -10525,205 +10821,361 @@ SRE|SRY|Crimsons|1975
 NAW44|NHO|Blues|1979
 RAK33|RTP|Greens|1968
 MUJ|MSU|Blues|1964
-MSB|MUD|Panthers|1986
-MPO|MBZ|Cobras|1986
-TAD51|TBC|Gökler|1963
-AKK|AKG|Kurtlar|1972
+MSB|MUC|Panthers|1986
+MPO|MBR|Cobras|1986
+TAD51|TAG|Gökler|1963
+AKK|AKB|Kurtlar|1972
 INR|YEI|Sarılar|1942
 DEH|DML|Kaplanlar|1945
-SUX|SUJ|Kırmızılar|1912
+SUX|SUL|Kırmızılar|1912
 KZK|KZB|Mavililer|1984
 BUE28|BUY|Kırmızılar|1981
 KZO|KZO|Lacivertler|1927
 EPE|EKT|Lacivertler|1938
-DEJ|DEB|Beyazlar|1916
+DEJ|DEA|Beyazlar|1916
 ESX|EBG|Atmacalar|1934
-KOY|KBB|Akbabalar|1974
+KOY|KAK|Akbabalar|1974
 USH|UAK|Kırmızılar|1928
 SOW|YNI|Sarılar|1910
 KZR|KZK|Akbabalar|1912
 UCE|UAB|Tilkiler|1952
 CAX45|CNV|Bordolar|1974
 BDE|BYK|Yeşiller|1953
-PGE|PBQ|Navy|1980
-GVE|GRQ|Wolves|1921
-MMB|MCE|Yellows|1950
+PGE|PRR|Navy|1980
+GVE|GRB|Wolves|1921
+MMB|MOM|Yellows|1950
 BLE|BLR|Greens|1961
-PLS|PBR|Maroons|1940
+PLS|POH|Maroons|1940
 WIH|WIS|Thunder|1923
 GRA24|GEE|Whites|1980
 FOK|FTB|Dragons|1962
-HEY|HRC|Dragons|1921
+HEY|HRB|Dragons|1921
 CYW|CYB|Greens|1944
 RRG|RVR|Blacks|1948
 IER|CNY|Reds|1956
-SRF|SIZ|Voyagers|1989
+SRF|SIE|Voyagers|1989
 RVE|RCK|Sky Blues|1985
-LNA|LAW|Blues|1977
+LNA|LAP|Blues|1977
 HHA|HLU|Buffaloes|1930
-COE28|COL|Reds|1928
+COE28|COJ|Reds|1928
 XII|XMK|Maroons|1916
 TBI|TUY|Blacks|1946
 THZ|TDF|Reds|1914
-SAF53|SFK|Elephants|1940
-CAY46|CAY|Reds|1973
-TIC|TIC|Blues|1930
-NBG|NBG|Comets|1965
-SOX|SOX|Seahawks|1948
-LYB|LYB|Royals|1926
-MCG|MCG|Tykes|1955
-EAB|EAB|Sky Blues|1969
-GLG|GLG|Tykes|1915
-TBD|TBD|Maroons|1928
-ATE|ATE|Hawks|1907
-EOE|EOE|Wolves|1938
-GAK|GAK|Tigers|1938
-SFF|SFF|Hawks|1969
-ATG|ATG|Stars|1953
-ITE|ITE|Rovers|1959
-SSS|SSS|Falcons|1956
-AWG|AWG|Falcons|1977
-FBB|FBB|Eagles|1974
-FPP|FPP|Falcons|1924
-IDD|IDD|Rovers|1908
-DZZ|DZZ|Tigers|1905
-RUQ|RUQ|Rovers|1930
-KGD|KGD|Rangers|1954
-UNF|UNF|Lions|1920
-USJ|USJ|Hawks|1908
-CVD|CVD|Eagles|1927
-CBE|CBE|Lions|1984
-RLL|RLL|Lions|1935
-CBF|CBF|Lions|1972
-UMD|UMD|Rovers|1932
-FMM|FMM|Stars|1929
-NBF|NBF|Rovers|1975
-FFF|FFF|Rovers|1980
-NKA|NKA|Wolves|1975
-DAA1|DAA1|Rovers|1942
-ETD|ETD|Tigers|1912
-UBF|UBF|Falcons|1961
-FBA|FBA|Stars|1918
-UNN|UNN|Stars|1977
-NAB1|NAB1|Wolves|1936
+SAF53|SCL|Elephants|1940
+CAY46|CAZ|Reds|1973
+TIC|TIM|Blues|1930
+NBG|LGP|Comets|1965
+SOX|THW|Seahawks|1948
+LYB|LYM|Royals|1926
+MCG|MKE|Tykes|1955
+EAB|REE|Sky Blues|1969
+GLG|GLS|Tykes|1915
+TBD|TBY|Maroons|1928
+ATE|OVR|Hawks|1907
+EOE|ERA|Wolves|1938
+GAK|GDA|Tigers|1938
+SFF|FEI|Hawks|1969
+ATG|GEN|Stars|1953
+ITE|INT|Rovers|1959
+SSS|SHA|Falcons|1956
+AWG|WFA|Falcons|1977
+FBB|BBE|Eagles|1974
+FPP|PVA|Falcons|1924
+IDD|ISL|Rovers|1908
+DZZ|DNE|Tigers|1905
+RUQ|SIN|Rovers|1930
+KGD|KVG|Rangers|1954
+UNF|FGI|Lions|1920
+USJ|SME|Hawks|1908
+CVD|VEM|Eagles|1927
+CBE|CEJ|Lions|1984
+RLL|RDP|Lions|1935
+CBF|CVD|Lions|1972
+UMD|USX|Rovers|1932
+FMM|FMX|Stars|1929
+NBF|NUV|Rovers|1975
+FFF|FSS|Rovers|1980
+NKA|NZA|Wolves|1975
+DAA1|DLK|Rovers|1942
+ETD|EDK|Tigers|1912
+UBF|USX|Falcons|1961
+FBA|BBN|Stars|1918
+UNN|USX|Stars|1977
+NAB1|NAV|Wolves|1936
 OBD|OBD|Stars|1918
-RLA|RLA|Bulls|1914
-ASS|ASS|Falcons|1908
-BFF|BFF|Tigers|1924
-UKK|UKK|Panthers|1982
-ANN|ANN|Hawks|1982
-AZZ|AZZ|Bulls|1966
-AMM|AMM|Bulls|1918
-LHH|LHH|Eagles|1975
-AGG|AGG|Rangers|1954
-DHH|DHH|Wolves|1941
-HMM|HMM|Wolves|1911
-HKK|HKK|Falcons|1982
-SBH|SBH|Stars|1975
-DHB|DHB|Rangers|1902
-DMM|DMM|Panthers|1988
-KLL|KLL|Wolves|1927
-RDA|RDA|Falcons|1943
-DFF|DFF|Eagles|1933
-AUU|AUU|Warriors|1956
+RLA|LUB|Bulls|1914
+ASS|SKN|Falcons|1908
+BFF|BAN|Tigers|1924
+UKK|USX|Panthers|1982
+ANN|NUR|Hawks|1982
+AZZ|ZHR|Bulls|1966
+AMM|MHG|Bulls|1918
+LHH|LEH|Eagles|1975
+AGG|AKG|Rangers|1954
+DHH|DJS|Wolves|1941
+HMM|HRR|Wolves|1911
+HKK|HKX|Falcons|1982
+SBH|SHE|Stars|1975
+DHB|DIH|Rangers|1902
+DMM|DMX|Panthers|1988
+KLL|KUK|Wolves|1927
+RDA|DNK|Falcons|1943
+DFF|DUF|Eagles|1933
+AUU|ADH|Warriors|1956
 UPG|UPG|Stars|1957
-BFA|BFA|Rovers|1943
-SBG|SBG|Tigers|1916
-AWF|AWF|Falcons|1971
-AZS|AZS|Warriors|1961
-ANH|ANH|Wolves|1960
-DSS|DSS|Wolves|1982
-SMC|SMC|Hawks|1958
-RLB|RLB|Bulls|1919
-SDS|SDS|Falcons|1934
-ATS|ATS|Wolves|1915
-AMH|AMH|Wolves|1969
-LBT|LBT|Eagles|1978
-OLT|OLT|Stars|1954
-SMB|SMB|Falcons|1969
-WAU|WAU|Wolves|1950
-ASU|ASU|Bulls|1984
-ZSS|ZSS|Warriors|1977
+BFA|BKS|Rovers|1943
+SBG|SHA|Tigers|1916
+AWF|WTN|Falcons|1971
+AZS|ZRB|Warriors|1961
+ANH|NDA|Wolves|1960
+DSS|DHQ|Wolves|1982
+SMC|SHA|Hawks|1958
+RLB|LRA|Bulls|1919
+SDS|SDM|Falcons|1934
+ATS|TMB|Wolves|1915
+AMH|AMI|Wolves|1969
+LBT|LDA|Eagles|1978
+OLT|ORY|Stars|1954
+SMB|SHA|Falcons|1969
+WAU|WAQ|Wolves|1950
+ASU|ATA|Bulls|1984
+ZSS|ZHS|Warriors|1977
 OYY|OYY|Panthers|1961
-KYY|KYY|Rangers|1985
-NSC|NSC|Wolves|1905
-KRS|KRS|Panthers|1989
-MBK|MBK|Tigers|1972
-AMF|AMF|Warriors|1939
-NSB|NSB|Rovers|1946
-LRR|LRR|Stars|1958
-GRA1|GRA1|Falcons|1900
-FGG|FGG|Falcons|1939
-FOP|FOP|Falcons|1946
-SLT|SLT|Tigers|1974
-EHC|EHC|Stars|1967
-SSB|SSB|Panthers|1984
-UMC|UMC|Stars|1966
-AGA|AGA|Falcons|1916
-TAA25|TAA25|Panthers|1972
-ETA|ETA|Rovers|1985
-CRD|CRD|Rovers|1964
-SCJ|SCJ|Stars|1913
-BEA25|BEA25|Lions|1912
-FFC|FFC|Stars|1905
-MLL|MLL|Panthers|1968
-SNS|SNS|Lions|1902
-ANJ|ANJ|Rovers|1909
-BSS|BSS|Lions|1976
-SRG|SRG|Panthers|1946
-KGG|KGG|Stars|1943
-UKA|UKA|Rovers|1904
-SDK|SDK|Lions|1923
-SDT|SDT|Bulls|1932
-AMG|AMG|Rovers|1971
-NAA1|NAA1|Eagles|1980
-GCC|GCC|Stars|1984
-PAA25|PAA25|Wolves|1928
-MBH|MBH|Falcons|1919
-FLL|FLL|Falcons|1933
-USK|USK|Wolves|1905
-FSS|FSS|Falcons|1913
-FBC|FBC|Eagles|1928
-RBB|RBB|Panthers|1934
-MFF|MFF|Warriors|1926
-FMA|FMA|Hawks|1952
-MUK|MUK|Lions|1959
-EZZ|EZZ|Falcons|1911
-EMM|EMM|Eagles|1941
-KKB|KKB|Rangers|1953
-AAG|AAG|Warriors|1951
-SKC|SKC|Warriors|1981
-BVV|BVV|Bulls|1950
-BRA1|BRA1|Stars|1909
-NHH|NHH|Panthers|1983
-MEA1|MEA1|Warriors|1970
-EVV|EVV|Hawks|1927
-QFF|QFF|Bulls|1904
-SCG|SCG|Warriors|1947
-FOM|FOM|Falcons|1951
-FQQ|FQQ|Lions|1945
-CWW|CWW|Rovers|1967
-SRH|SRH|Bulls|1932
-IDA|IDA|Wolves|1902
-MBJ|MBJ|Lions|1964
-KCS|KCS|Eagles|1905
-LCS|LCS|Lions|1926
-KSB|KSB|Wolves|1968
+KYY|KNG|Rangers|1985
+NSC|NYS|Wolves|1905
+KRS|KKA|Panthers|1989
+MBK|MWA|Tigers|1972
+AMF|MBL|Warriors|1939
+NSB|NGO|Rovers|1946
+LRR|LDN|Stars|1958
+GRA1|GMA|Falcons|1900
+FGG|GFA|Falcons|1939
+FOP|FSO|Falcons|1946
+SLT|LTH|Tigers|1974
+EHC|EAC|Stars|1967
+SSB|SPV|Panthers|1984
+UMC|USX|Stars|1966
+AGA|GAK|Falcons|1916
+TAA25|TUM|Panthers|1972
+ETA|EDM|Rovers|1985
+CRD|RIT|Rovers|1964
+SCJ|CAY|Stars|1913
+BEA25|BCA|Lions|1912
+FFC|FIG|Stars|1905
+MLL|MLX|Panthers|1968
+SNS|SLJ|Lions|1902
+ANJ|NIR|Rovers|1909
+BSS|BQQ|Lions|1976
+SRG|SUK|Panthers|1946
+KGG|KOP|Stars|1943
+UKA|KOB|Rovers|1904
+SDK|KUO|Lions|1923
+SDT|THR|Bulls|1932
+AMG|AIE|Rovers|1971
+NAA1|NMJ|Eagles|1980
+GCC|GAC|Stars|1984
+PAA25|PHK|Wolves|1928
+MBH|MUP|Falcons|1919
+FLL|LSO|Falcons|1933
+USK|USX|Wolves|1905
+FSS|SNR|Falcons|1913
+FBC|BKG|Eagles|1928
+RBB|BBM|Panthers|1934
+MFF|MBF|Warriors|1926
+FMA|MYA|Hawks|1952
+MUK|MON|Lions|1959
+EZZ|EOZ|Falcons|1911
+EMM|EOM|Eagles|1941
+KKB|KYK|Rangers|1953
+AAG|ALI|Warriors|1951
+SKC|KMR|Warriors|1981
+BVV|BUV|Bulls|1950
+BRA1|BGM|Stars|1909
+NHH|NSE|Panthers|1983
+MEA1|MSA|Warriors|1970
+EVV|ENV|Hawks|1927
+QFF|QAF|Bulls|1904
+SCG|SCE|Warriors|1947
+FOM|OLF|Falcons|1951
+FQQ|QAR|Lions|1945
+CWW|COL|Rovers|1967
+SRH|SER|Bulls|1932
+IDA|ISU|Wolves|1902
+MBJ|MZL|Lions|1964
+KCS|KST|Eagles|1905
+LCS|LUA|Lions|1926
+KSB|KBM|Wolves|1968
 PKW|PKW|Falcons|1902
-MHH|MHH|Falcons|1904
-NFF|NFF|Warriors|1955
-CPP|CPP|Wolves|1979
-HDD|HDD|Stars|1948
-CFA|CFA|Bulls|1950
-CFB|CFB|Rovers|1912
-MHB|MHB|Tigers|1943
-BSB|BSB|Falcons|1981
-KVJ|KVJ||1995
-KLJ|KLJ||1997
-JZA|JZA||1996
-RKJ|RKJ||1999
-SPA1|SPA1||1999
-UNJ|UNJ||2001`
+MHH|MUZ|Falcons|1904
+NFF|NYU|Warriors|1955
+CPP|CEK|Wolves|1979
+HDD|HWD|Stars|1948
+CFA|CIT|Bulls|1950
+CFB|CRU|Rovers|1912
+MHB|MTV|Tigers|1943
+BSB|BIS|Falcons|1981
+KVJ|JON||1995
+KLJ|JOK||1997
+JZA|ZAB||1996
+RKJ|RKB||1999
+SPA1|POV||1999
+UNJ|UPB||2001
+RPP|RPX|Hawks|1907
+ATQ|QAN|Wolves|1938
+RUL|UBN|Tigers|1938
+UNL|LCD|Hawks|1969
+UNV|VAU|Stars|1953
+CPA|PZD|Rovers|1959
+MBL|MLI|Falcons|1956
+ATZ|ZMN|Falcons|1977
+JPP|JUP|Eagles|1974
+REU|ELN|Falcons|1924
+JCD|JCD|Rovers|1908
+ATF|GJO|Tigers|1905
+CPB|PNL|Rovers|1930
+DRN|RND|Rangers|1954
+UAA|UAX|Lions|1920
+FCC|FGE|Hawks|1908
+UNK|UCA|Eagles|1927
+RRR|ROI|Lions|1984
+ATJ|AOO|Lions|1935
+RLC|LCS|Lions|1972
+KFF|KFM|Shqiponjat|1984
+NAX45|NTE|Luanët|1969
+KAU42|LVA|Shqiponjat|1916
+BAH55|BSH|Dhelprat|1927
+KKF|KFF|Shqiponjat|1967
+KOV|KDR|Skifterët|1981
+MAF53|LMM|Bordoit|1954
+PAW44|PMF|Të Verdhët|1982
+PAX45|PAR|Të Kuqit|1977
+SHH31|SHQ|Minatorët|1980
+KFM|KFA|Të Kaltrit|1949
+DIY|DBX|Të Zinjtë|1920
+BAJ56|BKI|Të Kuqit|1954
+MIA24|MII|Detarët|1957
+PNI|PAR|Të Verdhët|1970
+BMI|BIM|Minatorët|1978
+HIQ|HNJ|Lobos|1924
+GAQ|GDO|Rojos|1961
+LAP37|ULP|Amarillos|1947
+ALG78|ALQ|Pastores|1953
+LAQ38|ORE|Rayos|1948
+UBG|UBS|Amarillos|1946
+MAG54|RMX|Toros|1986
+CAZ47|DCD|Tiburones|1939
+ARB25|AEJ|Rojos|1942
+NUJ|NUA|Rojos|1990
+OND|EES|Venados|1949
+FRW|FRL|Azulones|1986
+GUK|GDJ|Blancos|1984
+HIT|HIJ|Celestes|1948
+SAG54|SMA|Amarillos|1925
+OSJ|OSE|Blancos|1938
+NOE28|NMA|Viinapunased|1966
+LOO|LTS|Kaluriid|1959
+MUM|MUF|Sinised|1957
+NOF29|NKX|Punased|1957
+HAY46|HPK|Punased|1965
+DUH|DUV|Punased|1919
+MEB25|MKU|Punased|1976
+NMB|NVT|Viinapunased|1922
+LOT|LTU|Mereväesinised|1937
+DUJ|DUL|Viinapunased|1949
+SHJ32|SHE|Mtsvaneebi|1921
+LAR39|LNB|Mgelebi|1988
+SIE28|SIC|Tsisperebi|1968
+GUN|GMX|Tetrebi|1943
+MZI|MZO|Tetrebi|1918
+DIA24|DLA|Ghvinisferebi|1946
+LOW|LOJ|Mtsvaneebi|1927
+TOE|TDO|Tsxenebi|1965
+SIF29|SIQ|Tsxenebi|1954
+DIB25|DZE|Tsxenebi|1982
+PAY46|PFP|Të Kuqit|1933
+SHK33|SJA|Të Verdhët|1982
+FUS|LFG|Të Zinjtë|1925
+MAH55|LMB|Të Verdhët|1980
+FLB|FLE|Dhelprat|1939
+LUM|LUF|Ujqërit|1949
+KFD|KFD|Kalorësit|1947
+KFS|KFS|Të Bardhët|1946
+DRI|DIT|Detarët|1922
+MLU|FML|Bordoit|1986
+SJA|SHQ|Minatorët|1914
+YLL|YLK|Minatorët|1950
+SHL34|SHQ|Detarët|1933
+KFB|KFI|Kalorësit|1956
+JFC|JFC|Lāči|1933
+AUG|AUL|Gulbji|1942
+AID|AUK|Dzeltenie|1914
+VAP|VRP|Melnie|1913
+ELP|ELO|Zaļie|1964
+DAC26|DAT|Zilie|1920
+DAD27|DGV|Debeszilie|1941
+SPN36|SPA|Vilki|1984
+DMO|DVL|Zvejnieki|1976
+DIC26|SMD|Ērgļi|1932
+SPP37|SPA|Debeszilie|1971
+DID27|GLI|Baltie|1969
+VED27|FVL|Zaļie|1962
+DIE28|VNP|Debeszilie|1946
+KOW|KUX|Raudonieji|1922
+BAK57|BGA|Baltieji|1972
+SAH55|SPA|Geltonieji|1961
+BIR|BIR|Juodieji|1975
+ZEU|ZEF|Žalieji|1947
+GRB25|GTA|Raudonieji|1949
+NAY46|NJT|Briedžiai|1916
+KOX|KTX|Šernai|1937
+DIF29|ALY|Žvejai|1961
+KAV43|KPX|Baltieji|1963
+PAZ47|PAL|Žydrieji|1941
+GRC26|GRJ|Baltieji|1970
+COF29|CDI|Weißen|1974
+UNM|VUG|Wikinger|1966
+OBB|OBR|Ritter|1978
+WEC|WET|Kicker|1911
+LIE28|LIG|Schwarzbären|1921
+FRX|FRH|Fischer|1925
+ALH79|AAN|Schwarzen|1950
+GRD27|GUN|Kicker|1972
+KIC26|KIH|Kicker|1956
+GRE28|TGE|Stahlwerker|1911
+RHA|RHS|Grünen|1937
+ALJ80|ANN|Bären|1915
+NED27|ECH|Bergleute|1914
+BRL34|VBX|Schwarzen|1952
+NIQ|NDR|Dunkelblauen|1979
+LUP|EHT|Löwen|1930
+LOX|LIV|Orlovi|1972
+PAA48|PSB|Bordo|1966
+NOG30|MFN|Bordo|1931
+OSK|NOX|Sokolovi|1967
+ZEW|ZER|Tamnoplavi|1965
+ZEX|ZLE|Bordo|1920
+PAB49|PAR|Bordo|1942
+OSL|OSI|Zeleni|1971
+DLU|LBK|Gladijatori|1915
+SPQ38|SPA|Pivari|1987
+MEC26|MEH|Lisice|1910
+TUF|NKT|Žuti|1946
+TAA|ZOT|Gladijatori|1969
+OSO|OSO|Gavranovi|1967
+RAL34|RDN|Vrane|1941
+KRT|ZOK|Beli|1941
+KAW44|KMI|Rakete|1968
+LUQ|ZOL|Tamnoplavi|1929
+MED27|MEC|Bordo|1984
+NOH31|NVI|Bikovi|1967
+DNA|NOC|Svetloplavi|1936
+MAJ56|MAL|Pivari|1979
+VEE28|VLK|Crni|1954
+ZAV|ZZN|Crveni|1971
+KRV|KCE|Medvedi|1988
+TOX|TBX|Žuti|1936
+TUG|AOU|Galebovi|1940
+KAX45|KMN|Crveni|1951`
       .split('\n')
       .map((l) => l.split('|'))
       .map(([code, abbr, nick, founded]) => [code, [abbr, nick, founded ? +founded : null]]),

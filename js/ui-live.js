@@ -1014,7 +1014,8 @@
     const win = FM.W.rule(comp.id, 'win'),
       old = fx.res;
     const tables = [comp.table];
-    if (comp.torneos) tables.push(comp.torneos[fx.round >= comp.torneoHalf ? 1 : 0].table);
+    if (comp.torneos && FM.W.torneoOf(comp, fx.round) >= 0)
+      tables.push(comp.torneos[FM.W.torneoOf(comp, fx.round)].table);
     for (const t of tables) {
       tableMove(t, fx, old.hg, old.ag, -1, win);
       tableMove(t, fx, hg, ag, 1, win);
