@@ -572,8 +572,18 @@
   };
   UI.slotMeta = (n) => FM.Save.metaOf(n);
   UI.load = async function (n) {
-    const raw = await FM.Save.read(n);
-    if (!raw) return false;
+    let raw = null;
+    try {
+      raw = await FM.Save.read(n);
+    } catch (e) {
+      console.warn('save read failed', e);
+    }
+    if (!raw) {
+      // (the title screen lists a slot from its small summary: the save itself can be gone, e.g. cleared storage or a write that
+      // ran out of room. Say so rather than doing nothing.)
+      UI.toast(`Slot ${n} has no save data on this device. Delete the slot, or import a save file.`, 6000);
+      return false;
+    }
     try {
       const { state, from } = FM.Save.unpack(raw);
       FM.DbImport.restore(state); // the game's clubs and leagues as this world has them (a database's, or the built-in ones)
@@ -1158,9 +1168,15 @@
   UI.acts.continue = async (d) => {
     UI.closeAllSheets();
     if (!(await UI.load(+d.n))) return;
-    UI.applyTheme();
-    UI.mount();
-    UI.finishPendingDay();
+    try {
+      UI.applyTheme();
+      UI.mount();
+      UI.finishPendingDay();
+    } catch (e) {
+      // (an error after the save was read used to leave the title screen as it was: say what happened)
+      console.warn('open save failed', e);
+      UI.toast(`This save opened but the game could not start it (${(e && e.message) || 'unknown error'}).`, 7000);
+    }
   };
   // Your result is saved at full time, but the rest of that day (every other match) runs when you leave the
   // post-match screens. Closed before then, the save holds a half-played day: finish it as soon as it loads.
