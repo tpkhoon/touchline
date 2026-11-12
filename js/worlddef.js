@@ -1871,14 +1871,21 @@
     }
     if (r.pools != null) {
       const n = def.clubs.filter((c) => c.league === l.id).length;
-      if (!Array.isArray(r.pools) || r.pools.length !== 2 || !r.pools.every((x) => String(x || '').trim()))
-        e.push(`${at}: separate groups are two groups, each with a name`);
+      if (
+        !Array.isArray(r.pools) ||
+        r.pools.length < 2 ||
+        r.pools.length > 9 ||
+        !r.pools.every((x) => String(x || '').trim()) ||
+        new Set(r.pools).size !== r.pools.length
+      )
+        e.push(`${at}: separate groups are two to nine groups, each with a name of its own`);
       if (r.zones || r.conferences || r.split || r.torneos || r.rounds || r.legs || r.playoffs || r.mls)
         e.push(
-          `${at}: a league of two groups cannot also have zones, conferences, a split, tournaments or a title play-off`,
+          `${at}: a league of separate groups cannot also have zones, conferences, a split, tournaments or a title play-off`,
         );
-      if (r.promote && r.promote.playoff) e.push(`${at}: a league of two groups has no promotion play-off`);
-      if (n && n < 8) e.push(`${at}: two groups need at least eight clubs`);
+      if (r.promote && r.promote.playoff) e.push(`${at}: a league of separate groups has no promotion play-off`);
+      if (n && Array.isArray(r.pools) && n < 4 * r.pools.length)
+        e.push(`${at}: separate groups need at least four clubs each (${4 * r.pools.length} in all)`);
     }
     if (r.average != null) {
       if (!(Number.isInteger(r.average) && r.average >= 2 && r.average <= 5))

@@ -2696,9 +2696,9 @@
       ),
     );
 
-  // A division of separate tables (rules.pools: Spain's third tier is two groups of 20): each club belongs to one pool for as long as
-  // it is in the division (comp.pool, club id -> pool number). The first season splits the division by where the clubs are (the north
-  // and the south); a club that arrives later joins the smaller pool.
+  // A division of separate tables (rules.pools: Spain's third tier is two groups of 20, Italy's Serie C three): each club belongs to
+  // one pool for as long as it is in the division (comp.pool, club id -> pool number). The first season splits the division by where
+  // the clubs are (from the north to the south); a club that arrives later joins the smallest pool, the nearest of them.
   W.poolsOf = function (comp) {
     const k = comp.rules.pools.length;
     comp.pool = comp.pool || {};
@@ -2713,8 +2713,16 @@
         .forEach((id, i) => (comp.pool[id] = Math.min(k - 1, Math.floor((i * k) / fresh.length))));
     } else
       for (const id of fresh) {
-        let best = 0;
-        for (let g = 1; g < k; g++) if (size(g) < size(best)) best = g;
+        // (the smallest group; where several are as small, the one whose clubs lie nearest, so a group stays a region)
+        const small = Math.min(...Array.from({ length: k }, (_, g) => size(g)));
+        const lat = (x) => (D.GEO[x.replace(/^c_/, '')] || [0])[0];
+        const mean = (g) => {
+          const m = comp.clubs.filter((x) => comp.pool[x] === g);
+          return m.length ? m.reduce((s, x) => s + lat(x), 0) / m.length : lat(id);
+        };
+        let best = -1;
+        for (let g = 0; g < k; g++)
+          if (size(g) === small && (best < 0 || Math.abs(mean(g) - lat(id)) < Math.abs(mean(best) - lat(id)))) best = g;
         comp.pool[id] = best;
       }
     return Array.from({ length: k }, (_, g) => comp.clubs.filter((id) => comp.pool[id] === g));

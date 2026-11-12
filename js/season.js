@@ -226,7 +226,24 @@
         if (!t && (cal.stage === 'SF' || cal.stage === 'SF1')) {
           const ut = W.sortedTable(u),
             down = ut[ut.length - R.n - 1 - k],
-            up = FM.Youth.promotable(lower, W.sortedTable(lower))[lower.rules.promote.auto + k]; // (a B team can't go up)
+            lt = W.sortedTable(lower),
+            auto = lower.rules.promote.auto;
+          // (a B team can't go up. A division of separate groups sends the next club of its groups: the runners-up first, by points
+          // a match, then the third-placed ...)
+          const next = lower.pools
+              ? lower.pools
+                  .flatMap((ids) =>
+                    FM.Youth.promotable(
+                      lower,
+                      lt.filter((r) => ids.includes(r.id)),
+                    )
+                      .slice(auto)
+                      .map((r, depth) => ({ r, depth })),
+                  )
+                  .sort((a, b) => a.depth - b.depth || b.r.pts / (b.r.p || 1) - a.r.pts / (a.r.p || 1))
+                  .map((x) => x.r)
+              : FM.Youth.promotable(lower, lt).slice(auto),
+            up = next[k];
           if (!down || !up) continue;
           const two = cal.stage === 'SF1',
             po = 'Relegation play-off';
@@ -2302,10 +2319,21 @@
           : tables.flatMap((pt) => pt.slice(-R.relegate.n))
         ).forEach((r) => moves.push([r.id, comp.id, R.relegate.to]));
       if (R.promote) {
-        for (const pt of tables)
-          FM.Youth.promotable(comp, pt)
+        for (const pt of tables) {
+          const rows = FM.Youth.promotable(comp, pt);
+          // (promote.winners: the winners of the two tournaments go up (Colombia's Primera B), the places that are left to the table)
+          const first =
+            R.promote.winners && comp.torneos
+              ? [...new Set(champs)]
+                  .filter((id) => rows.some((r) => r.id === id))
+                  .map((id) => rows.find((r) => r.id === id))
+                  .slice(0, R.promote.auto)
+              : [];
+          first
+            .concat(rows.filter((r) => !first.includes(r)))
             .slice(0, R.promote.auto)
             .forEach((r) => moves.push([r.id, comp.id, R.promote.to]));
+        }
         const fin = comp.playoff && (comp.playoff.final2 || comp.playoff.final);
         if (fin && fin.res) {
           const w = winnerOf(fin);

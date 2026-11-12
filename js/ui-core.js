@@ -1427,7 +1427,7 @@
     const out = [];
     if (r.pools)
       out.push(
-        `${U.plural(n, 'club')} in ${r.pools.length} separate groups (${r.pools.join(' and ')}) of ${Math.floor(n / r.pools.length)}: each club plays its group home and away, ${U.plural((Math.floor(n / r.pools.length) - 1) * 2, 'match', 'matches')}. The places for promotion and relegation are counted in each group.`,
+        `${U.plural(n, 'club')} in ${r.pools.length} separate groups (${r.pools.length > 1 ? r.pools.slice(0, -1).join(', ') + ' and ' + r.pools[r.pools.length - 1] : r.pools[0]}) of ${Math.floor(n / r.pools.length)}: each club plays its group home and away, ${U.plural((Math.floor(n / r.pools.length) - 1) * 2, 'match', 'matches')}. The places for promotion and relegation are counted in each group.`,
       );
     else if (r.conferences)
       out.push(

@@ -1993,7 +1993,7 @@
       clubs: 'CLUBS_ES3',
       nats: ['AND'],
       repBand: [46, 36],
-      rules: { pools: ['North', 'South'], relegate: { to: 'ES4', n: 2 }, promote: { to: 'ES2', auto: 2 } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'ES4', n: 5 }, promote: { to: 'ES2', auto: 2 } },
     },
     {
       id: 'DE1',
@@ -2026,7 +2026,7 @@
       sim: 'light',
       clubs: 'CLUBS_DE3',
       repBand: [46, 38],
-      rules: { relegate: { to: 'DE4', n: 1 }, promote: { to: 'DE2', auto: 2, tie: true } },
+      rules: { relegate: { to: 'DE4', n: 5 }, promote: { to: 'DE2', auto: 2, tie: true } },
     },
     {
       id: 'FR1',
@@ -3743,7 +3743,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AR2',
       repBand: [58, 47],
-      rules: { promote: { to: 'AR1', auto: 2 }, relegate: { to: 'AR3', n: 2 } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'AR3', n: 1 }, promote: { to: 'AR1', auto: 1 } },
     },
     {
       id: 'AT2',
@@ -3754,7 +3754,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AT2',
       repBand: [51, 40],
-      rules: { promote: { to: 'AT1', auto: 1 }, relegate: { to: 'AT3', n: 1 } },
+      rules: { relegate: { to: 'AT3', n: 3 }, promote: { to: 'AT1', auto: 1 } },
     },
     {
       id: 'BY2',
@@ -3820,7 +3820,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_CO2',
       repBand: [45, 34],
-      rules: { rounds: 15, promote: { to: 'CO1', auto: 2 } },
+      rules: {
+        rounds: 30,
+        torneos: ['Apertura', 'Finalización'],
+        playoffs: { type: 'groups4', legs: 2 },
+        promote: { to: 'CO1', auto: 2, winners: true },
+      },
     },
     {
       id: 'HR2',
@@ -3930,7 +3935,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_HU2',
       repBand: [50, 39],
-      rules: { promote: { to: 'HU1', auto: 2 }, relegate: { to: 'HU3', n: 2 } },
+      rules: { relegate: { to: 'HU3', n: 3 }, promote: { to: 'HU1', auto: 2 } },
     },
     {
       id: 'IN2',
@@ -4008,7 +4013,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_MX2',
       repBand: [60, 49],
-      rules: {},
+      rules: { rounds: 30, torneos: ['Apertura', 'Clausura'], playoffs: { type: 'liguilla' } },
     },
     {
       id: 'MA2',
@@ -4261,7 +4266,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AT3',
       repBand: [43, 32],
-      rules: { promote: { to: 'AT2', auto: 1 }, relegate: { to: 'AT4', n: 2 } },
+      rules: { pools: ['North', 'Centre', 'South'], relegate: { to: 'AT4', n: 1 }, promote: { to: 'AT2', auto: 1 } },
     },
     {
       id: 'BE3',
@@ -4316,7 +4321,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_CZ3',
       repBand: [43, 32],
-      rules: { promote: { to: 'CZ2', auto: 2 }, relegate: { to: 'CZ4', n: 2 } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'CZ4', n: 1 }, promote: { to: 'CZ2', auto: 1 } },
     },
     {
       id: 'DK3',
@@ -4338,7 +4343,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_FR3',
       repBand: [49, 38],
-      rules: { promote: { to: 'FR2', auto: 2, tie: true }, relegate: { to: 'FR4', n: 2 } },
+      rules: { relegate: { to: 'FR4', n: 3 }, promote: { to: 'FR2', auto: 2, tie: true } },
     },
     {
       id: 'GR3',
@@ -4360,7 +4365,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_HU3',
       repBand: [43, 32],
-      rules: { promote: { to: 'HU2', auto: 2 } },
+      rules: { pools: ['North', 'Centre', 'South'], promote: { to: 'HU2', auto: 1 } },
     },
     {
       id: 'ID3',
@@ -4393,7 +4398,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_IT3',
       repBand: [50, 39],
-      rules: { promote: { to: 'IT2', auto: 3 }, relegate: { to: 'IT4', n: 3 } },
+      rules: { pools: ['North', 'Centre', 'South'], relegate: { to: 'IT4', n: 1 }, promote: { to: 'IT2', auto: 1 } },
     },
     {
       id: 'JP3',
@@ -4448,7 +4453,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO3',
       repBand: [45, 34],
-      rules: { promote: { to: 'NO2', auto: 2, tie: true }, relegate: { to: 'NO4', n: 2 } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'NO4', n: 1 }, promote: { to: 'NO2', auto: 1, tie: true } },
     },
     {
       id: 'PL3',
@@ -4459,7 +4464,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_PL3',
       repBand: [45, 34],
-      rules: { promote: { to: 'PL2', auto: 2, playoff: [3, 6] }, relegate: { to: 'PL4', n: 2 } },
+      rules: { relegate: { to: 'PL4', n: 4 }, promote: { to: 'PL2', auto: 2, playoff: [3, 6] } },
     },
     {
       id: 'PT3',
@@ -4470,7 +4475,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_PT3',
       repBand: [48, 37],
-      rules: { promote: { to: 'PT2', auto: 2, tie: true }, relegate: { to: 'PT4', n: 2 } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'PT4', n: 1 }, promote: { to: 'PT2', auto: 1, tie: true } },
     },
     {
       id: 'RO3',
@@ -4547,7 +4552,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE3',
       repBand: [44, 33],
-      rules: { promote: { to: 'SE2', auto: 2, tie: true }, relegate: { to: 'SE4', n: 2 } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'SE4', n: 1 }, promote: { to: 'SE2', auto: 1, tie: true } },
     },
     {
       id: 'CH3',
@@ -4635,7 +4640,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_AT4',
       repBand: [43, 32],
-      rules: { promote: { to: 'AT3', auto: 2 } },
+      rules: { promote: { to: 'AT3', auto: 3 } },
     },
     {
       id: 'BE4',
@@ -4712,7 +4717,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_FR4',
       repBand: [43, 32],
-      rules: { promote: { to: 'FR3', auto: 2 } },
+      rules: { pools: ['North', 'Centre', 'South'], promote: { to: 'FR3', auto: 1 } },
     },
     {
       id: 'DE4',
@@ -4723,7 +4728,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_DE4',
       repBand: [43, 32],
-      rules: { promote: { to: 'DE3', auto: 1 } },
+      rules: { pools: ['North', 'Centre-north', 'Centre', 'Centre-south', 'South'], promote: { to: 'DE3', auto: 1 } },
     },
     {
       id: 'ID4',
@@ -4811,7 +4816,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_PL4',
       repBand: [43, 32],
-      rules: { promote: { to: 'PL3', auto: 2 } },
+      rules: { pools: ['North', 'Centre-north', 'Centre-south', 'South'], promote: { to: 'PL3', auto: 1 } },
     },
     {
       id: 'PT4',
@@ -4899,7 +4904,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_ES4',
       repBand: [41, 30],
-      rules: { promote: { to: 'ES3', auto: 4 } },
+      rules: { pools: ['North', 'Centre-north', 'Centre', 'Centre-south', 'South'], promote: { to: 'ES3', auto: 2 } },
     },
     {
       id: 'SE4',

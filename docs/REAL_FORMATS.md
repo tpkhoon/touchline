@@ -22,7 +22,7 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 | 09 Cross-nation cups | Active and historical cups and super cups | **Done**: the regional club cups (Southeast Asian, Gulf, Arab, East African, Central American, Atlantic) have the sheet's field sizes and groups; the Leagues Cup (a summer knockout of six American and six Mexican clubs) and the Campeones Cup (the American champion against the Mexican one, a single match) added; the historical cups are listed under Past; the national cups with foreign clubs: a cross-border club also enters the cup of the nation whose league it plays in (`D.CUP_HOSTS`), one tie a day |
 | 10 Fictional in Touchline | Competitions with no real equivalent | Reference only |
 | 11 Youth tournaments and cups | National-team and club youth competitions | **Done by results** (November 2026): 26 national-team tournaments, 17 club youth cups and the two school tournaments, played once a season as it ends from the strength of the young players, with qualifying for the national ones, three over-age players in the Olympic and Asian Games sides, the open cups topped up with non-league academies, and ten past editions made with a new world. Left: matches you can play or watch |
-| 12 to 14 Second, third and fourth tiers | Real divisions below the top flight | **Done as single tables** (November 2026): 47 more second divisions (54 listed, 7 were there), 34 more third (37, 3 were there) and 32 more fourth (33, 1 was there), 113 divisions of fictional clubs (1,702 clubs) in the minimal tier, each linked to the division above by promotion and relegation. Then ten second tiers the sheet does not list (Albania to North Macedonia, 136 clubs) so their top flights could have the relegation play-off the leagues sheet gives. Left: regional groups (a real division of three or more groups is one table of a group's size), the zones and tournaments of Argentina and Colombia, and the cross-division play-offs of more than one tie (see below) |
+| 12 to 14 Second, third and fourth tiers | Real divisions below the top flight | **Done as single tables** (November 2026): 47 more second divisions (54 listed, 7 were there), 34 more third (37, 3 were there) and 32 more fourth (33, 1 was there), 113 divisions of fictional clubs (1,702 clubs) in the minimal tier, each linked to the division above by promotion and relegation. Then ten second tiers the sheet does not list (Albania to North Macedonia, 136 clubs) so their top flights could have the relegation play-off the leagues sheet gives. Then **twelve divisions grown to their real groups** (Italy's Serie C 3 x 20, Germany's Regionalliga 5 x 18, Spain's Segunda Federación 5 x 18, France's National 2 3 x 16, Poland's third level 4 x 18, Austria's and Hungary's regional leagues 3 x 16, Czechia, Norway, Sweden and Portugal 2 groups, Argentina's Primera Nacional 2 zones of 18; 410 more fictional clubs), Colombia's Primera B and Mexico's Liga de Expansión as two tournaments with a play-off each, and the cross-division ties with the groups. Left: the other divisions of regional groups (see "Left to do"), the Argentine Reducido, Romania's play-off and play-out groups |
 | 15 Qualifying | How teams qualify for tournaments, clubs' cups and domestic cups | **Partly followed already:** the World Championship, European, African, Asian, North American and Oceania places, the qualifying groups and the play-offs. Added: the winner of a domestic cup takes a continental place. Left: every row on qualifying rounds before a club cup's main stage, a nation's Nations League route, and the real domestic-cup entry rounds. |
 | 16 Tie rules | Legs, extra time, penalties, replays, finals | **Started.** Engine support for straight-to-penalties by round (`etFrom`, `etFinalOnly`, `play.extraTime`), legs per round and neutral finals. No cup in the game has replays (the sheet lists them as abolished or "check"). |
 | 17 International calendar | FIFA windows 2026 to 2030 | **Done** (November 2026): four windows of 4 + 2 + 2 + 2 matchdays, each named for its real window on the calendar (September and October, November, March, June). Left: real dates (the game's season has no calendar dates for the breaks). |
@@ -47,15 +47,16 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
   `tools/newleagues.mjs`, `tools/realclubs.mjs`) or removing some.
 - **Tiers below the top flight:** every nation on sheets 12 to 14 now has the divisions the sheets list, down to a fourth tier
   (England, Spain and Germany had theirs). Each is one table of fictional clubs, `tools/newtiers.mjs` makes them (the table of
-  nations, club counts, promoted places and kinds is at the top of the tool). A real division of regional groups is one group
-  of the group's size (Italy's Serie C is one table of 20, Spain's Primera Federación one of 20 ...), so the real count of
-  clubs in a nation's tier is not matched; the group winners promoted become the places promoted from the one table.
+  nations, club counts, promoted places and kinds is at the top of the tool). A real division of regional groups was first one
+  table of the group's size; twelve of them are now the real groups (see "Regional groups" below), the rest are still one table
+  of a group's size, with the group winners promoted as the places promoted from it.
   A promotion is one of four kinds: `a` the places only; `p` plus a play-off among the next four places (Japan's third tier,
   Poland's third, Chile's second); `t` plus one tie against the club above (a champion or runner-up against the top flight's
   relegation-play-off club: Czechia, Scotland, Switzerland ...); `c` a closed league with no promotion or relegation (the American
   and Mexican lower leagues). Rows that name two or three ties against the top flight (Czechia, Russia, Ukraine, Romania ...) play
-  one. The Argentine zones and Reducido, the Colombian and Mexican tournaments (Apertura and Clausura with a liguilla) and the
-  Romanian single round-robin with play-off and play-out groups are not played: those divisions are a double or single round-robin.
+  them all (`relegate.playoff` is a number of ties; see "Ties against a division of groups" below). Colombia's Primera B and Mexico's
+  Liga de Expansión play two tournaments with a play-off each (see below); the Argentine Reducido and the Romanian single round-robin
+  with play-off and play-out groups are not played: those divisions are a double or single round-robin.
 - **Cross-border clubs:** the engine's own cross-nation league form carries them: a league lists the nations whose clubs may play in it
   (`nats`), a club has its own nation (`D.CLUB_NAT`), and its players, foreign-player rules and national cup follow that nation
   (the league's own clubs keep the league's nationality mix). `tools/crossborder.mjs` renamed 15 clubs in their home nation's style.
@@ -276,13 +277,42 @@ Turkey, one from 13 more); the Trophy 36. The places are still handed out by coe
 
 ## Left to do (other sheets)
 
-- Regional groups as real groups (sheet 02 owns the split and tournament formats; the lower divisions need them too).
-- A division with several cross-division play-off ties, and the Argentine, Colombian and Mexican tournaments in the lower divisions.
+- Regional groups still one table of a group's size, with what each needs: Italy's Serie D (9 groups of 18, 144 more clubs; the pools
+  are limited to nine), Spain's and Austria's other levels, Norway's and Sweden's fourth tiers (six groups of 14: 70 more clubs each),
+  Switzerland's 1. Liga (3 x 16), Turkey's second to fourth levels, Portugal's Campeonato de Portugal (4 x 14), Algeria, Tunisia,
+  Ghana, Greece and Ukraine (the sheet marks them "check"), Thailand (six groups and a national stage), Romania's Liga III (about
+  ten regional groups with a play-off between group winners), Mexico's Liga Premier and TDP, Brazil's Série C and D (groups, then
+  knockouts), Russia and Indonesia. Each is one row in the table at the top of `tools/growtiers.mjs` and its `pools` and the places each group
+  sends up and down in `js/data.js` (with the division above's relegation to match); the engine takes two to nine groups. The groups are made from where the clubs are (north to south), not from the real
+  regions; the play-offs between group winners and runners-up (Spain, Italy, Germany's rotation, Norway's runners-up, Turkey's) are
+  not played: each group sends its winner (Spain two) up, and Germany's four promoted places are five (one a group).
+- The Argentine Reducido (the second promotion of the Primera Nacional is decided by a knockout of the zones' next places; here
+  each zone's winner goes up), Argentina's two parallel third and fourth tiers (Buenos Aires clubs and the interior), and the
+  Mexican Liga Premier's groups with a liguilla. Needs a knockout over a division's places, which the engine has only for a
+  league's title.
 - A club in two cups plays them on shared cup days (the tie that waited longest goes first); a real second-cup calendar of its own
   would need the cup days split by nation.
 - Youth: matches you can play or watch (a final of your own nation is only news), school sides with players of their own, the
   non-league academies of the open cups as clubs.
 - The past competitions have winners but no matches, tables or rounds in the archive.
+
+## Regional groups, ties and tournaments (November 2026)
+
+- **Regional groups** (`rules.pools`, two to nine groups). The engine plays each group as its own double round-robin; its tables,
+  places for promotion and relegation (per group), merit prizes and the champion (the better of the groups' leaders) follow. A
+  division is split once, from the north to the south by where its clubs are; a club that comes in joins the nearest of the
+  smallest groups. `tools/growtiers.mjs` grows a division to its real total with fictional clubs (410 clubs in 12 divisions: Italy,
+  France, Germany, Spain, Austria, Hungary, Poland, Czechia, Norway, Sweden, Portugal, Argentina); each division's promoted places
+  are per group and the division above sends down as many as come up from all its groups (`unit.mjs` checks every pair).
+- **Ties against a division of groups.** A relegation play-off (`relegate.playoff`, one tie or a number) meets the next clubs of
+  the groups: the runners-up first, by points a match, then the third-placed. Norway, Sweden and Portugal keep their tie against the
+  top flight's relegation-play-off clubs; the other rows that name several ties (Czechia, Russia, Ukraine, Romania, South Korea,
+  Montenegro) already played all of them.
+- **Two tournaments in the lower divisions.** Colombia's Primera B: an Apertura and a Finalización of 15 matches each, the top eight
+  of each in two groups of four and a final, two places up for the tournament winners (`promote.winners`), the table filling a place
+  if one club wins both. Mexico's Liga de Expansión: Apertura and Clausura of 15 matches each with a liguilla, no promotion.
+- **Argentina's second level** is two zones of 18, a zone's winner promoted and its last club relegated; the sheet's final between
+  the zone winners and the Reducido for the second place are not played (see "Left to do").
 
 ## Not checked
 

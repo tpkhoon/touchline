@@ -336,6 +336,45 @@ try {
     r.errors.length >= 4 && r.errors.every((e) => e.startsWith('row 5')),
     'a bad row is reported by its row and left out',
   );
+  // separate groups (rules.pools): two to nine, split from the north to the south, a club that comes in joins the nearest smallest
+  {
+    const lat = (id) => FM.D.GEO[id.slice(2)][0];
+    const ids = Object.keys(FM.D.GEO)
+      .slice(0, 12)
+      .map((c) => 'c_' + c);
+    const comp = { rules: { pools: ['A', 'B', 'C'] }, clubs: ids.slice() };
+    const pools = FM.W.poolsOf(comp);
+    eq(
+      pools.map((p) => p.length),
+      [4, 4, 4],
+      'twelve clubs in three groups of four',
+    );
+    ok(
+      Math.min(...pools[0].map(lat)) >= Math.max(...pools[1].map(lat)) &&
+        Math.min(...pools[1].map(lat)) >= Math.max(...pools[2].map(lat)),
+      'the groups run from the north to the south',
+    );
+    const south = pools[2][0],
+      north = pools[0][0];
+    comp.clubs = comp.clubs.filter((id) => id !== south && id !== north);
+    FM.W.poolsOf(comp);
+    comp.clubs.push(south, north);
+    const again = FM.W.poolsOf(comp);
+    ok(
+      again[2].includes(south) && again[0].includes(north) && again.every((p) => p.length === 4),
+      'a club that comes in joins the nearest of the smallest groups',
+    );
+    const bad = (pools) =>
+      WD.validateLeagueRules(
+        { id: 'X', name: 'X', nat: 'ENG', tier: 3, rules: { pools } },
+        { clubs: [], leagues: [] },
+      ).filter((e) => /groups/.test(e)).length;
+    eq(
+      [bad(['A', 'B', 'C']), bad(['A', 'B', 'C', 'D', 'E']), bad(['A']), bad(['A', 'A']), bad(['A', ''])],
+      [0, 0, 1, 1, 1],
+      'two to nine groups, each with a name of its own',
+    );
+  }
   // the leagues that take clubs of other nations (the cross-border clubs) keep them through a CSV round trip
   {
     const d = WD.fromStatic({ name: 'csv nats' });

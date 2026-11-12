@@ -1340,7 +1340,9 @@
   };
   const setPair = (l, up, { n, mode, legs }) => {
     if ((l.rules && l.rules.pools) || (up.rules && up.rules.pools)) {
-      ED.err = ['A league of two groups keeps its places for promotion and relegation: they are counted in each group'];
+      ED.err = [
+        'A league of separate groups keeps its places for promotion and relegation: they are counted in each group',
+      ];
       return;
     }
     const was = [clone(l.rules || {}), clone(up.rules || {})];
@@ -1653,7 +1655,7 @@
   };
   const structureBox = (l, r) => {
     if (r.pools)
-      return `<div class="tiny dim" style="margin-top:6px;line-height:1.5">${esc(r.pools.join(' and '))}: separate tables that each play home and away. The places for promotion and relegation are counted in each group. A club that comes in joins the smaller group.</div>`;
+      return `<div class="tiny dim" style="margin-top:6px;line-height:1.5">${esc(r.pools.length > 1 ? r.pools.slice(0, -1).join(', ') + ' and ' + r.pools[r.pools.length - 1] : r.pools[0])}: separate tables that each play home and away. The places for promotion and relegation are counted in each group. A club that comes in joins the smallest group, the nearest of them.</div>`;
     if (r.zones)
       return `<div class="tiny dim" style="margin-top:6px;line-height:1.5">The clubs split into two zones by reputation (best clubs spread across both). Each zone plays itself once and the other zone once, twice a year (${(r.torneos || []).join(' and ')}), and the top eight of each zone play off for the title. Needs at least sixteen clubs.</div>`;
     if (!r.conferences) return '';
