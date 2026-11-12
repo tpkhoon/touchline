@@ -2953,7 +2953,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_GH1',
       repBand: [47, 35],
-      rules: { relegate: { to: 'GH2', n: 1 }, qualify: { to: 'AF', n: 1 } },
+      rules: { relegate: { to: 'GH2', n: 3 }, qualify: { to: 'AF', n: 1 } },
     },
     {
       id: 'CI1',
@@ -3693,7 +3693,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_TR2',
       repBand: [56, 42],
-      rules: { relegate: { to: 'TR3', n: 2 }, promote: { to: 'TR1', auto: 3 } },
+      rules: { relegate: { to: 'TR3', n: 4 }, promote: { to: 'TR1', auto: 3 } },
     },
     {
       id: 'PL2',
@@ -3923,7 +3923,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_GH2',
       repBand: [40, 29],
-      rules: { promote: { to: 'GH1', auto: 1 } },
+      rules: { pools: ['North', 'Centre', 'South'], promote: { to: 'GH1', auto: 1 } },
     },
     {
       id: 'GR2',
@@ -4410,7 +4410,7 @@
       repBand: [50, 39],
       rules: {
         pools: ['North', 'Centre', 'South'],
-        relegate: { to: 'IT4', n: 1 },
+        relegate: { to: 'IT4', n: 3 },
         promote: { to: 'IT2', auto: 1 },
         playoffs: { type: 'ko', promo: 'all', from: 1, n: 8 },
       },
@@ -4468,7 +4468,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO3',
       repBand: [45, 34],
-      rules: { pools: ['North', 'South'], relegate: { to: 'NO4', n: 1 }, promote: { to: 'NO2', auto: 1, tie: true } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'NO4', n: 3 }, promote: { to: 'NO2', auto: 1, tie: true } },
     },
     {
       id: 'PL3',
@@ -4567,7 +4567,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE3',
       repBand: [44, 33],
-      rules: { pools: ['North', 'South'], relegate: { to: 'SE4', n: 1 }, promote: { to: 'SE2', auto: 1, tie: true } },
+      rules: { pools: ['North', 'South'], relegate: { to: 'SE4', n: 3 }, promote: { to: 'SE2', auto: 1, tie: true } },
     },
     {
       id: 'CH3',
@@ -4578,7 +4578,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_CH3',
       repBand: [43, 32],
-      rules: { promote: { to: 'CH2', auto: 1 }, relegate: { to: 'CH4', n: 2 } },
+      rules: { promote: { to: 'CH2', auto: 1 }, relegate: { to: 'CH4', n: 3 } },
     },
     {
       id: 'TH3',
@@ -4600,7 +4600,12 @@
       sim: 'minimal',
       clubs: 'CLUBS_TR3',
       repBand: [47, 36],
-      rules: { promote: { to: 'TR2', auto: 2 }, relegate: { to: 'TR4', n: 2 } },
+      rules: {
+        pools: ['North', 'South'],
+        promote: { to: 'TR2', auto: 1 },
+        relegate: { to: 'TR4', n: 1 },
+        playoffs: { type: 'ko', promo: 'groups', from: 1, n: 4 },
+      },
     },
     {
       id: 'UA3',
@@ -4780,7 +4785,10 @@
       sim: 'minimal',
       clubs: 'CLUBS_IT4',
       repBand: [43, 32],
-      rules: { promote: { to: 'IT3', auto: 3 } },
+      rules: {
+        pools: ['Group A', 'Group B', 'Group C', 'Group D', 'Group E', 'Group F', 'Group G', 'Group H', 'Group I'],
+        promote: { to: 'IT3', auto: 1 },
+      },
     },
     {
       id: 'JP4',
@@ -4824,7 +4832,10 @@
       sim: 'minimal',
       clubs: 'CLUBS_NO4',
       repBand: [43, 32],
-      rules: { promote: { to: 'NO3', auto: 2 } },
+      rules: {
+        pools: ['Group A', 'Group B', 'Group C', 'Group D', 'Group E', 'Group F'],
+        promote: { to: 'NO3', auto: 1 },
+      },
     },
     {
       id: 'PL4',
@@ -4846,7 +4857,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_PT4',
       repBand: [43, 32],
-      rules: { promote: { to: 'PT3', auto: 2 } },
+      rules: { pools: ['North', 'Centre-north', 'Centre-south', 'South'], promote: { to: 'PT3', auto: 1, best: 2 } },
     },
     {
       id: 'RO4',
@@ -4938,7 +4949,10 @@
       sim: 'minimal',
       clubs: 'CLUBS_SE4',
       repBand: [43, 32],
-      rules: { promote: { to: 'SE3', auto: 2 } },
+      rules: {
+        pools: ['Group A', 'Group B', 'Group C', 'Group D', 'Group E', 'Group F'],
+        promote: { to: 'SE3', auto: 1 },
+      },
     },
     {
       id: 'CH4',
@@ -4949,7 +4963,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_CH4',
       repBand: [43, 32],
-      rules: { promote: { to: 'CH3', auto: 2 } },
+      rules: { pools: ['North', 'Centre', 'South'], promote: { to: 'CH3', auto: 1 } },
     },
     {
       id: 'TH4',

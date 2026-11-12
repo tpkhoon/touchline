@@ -25,6 +25,13 @@ export const GROW = {
   SE3: 32, // Ettan: two groups of 16
   PT3: 24, // Liga 3: two groups of 12
   AR2: 36, // Primera Nacional: two zones of 18
+  IT4: 162, // Serie D: nine groups of 18
+  NO4: 84, // 3. divisjon: six groups of 14
+  SE4: 84, // Division 2: six groups of 14
+  CH4: 48, // 1. Liga: three groups of 16
+  PT4: 56, // Campeonato de Portugal: four groups of 14
+  GH2: 48, // Division One: three zones of 16
+  TR3: 36, // 2. Lig: two groups of 18
   // a division of two parallel levels (Buenos Aires clubs and the interior): half the clubs lie around Buenos Aires, so the groups
   // made from the map are the two levels
   AR3: { total: 40, region: { at: [-34.6, -58.4], n: 20, r: 2 } }, // Primera B Metropolitana and Torneo Federal A

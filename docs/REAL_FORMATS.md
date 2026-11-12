@@ -277,15 +277,15 @@ Turkey, one from 13 more); the Trophy 36. The places are still handed out by coe
 
 ## Left to do (other sheets)
 
-- Regional groups still one table of a group's size, with what each needs: Italy's Serie D (9 groups of 18, 144 more clubs; the pools
-  are limited to nine), Spain's and Austria's other levels, Norway's and Sweden's fourth tiers (six groups of 14: 70 more clubs each),
-  Switzerland's 1. Liga (3 x 16), Turkey's second to fourth levels, Portugal's Campeonato de Portugal (4 x 14), Algeria, Tunisia,
-  Ghana, Greece and Ukraine (the sheet marks them "check"), Thailand (six groups and a national stage), Romania's Liga III (about
-  ten regional groups with a play-off between group winners), Mexico's Liga Premier and TDP, Brazil's Série C and D (groups, then
-  knockouts), Russia and Indonesia. Each is one row in the table at the top of `tools/growtiers.mjs` and its `pools` and the places each group
-  sends up and down in `js/data.js` (with the division above's relegation to match); the engine takes two to nine groups. The groups are made from where the clubs are (north to south), not from the real
-  regions; the play-offs between group winners and runners-up (Spain, Italy, Germany's rotation, Norway's runners-up, Turkey's) are
-  not played: each group sends its winner (Spain two) up, and Germany's four promoted places are five (one a group).
+- Regional groups still one table of a group's size, with what each needs: Austria's and Czechia's fourth tiers and Belgium's third (the
+  sheet marks them Low confidence), Turkey's fourth level (four or five groups, Low), Algeria, Tunisia, Greece and Ukraine (Low), Thailand
+  (six groups of 12 and a national stage between the regional winners and runners-up), Romania's Liga III (about ten groups of ten and a
+  play-off between group winners: 80 more clubs), Mexico's Liga Premier and TDP (Low), Brazil's Série C and D (a table then a knockout, and
+  sixteen groups of four then a knockout: the engine's groups are tables), Russia and Indonesia (groups, then stages). Each is one row in
+  the table at the top of `tools/growtiers.mjs` and its `pools` and the places each group sends up and down in `js/data.js` (with the
+  division above's relegation to match); the engine takes two to nine groups. Done in this pass: Italy's Serie D (9 groups of 18),
+  Norway's and Sweden's fourth tiers (6 of 14), Switzerland's 1. Liga (3 of 16), Portugal's Campeonato de Portugal (4 of 14, the best two
+  winners up), Ghana's second tier (3 zones of 16) and Turkey's 2. Lig (2 of 18 with a play-off in each group): 408 more clubs.
 - The final between Argentina's two zone winners as a match (the better winner by points goes up), the Mexican Liga Premier's groups
   with a liguilla (the sheet marks it Low confidence), Norway's and Turkey's third-tier runners-up play-offs (Norway's tie against the top
   flight's relegation-play-off club plays that part), the real league names for the groups.

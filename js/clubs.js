@@ -4231,21 +4231,63 @@
   ];
   FM.D.CLUBS_GH2 = [
     ['Takase Porcupines', 'TAL34', 'Takase', '#FFD100', '#00843D', 'youth', 41, 'Takase Sports Stadium', 16000],
+    ['Berondi Stars', 'BEG54', 'Berondi', '#6A1B9A', '#001F5B', 'fan', 40, 'Berondi Cultural Stadium', 12500],
     ['Real Old Sekase', 'SEW', 'Sekase', '#6CACE4', '#000000', 'selling', 39, 'Yenmasi Arena', 12500],
     ['New Kase Heroes', 'KAC26', 'Kase', '#0057B8', '#E30613', 'historic', 39, 'Kase Sports Stadium', 12500],
+    ['Dunadi United', 'DUQ', 'Dunadi', '#FFFFFF', '#6CACE4', 'selling', 39, 'Yenondi Arena', 15500],
+    ['Anora United', 'ANQ', 'Anora', '#6CACE4', '#001F5B', 'selling', 39, 'Anora Cultural Stadium', 16000],
+    ['Adra United', 'ADR', 'Adra', '#6CACE4', '#00843D', 'historic', 39, 'Adra Sports Stadium', 16000],
+    ['Hadi FC', 'HAK57', 'Hadi', '#001F5B', '#FFFFFF', 'selling', 38, 'Temasi Arena', 14000],
+    ['Bolmasi Mighty United', 'BOZ47', 'Bolmasi', '#FFFFFF', '#6CACE4', 'fan', 38, 'Kofu Stadium', 14500],
+    ['Old Effmasi Great United', 'ESZ', 'Effmasi', '#6A1B9A', '#001F5B', 'fan', 38, 'Effmasi Sports Stadium', 11500],
     ['Dunora Heroes', 'DUC', 'Dunora', '#6A1B9A', '#001F5B', 'fan', 37, 'Sekondi Stadium', 15000],
     ['Akofu Porcupines', 'AKE', 'Akofu', '#0057B8', '#FFFFFF', 'historic', 37, 'Akofu Sports Stadium', 15000],
     ['Bolondi Heroes', 'BOV', 'Bolondi', '#E30613', '#000000', 'fan', 37, 'Bolondi Park', 12000],
+    ['Akmasi United', 'AKL', 'Akmasi', '#FFD100', '#0057B8', 'fan', 37, 'Akmasi Sports Stadium', 14500],
+    ['Effadi United', 'EFI', 'Effadi', '#000000', '#FFD100', 'fan', 37, 'Effadi Sports Stadium', 13500],
+    ['Akase FC', 'AKN', 'Akase', '#001F5B', '#0057B8', 'youth', 37, 'Kadi Stadium', 11000],
+    ['Admasi Lions', 'ADM', 'Admasi', '#E30613', '#00843D', 'fallen', 37, 'Kokam Arena', 13500],
     ['Lower Nkora Stars', 'NKO', 'Nkora', '#6CACE4', '#00843D', 'fan', 36, 'Kukam Arena', 11000],
     ['Dunho Porcupines', 'DUO', 'Dunho', '#0057B8', '#E30613', 'fallen', 36, 'Dunho Cultural Stadium', 15000],
+    ['Effmale United', 'EFA', 'Effmale', '#FFD100', '#00843D', 'selling', 36, 'Effmale Cultural Stadium', 14000],
+    ['Bolora Porcupines', 'BOY46', 'Bolora', '#00843D', '#FFFFFF', 'youth', 36, 'Bolora Cultural Stadium', 11000],
+    ['Takmasi Hearts of Oak', 'TAJ56', 'Takmasi', '#00843D', '#000000', 'fan', 36, 'Temkam Arena', 10500],
+    ['Temkam Mighty United', 'TEQ', 'Temkam', '#FFD100', '#6A1B9A', 'historic', 35, 'Bermale Arena', 10500],
+    ['Sumasi Hearts', 'SUB25', 'Sumasi', '#6A1B9A', '#00843D', 'historic', 34, 'Sumasi Park', 11000],
+    ['Union Bofu', 'BOX45', 'Bofu', '#00843D', '#000000', 'historic', 34, 'Yenadi Stadium', 14000],
+    ['Wamasi Great United', 'WAV', 'Wamasi', '#001F5B', '#6A1B9A', 'fan', 34, 'Berkam Stadium', 10500],
     ['Real Kadi', 'KAD27', 'Kadi', '#6A1B9A', '#E30613', 'historic', 33, 'Kadi Park', 11000],
     ['Old Temasi Stars', 'TEM', 'Temasi', '#001F5B', '#FFFFFF', 'fan', 33, 'Base Stadium', 12000],
+    ['Lower Kuho United', 'KUH', 'Kuho', '#FFD100', '#001F5B', 'fan', 33, 'Kuho Cultural Stadium', 13000],
+    ['Union Sase', 'SAA72', 'Sase', '#001F5B', '#FFD100', 'fan', 33, 'Sase Cultural Stadium', 13500],
+    ['Wamale Lions', 'WAX', 'Wamale', '#6A1B9A', '#FFD100', 'youth', 33, 'Wamale Park', 10500],
     ['Real Old Dunondi', 'DUD', 'Dunondi', '#001F5B', '#FFD100', 'youth', 32, 'Adondi Arena', 12500],
     ['Dunmasi Mighty United', 'DSI', 'Dunmasi', '#6CACE4', '#001F5B', 'selling', 32, 'Dunmasi Sports Stadium', 13000],
     ['Nkomale Stars', 'NKE', 'Nkomale', '#FFD100', '#E30613', 'historic', 32, 'Yenumu Stadium', 9500],
+    ['Akumu Hearts of Oak', 'AKU', 'Akumu', '#6CACE4', '#E30613', 'fan', 32, 'Hadi Stadium', 12500],
+    ['Union Humu', 'HUM', 'Humu', '#E30613', '#0057B8', 'fan', 32, 'Kondi Arena', 11500],
+    ['Hoho FC', 'HOO', 'Hoho', '#6CACE4', '#FFD100', 'youth', 32, 'Hoho Park', 9000],
     ['Takra Hearts of Oak', 'TAM35', 'Takra', '#FFFFFF', '#6CACE4', 'selling', 31, 'Takra Park', 9000],
+    ['Berora Great United', 'BEF53', 'Berora', '#0057B8', '#FFFFFF', 'fan', 31, 'Berora Cultural Stadium', 10500],
+    [
+      'Upper Yenora Hearts of Oak',
+      'YEH',
+      'Yenora',
+      '#0057B8',
+      '#6A1B9A',
+      'selling',
+      31,
+      'Yenora Sports Stadium',
+      12500,
+    ],
+    ['Effumu Mighty United', 'EFU', 'Effumu', '#001F5B', '#FFD100', 'fan', 31, 'Effumu Sports Stadium', 12000],
     ['Boladi Lions', 'BOI', 'Boladi', '#00843D', '#6A1B9A', 'historic', 30, 'Boladi Park', 10500],
+    ['Bora Mighty United', 'BMA', 'Bora', '#FFFFFF', '#FFD100', 'fan', 30, 'Yenora Arena', 10500],
+    ['Yenho Lions', 'YEJ', 'Yenho', '#000000', '#6CACE4', 'fallen', 30, 'Akofu Stadium', 11500],
     ['Union Kumu', 'KUM', 'Kumu', '#FFD100', '#00843D', 'historic', 29, 'Kumu Park', 10500],
+    ['Nkofu Great United', 'NKC', 'Nkofu', '#6A1B9A', '#000000', 'historic', 29, 'Dunondi Arena', 8500],
+    ['Lower Adofu United', 'ADE', 'Adofu', '#FFD100', '#00843D', 'fan', 29, 'Adofu Sports Stadium', 12000],
+    ['Berase Stars', 'BSE', 'Berase', '#001F5B', '#00843D', 'fan', 29, 'Berase Sports Stadium', 12000],
   ];
   FM.D.CLUBS_GR2 = [
     ['AE Patópetra', 'PAG30', 'Patópetra', '#FFFFFF', '#0057B8', 'fan', 53, 'Mesia Arena', 18500],
@@ -6362,10 +6404,15 @@
   FM.D.CLUBS_TR3 = [
     ['Kaykale Belediyespor', 'KAR39', 'Kaykale', '#00843D', '#FFD100', 'fan', 47, 'Kaykale Şehir Stadyumu', 19500],
     ['İncsaraygücü', 'INE', 'İncsaray', '#FFFFFF', '#FFD100', 'fan', 47, 'Kızköy Arena', 19500],
+    ['Merkalespor', 'MEG30', 'Merkale', '#000000', '#6CACE4', 'fan', 47, 'Bayköy Stadyumu', 17000],
+    ['Çanpınargücü', 'CAS64', 'Çanpınar', '#000000', '#6CACE4', 'fan', 46, 'Aydbahçe Stadyumu', 18500],
     ['Kızehir İdman Yurdu', 'KZE', 'Kızehir', '#001F5B', '#0057B8', 'youth', 45, 'Kızehir Şehir Stadyumu', 14500],
     ['Yeni Bayköyspor', 'BBE', 'Bayköy', '#001F5B', '#E30613', 'historic', 45, 'Karalar Arena', 17000],
     ['Çanehir SK', 'CAN36', 'Çanehir', '#FFFFFF', '#001F5B', 'fan', 44, 'Çanehir Cumhuriyet Stadyumu', 17000],
+    ['Akehirgücü', 'AKQ', 'Akehir', '#0057B8', '#6CACE4', 'fan', 44, 'Bozova Arena', 15000],
     ['Kızlar Gücü', 'KZB', 'Kızlar', '#000000', '#FFD100', 'selling', 43, 'Gülar Stadyumu', 15000],
+    ['Küçük Tavköy Belediyespor', 'KUG', 'Küçük Tavköy', '#000000', '#00843D', 'fan', 43, 'Çanehir Arena', 15500],
+    ['Demköy Belediyespor', 'DEQ', 'Demköy', '#E30613', '#001F5B', 'fallen', 43, 'Demköy Şehir Stadyumu', 14500],
     [
       'Küçük Sultandere Birlik',
       'KUF',
@@ -6379,8 +6426,11 @@
     ],
     ['Karalar İdman Yurdu', 'KAS40', 'Karalar', '#000000', '#0057B8', 'fallen', 42, 'Özköy Stadyumu', 16000],
     ['Orhtepe Gençlik', 'ORG', 'Orhtepe', '#FFFFFF', '#FFD100', 'fallen', 42, 'Özehir Stadyumu', 14500],
+    ['Uşaköy Birlik', 'USL', 'Uşaköy', '#0057B8', '#001F5B', 'fan', 42, 'Tekpınar Stadyumu', 16500],
     ['Boztepegücü', 'BCU', 'Boztepe', '#6CACE4', '#001F5B', 'selling', 41, 'Boztepe Şehir Stadyumu', 16500],
     ['Uşapınar FK', 'USG', 'Uşapınar', '#FFFFFF', '#001F5B', 'historic', 41, 'Durova Stadyumu', 16500],
+    ['Bozbahçespor', 'BOB49', 'Bozbahçe', '#000000', '#0057B8', 'historic', 41, 'Yalbahçe Stadyumu', 16000],
+    ['Sultanehir SK', 'SUC26', 'Sultanehir', '#FFFFFF', '#6CACE4', 'fan', 41, 'Gülkale Stadyumu', 13500],
     ['Küçük Bayderespor', 'KUK', 'Küçük Baydere', '#E30613', '#001F5B', 'fan', 40, 'Uşakale Arena', 17000],
     [
       'Eski Dursarayspor',
@@ -6393,11 +6443,31 @@
       'Eski Dursaray Şehir Stadyumu',
       13000,
     ],
+    ['Yeni Gönköyspor', 'GOA24', 'Gönköy', '#FFFFFF', '#FFD100', 'youth', 40, 'Baytepe Stadyumu', 13500],
+    ['Teklar FK', 'TEV', 'Teklar', '#E30613', '#FFFFFF', 'fan', 39, 'Yalkale Arena', 14500],
+    ['İncderespor', 'ING', 'İncdere', '#6A1B9A', '#FFD100', 'youth', 39, 'Yalar Arena', 13000],
+    ['İncbahçe Gençlik', 'INJ', 'İncbahçe', '#00843D', '#E30613', 'fan', 39, 'Kızbahçe Arena', 14500],
     ['Çamehir Gençlik', 'CAP37', 'Çamehir', '#001F5B', '#FFFFFF', 'historic', 38, 'Sarlar Stadyumu', 15500],
     ['Eski Durpınarspor', 'EKI', 'Eski Durpınar', '#FFD100', '#FFFFFF', 'selling', 38, 'Gönehir Stadyumu', 15500],
     ['Eskehirspor', 'ESS', 'Eskehir', '#6CACE4', '#6A1B9A', 'fan', 38, 'Boztepe Stadyumu', 14500],
+    ['Yenehir Belediyespor', 'YEK', 'Yenehir', '#FFD100', '#001F5B', 'fan', 38, 'İncbahçe Arena', 13000],
+    [
+      'Yeni Aktepe Atletik',
+      'AKT',
+      'Yeni Aktepe',
+      '#000000',
+      '#001F5B',
+      'fan',
+      38,
+      'Yeni Aktepe Cumhuriyet Stadyumu',
+      11500,
+    ],
     ['Tekehir Gençlik', 'TEJ', 'Tekehir', '#000000', '#0057B8', 'historic', 37, 'Tekehir Şehir Stadyumu', 14000],
+    ['Bozehir Birlik', 'BOA48', 'Bozehir', '#FFFFFF', '#6CACE4', 'historic', 37, 'Çamdere Stadyumu', 15000],
+    ['Özova Gücü', 'OZO', 'Özova', '#001F5B', '#00843D', 'historic', 37, 'Durköy Stadyumu', 15000],
+    ['Çamtepespor', 'COL34', 'Çamtepe', '#001F5B', '#00843D', 'selling', 37, 'Eskbahçe Stadyumu', 15000],
     ['Çamköyspor', 'CCA', 'Çamköy', '#E30613', '#6A1B9A', 'fan', 36, 'Çamköy Cumhuriyet Stadyumu', 10500],
+    ['Akova Birlik', 'AKS', 'Akova', '#6A1B9A', '#FFFFFF', 'fan', 36, 'Akova Cumhuriyet Stadyumu', 14000],
   ];
   FM.D.CLUBS_UA3 = [
     ['FK Rovivske', 'ROC26', 'Rovivske', '#E30613', '#6A1B9A', 'historic', 43, 'Stadion Vinske', 17000],
@@ -7084,20 +7154,317 @@
   FM.D.CLUBS_IT4 = [
     ['SSC Modento', 'MOM35', 'Modento', '#6A1B9A', '#6CACE4', 'fan', 43, 'Stadio Civico di Modento', 17500],
     ['Iuventa Monte Cestara', 'IUA', 'Cestara', '#6A1B9A', '#6CACE4', 'youth', 43, 'Stadio Amalello', 18500],
+    ['Virtus Borgo Mirola 1897', 'BGO', 'Mirola', '#FFD100', '#000000', 'historic', 43, 'Stadio Mirone', 17000],
+    ['Virtus Casetto 1921', 'CAJ56', 'Casetto', '#00843D', '#6CACE4', 'fan', 43, 'Stadio Nuovo Leccana', 13500],
+    [
+      'SS Belucci di Sotto',
+      'SSG',
+      'Belucci di Sotto',
+      '#00843D',
+      '#FFFFFF',
+      'fan',
+      43,
+      'Stadio Civico di Belucci di Sotto',
+      16500,
+    ],
+    ['Galana Calcio 1883', 'GAC26', 'Galana', '#6A1B9A', '#0057B8', 'selling', 43, 'Arena Corale', 13500],
+    ['Fidelis Modana', 'FIS', 'Modana', '#000000', '#FFFFFF', 'selling', 43, 'Stadio Nuovo Belello', 14000],
+    ['US Ponate', 'POD51', 'Ponate', '#FFD100', '#FFFFFF', 'historic', 43, 'Arena Trenetto', 15500],
+    ['SSC Valola', 'VAH31', 'Valola', '#000000', '#6A1B9A', 'historic', 43, 'Stadio Comunale di Valola', 17500],
+    [
+      'Sporting Porto Venale 1931',
+      'PVE',
+      'Venale',
+      '#00843D',
+      '#6A1B9A',
+      'selling',
+      43,
+      'Stadio Comunale di Venale',
+      15000,
+    ],
+    ['AC Porto Albago', 'PAK57', 'Porto Albago', '#6A1B9A', '#000000', 'fallen', 43, 'Stadio Nuovo Gubbetto', 15000],
     ['Virtus Corento', 'COA24', 'Corento', '#6A1B9A', '#001F5B', 'historic', 42, 'Stadio Nuovo Padia', 16500],
+    ['AC Castel Arezana 1897', 'CAG54', 'Arezana', '#00843D', '#FFD100', 'historic', 42, 'Stadio Nuovo Lanara', 16000],
+    ['Pro Roccetto', 'RON36', 'Roccetto', '#6A1B9A', '#FFD100', 'fan', 42, 'Stadio Nuovo Galello', 17000],
+    ['Iuventa Pescate', 'ITF', 'Pescate', '#6A1B9A', '#FFD100', 'historic', 42, 'Stadio Arezetto', 15500],
+    ['Virtus Ferola', 'FEP', 'Ferola', '#E30613', '#FFFFFF', 'fan', 42, 'Stadio Comunale di Ferola', 17000],
+    ['AC Borone 1895', 'BOU42', 'Borone', '#6A1B9A', '#000000', 'youth', 42, 'Stadio Nuovo Borano', 15500],
+    ['AC Borgo Albezia', 'BAW68', 'Albezia', '#6A1B9A', '#000000', 'youth', 42, 'Stadio Nuovo Monara', 17000],
+    ['FC Belate', 'BED51', 'Belate', '#001F5B', '#00843D', 'fan', 42, 'Stadio Torona', 15000],
+    [
+      'Virtus Monte Leccino',
+      'MOC50',
+      'Leccino',
+      '#000000',
+      '#FFFFFF',
+      'youth',
+      42,
+      'Stadio Comunale di Leccino',
+      13500,
+    ],
     ['Pro Porto Fabrucci', 'PON36', 'Fabrucci', '#FFD100', '#001F5B', 'fallen', 41, 'Arena Torana', 14500],
     ['Unione Ferana', 'FEC', 'Ferana', '#FFFFFF', '#6A1B9A', 'fan', 41, 'Stadio Comunale di Ferana', 15500],
+    ['Pro Roccezia', 'ROP37', 'Roccezia', '#00843D', '#FFD100', 'fan', 41, 'Arena Frascezia', 16000],
+    ['AC Monte Gubbana', 'MTC', 'Gubbana', '#FFD100', '#6CACE4', 'selling', 41, 'Stadio Valale', 13000],
+    ['US Modello', 'MLO', 'Modello', '#FFD100', '#0057B8', 'fallen', 41, 'Stadio Belento', 13500],
+    ['Iuventa Trenino', 'IUT', 'Trenino', '#FFFFFF', '#0057B8', 'fan', 41, 'Arena Torate', 14500],
+    [
+      'Audace Porto Fosezia 1953',
+      'POF53',
+      'Fosezia',
+      '#6CACE4',
+      '#6A1B9A',
+      'fan',
+      41,
+      'Stadio Civico di Fosezia',
+      15500,
+    ],
+    ['Pescara Calcio 1917', 'PEY46', 'Pescara', '#FFD100', '#000000', 'youth', 41, 'Stadio Civico di Pescara', 14500],
+    ['SS Santale', 'SSJ', 'Santale', '#E30613', '#6A1B9A', 'historic', 41, 'Stadio Nuovo Borucci', 17000],
+    ['AC Belino', 'BEC50', 'Belino', '#E30613', '#FFD100', 'fan', 41, 'Stadio Galate', 17500],
+    ['Audace Venago', 'VEQ38', 'Venago', '#FFD100', '#00843D', 'fan', 41, 'Stadio Trenana', 13500],
+    ['Audace Lanale', 'LAE52', 'Lanale', '#00843D', '#6CACE4', 'historic', 41, 'Stadio Pescetto', 15000],
+    ['ASD Cestano 1942', 'CET', 'Cestano', '#FFD100', '#E30613', 'youth', 40, 'Stadio Nuovo Leccucci', 12500],
+    ['Borana Calcio', 'BOQ38', 'Borana', '#000000', '#6CACE4', 'fan', 40, 'Stadio Comunale di Borana', 13500],
+    ['Audace Amalana', 'ANL', 'Amalana', '#FFFFFF', '#6CACE4', 'historic', 40, 'Stadio Nuovo Leccento', 13000],
+    ['AC Arezate', 'ATL', 'Arezate', '#6A1B9A', '#000000', 'historic', 40, 'Stadio Cestano', 12500],
+    ['Sporting Galetto', 'GAB25', 'Galetto', '#0057B8', '#001F5B', 'youth', 40, 'Stadio Nuovo Albara', 13000],
+    ['SSC Borgo Arezona 1924', 'BAV67', 'Arezona', '#FFD100', '#000000', 'fan', 40, 'Stadio Civico di Arezona', 12000],
+    ['Robur Amalona', 'ROQ38', 'Amalona', '#001F5B', '#E30613', 'youth', 40, 'Stadio Nuovo Galona', 15500],
+    ['Iuventa San Sanezia', 'IUS', 'Sanezia', '#FFD100', '#001F5B', 'fallen', 40, 'Stadio Comunale di Sanezia', 15000],
+    ['US Castel Fosone 1893', 'CAN60', 'Fosone', '#FFD100', '#E30613', 'fan', 40, 'Stadio Nuovo Ferola', 15000],
+    ['ASD Castel Frascate', 'CFR', 'Castel Frascate', '#E30613', '#00843D', 'fallen', 40, 'Stadio Borara', 12000],
     ['Sporting Padara', 'PAV43', 'Padara', '#000000', '#6A1B9A', 'fan', 39, 'Stadio Comunale di Padara', 16000],
     ['AC Castel Maretto', 'CAV43', 'Maretto', '#6A1B9A', '#6CACE4', 'historic', 39, 'Stadio Ponate', 12000],
+    [
+      'FC Santa Borucci',
+      'BON36',
+      'Santa Borucci',
+      '#6A1B9A',
+      '#6CACE4',
+      'fan',
+      39,
+      'Stadio Comunale di Santa Borucci',
+      15500,
+    ],
+    ['Audace Arezara', 'ARJ32', 'Arezara', '#6A1B9A', '#0057B8', 'selling', 39, 'Stadio Sanucci', 16500],
+    ['SS Torre Casana', 'SSF', 'Torre Casana', '#FFFFFF', '#00843D', 'historic', 39, 'Stadio Borento', 12000],
+    ['Monara Calcio 1893', 'MOY46', 'Monara', '#E30613', '#00843D', 'fan', 39, 'Stadio Serello', 15000],
+    ['Atletico Modara', 'MRF', 'Modara', '#0057B8', '#00843D', 'fan', 39, 'Stadio Serate', 13000],
+    ['Sporting Torre Marano', 'TOH31', 'Torre Marano', '#FFD100', '#FFFFFF', 'historic', 39, 'Stadio Pescento', 16000],
+    ['US Ferento', 'FEM', 'Ferento', '#00843D', '#0057B8', 'fan', 39, 'Stadio Nuovo Serento', 14000],
+    ['Valino Calcio', 'VNB', 'Valino', '#00843D', '#001F5B', 'fallen', 39, 'Stadio Comunale di Valino', 14000],
+    ['AC Lanezia 1919', 'LAD51', 'Lanezia', '#6A1B9A', '#6CACE4', 'historic', 39, 'Stadio Vilento', 12500],
+    ['Virtus Cestetto', 'CEW', 'Cestetto', '#6CACE4', '#001F5B', 'fan', 39, 'Stadio Modate', 11500],
+    ['Polisportiva Trenento', 'PVA', 'Trenento', '#00843D', '#FFD100', 'historic', 39, 'Stadio Lanetto', 14000],
     ['Audace Amalino', 'AMO', 'Amalino', '#FFD100', '#6A1B9A', 'fan', 38, 'Stadio Nuovo Orvia', 13000],
     ['AC Ravale 1895', 'RAG30', 'Ravale', '#6CACE4', '#FFD100', 'selling', 38, 'Stadio Nuovo Casara', 12000],
+    ['US Frascana 1877', 'FRB25', 'Frascana', '#6A1B9A', '#6CACE4', 'historic', 38, 'Stadio Civico di Frascana', 14500],
+    ['AC Serezia', 'SEK33', 'Serezia', '#6CACE4', '#00843D', 'youth', 38, 'Stadio Nuovo Lania', 14000],
+    ['US Torana', 'TOG30', 'Torana', '#6CACE4', '#001F5B', 'fallen', 38, 'Arena Ponale', 13500],
+    ['US Borgo Monone', 'BOS40', 'Monone', '#6CACE4', '#000000', 'fan', 38, 'Stadio Casana', 15000],
+    ['Libertas San Santona', 'LIK33', 'Santona', '#FFD100', '#001F5B', 'fan', 38, 'Stadio Comunale di Santona', 15000],
+    ['Casara Calcio 1949', 'CRB', 'Casara', '#6A1B9A', '#000000', 'fallen', 38, 'Arena Monola', 14000],
+    [
+      'Sanara al Monte Calcio',
+      'SAV67',
+      'Sanara al Monte',
+      '#00843D',
+      '#0057B8',
+      'fallen',
+      38,
+      'Stadio Civico di Sanara al Monte',
+      12000,
+    ],
+    ['Borgo Corona Calcio 1955', 'BOT41', 'Borgo Corona', '#6A1B9A', '#E30613', 'fan', 38, 'Stadio Arezola', 13000],
+    ['US Venate', 'VEP37', 'Venate', '#6CACE4', '#FFFFFF', 'historic', 38, 'Stadio Nuovo Fosale', 14000],
+    ['US Castel Leccona 1913', 'CLH', 'Leccona', '#000000', '#6A1B9A', 'selling', 38, 'Stadio Trenia', 13500],
+    ['AC Porto Venone', 'POG54', 'Venone', '#000000', '#00843D', 'selling', 38, 'Stadio Fabrello', 12000],
+    ['Unione Porto Modino', 'POH55', 'Modino', '#0057B8', '#FFFFFF', 'selling', 38, 'Stadio Trenento', 11500],
+    ['Virtus Ferate 1940', 'FEQ', 'Ferate', '#E30613', '#001F5B', 'fan', 38, 'Stadio Comunale di Ferate', 14000],
+    ['Unione Piate', 'PIV', 'Piate', '#00843D', '#001F5B', 'fan', 38, 'Stadio Comunale di Piate', 15500],
     ['Audace Albia', 'ALC74', 'Albia', '#6A1B9A', '#001F5B', 'youth', 37, 'Arena Leccento', 14000],
+    [
+      'Pro Castel Vilara 1929',
+      'CAH55',
+      'Vilara',
+      '#000000',
+      '#0057B8',
+      'youth',
+      37,
+      'Stadio Comunale di Vilara',
+      11000,
+    ],
+    ['Audace Porto Galara', 'POZ47', 'Galara', '#FFD100', '#6CACE4', 'fan', 37, 'Arena Arezara', 11500],
+    ['AC Amalara', 'AMK', 'Amalara', '#6CACE4', '#E30613', 'fallen', 37, 'Stadio Trenara', 11000],
+    ['FC Marento', 'MAN60', 'Marento', '#000000', '#6A1B9A', 'fan', 37, 'Stadio Civico di Marento', 14500],
+    ['SS Casona', 'SSH', 'Casona', '#FFD100', '#FFFFFF', 'fan', 37, 'Stadio Ponezia', 12000],
+    ['Atletico San Orvello', 'ORY', 'Orvello', '#FFFFFF', '#FFD100', 'historic', 37, 'Stadio Borone', 15500],
+    ['Venia 1908', 'VEN36', 'Venia', '#001F5B', '#000000', 'fan', 37, 'Stadio Comunale di Venia', 12000],
+    ['US Monte Gubbate', 'MOZ47', 'Gubbate', '#E30613', '#000000', 'youth', 37, 'Stadio Comunale di Gubbate', 13500],
+    ['US Galino', 'GAD27', 'Galino', '#6A1B9A', '#00843D', 'fan', 37, 'Stadio Frascara', 14000],
+    ['Virtus Lanana', 'LAC50', 'Lanana', '#E30613', '#00843D', 'selling', 37, 'Stadio Civico di Lanana', 14000],
+    [
+      'Fosago sul Mare Calcio',
+      'FOV',
+      'Fosago sul Mare',
+      '#0057B8',
+      '#000000',
+      'youth',
+      37,
+      'Stadio Nuovo Marate',
+      11000,
+    ],
+    ['Venona Calcio', 'VNC', 'Venona', '#E30613', '#000000', 'fan', 37, 'Stadio Gubbezia', 14500],
+    ['Santa Mirara 1908', 'MIH31', 'Santa Mirara', '#6A1B9A', '#FFD100', 'fan', 37, 'Stadio Modello', 10500],
+    ['AC Orvone', 'ORZ', 'Orvone', '#6A1B9A', '#001F5B', 'youth', 37, 'Stadio Ponino', 15500],
+    ['Sporting Orvona', 'ORA24', 'Orvona', '#6A1B9A', '#FFD100', 'fan', 37, 'Stadio Nuovo Trenale', 13000],
+    ['Atletico Borgo Orvate', 'BOV43', 'Orvate', '#001F5B', '#000000', 'fan', 37, 'Arena Fosucci', 13000],
+    [
+      'Pro Gubbana di Sotto',
+      'GUV',
+      'Gubbana di Sotto',
+      '#FFFFFF',
+      '#6A1B9A',
+      'fan',
+      37,
+      'Stadio Civico di Gubbana di Sotto',
+      11000,
+    ],
     ['US Ravento 1949', 'RTO', 'Ravento', '#FFFFFF', '#001F5B', 'historic', 36, 'Stadio Arezello', 15000],
     ['Pro Arezana al Monte 1936', 'ARY', 'Arezana al Monte', '#0057B8', '#FFD100', 'fan', 36, 'Stadio Roccino', 11000],
+    ['Fidelis Borgo Ravia', 'FIB', 'Ravia', '#6CACE4', '#6A1B9A', 'selling', 36, 'Stadio Gubbucci', 12500],
+    ['Polisportiva Roccara', 'POA48', 'Roccara', '#FFFFFF', '#E30613', 'fan', 36, 'Stadio Frascano', 12000],
+    ['SSC San Piola 1911', 'PIU', 'Piola', '#FFFFFF', '#6CACE4', 'historic', 36, 'Stadio Comunale di Piola', 10500],
+    ['AC Trenale', 'TRQ', 'Trenale', '#001F5B', '#FFD100', 'fan', 36, 'Stadio Civico di Trenale', 14500],
+    ['FC Santino 1927', 'SAS64', 'Santino', '#0057B8', '#00843D', 'fan', 36, 'Stadio Comunale di Santino', 15000],
+    ['Pro Sassate', 'SAT65', 'Sassate', '#E30613', '#00843D', 'fan', 36, 'Stadio Comunale di Sassate', 11500],
+    [
+      'SSC Monte Fosone 1953',
+      'MOX45',
+      'Monte Fosone',
+      '#00843D',
+      '#0057B8',
+      'fan',
+      36,
+      'Stadio Comunale di Monte Fosone',
+      14500,
+    ],
+    ['Sporting Marago', 'MAP61', 'Marago', '#FFD100', '#6A1B9A', 'historic', 36, 'Stadio Comunale di Marago', 12500],
+    ['Unione Trenano', 'TRR', 'Trenano', '#0057B8', '#001F5B', 'fan', 36, 'Stadio Nuovo Vilia', 13500],
+    [
+      'SSC Castel Pescento',
+      'CAM59',
+      'Pescento',
+      '#0057B8',
+      '#FFD100',
+      'historic',
+      36,
+      'Stadio Civico di Pescento',
+      12500,
+    ],
+    ['Libertas San Fosate', 'LIL34', 'Fosate', '#001F5B', '#FFFFFF', 'fan', 36, 'Stadio Nuovo Borento', 14500],
+    ['AC Fabrara', 'FAQ', 'Fabrara', '#E30613', '#0057B8', 'youth', 36, 'Stadio Nuovo Cestago', 14500],
+    ['Atletico Serate', 'SEL34', 'Serate', '#FFFFFF', '#0057B8', 'historic', 36, 'Stadio Nuovo Ferara', 14500],
+    ['Atletico Pescola', 'PEZ47', 'Pescola', '#6A1B9A', '#00843D', 'historic', 36, 'Stadio Civico di Pescola', 13500],
+    ['Sanola Calcio 1930', 'SLU', 'Sanola', '#FFD100', '#E30613', 'historic', 36, 'Stadio Gubbento', 12500],
+    ['AC Torale 1947', 'TLB', 'Torale', '#FFFFFF', '#6A1B9A', 'selling', 36, 'Stadio Civico di Torale', 10500],
+    ['Audace Casano', 'CNO', 'Casano', '#FFD100', '#0057B8', 'historic', 36, 'Stadio Civico di Casano', 12000],
+    ['Virtus Modona', 'MND', 'Modona', '#6A1B9A', '#00843D', 'historic', 36, 'Stadio Casano', 12000],
+    [
+      'Audace Cestia sul Mare',
+      'CEX',
+      'Cestia sul Mare',
+      '#00843D',
+      '#E30613',
+      'youth',
+      36,
+      'Stadio Civico di Cestia sul Mare',
+      12000,
+    ],
+    ['Audace Santola', 'SAW68', 'Santola', '#FFD100', '#001F5B', 'fan', 36, 'Stadio Nuovo Trenone', 13000],
     ['AC Porto Galago 1920', 'POP37', 'Galago', '#FFD100', '#00843D', 'fan', 35, 'Arena Frascino', 12500],
     ['US Porto Sassia', 'PSJ', 'Sassia', '#6CACE4', '#0057B8', 'selling', 35, 'Stadio Gubbara', 11000],
+    ['US Monello 1891', 'MOV43', 'Monello', '#6CACE4', '#6A1B9A', 'fan', 35, 'Stadio Civico di Monello', 11500],
+    ['Virtus Modate', 'MOW44', 'Modate', '#001F5B', '#6A1B9A', 'fan', 35, 'Arena Gubbia', 13000],
+    ['Pro Ponetto 1952', 'POB49', 'Ponetto', '#FFD100', '#001F5B', 'fan', 35, 'Stadio Frascana', 12500],
+    ['SSC Ponento', 'POC50', 'Ponento', '#0057B8', '#001F5B', 'selling', 35, 'Stadio Gubbello', 11000],
+    ['Atletico Santate', 'STL34', 'Santate', '#6A1B9A', '#6CACE4', 'selling', 35, 'Stadio Civico di Santate', 11000],
+    [
+      'Sporting Venetto di Sotto',
+      'VEM35',
+      'Venetto di Sotto',
+      '#FFD100',
+      '#0057B8',
+      'youth',
+      35,
+      'Stadio Torale',
+      10000,
+    ],
+    ['Pro Castel Torucci', 'CAL58', 'Torucci', '#E30613', '#0057B8', 'fan', 35, 'Stadio Comunale di Torucci', 10000],
+    ['Virtus Castel Trenetto', 'CTB', 'Trenetto', '#FFD100', '#6CACE4', 'fan', 35, 'Arena Gubbone', 14500],
+    ['Porto Albano Calcio', 'POE52', 'Albano', '#FFFFFF', '#FFD100', 'fan', 35, 'Arena Vilezia', 13500],
+    [
+      'AC Porto Amalara 1954',
+      'PAJ56',
+      'Porto Amalara',
+      '#E30613',
+      '#001F5B',
+      'selling',
+      35,
+      'Stadio Civico di Porto Amalara',
+      10500,
+    ],
+    ['Unione Galezia', 'GIE', 'Galezia', '#FFFFFF', '#000000', 'fan', 35, 'Arena Padello', 11000],
+    ['US Torate', 'TTE', 'Torate', '#E30613', '#6CACE4', 'fallen', 35, 'Stadio Civico di Torate', 10500],
     ['AC Roccia 1953', 'RRO', 'Roccia', '#FFFFFF', '#0057B8', 'youth', 34, 'Stadio Ferino', 13000],
     ['Corola Calcio 1900', 'COB25', 'Corola', '#000000', '#001F5B', 'historic', 34, 'Stadio Nuovo Valento', 11500],
+    [
+      'Sporting Castel Ferezia',
+      'CEU',
+      'Castel Ferezia',
+      '#000000',
+      '#0057B8',
+      'fan',
+      34,
+      'Stadio Civico di Castel Ferezia',
+      10500,
+    ],
+    ['Sassano Calcio', 'SAR63', 'Sassano', '#E30613', '#00843D', 'historic', 34, 'Stadio Leccia', 12000],
+    ['Virtus Monte Belana', 'MOU42', 'Monte Belana', '#6CACE4', '#FFFFFF', 'selling', 34, 'Arena Modago', 14000],
+    ['AC Valento', 'VAF29', 'Valento', '#FFFFFF', '#6A1B9A', 'historic', 34, 'Stadio Marento', 11500],
+    ['AC Porto Marucci 1915', 'PTC', 'Porto Marucci', '#000000', '#00843D', 'historic', 34, 'Stadio Miria', 11000],
+    ['AC Valetto', 'VAG30', 'Valetto', '#FFFFFF', '#6CACE4', 'historic', 34, 'Stadio Civico di Valetto', 13500],
+    ['Ferino Calcio', 'FEK', 'Ferino', '#6A1B9A', '#6CACE4', 'selling', 34, 'Arena Trenezia', 14000],
+    [
+      'US Santano sul Mare',
+      'SAU66',
+      'Santano sul Mare',
+      '#6CACE4',
+      '#FFD100',
+      'youth',
+      34,
+      'Stadio Nuovo Frascana',
+      14000,
+    ],
+    ['Pro Padana', 'PAH55', 'Padana', '#001F5B', '#FFD100', 'fan', 34, 'Stadio Padona', 9500],
+    ['Fosana Calcio', 'FOU', 'Fosana', '#FFD100', '#000000', 'youth', 34, 'Arena Coretto', 13000],
+    ['Toria Calcio 1940', 'TOJ32', 'Toria', '#000000', '#001F5B', 'fan', 34, 'Stadio Civico di Toria', 13000],
+    [
+      'Sporting Monte Cestone',
+      'MOA48',
+      'Cestone',
+      '#6A1B9A',
+      '#000000',
+      'historic',
+      34,
+      'Stadio Comunale di Cestone',
+      14000,
+    ],
+    ['Fidelis Cestento', 'FIC', 'Cestento', '#0057B8', '#E30613', 'historic', 34, 'Stadio Nuovo Vilucci', 14000],
+    ['AC Ponale', 'PLD', 'Ponale', '#6CACE4', '#001F5B', 'fan', 34, 'Stadio Civico di Ponale', 13000],
+    ['Borgo Ravia Calcio', 'BRP37', 'Borgo Ravia', '#FFD100', '#000000', 'historic', 34, 'Stadio Marello', 12000],
+    ['FC Arezone sul Mare', 'ANP', 'Arezone sul Mare', '#0057B8', '#000000', 'fan', 34, 'Stadio Nuovo Orvara', 10500],
     [
       'Castel Trenento Calcio',
       'CTR',
@@ -7110,6 +7477,33 @@
       9500,
     ],
     ['Vis Fosia', 'VIL34', 'Fosia', '#E30613', '#FFD100', 'historic', 33, 'Arena Casago', 10000],
+    ['Iuventa Amalucci', 'IUD', 'Amalucci', '#6CACE4', '#FFD100', 'historic', 33, 'Stadio Civico di Amalucci', 9000],
+    ['AC Borgo Ravone 1913', 'BOP37', 'Ravone', '#6CACE4', '#FFD100', 'fallen', 33, 'Stadio Comunale di Ravone', 13000],
+    ['Atletico Borgo Valento', 'BOR39', 'Borgo Valento', '#00843D', '#001F5B', 'historic', 33, 'Stadio Albucci', 9500],
+    ['ASD Monento 1888', 'MTO', 'Monento', '#0057B8', '#001F5B', 'youth', 33, 'Stadio Civico di Monento', 10500],
+    ['Iuventa Castel Pescezia', 'IUF', 'Pescezia', '#0057B8', '#E30613', 'historic', 33, 'Stadio Nuovo Roccara', 13000],
+    ['Atletico Marezia', 'MAQ62', 'Marezia', '#6CACE4', '#6A1B9A', 'fan', 33, 'Stadio Civico di Marezia', 13500],
+    ['AC San Gubbucci', 'GUU', 'Gubbucci', '#00843D', '#6CACE4', 'fan', 33, 'Stadio Civico di Gubbucci', 11500],
+    ['SS Venara', 'SSV', 'Venara', '#6A1B9A', '#00843D', 'fallen', 33, 'Stadio Nuovo Borara', 9000],
+    [
+      'Virtus Villa Vilola',
+      'VIR39',
+      'Villa Vilola',
+      '#FFFFFF',
+      '#6A1B9A',
+      'historic',
+      33,
+      'Stadio Comunale di Villa Vilola',
+      13500,
+    ],
+    ['Mirezia Calcio', 'MIF29', 'Mirezia', '#000000', '#0057B8', 'fallen', 33, 'Stadio Civico di Mirezia', 12000],
+    ['AC Roccino al Monte', 'ROR39', 'Roccino al Monte', '#6A1B9A', '#000000', 'fan', 33, 'Stadio Nuovo Sania', 11000],
+    ['Unione Mirate', 'MIG30', 'Mirate', '#E30613', '#0057B8', 'fan', 33, 'Stadio Nuovo Venone', 9500],
+    ['Atletico Piola sul Mare', 'PLG', 'Piola sul Mare', '#FFD100', '#6CACE4', 'youth', 33, 'Stadio Fabrara', 12000],
+    ['Iuventa Sassone', 'IUE', 'Sassone', '#6CACE4', '#FFD100', 'fan', 32, 'Stadio Nuovo Fabrucci', 12500],
+    ['US Castel Arezetto', 'CAK57', 'Arezetto', '#E30613', '#6CACE4', 'historic', 32, 'Stadio Sanone', 10500],
+    ['AC Modago', 'MGA', 'Modago', '#0057B8', '#00843D', 'fan', 32, 'Arena Frascola', 9500],
+    ['Virtus Monte Piello', 'MOB49', 'Monte Piello', '#E30613', '#FFFFFF', 'fan', 32, 'Stadio Mirate', 11500],
   ];
   FM.D.CLUBS_JP4 = [
     ['Shinsakuramoto City', 'SCI', 'Shinsakuramoto', '#001F5B', '#00843D', 'historic', 43, 'Kitano Park', 16500],
@@ -7218,18 +7612,88 @@
   FM.D.CLUBS_NO4 = [
     ['Freborg BK', 'FRV', 'Freborg', '#00843D', '#0057B8', 'youth', 43, 'Dalby Idrætspark', 18000],
     ['Fremad Askløkke', 'ASR', 'Askløkke', '#E30613', '#FFD100', 'selling', 43, 'Askløkke Idrætsanlæg', 18000],
+    ['Fremad Vesterstrandø', 'VNF', 'Vesterstrandø', '#FFD100', '#001F5B', 'fallen', 43, 'Østdal Park', 14000],
+    ['Østholm IL', 'STU42', 'Østholm', '#E30613', '#0057B8', 'fan', 43, 'Gammelund Park', 15500],
     ['FC Bjørnvang', 'BJG', 'Bjørnvang', '#E30613', '#6A1B9A', 'youth', 42, 'Bjørnvang Arena', 15000],
+    ['Fremad Vestrud', 'VES40', 'Vestrud', '#000000', '#0057B8', 'fallen', 42, 'Østgård Stadion', 17500],
+    ['Gammelfors IF', 'GAF29', 'Gammelfors', '#000000', '#FFD100', 'selling', 42, 'Vestborg Idrætspark', 13000],
+    ['Fremad Langdal', 'LAF53', 'Langdal', '#FFFFFF', '#00843D', 'historic', 41, 'Bergård Park', 15000],
+    ['Langborg FK', 'LAG54', 'Langborg', '#E30613', '#6A1B9A', 'fallen', 41, 'Langborg Arena', 16000],
+    ['Fjordvik FK', 'FJB', 'Fjordvik', '#00843D', '#FFD100', 'fan', 41, 'Brovik Park', 13000],
+    ['Dalnæs Fotball', 'DAJ32', 'Dalnæs', '#00843D', '#001F5B', 'fallen', 41, 'Skovsund Idrætspark', 16500],
+    ['Nyrud IF', 'NYR', 'Nyrud', '#00843D', '#000000', 'historic', 41, 'Nyrud Arena', 13500],
+    ['FC Kilstad', 'KIJ32', 'Kilstad', '#00843D', '#FFFFFF', 'historic', 41, 'Hednæs Park', 15000],
+    ['Storløkke BK', 'STT41', 'Storløkke', '#6A1B9A', '#0057B8', 'fallen', 41, 'Storløkke Arena', 12500],
+    ['BK Nesgård', 'NEN36', 'Nesgård', '#E30613', '#000000', 'fan', 41, 'Nesgård Idrætsanlæg', 13500],
+    ['Østborg IF', 'SRJ', 'Østborg', '#00843D', '#6A1B9A', 'fan', 41, 'Dalholm Park', 13000],
     ['FC Nordøstrud', 'NUH', 'Nordøstrud', '#001F5B', '#FFD100', 'fan', 40, 'Nesvik Park', 14000],
     ['Nyø IF', 'NYY', 'Nyø', '#001F5B', '#6A1B9A', 'selling', 40, 'Sydstrup Park', 12000],
+    ['Sønderstrup Boldklub', 'SNF', 'Sønderstrup', '#0057B8', '#6A1B9A', 'fallen', 40, 'Veststad Stadion', 14000],
+    ['Strandborg Fotball', 'STQ38', 'Strandborg', '#6CACE4', '#FFFFFF', 'youth', 40, 'Dyrborg Park', 15000],
+    ['Ålby FK', 'ALA96', 'Ålby', '#0057B8', '#00843D', 'selling', 40, 'Gammelrud Park', 12500],
+    ['FC Lilleø', 'LIN36', 'Lilleø', '#6A1B9A', '#001F5B', 'historic', 40, 'Østfors Idrætspark', 15000],
+    ['Gammeldal IF', 'GAE28', 'Gammeldal', '#0057B8', '#00843D', 'fallen', 40, 'Soldal Stadion', 15500],
+    ['Marsund IF', 'MAR63', 'Marsund', '#6CACE4', '#000000', 'historic', 40, 'Marsund Arena', 14500],
+    ['Storvang IF', 'STS40', 'Storvang', '#000000', '#0057B8', 'fan', 40, 'Vestnæs Idrætspark', 15000],
+    ['FC Gamleringlund', 'GNA', 'Gamleringlund', '#FFFFFF', '#001F5B', 'selling', 40, 'Storholm Stadion', 17000],
+    ['Frerud Fotball', 'FRE28', 'Frerud', '#001F5B', '#6A1B9A', 'fan', 40, 'Brovik Idrætspark', 13500],
     ['Strandvang FK', 'STE28', 'Strandvang', '#00843D', '#E30613', 'historic', 39, 'Askdal Stadion', 13500],
     ['BK Skovholm', 'SKB', 'Skovholm', '#00843D', '#FFD100', 'fan', 39, 'Nesløkke Park', 14000],
+    ['Freø IF', 'FRC26', 'Freø', '#0057B8', '#000000', 'fan', 39, 'Freø Arena', 12500],
+    ['Østnæs BK', 'STP37', 'Østnæs', '#000000', '#6CACE4', 'historic', 39, 'Storvang Stadion', 15000],
+    ['Åldal IL', 'ALB97', 'Åldal', '#0057B8', '#001F5B', 'fallen', 39, 'Bergholm Idrætspark', 16000],
+    ['Nynesrud Boldklub', 'NYF', 'Nynesrud', '#000000', '#0057B8', 'youth', 39, 'Nynesrud Arena', 12000],
+    ['Hednæs IL', 'HED27', 'Hednæs', '#0057B8', '#FFD100', 'historic', 39, 'Hednæs Arena', 16000],
+    ['Marfors IF', 'MAS64', 'Marfors', '#001F5B', '#0057B8', 'selling', 39, 'Strandholm Stadion', 15500],
+    ['IK Holfors', 'HON36', 'Holfors', '#001F5B', '#000000', 'historic', 39, 'Lilleø Idrætspark', 13000],
+    ['Kildal FK', 'KIH31', 'Kildal', '#00843D', '#000000', 'historic', 38, 'Kildal Arena', 15500],
+    ['Storvik IL', 'STN36', 'Storvik', '#6CACE4', '#0057B8', 'historic', 38, 'Havang Park', 15000],
+    ['Søndersolstad IF', 'SAX69', 'Søndersolstad', '#E30613', '#000000', 'fallen', 38, 'Hedvik Stadion', 15000],
+    ['Nordaskløkke IF', 'NON36', 'Nordaskløkke', '#001F5B', '#00843D', 'fallen', 38, 'Nordaskløkke Arena', 15000],
+    ['Nyvik FK', 'NYV', 'Nyvik', '#000000', '#E30613', 'selling', 38, 'Nyvik Arena', 13500],
+    ['IK Hedsund', 'HNB', 'Hedsund', '#0057B8', '#001F5B', 'fallen', 38, 'Hedsund Idrætsanlæg', 12500],
+    ['Dalstrup IL', 'DAL34', 'Dalstrup', '#00843D', '#001F5B', 'historic', 38, 'Nyløkke Stadion', 13000],
+    ['FC Ålsund', 'ALE100', 'Ålsund', '#E30613', '#FFD100', 'fan', 38, 'Ålsund Idrætsanlæg', 11500],
     ['Nordlund FK', 'NNB', 'Nordlund', '#000000', '#FFD100', 'fan', 37, 'Fjordstad Stadion', 14000],
+    ['Frestrup IF', 'FRD27', 'Frestrup', '#001F5B', '#FFD100', 'youth', 37, 'Storby Stadion', 14500],
+    ['Bjørnø FK', 'BJD', 'Bjørnø', '#FFD100', '#6A1B9A', 'fallen', 37, 'Bjørnø Idrætsanlæg', 12000],
+    ['FC Daløkke', 'DAK33', 'Daløkke', '#0057B8', '#000000', 'fan', 37, 'Skovik Stadion', 11000],
     ['Bergstrup IL', 'BES40', 'Bergstrup', '#FFD100', '#FFFFFF', 'fan', 36, 'Gammelstad Park', 11500],
     ['Ringvang Fotball', 'RIR', 'Ringvang', '#FFFFFF', '#6CACE4', 'historic', 36, 'Stornæs Stadion', 10500],
+    ['Havløkke FK', 'HAG54', 'Havløkke', '#E30613', '#00843D', 'fan', 36, 'Ringård Stadion', 14500],
+    ['Ålund BK', 'ALZ95', 'Ålund', '#000000', '#0057B8', 'selling', 36, 'Nordby Idrætspark', 13000],
+    ['Nordborg BK', 'NOM35', 'Nordborg', '#000000', '#FFFFFF', 'fan', 36, 'Strandgård Idrætspark', 12500],
+    ['Vestermardal IF', 'VET41', 'Vestermardal', '#6A1B9A', '#000000', 'fallen', 36, 'Vestermardal Arena', 14000],
+    ['Ålrud BK', 'ALC98', 'Ålrud', '#FFFFFF', '#6A1B9A', 'youth', 36, 'Frefors Stadion', 13000],
+    ['Fremad Solgård', 'SOZ', 'Solgård', '#FFD100', '#E30613', 'historic', 36, 'Strandnæs Stadion', 14500],
+    ['BK Fjordholm', 'FJM', 'Fjordholm', '#001F5B', '#000000', 'fan', 36, 'Strandstrup Stadion', 11500],
+    ['Askgård FK', 'ASW', 'Askgård', '#6A1B9A', '#0057B8', 'selling', 35, 'Kildal Idrætspark', 14500],
+    ['Østerskovdal BK', 'STM35', 'Østerskovdal', '#00843D', '#FFD100', 'historic', 35, 'Østerskovdal Arena', 10500],
+    ['Lilleholm Fotball', 'LIM35', 'Lilleholm', '#E30613', '#000000', 'fan', 35, 'Lilleholm Idrætsanlæg', 11500],
+    ['Skovang FK', 'SKJ', 'Skovang', '#FFFFFF', '#001F5B', 'youth', 35, 'Skovang Arena', 11000],
+    ['Dalø Fotball', 'DAH31', 'Dalø', '#6A1B9A', '#E30613', 'historic', 35, 'Dalø Arena', 13000],
+    ['Askrud IF', 'ASX', 'Askrud', '#FFD100', '#6A1B9A', 'fan', 35, 'Askrud Arena', 14500],
+    ['Gammelund FK', 'GAG30', 'Gammelund', '#000000', '#6CACE4', 'fan', 35, 'Gammelund Arena', 11000],
     ['BK Gammelø', 'GAH', 'Gammelø', '#6CACE4', '#E30613', 'selling', 34, 'Gammelø Idrætsanlæg', 9500],
+    ['Vesterlillegård IF', 'VER39', 'Vesterlillegård', '#E30613', '#00843D', 'youth', 34, 'Kilstad Stadion', 14000],
+    ['FC Strandløkke', 'STR39', 'Strandløkke', '#000000', '#0057B8', 'historic', 34, 'Bjørnborg Idrætspark', 9500],
+    ['Berglund FK', 'BEE52', 'Berglund', '#FFD100', '#00843D', 'historic', 34, 'Berglund Idrætsanlæg', 9500],
+    ['IK Broholm', 'BRQ38', 'Broholm', '#6CACE4', '#00843D', 'fan', 34, 'Askvik Idrætspark', 12000],
     ['BK Hedvang', 'HEW', 'Hedvang', '#6CACE4', '#FFD100', 'selling', 33, 'Skovborg Park', 13000],
     ['Strandal FK', 'STF29', 'Strandal', '#FFFFFF', '#0057B8', 'fan', 33, 'Dyrfors Park', 12500],
+    ['FC Hedby', 'HEC26', 'Hedby', '#6CACE4', '#00843D', 'fan', 33, 'Ålvik Stadion', 14000],
+    ['Skovdal Boldklub', 'SKG', 'Skovdal', '#FFD100', '#6CACE4', 'fallen', 33, 'Skovdal Idrætsanlæg', 12500],
+    ['Veststad Fotball', 'VAJ32', 'Veststad', '#00843D', '#0057B8', 'fan', 33, 'Veststad Idrætsanlæg', 12500],
+    ['Fjordrud IF', 'FJD', 'Fjordrud', '#0057B8', '#FFD100', 'selling', 33, 'Fjordrud Idrætsanlæg', 10000],
+    ['Nestrup BK', 'NEM35', 'Nestrup', '#001F5B', '#6CACE4', 'historic', 33, 'Nestrup Arena', 9500],
+    ['Ålnæs FK', 'ALD99', 'Ålnæs', '#E30613', '#00843D', 'fan', 33, 'Ålnæs Arena', 9500],
+    ['BK Sønderasknæs', 'SNH', 'Sønderasknæs', '#E30613', '#001F5B', 'youth', 33, 'Gammelgård Stadion', 13000],
+    ['Ringrud Fotball', 'RIT', 'Ringrud', '#00843D', '#E30613', 'selling', 33, 'Ringrud Arena', 9000],
     ['FC Nydal', 'NYD', 'Nydal', '#000000', '#6CACE4', 'historic', 32, 'Nydal Arena', 10500],
+    ['Østløkke FK', 'SKH', 'Østløkke', '#FFFFFF', '#001F5B', 'fan', 32, 'Østløkke Arena', 8500],
+    ['Skovnæs IF', 'SKS', 'Skovnæs', '#6CACE4', '#00843D', 'fan', 32, 'Neslund Park', 11000],
+    ['Havlund BK', 'HAH55', 'Havlund', '#000000', '#001F5B', 'fan', 32, 'Skovang Stadion', 9500],
+    ['BK Marvik', 'MAT65', 'Marvik', '#E30613', '#000000', 'historic', 32, 'Marvik Arena', 11000],
   ];
   FM.D.CLUBS_PL4 = [
     ['MKS Rybnówka', 'RYG', 'Rybnówka', '#00843D', '#000000', 'historic', 43, 'Stadion Miejski im. Gorzów', 14000],
@@ -7377,17 +7841,149 @@
       'Estádio Alcobouro',
       14500,
     ],
+    ['Castinha FC', 'CHX45', 'Castinha', '#FFFFFF', '#6CACE4', 'fan', 43, 'Estádio Municipal de Castinha', 17000],
+    ['Alvorães FC', 'ALK105', 'Alvorães', '#E30613', '#6A1B9A', 'fan', 43, 'Estádio Municipal de Alvorães', 18500],
     ['SC Ferrais', 'FES', 'Ferrais', '#00843D', '#0057B8', 'historic', 42, 'Complexo Desportivo Ferrais', 17000],
+    ['Sporting Clube de Ferreiro', 'FRO', 'Ferreiro', '#E30613', '#6A1B9A', 'fan', 42, 'Arena Alvorada', 16500],
+    ['Naval Tavirela', 'NAG54', 'Tavirela', '#001F5B', '#6A1B9A', 'historic', 42, 'Estádio Monchão', 16500],
+    [
+      'Santães Atlético Clube',
+      'SEN36',
+      'Santães',
+      '#6CACE4',
+      '#E30613',
+      'historic',
+      42,
+      'Estádio Municipal de Santães',
+      16500,
+    ],
+    ['União Gaiela', 'GAJ32', 'Gaiela', '#E30613', '#0057B8', 'historic', 42, 'Estádio Barceira', 17000],
     ['Santa Mirinha FC', 'MHA', 'Mirinha', '#6CACE4', '#FFD100', 'youth', 41, 'Estádio Gaiinha', 14500],
+    ['Naval Portães', 'NAF53', 'Portães', '#001F5B', '#6CACE4', 'selling', 41, 'Estádio Nova Mirura', 16500],
+    ['Grémio Santa Penares', 'PEA48', 'Penares', '#FFD100', '#0057B8', 'youth', 41, 'Estádio Nova Valenais', 13500],
     ['Racing Nazarão', 'NAU42', 'Nazarão', '#6A1B9A', '#001F5B', 'historic', 40, 'Estádio Paiveiro', 16000],
     ['Atlético Vila Vilais', 'VIM35', 'Vilais', '#000000', '#6CACE4', 'historic', 40, 'Estádio Ovarinha', 14000],
+    ['GD Vila Carta', 'GDV', 'Carta', '#E30613', '#001F5B', 'youth', 40, 'Estádio Nova Moncorão', 13000],
     ['União Vendouro', 'VRO', 'Vendouro', '#E30613', '#FFD100', 'historic', 39, 'Complexo Desportivo Vendouro', 13500],
+    ['União Ferrinha', 'FHA', 'Ferrinha', '#0057B8', '#000000', 'historic', 39, 'Estádio Municipal de Ferrinha', 15500],
+    ['Grémio Nova Castão', 'NOT41', 'Nova Castão', '#FFFFFF', '#E30613', 'fallen', 39, 'Estádio Nova Sesimares', 15500],
+    [
+      'Naval Argais do Mar',
+      'NAH55',
+      'Argais do Mar',
+      '#FFD100',
+      '#00843D',
+      'selling',
+      39,
+      'Estádio Nova Tominha',
+      14000,
+    ],
+    [
+      'Gouveira do Vale FC',
+      'GOY',
+      'Gouveira do Vale',
+      '#FFD100',
+      '#6CACE4',
+      'historic',
+      39,
+      'Complexo Desportivo Gouveira do Vale',
+      13500,
+    ],
+    [
+      'Clube Boa Ferra',
+      'BOW44',
+      'Boa Ferra',
+      '#FFFFFF',
+      '#6CACE4',
+      'selling',
+      39,
+      'Complexo Desportivo Boa Ferra',
+      16000,
+    ],
+    ['Desportivo Estrura', 'DEK', 'Estrura', '#FFFFFF', '#00843D', 'fallen', 38, 'Complexo Desportivo Estrura', 14000],
+    [
+      'Esporte Clube Alto Gouvura',
+      'ATM',
+      'Alto Gouvura',
+      '#6CACE4',
+      '#FFFFFF',
+      'youth',
+      38,
+      'Estádio Braganeira',
+      15000,
+    ],
+    [
+      'Sporting Nazareiro',
+      'NAJ56',
+      'Nazareiro',
+      '#FFD100',
+      '#000000',
+      'fan',
+      38,
+      'Estádio Municipal de Nazareiro',
+      11500,
+    ],
+    ['Casta Atlético Clube', 'CTC', 'Casta', '#000000', '#00843D', 'selling', 38, 'Estádio Elvada', 13000],
+    ['Sporting Lagais', 'LAH55', 'Lagais', '#0057B8', '#E30613', 'historic', 38, 'Complexo Desportivo Lagais', 15000],
+    ['Grémio Campo de Paiva', 'CAR63', 'Campo de Paiva', '#E30613', '#6A1B9A', 'selling', 38, 'Estádio Estrura', 15000],
+    ['Desportivo Alto Moncorais', 'DVO', 'Moncorais', '#FFFFFF', '#E30613', 'historic', 38, 'Estádio Olivouro', 12000],
     ['Atlético Moncorada', 'MDA', 'Moncorada', '#6CACE4', '#001F5B', 'fan', 37, 'Arena Ferrinha', 12000],
     ['GD Matosães', 'GGA', 'Matosães', '#00843D', '#6A1B9A', 'fallen', 37, 'Estádio Municipal de Matosães', 11000],
+    ['Grémio Castura', 'CAP61', 'Castura', '#00843D', '#6A1B9A', 'historic', 37, 'Complexo Desportivo Castura', 12000],
+    ['Clube Desportivo Mirouro', 'DEL', 'Mirouro', '#6A1B9A', '#6CACE4', 'fan', 37, 'Arena Pombura', 11000],
+    ['Atlético Mira', 'MIJ32', 'Mira', '#6CACE4', '#000000', 'fan', 37, 'Estádio Tavireira', 11500],
+    ['Esporte Clube Guimães', 'GUW', 'Guimães', '#00843D', '#6CACE4', 'selling', 37, 'Arena Alvora', 11000],
     ['Desportivo Moncorela', 'DED', 'Moncorela', '#FFD100', '#FFFFFF', 'selling', 36, 'Estádio Penela', 12000],
+    ['Sporting São Sesimais', 'SSM', 'São Sesimais', '#FFD100', '#6CACE4', 'fan', 36, 'Estádio Sesimela', 11500],
+    [
+      'Porto Figães Futebol Clube',
+      'PFI',
+      'Porto Figães',
+      '#E30613',
+      '#6A1B9A',
+      'historic',
+      36,
+      'Complexo Desportivo Porto Figães',
+      12000,
+    ],
+    ['Grémio Tomeira', 'TOK33', 'Tomeira', '#000000', '#FFFFFF', 'youth', 36, 'Arena Tomeira', 12000],
     ['Associação Elva', 'ELG', 'Elva', '#E30613', '#6CACE4', 'historic', 35, 'Estádio Alentela', 14500],
+    ['Racing Cartais', 'CAQ62', 'Cartais', '#6CACE4', '#FFD100', 'fan', 35, 'Estádio Leirela', 14000],
+    ['GD Peneiro do Vale', 'GGB', 'Peneiro do Vale', '#FFD100', '#00843D', 'fan', 35, 'Estádio Alvorela', 14000],
+    ['GD Olivouro', 'GDO', 'Olivouro', '#FFD100', '#6A1B9A', 'youth', 35, 'Estádio Ovarão', 11500],
+    ['Clube Vila Sesiminha', 'VIS40', 'Sesiminha', '#6A1B9A', '#0057B8', 'youth', 35, 'Estádio Lousares', 14500],
+    ['Sporting Paivais', 'PAL58', 'Paivais', '#FFD100', '#6A1B9A', 'fan', 35, 'Complexo Desportivo Paivais', 12500],
+    ['Amaral EC', 'AML', 'Amaral', '#0057B8', '#00843D', 'historic', 35, 'Estádio Municipal de Amaral', 12500],
     ['Sporting São de Figura', 'SAE52', 'São de Figura', '#0057B8', '#FFD100', 'fan', 34, 'Estádio Estrada', 11500],
     ['Esporte Clube Braganura', 'BRK33', 'Braganura', '#0057B8', '#6A1B9A', 'fallen', 34, 'Arena Leirouro', 10000],
+    [
+      'Esporte Clube Santela',
+      'SAY70',
+      'Santela',
+      '#0057B8',
+      '#6CACE4',
+      'fallen',
+      34,
+      'Estádio Municipal de Santela',
+      9500,
+    ],
+    ['Grémio Gouvada', 'GOX', 'Gouvada', '#FFFFFF', '#6CACE4', 'historic', 34, 'Complexo Desportivo Gouvada', 14000],
+    ['Alentinha EC', 'AHD', 'Alentinha', '#FFD100', '#001F5B', 'selling', 34, 'Estádio Municipal de Alentinha', 13000],
+    ['Sport Clube Alto Marval', 'ALL106', 'Marval', '#00843D', '#000000', 'historic', 34, 'Estádio Matosela', 10500],
+    ['Grémio São Elvais', 'SEP37', 'Elvais', '#6A1B9A', '#000000', 'fan', 34, 'Estádio Municipal de Elvais', 10500],
+    ['GD Porto Lousinha', 'GDB', 'Porto Lousinha', '#FFD100', '#00843D', 'fan', 33, 'Estádio Alvora', 13000],
+    ['Braganeiro FC', 'BFC', 'Braganeiro', '#E30613', '#FFD100', 'historic', 33, 'Arena Moncheiro', 11000],
+    [
+      'Sport Clube São Tomada',
+      'SAZ71',
+      'Tomada',
+      '#E30613',
+      '#001F5B',
+      'historic',
+      33,
+      'Complexo Desportivo Tomada',
+      12000,
+    ],
     ['Santa Castares EC', 'CEH', 'Castares', '#6CACE4', '#6A1B9A', 'fan', 32, 'Estádio Aveiro', 10000],
     ['Sporting Moncorão', 'MON36', 'Moncorão', '#FFD100', '#E30613', 'fan', 31, 'Arena Lamela', 11000],
   ];
@@ -7793,25 +8389,122 @@
   ];
   FM.D.CLUBS_SE4 = [
     ['GIF Nynäs', 'GNY', 'Nynäs', '#6A1B9A', '#FFD100', 'historic', 43, 'Sigfors IP', 17500],
+    ['Norra Falberg FK', 'NOR39', 'Falberg', '#6CACE4', '#00843D', 'fallen', 43, 'Falby Arena', 13500],
     ['Vasalund Östra Sigberg', 'VAC26', 'Sigberg', '#6CACE4', '#0057B8', 'youth', 42, 'Falhamn Arena', 13000],
+    ['Västra Borhamn BK', 'VAK33', 'Borhamn', '#6CACE4', '#000000', 'fallen', 42, 'Borhamn Idrottspark', 15000],
+    ['Vasalund Karlby', 'VAL34', 'Karlby', '#00843D', '#6A1B9A', 'selling', 42, 'Karlby Idrottspark', 15000],
+    ['Sleipner Ekhamn', 'SEM35', 'Ekhamn', '#FFD100', '#6CACE4', 'fallen', 42, 'Söhamnvallen', 16000],
+    ['FC Östra Väsköping', 'OSZ', 'Väsköping', '#E30613', '#6A1B9A', 'fallen', 42, 'Falforsvallen', 14000],
+    ['GIF Väshamn', 'GIV', 'Väshamn', '#FFFFFF', '#00843D', 'fan', 42, 'Väshamn Stadion', 17500],
+    ['Ekberg FF', 'EKB', 'Ekberg', '#FFFFFF', '#001F5B', 'fallen', 42, 'Nynfors IP', 13500],
     ['IFK Norby', 'IFK', 'Norby', '#00843D', '#6CACE4', 'selling', 41, 'Norby Stadion', 15000],
     ['Gävstad FF', 'GAV', 'Gävstad', '#E30613', '#FFFFFF', 'historic', 41, 'Lidsundvallen', 12500],
+    ['Vasalund Väsnäs', 'VAM35', 'Väsnäs', '#00843D', '#FFFFFF', 'historic', 41, 'Väsnäs Stadion', 15000],
+    ['Nya Väsund IF', 'NYG', 'Nya Väsund', '#0057B8', '#6CACE4', 'fan', 41, 'Nya Väsund Stadion', 16000],
+    ['IF Nya Linby', 'NYJ', 'Linby', '#FFFFFF', '#6CACE4', 'historic', 41, 'Linby Idrottspark', 15500],
+    ['Örnvik Boll', 'ORB25', 'Örnvik', '#6CACE4', '#00843D', 'fan', 41, 'Örnvik Stadion', 16500],
     ['FC Moby', 'MOP37', 'Moby', '#E30613', '#FFD100', 'youth', 40, 'Gävik Arena', 13500],
+    ['Norra Lidby Boll', 'NRB', 'Norra Lidby', '#00843D', '#0057B8', 'fan', 40, 'Nynköping Arena', 15500],
+    ['GIF Borvik', 'GIG', 'Borvik', '#FFFFFF', '#001F5B', 'historic', 40, 'Borvik Idrottspark', 15000],
+    ['Brage Lidstad', 'BRR39', 'Lidstad', '#000000', '#0057B8', 'fan', 40, 'Vetsundvallen', 15500],
+    ['GIF Norra Söstad', 'GIH', 'Söstad', '#0057B8', '#6A1B9A', 'fan', 40, 'Lidnäs Arena', 13000],
+    ['Sleipner Söfors', 'SLA24', 'Söfors', '#000000', '#FFD100', 'historic', 40, 'Vävikvallen', 16500],
+    ['Gamla Norsund BK', 'GLC', 'Gamla Norsund', '#6CACE4', '#E30613', 'fan', 40, 'Falvikvallen', 13000],
+    ['Nya Halholm Boll', 'NYK', 'Nya Halholm', '#E30613', '#0057B8', 'historic', 40, 'Sighamnvallen', 15000],
     ['Vasalund Norberg', 'VNO', 'Norberg', '#E30613', '#6A1B9A', 'historic', 39, 'Norberg Idrottspark', 15500],
+    ['Sleipner Sigsund', 'SLV', 'Sigsund', '#E30613', '#0057B8', 'historic', 39, 'Väberg IP', 14000],
+    ['IF Södra Vetfors', 'SOC26', 'Vetfors', '#001F5B', '#000000', 'selling', 39, 'Sigvikvallen', 12000],
+    ['Brage Skelfors', 'BSK', 'Skelfors', '#001F5B', '#E30613', 'historic', 39, 'Movik IP', 14000],
+    ['Sigholm Boll', 'SIJ32', 'Sigholm', '#000000', '#6A1B9A', 'youth', 39, 'Sigholm Idrottspark', 12000],
+    ['Norö FK', 'NOS40', 'Norö', '#E30613', '#001F5B', 'historic', 39, 'Norö Idrottspark', 11500],
+    [
+      'Vasalund Västra Väshamn',
+      'VAP37',
+      'Västra Väshamn',
+      '#FFD100',
+      '#FFFFFF',
+      'historic',
+      39,
+      'Transtad Arena',
+      12000,
+    ],
+    [
+      'Gamla Sundshamn BK',
+      'GSU',
+      'Gamla Sundshamn',
+      '#FFD100',
+      '#E30613',
+      'fan',
+      39,
+      'Gamla Sundshamn Idrottspark',
+      13000,
+    ],
+    ['Vasalund Nynholm', 'VAQ38', 'Nynholm', '#6CACE4', '#00843D', 'historic', 39, 'Nynholm Idrottspark', 15000],
     ['FC Ulrholm', 'ULR', 'Ulrholm', '#00843D', '#6A1B9A', 'fan', 38, 'Halby IP', 14500],
     ['Nya Ronberg FK', 'NYC', 'Nya Ronberg', '#001F5B', '#6CACE4', 'fan', 38, 'Lidberg IP', 12500],
+    ['FC Sösund', 'SOA24', 'Sösund', '#FFD100', '#E30613', 'fan', 38, 'Skelstad IP', 11500],
+    ['Östra Väsö FF', 'OSY', 'Väsö', '#001F5B', '#FFFFFF', 'youth', 38, 'Väsö Idrottspark', 14000],
+    ['IK Nya Borköping', 'NYH', 'Borköping', '#0057B8', '#6A1B9A', 'historic', 38, 'Borköping Idrottspark', 13500],
+    ['Brage Halö', 'BGA', 'Halö', '#FFFFFF', '#000000', 'fan', 38, 'Borholm IP', 13500],
+    ['Vasalund Vähamn', 'VVA', 'Vähamn', '#000000', '#E30613', 'historic', 38, 'Vähamn Stadion', 13500],
+    ['Väköping BK', 'VNG', 'Väköping', '#6CACE4', '#001F5B', 'selling', 38, 'Norsund Arena', 13500],
     ['IFK Sigvik', 'IFS', 'Sigvik', '#FFFFFF', '#6CACE4', 'historic', 37, 'Väsnäs Arena', 12500],
+    ['Sleipner Väholm', 'SLX', 'Väholm', '#0057B8', '#000000', 'selling', 37, 'Falhamnvallen', 15500],
+    ['Sleipner Norra Halby', 'SLY', 'Norra Halby', '#FFD100', '#FFFFFF', 'fan', 37, 'Skelnäs Arena', 15000],
+    ['IK Solstad', 'SSO', 'Solstad', '#FFFFFF', '#E30613', 'fallen', 37, 'Solstad Idrottspark', 14500],
+    ['FC Sundsby', 'SUZ', 'Sundsby', '#E30613', '#FFD100', 'fan', 37, 'Vetstad IP', 13000],
+    ['Brage Solnäs', 'BRS40', 'Solnäs', '#001F5B', '#E30613', 'fan', 37, 'Eksundvallen', 13500],
+    ['IK Östra Moberg', 'OSB25', 'Moberg', '#001F5B', '#E30613', 'fan', 37, 'Tranberg IP', 13500],
+    ['Östra Kalnäs FF', 'OSC26', 'Kalnäs', '#000000', '#001F5B', 'fan', 37, 'Sigberg Arena', 11000],
+    ['Norra Solö IF', 'NSO', 'Solö', '#FFFFFF', '#6A1B9A', 'historic', 37, 'Transund Arena', 11500],
+    ['IFK Norra Skelköping', 'IFN', 'Skelköping', '#001F5B', '#0057B8', 'youth', 37, 'Skelköping Idrottspark', 11000],
     ['Tranhamn FF', 'TRN', 'Tranhamn', '#0057B8', '#FFD100', 'selling', 36, 'Skelby Arena', 15000],
+    ['IK Skelberg', 'SSL', 'Skelberg', '#001F5B', '#6A1B9A', 'fan', 36, 'Sundsby IP', 13000],
+    ['Ronäs IF', 'ROS40', 'Ronäs', '#E30613', '#001F5B', 'fan', 36, 'Ronberg Arena', 13000],
+    ['Södra Gävberg FK', 'SOB25', 'Gävberg', '#FFD100', '#6CACE4', 'historic', 36, 'Skelö Arena', 13500],
+    ['IFK Halhamn', 'IFB', 'Halhamn', '#FFD100', '#6CACE4', 'historic', 36, 'Halhamn Idrottspark', 13500],
+    ['Sleipner Hudnäs', 'SLB25', 'Hudnäs', '#E30613', '#000000', 'selling', 36, 'Vetfors Arena', 11000],
+    ['Brage Falnäs', 'BRT41', 'Falnäs', '#6A1B9A', '#6CACE4', 'fan', 36, 'Sundsholm IP', 12500],
     ['Sundsund FF', 'SUW', 'Sundsund', '#FFD100', '#000000', 'historic', 35, 'Skelvikvallen', 13500],
+    ['Sleipner Sigö', 'SLW', 'Sigö', '#0057B8', '#6CACE4', 'fan', 35, 'Sigö Stadion', 14000],
+    ['IF Halköping', 'HAJ56', 'Halköping', '#0057B8', '#001F5B', 'fan', 35, 'Halköping Idrottspark', 14000],
+    ['Västra Solfors IF', 'VSO', 'Västra Solfors', '#E30613', '#000000', 'fan', 35, 'Västra Solfors Stadion', 10500],
+    ['IFK Falvik', 'IFF', 'Falvik', '#E30613', '#6A1B9A', 'selling', 35, 'Lidsund Arena', 10000],
+    ['Norfors Boll', 'NOQ38', 'Norfors', '#000000', '#6CACE4', 'fan', 34, 'Norfors Stadion', 12500],
+    ['IFK Ekö', 'IFE', 'Ekö', '#6CACE4', '#0057B8', 'selling', 34, 'Ekö Stadion', 13000],
+    ['IFK Kalhamn', 'IKD', 'Kalhamn', '#00843D', '#FFD100', 'youth', 34, 'Kalhamn Idrottspark', 10500],
+    ['Sleipner Södra Gävsund', 'SLD27', 'Gävsund', '#FFFFFF', '#001F5B', 'fallen', 34, 'Gävsund Stadion', 11000],
+    ['Sleipner Nya Kalholm', 'SNY', 'Kalholm', '#6A1B9A', '#FFFFFF', 'fallen', 34, 'Kalholm Idrottspark', 12500],
     ['IFK Tranholm', 'IFT', 'Tranholm', '#FFFFFF', '#E30613', 'selling', 33, 'Mostadvallen', 9500],
+    ['Norra Vetsund FF', 'NOP37', 'Norra Vetsund', '#FFD100', '#0057B8', 'fan', 33, 'Norra Vetsund Stadion', 13500],
+    ['Karlsund IF', 'KAC50', 'Karlsund', '#FFFFFF', '#6A1B9A', 'historic', 33, 'Sundsköpingvallen', 12000],
+    ['FC Västra Nynö', 'VRF', 'Nynö', '#6CACE4', '#FFD100', 'fan', 33, 'Väsövallen', 10000],
+    ['Linäs FF', 'LIP37', 'Linäs', '#FFD100', '#E30613', 'youth', 33, 'Linäs Idrottspark', 12000],
+    ['Vasalund Gamla Söberg', 'VAN36', 'Söberg', '#FFD100', '#FFFFFF', 'historic', 33, 'Söberg Stadion', 10500],
+    ['Sleipner Kalköping', 'SLC26', 'Kalköping', '#000000', '#E30613', 'fallen', 33, 'Örnholm IP', 10500],
+    ['IFK Sigfors', 'IFC', 'Sigfors', '#000000', '#6CACE4', 'fallen', 33, 'Sigfors Idrottspark', 12500],
+    ['FC Sundsfors', 'SUA24', 'Sundsfors', '#FFFFFF', '#6A1B9A', 'fallen', 33, 'Sundsfors Stadion', 10500],
+    ['IF Karlnäs', 'KAD51', 'Karlnäs', '#FFD100', '#00843D', 'fallen', 33, 'Karlnäs Stadion', 13500],
+    ['IF Ulrköping', 'ULE', 'Ulrköping', '#00843D', '#FFFFFF', 'fan', 33, 'Ulrköping Stadion', 12500],
+    ['Norra Falvik IF', 'NFB', 'Norra Falvik', '#6A1B9A', '#001F5B', 'historic', 33, 'Norra Falvik Idrottspark', 9500],
     ['Lidsund IF', 'LID27', 'Lidsund', '#6A1B9A', '#001F5B', 'fan', 32, 'Sigö IP', 12500],
     ['Vasalund Örnfors', 'VOR', 'Örnfors', '#6A1B9A', '#FFD100', 'fallen', 32, 'Örnfors Stadion', 10000],
+    ['Östra Sövik IF', 'OSA24', 'Sövik', '#6A1B9A', '#6CACE4', 'youth', 32, 'Sövik Idrottspark', 9000],
+    ['IF Gävhamn', 'GAH31', 'Gävhamn', '#0057B8', '#6A1B9A', 'youth', 32, 'Borköping IP', 9000],
+    ['Brage Norra Falsund', 'BRU42', 'Norra Falsund', '#FFD100', '#FFFFFF', 'fan', 32, 'Gävfors Arena', 12500],
   ];
   FM.D.CLUBS_CH4 = [
+    ['Eintracht Heidburg 1920', 'HEF29', 'Heidburg', '#001F5B', '#0057B8', 'historic', 43, 'Stadion Brandorf', 15000],
+    ['Alemannia Lütwald', 'ALH103', 'Lütwald', '#001F5B', '#000000', 'youth', 43, 'Kronfeld-Stadion', 13500],
+    ['FSV Alt Elstein', 'AEC', 'Elstein', '#00843D', '#0057B8', 'fan', 43, 'Sportpark Eichof', 17000],
     ['Thalingen SC', 'THY', 'Thalingen', '#00843D', '#001F5B', 'selling', 42, 'Dillhof-Stadion', 16500],
     ['Fortuna Hirschtal', 'HIP', 'Hirschtal', '#E30613', '#001F5B', 'fallen', 42, 'Hirschtal-Arena', 14000],
     ['FSV Dornfurt 1945', 'DOD27', 'Dornfurt', '#00843D', '#E30613', 'fan', 41, 'Altingen-Stadion', 15000],
     ['Teutonia Marienfeld', 'MLH', 'Marienfeld', '#0057B8', '#00843D', 'youth', 41, 'Schwarzbrück-Stadion', 16000],
+    ['Preußen Klein Rheinheim', 'PRA24', 'Rheinheim', '#E30613', '#FFD100', 'selling', 41, 'Stadion Lindstein', 15000],
+    ['Eintracht Unter Rotstadt', 'UNU', 'Rotstadt', '#FFD100', '#00843D', 'fan', 41, 'Rotstadt-Arena', 14000],
+    ['Blau-Weiß Waldhausen', 'BLH', 'Waldhausen', '#6A1B9A', '#00843D', 'fan', 40, 'Stadion am Eberhof', 13500],
+    ['FC Goldstadt 1881', 'GOV', 'Goldstadt', '#E30613', '#FFD100', 'fan', 40, 'Goldstadt-Arena', 14000],
     ['Eintracht Steinbrück', 'STG30', 'Steinbrück', '#FFFFFF', '#6CACE4', 'youth', 39, 'Steinbrück-Arena', 16000],
     [
       'Eintracht Ober Westeringen',
@@ -7824,16 +8517,81 @@
       'Waldstadion Westeringen',
       12000,
     ],
+    ['Rot-Weiß Waldbrück', 'ROT41', 'Waldbrück', '#FFD100', '#6CACE4', 'fan', 39, 'Sportpark Furtburg', 16000],
+    ['TSV Ober Bachstadt', 'OEB', 'Bachstadt', '#0057B8', '#001F5B', 'fan', 39, 'Zellbrück-Stadion', 13000],
+    ['Union Wiesdorf', 'WIP', 'Wiesdorf', '#FFD100', '#0057B8', 'fan', 39, 'Stadion am Holzwald', 13000],
     ['Rot-Weiss Bachorst', 'RWE', 'Bachorst', '#00843D', '#000000', 'historic', 38, 'Stadion am Greifurt', 13500],
     ['Hansa Bachsee', 'HSA', 'Bachsee', '#0057B8', '#6CACE4', 'fallen', 38, 'Stadion am Westerdorf', 15500],
+    ['TSV Ober Hagau 1932', 'OBL', 'Ober Hagau', '#FFFFFF', '#0057B8', 'historic', 38, 'Sportpark Heidberg', 13500],
+    ['Germania Branstadt', 'BRV43', 'Branstadt', '#E30613', '#FFD100', 'fan', 37, 'Waldstadion Branstadt', 12000],
+    ['Arminia Dornau', 'ARK33', 'Dornau', '#00843D', '#001F5B', 'selling', 37, 'Grünburg-Stadion', 14500],
+    ['VfB Greifsee', 'GRK33', 'Greifsee', '#FFD100', '#001F5B', 'fan', 37, 'Niederingen-Stadion', 14500],
+    [
+      'Rot-Weiss Ober Lindbach',
+      'ROU42',
+      'Ober Lindbach',
+      '#E30613',
+      '#00843D',
+      'fallen',
+      37,
+      'Stadion Ahrweiler',
+      15000,
+    ],
+    ['Groß Kronhafen 1899', 'GRL34', 'Groß Kronhafen', '#FFD100', '#FFFFFF', 'fan', 37, 'Groß Kronhafen-Arena', 11000],
     ['Eintracht Bad Steinwald', 'BST', 'Bad Steinwald', '#000000', '#FFFFFF', 'selling', 36, 'Lütsee-Stadion', 13500],
     ['TSV Burgbrück 1894', 'BCK', 'Burgbrück', '#6CACE4', '#6A1B9A', 'fan', 36, 'Stadion Heidfeld', 14500],
     ['Borussia Klein Mühltal', 'BKL', 'Mühltal', '#0057B8', '#6A1B9A', 'fallen', 36, 'Waldstadion Mühltal', 11500],
+    ['Union Burghausen', 'BUM35', 'Burghausen', '#FFD100', '#000000', 'fallen', 36, 'Thalfeld-Stadion', 14500],
+    ['Alt Felshof 04', 'ALJ104', 'Felshof', '#001F5B', '#00843D', 'fan', 36, 'Sportpark Langhausen', 12000],
     ['Eintracht Rotal', 'ROE28', 'Rotal', '#6A1B9A', '#FFFFFF', 'fan', 35, 'Langau-Stadion', 14500],
+    ['Alemannia Groß Wiestal', 'ALF101', 'Wiestal', '#00843D', '#001F5B', 'fan', 35, 'Rothausen-Stadion', 11000],
+    [
+      'Eintracht Alt Hohental',
+      'ALG102',
+      'Alt Hohental',
+      '#6A1B9A',
+      '#000000',
+      'fallen',
+      35,
+      'Waldstadion Alt Hohental',
+      11500,
+    ],
+    ['TSV Ahrburg', 'AHB', 'Ahrburg', '#E30613', '#000000', 'fan', 35, 'Waldstadion Ahrburg', 12000],
     ['Rot-Weiß Dornbrück', 'ROF29', 'Dornbrück', '#0057B8', '#FFD100', 'historic', 34, 'Dornbrück-Arena', 12000],
     ['FSV Eichstein', 'EIB', 'Eichstein', '#FFFFFF', '#000000', 'historic', 34, 'Eichstein-Arena', 14000],
+    ['SC Schwarzfurt 1901', 'SCL', 'Schwarzfurt', '#FFD100', '#6A1B9A', 'fan', 34, 'Waldstadion Schwarzfurt', 10500],
+    ['SpVgg Westerstadt', 'WEH', 'Westerstadt', '#FFFFFF', '#001F5B', 'historic', 34, 'Sportpark Mühlberg', 12500],
+    ['VfL Langsee', 'LEP', 'Langsee', '#001F5B', '#000000', 'fan', 34, 'Waldstadion Langsee', 13500],
     ['VfL Greifingen', 'GRZ', 'Greifingen', '#E30613', '#001F5B', 'historic', 33, 'Stadion Kalhafen', 13500],
+    ['FSV Ober Neckarhorst', 'OBK', 'Ober Neckarhorst', '#FFD100', '#6CACE4', 'historic', 33, 'Rotau-Stadion', 11500],
+    [
+      'Sportfreunde Bad Rotweiler',
+      'BAX69',
+      'Rotweiler',
+      '#6CACE4',
+      '#FFD100',
+      'fan',
+      33,
+      'Waldstadion Rotweiler',
+      12500,
+    ],
+    ['Mühlhof 04', 'MUR', 'Mühlhof', '#6CACE4', '#E30613', 'historic', 33, 'Stadion am Furtdorf', 11000],
+    ['Hertha Althof', 'HEE28', 'Althof', '#000000', '#FFD100', 'fallen', 33, 'Waldstadion Althof', 9000],
+    [
+      'SpVgg Hohen Thalfurt',
+      'HOP37',
+      'Hohen Thalfurt',
+      '#6A1B9A',
+      '#000000',
+      'youth',
+      33,
+      'Stadion am Bruchausen',
+      10500,
+    ],
+    ['Union Ahrheim 1930', 'AHC', 'Ahrheim', '#000000', '#00843D', 'historic', 33, 'Sportpark Lindwald', 11000],
+    ['Sportfreunde Goldbach 1951', 'GOW', 'Goldbach', '#000000', '#001F5B', 'historic', 33, 'Goldbach-Arena', 12000],
     ['Fortuna Bad Mariental 1949', 'BAF53', 'Mariental', '#E30613', '#6A1B9A', 'fallen', 32, 'Mariental-Arena', 12500],
+    ['FC Kronweiler 1882', 'KRA24', 'Kronweiler', '#001F5B', '#000000', 'historic', 32, 'Stadion am Goldhausen', 11500],
   ];
   FM.D.CLUBS_TH4 = [
     ['Banam United', 'BAG54', 'Banam', '#FFFFFF', '#0057B8', 'fallen', 43, 'Phrapur Arena', 16500],
@@ -8282,7 +9040,7 @@ YTH|YTH|Seahawks|1890
 LMR|LMR|Pitmen|1921
 MIA|MLD|Valleymen|1863
 EVA|EVA|Pilgrims|1862
-PRU|PCA|Bees|1895
+PRU|PTE|Bees|1895
 HAR|HAU|Lions|1896
 PIC|PIH|Gulls|1902
 CUR|CEW|Rams|1901
@@ -8337,7 +9095,7 @@ JUB|JUB|Blancos|1918
 OLB|OLB||1911
 CEB|CEB||1929
 CUB|CUB||1979
-POZ|POE|Pastores|1913
+POZ|POQ|Pastores|1913
 OLA|OMA||1931
 PLB|PLD||1959
 ALA|AED||1940
@@ -8352,7 +9110,7 @@ NAU|NVJ|Cruzados|1882
 CAC|CTA|Guerreros|1884
 ELC|ELA|Faroleros|1943
 OSC|OSC|Cóndores|1939
-MOS|MOQ|Delfines|1876
+MOS|MOX|Delfines|1876
 NUE|NUA|Cementeros|1947
 DIL|DIL|Pioniere|1881
 TEU|TEU|Falken|1951
@@ -8390,8 +9148,8 @@ FSF|FSF|Hirsche|1923
 EIM|EIM|Brauer|1922
 FOB|FOB|Wildschweine|1902
 SPH|SPH|Gladiatoren|1879
-VII|VIZ||1903
-TTN|TIA||1983
+VII|VIK||1903
+TTN|TEJ||1983
 MUB|MUV||2008
 FSD|FSD|Köhler|1892
 AHR|AHR|Lotsen|1894
@@ -8400,8 +9158,8 @@ HAK|HAK|Roten|1889
 BRT|BRT|Tuchmacher|1888
 EIE|EIE|Blauen|1930
 HIR|HRS|Seeadler|1886
-ALO|ALN|Gelben|1899
-KLA|KEI|Schwäne|1908
+ALO|ALI|Gelben|1899
+KLA|KLG|Schwäne|1908
 SPV|SVG|Adler|1909
 BLA|BLA|Hirsche|1892
 UNH|UNH|Eisenmänner|1922
@@ -8903,12 +9661,12 @@ LLA|LLA|Ravens|1900
 DOC|DLG|Potters|1930
 CLY|CLY|Quarrymen|1886
 ABE|ABL|Brewers|1878
-CAH|CAH|Colliers|1947
+CAH|CRW|Colliers|1947
 BLN|BAT|Dragons|1902
 BLW|BWY|Whalers|1952
 PEN|POU|Miners|1926
 TEN|TEN|Reds|1916
-BNG|BGO|Harpers|1892
+BNG|BRX|Harpers|1892
 BAH|BDD|Drovers|1911
 JAN|JAH|Horsemen|1946
 SAH|MAW|Caravans|1973
@@ -9000,7 +9758,7 @@ PPX|PPX|Yellows|1943
 BHP|BHP|Greens|1970
 PSA|PSW|Eagles|1961
 PUR|PUU|Yellows|1990
-BIF|BIN|Warriors|2008
+BIF|BIF|Warriors|2008
 BIW|BIW|Whites|1982
 BAG|BGY|Elephants|1927
 PAS|PYA|Reds|2008
@@ -9080,7 +9838,7 @@ THI|ASO|Chacals|1938
 AJM|NMY|Fennecs|1899
 NAF|BOK|Fennecs|1928
 MIO|ASH|Sahariens|1928
-BEC|USK|Blancs|1968
+BEC|USQ|Blancs|1968
 SPC|MBB|Gazelles|1926
 MNV|MCT|Aigles|1927
 TRL|BFX|Lions|1959
@@ -9127,7 +9885,7 @@ STO|GAV|Vargarna|1966
 BRI|IFO|Björnarna|1911
 SND|SIG|Fiskarna|1923
 STK|IKT|Blå|1887
-SBX|NYA|Röda|1909
+SBX|NYS|Röda|1909
 DYY|NYI|Gruvarbetarna|1903
 SYD|LNS|Gröna|1903
 MET|VIV|Minerii|1919
@@ -9143,7 +9901,7 @@ KAU|GLB|Zimbrii|1928
 BRS|MTL|Lupii|1909
 RAN|ACZ|Albaștrii|1952
 KSP|CMS|Minerii|1911
-DOJ|PGR|Șoimii|1942
+DOJ|PSU|Șoimii|1942
 RAB|MEA|Leii|1966
 LOK|ELZ|Albaștrii|1939
 VLD|VAC|Alcarraza|1926
@@ -9161,7 +9919,7 @@ ATO|ALJ|Blancos|1931
 LIR|LIA|Jaguares|1941
 ARN|ARN|Azules|1938
 SNT|SAN|Leñadores|1925
-ROB|ROA|Halcones|1967
+ROB|RLA|Halcones|1967
 ESU|ESO|Potros|1894
 DEO|DEO|Pampas|1921
 RGT|RES|Arrieros|1909
@@ -9196,7 +9954,7 @@ NUM|NUM|Cóndores|1950
 LUC|LUS|Alcarraza|1966
 TAU|TAU|Jaguares|1961
 CNJ|CUJ|Leñadores|1954
-BAJ|DBA|Tejedores|1917
+BAJ|BAZ|Tejedores|1917
 NUT|NUT|Mineros|1894
 BRB|KMF|Voyageurs|1973
 GRN|HMH|Reds|1931
@@ -9214,7 +9972,7 @@ WAT|SAC|Reds|1986
 JEA|SHB|Camels|1957
 YAQ|SHY|Eagles|1907
 SHQ|SHJ|Oranges|1948
-RIM|KUS|Nomads|1935
+RIM|KTQ|Nomads|1935
 DHA|BUR|Horsemen|1954
 HUR|KRA|Lions|1978
 NAW|BUC|Falcons|1922
@@ -9329,7 +10087,7 @@ PUN|PUA|Buffaloes|1930
 SUB|SRJ|Eagles|1917
 PEP|PEG|Greens|1974
 PEF|PBX|Lions|1965
-PSC|PSR|Elephants|1935
+PSC|PSE|Elephants|1935
 PAD|PML|Panthers|1915
 PUC|PUP|Panthers|2000
 BHB|BHB|Sharks|1954
@@ -9393,8 +10151,8 @@ BEB|BVA|Titanes|1929
 LAC|MDE|Cóndores|1974
 TOA|JUU|Toreros|1944
 POB|PZT|Gauchos|2007
-VIA|VIJ|Corsarios|1952
-GAO|GAE|Alacranes|1934
+VIA|VEJ|Corsarios|1952
+GAO|GDE|Alacranes|1934
 LAV|LVN|Pescadores|1937
 LAH|LAV|Cóndores|1906
 ARE|STI|Hornero|1910
@@ -9428,7 +10186,7 @@ ANO|ANO|Miners|1939
 TAB25|TKM|Greens|1970
 SUC|SUU|Blues|1932
 WAB|WRA|Rams|1913
-EFF|EFF|Porcupines|1958
+EFF|EFR|Porcupines|1958
 KOH|KOH|Lamplighters|1983
 KOM|KOM|Reds|1916
 HOA|HOG|Elephants|1988
@@ -9438,11 +10196,11 @@ KAD|KAO|Verts|1937
 SPE|SPO|Canonniers|1984
 LOL|LSS|Rouges|1926
 DCK|DKL|Panthères|1960
-BOK|USQ|Panthères|1925
+BOK|USX|Panthères|1925
 YAA|YMS|Mimosas|1955
 AIE|ACF|Écureuils|1913
-YAO|USY|Crocodiles|1929
-ASC|ASC|Buffles|1913
+YAO|UYX|Crocodiles|1929
+ASC|ATX|Buffles|1913
 DAO|DLR|Corbeaux|1990
 ACY|ACY|Rouges|1934
 SAT|SSB|Hyènes|1900
@@ -9450,11 +10208,11 @@ MSO|ETM|Rouges|1908
 NZE|NZE|Rouges|1903
 MAV|MTR|Faucons|1951
 GRC|GRG|Blancs|1915
-DAC|DAS|Rouges|1937
+DAC|DBA|Rouges|1937
 GUC|GUU|Éléphants|1986
 SIK|SIK|Verts|1956
 KOU|KMB|Bleus|1925
-TOC|USW|Noirs|1977
+TOC|USX|Noirs|1977
 BOD|BKD|Bleus|1952
 MAX|MSS|Aigles|1946
 ZIA|ETZ|Chacals|1928
@@ -9468,12 +10226,12 @@ DIO|DIO|Buffles|1961
 YOP|YOP|Antilopes|1955
 KIC|KIM|Panthères|1949
 ZIO|ZIF|Gazelles|1989
-LAJ|LAR|Hyènes|1940
+LAJ|LBG|Hyènes|1940
 OUS|OUS|Crocodiles|1937
 OUO|OUA|Léopards|1936
 TAC26|TMD|Rouges|1915
 KAE|KYR|Rhinocéros|1934
-SED|SSS|Lions|1919
+SED|SEW|Lions|1919
 KAN|KND|Verts|1944
 MBU|MBO|Antilopes|1951
 SAV|USX|Faucons|1969
@@ -9506,27 +10264,27 @@ ZIE|ZGN|Léopards|1953
 BAZ|BMT|Éléphants|1979
 MKO|MKO|Rouges|1944
 VIF|VLS|Verdes|1937
-GDD|GDV|Cabras|1904
-LAP|ETE|Onças|1928
+GDD|GDI|Cabras|1904
+LAP|ECL|Onças|1928
 AMC|AMR|Pastores|1932
-VIG|VIQ|Oleiros|1979
+VIG|VIX|Oleiros|1979
 POE|UPD|Cruzados|1985
 VIH|VOU|Cegonhas|1964
 POO|PDC|Raposas|1932
 VAG|VAF|Rubro-Negros|1935
-BRC|BRM|Azuis|1983
+BRC|BRW|Azuis|1983
 VIJ|UAO|Lavradores|1916
 OSS|OBD|Águias|1912
 MIB|ASM|Marinheiros|1979
 AVA|RSA|Corsários|1958
 ALV|AVO|Amarelos|1986
-AVE|ERT|Tubarões|1949
-ACO|ACI|Corvos|1899
+AVE|ETE|Tubarões|1949
+ACO|ACC|Corvos|1899
 GGD|GLX|Faroleiros|1941
 FER|FEO|Cabras|1941
-NAP|NVL|Mineiros|1939
+NAP|NCX|Mineiros|1939
 POF|PTA|Corvos|1946
-COC|UNF|Amarelos|1934
+COC|UNJ|Amarelos|1934
 PRY|PRY|Lvy|1897
 BUC|BUK|Zubry|1913
 KOA|KOL|Metalurhy|1963
@@ -9635,14 +10393,14 @@ SYA|HMR|Rauðir|1907
 SOE|HAY|Grænir|1919
 SYE|HOT|Birnir|1924
 HOD|HTT|Hvítir|1930
-HEA|GRI|Hafernir|1980
+HEA|GRD|Hafernir|1980
 VBY|UMF|Hvítir|1897
 LIL|SYK|Úlfar|1923
 NND|VIG|Sjómenn|1990
 HEK|RTT|Selir|1934
 SOG|ROY|Rauðir|1986
 NEC|HMA|Úlfar|1931
-ALH|BOL|Ernir|1943
+ALH|BLF|Ernir|1943
 TSK|GUR|Lomebi|1911
 SAW|TSK|Tsxenebi|1927
 MTB|GIA|Mgelebi|1945
@@ -9651,7 +10409,7 @@ TSI|IBE|Lomebi|1980
 OCA|IME|Yvitlebi|1970
 WIA|TOD|Tsxenebi|1925
 MTI|SMG|Mgelebi|1937
-OCI|MEN|Arcivebi|1952
+OCI|MDX|Arcivebi|1952
 OZI|LVI|Tsitlebi|1961
 BNE|BNE|Jackals|1926
 MBI|MAN|Lions|1900
@@ -9729,7 +10487,7 @@ ALM|JUA|Pastores|1906
 BJO|BAJ|Osos|1916
 ELD|ELB|Blancos|1951
 BAC26|CBC|Leones|1942
-MMA|MNA|Corsarios|1937
+MMA|DMX|Corsarios|1937
 PID|PIO|Pastores|1986
 FUD|SFC|Segadores|1936
 ATA|JUO|Lagartos|1911
@@ -9739,7 +10497,7 @@ NER|NEB|Amarillos|1934
 NUB|NUC|Azules|1908
 OSA|OSM|Azules|1980
 QUB|QNT|Pumas|1948
-MOG|MOK|Águilas|1947
+MOG|MOQ|Águilas|1947
 OLN|OLD|Tiburones|1938
 BAD27|CBP|Tigres|1943
 NEE|NRJ|Panteras|1952
@@ -9763,14 +10521,14 @@ LIE|JUE|Amarillos|1910
 LDA|LRD|Verdes|1925
 POK|PZL|Halcones|1917
 PAJ|PLO|Gladiadores|1915
-POM|POJ|Pastores|1975
-VIV|VIW|Rayos|1973
+POM|POX|Pastores|1975
+VIV|VIY|Rayos|1973
 CAW|RCC|Amarillos|1973
 BPO|RBP|Cóndores|2008
 YEC|YST|Potros|1938
 YRO|JUY|Jaguares|1932
 ALP|AAZ|Rojos|1932
-ALQ|AAL|Guerreros|1921
+ALQ|RVA|Guerreros|1921
 VAJ|RSV|Toros|1952
 CAX|CLP|Mulas|1952
 QUS|QUN|Rojos|1915
@@ -9778,7 +10536,7 @@ TAE28|RCS|Leñadores|1928
 ARH|SAN|Tiburones|1979
 QES|QUT|Alacranes|1932
 LUD|LCL|Amarillos|1982
-GAB|GDI|Pastores|1916
+GAB|GLL|Pastores|1916
 YAN|YAN|Tigers|1900
 YAI|YAA|Leopards|1951
 ESK|EKI|Falcons|1927
@@ -9788,7 +10546,7 @@ OLK|OLK|Leopards|1989
 NEF|NEY|Camels|1913
 NEI|NET|Eagles|1943
 NHI|NEH|Tigers|1988
-AND|AND|Bulls|1917
+AND|ANB|Bulls|1917
 TER|TNC|Eagles|1982
 KHI|KHV|Wolves|1942
 GRF|PLY|Navy|1933
@@ -9825,7 +10583,7 @@ JAU|KLV|Kaluriid|1931
 PLU|NOP|Rohelised|1940
 ANA|TRX|Kotkad|1930
 RAK|JKR|Hundid|1924
-ALC26|VAV|Zvejnieki|1936
+ALC26|VRP|Zvejnieki|1936
 ALD27|VAJ|Lāči|1991
 SIF|ELT|Alņi|1921
 NAT|SAL|Ērgļi|1983
@@ -9839,10 +10597,10 @@ ALE28|GNI|Ereliai|1929
 HAG|PNV|Žalieji|1927
 REZ|SPA|Lokiai|1913
 TUA|GTA|Vilkai|1915
-AAA|SEQ|Raudonieji|2008
+AAA|SEN|Raudonieji|2008
 HAU|KVS|Mėlynieji|1980
-HVB|AUG|Šernai|1986
-KUB|GRJ|Gandrai|1923
+HVB|AUK|Šernai|1986
+KUB|GRQ|Gandrai|1923
 JEL|ROK|Vilkai|1917
 ALF29|UTI|Žirgai|1949
 WIB|LOM|Artsivner|1975
@@ -9854,7 +10612,7 @@ WTB|LTI|Dashtner|1926
 LOC|LRI|Gaylner|1937
 OZE|URA|Sarer|2008
 SAA24|ANC|Artsivner|1939
-KUT|ARH|Gaylner|1974
+KUT|ATA|Gaylner|1974
 ESD|LOY|Qartallar|1911
 BUY|QUB|Aslanlar|1899
 BUE|SDA|Neftçilər|2001
@@ -9904,7 +10662,7 @@ TUS|TNX|Wikinger|1982
 HAH|HHX|Stiere|1918
 BAF29|SBH|Gladiatoren|1931
 FUF|FUH|Blauen|1960
-GRG|GEI|Kumpel|1927
+GRG|GFH|Kumpel|1927
 ALG30|AJL|Sandstorm|1919
 JUA|AJA|Camels|1929
 ABB|MHY|Caravans|1915
@@ -9928,7 +10686,7 @@ AWB|FAR|Greens|1924
 ALP37|AIZ|Oryx|1922
 ALQ38|FLY|Sandstorm|1934
 RAG|WAJ|Knights|1946
-RIS|FAA|Hawks|1963
+RIS|FAI|Hawks|1963
 RAH|SHA|Falcons|1982
 ALR39|UMN|Desert Foxes|1962
 ALS40|WJS|Blues|1971
@@ -9952,7 +10710,7 @@ DAD|SHA|Lions|1977
 AUR|MND|Reds|1951
 AAM|MRD|Shaheens|1939
 KOB|MMU|Markhors|1966
-BEQ|SSG|Markhors|1930
+BEQ|SHA|Markhors|1930
 BHC|AFG|Cheetahs|1988
 VIQ|DSK|Shaheens|1968
 NAX|UTT|Kings|1995
@@ -9981,7 +10739,7 @@ SHN|MDU|Elephants|1926
 CHY|PLU|Whites|1983
 DAE|PZH|Yellows|1927
 HOJ|MMS|Yellows|1924
-SEJ|BIF|Rhinos|1964
+SEJ|BIR|Rhinos|1964
 LAR|HWA|Lions|1980
 DRE|TSA|Chiefs|1971
 SHH|RUG|Hippos|1972
@@ -9994,7 +10752,7 @@ NOG|NRX|Chui|1982
 WOE|GAT|Simba|1966
 SCC|KSX|Mamba|1927
 DUB|MBH|Twiga|1927
-FAM|POQ|Blues|1952
+FAM|POR|Blues|1952
 HAJ|BSN|Leopards|2002
 FOC|WAK|Yellows|1928
 MAJ32|WAP|Hornbills|1904
@@ -10010,17 +10768,17 @@ WAY|ASJ|Zebras|1930
 BPE|LEK|Lions|1930
 MAL34|MEP|Walyas|1974
 WEF|NKM|Geladas|1980
-CHZ|ADL|Yellows|1942
+CHZ|AHX|Yellows|1942
 DEB|LKL|Falcons|1944
 WEN|JIM|Leopards|1944
 WEY|ETJ|Reds|1982
 BAG30|ADX|Hyenas|1968
 BAH31|BNB|Bleus|1990
-DAF|SDX|Faucons|2008
+DAF|DAD|Faucons|2008
 DAG|RDX|Hippopotames|1954
 BOQ|BBK|Aigles|1929
 KAK|KYD|Pythons|1956
-YOA|UYX|Éléphants|1984
+YOA|USX|Éléphants|1984
 BAJ32|USX|Rouges|1933
 NOH|NOE|Buffles|1919
 DIG|DIU|Léopards|1963
@@ -10031,17 +10789,17 @@ PAX|PVE|Pretos|1958
 POQ|PNH|Azuis|1934
 OVA|OVA|Corsários|1934
 VIU|VUR|Amarelos|1915
-DES|DEI|Pioneiros|1964
+DES|DIV|Pioneiros|1964
 TOG|ESQ|Verdes|1981
 TOH|TOF|Tubarões|1935
-ACB|ACC|Pescadores|1939
+ACB|ACO|Pescadores|1939
 BEW|BEV|Titanes|1935
 BEZ|BEB|Segadores|1903
 ROE|JNT|Azules|1933
 COJ|CAX|Rojos|1907
 BAK33|DBR|Rojos|1952
 CAA24|CPO|Mulas|1948
-PAZ|PNE|Gladiadores|1954
+PAZ|UVP|Gladiadores|1954
 ONA|ONT|Caudillos|1955
 SAD27|SMI|Rojos|1967
 FUG|EDF|Gladiadores|1926
@@ -10050,12 +10808,12 @@ SDB|PEN|Marineros|1978
 CEC|CEU|Blancos|1904
 POU|PAO|Jaguares|1902
 LUE|LUM|Gladiadores|1936
-ALX45|ALQ|Mineros|1975
+ALX45|ALT|Mineros|1975
 ORC|ONC|Tiburones|1987
 CEO|CRR|Jaguares|1953
 LER|SAN|Pastores|1932
-FRJ|FRP|Leñadores|1941
-CTA|CAJ|Rojos|1930
+FRJ|FRK|Leñadores|1941
+CTA|CAQ|Rojos|1930
 ESF|EER|Zorros|1982
 MOK|MCX|Azules|1975
 PEJ|PEN|Caudillos|1964
@@ -10194,16 +10952,16 @@ USD|USJ|Sahariens|1948
 MAM35|MSK|Blancs|1917
 MCC|MCM|Verts|1949
 TLE|TLE|Dromadaires|1983
-MOO|MOG|Bleus|1983
+MOO|MOJ|Bleus|1983
 BEA24|ABS|Grenats|1978
-MMO|MOJ|Fennecs|1986
+MMO|MOK|Fennecs|1986
 CAB25|HSS|Aigles|1982
 CCR|CRG|Fennecs|1914
 MOW|MSR|Bleus|1960
 MOX|MOX|Aigles|1985
 JSS|JSA|Rouges|1948
 MMC|MTX|Marine|1933
-GHB|EGX|Aigles|1965
+GHB|ESW|Aigles|1965
 TIM|TIR|Sahariens|1931
 FRK|FRC|Pioneros|1951
 NAY|NAL|Rojos|1910
@@ -10283,7 +11041,7 @@ VIZ|VDT|Nebesnosinite|1967
 MIF|MYO|Metalurzite|1930
 MIV|MIV|Lavovete|1936
 BAL34|BKA|Sokolite|1934
-DIS|SLW|Tamnosinite|1985
+DIS|SLI|Tamnosinite|1985
 LOD|LTX|Minyorite|1945
 MEG|MSP|Chernite|1916
 SPS|SPA|Belite|1973
@@ -10335,7 +11093,7 @@ ALZ47|AJB|Titanes|1957
 QUF|QTA|Azules|1915
 SET|SAN|Celestes|1956
 NEP|NEJ|Leñadores|1968
-OSE|OSN|Verdes|1959
+OSE|OSE|Verdes|1959
 QUL|QUE|Azulones|1970
 LIQ|LIP|Bikovi|1985
 PAD27|PAJ|Pioniri|1913
@@ -10353,7 +11111,7 @@ IOA|AOI|Áspri|1977
 ARQ|DXA|Arkoúdes|1966
 XAI|PNA|Kometes|1930
 XAB|PHL|Ouránioi|1968
-TRC|ATX|Titánes|1921
+TRC|AOR|Titánes|1921
 TRD|AER|Prásinoi|1976
 LAW|PLX|Psarádes|1933
 PEV|NIP|Kókkinoi|1941
@@ -10389,7 +11147,7 @@ KIH|KKI|Soldater|1904
 HAB25|HAB|De Blå|1896
 NYN|NYN|De Mørkerøde|1902
 KIJ|KLR|Ulve|1904
-VEM|VST|De Sorte|1952
+VEM|VEY|De Sorte|1952
 BJB|BBR|De Mørkerøde|1943
 ORD|ORB|Negros|1979
 LUG|LUC|Águilas|1919
@@ -10421,21 +11179,21 @@ PEO|PDX|Whites|1950
 KFR|KMS|Whites|1923
 ALI|ITT|Lions|1939
 MAP37|MAR|Eagles|1970
-VAV|VAN|Taivaansiniset|1967
+VAV|VNH|Taivaansiniset|1967
 LIX|LIK|Keltaiset|1948
 SEV|SKK|Keltaiset|1962
 PIH|PIJ|Ahmat|1948
 TAK33|TIX|Viininpunaiset|1913
-OUA|OSL|Sudet|1970
+OUA|OUT|Sudet|1970
 OUB|OUV|Taivaansiniset|1985
 PYR|PYY|Vihreät|1951
-VAI|VNH|Mustat|1947
-SIS|SSU|Punaiset|1974
+VAI|VHA|Mustat|1947
+SIS|SIS|Punaiset|1974
 TAL34|TAP|Elephants|1910
 SEW|SKA|Eagles|1979
 KAC26|KSE|Blues|1916
 DUC|DUH|Leopards|1978
-AKE|AKF|Eagles|1934
+AKE|AOF|Eagles|1934
 BOV|BOH|Reds|1962
 NKO|NKO|Sky Blues|1983
 DUO|DUP|Elephants|1926
@@ -10480,10 +11238,10 @@ HUB|HUB|Sky Blues|1923
 LUJ|LCG|Navy|1960
 AUN|AUO|Reds|1937
 MEP|MRP|Peacocks|1947
-POX|POV|Yellows|1936
+POX|POR|Yellows|1936
 NAD27|NGK|Whites|1928
 INC|INW|Blues|1956
-KOE|KLG|Warriors|1955
+KOE|KOG|Warriors|1955
 BAR39|BBA|Blacks|1947
 SHS|SHS|Reds|1934
 HAD27|HAO|Reds|1940
@@ -10500,9 +11258,9 @@ SAH31|SYX|Reds|1923
 SAJ32|SQX|Greens|1957
 MOA24|MMM|Greens|1982
 SAK33|SAN|Camels|1961
-SEX|SEZ|Greens|1957
+SEX|SEP|Greens|1957
 PAO|PKA|Camels|1927
-PAK33|PAW|Gazelles|1949
+PAK33|PAS|Gazelles|1949
 TRH|TRR|Sky Blues|1919
 BAS40|BAW|Tricolours|1950
 NEQ|NER|Sky Blues|1925
@@ -10510,7 +11268,7 @@ TUC|TUB|Clansmen|1922
 POY|PGC|Blues|1926
 WID|WIC|Hurlers|1876
 MAR39|MLR|Blues|1952
-CAG30|CSR|Clansmen|1896
+CAG30|UCS|Clansmen|1896
 ENN|END|Blacks|1880
 PRH|PMC|Reds|1937
 HAF29|HPL|Blues|1938
@@ -10532,7 +11290,7 @@ BNK|BNP|Lions|1951
 POA24|PKU|Reds|1920
 KAG30|KTL|Reds|1950
 NAF29|NNN|Kifaru|1917
-BUT|BUZ|Yellows|1961
+BUT|BUR|Yellows|1961
 LAZ|LKP|Greens|1971
 LAA24|LAJ|Maroons|1930
 MOB25|MMP|Greens|1965
@@ -10610,7 +11368,7 @@ ONO|OWP|Reds|1939
 OWI|OWI|Chiefs|1917
 MRI|MRI|Chiefs|1971
 SAM35|SGR|Porcupines|1968
-AKF|AKE|Warriors|1945
+AKF|AKG|Warriors|1945
 SAN36|SGK|Yellows|1967
 NSA|NSA|Chiefs|1929
 ILO|ILO|Maroons|1913
@@ -10644,9 +11402,9 @@ FOD|RDF|Rojos|1956
 HEJ|GIH|Amarillos|1913
 RAV|REO|Toros|1931
 ONB|ONA|Verdes|1975
-ALH55|ALI|Cóndores|1979
+ALH55|ALH|Cóndores|1979
 MOE28|MOT|Alacranes|1937
-VIA24|VLL|Negros|1932
+VIA24|VON|Negros|1932
 CEE|CEG|Celestes|1971
 MOF29|SMB|Halcones|1924
 VAO|VLE|Blancos|1924
@@ -10666,7 +11424,7 @@ WAM|WMC|Blacks|1946
 AWD|WHT|Camels|1922
 RIH|RIS|Foxes|1928
 MUS|MSY|Eagles|1977
-ALL58|AFX|Blacks|1978
+ALL58|FAF|Blacks|1978
 PUD|PEF|Grena|1946
 DIM|DRI|Negrii|1953
 MAX45|MRE|Albii|1927
@@ -10687,7 +11445,7 @@ RAX|RAF|Negrii|1945
 VAW|VTI|Negrii|1914
 OLP|OIM|Vulturii|1910
 ZAK|ZLN|Leii|1945
-VIB25|VTR|Negrii|1969
+VIB25|VRU|Negrii|1969
 DIP|MAR|Albii|1943
 KAJ32|KLB|Siniye|1914
 NID|NIZ|Belye|1983
@@ -10705,7 +11463,7 @@ SAP37|SNO|Vinnye|1980
 SPZ|SUX|Kosmonavty|1961
 NEV|NEI|Shakhtyory|1916
 ART|AVG|Temno-sinie|1964
-TRK|TRL|Temno-sinie|1915
+TRK|TUD|Temno-sinie|1915
 NVO|NVO|Kozaki|1910
 DAQ|DAL|Whites|1938
 PEC26|PEA|Navy|1910
@@ -10729,16 +11487,16 @@ LIZ|LPT|Bordo|1953
 BOW|BOS|Plavi|1919
 RIK|RPD|Komete|1948
 HRL|HRA|Beli|1980
-DMI|MRK|Žuti|1974
+DMI|MIE|Žuti|1974
 NOX|NVV|Beli|1980
 ZEQ|MFZ|Gavranovi|1938
 SST|SSD|Zeleni|1957
-VAX|SLN|Levy|1971
+VAX|SOV|Levy|1971
 ZVO|ZVO|Vlci|1927
 JEC|JEB|Bordoví|1969
 SPB25|SPA|Svetlomodrí|1930
 PIJ|PNY|Bordoví|1948
-BRY|SOV|Rytieri|1913
+BRY|SLC|Rytieri|1913
 SRB|TSD|Modrí|1970
 SKK|LPN|Tmavomodrí|1921
 HON|MFH|Žltí|1985
@@ -10748,7 +11506,7 @@ STZ|MFT|Rytieri|1968
 KRH|KRG|Tmavomodrí|1987
 STA24|STR|Železiari|1959
 SPC26|SPA|Žltí|1925
-SOP|SBI|Bordoví|1946
+SOP|SOU|Bordoví|1946
 RUG|RDR|Beli|1923
 DSK|SKD|Svetlomodri|1912
 RAZ|RUR|Svetlomodri|1972
@@ -10760,10 +11518,10 @@ RUN|RUN|Modri|1946
 BLI|BLX|Jeleni|1964
 RUH|RDA|Zeleni|1943
 SVA|SVB|Jeleni|1978
-DNO|NOQ|Svetlomodri|1939
+DNO|NOY|Svetlomodri|1939
 SAR39|SAV|Beli|1924
 BOX|BZX|Zeleni|1968
-NDD|NZK|Svetlomodri|1959
+NDD|NDG|Svetlomodri|1959
 LJU|NKU|Modri|1941
 MSW|MAB|Blues|1914
 PHA|PHA|Stars|1942
@@ -10794,23 +11552,23 @@ LIA24|LAE|Gelben|1887
 BUV|BKB|Eagles|1940
 DAS|DRM|Navy|1939
 SIU|SIM|Reds|1915
-ARU|ARU|Navy|1970
-SOQ|SOG|Reds|1939
+ARU|ARH|Navy|1970
+SOQ|SOE|Reds|1939
 KIW|KBG|Elephants|1925
 TAP37|TNG|Greens|1934
-KGA|KOG|Navy|1925
-KTA|KID|Eagles|1944
+KGA|KGA|Navy|1925
+KTA|KBT|Eagles|1944
 MBG|MYT|Sky Blues|1970
 YOB|YOM|Blacks|1960
 TAQ38|TBW|Reds|1920
 TYA|TGY|Cheetahs|1951
 AZA|AHZ|Lions|1924
-ATC|AHT|Buffaloes|1971
+ATC|ARV|Buffaloes|1971
 KIX|KBW|Blacks|1963
 KEL|EKX|Fennecs|1951
 KEB|KEL|Noirs|1916
 JJS|JSM|Jaunes|1974
-SIW|USL|Rouges|1911
+SIW|USY|Rouges|1911
 KAL34|KAG|Grenats|1910
 BEG30|ETL|Fennecs|1959
 TAR39|TBO|Grenats|1970
@@ -10835,7 +11593,7 @@ CHG30|CET|Temno-syni|1979
 STB25|FST|Vyshnevi|1978
 VEO|VOX|Charivnyky|1980
 AKG|AKN|Chorni|1918
-NYB|NYK|Blakytni|1979
+NYB|NHN|Blakytni|1979
 AVV|AVD|Zhovti|1966
 ALM59|WAF|Yellows|1923
 HIF|HIL|Lions|1923
@@ -10887,7 +11645,7 @@ NAL34|NDX|Pioneros|1939
 LEB|LEU|Lobos|1973
 DOY|IDE|Celestes|1941
 BUW|BST|Leones|1900
-NAM35|NAP|Gladiadores|1903
+NAM35|NAC|Gladiadores|1903
 LAO|EES|Amarillos|1905
 ORO|DDO|Granates|1918
 MIG|MIO|Verdes|1934
@@ -10896,15 +11654,15 @@ TAS40|TSH|Camels|1951
 BEJ32|BKC|Blues|1938
 GUG|GLK|Yellows|1915
 NUF|NUK|Leopards|1931
-ANF|ANU|Bulls|1967
+ANF|ANK|Bulls|1967
 NAN36|NMZ|Greens|1931
-SHZ|SCS|Eagles|1965
+SHZ|SHA|Eagles|1965
 KHF|KHF|Reds|1946
 NEZ|NTC|Crimsons|1950
 BEK33|BKR|Blacks|1923
 KHZ|KHC|Yellows|1969
 MRC|MRR|Whites|1944
-ESN|ESW|Sky Blues|1947
+ESN|ESX|Sky Blues|1947
 ROP|ROR|Amarillos|1935
 NAP37|NAQ|Granates|1917
 BIB|BLI|Titanes|1967
@@ -10914,27 +11672,27 @@ GAC|GAO|Verdes|1908
 CAJ32|RDC|Zorros|1935
 VEW|RDV|Negros|1967
 SSA|SLL|Verdes|1965
-LAF29|IEP|Amarillos|1894
+LAF29|IPE|Amarillos|1894
 CIA|UDC|Amarillos|1906
 PUG|SAN|Celestes|1930
-GAD|IPE|Azules|1960
+GAD|IEN|Azules|1960
 PUH|PUO|Osos|1895
 RAA24|REV|Toros|1923
 COT|COP|Arrieros|1903
-HNA|GSI|Granates|1960
-GEA|GEA|Celestes|1938
+HNA|GDH|Granates|1960
+GEA|GNE|Celestes|1938
 KLB|FTU|Grünen|1913
 OBA|FUN|Weinroten|1938
 COW|CCO|Schwarzen|1951
 ROQ|FRX|Gelben|1936
-KLC|KLI|Pioniere|1921
+KLC|KEI|Pioniere|1921
 HOQ|HHN|Himmelblauen|1900
 UER|UER|Blauen|1940
 RRT|RTF|Wölfe|1931
 FUK|FOM|Bären|1923
 HOT|HHE|Grünen|1909
 HAP37|HNX|Blauen|1912
-GOC|FSG|Schwarzen|1903
+GOC|FSL|Schwarzen|1903
 COX|COU|Blauen|1891
 BLB|BWO|Ritter|1904
 LUT|LUT|Seeadler|1952
@@ -10945,14 +11703,14 @@ KSA|KNL|Blauwen|1924
 KSK|KSK|Hemelsblauwen|1917
 KOF|KNN|Witten|1906
 KRL|KRH|Rooien|1955
-SNE|SNE|Witten|1934
+SNE|SNR|Witten|1934
 EOR|EXK|Groenen|1935
 KKE|KOK|Geelen|1931
 HAQ38|HRD|Spechten|1879
 KOO|KOJ|Witten|1948
 KOZ|KOZ|Donkerblauwen|1908
 KAP37|KBX|Witten|1915
-SRD|STZ|Witten|1910
+SRD|STA|Witten|1910
 KFA|KFO|Wolven|1916
 NIH|NWD|Geelen|1900
 CAK33|ESC|Azuis|1907
@@ -10983,12 +11741,12 @@ POG30|PZN|Rayos|1957
 ATD|ALU|Rojos|1959
 TAO|TAE|Corsarios|1937
 PEE28|PDD|Verdes|1901
-MOK33|MOZ|Halcones|1947
+MOK33|MOR|Halcones|1947
 BAX45|BAJ|Amarillos|1915
-VIC26|VNO|Granates|1957
+VIC26|VIL|Granates|1957
 MTE|MBE|Azules|1931
 VID27|CVX|Toros|1937
-ROR|RLA|Leones|1925
+ROR|RNE|Leones|1925
 KLI|KAI|Reds|1921
 LOS|LON|Whites|1972
 HUU|HUU|Tigers|1942
@@ -11013,7 +11771,7 @@ ZEY|ZEA|Bílí|1917
 POH31|PDO|Rybáři|1959
 DOI|DOP|Vlci|1922
 ROV|SPA|Červení|1990
-KOS|SOB|Husité|1948
+KOS|SOM|Husité|1948
 RYF|RYF|Rytíři|1956
 PEF29|PLH|Lišky|1940
 DST|DUS|Průkopníci|1989
@@ -11024,9 +11782,9 @@ SNB|FSX|De Gule|1935
 LIB25|ILX|De Sorte|1896
 HEM|HDV|Fiskere|1906
 LNS|ILS|De Hvide|1889
-NOY|NOK|De Mørkerøde|1921
-VNA|VEJ|Bjørner|1898
-SAV43|SST|Ravner|1933
+NOY|NDV|De Mørkerøde|1921
+VNA|VEU|Bjørner|1898
+SAV43|STR|Ravner|1933
 HOY|HKF|De Sorte|1944
 SUJ|SRU|Gladiatorer|1909
 BLT|ETB|Faucons|1906
@@ -11041,7 +11799,7 @@ PAN36|PVL|Faucons|1953
 SAI|ESS|Marines|1904
 SAW44|ASB|Marines|1925
 VLB|ESV|Renards|1918
-ROX|USH|Verts|1923
+ROX|USW|Verts|1923
 CGE|CSA|Grenats|1913
 MNS|AMX|Comètes|1940
 BGE|BNG|Grenats|1947
@@ -11056,7 +11814,7 @@ PAP37|AOP|Psarádes|1987
 LAH31|ETK|Kókkino Krasí|1913
 MEW|MSI|Mávroi|1990
 CKI|AOH|Alepoúdes|1965
-ARV|AOR|Prásinoi|1990
+ARV|AOG|Prásinoi|1990
 NIJ|GSN|Áspri|1981
 THU|DOT|Psarádes|1948
 MEZ|MEF|Medvék|1953
@@ -11101,10 +11859,10 @@ SIZ|SIF|Sky Blues|1959
 FOG|FLA|Maroons|1923
 EAL|EGH|Whites|1947
 GOZ|GOZ|Horsemen|1974
-SBU|SEW|Whites|1931
+SBU|SEP|Whites|1931
 ZOA|ZOS|Navy|1940
-PAR39|POX|Whites|1953
-FAF|FAX|Sky Blues|1937
+PAR39|PAS|Whites|1953
+FAF|FAV|Sky Blues|1937
 POJ32|AUP|Bianchi|1924
 MGO|MNG|Marinai|1944
 BOA24|BOA|Cavalieri|1950
@@ -11121,9 +11879,9 @@ BOB25|AUB|Gabbiani|1929
 SED27|SEN|Blu|1918
 RGA|ROG|Volpi|1928
 GRV|ASG|Bianchi|1893
-VIF29|VUS|Blu|1907
+VIF29|VSV|Blu|1907
 POK33|PLS|Granata|1942
-CEL|CEL|Verdi|1908
+CEL|FCC|Verdi|1908
 CCO|UCX|Pionieri|1934
 NAR39|NAR|Greens|1988
 MWA|MAZ|Reds|1960
@@ -11156,7 +11914,7 @@ TEF|TPO|Azules|1952
 LOZ|LBS|Toros|1970
 JIB|JLP|Celestes|1950
 ZAZ|ZPC|Guindas|1894
-MIJ|MNE|Mineros|1930
+MIJ|MDT|Mineros|1930
 TEG|TCL|Zorros|1955
 TEH|TCC|Azules|1911
 ZUK|FOZ|Geelen|1949
@@ -11184,7 +11942,7 @@ MCK|MEO|Knights|1922
 MIM|MLP|Bees|1989
 CHP37|CHV|Magpies|1958
 WYN|WYN|Railwaymen|1965
-TOQ|TOT|Dark Horses|1974
+TOQ|TDH|Dark Horses|1974
 HCH|HRW|Emeralds|1914
 HEP|HLM|Dark Horses|1980
 LUH|LUD|Railwaymen|1981
@@ -11215,12 +11973,12 @@ JAJ|KJX|Rycerze|1972
 WOJ|WKX|Zieloni|1964
 NOZ|NWC|Granatowi|1940
 WIG|SWX|Bordowi|1923
-NOA24|STM|Czarni|1964
+NOA24|STA|Czarni|1964
 KOK|KKX|Rybacy|1921
 KAQ38|GKX|Rycerze|1969
 BUI|BOX|Bordowi|1987
 BRA24|KSZ|Bordowi|1923
-BWO|POW|Żółci|1975
+BWO|POL|Żółci|1975
 CDA|CRT|Pretos|1911
 VIJ32|VLA|Tigres|1951
 PDO|PAI|Pioneiros|1894
@@ -11231,13 +11989,13 @@ VEZ|VND|Verdes|1882
 ESQ|ETR|Rubro-Negros|1924
 AVO|AVS|Dragões|1944
 LOJ|LOS|Celestes|1892
-ACC|ACE|Lobos|1884
+ACC|ACI|Lobos|1884
 TAW44|TVR|Verdes|1901
 PRN|PRH|Zimbrii|1972
 RAD27|RAI|Negrii|1927
 ERE|ELF|Grena|1970
 UNC|UIR|Minerii|1929
-MUL|MIE|Minerii|1970
+MUL|MNE|Minerii|1970
 CSS|HUN|Grena|1941
 CFC|CNN|Lupii|1975
 MAC50|MAQ|Negrii|1967
@@ -11256,7 +12014,7 @@ VNE|VEK|Belye|1967
 END|ENN|Golubye|1936
 KRN|KNX|Chernye|1938
 CSK|CSN|Siniye|1948
-BAZ47|BLT|Temno-sinie|1940
+BAZ47|BIK|Temno-sinie|1940
 SMO|SMO|Metallurgi|1990
 BVO|BYE|Zheltye|1990
 EYA|ENZ|Krasnye|1948
@@ -11281,11 +12039,11 @@ CUM|CMB|Whites|1899
 MIP|MIP|Maroons|1891
 JEE|JEA|Yellows|1949
 INN|INO|Blacks|1883
-GAL|GAL|Foresters|1901
+GAL|GAB|Foresters|1901
 TIE|TOI|Lairds|1898
 ROA24|RSR|Yellows|1933
 TUD|TUC|Reds|1893
-BAB49|BOC|Maroons|1888
+BAB49|BCK|Maroons|1888
 KIA24|KNK|Sky Blues|1912
 ULG|ULN|Blacks|1911
 VRA|VRE|Reds|1922
@@ -11301,7 +12059,7 @@ RAE28|RDS|Greens|1949
 VRD|VDE|Pirates|1919
 MAD51|MUR|Pirates|1946
 NEA24|NEO|Reds|1919
-SIB25|SBD|Blues|1957
+SIB25|SIW|Blues|1957
 KWD|KWL|Yellows|1984
 MUE|MUN|Hawks|1929
 SIC26|SNW|Whites|1967
@@ -11318,39 +12076,39 @@ JIE|JIJ|Crimsons|1916
 GIA|GIE|Blues|1983
 DDO|DOD|Navy|1944
 HNG|HDN|Blues|1910
-SEF29|SSN|Steelmen|1911
+SEF29|SSM|Steelmen|1911
 HUD|HUD|Vita|1877
 VOO|VOF|Vita|1883
 SLN|SLP|Vinröda|1903
 SKD|SKE|Sjömännen|1934
-VAA24|VAK|Gröna|1939
+VAA24|VSL|Gröna|1939
 SOU|SOA|Örnarna|1921
 MMN|MHA|Älgarna|1913
-BRB25|BAG|Vinröda|1907
-GIF|GIV|Örnarna|1954
+BRB25|BGE|Vinröda|1907
+GIF|GVU|Örnarna|1954
 SLR|SLK|Lejonen|1913
 BRC26|BVN|Blå|1915
-BRD27|BGE|Mörkblå|1893
-SLP|SLC|Älgarna|1939
+BRD27|BSO|Mörkblå|1893
+SLP|SLW|Älgarna|1939
 NOB25|NRS|Sjömännen|1911
 NYS|NYO|Blå|1877
-BNY|BNF|Ljusblå|1906
+BNY|BRA|Ljusblå|1906
 ALZ71|FAE|Bergleute|1952
 BLC|BLW|Kicker|1889
 ELF|ELS|Schwarzen|1929
 BRE28|VTO|Grünen|1950
 WET|WST|Blauen|1913
 ARW|ARM|Blauen|1910
-AST|ALF|Roten|1890
+AST|ALP|Roten|1890
 SCF|SRZ|Fischer|1952
 GRW|TEG|Schwarzen|1913
 NNI|NIT|Ritter|1881
 KLW|KLL|Gladiatoren|1927
 KEC|KIC|Hirsche|1932
-AWE|ALX|Ritter|1910
+AWE|ALT|Ritter|1910
 BRF29|BHF|Pioniere|1914
-BAC50|ECH|Gelben|1899
-GOT|EIG|Stahlwerker|1888
+BAC50|EIG|Gelben|1899
+GOT|EGX|Stahlwerker|1888
 HHO|HEN|Weißen|1890
 ROB25|RWN|Kumpel|1878
 RAF29|RTY|Tigers|1959
@@ -11371,7 +12129,7 @@ KZE|KZI|Lacivertler|1970
 BBE|YEB|Şahinler|1975
 CAN36|CNH|Beyazlar|1986
 KZB|KZG|Şahinler|1931
-KUF|KUC|Martılar|1984
+KUF|KUS|Martılar|1984
 KAS40|KLA|Siyahlar|1966
 ORG|ORG|Beyazlar|1923
 BCU|BZT|Gökler|1975
@@ -11390,8 +12148,8 @@ VSH|VRS|Syni|1987
 LOR|LOV|Chervoni|1927
 KOG|KOO|Lvy|1965
 POL34|PLK|Zubry|1920
-POM35|POP|Blakytni|1916
-NOC26|NVA|Blakytni|1936
+POM35|POW|Blakytni|1916
+NOC26|FNB|Blakytni|1936
 SPJ32|SPA|Temno-syni|1986
 HYK|HIY|Zeleni|1974
 KOJ|KLO|Hirnyky|1913
@@ -11421,14 +12179,14 @@ THX|TTP|Tigers|1910
 SDO|SAI|Blues|1953
 CLL|CLO|Buffaloes|1987
 DNG|DOQ|Phoenix|1961
-COZ|COQ|Buffaloes|1971
+COZ|COW|Buffaloes|1971
 YEF|YEU|Eagles|1966
 NCO|NCI|Pumas|1907
 LNO|SVO|Celestes|1900
 LLB|DSO|Matadores|1923
 FEO|FEC|Gladiadores|1944
 LEO|INL|Titanes|1949
-GAG|ING|Corsarios|1943
+GAG|IEP|Corsarios|1943
 VVE|EDI|Azulones|1941
 ESV|AEX|Azulones|1943
 URR|CSU|Negros|1953
@@ -11437,7 +12195,7 @@ GEL|GNR|Leones|1893
 NLA|NLX|Celestes|1965
 FUI|FNU|Titanes|1957
 DOB25|DCT|Gauchos|1925
-DOC26|GNA|Verdes|1907
+DOC26|GSI|Verdes|1907
 LAL34|VLF|Azules|1949
 HHE|TEH|Weinroten|1901
 BRG30|BRS|Falken|1906
@@ -11447,14 +12205,14 @@ KRP|VKX|Weißen|1951
 NEB25|SFR|Gelben|1876
 PRP|PEW|Weißen|1949
 KRQ|KNH|Weißen|1888
-EIH|EIT|Seeadler|1901
+EIH|EIR|Seeadler|1901
 BUB25|TTO|Weinroten|1896
 BOE28|BSS|Dunkelblauen|1903
 UDO|UUD|Himmelblauen|1894
-HET|EHT|Wölfe|1911
+HET|EHX|Wölfe|1911
 EBE|EBS|Roten|1897
 LUK|LUI|Grünen|1924
-UNE|EIU|Löwen|1885
+UNE|EUB|Löwen|1885
 KKL|KRK|Bordeauxen|1919
 OSN|UOS|Geelen|1924
 KLD|KLW|Kikkers|1890
@@ -11486,7 +12244,7 @@ CAQ38|CPN|Rubro-Negros|1942
 CAR39|CPM|Verdões|1952
 CAS40|UNM|Leões|1925
 IIA|IPS|Pretos|1953
-GUJ|GIB|Leões|1918
+GUJ|GBA|Leões|1918
 CAT41|CIG|Pretos|1954
 IPI|IPT|Alvinegros|1919
 CAU42|CTM|Águias|1915
@@ -11514,7 +12272,7 @@ FUZ|FUZ|Tigers|1922
 LOM|LOC|Sky Blues|1956
 SHB25|SHA|Maroons|1979
 LUL|LOG|Phoenix|1976
-SHC26|SNB|Eagles|1968
+SHC26|SBI|Eagles|1968
 LOQ|LGT|Blacks|1973
 BCI|BYN|Eagles|1962
 QIU|QIT|Yellows|1915
@@ -11530,8 +12288,8 @@ KCE|KRI|Husité|1960
 DNY|DBN|Červení|1938
 SPL34|SPA|Zelení|1937
 PAT41|PAV|Vlci|1955
-SSE|SOE|Bílí|1971
-BIC|BRP|Kováři|1961
+SSE|SOB|Bílí|1971
+BIC|BRA|Kováři|1961
 VYV|VYD|Zelení|1962
 VOV|SPA|Červení|1963
 HOB25|VHX|Zelení|1970
@@ -11541,9 +12299,9 @@ ASQ|AST|Løver|1878
 HOC26|HOI|De Sorte|1891
 BEQ38|BGS|De Mørkerøde|1949
 HOD27|HOB|De Sorte|1932
-FRU|FRV|Bryggere|1936
+FRU|FEV|Bryggere|1936
 VEB25|VEE|De Lyseblå|1888
-RIQ|FRH|Hjorter|1919
+RIQ|FRJ|Hjorter|1919
 HEV|HDH|De Sorte|1920
 STD27|SRH|De Lyseblå|1927
 SYB|SYD|Løver|1904
@@ -11572,22 +12330,22 @@ OBR|OBA|Gelben|1887
 FED|FFX|Gelben|1886
 FUQ|SGG|Dunkelblauen|1926
 SLQ|SDE|Gelben|1875
-ALB73|ALP|Schmiede|1926
-ECK|EIR|Dunkelblauen|1912
-ROD27|GEM|Gelben|1928
-UAH|UNJ|Schwarzen|1934
-PRR|PRJ|Weißen|1919
+ALB73|ALW|Schmiede|1926
+ECK|ERA|Dunkelblauen|1912
+ROD27|GEI|Gelben|1928
+UAH|UNQ|Schwarzen|1934
+PRR|PRW|Weißen|1919
 GRX|SPO|Himmelblauen|1918
 OER|OBC|Weißen|1893
-KST|FOW|Schwarzen|1876
-IMA|VIX|Adler|1876
+KST|FOY|Schwarzen|1876
+IMA|VIK|Adler|1876
 BHJ|BHJ|Lions|1939
 BHK|BHK|Yellows|1959
 BHM|BHM|Whites|1956
-PSF|PSU|Reds|1928
+PSF|PSR|Reds|1928
 BKE|BHI|Blacks|1932
 CIN|CIE|Crimsons|1916
-PSG|PSE|Sky Blues|1914
+PSG|PSB|Sky Blues|1914
 JEM|JEM|Panthers|1963
 SUV|SRD|Blacks|1970
 PSK|PSK|Tigers|1913
@@ -11599,30 +12357,30 @@ FAK|FLD|Knights|1974
 KEF|KEF|Yellows|1934
 NJI|NJI|Tigers|1937
 BSA|BDA|Reds|1967
-FOJ|FAD|Camels|1944
+FOJ|FAX|Camels|1944
 ESW|EEG|Navy|1955
 NAT41|NAF|Blues|1940
 MZA|MZX|Blues|1969
 FJR|FBT|Falcons|1926
-BGH|BRX|Whites|1986
+BGH|BAR|Whites|1986
 MOM35|MOS|Granata|1941
 IUA|IVN|Falchi|1920
-COA24|VTU|Comete|1917
+COA24|VCX|Comete|1917
 PON36|PPF|Gialli|1946
 FEC|FEU|Marinai|1918
 PAV43|PAB|Neri|1879
 CAV43|ACM|Granata|1884
-AMO|AAX|Gialli|1888
+AMO|AUH|Gialli|1888
 RAG30|RAV|Minatori|1895
-ALC74|AUL|Orsi|1923
+ALC74|AUJ|Orsi|1923
 RTO|USX|Bianchi|1949
 ARY|PRZ|Azzurri|1936
-POP37|APG|Marinai|1920
+POP37|POR|Marinai|1920
 PSJ|UPS|Celesti|1942
 RRO|RCI|Orsi|1953
 COB25|CRL|Neri|1900
-CTR|CAW|Granata|1933
-VIL34|VFX|Pionieri|1899
+CTR|CAY|Granata|1933
+VIL34|VIS|Pionieri|1899
 SCI|SHC|Wolves|1935
 KII|KIS|Rockets|1924
 TOV|TYR|Tigers|1945
@@ -11635,7 +12393,7 @@ TFA|TKA|Vento|1929
 HUN|HKR|Whites|1947
 TAZ47|TKE|Whites|1974
 TNO|TAJ|Aurora|1919
-AKJ|AKS|Warriors|1977
+AKJ|AHI|Warriors|1977
 OKC|OKP|Yellows|1926
 KVO|KWG|Cranes|1947
 MNO|MSN|Blacks|1983
@@ -11650,13 +12408,13 @@ HUI|HUI|Guindas|1907
 SOV|SZX|Blancos|1955
 PUO|PUT|Tuzos|1931
 HNU|HNE|Zorros|1900
-TUO|TUD|Guindas|1942
+TUO|TLC|Guindas|1942
 CEM|CEM|Cementeros|1896
 IXT|IXT|Celestes|1902
 BRJ32|BRD|Donkerblauwen|1888
 AJK|ALK|Witten|1888
 LEE|SPP|Rooien|1876
-KLS|KLS|Ruiters|1943
+KLS|KLI|Ruiters|1943
 OUF|FOD|Geelen|1893
 DVD|DVD|Kasteelheren|1903
 NDE|NWR|Bordeauxen|1895
@@ -11668,7 +12426,7 @@ DVN|DVN|Brouwers|1930
 DIX|DIR|Zwanen|1892
 OUK|FOQ|Arenden|1935
 BNC|BEZ|Wolven|1916
-SNK|SNK|Groenen|1891
+SNK|SBE|Groenen|1891
 COC26|COX|Bijen|1951
 GRY|VGV|Hemelsblauwen|1893
 FRV|FRB|De Grønne|1948
@@ -11677,11 +12435,11 @@ BJG|FBR|De Røde|1930
 NUH|NOS|Svaner|1926
 NYY|NYC|Bjørner|1953
 STE28|SDV|Elge|1900
-SKB|SKB|De Grønne|1920
+SKB|SKV|De Grønne|1920
 NNB|NDL|Fiskere|1905
 BES40|BUP|De Gule|1899
 RIR|RIG|Bjørne|1941
-GAH|GAB|De Lyseblå|1916
+GAH|GEL|De Lyseblå|1916
 HEW|HEV|De Lyseblå|1888
 STF29|STR|De Hvide|1893
 NYD|NYD|Soldater|1883
@@ -11697,7 +12455,7 @@ GOF|GCM|Granatowi|1966
 JKA|MKJ|Zieloni|1918
 BUC26|BUN|Zieloni|1989
 OSG|RUO|Żółci|1977
-BNO|BUE|Lwy|1935
+BNO|BUQ|Lwy|1935
 KOT|ZNK|Kosynierzy|1974
 BNF|MKB|Żółci|1951
 WRZ|WOO|Sokoły|1962
@@ -11711,7 +12469,7 @@ VIM35|AVV|Pretos|1915
 VRO|UVX|Rubro-Negros|1938
 MDA|MNC|Celestes|1880
 GGA|GDM|Gladiadores|1949
-DED|DET|Amarelos|1916
+DED|DTI|Amarelos|1916
 ELG|ELO|Rubro-Negros|1886
 SAE52|SAO|Gladiadores|1946
 BRK33|ECB|Azuis|1881
@@ -11720,17 +12478,17 @@ MON36|MCO|Gladiadores|1914
 RAH31|RAB|Șoimii|1919
 ELH|ELE|Minerii|1948
 TUI|TUA|Pescarii|1949
-PPE|PRL|Vulturii|1937
+PPE|PGR|Vulturii|1937
 OIA|OLZ|Verzii|1911
 DRO|VDX|Vulturii|1957
 GIB|GLF|Albii|1918
 SPM35|SPO|Verzii|1922
 PRW|PSX|Galbenii|1913
-ALD75|ABO|Azurii|1956
+ALD75|ALX|Azurii|1956
 ACP|ACP|Albaștrii|1986
 CCS|CMF|Albii|1959
 ELJ|ELG|Azurii|1986
-PTI|PTE|Galbenii|1953
+PTI|PET|Galbenii|1953
 VLO|VLI|Krasnye|1987
 TUE|TRP|Zelenye|1935
 TKE|TOE|Gusary|1985
@@ -11761,7 +12519,7 @@ WER|WEG|Sky Blues|1880
 JDE|JEU|Blacks|1907
 MIZ|MIB|Highlanders|1951
 NAV43|NRN|Greens|1902
-CAW44|CAQ|Blacks|1908
+CAW44|CAW|Blacks|1908
 KEG|KLM|Blues|1936
 PHS|PHS|Reds|1981
 LAN36|LDS|Blacks|1943
@@ -11788,43 +12546,43 @@ HAW44|HCH|Rockets|1968
 PYG|PYH|Sky Blues|1938
 CTI|CND|Bears|1913
 DAB25|DYN|Greens|1938
-BUD27|BUQ|Whites|1939
+BUD27|BUZ|Whites|1939
 WOM|WLC|Sky Blues|1916
-BOG30|BOE|Greens|1979
-BAE52|BSE|Whites|1952
+BOG30|BSE|Greens|1979
+BAE52|BAN|Whites|1952
 HAX45|HWN|Crimsons|1954
 ZAU|ZAM|Azules|1891
 TAB49|TAI|Azules|1927
 BEU42|BNL|Blancos|1950
 BCF|BIL|Rojos|1885
-COD27|ACX|Granates|1940
+COD27|COT|Granates|1940
 UBD|UBD|Águilas|1954
-GAJ|GDE|Verdes|1931
+GAJ|GNA|Verdes|1931
 HIJ|SAN|Amarillos|1953
-FFR|FRU|Gladiadores|1911
+FFR|FNE|Gladiadores|1911
 ELN|JUM|Azules|1935
 AAR|ANJ|Marineros|1925
 AES|AZA|Cóndores|1884
-OSR|OSR|Blancos|1904
+OSR|OSA|Blancos|1904
 ARA24|JAX|Venados|1902
 PEN36|PDE|Azules|1941
 PEP37|PED|Azulones|1922
-VVI|VIY|Rayos|1914
+VVI|VIL|Rayos|1914
 ONE|ONE|Azules|1908
 GNY|GIN|Vinröda|1917
 VAC26|VAO|Ljusblå|1883
 IFK|IFN|Gröna|1918
 GAV|GVS|Röda|1935
 MOP37|MBY|Örnarna|1954
-VNO|VSL|Röda|1925
+VNO|VAU|Röda|1925
 ULR|ULR|Gröna|1944
-NYC|NYR|Mörkblå|1951
+NYC|NRF|Mörkblå|1951
 IFS|IFI|Vita|1889
 TRN|TRH|Älgarna|1888
-SUW|SUD|Vikingarna|1911
+SUW|SSU|Vikingarna|1911
 IFT|IFT|Vita|1887
 LID27|LII|Vinröda|1947
-VOR|VLU|Vinröda|1891
+VOR|VAH|Vinröda|1891
 THY|THI|Kumpel|1901
 HIP|FNA|Fischer|1908
 DOD27|FDX|Grünen|1945
@@ -11836,10 +12594,10 @@ HSA|HSA|Blauen|1899
 BST|EIB|Schwarzen|1894
 BCK|BUT|Himmelblauen|1894
 BKL|BSI|Ritter|1908
-ROE28|EAC|Weinroten|1954
+ROE28|EHT|Weinroten|1954
 ROF29|RWD|Blauen|1949
 EIB|FSE|Brauer|1883
-GRZ|GRV|Roten|1900
+GRZ|GFI|Roten|1900
 BAF53|FBM|Roten|1949
 KAT41|KCH|Blacks|1923
 BAG54|BNM|Whites|1928
@@ -11848,14 +12606,14 @@ TAC50|TKT|Rockets|1927
 SRE|SRY|Crimsons|1975
 NAW44|NHO|Blues|1979
 RAK33|RTP|Greens|1968
-MUJ|MSU|Blues|1964
+MUJ|MUI|Blues|1964
 MSB|MUC|Panthers|1986
 MPO|MBR|Cobras|1986
 TAD51|TAG|Gökler|1963
 AKK|AKB|Kurtlar|1972
 INR|YEI|Sarılar|1942
 DEH|DML|Kaplanlar|1945
-SUX|SUL|Kırmızılar|1912
+SUX|SUO|Kırmızılar|1912
 KZK|KZB|Mavililer|1984
 BUE28|BUY|Kırmızılar|1981
 KZO|KZO|Lacivertler|1927
@@ -11864,7 +12622,7 @@ DEJ|DEA|Beyazlar|1916
 ESX|EBG|Atmacalar|1934
 KOY|KKO|Akbabalar|1974
 USH|UAK|Kırmızılar|1928
-SOW|YNI|Sarılar|1910
+SOW|YSN|Sarılar|1910
 KZR|KZK|Akbabalar|1912
 UCE|UAB|Tilkiler|1952
 CAX45|CNV|Bordolar|1974
@@ -11890,7 +12648,7 @@ XII|XMK|Maroons|1916
 TBI|TUY|Blacks|1946
 THZ|TDF|Reds|1914
 SAF53|SCL|Elephants|1940
-CAY46|CAZ|Reds|1973
+CAY46|CAN|Reds|1973
 TIC|TIM|Blues|1930
 NBG|LGP|Comets|1965
 SOX|THW|Seahawks|1948
@@ -11902,7 +12660,7 @@ TBD|TBY|Maroons|1928
 ATE|OVR|Hawks|1907
 EOE|EAO|Wolves|1938
 GAK|GAX|Tigers|1938
-SFF|FAI|Hawks|1969
+SFF|FIS|Hawks|1969
 ATG|GEN|Stars|1953
 ITE|INT|Rovers|1959
 SSS|SHA|Falcons|1956
@@ -11915,7 +12673,7 @@ RUQ|SIN|Rovers|1930
 KGD|KVG|Rangers|1954
 UNF|FGI|Lions|1920
 USJ|SME|Hawks|1908
-CVD|VEM|Eagles|1927
+CVD|VMA|Eagles|1927
 CBE|CEJ|Lions|1984
 RLL|RDP|Lions|1935
 CBF|CVD|Lions|1972
@@ -11923,14 +12681,14 @@ UMD|USX|Rovers|1932
 FMM|MAT|Stars|1929
 NBF|NVE|Rovers|1975
 FFF|FSS|Rovers|1980
-NKA|NZA|Wolves|1975
+NKA|NZK|Wolves|1975
 DAA1|DLK|Rovers|1942
 ETD|EDK|Tigers|1912
 UBF|USX|Falcons|1961
 FBA|BBN|Stars|1918
 UNN|USX|Stars|1977
 NAB1|NAV|Wolves|1936
-OBD|OSE|Stars|1918
+OBD|OSL|Stars|1918
 RLA|LUB|Bulls|1914
 ASS|SKN|Falcons|1908
 BFF|BAN|Tigers|1924
@@ -11939,13 +12697,13 @@ ANN|NUR|Hawks|1982
 AZZ|ZHR|Bulls|1966
 AMM|MHG|Bulls|1918
 LHH|LEH|Eagles|1975
-AGG|AKG|Rangers|1954
+AGG|AKJ|Rangers|1954
 DHH|DJS|Wolves|1941
 HMM|HRR|Wolves|1911
 HKK|HKX|Falcons|1982
 SBH|SHE|Stars|1975
 DHB|DIH|Rangers|1902
-DMM|DMX|Panthers|1988
+DMM|DII|Panthers|1988
 KLL|KUK|Wolves|1927
 RDA|DNK|Falcons|1943
 DFF|DNM|Eagles|1933
@@ -11966,11 +12724,11 @@ LBT|LDA|Eagles|1978
 OLT|ORY|Stars|1954
 SMB|SHA|Falcons|1969
 WAU|WAQ|Wolves|1950
-ASU|ATA|Bulls|1984
+ASU|AAI|Bulls|1984
 ZSS|ZHS|Warriors|1977
 OYY|OYY|Panthers|1961
 KYY|KNG|Rangers|1985
-NSC|NYS|Wolves|1905
+NSC|NME|Wolves|1905
 KRS|KKA|Panthers|1989
 MBK|MWA|Tigers|1972
 AMF|MBL|Warriors|1939
@@ -11978,20 +12736,20 @@ NSB|NGO|Rovers|1946
 LRR|LDN|Stars|1958
 GRA1|GMA|Falcons|1900
 FGG|GFA|Falcons|1939
-FOP|FSC|Falcons|1946
+FOP|FSM|Falcons|1946
 SLT|LTH|Tigers|1974
-EHC|EHX|Stars|1967
+EHC|EIF|Stars|1967
 SSB|SPV|Panthers|1984
 UMC|USX|Stars|1966
 AGA|AGX|Falcons|1916
 TAA25|TUM|Panthers|1972
 ETA|EDM|Rovers|1985
 CRD|RIT|Rovers|1964
-SCJ|CAY|Stars|1913
+SCJ|CAZ|Stars|1913
 BEA25|BCA|Lions|1912
 FFC|FIG|Stars|1905
 MLL|MLX|Panthers|1968
-SNS|SLU|Lions|1902
+SNS|SLA|Lions|1902
 ANJ|NIR|Rovers|1909
 BSS|BQQ|Lions|1976
 SRG|SUK|Panthers|1946
@@ -12006,7 +12764,7 @@ PAA25|PHK|Wolves|1928
 MBH|MUP|Falcons|1919
 FLL|LSO|Falcons|1933
 USK|USX|Wolves|1905
-FSS|SNR|Falcons|1913
+FSS|SIZ|Falcons|1913
 FBC|BKG|Eagles|1928
 RBB|BBM|Panthers|1934
 MFF|MBF|Warriors|1926
@@ -12046,13 +12804,13 @@ KVJ|JON||1995
 KLJ|JOK||1997
 JZA|ZAB||1996
 RKJ|RKB||1999
-SPA1|POY||1999
+SPA1|POR||1999
 UNJ|UPB||2001
 RPP|RPX|Hawks|1907
 ATQ|QAN|Wolves|1938
 RUL|UBN|Tigers|1938
 UNL|LCD|Hawks|1969
-UNV|VAU|Stars|1953
+UNV|VDO|Stars|1953
 CPA|PZD|Rovers|1959
 MBL|MLI|Falcons|1956
 ATZ|ZMN|Falcons|1977
@@ -12087,7 +12845,7 @@ BMI|BIM|Minatorët|1978
 HIQ|HNJ|Lobos|1924
 GAQ|GDO|Rojos|1961
 LAP37|ULP|Amarillos|1947
-ALG78|ALW|Pastores|1953
+ALG78|ALT|Pastores|1953
 LAQ38|ORD|Rayos|1948
 UBG|UBS|Amarillos|1946
 MAG54|RMX|Toros|1986
@@ -12095,7 +12853,7 @@ CAZ47|DCD|Tiburones|1939
 ARB25|AEJ|Rojos|1942
 NUJ|NEV|Rojos|1990
 OND|EDO|Venados|1949
-FRW|FRL|Azulones|1986
+FRW|FLL|Azulones|1986
 GUK|GDJ|Blancos|1984
 HIT|HOJ|Celestes|1948
 SAG54|SMA|Amarillos|1925
@@ -12118,7 +12876,7 @@ MZI|MZO|Tetrebi|1918
 DIA24|DLA|Ghvinisferebi|1946
 LOW|LOJ|Mtsvaneebi|1927
 TOE|TDO|Tsxenebi|1965
-SIF29|SIW|Tsxenebi|1954
+SIF29|SIO|Tsxenebi|1954
 DIB25|DZE|Tsxenebi|1982
 PAY46|PFP|Të Kuqit|1933
 SHK33|SJA|Të Verdhët|1982
@@ -12135,9 +12893,9 @@ YLL|YLK|Minatorët|1950
 SHL34|SHQ|Detarët|1933
 KFB|KFI|Kalorësit|1956
 JFC|JFC|Lāči|1933
-AUG|AKL|Gulbji|1942
-AID|AUK|Dzeltenie|1914
-VAP|VRP|Melnie|1913
+AUG|AUX|Gulbji|1942
+AID|AKL|Dzeltenie|1914
+VAP|VAP|Melnie|1913
 ELP|EEK|Zaļie|1964
 DAC26|DAV|Zilie|1920
 DAD27|DGV|Debeszilie|1941
@@ -12151,33 +12909,33 @@ DIE28|VNP|Debeszilie|1946
 KOW|KUX|Raudonieji|1922
 BAK57|BGA|Baltieji|1972
 SAH55|SPA|Geltonieji|1961
-BIR|BIR|Juodieji|1975
+BIR|BII|Juodieji|1975
 ZEU|ZEF|Žalieji|1947
-GRB25|GRK|Raudonieji|1949
+GRB25|GRW|Raudonieji|1949
 NAY46|NJT|Briedžiai|1916
 KOX|KTX|Šernai|1937
 DIF29|AYT|Žvejai|1961
 KAV43|KPX|Baltieji|1963
 PAZ47|PAL|Žydrieji|1941
-GRC26|GRQ|Baltieji|1970
+GRC26|GRX|Baltieji|1970
 COF29|CGK|Weißen|1974
 UNM|VUG|Wikinger|1966
-OBB|OBH|Ritter|1978
+OBB|OBN|Ritter|1978
 WEC|WER|Kicker|1911
 LIE28|LIG|Schwarzbären|1921
 FRX|FIH|Fischer|1925
-ALH79|ANN|Schwarzen|1950
+ALH79|ALE|Schwarzen|1950
 GRD27|GUN|Kicker|1972
 KIC26|KIH|Kicker|1956
 GRE28|TGE|Stahlwerker|1911
 RHA|RHS|Grünen|1937
 ALJ80|ALE|Bären|1915
-NED27|EIF|Bergleute|1914
+NED27|EII|Bergleute|1914
 BRL34|VBX|Schwarzen|1952
 NIQ|NDE|Dunkelblauen|1979
 LUP|ELX|Löwen|1930
 LOX|LKX|Orlovi|1972
-PAA48|PSB|Bordo|1966
+PAA48|PAW|Bordo|1966
 NOG30|MFN|Bordo|1931
 OSK|NKT|Sokolovi|1967
 ZEW|ZER|Tamnoplavi|1965
@@ -12196,7 +12954,7 @@ KAW44|KMI|Rakete|1968
 LUQ|ZOL|Tamnoplavi|1929
 MED27|MEC|Bordo|1984
 NOH31|NVI|Bikovi|1967
-DNA|NOH|Svetloplavi|1936
+DNA|NOQ|Svetloplavi|1936
 MAJ56|MAL|Pivari|1979
 VEE28|VLK|Crni|1954
 ZAV|ZZN|Crveni|1971
@@ -12216,7 +12974,7 @@ TOA24|TRN|Granata|1950
 FAP|FAS|Granata|1915
 MOL|MDN|Gialli|1925
 POS40|POM|Granata|1884
-PAC50|AAC|Celesti|1926
+PAC50|AUG|Celesti|1926
 IUB|IUM|Bianchi|1904
 PAD51|PAA|Cavalieri|1920
 PEQ38|PSC|Cavalieri|1952
@@ -12229,13 +12987,13 @@ LAT41|LNA|Rossi|1913
 POT41|PON|Neri|1906
 ROG30|ROB|Cavalieri|1881
 VIN36|VMX|Pionieri|1899
-POU42|PTO|Celesti|1930
+POU42|POE|Celesti|1930
 FEE|FER|Blu|1891
 IUC|IUR|Verdi|1880
 RAM35|USR|Verdi|1925
 LEG|VLX|Verdi|1897
 VEF29|USV|Gladiatori|1896
-FID|FID|Blu|1904
+FID|FIA|Blu|1904
 PTB|POG|Gladiatori|1952
 BOJ32|AUA|Cavalieri|1926
 COG30|CRN|Pionieri|1904
@@ -12267,7 +13025,7 @@ JOA|JOF|Grenats|1904
 CEJ|FCX|Marines|1947
 MOR39|FMB|Cerfs|1936
 STM|SAI|Lions|1890
-AUH|AUU|Ciel et Blancs|1934
+AUH|AES|Ciel et Blancs|1934
 LAW44|ULX|Bleus|1881
 SPS40|SPO|Pionniers|1920
 PAF53|PLT|Marines|1931
@@ -12282,7 +13040,7 @@ DOE28|FSO|Rothirsche|1953
 HAA48|HGT|Raben|1897
 HEZ|HER|Weinroten|1924
 BAL58|SBS|Weinroten|1895
-PRX|PRC|Himmelblauen|1921
+PRX|PRJ|Himmelblauen|1921
 MUP|MUF|Löwen|1938
 HIU|HIT|Stahlwerker|1886
 LIF29|LID|Schwarzen|1942
@@ -12291,7 +13049,7 @@ OBF|FOJ|Weinroten|1926
 FUT|FOE|Roten|1892
 WIM|WIE|Weißen|1930
 NEE28|NCK|Bären|1938
-COH31|COT|Schwarzen|1910
+COH31|COQ|Schwarzen|1910
 UNQ|UND|Raben|1928
 BLF|BWN|Wikinger|1950
 ALL82|VAX|Weißen|1951
@@ -12301,7 +13059,7 @@ OEA|OFX|Weißen|1887
 NIR|NDR|Roten|1933
 NEF29|VNN|Schwarzbären|1878
 GOH|FOP|Bären|1908
-DIG30|ENT|Gelben|1886
+DIG30|EIT|Gelben|1886
 LIG30|SPV|Roten|1915
 ENF|ENA|Himmelblauen|1925
 EID|EIV|Weinroten|1917
@@ -12316,7 +13074,7 @@ HAB49|HGK|Gelben|1903
 EIF|ENL|Weinroten|1949
 FEJ|FET|Blauen|1913
 IMB|IMB|Roten|1913
-ALP85|FSA|Gelben|1919
+ALP85|FSC|Gelben|1919
 BAM59|VBB|Adler|1939
 KLH|TEI|Blauen|1947
 WEE|WET|Roten|1895
@@ -12328,54 +13086,54 @@ NEJ32|NEG|Pioniere|1926
 COJ32|CKX|Wölfe|1921
 RHB|RHF|Weinroten|1946
 RHG|RHT|Roten|1909
-GRG30|GRD|Grünen|1918
+GRG30|GRJ|Grünen|1918
 EBR|EBE|Weinroten|1888
 AEE|ATS|Bergleute|1901
 BOK33|BOI|Grünen|1933
 BUF29|BUV|Weinroten|1951
 THC26|THF|Gelben|1887
-BKI|BOD|Rothirsche|1877
+BKI|BOQ|Rothirsche|1877
 ALQ86|ATK|Wikinger|1953
 ARE28|ANI|Gelben|1928
 DIH31|EID|Dunkelblauen|1909
 WEG|WEE|Roten|1928
 UNS|UNL|Roten|1914
-HOF29|EIH|Bergleute|1899
+HOF29|ENT|Bergleute|1899
 KID27|FOK|Gladiatoren|1922
 CIB|CIA|Weißen|1921
 KRX|KRR|Rothirsche|1893
 CNE|CDI|Grünen|1917
-PRZ|PRQ|Gelben|1899
+PRZ|PRE|Gelben|1899
 KRZ|KRT|Grünen|1903
 ENG|ENG|Seeadler|1942
-FRZ|FNE|Celestes|1935
+FRZ|FDO|Celestes|1935
 NAA48|NVR|Cóndores|1895
 MAL58|MDO|Toros|1912
 RIC|SAN|Gladiadores|1911
 NUL|NUP|Azules|1895
-ALR87|ALY|Rojos|1905
+ALR87|ALT|Rojos|1905
 SDE|TOH|Marineros|1922
 LUS|LCN|Verdes|1886
 VAD27|DVX|Corsarios|1885
 CEK|CSC|Amarillos|1931
 ALS88|AIL|Venados|1906
-MOT41|MOX|Celestes|1935
+MOT41|MOZ|Celestes|1935
 ORK|JUI|Blancos|1933
-OSM|OSV|Negros|1878
-BAN60|BAZ|Rayos|1886
+OSM|OSN|Negros|1878
+BAN60|BAI|Rayos|1886
 SEH31|RSX|Negros|1938
 CAC50|CRO|Tiburones|1901
 AJO|AJE|Blancos|1935
 GAS|EUD|Blancos|1896
 ROH31|RRE|Celestes|1928
 LEH|LES|Gladiadores|1955
-SSD|SOM|Negros|1934
+SSD|SOQ|Negros|1934
 NUN|NUV|Rojos|1922
 GAU|GDA|Verdes|1898
 ALT89|ALB|Cóndores|1928
 FUU|FUO|Granates|1903
-SEJ32|SRA|Gladiadores|1944
-ORL|ORN|Azules|1935
+SEJ32|SEQ|Gladiadores|1944
+ORL|OIH|Azules|1935
 CAD51|CIN|Azules|1912
 PER39|PEX|Jaguares|1907
 ARF29|ARJ|Celestes|1909
@@ -12388,7 +13146,7 @@ HIV|HIJ|Marineros|1910
 ESY|EAL|Osos|1910
 LEL|SAN|Amarillos|1931
 ZAW|ZAN|Mineros|1934
-ARG30|AEN|Verdes|1895
+ARG30|ARQ|Verdes|1895
 TAG30|TLA|Titanes|1896
 NAB49|NVN|Granates|1914
 NVB|NUB|Azulones|1917
@@ -12403,7 +13161,7 @@ GUQ|GDD|Cóndores|1897
 SDY|YEE|Azulones|1881
 ANK|ANA|Rayos|1955
 LIH31|LIC|Negros|1953
-AEB|ALH|Osos|1940
+AEB|ALQ|Osos|1940
 CAF53|CNE|Azules|1931
 CUG|SAN|Leones|1909
 TOC26|SAN|Rojos|1945
@@ -12414,7 +13172,7 @@ OLV|OLS|Venados|1929
 HIO|SAN|Azulones|1930
 GUT|GUO|Verdes|1925
 OLW|OLU|Blancos|1897
-BEY46|BEY|Rojos|1898
+BEY46|BEN|Rojos|1898
 ELT|LUA|Rayos|1890
 LAX45|QUL|Rojos|1906
 PET41|PEN|Verdes|1937
@@ -12440,11 +13198,11 @@ STJ32|GES|Gladiatoren|1883
 HEB25|HEH|Weißen|1918
 GRH31|GRS|Blauen|1930
 MUQ|VOR|Schmiede|1911
-BRM35|BRJ|Pioniere|1902
+BRM35|BRM|Pioniere|1902
 OBT|OBS|Blauen|1882
 BAR63|BMS|Seeadler|1947
 OBJ|OER|Schwarzen|1926
-NEO|ERA|Seeadler|1902
+NEO|EAC|Seeadler|1902
 HSB|HNS|Weißen|1955
 HIW|HIH|Gelben|1916
 EBB|ENB|Ritter|1943
@@ -12472,7 +13230,7 @@ LAZ47|LRV|Fehérek|1962
 BAT65|EGY|Sárgák|1944
 MEF29|MZT|Sárgák|1950
 LOA24|LRT|Huszárok|1959
-VEH31|VEY|Bányászok|1954
+VEH31|VZE|Bányászok|1954
 BBG|EGB|Zöldek|1911
 DUM|DUF|Égszínkékek|1986
 ORP|ORE|Lovagok|1911
@@ -12490,9 +13248,9 @@ SIG30|ZNS|Kruki|1943
 CZB|CZA|Komety|1939
 ZAY|RUZ|Mewy|1944
 OSP|KOX|Żółci|1965
-SIH31|KSF|Orły|1934
+SIH31|KSH|Orły|1934
 WON|WIX|Kruki|1943
-LUU|KSU|Czarni|1944
+LUU|KSF|Czarni|1944
 POX45|ZNI|Orły|1938
 NOJ32|NOW|Kosynierzy|1927
 OSQ|ZNO|Rycerze|1989
@@ -12504,11 +13262,11 @@ KOA24|RUK|Mewy|1948
 WRA|WOW|Husaria|1916
 JAK|GKA|Biali|1969
 TAE52|MKA|Granatowi|1980
-BKB|SBO|Bordowi|1949
+BKB|STJ|Bordowi|1949
 OSV|RCH|Granatowi|1986
 LUV|KLX|Czerwoni|1988
 ZAA24|ZEB|Granatowi|1945
-RAP37|STJ|Komety|1961
+RAP37|STZ|Komety|1961
 CZO|CZS|Rycerze|1943
 WOW|RUW|Czerwoni|1914
 BIG|BIE|Czarni|1978
@@ -12540,12 +13298,12 @@ LUW|MKL|Rybacy|1932
 WOU|WAX|Kruki|1938
 HOL34|HLE|Nebesky modří|1950
 SPT41|SPA|Medvědi|1930
-BOL34|SLJ|Medvědi|1967
+BOL34|SLA|Medvědi|1967
 JAL|SJX|Býci|1941
 JAM|JBC|Nebesky modří|1949
 KAA48|KAV|Žlutí|1926
 ZEA24|ZET|Sokoli|1931
-STK33|STQ|Žlutí|1979
+STK33|STR|Žlutí|1979
 HOM35|HLN|Černí|1968
 DUP|DUL|Nebesky modří|1971
 HOI|HNI|Býci|1979
@@ -12560,22 +13318,22 @@ SKF|ISX|De Røde|1954
 GAY|FGX|De Mørkerøde|1943
 ASV|ASN|De Røde|1925
 BEZ47|IBX|De Sorte|1921
-LNB|LGS|De Blå|1902
+LNB|LSU|De Blå|1902
 KIG30|FKS|De Hvide|1913
 SNC|STD|De Hvide|1881
 MAM59|FMX|Pionerer|1947
 NYE|NYB|De Gule|1896
-FJA|FJB|De Mørkerøde|1924
+FJA|FJD|De Mørkerøde|1924
 VRC|VTF|Bjørne|1916
-LIJ32|LLL|De Mørkerøde|1946
+LIJ32|LLE|De Mørkerøde|1946
 HUE|HDB|Blå|1924
-VAE28|VSA|Ljusblå|1943
-SLS|SLQ|Mörkblå|1930
+VAE28|VVX|Ljusblå|1943
+SLS|SLE|Mörkblå|1930
 OSW|OSG|Gula|1924
-NOK33|NRA|Gröna|1941
+NOK33|NVF|Gröna|1941
 KAB49|KBY|Mörkblå|1901
 SUY|SND|Björnarna|1948
-NOL34|NRR|Vikingarna|1912
+NOL34|NRA|Vikingarna|1912
 SOY|SDR|Lejonen|1903
 GAZ|IKG|Ljusblå|1904
 ORQ|IKO|Gröna|1893
@@ -12594,7 +13352,7 @@ ALW92|SAT|Cavaleiros|1923
 BRN36|BRC|Grenás|1882
 AOD|AAO|Pretos|1878
 VIQ38|AVP|Grenás|1949
-GOQ|GOF|Rubro-Negros|1915
+GOQ|GVL|Rubro-Negros|1915
 OSX|OSB|Falcões|1914
 TOD27|GIT|Tigres|1973
 DOH31|DEN|Granates|1920
@@ -12617,10 +13375,10 @@ DOL34|INE|Zorros|1946
 VEK33|VEI|Pescadores|1936
 ORW|CSO|Celestes|1912
 PUJ|PUC|Amarillos|1971
-MIC26|MII|Celestes|1913
+MIC26|MIH|Celestes|1913
 ORX|DNS|Verdes|1945
 LEK|DFE|Amarillos|1950
-TOE28|TON|Celestes|1926
+TOE28|TRO|Celestes|1926
 PUK|SSP|Gauchos|1894
 LAB49|LVD|Granates|1957
 DOM35|GIS|Granates|1914
@@ -12638,20 +13396,428 @@ ALY94|SPO|Leones|1895
 MIE28|INM|Pescadores|1896
 GEC|SGB|Rayos|1959
 REX|RGA|Granates|1945
-ROM35|IEN|Albos|1945
+ROM35|IDI|Albos|1945
 PUM|GIP|Lobos|1955
-TOF29|TRO|Azulones|1967
+TOF29|TOT|Azulones|1967
 URE|GIU|Verdes|1906
 TAH55|TOC|Pampas|1960
 URF|GDU|Verdes|1907
-LEN|IIE|Rayos|1971
+LEN|ITE|Rayos|1971
 SAN60|UDS|Azulones|1935
 BEB49|ETU|Azules|1917
 ADD|AVE|Granates|1919
-SAP61|IDI|Azules|1952
+SAP61|IIE|Azules|1952
 SAQ62|GII|Rojos|1897
 NAE52|NOX|Pescadores|1931
-FRA24|DDF|Pumas|1934`
+FRA24|DDF|Pumas|1934
+BON36|SAN|Marinai|1953
+IUD|IUA|Celesti|1933
+CET|ACX|Gialli|1942
+BOP37|BOM|Celesti|1913
+CAG54|CEL|Orsi|1897
+BGO|VTU|Gialli|1897
+FIB|FIB|Celesti|1940
+CAH55|PCV|Neri|1929
+FRB25|USX|Aquile|1877
+ARJ32|AUZ|Granata|1910
+POZ47|APG|Cavalieri|1895
+RON36|PRX|Cervi|1919
+IUE|IUN|Cervi|1925
+SSF|SST|Bianchi|1931
+POA48|PPO|Bianchi|1938
+CEU|SCF|Grifoni|1905
+SEK33|SEZ|Birrai|1940
+AMK|AML|Volpi|1916
+BOQ38|BOC|Gabbiani|1947
+CAJ56|VUS|Verdi|1921
+ANL|AAX|Falchi|1909
+SAR63|SAS|Minatori|1954
+MAN60|MEN|Fabbri|1928
+ATL|AEZ|Granata|1908
+PIU|SAN|Cavalieri|1911
+MOU42|VMB|Cavalieri|1948
+TRQ|TNA|Blu|1907
+ROP37|PRC|Aquile|1917
+SSG|SBD|Leoni|1945
+BOR39|ABV|Leoni|1888
+MOV43|USX|Celesti|1891
+MOW44|VIR|Blu|1885
+GAB25|GLT|Azzurri|1954
+ITF|IUP|Granata|1942
+SAS64|SAN|Orsi|1927
+SAT65|PRQ|Birrai|1878
+MTO|ASY|Pionieri|1888
+SSH|SSC|Fabbri|1933
+POB49|PRO|Gialli|1952
+IUF|IUE|Grifoni|1904
+BAV67|BGO|Gialli|1924
+MOX45|MON|Grifoni|1953
+VAF29|AVX|Aquile|1904
+MTC|MOG|Marinai|1886
+CAK57|USX|Cavalieri|1902
+TOG30|USX|Celesti|1880
+BOS40|UBM|Celesti|1934
+POC50|PNE|Fabbri|1950
+STL34|SAN|Granata|1886
+LIK33|LBR|Gialli|1922
+PTC|APM|Neri|1915
+GAC26|GAL|Granata|1883
+CRB|CSR|Pescatori|1949
+VAG30|VTT|Cavalieri|1922
+ORY|SAN|Lupi|1904
+MLO|USL|Gialli|1950
+MAP61|MGO|Gialli|1937
+VEM35|VNT|Gialli|1890
+MOY46|MNA|Rossi|1893
+FEK|FIN|Pionieri|1951
+VEN36|VNI|Blu|1920
+MRF|MDA|Azzurri|1882
+MOZ47|UMG|Rossi|1896
+SAU66|USX|Marinai|1880
+TRR|TNO|Fabbri|1911
+MAQ62|MRZ|Celesti|1898
+ROQ38|ROA|Blu|1927
+TOH31|TON|Cavalieri|1879
+SAV67|SAN|Verdi|1925
+FEM|UFX|Verdi|1907
+CAL58|PCT|Rossi|1899
+GUU|SAN|Verdi|1925
+PAH55|PRO|Pionieri|1910
+FEP|VFX|Rossi|1924
+BOT41|BCC|Granata|1955
+CAM59|SCP|Azzurri|1950
+BOU42|BOE|Granata|1895
+BAW68|BOO|Volpi|1924
+VEP37|USX|Falchi|1906
+FOU|FOW|Gialli|1885
+SSV|SSV|Granata|1950
+FIS|FID|Neri|1912
+LIL34|LBE|Blu|1948
+GAD27|USX|Granata|1911
+LAC50|VIW|Rossi|1882
+IUT|IUT|Bianchi|1926
+VNB|VAN|Verdi|1878
+TOJ32|TIA|Neri|1940
+CLH|UCL|Birrai|1913
+MOA48|MON|Lupi|1949
+VIR39|VIR|Pescatori|1882
+POD51|USH|Gialli|1920
+CTB|VIR|Gabbiani|1882
+POE52|POR|Corvi|1918
+FAQ|FAA|Rossi|1916
+POF53|AAC|Celesti|1953
+FIC|FIC|Azzurri|1948
+PEY46|PCA|Fabbri|1917
+PAJ56|POY|Marinai|1954
+PLD|PON|Celesti|1932
+LAD51|LNZ|Granata|1919
+CEW|VIJ|Celesti|1952
+MIF29|MIZ|Volpi|1916
+SEL34|SER|Leoni|1935
+POG54|POJ|Neri|1903
+SSJ|SSS|Gladiatori|1919
+ROR39|ROM|Cavalieri|1887
+FOV|FSG|Azzurri|1924
+IUS|IUS|Gialli|1911
+PEZ47|PCO|Volpi|1922
+MGA|MDG|Falchi|1948
+VNC|VNO|Volpi|1879
+BRP37|BOD|Gialli|1946
+CAN60|UCF|Lupi|1893
+POH55|UPM|Marinai|1924
+FEQ|VIQ|Rossi|1940
+MIG30|MIJ|Rossi|1891
+GIE|GLZ|Cavalieri|1939
+SLU|SNL|Orsi|1930
+TLB|TRL|Cavalieri|1947
+PIV|PIU|Verdi|1934
+CNO|AUQ|Gialli|1912
+MND|VIZ|Granata|1931
+BEC50|BIN|Rossi|1908
+CEX|AUU|Verdi|1917
+MIH31|SAN|Granata|1888
+ORZ|OVO|Gabbiani|1936
+PVA|POP|Corvi|1889
+ORA24|OON|Granata|1901
+VEQ38|ACE|Pionieri|1880
+MOB49|VMP|Corvi|1940
+BOV43|ABO|Gladiatori|1899
+SAW68|AUW|Orsi|1953
+BED51|BLT|Blu|1944
+TTE|USX|Cervi|1892
+CFR|ASC|Rossi|1918
+MOC50|VML|Pescatori|1935
+VAH31|VLL|Neri|1908
+GUV|PGD|Bianchi|1916
+ANP|AZO|Grifoni|1909
+LAE52|AUL|Falchi|1916
+PLG|APS|Gialli|1928
+PVE|POV|Volpi|1931
+PAK57|PTO|Granata|1878
+HEC26|HEF|Gladiatorer|1932
+KIH31|KID|De Grønne|1899
+ASW|AGA|De Mørkerøde|1915
+FRC26|FIX|Ulve|1955
+SNF|SNB|De Blå|1905
+HAG54|HVL|Løver|1885
+ALZ95|ALU|De Sorte|1885
+STM35|STE|De Grønne|1940
+LIM35|LIH|De Røde|1941
+SKG|SKC|Ravner|1948
+VER39|VEG|Ulve|1921
+STN36|STO|De Lyseblå|1952
+SKH|STL|De Hvide|1912
+STP37|STQ|Løver|1883
+STQ38|SRA|Rever|1906
+NOM35|NDB|Fiskere|1898
+ALA96|ALY|De Blå|1938
+SKJ|SKF|Bæverne|1891
+LAF53|FRL|Bæverne|1946
+SKS|SVN|Bryggere|1884
+VES40|FAD|De Sorte|1882
+STR39|STR|Løver|1886
+LAG54|LAR|De Røde|1951
+FJB|FJF|De Grønne|1899
+DAH31|DFX|De Mørkerøde|1918
+LIN36|LLL|De Mørkerøde|1896
+DAJ32|DAS|Pionerer|1894
+GAE28|GAE|De Blå|1924
+ALB97|AAL|De Blå|1939
+VET41|VEM|De Mørkerøde|1950
+MAR63|MSU|De Lyseblå|1947
+NYR|NYR|De Grønne|1943
+STS40|SRV|De Sorte|1940
+FRD27|FRP|De Mørkeblå|1878
+ASX|ASW|De Gule|1907
+VNF|FRV|De Gule|1922
+SAX69|SDX|De Røde|1946
+KIJ32|KLS|Elge|1913
+BEE52|BEY|De Gule|1943
+ALC98|ARU|De Hvide|1918
+VAJ32|VTA|Ulve|1915
+SOZ|FRH|Svaner|1898
+STT41|SKB|De Mørkerøde|1941
+NON36|NOK|De Mørkeblå|1910
+NYF|NYE|De Sorte|1947
+GAF29|GMM|De Sorte|1883
+BJD|BJF|Løver|1887
+FJD|FJI|De Blå|1933
+HED27|HES|Løver|1942
+NEM35|NST|De Mørkeblå|1915
+MAS64|MRF|De Mørkeblå|1936
+GAG30|GME|De Sorte|1902
+FJM|FJB|Elge|1920
+BRQ38|IKR|Løver|1942
+NYV|NYK|De Sorte|1894
+NEN36|NSG|De Røde|1907
+DAK33|FDK|De Blå|1929
+SRJ|SBO|Soldater|1924
+STU42|STM|De Røde|1948
+HNB|IHX|Vikinger|1884
+ALD99|ALN|De Røde|1939
+HAH55|HBX|Bæverne|1936
+MAT65|MRV|De Røde|1914
+HON36|IKH|Fiskere|1914
+DAL34|DLS|Soldater|1943
+GNA|GML|De Hvide|1918
+SNH|SXA|De Røde|1915
+FRE28|FRU|De Mørkeblå|1877
+ALE100|AND|Ørne|1948
+RIT|RIR|De Grønne|1927
+SLV|SLU|Röda|1924
+SLW|SLE|Blå|1915
+VAK33|VST|Svanarna|1875
+SOA24|SSN|Lejonen|1951
+NOP37|NOH|Svanarna|1921
+SLX|SLJ|Blå|1951
+NOQ38|NFO|Sjömännen|1902
+SSL|IKK|Mörkblå|1951
+NRB|NLB|Gröna|1931
+OSY|OSR|Mörkblå|1941
+GIG|GIB|Älgarna|1904
+SLY|SNH|Gula|1905
+ROS40|RNS|Röda|1876
+VAL34|VAK|Sjömännen|1933
+BRR39|BAG|Svarta|1876
+VAM35|VAV|Gröna|1911
+SEM35|SLN|Gula|1884
+SOB25|SOG|Gula|1899
+HAJ56|HLK|Blå|1946
+KAC50|KSU|Vita|1924
+NYG|NYV|Blå|1944
+OSZ|OSV|Örnarna|1930
+NYH|IKN|Blå|1888
+GIH|GNS|Blå|1893
+VRF|FVN|Älgarna|1883
+SLA24|SNE|Svarta|1927
+IFB|IFA|Gula|1882
+GIV|GIV|Lejonen|1890
+LIP37|LFX|Gula|1926
+NYJ|NYA|Vita|1899
+OSA24|OTR|Vinröda|1921
+SSO|IKC|Lejonen|1904
+BGA|BHX|Vita|1916
+GLC|GNB|Ljusblå|1940
+SUZ|SUD|Röda|1900
+BRS40|BRP|Mörkblå|1880
+SOC26|ISV|Lejonen|1883
+SLB25|SLQ|Röda|1922
+IFE|IFE|Ljusblå|1908
+VAN36|VAG|Gula|1876
+SLC26|SLE|Svanarna|1927
+VVA|VUN|Lejonen|1877
+IFC|IFG|Svarta|1945
+GAH31|GVH|Örnarna|1937
+BSK|BRJ|Älgarna|1935
+BRT41|BRQ|Älgarna|1916
+NOR39|NRR|Vargarna|1904
+SIJ32|SGH|Svarta|1900
+VSO|VTR|Röda|1910
+NOS40|NRO|Vargarna|1926
+SUA24|SSF|Svanarna|1892
+VAP37|VLU|Sjömännen|1884
+GSU|GSB|Gula|1938
+OSB25|IOM|Mörkblå|1891
+KAD51|KNA|Älgarna|1919
+IKD|IFL|Gröna|1911
+VNG|VKP|Ljusblå|1934
+VAQ38|VSA|Ljusblå|1942
+SLD27|SSG|Vita|1930
+ULE|ULI|Björnarna|1948
+NFB|NFI|Vinröda|1942
+EKB|EKB|Lejonen|1876
+NYK|NYH|Älgarna|1880
+BRU42|BNF|Gula|1901
+OSC26|OSK|Svarta|1950
+NSO|NSI|Vikingarna|1887
+IFF|IFF|Röda|1945
+IFN|IFR|Mörkblå|1910
+SNY|SNK|Vinröda|1915
+ORB25|ORN|Ljusblå|1876
+ALF101|ANN|Bären|1911
+OBK|FSJ|Gelben|1945
+BAX69|SPO|Himmelblauen|1934
+MUR|MHL|Himmelblauen|1881
+HEE28|HET|Schwarzen|1917
+PRA24|PRL|Roten|1944
+HEF29|EIH|Kumpel|1920
+SCL|SCS|Gelben|1904
+BRV43|GEA|Roten|1883
+ARK33|ARD|Grünen|1901
+BUM35|BUE|Wölfe|1923
+ALG102|ECH|Löwen|1905
+HOP37|SPV|Pioniere|1930
+GRK33|GRV|Gelben|1913
+WEH|SPV|Kicker|1943
+KRA24|KRW|Bären|1882
+BLH|BWW|Stahlwerker|1900
+LEP|LSE|Bären|1951
+GOV|GOF|Roten|1881
+ALH103|ALN|Dunkelblauen|1920
+ROT41|RWW|Raben|1902
+OBL|OBH|Weißen|1932
+AHB|AHT|Roten|1899
+AHC|AHU|Pioniere|1930
+UNU|EIU|Gelben|1904
+OEB|OBB|Kicker|1889
+AEC|FSA|Grünen|1897
+GOW|SPO|Schwarzbären|1951
+WIP|WIU|Gelben|1897
+ROU42|RWO|Seeadler|1918
+ALJ104|AFX|Falken|1901
+GRL34|GRK|Gelben|1878
+FRO|FEE|Tigres|1942
+NAF53|NAP|Onças|1893
+NAG54|NVL|Cavaleiros|1891
+FHA|UNF|Azuis|1918
+CHX45|CAH|Leões|1893
+SAY70|ECS|Marinheiros|1902
+NOT41|GEM|Brancos|1929
+GOX|GGX|Brancos|1953
+SSM|SAO|Marinheiros|1910
+GDB|GPL|Amarelos|1907
+AHD|AEN|Amarelos|1952
+CAP61|GIO|Verdes|1940
+ALK105|ALF|Onças|1943
+NAH55|NVA|Lobos|1878
+DEK|DEI|Brancos|1900
+GOY|GOD|Amarelos|1918
+SEN36|SAN|Celestes|1942
+BFC|BRZ|Falcões|1891
+CAQ62|CIS|Celestes|1927
+GGB|GDP|Amarelos|1947
+ALL106|ALT|Verdes|1899
+DEL|DPO|Grenás|1920
+ATM|ERT|Celestes|1909
+PEA48|GRI|Amarelos|1924
+NAJ56|NZA|Amarelos|1890
+GDO|GOX|Águias|1943
+CTC|CAJ|Pretos|1921
+MIJ32|MII|Celestes|1885
+SAZ71|SAO|Tubarões|1880
+BOW44|CBF|Brancos|1882
+VIS40|CVS|Grenás|1912
+GAJ32|UGX|Gladiadores|1897
+PAL58|PVS|Leões|1943
+PFI|PFF|Dragões|1898
+LAH55|LGS|Azuis|1895
+GUW|ECG|Verdes|1876
+GDV|GDV|Rubro-Negros|1929
+SEP37|GSE|Grenás|1893
+CAR63|GMI|Rubro-Negros|1876
+TOK33|GTX|Pretos|1941
+AML|AMC|Azuis|1878
+DVO|DET|Brancos|1907
+DUQ|DUU|Hearts|1928
+AKL|AKS|Yellows|1973
+EFA|EFM|Yellows|1954
+NKC|NKG|Eagles|1947
+ADE|ADF|Yellows|1923
+SUB25|SUI|Maroons|1978
+BEF53|BER|Blues|1952
+AKU|AMU|Sky Blues|1967
+BSE|BER|Lions|1986
+KUH|KUH|Yellows|1969
+BOX45|BFU|Greens|1969
+WAV|WMS|Navy|1917
+ANQ|ANU|Antelopes|1964
+EFI|EFU|Buffaloes|1969
+HAK57|HDI|Navy|1920
+ADR|ADR|Sky Blues|1987
+BOY46|BOP|Stars|1937
+HUM|HUM|Eagles|1912
+AKN|AKF|Navy|1963
+BMA|BMU|Whites|1978
+BOZ47|BOL|Whites|1915
+YEH|YNR|Antelopes|1934
+TEQ|TMK|Elephants|1916
+HOO|HHO|Sky Blues|1960
+EFU|EUM|Navy|1910
+TAJ56|TMA|Greens|1950
+SAA72|SAS|Navy|1989
+ADM|ADL|Reds|1962
+BEG54|BDI|Maroons|1964
+ESZ|EFF|Eagles|1957
+YEJ|YEL|Blacks|1960
+WAX|WML|Maroons|1969
+TEV|TKL|Kuyruklu Yıldızlar|1915
+KUG|KUC|Kargalar|1926
+YEK|YNH|Akbabalar|1973
+ING|ICD|Bordolar|1955
+BOA48|BZH|Atmacalar|1936
+MEG30|MRK|Siyahlar|1961
+GOA24|YEG|Aslanlar|1976
+CAS64|CNP|Kaplanlar|1968
+USL|USK|Mavililer|1973
+OZO|OZO|Lacivertler|1955
+BOB49|BZB|Siyahlar|1922
+COL34|CMT|Lacivertler|1967
+INJ|ING|Kurtlar|1981
+AKQ|AKE|Kuyruklu Yıldızlar|1967
+SUC26|SUL|Ayılar|1926
+AKS|AKV|Bordolar|1984
+DEQ|DMK|Kırmızılar|1947
+AKT|YNI|Siyahlar|1989`
       .split('\n')
       .map((l) => l.split('|'))
       .map(([code, abbr, nick, founded]) => [code, [abbr, nick, founded ? +founded : null]]),
