@@ -2697,32 +2697,49 @@
     );
 
   // A division of separate tables (rules.pools: Spain's third tier is two groups of 20, Italy's Serie C three): each club belongs to
-  // one pool for as long as it is in the division (comp.pool, club id -> pool number). The first season splits the division by where
-  // the clubs are (from the north to the south); a club that arrives later joins the smallest pool, the nearest of them.
+  // one pool for as long as it is in the division (comp.pool, club id -> pool number). The first season splits the division into
+  // regions: groups of the same size made of the clubs that lie nearest each other (the group names run from the north to the south
+  // by where each group lies); a club that arrives later joins the smallest group, the nearest of them.
   W.poolsOf = function (comp) {
     const k = comp.rules.pools.length;
     comp.pool = comp.pool || {};
     for (const id of Object.keys(comp.pool)) if (!comp.clubs.includes(id)) delete comp.pool[id];
     const fresh = comp.clubs.filter((id) => comp.pool[id] === undefined);
     const size = (g) => comp.clubs.filter((id) => comp.pool[id] === g).length;
+    const geo = (id) => D.GEO[id.replace(/^c_/, '')] || [0, 0];
+    const dist = (a, b) => Math.hypot(a[0] - b[0], (a[1] - b[1]) * 0.75);
+    const centre = (ids) => [0, 1].map((j) => ids.reduce((s, x) => s + geo(x)[j], 0) / (ids.length || 1));
     if (fresh.length === comp.clubs.length) {
-      const lat = (id) => (D.GEO[id.replace(/^c_/, '')] || [0])[0];
-      fresh
-        .slice()
-        .sort((a, b) => lat(b) - lat(a))
-        .forEach((id, i) => (comp.pool[id] = Math.min(k - 1, Math.floor((i * k) / fresh.length))));
+      const n = fresh.length,
+        cap = Math.ceil(n / k),
+        byLat = fresh.slice().sort((a, b) => geo(b)[0] - geo(a)[0]);
+      let centres = Array.from({ length: k }, (_, g) => geo(byLat[Math.floor(((g + 0.5) * n) / k)])),
+        groups = [];
+      // (balanced k-means: every club goes to the nearest centre that still has room, nearest pairs first)
+      for (let it = 0; it < 8; it++) {
+        const pairs = fresh
+          .flatMap((id) => centres.map((c, g) => [dist(geo(id), c), id, g]))
+          .sort((a, b) => a[0] - b[0]);
+        groups = Array.from({ length: k }, () => []);
+        const placed = new Set();
+        for (const [, id, g] of pairs)
+          if (!placed.has(id) && groups[g].length < cap) {
+            groups[g].push(id);
+            placed.add(id);
+          }
+        centres = groups.map((ids, g) => (ids.length ? centre(ids) : centres[g]));
+      }
+      groups
+        .map((ids, g) => ({ ids, lat: centres[g][0] }))
+        .sort((a, b) => b.lat - a.lat)
+        .forEach((x, g) => x.ids.forEach((id) => (comp.pool[id] = g)));
     } else
       for (const id of fresh) {
         // (the smallest group; where several are as small, the one whose clubs lie nearest, so a group stays a region)
         const small = Math.min(...Array.from({ length: k }, (_, g) => size(g)));
-        const lat = (x) => (D.GEO[x.replace(/^c_/, '')] || [0])[0];
-        const mean = (g) => {
-          const m = comp.clubs.filter((x) => comp.pool[x] === g);
-          return m.length ? m.reduce((s, x) => s + lat(x), 0) / m.length : lat(id);
-        };
+        const near = (g) => dist(geo(id), centre(comp.clubs.filter((x) => comp.pool[x] === g)));
         let best = -1;
-        for (let g = 0; g < k; g++)
-          if (size(g) === small && (best < 0 || Math.abs(mean(g) - lat(id)) < Math.abs(mean(best) - lat(id)))) best = g;
+        for (let g = 0; g < k; g++) if (size(g) === small && (best < 0 || near(g) < near(best))) best = g;
         comp.pool[id] = best;
       }
     return Array.from({ length: k }, (_, g) => comp.clubs.filter((id) => comp.pool[id] === g));
@@ -3063,7 +3080,7 @@
       legs.push(i === r - 1 ? lastLegs : P.legs === 2 ? 2 : 1);
     }
     // (a Europe play-off takes the clubs from rank `from` on, not the top of the table, and does not decide the champion)
-    return { n, r, size: 2 ** r, keys, legs, from: P.from || 0, europe: !!P.europe };
+    return { n, r, size: 2 ** r, keys, legs, from: P.from || 0, europe: !!P.europe, promo: P.promo || null };
   };
   // the days a title play-off needs for second legs (those of any league that plays them)
   W.koStages = function () {

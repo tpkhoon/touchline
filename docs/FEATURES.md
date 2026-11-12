@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-481 features are playable in the web prototype today. Build = the build that added it.
+482 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -688,7 +688,8 @@ Design principle from here: don't make the game deeper by adding more screens �
 | Competitions | Qualifying rounds of amateur clubs, Chile's regional groups and Brazil's seeded draws in the domestic cups; the real-size regional nations cups (sheets 03, 05) | Real formats |
 | Calendar | The real FIFA dates 2026 to 2030, and each confederation's staged World Cup qualifying rounds (sheets 17, 19) | Real formats |
 | Competitions | Separate groups in the lower divisions: Italy's Serie C, Germany's Regionalliga, Spain's Segunda Federación and nine more levels as their real groups with real club totals; relegation play-offs against a division of groups; Colombia's Primera B and Mexico's Liga de Expansión as two tournaments with a play-off each (sheets 12 to 14) | Real formats |
-| Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; the other lower divisions of regional groups, the Argentine Reducido, regional competitions and playable youth matches | Alpha 2 |
+| Competitions | Promotion play-offs over the groups' places (Spain, Italy's Serie C, Germany's Regionalliga, Argentina's Reducido) and Argentina's parallel third and fourth levels as groups made from the map (sheets 12 to 14) | Real formats |
+| Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; the other lower divisions of regional groups, regional competitions and playable youth matches | Alpha 2 |
 | Scouting | Lower-league stars, the rest: a measured loan rate for late finds over a real season, and calibration against real figures for age at breakthrough and clubs per career | Alpha 2 |
 | Legacy | Player career timeline: every club with dates, fee, appearances, goals, trophies, awards, injuries and caps — transfers never disappear | Alpha 2 |
 | Legacy | Player biographies: academy prospect → debut → breakthrough → big move → awards → return to childhood club → retirement → coaching; the archive writes stories from them ("The $8M signing who became the club's greatest-ever striker") | Alpha 2 |

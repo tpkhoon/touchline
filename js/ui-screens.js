@@ -3065,13 +3065,21 @@
           )
           .join('')}</table></div>`
       : '';
-    const bracket = shown ? UI.koBracket(comp, shown) : '';
+    // (a promotion play-off over the groups' places: one bracket, or one for each group)
+    const promoKo = R.playoffs && R.playoffs.promo;
+    const bracket = promoKo
+      ? (comp.ko || [])
+          .map((M, g) => (M ? UI.koBracket(comp, M, promoKo === 'groups' && R.pools ? R.pools[g] : '') : ''))
+          .join('')
+      : shown
+        ? UI.koBracket(comp, shown)
+        : '';
     return `<div class="row" style="margin:0 2px 6px"><span class="grow"></span>${UI.followBtn('comp', cid, true)}</div>${tier}${confChips}${splitNote}${UI.travelNote ? UI.travelNote(comp) : ''}${tables}${avgCard}${UI.expansionCard(comp)}
       <div class="row tiny dim" style="gap:12px;margin:0 4px 12px;flex-wrap:wrap">${(mlsLegend || legend).map((l) => `<span>${l}</span>`).join('')}</div>
       ${bracket}${po ? `<div class="card"><div class="h3">Playoffs</div>${po.sf.map((f) => fxLine(f)).join('')}${(po.sf2 || []).map((f) => fxLine(f)).join('')}${po.final ? fxLine(po.final) : ''}</div>` : ''}${UI.compHistoryCard ? `<div class="card flat">${UI.compHistoryCard(comp)}</div>` : ''}`;
   }
   // A title playoff bracket: the seeds, then each round's ties
-  UI.koBracket = function (comp, M) {
+  UI.koBracket = function (comp, M, group) {
     const rows = [];
     for (const k of ['M1', 'N1', 'M2', 'N2', 'M3', 'N3', 'M4', 'N4']) {
       const ties = M[k] || [];
@@ -3086,8 +3094,9 @@
           `<div class="tiny dim" style="margin-top:4px">${cn === 'all' ? '' : `<b>${esc(cn)}</b>: `}${ids.map((id, i) => `${i + 1} ${esc(CL(id).name)}`).join(' · ')}</div>`,
       )
       .join('');
-    const eu = comp.rules.playoffs && comp.rules.playoffs.europe;
-    return `<div class="card"><div class="h3">${eu ? 'Europe play-off' : 'Playoffs'}</div>${seeds}${rows.join('')}</div>`;
+    const eu = comp.rules.playoffs && comp.rules.playoffs.europe,
+      pr = comp.rules.playoffs && comp.rules.playoffs.promo;
+    return `<div class="card"><div class="h3">${eu ? 'Europe play-off' : pr ? 'Promotion play-off' + (group ? ' · ' + esc(group) : '') : 'Playoffs'}</div>${seeds}${rows.join('')}</div>`;
   };
   UI.acts.torneoView = (d) => {
     UI._torneoView = d.v === 'all' || d.v === 'inter' ? d.v : +d.v;

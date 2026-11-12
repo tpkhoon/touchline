@@ -1879,7 +1879,16 @@
         new Set(r.pools).size !== r.pools.length
       )
         e.push(`${at}: separate groups are two to nine groups, each with a name of its own`);
-      if (r.zones || r.conferences || r.split || r.torneos || r.rounds || r.legs || r.playoffs || r.mls)
+      if (
+        r.zones ||
+        r.conferences ||
+        r.split ||
+        r.torneos ||
+        r.rounds ||
+        r.legs ||
+        (r.playoffs && !r.playoffs.promo) ||
+        r.mls
+      )
         e.push(
           `${at}: a league of separate groups cannot also have zones, conferences, a split, tournaments or a title play-off`,
         );

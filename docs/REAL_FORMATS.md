@@ -286,10 +286,9 @@ Turkey, one from 13 more); the Trophy 36. The places are still handed out by coe
   sends up and down in `js/data.js` (with the division above's relegation to match); the engine takes two to nine groups. The groups are made from where the clubs are (north to south), not from the real
   regions; the play-offs between group winners and runners-up (Spain, Italy, Germany's rotation, Norway's runners-up, Turkey's) are
   not played: each group sends its winner (Spain two) up, and Germany's four promoted places are five (one a group).
-- The Argentine Reducido (the second promotion of the Primera Nacional is decided by a knockout of the zones' next places; here
-  each zone's winner goes up), Argentina's two parallel third and fourth tiers (Buenos Aires clubs and the interior), and the
-  Mexican Liga Premier's groups with a liguilla. Needs a knockout over a division's places, which the engine has only for a
-  league's title.
+- The final between Argentina's two zone winners as a match (the better winner by points goes up), the Mexican Liga Premier's groups
+  with a liguilla (the sheet marks it Low confidence), Norway's and Turkey's third-tier runners-up play-offs (Norway's tie against the top
+  flight's relegation-play-off club plays that part), the real league names for the groups.
 - A club in two cups plays them on shared cup days (the tie that waited longest goes first); a real second-cup calendar of its own
   would need the cup days split by nation.
 - Youth: matches you can play or watch (a final of your own nation is only news), school sides with players of their own, the
@@ -311,8 +310,17 @@ Turkey, one from 13 more); the Trophy 36. The places are still handed out by coe
 - **Two tournaments in the lower divisions.** Colombia's Primera B: an Apertura and a Finalización of 15 matches each, the top eight
   of each in two groups of four and a final, two places up for the tournament winners (`promote.winners`), the table filling a place
   if one club wins both. Mexico's Liga de Expansión: Apertura and Clausura of 15 matches each with a liguilla, no promotion.
-- **Argentina's second level** is two zones of 18, a zone's winner promoted and its last club relegated; the sheet's final between
-  the zone winners and the Reducido for the second place are not played (see "Left to do").
+- **Argentina's second level** is two zones of 18. The better zone winner (by points a match: no final is played) goes up at once
+  (`promote.best`), and the Reducido, a knockout of sixteen of the zones' next places and the other zone winner, decides the second.
+  Argentina's third and fourth levels are two parallel groups each, the interior and Buenos Aires (40 and 32 clubs), made from the
+  map: half the clubs of each lie around Buenos Aires.
+- **Promotion play-offs over groups** (`rules.playoffs: { type: 'ko', promo: 'groups' | 'all', from, n }`): a knockout among the
+  groups' next places, from place `from` of each group on; 'groups' plays one in each group (Spain's third and fourth levels: 2nd to 5th of
+  each group, the winner going up beside the group winner), 'all' one among the best of them all, by place and then points a match
+  (Italy's Serie C: eight clubs, a fourth club up beside the three winners). `promote.best` sends up only the best winners at once
+  (Germany's Regionalliga: three of the five league winners, the other two play off, four up as the sheet has it).
+- **Groups from regions.** A division's first split is balanced clustering of its clubs on the map (groups of the same size of the
+  clubs that lie nearest each other), the groups named from the north to the south; the names are compass names, not the real league names.
 
 ## Not checked
 

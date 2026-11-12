@@ -133,8 +133,12 @@
     const out = [];
     for (const c of W.leagues()) {
       // title playoffs: the tournament the day belongs to (a day with none belongs to the leagues that have only one)
-      if (W.koType(c) && (cal.torneo === undefined ? !c.torneos : c.torneos && cal.torneo < c.torneos.length))
-        out.push(...Sea.koDay(c, cal.stage, cal.torneo || 0));
+      if (W.koType(c) && (cal.torneo === undefined ? !c.torneos : c.torneos && cal.torneo < c.torneos.length)) {
+        // (a promotion play-off of each group is one knockout a group, played on the same days)
+        if (c.rules.playoffs && c.rules.playoffs.promo === 'groups' && c.pools)
+          c.pools.forEach((_, g) => out.push(...Sea.koDay(c, cal.stage, g)));
+        else out.push(...Sea.koDay(c, cal.stage, cal.torneo || 0));
+      }
       const po = c.rules.promote && c.rules.promote.playoff;
       // (the promotion play-offs only start on their own days, not on the title playoffs' days mid-season)
       if (!po || !/^(SF|F)/.test(cal.stage)) continue;
@@ -300,7 +304,39 @@
   };
   // The table a tournament's playoff is seeded from
   Sea.koTable = (c, t) => (c.torneos ? W.torneoTable(c, t) : W.sortedTable(c));
+  // A division's promotion play-off (rules.playoffs.promo): a knockout among the next places of its groups, from place `from` of each
+  // group on (the clubs already up are left out). promo 'groups': one knockout in each group (t is the group); 'all': one knockout of
+  // the best of them all, the runners-up before the third-placed (by points a match). Its winner goes up.
+  Sea.promoSeeds = function (c, t) {
+    const P = c.rules.playoffs,
+      all = W.sortedTable(c),
+      tables = c.pools.map((ids) => all.filter((r) => ids.includes(r.id))),
+      direct = new Set(Sea.directUp(c, tables).map((r) => r.id)),
+      rows = tables.map((pt) =>
+        FM.Youth.promotable(c, pt)
+          .slice(P.from || 0)
+          .filter((r) => !direct.has(r.id)),
+      );
+    if (P.promo === 'groups') return { all: (rows[t] || []).slice(0, P.n || 4).map((r) => r.id) };
+    return {
+      all: rows
+        .flatMap((rs) => rs.map((r, depth) => ({ r, depth })))
+        .sort((a, b) => a.depth - b.depth || b.r.pts / (b.r.p || 1) - a.r.pts / (a.r.p || 1))
+        .slice(0, P.n || 4)
+        .map((x) => x.r.id),
+    };
+  };
+  // The clubs a division sends up without a play-off: the first `auto` of each group; with promote.best, only the best of those by
+  // points a match (Germany's Regionalliga: three of the five league winners, the other two play off; Argentina's Primera Nacional: the
+  // better zone winner, the other joins the Reducido)
+  Sea.directUp = function (c, tables) {
+    const R = c.rules.promote,
+      ppg = (r) => r.pts / (r.p || 1),
+      ups = tables.flatMap((pt) => FM.Youth.promotable(c, pt).slice(0, R.auto));
+    return R.best == null ? ups : ups.sort((a, b) => ppg(b) - ppg(a)).slice(0, R.best);
+  };
   Sea.koSeeds = function (c, t) {
+    if (c.rules.playoffs && c.rules.playoffs.promo) return Sea.promoSeeds(c, t);
     const type = W.koType(c),
       table = Sea.koTable(c, t).map((r) => r.id);
     if (type === 'mls')
@@ -2138,7 +2174,8 @@
       // season's being the last); the best record takes the Shield
       // (a Europe play-off ranks the clubs it is played by and decides no title)
       const euro = comp.rules.playoffs && comp.rules.playoffs.europe,
-        kt = euro ? null : W.koType(comp),
+        promoKo = comp.rules.playoffs && comp.rules.playoffs.promo,
+        kt = euro || promoKo ? null : W.koType(comp),
         nT = comp.torneos ? comp.torneos.length : 1,
         results = kt
           ? Array.from({ length: nT }, (_, i) => Sea.koResult(comp, i))
@@ -2319,21 +2356,38 @@
           : tables.flatMap((pt) => pt.slice(-R.relegate.n))
         ).forEach((r) => moves.push([r.id, comp.id, R.relegate.to]));
       if (R.promote) {
-        for (const pt of tables) {
-          const rows = FM.Youth.promotable(comp, pt);
-          // (promote.winners: the winners of the two tournaments go up (Colombia's Primera B), the places that are left to the table)
-          const first =
-            R.promote.winners && comp.torneos
-              ? [...new Set(champs)]
-                  .filter((id) => rows.some((r) => r.id === id))
-                  .map((id) => rows.find((r) => r.id === id))
-                  .slice(0, R.promote.auto)
-              : [];
-          first
-            .concat(rows.filter((r) => !first.includes(r)))
-            .slice(0, R.promote.auto)
-            .forEach((r) => moves.push([r.id, comp.id, R.promote.to]));
-        }
+        // (promote.best: only the best of the groups' winners go up at once)
+        if (R.promote.best != null)
+          for (const r of Sea.directUp(comp, tables)) moves.push([r.id, comp.id, R.promote.to]);
+        else
+          for (const pt of tables) {
+            const rows = FM.Youth.promotable(comp, pt);
+            // (promote.winners: the winners of the two tournaments go up (Colombia's Primera B), the places that are left to the table)
+            const first =
+              R.promote.winners && comp.torneos
+                ? [...new Set(champs)]
+                    .filter((id) => rows.some((r) => r.id === id))
+                    .map((id) => rows.find((r) => r.id === id))
+                    .slice(0, R.promote.auto)
+                : [];
+            first
+              .concat(rows.filter((r) => !first.includes(r)))
+              .slice(0, R.promote.auto)
+              .forEach((r) => moves.push([r.id, comp.id, R.promote.to]));
+          }
+        // (a promotion play-off over the groups' places: the winner of each knockout goes up)
+        if (promoKo)
+          for (let g = 0; g < (promoKo === 'groups' ? comp.pools.length : 1); g++) {
+            const pr = Sea.koResult(comp, g);
+            if (!pr) continue;
+            moves.push([pr.champion, comp.id, R.promote.to]);
+            FM.News.add({
+              type: 'world',
+              title: `${S.clubs[pr.champion].name} win the promotion play-off`,
+              body: `${comp.name}: ${S.clubs[pr.champion].name} beat ${S.clubs[pr.runnerUp].name} in the final of the promotion play-off and go up to the ${S.comps[R.promote.to].name}.`,
+              clubId: pr.champion,
+            });
+          }
         const fin = comp.playoff && (comp.playoff.final2 || comp.playoff.final);
         if (fin && fin.res) {
           const w = winnerOf(fin);

@@ -336,23 +336,34 @@ try {
     r.errors.length >= 4 && r.errors.every((e) => e.startsWith('row 5')),
     'a bad row is reported by its row and left out',
   );
-  // separate groups (rules.pools): two to nine, split from the north to the south, a club that comes in joins the nearest smallest
+  // separate groups (rules.pools): two to nine, made of regions (the clubs that lie nearest each other), named from the north to the
+  // south; a club that comes in joins the nearest of the smallest groups
   {
-    const lat = (id) => FM.D.GEO[id.slice(2)][0];
-    const ids = Object.keys(FM.D.GEO)
-      .slice(0, 12)
-      .map((c) => 'c_' + c);
-    const comp = { rules: { pools: ['A', 'B', 'C'] }, clubs: ids.slice() };
+    // (three places of four clubs each: one in the north, one in the middle, one in the south)
+    const spots = [
+      [60, 10],
+      [50, 12],
+      [40, 8],
+    ];
+    const ids = [];
+    spots.forEach(([la, lo], s) => {
+      for (let i = 0; i < 4; i++) {
+        const code = 'ZP' + s + i;
+        FM.D.GEO[code] = [la + i * 0.1, lo + i * 0.1];
+        ids.push('c_' + code);
+      }
+    });
+    const comp = { rules: { pools: ['A', 'B', 'C'] }, clubs: ids.slice().reverse() };
     const pools = FM.W.poolsOf(comp);
     eq(
       pools.map((p) => p.length),
       [4, 4, 4],
       'twelve clubs in three groups of four',
     );
-    ok(
-      Math.min(...pools[0].map(lat)) >= Math.max(...pools[1].map(lat)) &&
-        Math.min(...pools[1].map(lat)) >= Math.max(...pools[2].map(lat)),
-      'the groups run from the north to the south',
+    eq(
+      pools.map((p) => [...new Set(p.map((id) => id.slice(4, 5)))]),
+      [['0'], ['1'], ['2']],
+      'each group is one region, the first in the north',
     );
     const south = pools[2][0],
       north = pools[0][0];
@@ -364,6 +375,7 @@ try {
       again[2].includes(south) && again[0].includes(north) && again.every((p) => p.length === 4),
       'a club that comes in joins the nearest of the smallest groups',
     );
+    for (const id of ids) delete FM.D.GEO[id.slice(2)];
     const bad = (pools) =>
       WD.validateLeagueRules(
         { id: 'X', name: 'X', nat: 'ENG', tier: 3, rules: { pools } },
@@ -962,7 +974,12 @@ try {
       // the division above sends down as many as come up (one more when a play-off decides a further place)
       // (a division of separate groups counts its places in each group)
       const groups = (x) => (x.rules.pools ? x.rules.pools.length : 1);
-      const want = (pr.auto + (pr.playoff ? 1 : 0)) * groups(l);
+      // (a promotion play-off over the groups' places sends up a club a group, or one in all; promote.best only the best winners)
+      const po = l.rules.playoffs && l.rules.playoffs.promo,
+        want =
+          (pr.best != null ? pr.best : pr.auto * groups(l)) +
+          (pr.playoff ? groups(l) : 0) +
+          (po ? (po === 'groups' ? groups(l) : 1) : 0);
       if (!up || !down || down.to !== l.id || down.n * groups(up) !== want || !!down.playoff !== !!pr.tie)
         bad.push(l.id);
       else if (up.nat !== l.nat) bad.push(l.id + ' (nation)');

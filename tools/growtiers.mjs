@@ -25,6 +25,10 @@ export const GROW = {
   SE3: 32, // Ettan: two groups of 16
   PT3: 24, // Liga 3: two groups of 12
   AR2: 36, // Primera Nacional: two zones of 18
+  // a division of two parallel levels (Buenos Aires clubs and the interior): half the clubs lie around Buenos Aires, so the groups
+  // made from the map are the two levels
+  AR3: { total: 40, region: { at: [-34.6, -58.4], n: 20, r: 2 } }, // Primera B Metropolitana and Torneo Federal A
+  AR4: { total: 32, region: { at: [-34.6, -58.4], n: 16, r: 2 } }, // Primera C and the Regional Amateur
 };
 
 const args = parseArgs();
@@ -47,13 +51,23 @@ const IDT = ['fan', 'fan', 'fan', 'historic', 'historic', 'selling', 'youth', 'f
 
 const byId = Object.fromEntries(D.LEAGUES.map((l) => [l.id, l]));
 const todo = [];
-for (const [id, total] of Object.entries(GROW)) {
+for (const [id, size] of Object.entries(GROW)) {
   if (ONLY && !ONLY.has(id)) continue;
   const l = byId[id];
   if (!l) throw new Error(`no league ${id}`);
-  const have = (D[l.clubs] || []).length;
+  const have = (D[l.clubs] || []).length,
+    total = typeof size === 'number' ? size : size.total;
   if (have >= total) continue;
-  todo.push({ id, nat: l.nat, tier: l.tier, band: l.repBand || [40, 30], have, total, rows: D[l.clubs] });
+  todo.push({
+    id,
+    nat: l.nat,
+    tier: l.tier,
+    band: l.repBand || [40, 30],
+    have,
+    total,
+    region: typeof size === 'number' ? null : size.region,
+    rows: D[l.clubs],
+  });
 }
 if (!todo.length) {
   console.log('the divisions are already at their sizes');
@@ -183,13 +197,29 @@ const natSpots = {};
 for (const l of D.LEAGUES)
   for (const r of D[l.clubs] || []) if (geo.has(r[1])) (natSpots[l.nat] = natSpots[l.nat] || []).push(geo.get(r[1]));
 const lines = [];
-for (const l of todo)
+const near = (p, q, r) => Math.hypot(p[0] - q[0], (p[1] - q[1]) * 0.75) <= r;
+for (const l of todo) {
+  // (a division with a region: enough of its clubs lie around it, the others anywhere else in the nation)
+  const all = natSpots[l.nat] || [[20, 0]],
+    rg = l.region;
+  const inRegion = rg ? l.rows.filter((r) => geo.has(r[1]) && near(geo.get(r[1]), rg.at, rg.r)).length : 0;
+  let wantNear = rg ? Math.max(0, Math.min(l.added.length, rg.n - inRegion)) : 0;
   for (const c of l.added) {
-    const code = fixed(c.code),
-      spots = natSpots[l.nat] || [[20, 0]];
+    const code = fixed(c.code);
+    const here = wantNear-- > 0;
+    const spots = rg
+      ? here
+        ? [rg.at]
+        : all.filter((p) => !near(p, rg.at, rg.r * 1.5)).length
+          ? all.filter((p) => !near(p, rg.at, rg.r * 1.5))
+          : all
+      : all;
     const [la, lo] = pick(spots);
-    lines.push(`${code}:${(la + (rnd() - 0.5) * 1.2).toFixed(2)},${(lo + (rnd() - 0.5) * 1.6).toFixed(2)}`);
+    lines.push(
+      `${code}:${(la + (rnd() - 0.5) * (here ? 1.6 : 1.2)).toFixed(2)},${(lo + (rnd() - 0.5) * (here ? 1.8 : 1.6)).toFixed(2)}`,
+    );
   }
+}
 edit('js/geo.js', (t) => {
   const at = t.lastIndexOf('`;');
   return t.slice(0, at) + '\n' + lines.join('\n') + t.slice(at);
