@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-474 features are playable in the web prototype today. Build = the build that added it.
+478 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -649,6 +649,10 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | The Oceania Professional League: eight clubs from seven Oceania nations and an Australian one, each keeping its own nation, in a double round-robin | Real formats 2026-27 |
 | Competitions | The Leagues Cup (a summer knockout of six American and six Mexican clubs) and the Campeones Cup (the American champion against the Mexican one) | Real formats 2026-27 |
 | Competitions | Youth tournaments, by results: 26 national-team tournaments (the Under-17, Under-20 and Under-23 world, continental and regional ones, and the invitationals) and 17 club youth cups (the European and South American youth leagues, the invitationals and each big nation's youth cup), winners kept on the Cups screen under Youth | Real formats 2026-27 |
+| Competitions | Cross-border clubs enter two cups: their own nation's and the cup of the nation whose league they play in (Welsh clubs in the English cup, Canadian clubs in the American one); a tie that would be the club's second match of a day waits for the next cup day; Andorra's and Brunei's clubs have their own nations | Real formats 2026-27 |
+| Competitions | Youth tournaments get qualifying (more nations than places), three over-age players in the Olympic and Asian Games sides, the Japanese and Korean school tournaments, open youth cups topped up with non-league academies, and ten past editions with a new world | Real formats 2026-27 |
+| Competitions | The Oceania Professional League ends in two play-off groups of four and a final; the regional club cups (Southeast Asian, Gulf, Arab, East African, Central American, Atlantic) have the real field sizes and groups | Real formats 2026-27 |
+| History | Past competitions that are over (Royal League, Baltic League, Cup Winners' Cups, Intertoto, Intercontinental Cup and others) have winners in the generated thirty-year past, listed on each club's honours card | Real formats 2026-27 |
 | Competitions | Past competitions: the real cross-nation leagues and cups that are over (the Scandinavian and Baltic leagues, the Soviet, Yugoslav and Czechoslovak leagues, the Cup Winners' Cups and others) listed on the Cups screen under Past | Real formats 2026-27 |
 
 ## Yet to be added
@@ -681,7 +685,7 @@ Design principle from here: don't make the game deeper by adding more screens �
 | Competitions | The 36-club European league phase, the AFC Elite league stage and the CONCACAF straight knockout (sheet 04) | Real formats |
 | Competitions | Qualifying rounds of amateur clubs, Chile's regional groups and Brazil's seeded draws in the domestic cups; the real-size regional nations cups (sheets 03, 05) | Real formats |
 | Calendar | The real FIFA dates 2026 to 2030, and each confederation's staged World Cup qualifying rounds (sheets 17, 19) | Real formats |
-| Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; third and fourth divisions, cross-border clubs, cross-nation leagues and cups, regional competitions and youth tournaments | Alpha 2 |
+| Competitions | Real competition formats, the rest (see `docs/REAL_FORMATS.md`): domestic cup, continental and national-team formats and tie rules; qualifying, the international calendar, guest nations and World Cup qualifying; regional groups and multi-tie play-offs in the lower divisions, regional competitions and playable youth matches | Alpha 2 |
 | Scouting | Lower-league stars, the rest: a measured loan rate for late finds over a real season, and calibration against real figures for age at breakthrough and clubs per career | Alpha 2 |
 | Legacy | Player career timeline: every club with dates, fee, appearances, goals, trophies, awards, injuries and caps — transfers never disappear | Alpha 2 |
 | Legacy | Player biographies: academy prospect → debut → breakthrough → big move → awards → return to childhood club → retirement → coaching; the archive writes stories from them ("The $8M signing who became the club's greatest-ever striker") | Alpha 2 |

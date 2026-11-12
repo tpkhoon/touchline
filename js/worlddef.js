@@ -894,6 +894,7 @@
         sim: l.sim,
         repBand: l.repBand.slice(),
         rules: JSON.parse(JSON.stringify(l.rules || {})),
+        ...(l.nats && l.nats.length ? { nats: l.nats.slice() } : {}),
       });
       for (const r of D[l.clubs] || []) def.clubs.push(rowToClub(r, l));
     }

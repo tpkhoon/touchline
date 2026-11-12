@@ -3108,7 +3108,12 @@
     }
     // Domestic cup days: enough rounds for the biggest cup (byes even out the first round), spread through the season
     const legs = !!S.rules.twoLegs;
-    const cupDays = Math.max(Object.keys(D.CUP_AFTER).length, ...W.domesticCups().map((c) => FM.Cups.daysNeeded(c)));
+    // (two spare days where a club is in two cups: a tie that would be its second match of a day waits for the next cup day)
+    const dual = Object.keys(D.CUP_HOSTS || {}).some((k) => S.clubs['c_' + k]) ? 2 : 0;
+    const cupDays = Math.max(
+      Object.keys(D.CUP_AFTER).length,
+      ...W.domesticCups().map((c) => FM.Cups.daysNeeded(c) + dual),
+    );
     const CUP = {},
       c0 = W.scaleRound(1),
       c1 = W.scaleRound(19);
@@ -4160,9 +4165,42 @@
         win.titles = win.titles || {};
         win.titles[cup.id] = (win.titles[cup.id] || 0) + 1;
       }
+      // the competitions of the real game that are over (D.PAST_GEN): their winners in the seasons the past covers
+      for (const g of D.PAST_GEN || []) {
+        if (year < g.from || year > g.to) continue;
+        const region = (c) => (D.NATIONS[c.nat] || {}).region;
+        const pool = clubs.filter(
+          (c) =>
+            !(c.founded && c.founded > year) &&
+            S.comps[c.comp] &&
+            S.comps[c.comp].tier === 1 &&
+            ((g.nats || []).includes(c.nat) ||
+              (g.regions || []).includes(region(c)) ||
+              ((g.regions || []).includes('EUR') && region(c) === 'ENG')),
+        );
+        if (pool.length < 2) continue;
+        // (the strongest few of each nation, or of the region as a whole)
+        const byNat = {};
+        for (const c of pool) (byNat[c.nat] = byNat[c.nat] || []).push(c);
+        const w = (c) => Math.exp((W.repPath(c, ago) - 55) / 8) + (g.low ? 0.3 : 0);
+        const strong = (a, b) => W.repPath(b, ago) - W.repPath(a, ago);
+        let field = Object.values(byNat).flatMap((l) => l.sort(strong).slice(0, g.top || 2));
+        if (g.field && field.length > g.field) field = field.sort(strong).slice(0, g.field);
+        if (field.length < 2) continue;
+        const win = U.wpick(field, w) || field[0];
+        const second = U.wpick(
+          field.filter((c) => c.id !== win.id),
+          w,
+        );
+        (entry.past = entry.past || {})[g.id] = { name: g.name, winner: win.id, runnerUp: second ? second.id : null };
+        win.pastTitles = win.pastTitles || {};
+        win.pastTitles[g.id] = (win.pastTitles[g.id] || 0) + 1;
+      }
       out.push(entry);
     }
     S.archive = out.concat(S.archive).sort((a, b) => a.year - b.year);
+    // (the youth tournaments' past editions: the nations' youth honours)
+    if (out.length && FM.YouthComps) FM.YouthComps.seedPast();
     return out.length;
   };
 

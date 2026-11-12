@@ -17,11 +17,11 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 | 04 Continental club | 30 continental and regional club competitions | **Started.** Final and knockout legs follow the sheet (North American and African Champions Cups single-match finals; Libertadores and Sudamericana extra time in the final only; two-legged finals in the Southeast Asian, Gulf and Central American cups; single matches in the Arab and East African cups). The Intercontinental Cup already follows the sheet (African and Asian champions open, the Americas meet, the European champion joins the final). Left: the 36-club league phase, the Asian West and East league stages, the straight CONCACAF knockout, the Club World Cup (see below). |
 | 05 International | 33 national-team tournaments | **Done as far as the engine allows** (November 2026). Sizes already follow the sheet for the confederation finals; the Gold Cup takes a guest and the Copa América plays extra time in the final only; the Southeast Asian pool is all eleven ASEAN nations, the Gulf pool the eight Gulf federation members, the Central Asian pool the CAFA nations. Left: the sizes of the regional nations cups, two-legged ASEAN knockouts, Olympic and Asian Games football (see below). |
 | 06 Regional | 40 regional competition rows | Reviewed, **no change**: the game's regional competitions are Brazil's state championships and generated regional cups, which stay as they are (the sheet lists them as fictional or partly fictional). Left: the Copa do Nordeste and Copa Verde, island and regional first stages (Cape Verde, New Zealand, India), real county, district and state cups (see below). |
-| 07 Cross-border clubs | Clubs in another nation's league (Monaco, Welsh clubs in England ...) | **Done as far as the engine allows** (November 2026): 15 clubs renamed in their home nation's style and set in the host league; 12 keep their home nation (four Welsh clubs in England's three divisions below the top, a Northern Ireland club in the Irish league, the English-based club in Wales, three Canadian clubs in the American league, two New Zealand clubs in Australia, the Japanese satellite in Singapore); the 3 whose home is not a nation of the game (the principality in France, the mountain principality in Spain, the Bornean sultanate in Malaysia) keep the host's nationality. Left: the real clubs also enter the host's cups (see below) |
-| 08 Cross-nation leagues | MLS, A-League, OFC Pro League and past ones | **Done**: MLS and the A-League through the cross-border clubs above; the OFC Pro League added (eight clubs, one from each of seven Oceania nations and an Australian one; double round-robin; its play-off groups and finals left); the past leagues (Royal League, Baltic League, African Football League, BeNe League, Soviet, Yugoslav and Czechoslovak leagues) are listed on the Cups screen under Past |
-| 09 Cross-nation cups | Active and historical cups and super cups | **Done except the regional club cups**: the Leagues Cup (a summer knockout of six American and six Mexican clubs) and the Campeones Cup (the American champion against the Mexican one, a single match) added; the historical cups are listed under Past; the national cups with foreign clubs follow the engine's rule that a club plays its own nation's cup |
+| 07 Cross-border clubs | Clubs in another nation's league (Monaco, Welsh clubs in England ...) | **Done as far as the engine allows** (November 2026): 15 clubs renamed in their home nation's style and set in the host league; 12 keep their home nation (four Welsh clubs in England's three divisions below the top, a Northern Ireland club in the Irish league, the English-based club in Wales, three Canadian clubs in the American league, two New Zealand clubs in Australia, the Japanese satellite in Singapore); Andorra's and Brunei's clubs now have their own nations (both are nations of the game); only the principality in France keeps the host's nationality (Monaco is not a nation of the game). The clubs of the pyramid below also enter the host's cup (see below) |
+| 08 Cross-nation leagues | MLS, A-League, OFC Pro League and past ones | **Done**: MLS and the A-League through the cross-border clubs above; the OFC Pro League added (eight clubs, one from each of seven Oceania nations and an Australian one; double round-robin, then two play-off groups of four and a final); the past leagues (Royal League, Baltic League, African Football League, BeNe League, Soviet, Yugoslav and Czechoslovak leagues) are listed on the Cups screen under Past |
+| 09 Cross-nation cups | Active and historical cups and super cups | **Done**: the regional club cups (Southeast Asian, Gulf, Arab, East African, Central American, Atlantic) have the sheet's field sizes and groups; the Leagues Cup (a summer knockout of six American and six Mexican clubs) and the Campeones Cup (the American champion against the Mexican one, a single match) added; the historical cups are listed under Past; the national cups with foreign clubs: a cross-border club also enters the cup of the nation whose league it plays in (`D.CUP_HOSTS`), one tie a day |
 | 10 Fictional in Touchline | Competitions with no real equivalent | Reference only |
-| 11 Youth tournaments and cups | National-team and club youth competitions | **Done by results** (November 2026): 26 national-team tournaments and 17 club youth cups, played once a season as it ends from the strength of the young players, with winners kept on the Cups screen under Youth. Left: the two school tournaments (Japan, Korea: the game has no school sides), qualifying (the field is a confederation's strongest nations), matches you can play or watch, the Under-23 over-age players |
+| 11 Youth tournaments and cups | National-team and club youth competitions | **Done by results** (November 2026): 26 national-team tournaments, 17 club youth cups and the two school tournaments, played once a season as it ends from the strength of the young players, with qualifying for the national ones, three over-age players in the Olympic and Asian Games sides, the open cups topped up with non-league academies, and ten past editions made with a new world. Left: matches you can play or watch |
 | 12 to 14 Second, third and fourth tiers | Real divisions below the top flight | **Done as single tables** (November 2026): 47 more second divisions (54 listed, 7 were there), 34 more third (37, 3 were there) and 32 more fourth (33, 1 was there), 113 divisions of fictional clubs (1,702 clubs) in the minimal tier, each linked to the division above by promotion and relegation. Then ten second tiers the sheet does not list (Albania to North Macedonia, 136 clubs) so their top flights could have the relegation play-off the leagues sheet gives. Left: regional groups (a real division of three or more groups is one table of a group's size), the zones and tournaments of Argentina and Colombia, and the cross-division play-offs of more than one tie (see below) |
 | 15 Qualifying | How teams qualify for tournaments, clubs' cups and domestic cups | **Partly followed already:** the World Championship, European, African, Asian, North American and Oceania places, the qualifying groups and the play-offs. Added: the winner of a domestic cup takes a continental place. Left: every row on qualifying rounds before a club cup's main stage, a nation's Nations League route, and the real domestic-cup entry rounds. |
 | 16 Tie rules | Legs, extra time, penalties, replays, finals | **Started.** Engine support for straight-to-penalties by round (`etFrom`, `etFinalOnly`, `play.extraTime`), legs per round and neutral finals. No cup in the game has replays (the sheet lists them as abolished or "check"). |
@@ -59,14 +59,27 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 - **Cross-border clubs:** the engine's own cross-nation league form carries them: a league lists the nations whose clubs may play in it
   (`nats`), a club has its own nation (`D.CLUB_NAT`), and its players, foreign-player rules and national cup follow that nation
   (the league's own clubs keep the league's nationality mix). `tools/crossborder.mjs` renamed 15 clubs in their home nation's style.
-  The clubs whose home is not a nation of the game keep the host's nationality (the table `D.CROSS_BORDER` says what each is). A club
-  plays one national cup, its own nation's (Welsh clubs in England play the Welsh cup, not the English one).
+  Monaco's club is the one whose home is not a nation of the game: it keeps France's nationality (`D.CROSS_BORDER` says what each
+  is). A club also enters the cup of the nation whose league it plays in (`D.CUP_HOSTS`: the Welsh clubs the English cup, the Irish
+  league's Northern Irish club the Irish cup, the Canadian clubs the American cup ...), so it is in two cups; the calendar's
+  cup days have two spare days, and a tie that would be the club's second match of a day waits for the next cup day
+  (`Sea.oneMatchADay`). A winner of either cup takes the place the cup gives.
 - **Cross-nation leagues:** the Oceania Professional League (`OC1`, `tools/crossleague.mjs`) is a minimal-tier double round-robin of
-  eight clubs from eight nations. Its central venues, play-off groups and finals are not played; it has no continental places.
+  eight clubs from eight nations, then the eight in two play-off groups of four and a final (`playoffs: groups4`). The rounds are
+  not staged at central venues; it has no continental places.
 - **Youth competitions:** `js/youthcomps.js` plays the sheet's youth tournaments and cups at the end of each season by results:
   entrants chosen as the real competition does as far as the game knows, seeded by the strength of their young players, groups
-  and knockouts or a round-robin with goals from the strength gap. No matches are shown or played by you, there is no qualifying
-  and no over-age players. Winners are kept in the save and listed on the Cups screen (Youth tab).
+  and knockouts or a round-robin with goals from the strength gap. A confederation with more nations than finals places plays
+  qualifying (the strongest quarter go through, the rest play groups of five); the Olympic and Asian Games sides add three
+  over-age players from the nation's senior pool; the two school tournaments (Japan 48, Korea 64) use school sides that are only
+  a name, a nation and a strength (`S.youthSides`); the open cups (England, France, Scotland, Brazil) are topped up with
+  non-league academies to 128 or 64. No matches are shown or played by you. Winners are kept in the save and listed on the Cups
+  screen (Youth tab); with a new world the last ten editions are made so the tab starts with honours.
+- **Past competitions:** `D.PAST_GEN` says how each past competition that falls in the game's thirty-year past was won: with
+  `W.seedHistory` it picks a winner and runner-up from the top-flight clubs of its nations or regions that were around then,
+  keeps them in the season's archive entry (`entry.past`) and on the club (`club.pastTitles`, shown on the club's honours card
+  under "Competitions that are over"). The ones that ended before the past begins (the Soviet, Yugoslav and Czechoslovak leagues,
+  the Fairs and Latin Cups) stay on the Cups screen's Past tab alone.
 
 ## Leagues sheet (02): what was done
 
@@ -229,12 +242,13 @@ better ranked nations of its part. A world definition that sets two or more co-h
 
 - Regional groups as real groups (sheet 02 owns the split and tournament formats; the lower divisions need them too).
 - A division with several cross-division play-off ties, and the Argentine, Colombian and Mexican tournaments in the lower divisions.
-- A club that plays its host nation's cup as well as its own (Welsh clubs in the FA Cup, Monaco's and Andorra's clubs in a cup of
-  their own), and clubs from non-game nations (Monaco, Andorra, Brunei) with a nation of their own.
-- The Oceania Professional League's staged rounds, play-off groups and finals; the regional club cups of sheet 09 as real fields.
-- Youth: playable and watched matches, qualifying, the school tournaments of Japan and Korea, a youth cup that is the nation's
-  open cup of 300 to 400 academies (the game has fewer clubs), the Under-23 over-age players.
-- The past competitions are a reference list; they feed no generated history yet.
+- Monaco as a nation of its own: the game's nation list has no Monaco, and a new nation brings a national team, qualifying places,
+  a name library and a place in every confederation count.
+- A club in two cups plays them on shared cup days (the tie that waited longest goes first); a real second-cup calendar of its own
+  would need the cup days split by nation.
+- Youth: matches you can play or watch (a final of your own nation is only news), school sides with players of their own, the
+  non-league academies of the open cups as clubs.
+- The past competitions have winners but no matches, tables or rounds in the archive.
 
 ## Not checked
 

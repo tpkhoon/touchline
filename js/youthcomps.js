@@ -48,6 +48,7 @@
     },
     {
       id: 'YOLY',
+      overAge: 3,
       name: "Olympic men's football",
       age: 'Under-23',
       region: 'WORLD',
@@ -134,6 +135,7 @@
     },
     {
       id: 'YASG',
+      overAge: 3,
       name: "Asian Games men's football",
       age: 'Under-23',
       region: 'ASIA',
@@ -387,7 +389,16 @@
       groups: [4, 2, 2],
       off: 0,
     },
-    { id: 'YFAY', name: 'FA Youth Cup', age: 'Under-18', who: { nat: 'ENG', tier: 4 }, fmt: 'ko', off: 0, nat: 'ENG' },
+    {
+      id: 'YFAY',
+      topUp: 128,
+      name: 'FA Youth Cup',
+      age: 'Under-18',
+      who: { nat: 'ENG', tier: 4 },
+      fmt: 'ko',
+      off: 0,
+      nat: 'ENG',
+    },
     {
       id: 'YPLC',
       name: 'Premier League Cup',
@@ -400,6 +411,7 @@
     },
     {
       id: 'YSCY',
+      topUp: 64,
       name: 'Scottish Youth Cup',
       age: 'Under-18',
       who: { nat: 'SCO', tier: 9 },
@@ -436,6 +448,7 @@
     },
     {
       id: 'YGAM',
+      topUp: 128,
       name: 'Coupe Gambardella',
       age: 'Under-19',
       who: { nat: 'FRA', tier: 9 },
@@ -455,6 +468,7 @@
     },
     {
       id: 'YCOP',
+      topUp: 128,
       name: 'Copa São Paulo de Futebol Júnior',
       age: 'Under-20',
       who: { nat: 'BRA', tier: 9 },
@@ -483,6 +497,73 @@
       nat: 'JPN',
     },
   ];
+
+  // School tournaments (Japan's and Korea's high-school championships): the school sides are not clubs, so each is only a name, a
+  // nation and a strength (S.youthSides, kept from year to year), drawn from the nation's towns and seeded by how strong its young
+  // players are. words: what a school is called.
+  Y.SCHOOLS = [
+    {
+      id: 'YJHS',
+      name: 'All Japan High School Soccer Tournament',
+      age: 'High school',
+      nat: 'JPN',
+      size: 48,
+      fmt: 'ko',
+      off: -3,
+      words: ['Gakuen', 'High School', 'Commercial High', 'Technical High'],
+      major: true,
+    },
+    {
+      id: 'YKHS',
+      name: 'Korean national high school championships',
+      age: 'High school',
+      nat: 'KOR',
+      size: 64,
+      fmt: 'ko',
+      off: -3,
+      words: ['High School', 'Technical High', 'Commercial High'],
+    },
+  ];
+  // The non-league academies and schools of a nation that the game has no club for: a persistent list of sides, each with a place
+  // name from the nation's clubs' towns and a strength of its own
+  Y.sides = function (nat, n, words) {
+    const s = S();
+    const all = (s.youthSides = s.youthSides || {});
+    const key = nat + '|' + words[0];
+    const list = (all[key] = all[key] || []);
+    if (list.length >= n) return list.slice(0, n);
+    const towns = [
+      ...new Set(
+        Object.values(s.clubs)
+          .filter((c) => c.nat === nat)
+          .map((c) => c.city),
+      ),
+    ];
+    const taken = new Set(list.map((x) => x.name));
+    for (let i = list.length; i < n; i++) {
+      let name = '';
+      for (let k = 0; k < 12 && (!name || taken.has(name)); k++)
+        name = `${towns.length ? U.pick(towns) : 'Town'} ${U.pick(words)}${k > 6 ? ' ' + (i + 1) : ''}`;
+      taken.add(name);
+      list.push({ id: `ys_${nat}_${words[0].slice(0, 3)}_${i}`, name, nat, base: U.gauss(0, 3) });
+    }
+    return list.slice(0, n);
+  };
+  // A nation's young players' strength (its Under-21 side, or from its clubs' reputation)
+  Y.natYouth = function (nat) {
+    const t = S().nteams && S().nteams['n_' + nat];
+    const v = t ? FM.Intl.u21Rating(t) : 0;
+    return v || 30;
+  };
+  Y.schoolEntrants = function (def) {
+    const r0 = Y.natYouth(def.nat) + (def.off || 0);
+    return Y.sides(def.nat, def.size, def.words).map((x) => ({
+      id: x.id,
+      name: x.name,
+      nat: x.nat,
+      r: r0 + x.base + U.gauss(0, 2),
+    }));
+  };
 
   // ---------- strength and matches ----------
   const poisson = (lam) => {
@@ -646,7 +727,14 @@
         );
       }
     }
-    return list.map((c) => ({ id: c.id, name: c.name, nat: c.nat, r: Y.clubRating(c, idx, def.off) }));
+    const out = list.map((c) => ({ id: c.id, name: c.name, nat: c.nat, r: Y.clubRating(c, idx, def.off) }));
+    // (an open cup of hundreds of academies, with fewer clubs in the game: the rest are the non-league academies of its towns)
+    if (def.topUp && out.length < def.topUp) {
+      const r0 = Y.natYouth(w.nat) - 8 + (def.off || 0);
+      for (const x of Y.sides(w.nat, def.topUp - out.length, ['Academy', 'Juniors', 'Youth']))
+        out.push({ id: x.id, name: x.name, nat: x.nat, r: r0 + x.base + U.gauss(0, 2) });
+    }
+    return out;
   };
   Y.nationEntrants = function (def) {
     const I = FM.Intl,
@@ -658,18 +746,63 @@
       const regs = def.region === 'EUR' ? ['EUR', 'ENG'] : [def.region];
       pool = teams.filter((t) => regs.includes((D.NATIONS[t.code] || {}).region));
     }
-    // (a confederation's strongest nations qualify: strength with some luck, as a real qualifying route is not a fixed list)
-    return pool
-      .map((t) => ({ id: t.id, name: t.name, nat: t.code, r: I.u21Rating(t) + (def.off || 0) + U.gauss(0, 2.5) }))
-      .sort((a, b) => b.r - a.r)
-      .slice(0, def.size);
+    const field = pool.map((t) => {
+      const e = { id: t.id, name: t.name, nat: t.code, r: I.u21Rating(t) + (def.off || 0) + U.gauss(0, 2.5), oa: null };
+      if (def.overAge) {
+        // (up to three players above the age limit, the best of the nation's senior pool who are not in the young squad)
+        const oa = I.pool(t.code)
+          .filter((p) => FM.W.age(p) > 23 && FM.W.age(p) <= 29)
+          .slice(0, def.overAge);
+        if (oa.length) {
+          const strong = U.avg(oa, (p) => p.ca);
+          e.r += (oa.length / 11) * Math.max(0, strong - e.r);
+          e.oa = oa.map((p) => p.id);
+        }
+      }
+      return e;
+    });
+    return Y.qualify(field, def.size);
+  };
+  // Qualifying: when more teams than places want in, the strongest few go straight through and the rest play groups of five (a
+  // single round-robin by results); the group winners and the best runners-up fill the places that are left
+  Y.qualify = function (field, size) {
+    if (field.length <= size) return { teams: field, q: 0 };
+    const sorted = field.slice().sort((a, b) => b.r - a.r);
+    const auto = Math.max(1, Math.floor(size / 4));
+    const direct = sorted.slice(0, auto),
+      rest = sorted.slice(auto).map((e) => ({ ...e, pts: 0, gd: 0, gf: 0 }));
+    const need = size - auto;
+    if (rest.length <= need) return { teams: direct.concat(rest), q: field.length };
+    const k = Math.max(1, Math.min(need, Math.ceil(rest.length / 5)));
+    const groups = Array.from({ length: k }, () => /** @type {any[]} */ ([]));
+    rest.forEach((e, i) => groups[i % k].push(e));
+    for (const g of groups)
+      for (let i = 0; i < g.length; i++)
+        for (let j = i + 1; j < g.length; j++) {
+          const m = Y.match(g[i], g[j], false);
+          g[i].gf += m.ga;
+          g[j].gf += m.gb;
+          g[i].gd += m.ga - m.gb;
+          g[j].gd += m.gb - m.ga;
+          if (m.ga === m.gb) (g[i].pts++, g[j].pts++);
+          else (m.ga > m.gb ? g[i] : g[j]).pts += 3;
+        }
+    const winners = [],
+      others = [];
+    for (const g of groups) {
+      const tbl = g.slice().sort(byPoints);
+      winners.push(tbl[0]);
+      others.push(...tbl.slice(1));
+    }
+    const through = winners.concat(others.sort(byPoints)).slice(0, need);
+    return { teams: direct.concat(through), q: field.length };
   };
 
   // ---------- a season's worth ----------
   Y.honours = () => (S().youthHonours = S().youthHonours || []);
-  Y.run = function () {
+  Y.run = function (yearArg, quiet) {
     const s = S(),
-      year = s.year;
+      year = yearArg || s.year;
     if (!s.nteams) return;
     if (Object.values(s.nteams).some((t) => !t.u21)) FM.Intl.youthTick();
     const out = [];
@@ -689,13 +822,16 @@
         f: res.final,
         n: res.n,
       };
+      if (res.q) e.q = res.q;
+      if (res.winner.oa && res.winner.oa.length)
+        e.oa = res.winner.oa.map((id) => (s.players[id] ? s.players[id].name : '')).filter(Boolean);
       Y.honours().push(e);
       out.push(e);
       const mine = [res.winner.id, res.runnerUp && res.runnerUp.id].filter(Boolean);
       const uc = s.user && (s.user.clubId || (s.user.nation && 'n_' + s.user.nation));
       const you =
         mine.includes(uc) || (kind === 'nation' && s.user && s.user.nation && mine.includes('n_' + s.user.nation));
-      if (you || def.major)
+      if (!quiet && (you || def.major))
         FM.News.add({
           type: you ? 'club' : 'world',
           title: `${res.winner.name} win the ${def.name}`,
@@ -704,9 +840,11 @@
     };
     for (const def of Y.NATIONAL) {
       if (year < def.from || (year - def.from) % def.every) continue;
-      const ent = Y.nationEntrants(def);
-      if (ent.length < 4) continue;
-      record(def, Y.play(ent, def), 'nation');
+      const qf = Y.nationEntrants(def);
+      if (qf.teams.length < 4) continue;
+      const res = Y.play(qf.teams, def);
+      res.q = qf.q;
+      record(def, res, 'nation');
     }
     const idx = Y.youthIndex();
     const done = {};
@@ -734,9 +872,22 @@
       done[def.id] = res;
       record(def, res, 'club');
     }
+    for (const def of Y.SCHOOLS) record(def, Y.play(Y.schoolEntrants(def), def), 'school');
     // (kept to a long run of seasons: a few hundred lines)
     if (Y.honours().length > 1500) s.youthHonours = Y.honours().slice(-1500);
     return out;
+  };
+  // The past editions of the youth tournaments, made when a world's thirty seasons are (W.seedHistory): the last ten years of them, so
+  // the Youth tab has honours from the start
+  Y.seedPast = function (years = 10) {
+    try {
+      const s = S();
+      if (!s.nteams || Y.honours().length) return;
+      if (Object.values(s.nteams).some((t) => !t.u21)) FM.Intl.youthTick();
+      for (let y = s.year - years; y < s.year; y++) Y.run(y, true);
+    } catch (e) {
+      if (typeof console !== 'undefined') console.error('youth tournaments (past)', e);
+    }
   };
   Y.seasonEnd = function () {
     try {
@@ -779,13 +930,14 @@
         .slice(-5)
         .reverse();
       return `<div class="card"><div class="row"><div class="h3 grow">${esc(def.name)}</div>${e ? `<span class="pill acc">${e.wn ? flag(e.wn) + ' ' : ''}${esc(e.w)}</span>` : ''}</div>
-        <div class="tiny dim" style="margin-top:4px">${esc(def.age)} · ${kind === 'nation' ? 'national teams' : 'club youth sides'} · ${def.size || (def.who && def.who.n) ? U.plural(def.size || def.who.n, kind === 'nation' ? 'team' : 'club') : "open to the nation's clubs"}${def.every ? ` · ${def.every === 1 ? 'every year' : `every ${U.plural(def.every, 'year')}`}` : ' · every year'}</div>
-        ${hist.length ? hist.map((x) => `<div class="small" style="padding:3px 0">${x.y}: <b>${esc(x.w)}</b>${x.r ? ` beat ${esc(x.r)}` : ''}${x.f ? ` (${esc(x.f)})` : ''}</div>`).join('') : '<div class="small dim" style="margin-top:6px">Not played yet: the first edition is at the end of this season or a later one.</div>'}</div>`;
+        <div class="tiny dim" style="margin-top:4px">${esc(def.age)} · ${kind === 'nation' ? 'national teams' : kind === 'school' ? 'school sides' : 'club youth sides'} · ${def.topUp ? `open: ${U.plural(def.topUp, 'side')} or more` : def.size || (def.who && def.who.n) ? U.plural(def.size || def.who.n, kind === 'nation' ? 'team' : kind === 'school' ? 'school' : 'club') : "open to the nation's clubs"}${def.every ? ` · ${def.every === 1 ? 'every year' : `every ${U.plural(def.every, 'year')}`}` : ' · every year'}</div>
+        ${hist.length ? hist.map((x) => `<div class="small" style="padding:3px 0">${x.y}: <b>${esc(x.w)}</b>${x.r ? ` beat ${esc(x.r)}` : ''}${x.f ? ` (${esc(x.f)})` : ''}${x.q ? ` · ${U.plural(x.q, 'team')} in qualifying` : ''}${x.oa ? ` · over-age: ${esc(x.oa.join(', '))}` : ''}</div>`).join('') : '<div class="small dim" style="margin-top:6px">Not played yet: the first edition is at the end of this season or a later one.</div>'}</div>`;
     };
     return (
       `<div class="tiny dim" style="margin:8px 0">Youth competitions are played once a season, as it ends, by results only: the young players of each side, seeded by their strength.</div>` +
       `<div class="small b dim" style="margin:12px 0 4px">NATIONAL TEAMS</div>${Y.NATIONAL.map((d) => card(d, 'nation')).join('')}` +
-      `<div class="small b dim" style="margin:12px 0 4px">CLUB YOUTH CUPS</div>${Y.CLUBS.map((d) => card(d, 'club')).join('')}`
+      `<div class="small b dim" style="margin:12px 0 4px">CLUB YOUTH CUPS</div>${Y.CLUBS.map((d) => card(d, 'club')).join('')}` +
+      `<div class="small b dim" style="margin:12px 0 4px">SCHOOL TOURNAMENTS</div>${Y.SCHOOLS.map((d) => card(d, 'school')).join('')}`
     );
   };
 })();

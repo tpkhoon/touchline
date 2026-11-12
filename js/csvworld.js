@@ -28,6 +28,7 @@
       'promote_n',
       'qualify_to',
       'qualify_n',
+      'nats',
     ],
     clubs: [
       'id',
@@ -183,6 +184,7 @@
         promote_n: r.promote && r.promote.auto != null ? r.promote.auto : r.promote && r.promote.n,
         qualify_to: r.qualify && r.qualify.to,
         qualify_n: r.qualify && r.qualify.n,
+        nats: (l.nats || []).join(' '), // (the other nations whose clubs play in it, such as the cross-border clubs)
       };
     });
     const clubs = (def.clubs || []).map((c) => ({
@@ -621,9 +623,24 @@
         link('relegate', 'relegate_to', 'relegate_n', known);
         link('promote', 'promote_to', 'promote_n', known);
         link('qualify', 'qualify_to', 'qualify_n', (to) => compIds().includes(to));
+        // (the other nations of its clubs: a blank cell, or a file without the column, keeps what the league has)
+        let nats = cur && cur.nats ? cur.nats.slice() : null;
+        if (v.nats !== '') {
+          const list = v.nats
+            .toUpperCase()
+            .split(/[\s,;|]+/)
+            .filter(Boolean);
+          const odd = list.find((x) => !natOk(x));
+          if (odd)
+            bad(f, n, who, 'nats', `"${odd}" is not a nation of the game (use its three-letter code, such as ENG)`);
+          else if (new Set(list).size !== list.length || list.includes(nat))
+            bad(f, n, who, 'nats', 'list each other nation once, and not the nation of the league itself');
+          else nats = list;
+        }
         if (errors.length > e0) continue;
         const next = {
           ...(cur || {}),
+          ...(nats && nats.length ? { nats } : {}),
           id,
           name: v.name || (cur && cur.name),
           short: (v.short || (cur && cur.short) || id).toUpperCase().slice(0, 6),

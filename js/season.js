@@ -97,6 +97,23 @@
     for (const f of out) if (f.day === undefined) f.day = FM.S.day;
     return out;
   };
+  // A club in two cups (a cross-border club: D.CUP_HOSTS) plays one tie a day: the tie that has waited longest goes first and the other
+  // waits for the next cup day
+  Sea.oneMatchADay = function (fx) {
+    const order = fx.map((f, i) => [f, i]).sort((a, b) => (b[0].wait || 0) - (a[0].wait || 0) || a[1] - b[1]);
+    const busy = new Set(),
+      keep = new Set();
+    for (const [f] of order) {
+      if (f.res) keep.add(f);
+      else if (busy.has(f.h) || busy.has(f.a)) f.wait = (f.wait || 0) + 1;
+      else {
+        busy.add(f.h);
+        busy.add(f.a);
+        keep.add(f);
+      }
+    }
+    return fx.filter((f) => keep.has(f));
+  };
   function dayFixtures() {
     const S = FM.S,
       cal = Sea.today();
@@ -104,7 +121,10 @@
     if (cal.type === 'league') {
       return W.leagues().flatMap((c) => W.roundFixtures(c, cal.round) || []);
     }
-    if (cal.type === 'cup') return cal.comps.flatMap((id) => FM.Cups.fixturesFor(S.comps[id], cal));
+    if (cal.type === 'cup') {
+      const fx = cal.comps.flatMap((id) => FM.Cups.fixturesFor(S.comps[id], cal));
+      return cal.regional || cal.super || !D.CUP_HOSTS ? fx : Sea.oneMatchADay(fx);
+    }
     if (cal.type === 'pre') {
       const plan = S.user.preseason[cal.idx];
       return plan && plan.fx ? [plan.fx] : [];

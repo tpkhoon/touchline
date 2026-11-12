@@ -336,6 +336,32 @@ try {
     r.errors.length >= 4 && r.errors.every((e) => e.startsWith('row 5')),
     'a bad row is reported by its row and left out',
   );
+  // the leagues that take clubs of other nations (the cross-border clubs) keep them through a CSV round trip
+  {
+    const d = WD.fromStatic({ name: 'csv nats' });
+    const cross = d.leagues.filter((x) => x.nats && x.nats.length).map((x) => [x.id, x.nats.slice()]);
+    ok(cross.length >= 9, 'the world has the leagues with other nations to test (' + cross.length + ')');
+    const ex = CS.export(d);
+    const bare = WD.fromStatic({ name: 'csv nats 2' });
+    for (const x of bare.leagues) delete x.nats;
+    const back = CS.apply(bare, [{ name: 'leagues.csv', text: ex.leagues }]);
+    eq(back.errors, [], 'the leagues CSV with a nats column is read back whole');
+    eq(
+      cross.map(([id]) => [id, (bare.leagues.find((x) => x.id === id).nats || []).slice()]),
+      cross,
+      'a CSV round trip keeps the nations of the leagues with cross-border clubs',
+    );
+    // an older file without the column leaves the league as it is
+    const old = ex.leagues.replace(/,nats(\r?\n)/, ',unused$1');
+    ok(old !== ex.leagues, 'the leagues CSV has a nats column to take out');
+    const d2 = WD.fromStatic({ name: 'csv nats 3' });
+    CS.apply(d2, [{ name: 'leagues.csv', text: old }]);
+    eq(
+      cross.map(([id]) => (d2.leagues.find((x) => x.id === id).nats || []).slice()),
+      cross.map(([, n]) => n),
+      'an older leagues CSV without the nats column keeps the nations',
+    );
+  }
   eq(
     [E.player(ids[0]).wage, E.player(ids[0]).no, E.player(ids[0]).contract],
     [12000, 9, 2031],
@@ -930,6 +956,29 @@ try {
   for (let i = 0; i < 200; i++) if (YC.play(field(16), { fmt: 'groups', groups: [4, 2, 0] }).winner.id === 't0') top++;
   ok(top > 200 / 16, 'the strongest side wins a youth tournament more often than a one in sixteen chance');
   ok(YC.NATIONAL.length === 26 && YC.CLUBS.length === 17, 'the youth competitions are all listed');
+  // qualifying: more teams than places, the places filled, no team twice
+  {
+    const q = YC.qualify(field(54), 16);
+    eq(q.teams.length, 16, 'qualifying fills the places');
+    eq(new Set(q.teams.map((e) => e.id)).size, 16, 'a team qualifies once');
+    ok(
+      q.teams.some((e) => e.id === 't0'),
+      'the strongest team is through',
+    );
+    eq(YC.qualify(field(10), 16).teams.length, 10, 'a field smaller than the places needs no qualifying');
+  }
+  ok(YC.SCHOOLS.length === 2, 'the Japanese and Korean school tournaments are listed');
+  for (const [code, host] of Object.entries(D.CUP_HOSTS)) {
+    ok(
+      codes.has(code) && D.CLUB_NAT[code] && D.NATIONS[host],
+      `cup-host club ${code} is a cross-border club in a nation`,
+    );
+    ok(D.CLUB_NAT[code] !== host, `${code} has a home nation other than the one whose cup it also enters`);
+  }
+  ok(
+    L.OC1 && L.OC1.rules.playoffs && L.OC1.clubs && (D[L.OC1.clubs] || []).length === 8,
+    'the Oceania league has eight clubs and play-off groups',
+  );
 }
 
 console.log(

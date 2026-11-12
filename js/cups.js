@@ -59,8 +59,12 @@
   // only play its cup in the full engine, so the cup has real matches and real stories)
   // (a cup's format can keep it to the top divisions: opts.tiers = the lowest division that enters; too few clubs and it is open to all)
   Cu.entrants = (c) => {
+    // (a cross-border club also enters the cup of the nation whose league it plays in: D.CUP_HOSTS)
     const all = Object.values(S().clubs).filter(
-      (x) => x.nat === c.nat && x.comp && S().comps[x.comp] && W.leagueOpen(S().comps[x.comp], c.nat),
+      (x) =>
+        x.comp &&
+        S().comps[x.comp] &&
+        ((x.nat === c.nat && W.leagueOpen(S().comps[x.comp], c.nat)) || (D.CUP_HOSTS || {})[x.id.slice(2)] === c.nat),
     );
     const t = (Cu.optsOf(c) || {}).tiers;
     if (!t) return all;

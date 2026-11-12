@@ -1971,6 +1971,7 @@
       tier: 2,
       sim: 'light',
       clubs: 'CLUBS_ES2',
+      nats: ['AND'],
       repBand: [56, 45],
       rules: { promote: { to: 'ES1', auto: 2, playoff: [3, 6], finalLegs: 2 }, relegate: { to: 'ES3', n: 4 } },
     },
@@ -1982,6 +1983,7 @@
       tier: 3,
       sim: 'light',
       clubs: 'CLUBS_ES3',
+      nats: ['AND'],
       repBand: [46, 36],
       rules: { pools: ['North', 'South'], relegate: { to: 'ES4', n: 2 }, promote: { to: 'ES2', auto: 2 } },
     },
@@ -2530,6 +2532,7 @@
       tier: 1,
       sim: 'minimal',
       clubs: 'CLUBS_MY1',
+      nats: ['BRU'],
       repBand: [60, 40],
       rules: { relegate: { to: 'MY2', n: 1 }, qualify: { to: 'AC', n: 1 } },
     },
@@ -3984,6 +3987,7 @@
       tier: 2,
       sim: 'minimal',
       clubs: 'CLUBS_MY2',
+      nats: ['BRU'],
       repBand: [45, 34],
       rules: { promote: { to: 'MY1', auto: 1 } },
     },
@@ -4942,7 +4946,7 @@
       sim: 'minimal',
       clubs: 'CLUBS_US4',
       repBand: [43, 32],
-      rules: { rounds: 14 },
+      rules: { rounds: 14, playoffs: { type: 'groups4', legs: 1 } },
     },
     {
       id: 'VN4',
@@ -4965,7 +4969,7 @@
       clubs: 'CLUBS_OC1',
       repBand: [36, 28],
       nats: ['FIJ', 'SOL', 'VAN', 'PNG', 'TAH', 'NCL', 'AUS'],
-      rules: { rounds: 14 },
+      rules: { rounds: 14, playoffs: { type: 'groups4', legs: 1 } },
     },
     {
       id: 'AL2',
@@ -5288,7 +5292,8 @@
       prize: 1e6,
       tier: 4,
       legs: { f: 2 }, // a two-legged final, as the ASEAN Club Championship's
-      feeders: { TH1: 3, VN1: 3, ID1: 3, MY1: 3, SG1: 2, PH1: 2 },
+      groupSize: 6,
+      feeders: { TH1: 2, VN1: 2, ID1: 2, MY1: 2, SG1: 2, PH1: 2 },
     },
     {
       id: 'GC',
@@ -5298,7 +5303,8 @@
       prize: 1.2e6,
       tier: 4,
       legs: { f: 2 },
-      feeders: { SA1: 4, AE1: 4, QA1: 4, IR1: 4, KW1: 2, BH1: 1, OM1: 1 },
+      groupSize: 4,
+      feeders: { SA1: 2, AE1: 2, QA1: 2, KW1: 1, BH1: 1 },
     },
     {
       id: 'AB',
@@ -5308,7 +5314,8 @@
       prize: 1e6,
       tier: 5,
       legs: { qf: 1, sf: 1, f: 1 }, // single matches in the recent editions
-      feeders: { SA1: 3, AE1: 2, QA1: 2, IQ1: 2, JO1: 2, KW1: 2, BH1: 1, OM1: 2 },
+      groupSize: 6,
+      feeders: { SA1: 2, AE1: 2, QA1: 2, IQ1: 2, JO1: 1, KW1: 1, BH1: 1, OM1: 1 },
     },
     {
       id: 'WF',
@@ -5327,7 +5334,8 @@
       prize: 1e6,
       tier: 4,
       legs: { qf: 1, sf: 1, f: 1 }, // single matches (the Kagame Cup)
-      feeders: { KE1: 3, UG1: 3, TZ1: 3, ET1: 3, ZM1: 2, ZW1: 2 },
+      groupSize: 6,
+      feeders: { KE1: 3, UG1: 3, TZ1: 2, ET1: 2, ZM1: 1, ZW1: 1 },
     },
     {
       id: 'CA',
@@ -5337,7 +5345,8 @@
       prize: 1e6,
       tier: 4,
       legs: { f: 2 }, // a two-legged final
-      feeders: { CR1: 2, HN1: 2, PA1: 2, JM1: 2, GT1: 3, SV1: 2, TT1: 3 },
+      groupSize: 5,
+      feeders: { CR1: 3, HN1: 3, PA1: 3, JM1: 2, GT1: 3, SV1: 3, TT1: 3 },
     },
     {
       id: 'AN',
@@ -5355,7 +5364,8 @@
       short: 'ATL',
       prize: 1e6,
       tier: 4,
-      feeders: { SC1: 4, WA1: 4, IE1: 4, NI1: 4 },
+      groupSize: 5,
+      feeders: { SC1: 3, WA1: 2, IE1: 3, NI1: 2 },
     },
     // The Balkan and Slavic club cups (tier 5: the places below the regional cups' in each league, as the Arab Cup has them): the
     // clubs of the Balkan nations, and the clubs of the Slavic nations. Their nations have cups of their own (the Balkan and Slavic
@@ -5656,6 +5666,26 @@
     NOW: 'NZL',
     MOB: 'NZL',
     KAM: 'JPN',
+    MRB: 'AND',
+    SIT: 'BRU',
+  };
+  // A cross-border club also enters the domestic cup of the nation whose league it plays in (its own nation's cup it enters as any club
+  // of that nation does): club code -> the host nation
+  FM.D.CUP_HOSTS = {
+    CHI: 'ENG',
+    LIT: 'ENG',
+    CAE: 'ENG',
+    MIA: 'ENG',
+    TAL: 'WAL',
+    COU: 'IRL',
+    EAG: 'USA',
+    WHI: 'USA',
+    LAK: 'USA',
+    NOW: 'AUS',
+    MOB: 'AUS',
+    KAM: 'SGP',
+    MRB: 'ESP',
+    SIT: 'MYS',
   };
   FM.D.CROSS_BORDER = {
     ESB: 'A principality on the French coast with no league of its own',
@@ -5676,6 +5706,65 @@
   };
   // Competitions of the real game that are over (real-formats sheets 08 and 09): the cross-nation leagues and cups of the past. They are
   // not played in the game (its world begins in the present); the Cups screen lists them under Past with what they were.
+  // How the past competitions feed the generated history (W.seedHistory): the seasons they were held that the game's thirty-year past
+  // covers, and which clubs could win them: the top-division clubs of the nations (nats) or of a region (regions; the game's region
+  // codes), weighted by how strong each was then. top: how many of each nation's strongest clubs take part
+  FM.D.PAST_GEN = [
+    { id: 'PRL', name: 'Royal League', from: 2004, to: 2006, nats: ['DEN', 'NOR', 'SWE'], top: 4 },
+    { id: 'PBL', name: 'Baltic League', from: 2007, to: 2010, nats: ['EST', 'LVA', 'LTU'], top: 6 },
+    { id: 'PAFL', name: 'African Football League', from: 2023, to: 2023, regions: ['AFR'], top: 1, field: 8 },
+    {
+      id: 'PIC',
+      name: 'Intercontinental Cup (Europe v South America)',
+      from: 1996,
+      to: 2004,
+      regions: ['EUR', 'SAM'],
+      top: 1,
+      field: 2,
+    },
+    { id: 'PCWE', name: "European Cup Winners' Cup", from: 1996, to: 1999, regions: ['EUR', 'ENG'], top: 1 },
+    { id: 'PCWA', name: "African Cup Winners' Cup", from: 1996, to: 2003, regions: ['AFR'], top: 1 },
+    { id: 'PCWS', name: "Asian Cup Winners' Cup", from: 1996, to: 2002, regions: ['ASIA'], top: 1 },
+    { id: 'PIT', name: 'Intertoto Cup', from: 1996, to: 2008, regions: ['EUR', 'ENG'], top: 2, low: true },
+    { id: 'PCI', name: 'Copa Interamericana', from: 1996, to: 1998, regions: ['SAM', 'NAM'], top: 1, field: 2 },
+    {
+      id: 'PAA',
+      name: 'Afro-Asian Club Championship',
+      from: 1996,
+      to: 1998,
+      regions: ['AFR', 'ASIA'],
+      top: 1,
+      field: 2,
+    },
+    { id: 'PSL', name: 'Supercopa Libertadores', from: 1996, to: 1997, regions: ['SAM'], top: 1 },
+    {
+      id: 'PSB',
+      name: 'Suruga Bank Championship',
+      from: 2008,
+      to: 2019,
+      nats: ['JPN'],
+      regions: ['SAM'],
+      top: 1,
+      field: 2,
+    },
+    { id: 'PSET', name: 'Setanta Sports Cup', from: 2005, to: 2014, nats: ['IRL', 'NIR'], top: 6 },
+    {
+      id: 'PSCC',
+      name: 'Scottish Challenge Cup (with guest clubs)',
+      from: 2016,
+      to: 2020,
+      nats: ['SCO', 'WAL', 'NIR', 'IRL'],
+      top: 4,
+    },
+    {
+      id: 'PMEK',
+      name: 'Mekong Club Championship',
+      from: 2014,
+      to: 2017,
+      nats: ['CAM', 'LAO', 'MYA', 'THA', 'VIE'],
+      top: 1,
+    },
+  ];
   FM.D.PAST_COMPETITIONS = [
     {
       name: 'Royal League',

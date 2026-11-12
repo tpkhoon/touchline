@@ -4422,6 +4422,17 @@
       reg = entries.filter(([k]) => S().comps[k].type === 'regional');
     const line = ([k, n], icon) =>
       `<div class="row small" style="margin-top:6px">${icon} <span class="grow">${esc(S().comps[k].name)}</span><b>${n}</b></div>`;
+    // (the trophies of competitions that are over: the Royal League, the Cup Winners' Cup ...)
+    const gone = Object.entries(c.pastTitles || {}).filter(([k]) => (D.PAST_GEN || []).some((g) => g.id === k));
+    const goneHtml = gone.length
+      ? `<div class="small b dim" style="margin-top:12px;text-transform:uppercase;letter-spacing:.6px">Competitions that are over</div>${gone
+          .map(
+            ([k, n]) =>
+              `<div class="row small" style="margin-top:6px">${UI.ico('medal')} <span class="grow">${esc(D.PAST_GEN.find((g) => g.id === k).name)}</span><b>${n}</b></div>`,
+          )
+          .join('')}`
+      : '';
+    if (!entries.length && gone.length) return `<div class="card"><div class="h3">Honours</div>${goneHtml}</div>`;
     if (!entries.length && none)
       return `<div class="card"><div class="h3">Honours</div><div class="small dim" style="margin-top:6px">${none}</div></div>`;
     if (!entries.length) return '';
@@ -4429,7 +4440,7 @@
       reg.length
         ? `<div class="small b dim" style="margin-top:12px;text-transform:uppercase;letter-spacing:.6px">Regional</div>${reg.map((e) => line(e, UI.ico('medal'))).join('')}`
         : ''
-    }</div>`;
+    }${goneHtml}</div>`;
   };
   // A season's county cups and state championships, tucked away under one heading (the winners of every area; yours first)
   UI.regionalSeason = function (e, card) {

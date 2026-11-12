@@ -52,6 +52,26 @@ check(
     .map((c) => c.name + ' ' + c.nick)
     .join(', ')}`,
 );
+// the past competitions of the real game that are over feed the generated past: their winners are clubs that were around then
+const D = FM.D;
+const past = S.archive.flatMap((e) => Object.entries(e.past || {}).map(([id, x]) => ({ id, y: e.year, ...x })));
+check(past.length > 20, 'only ' + past.length + ' past-competition winners in the generated past');
+check(
+  past.every((x) => S.clubs[x.winner] && !(S.clubs[x.winner].founded > x.y)),
+  'a past competition won by a club that did not exist yet',
+);
+const gen = D.PAST_GEN.filter((g) => g.to < S.year && g.from >= S.year - 30);
+check(
+  gen.every((g) => past.some((x) => x.id === g.id)),
+  'a past competition with no winner in the generated past',
+);
+const pastTitles = clubs.reduce((n, c) => n + Object.values(c.pastTitles || {}).reduce((a, b) => a + b, 0), 0);
+check(
+  pastTitles === past.length,
+  'club honours (' + pastTitles + ') and the archive (' + past.length + ') disagree on past competitions',
+);
+const youth = (S.youthHonours || []).length;
+check(youth > 100, 'only ' + youth + ' youth-tournament honours in the generated past');
 const notes = new Set(clubs.flatMap((c) => (c.legends || []).map((l) => l.note)));
 console.log({
   clubs: clubs.length,
@@ -60,6 +80,8 @@ console.log({
   fallen: fallen.length,
   noGlory: noGlory.length,
   distinctNotes: notes.size,
+  past: past.length,
+  youth,
 });
 if (fails.length) {
   console.error('FAILED\n' + fails.join('\n'));

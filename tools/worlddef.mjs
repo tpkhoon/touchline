@@ -309,6 +309,7 @@ if ('test' in args) {
       WD.validate(bad, null).errors.some((e) => /listed once/.test(e)),
       'a league open to its own nation was accepted',
     );
+    const natsBefore = Object.keys(D.CLUB_NAT).length;
     WD.useStatic(WD.patchOf(d7));
     W.newWorld(W.REAL_RULES);
     FM.Season.init();
@@ -325,7 +326,7 @@ if ('test' in args) {
     );
     WD.useStatic(null);
     check(
-      !D.LEAGUES.some((l) => l.id === 'NAF') && !Object.keys(D.CLUB_NAT).length,
+      !D.LEAGUES.some((l) => l.id === 'NAF') && Object.keys(D.CLUB_NAT).length === natsBefore,
       'the cross-nation league was not taken out again',
     );
   }
