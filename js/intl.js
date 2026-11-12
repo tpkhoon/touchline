@@ -63,11 +63,11 @@
         ], // (the host places by part of the world: Europe 2, Africa 1, South America 3)
         pools: [
           [['EUR'], 16],
-          [['AFR'], 9],
-          [['ASIA'], 8],
+          [['AFR'], 9, { size: 6, runners: 4 }], // nine groups of six; the four best runners-up play off for the play-off place
+          [['ASIA'], 8, { prelim: 20 }], // the lowest twenty play a first round
           [['SAM'], 6],
-          [['NAM'], 6],
-          [['OFC'], 1],
+          [['NAM'], 6, { prelim: 4 }],
+          [['OFC'], 1, { prelim: 4 }],
         ],
       },
     ],
@@ -99,7 +99,7 @@
     if (!extra.length) return base;
     if (kind === 'world')
       return base.map((tn) => {
-        const pools = tn.pools.map(([r, n]) => [r.slice(), n]);
+        const pools = tn.pools.map(([r, n, o]) => [r.slice(), n, o]);
         let take = extra.length;
         while (take-- > 0) {
           const big = pools.reduce((m, p) => (p[1] > m[1] ? p : m), pools[0]);
@@ -1168,6 +1168,54 @@
   const inviteTags = () => ((S().calendar || []).some((d) => d.tag === 'I3a') ? ['I3a', 'I3b'] : ['I2a', 'I2b']);
 
   // ---------- Season setup: qualifying groups for the coming summer ----------
+  // A pool's options (the third item of [regions, places, options]): size (the group size, 4 by default), prelim (the lowest ranked
+  // nations that play a two-legged first round before the groups), runners (the best runners-up that play off for the one place
+  // in the intercontinental play-offs)
+  const pool3 = (tn, pi) => (tn.pools[pi] && tn.pools[pi][2]) || {};
+  // Draw a pool's qualifying groups from its teams (in ranking order, snake-seeded); start = the matchday of the first round
+  const addPoolGroups = (q, kind, tn, regions, key, slots, teams, o, start) => {
+    const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || o.size || 4)));
+    const groups = [...Array(g)].map(() => []);
+    teams.forEach((t, i) => {
+      const row = Math.floor(i / g),
+        col = i % g;
+      groups[row % 2 ? g - 1 - col : col].push(t.id);
+    });
+    groups.forEach((ids, gi) => {
+      const rr = W.roundRobin(ids);
+      // (the groups of up to four play home and away, as the sheets say of every confederation; a bigger group plays once each)
+      const rounds = ids.length <= 4 ? rr : rr.slice(0, rr.length / 2);
+      const letter =
+        gi < 26
+          ? String.fromCharCode(65 + gi)
+          : String.fromCharCode(64 + Math.floor(gi / 26)) + String.fromCharCode(65 + (gi % 26));
+      const name = `${tn.id === 'WC' ? '' : tn.id + ' '}${I.confedName(regions[0])}${regions.length > 1 ? '+' : ''} ${letter}`;
+      // (a pool with a first round has no play-off tie: its six group matchdays end on the last one of the window; a pool whose
+      // runners-up play off has its own)
+      const po =
+        o.prelim || o.runners
+          ? 0
+          : g >= 2 * Math.round(slots * (kind === 'world' ? 0.12 : 0.13))
+            ? Math.round(slots * (kind === 'world' ? 0.12 : 0.13))
+            : 0;
+      q.groups.push({
+        key,
+        tn: tn.id,
+        slots,
+        // the last places are played for: the best teams that missed the direct places meet in single matches on the last
+        // matchday (the play-offs), as at the European championship
+        po,
+        ...(o.runners ? { runners: o.runners } : {}),
+        ...(start ? { start } : {}),
+        name,
+        teams: ids,
+        table: Object.fromEntries(ids.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }])),
+        rounds: rounds.map((rd) => rd.map(([h, a]) => ({ h, a }))),
+      });
+    });
+  };
+  // the group's round on a matchday of the window (a group drawn after a first round starts on its third matchday)
+  const groupRound = (g, md) => g.rounds[md - (g.start || 0)] || [];
   I.newSeason = function () {
     const s = S();
     s.quals = null;
@@ -1237,40 +1285,27 @@
             q.direct[key] = nonHosts.slice(0, slots).map((t) => t.id);
             return;
           }
-          const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || 4)));
-          const groups = [...Array(g)].map(() => []);
-          teams.forEach((t, i) => {
-            const row = Math.floor(i / g),
-              col = i % g;
-            groups[row % 2 ? g - 1 - col : col].push(t.id);
-          });
-          groups.forEach((ids, gi) => {
-            const rr = W.roundRobin(ids);
-            // (the groups of up to four play home and away, as the sheets say of every confederation; a bigger group plays once each)
-            const rounds = ids.length <= 4 ? rr : rr.slice(0, rr.length / 2);
-            const letter =
-              gi < 26
-                ? String.fromCharCode(65 + gi)
-                : String.fromCharCode(64 + Math.floor(gi / 26)) + String.fromCharCode(65 + (gi % 26));
-            const name = `${tn.id === 'WC' ? '' : tn.id + ' '}${I.confedName(regions[0])}${regions.length > 1 ? '+' : ''} ${letter}`;
-            q.groups.push({
-              key,
+          // a first round before the groups (the lowest ranked nations play two-legged ties on the first two matchdays; the winners
+          // join the others, and the groups are drawn after the round): `prelim` on the pool's options
+          const o = pool3(tn, pi),
+            pre = Math.min(o.prelim || 0, Math.floor(teams.length / 3)) & ~1;
+          if (pre >= 2 && teams.length - pre / 2 > slots) {
+            const low = teams.slice(-pre);
+            q.pending = q.pending || {};
+            q.pending[key] = {
               tn: tn.id,
+              regions,
               slots,
-              // the last places are played for: the best teams that missed the direct places meet in single matches on the last
-              // matchday (the play-offs), as at the European championship
-              po:
-                g >= 2 * Math.round(slots * (kind === 'world' ? 0.12 : 0.13))
-                  ? Math.round(slots * (kind === 'world' ? 0.12 : 0.13))
-                  : 0,
-              name,
-              teams: ids,
-              table: Object.fromEntries(
-                ids.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }]),
-              ),
-              rounds: rounds.map((rd) => rd.map(([h, a]) => ({ h, a }))),
-            });
-          });
+              pi,
+              teams: teams.map((t) => t.id),
+              low: low.map((t) => t.id),
+              // (the stronger side of each pair plays the second leg at home)
+              ties: [...Array(pre / 2)].map((_, i) => ({ s: low[i].id, w: low[pre - 1 - i].id, l1: null, l2: null })),
+              drawn: false,
+            };
+            return;
+          }
+          addPoolGroups(q, kind, tn, regions, key, slots, teams, o, 0);
         }),
       );
       // A nation can't be in two qualifying groups at once (the World Championship takes priority)
@@ -1654,6 +1689,111 @@
     }
     return out;
   };
+  // ---------- The first round and the runners-up play-off of the staged pools ----------
+  // A pool with a first round (the Asian, North American and Oceanian ones): its lowest ranked nations play two-legged ties on the
+  // first two matchdays, the stronger side hosting the second leg; the winners join the others and the groups are drawn on the third
+  // matchday and play the next six. (A tie that is somehow unplayed goes to the stronger side.)
+  const winOf = (f, fallback) => (f && f.res ? FM.Season.winnerOf(f) : fallback);
+  I.prelimDay = function (md, busy) {
+    const q = S().quals,
+      out = [];
+    if (!q || !q.pending || md > 1) return out;
+    for (const [key, p] of Object.entries(q.pending)) {
+      const label = `${I.TNAME[p.tn]} qualifying first round`;
+      for (const t of p.ties) {
+        if (md === 0 && !t.l1) {
+          t.l1 = mkFx(t.w, t.s, label + ' · 1st leg', { kind: 'qual', group: 'R1 ' + key, leg: 1 });
+          out.push(t.l1);
+        } else if (md === 1 && t.l1 && !t.l2) {
+          t.l2 = mkFx(t.s, t.w, label + ' · 2nd leg', {
+            kind: 'qual',
+            group: 'R1 ' + key,
+            ko: true,
+            leg: 2,
+            first: t.l1.id,
+          });
+          out.push(t.l2);
+        } else continue;
+        busy.add(t.s);
+        busy.add(t.w);
+      }
+    }
+    return out;
+  };
+  // The groups of a pool with a first round, drawn from the nations that came through (on the third matchday)
+  I.drawPending = function (md) {
+    const q = S().quals;
+    if (!q || !q.pending || md < 2) return;
+    for (const [key, p] of Object.entries(q.pending)) {
+      if (p.drawn) continue;
+      p.drawn = true;
+      const out = new Set(p.low),
+        through = p.ties.map((t) => winOf(t.l2, t.s));
+      p.through = through;
+      const tn = I.tournsFor(q.kind).find((x) => x.id === p.tn);
+      if (!tn) continue;
+      const teams = I.qualRanked().filter((t) => p.teams.includes(t.id) && (!out.has(t.id) || through.includes(t.id)));
+      addPoolGroups(q, q.kind, tn, p.regions, key, p.slots, teams, pool3(tn, p.pi), 2);
+      FM.News.add({
+        type: 'world',
+        title: `${I.TNAME[p.tn]}: the qualifying groups are drawn`,
+        body: `${U.plural(p.ties.length, 'team')} came through the first round to join the groups.`,
+        keep: true,
+      });
+    }
+  };
+  // The best runners-up of a pool with `runners` (the African one) play off for the pool's place in the intercontinental
+  // play-offs: single matches on neutral ground, semi-finals on the sixth matchday and the final on the seventh
+  I.runnersDay = function (md, busy) {
+    const q = S().quals,
+      out = [];
+    if (!q || (md !== 5 && md !== 6)) return out;
+    for (const key of [...new Set(q.groups.map((g) => g.key))]) {
+      const g0 = q.groups.find((g) => g.key === key),
+        R = g0.runners || 0;
+      if (!R) continue;
+      q.runners = q.runners || {};
+      const mk = (h, a, label) => {
+        busy.add(h);
+        busy.add(a);
+        return mkFx(h, a, `${I.TNAME[g0.tn]} qualifying play-off · ${label}`, {
+          kind: 'qual',
+          group: 'RU ' + key,
+          ko: true,
+          neutral: true,
+        });
+      };
+      if (md === 5 && !q.runners[key]) {
+        const rows = rankPool(key).rows.slice(g0.slots, g0.slots + R);
+        if (rows.length < 4) continue;
+        const ids = rows.map((r) => r.id);
+        q.runners[key] = {
+          teams: ids,
+          sf: [mk(ids[0], ids[3], 'semi-final'), mk(ids[1], ids[2], 'semi-final')],
+          final: null,
+        };
+        FM.News.add({
+          type: 'world',
+          title: `${I.TNAME[g0.tn]}: the runners-up play-off`,
+          body: `The best runners-up play for a place in the intercontinental play-offs: ${q.runners[key].sf
+            .map((f) => `${T(f.h).name} v ${T(f.a).name}`)
+            .join(', ')}.`,
+          keep: true,
+        });
+        out.push(...q.runners[key].sf);
+      } else if (md === 6) {
+        const r = q.runners[key];
+        if (r && !r.final && r.sf.every((f) => f.res)) r.final = mk(winOf(r.sf[0]), winOf(r.sf[1]), 'final');
+        if (r && r.final && !r.final.res) out.push(r.final);
+      }
+    }
+    return out;
+  };
+  // The winner of a pool's runners-up play-off (null until the final is played)
+  I.runnersWinner = (key) => {
+    const r = S().quals && S().quals.runners && S().quals.runners[key];
+    return r && r.final && r.final.res ? FM.Season.winnerOf(r.final) : null;
+  };
   // ---------- The intercontinental play-offs ----------
   // The last places at the World Championship (tn.playoff) are played for, as in real life, by the best nation of each part of the world
   // that did not qualify (Europe settles its own in its pools' play-offs), a few more of the next best to make 3 for each place: the
@@ -1665,15 +1805,17 @@
     const P = tn.playoff || 0;
     if (!P) return [];
     const inSet = new Set(I.qualifiedFor(tn.id));
-    const pools = tn.pools.filter(([regions]) => !regions.includes('EUR'));
+    const pools = tn.pools.map((p, pi) => [p, pi]).filter(([p]) => !p[0].includes('EUR'));
     const cands = (regions) => I.qualRanked().filter((t) => regions.includes(I.region(t.code)) && !inSet.has(t.id));
     const out = [];
-    for (const [regions] of pools) {
-      const c = cands(regions)[0];
+    for (const [[regions, , o], pi] of pools) {
+      // (the African pool's runners-up play-off winner is its place; the others send the best nation that missed out)
+      const w = o && o.runners ? T(I.runnersWinner(`${tn.id}:${pi}`)) : null;
+      const c = w && !inSet.has(w.id) ? w : cands(regions)[0];
       if (c) out.push(c);
     }
     const rest = pools
-      .flatMap(([regions]) => cands(regions))
+      .flatMap(([[regions]]) => cands(regions))
       .filter((t) => !out.includes(t))
       .sort((a, b) => b.coef - a.coef);
     for (const t of rest) {
@@ -1788,6 +1930,8 @@
             [
               ...invitesOf(s).flatMap((inv) => [...(inv.sf || []), inv.third, inv.final]),
               ...Object.values((s.quals && s.quals.pos) || {}).flat(),
+              ...Object.values((s.quals && s.quals.pending) || {}).flatMap((p) => p.ties.flatMap((t) => [t.l1, t.l2])),
+              ...Object.values((s.quals && s.quals.runners) || {}).flatMap((r) => [...r.sf, r.final]),
               ...(ic.sf || []),
               ...(ic.final || []),
             ]
@@ -1823,8 +1967,9 @@
       fx = [],
       busy = new Set();
     if (s.quals) {
+      I.drawPending(md); // (the groups that follow a first round are drawn once it is played)
       s.quals.groups.forEach((g) => {
-        (g.rounds[md] || []).forEach(({ h, a }) => {
+        groupRound(g, md).forEach(({ h, a }) => {
           if (busy.has(h) || busy.has(a)) return;
           busy.add(h);
           busy.add(a);
@@ -1832,6 +1977,8 @@
         });
       });
     }
+    // the first rounds of the pools that have one (the first two matchdays) and the runners-up play-off (the sixth and seventh)
+    if (s.quals) fx.push(...I.prelimDay(md, busy), ...I.runnersDay(md, busy));
     // the qualifying play-offs, on the last matchday
     if (s.quals && tag === 'I2b') fx.push(...I.playoffDay(busy));
     // the World Championship's intercontinental play-offs, in the third break
@@ -2314,7 +2461,13 @@
   };
   I.findFixture = function (id) {
     const s = S();
-    return (s.tourns || []).flatMap((t) => I.tournKo(t)).find((f) => f.id === id) || null;
+    return (
+      (s.tourns || []).flatMap((t) => I.tournKo(t)).find((f) => f.id === id) ||
+      Object.values((s.quals && s.quals.pending) || {})
+        .flatMap((p) => p.ties.flatMap((t) => [t.l1, t.l2]))
+        .find((f) => f && f.id === id) ||
+      null
+    );
   };
   // A tournament team's progress, for the national team screen
   I.stageReached = function (t, id) {
@@ -2840,6 +2993,11 @@
     if (!t) return null;
     if (s.tourns) return { text: 'Do well at the finals: the federation expects at least the knockout stage' };
     const g = s.quals && s.quals.groups.find((x) => x.teams.includes(id));
+    const pend = s.quals && Object.values(s.quals.pending || {}).find((p) => !p.drawn && p.low.includes(id));
+    if (pend)
+      return {
+        text: `Win a two-legged first round to reach the ${s.quals.kind === 'world' ? 'World Championship' : 'continental'} qualifying groups`,
+      };
     if (g)
       return {
         text: `Qualify for the ${s.quals.kind === 'world' ? 'World Championship' : 'continental championships'}: ${g.slots} place${g.slots === 1 ? '' : 's'} from ${g.name.trim()}`,
@@ -2862,13 +3020,23 @@
     if (!id) return [];
     const out = [];
     const g = (s.quals && s.quals.groups.find((x) => x.teams.includes(id))) || (I.nlGroupOf(id) || {}).g;
-    const label = s.quals && s.quals.groups.includes(g) ? `${I.TNAME[g.tn]} qualifier` : g ? 'Nations League' : '';
+    const pend = s.quals && Object.values(s.quals.pending || {}).find((p) => !p.drawn && p.low.includes(id));
+    const label = pend
+      ? `${I.TNAME[pend.tn]} qualifying first round`
+      : s.quals && s.quals.groups.includes(g)
+        ? `${I.TNAME[g.tn]} qualifier`
+        : g
+          ? 'Nations League'
+          : '';
     const played = g ? g.table[id].p : 0;
     let ix = 0;
     s.calendar.slice(s.day).forEach((d, k) => {
       if (d.type !== 'intl') return;
       const md = MD[d.tag] ?? 0;
-      const fx = g && md >= played && (g.rounds[md] || []).find((f) => f.h === id || f.a === id);
+      let fx = g && md - (g.start || 0) >= played && groupRound(g, md).find((f) => f.h === id || f.a === id);
+      // (a nation in a pool's first round: its two legs, on the first two matchdays)
+      const tie = !g && md < 2 && pend && pend.ties.find((t) => t.s === id || t.w === id);
+      if (tie) fx = { h: md === 0 ? tie.w : tie.s, a: md === 0 ? tie.s : tie.w };
       out.push({
         in: k,
         md: ++ix,

@@ -235,6 +235,21 @@ the Netherlands, one from four smaller leagues, and the rest of the 36 through t
 their champions: up to nine); the Shield takes 36 (three from each big league, two from Portugal, the Netherlands, Belgium and
 Turkey, one from 13 more); the Trophy 36. The places are still handed out by coefficient (`Cu.spots`).
 
+**Staged World Cup qualifying (19).** A pool of the World Championship's qualifying can have options (`[regions, places, options]` in
+`I.TOURNS`): `prelim` (a first round), `size` (the group size) and `runners` (a runners-up play-off).
+- *First round before the groups:* the Asian pool's lowest ranked nations (the sheet's 20; fewer when the pool is small: at most a
+  third of it), the North American pool's lowest four and the Oceanian pool's lowest four play two-legged ties on the first two
+  matchdays (the stronger side hosts the second leg, the winners join the others). The groups are drawn on the third matchday from the
+  nations that came through (`Intl.drawPending`, groups with `start: 2`) and play the next six matchdays, so the pool has no
+  play-off tie of its own (the matchdays are used). Fixtures, tables and the Qualifying screen show the first round.
+- *Africa:* nine groups of six played once (five matchdays, the sheet's format), the group winners qualify, and the four best
+  runners-up play single-match semi-finals (matchday six) and a final (seven) on neutral ground for the pool's place in the
+  intercontinental play-offs (`Intl.runnersDay`, `Intl.runnersWinner`); the intercontinental play-offs take that winner as Africa's team.
+- *Matchday budget:* the game's qualifying season has ten matchdays, so a stage that follows a group stage cannot be played in the same
+  season: the sheet's second and third rounds in Asia (36 teams in nine groups, then 18 in three), CONCACAF's six groups of five
+  followed by three groups of four, and the CONMEBOL league of 18 matchdays (the game's South American pool has ten nations) stay as
+  one group stage per pool (see below).
+
 ## Still to do from these sheets
 
 - **League phase (04), Europe done; the Asian league stage and CONCACAF not:** the three European cups play the 36-club league phase
@@ -248,10 +263,12 @@ Turkey, one from 13 more); the Trophy 36. The places are still handed out by coe
   clubs), Chile's regional groups, Brazil's seeded draws, Finland's occasional group stage, Peru and the other irregular cups.
 - **International (05, 19):** sizes of the regional cups (ASEAN 10, Gulf 8, Arab 16, Central Asian 8, East African 10, Southern African
   14, West African 12): the invitationals are four-team tournaments played on the two days of the June window, so a bigger field needs
-  more days there or a tournament played by results; two-legged ASEAN knockouts need a third day. The confederations' staged
-  qualifying (the AFC first round and play-offs, the CAF play-off of four, CONCACAF's first round and its six groups of five, OFC round
-  one, the CONMEBOL league of 18 matchdays, the European play-off paths) needs rounds before the groups and groups drawn after them;
-  the game draws every group at the start of the season. Olympic and Asian Games football (Under-23).
+  more days there or a tournament played by results; two-legged ASEAN knockouts need a third day. Staged qualifying is done for
+  the first rounds (Asia, North America, Oceania) and Africa's groups of six and play-off of four (see above); not done: the AFC
+  rounds three to five, CONCACAF's six groups of five followed by three of four, Oceania's round-two groups and semi-finals, the
+  CONMEBOL league of 18 matchdays and the European play-off paths (the runners-up and the best Nations League group winners in four
+  paths): each needs a second group stage or more matchdays in the same season than the ten the game has, so they need a
+  qualifying that runs over two seasons. Olympic and Asian Games football (Under-23).
 - **Regional (06):** the Copa do Nordeste and Copa Verde (a Brazilian club has one regional competition in the engine), the island
   and regional first stages (Cape Verde, New Zealand, India), and the real county, district and state cups of the sheet's category C
   (lower and amateur clubs, which the game's nations do not have).

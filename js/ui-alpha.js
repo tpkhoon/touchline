@@ -1254,6 +1254,26 @@
             ? `<div class="card flat" style="margin:0 0 8px;padding:6px 12px">${rows.join('')}</div>`
             : '';
         })()}
+        ${(() => {
+          // the first rounds of the staged pools (two legs, the groups are drawn after them) and the runners-up play-off
+          const row = (f, pill) =>
+            `<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span class="pill">${esc(pill)}</span><span class="grow ellip" style="text-align:right" data-act="nation" data-id="${f.h}">${esc(T(f.h).name)} ${C.flag(T(f.h).code)}</span><b style="min-width:44px;text-align:center">${f.res ? `${f.res.hg}–${f.res.ag}` : 'v'}</b><span class="grow ellip" data-act="nation" data-id="${f.a}">${C.flag(T(f.a).code)} ${esc(T(f.a).name)}</span></div>${f.res && f.res.pens ? `<div class="tiny dim center">pens ${f.res.pens[0]}–${f.res.pens[1]}</div>` : ''}`;
+          const first = Object.values(q.pending || {}).map(
+              (p) =>
+                `<div class="tiny dim" style="margin:8px 0 2px">${esc(FM.Intl.TNAME[p.tn])} · first round: ${U.plural(p.low.length, 'nation')} play two-legged ties, the groups are drawn after them</div>${p.ties
+                  .flatMap((t) => [t.l1, t.l2])
+                  .filter(Boolean)
+                  .map((f) => row(f, f.leg === 2 ? '2nd leg' : '1st leg'))
+                  .join('')}`,
+            ),
+            runners = Object.values(q.runners || {}).map((r) =>
+              r.sf
+                .concat(r.final || [])
+                .map((f) => row(f, r.final === f ? 'Final' : 'Semi-final'))
+                .join(''),
+            );
+          return first.concat(runners).join('');
+        })()}
         ${Object.values(q.pos || {})
           .flat()
           .map(

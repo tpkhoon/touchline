@@ -12,7 +12,7 @@ Every feature from the game design document, with what is playable in the protot
 
 ## In the game
 
-479 features are playable in the web prototype today. Build = the build that added it.
+480 features are playable in the web prototype today. Build = the build that added it.
 
 | Area | Feature | Build |
 | --- | --- | --- |
@@ -480,6 +480,7 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | Real cup formats: legs, neutral finals and extra-time rules per domestic cup from the real-formats sheet (two-legged semi-finals in Spain and Belgium, Canada and Colombia fully two-legged, Argentina and Brazil straight to penalties) | Real formats |
 | Competitions | A domestic cup's winner takes his cup's continental place in place of his nation's lowest club in that cup | Real formats |
 | Competitions | Continental finals and extra time per competition (single-match finals in North America and Africa, extra time in the final only in the Libertadores and Copa América) and guest nations in the Gold Cup and the regional invitationals | Real formats |
+| International | Staged World Cup qualifying: a two-legged first round for the lowest ranked Asian, North American and Oceanian nations with the groups drawn after it, Africa in nine groups of six with a runners-up play-off of four for its intercontinental play-off place | Real formats |
 | Competitions | The 36-club European league phase: the Champions, Shield and Trophy play one table (eight matches against different opponents, drawn from four pots, four at home), the top eight go to the round of 16 and ninth to 24th through a two-legged knockout play-off; more places for each league, a bigger qualifying round, four more matchdays in the calendar (the editor shows the new days) | Real formats |
 | Competitions | Group-stage domestic cups (Sweden, Romania, Turkey, Colombia, Uzbekistan, Russia, India, Kazakhstan, Bangladesh, Singapore, the Philippines: the early rounds thin the field, snake-seeded groups play through, the best go on) and late entry for the top divisions (England, France, Italy, Japan, Scotland, Spain), with group tables on the Cups screen | Real formats |
 | International | Four international windows a season, ten matchdays (4 + 2 + 2 + 2) named for the real September and October, November, March and June windows; qualifying groups play home and away; the six 2030 World Championship hosts (two European, one African, three South American) qualify automatically | Real formats |
