@@ -16,7 +16,13 @@
   const mkTable = (ids) =>
     Object.fromEntries(ids.map((id) => [id, { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] }]));
   // (UEFA's group tiebreakers: head-to-head points, goal difference and goals, then overall)
-  Cu.groupTable = (g) => W.sortedTable({ table: g.table, fixtures: g.fixtures, tiebreak: ['h2h', 'gd', 'gf'] });
+  // (the league phase's table is one table of clubs that have not all met: goal difference, then goals)
+  Cu.groupTable = (g) =>
+    W.sortedTable({
+      table: g.table,
+      fixtures: g.fixtures,
+      tiebreak: g.lp ? ['gd', 'gf', 'wins'] : ['h2h', 'gd', 'gf'],
+    });
   // Top two go through. With the games left, who is already through (or top), and who can no longer make it?
   Cu.groupMarks = function (g, wide, compId) {
     if (wide) return {}; // (the runners-up are ranked across the groups, so a group's own table cannot say)
@@ -119,6 +125,11 @@
           ),
         );
       }
+      // (the 36-club league phase of the European cups: one table, play-offs and a round of 16; not for a cup whose format asks for
+      // groups of its own, nor when the calendar has no days for it)
+      c.lp = undefined;
+      const lpDef = Cu.lpDef(def0);
+      if (lpDef && Cu.setupLeaguePhase(c, lpDef, entrants, qualified)) continue;
       // (groups of four; three groups do not make a bracket, so the weakest four entrants wait for another year)
       // (a cup's format can set groups of three, four, five or six: def.groupSize)
       const GS = def.groupSize || 4;
@@ -237,6 +248,218 @@
       }));
   };
 
+  // ---------- The 36-club league phase (the European cups) ----------
+  // One table of 36 clubs (a multiple of four, at least 24): the clubs are drawn into four pots by reputation and each plays two
+  // opponents from every pot, one at home and one away (eight matches; the Trophy's six leave one pot pair out). The top eight go
+  // straight to the round of 16, ninth to 24th play a two-legged knockout play-off for the other eight places, the rest are out.
+  Cu.lpDef = (def) =>
+    def && def.leaguePhase && !def.groupSize && Object.values(D.CC_AFTER).includes('PP1') ? def.leaguePhase : null;
+  // how many opponents a club of pot a meets from pot b (a row adds up to the matches played), and who hosts when it is one
+  const LP_WEIGHTS = {
+    8: [
+      [2, 2, 2, 2],
+      [2, 2, 2, 2],
+      [2, 2, 2, 2],
+      [2, 2, 2, 2],
+    ],
+    6: [
+      [2, 2, 1, 1],
+      [2, 0, 2, 2],
+      [1, 2, 2, 1],
+      [1, 2, 1, 2],
+    ],
+  };
+  const LP_HOST = { '0,2': true, '0,3': false, '2,3': true }; // true: the stronger pot hosts
+  // the matches [home, away] for pots drawn in this order
+  Cu.lpEdges = function (pots, M) {
+    const w = LP_WEIGHTS[M] || LP_WEIGHTS[8],
+      edges = [];
+    for (let a = 0; a < 4; a++)
+      for (let b = a; b < 4; b++) {
+        const A = pots[a],
+          B = pots[b],
+          k = A.length;
+        if (!w[a][b]) continue;
+        for (let i = 0; i < k; i++) {
+          if (a === b) edges.push([A[i], A[(i + 1) % k]]);
+          else if (w[a][b] === 2) edges.push([A[i], B[i]], [B[i], A[(i + 1) % k]]);
+          else edges.push(LP_HOST[a + ',' + b] ? [A[i], B[i]] : [B[i], A[i]]);
+        }
+      }
+    return edges;
+  };
+  // Colour the matches with M colours so that no club plays twice in a round (Kempe chains); null when it does not work out
+  Cu.lpColour = function (edges, ids, M) {
+    const idx = new Map(ids.map((id, i) => [id, i])),
+      at = ids.map(() => Array(M).fill(-1)),
+      col = Array(edges.length).fill(-1),
+      ends = edges.map(([h, a]) => [idx.get(h), idx.get(a)]),
+      other = (ei, x) => (ends[ei][0] === x ? ends[ei][1] : ends[ei][0]);
+    // the path from x along colour c, then d, then c ... (null if it runs into `stop`)
+    const chain = (x, c, d, stop) => {
+      const path = [];
+      for (let cur = x, k = c; ; k = k === c ? d : c) {
+        const ei = at[cur][k];
+        if (ei < 0) return path;
+        path.push(ei);
+        cur = other(ei, cur);
+        if (cur === stop) return null;
+      }
+    };
+    const set = (ei, c) => {
+      col[ei] = c;
+      at[ends[ei][0]][c] = at[ends[ei][1]][c] = ei;
+    };
+    const flip = (path, c, d) => {
+      const was = path.map((ei) => col[ei]);
+      for (const ei of path) at[ends[ei][0]][col[ei]] = at[ends[ei][1]][col[ei]] = -1;
+      path.forEach((ei, i) => set(ei, was[i] === c ? d : c));
+    };
+    for (const e of U.shuffle(edges.map((_, i) => i))) {
+      const [u, v] = ends[e],
+        freeU = [...Array(M).keys()].filter((c) => at[u][c] < 0),
+        freeV = [...Array(M).keys()].filter((c) => at[v][c] < 0),
+        both = freeU.find((c) => freeV.includes(c));
+      if (both !== undefined) {
+        set(e, both);
+        continue;
+      }
+      // a free at u and in use at v, b free at v and in use at u: swap a and b along a path that frees a at v (or b at u)
+      let done = false;
+      for (const a of freeU) {
+        for (const b of freeV) {
+          let p = chain(v, a, b, u);
+          if (p) {
+            flip(p, a, b);
+            set(e, a);
+            done = true;
+          } else if ((p = chain(u, b, a, v))) {
+            flip(p, b, a);
+            set(e, b);
+            done = true;
+          }
+          if (done) break;
+        }
+        if (done) break;
+      }
+      if (!done) return null;
+    }
+    return col;
+  };
+  // The league phase's fixtures: the draw with fewest clashes of clubs from one nation that can be put into M rounds
+  Cu.makeLeaguePhase = function (c) {
+    const M = c.lp.M,
+      ids = c.clubs.slice().sort((a, b) => rep(b) - rep(a)),
+      k = ids.length / 4,
+      nat = (id) => S().clubs[id].nat;
+    const seeded = [0, 1, 2, 3].map((p) => ids.slice(p * k, (p + 1) * k));
+    const tries = [];
+    for (let t = 0; t < 400; t++) {
+      const pots = seeded.map((p) => U.shuffle(p)),
+        edges = Cu.lpEdges(pots, M);
+      tries.push({ edges, clash: edges.filter(([h, a]) => nat(h) === nat(a)).length });
+    }
+    tries.sort((x, y) => x.clash - y.clash);
+    let rounds = null;
+    for (const t of tries) {
+      const col = Cu.lpColour(t.edges, ids, M);
+      if (!col) continue;
+      rounds = [...Array(M)].map(() => []);
+      t.edges.forEach((e, i) => rounds[col[i]].push(e));
+      break;
+    }
+    // (should no draw work out: the first rounds of a round-robin, which never repeat an opponent)
+    if (!rounds) rounds = W.roundRobin(U.shuffle(ids)).slice(0, M);
+    c.groups = [
+      {
+        name: 'League phase',
+        clubs: ids,
+        lp: true,
+        table: mkTable(ids),
+        fixtures: rounds.map((rd, r) =>
+          rd.map(([h, a]) => ({
+            id: FM.nextId('f'),
+            comp: c.id,
+            group: 'League phase',
+            round: r,
+            h,
+            a,
+            res: null,
+            po: `League phase · MD${r + 1}`,
+          })),
+        ),
+      },
+    ];
+  };
+  // A cup's entrants as a league phase: the direct entrants (the weakest wait when there are more than the places) and, for a main cup,
+  // the qualifying rounds that fill the rest. False when the field is too small (under 24 clubs): the cup keeps its groups.
+  Cu.setupLeaguePhase = function (c, lp, entrants, qualified) {
+    const byRep = (a, b) => rep(b) - rep(a),
+      main = (c.tier || 1) === 1 && Cu.qualActive(c);
+    const direct = entrants.slice().sort(byRep).slice(0, lp.size);
+    let pool = [];
+    if (main) {
+      pool = ((qualified && qualified[c.id + 'Q']) || [])
+        .filter((id) => S().clubs[id] && !direct.includes(id))
+        .filter((id, i, a) => a.indexOf(id) === i);
+      if (pool.length < 8)
+        // (the first season of a world, or a pool the table did not fill: the best club of each such nation)
+        pool = Cu.qualLeagues(c)
+          .map((l) => l.clubs.slice().sort((a, b) => rep(b) - rep(a))[0])
+          .filter((id) => id && !direct.includes(id));
+    }
+    const rounds = (n, P) => {
+      let k = 0;
+      for (let cnt = n; cnt > P; k++) cnt -= Math.min(Math.floor(cnt / 2), cnt - P);
+      return k;
+    };
+    let P = main ? Math.max(0, Math.min(lp.size - direct.length, Math.floor(pool.length / 2))) : 0;
+    // (at most three qualifying rounds)
+    while (P && rounds(pool.length, P) > 3 && P < Math.floor(pool.length / 2)) P++;
+    let total = direct.length + P;
+    total -= total % 4; // (four pots of a quarter each)
+    if (total < 24) return false;
+    while (direct.length + P > total) {
+      if (P > 0) P--;
+      else direct.pop();
+    }
+    c.lp = { N: total, M: lp.matches };
+    c.clubs = direct;
+    c.ko = { po: [], pp: [], pp2: null, r16: [], r162: null, qf: [], qf2: null, sf: [], sf2: null, final: null };
+    c.dropped = [];
+    c.winner = c.awards = c.runnerUp = null;
+    c.qual = null;
+    if (P) {
+      pool.sort(byRep);
+      const plan = [];
+      for (let cnt = pool.length; cnt > P;) {
+        const ties = Math.min(Math.floor(cnt / 2), cnt - P);
+        plan.push(ties);
+        cnt -= ties;
+      }
+      c.qual = { pool, places: P, plan, byes: {}, drawn: false, GS: 4 };
+      Object.assign(c.ko, { qa: [], qa2: null, qb: [], qb2: null, qc: [], qc2: null });
+      c.groups = [];
+    } else Cu.makeLeaguePhase(c);
+    c.clubs.forEach((id) => pay(id, c.prize * 0.13, c, 'participation'));
+    return true;
+  };
+  // The ranks of the league phase table and the play-off's and round of 16's pairings (the seeded club hosts the decider): ninth
+  // to 16th meet 24th to 17th, and the top eight meet the play-off winners, the best the winner of the weakest seeded tie
+  Cu.lpTable = (c) => Cu.groupTable(c.groups[0]).map((r) => r.id);
+  Cu.lpPlayoffPairs = (c) => {
+    const t = Cu.lpTable(c),
+      n = t.length - 8, // (the clubs in the play-off: ninth to 24th)
+      half = Math.min(8, Math.floor(n / 2));
+    return [...Array(half)].map((_, j) => [t[8 + j], t[8 + 2 * half - 1 - j]]);
+  };
+  Cu.lpRoundOf16Pairs = (c) => {
+    const t = Cu.lpTable(c),
+      w = Cu.roundWinners(c, 'pp');
+    if (!w) return null;
+    return [...Array(8)].map((_, i) => [t[i], w[w.length - 1 - i]]);
+  };
+
   // ---------- Qualifying rounds ----------
   // The main continental cups (the European, South American, Asian, African and North American champions' cups) hold a qualifying
   // competition, as the Champions League does. The nations with no place of their own in the cup (the places go by coefficient)
@@ -324,11 +547,12 @@
     q.through = field.slice();
     c.clubs = c.clubs.concat(field.filter((id) => !c.clubs.includes(id)));
     const GS = q.GS || 4;
-    Cu.makeGroups(c, GS, Math.max(1, Math.floor(c.clubs.length / GS)));
+    if (c.lp) Cu.makeLeaguePhase(c);
+    else Cu.makeGroups(c, GS, Math.max(1, Math.floor(c.clubs.length / GS)));
     field.forEach((id) => pay(id, c.prize * 0.13, c, 'participation'));
     FM.News.add({
       type: 'world',
-      title: `${c.name}: the groups are drawn`,
+      title: `${c.name}: the ${c.lp ? 'league phase is' : 'groups are'} drawn`,
       body: `${U.plural(field.length, 'club')} came through the qualifying rounds to join the ${U.plural(c.clubs.length - field.length, 'club')} with a place already.`,
       cat: 'competitions',
     });
@@ -640,7 +864,9 @@
     'Runners-up': 7,
     'Semi-finals': 5,
     'Quarter-finals': 3,
+    'Round of 16': 2.5,
     'Knockout play-off': 2,
+    'League phase': 1,
     'Group stage': 1,
   };
   Cu.noteSeason = function (c) {
@@ -1073,9 +1299,10 @@
         inR = (a) => (a || []).some((f) => f && (f.h === id || f.a === id));
       if (inR(ko.sf) || inR(ko.sf2)) return 'Semi-finals';
       if (inR(ko.qf) || inR(ko.qf2)) return 'Quarter-finals';
-      if (inR(ko.r16)) return 'Round of 16';
+      if (inR(ko.r16) || inR(ko.r162)) return 'Round of 16';
+      if (inR(ko.pp) || inR(ko.pp2)) return 'Knockout play-off';
       if (inR(ko.po)) return 'Knockout play-off';
-      if (c.clubs && c.clubs.includes(id)) return 'Group stage';
+      if (c.clubs && c.clubs.includes(id)) return c.lp ? 'League phase' : 'Group stage';
       if (c.qual && c.qual.pool.includes(id)) {
         const n = [...Cu.qualList(c)].reverse().find((f) => f.h === id || f.a === id);
         return n ? n.po.replace(/ · .*$/, '') : 'Qualifying';
@@ -1094,7 +1321,7 @@
   // played at one centralised venue (the AFC Champions League Elite)
   Cu.formatOf = (c) => {
     const d = D.CONTINENTALS.find((x) => x.id === c.id) || {};
-    const legs = { qf: 2, sf: 2, f: 1, ...(d.legs || {}) };
+    const legs = { qf: 2, sf: 2, f: 1, pp: 2, r16: 2, ...(d.legs || {}) };
     // a season already under way from an older save has no day for a second leg of the final
     if (!(S().calendar || []).some((x) => x.type === 'cup' && x.stage === 'F2')) legs.f = 1;
     return { legs, central: !!d.central };
@@ -1122,7 +1349,7 @@
   // clubs of the groups of the cup above play the runners-up of this cup's groups for a place in the quarter-finals: a play-off
   // of single matches at the runner-up's ground, before the quarter-finals. Works for a cup with the classic four groups.
   const better = (a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || rep(b.id) - rep(a.id);
-  Cu.dropSources = (c) => W.continentals().filter((x) => x.drop === c.id && x.groups && x.groups.length);
+  Cu.dropSources = (c) => W.continentals().filter((x) => x.drop === c.id && x.groups && x.groups.length && !x.lp);
   Cu.dropOn = (c) => !!(c.groups && c.groups.length === 4 && Cu.dropSources(c).length);
   Cu.dropRound = function (c) {
     if (!Cu.dropOn(c)) return [];
@@ -1186,6 +1413,26 @@
       if (one && stage.endsWith('2')) return [];
       return koRound(c, key, one ? stage.slice(0, -1) : stage, label, pairsFn, one && fmt.central);
     };
+    // the league phase: the play-off and the round of 16 (a cup with groups of four leaves these days empty)
+    if (/^(PP|R16)/.test(stage)) {
+      if (!c.lp) return [];
+      return stage.startsWith('PP')
+        ? round('pp', 'Knockout play-off', () => (groupsDone() ? Cu.lpPlayoffPairs(c) : null))
+        : round('r16', 'Round of 16', () => Cu.lpRoundOf16Pairs(c));
+    }
+    if (stage.startsWith('QF') && c.lp)
+      return round('qf', 'Quarter-final', () => {
+        const w = Cu.roundWinners(c, 'r16');
+        // (the best seed meets the eighth, the two sides of the bracket cross only in the final)
+        return (
+          w && [
+            [w[0], w[7]],
+            [w[1], w[6]],
+            [w[3], w[4]],
+            [w[2], w[5]],
+          ]
+        );
+      });
     if (stage.startsWith('QF')) {
       if (c.groups.length < 4) return [];
       return round('qf', 'Quarter-final', () => {
@@ -1205,7 +1452,7 @@
     }
     if (stage.startsWith('SF')) {
       return round('sf', 'Semi-final', () => {
-        if (c.groups.length >= 4) {
+        if (c.lp || c.groups.length >= 4) {
           const w = Cu.roundWinners(c, 'qf');
           return (
             w && [
@@ -1433,7 +1680,7 @@
       const g = c.groups.find((x) => x.name === fx.group);
       FM.Season.updTable(g.table, fx, r);
       const w = r.hg > r.ag ? fx.h : r.ag > r.hg ? fx.a : null,
-        amt = (c.prize || 0) * (c.type === 'cup' ? 0.01 : 0.1);
+        amt = (c.prize || 0) * (c.type === 'cup' ? 0.01 : c.lp ? (0.1 * 6) / c.lp.M : 0.1); // (the league phase's eight matches pay what six did)
       if (w) pay(w, amt, c, 'group wins');
       else {
         pay(fx.h, amt / 3, c, 'group wins');
@@ -1504,7 +1751,10 @@
     c.ko
       ? [
           ...(c.ko.po || []),
+          ...(c.ko.pp || []),
+          ...(c.ko.pp2 || []),
           ...(c.ko.r16 || []),
+          ...(c.ko.r162 || []),
           ...(c.ko.qf || []),
           ...(c.ko.qf2 || []),
           ...(c.ko.sf || []),
@@ -1633,6 +1883,40 @@
       if (!c.groups || !c.groups.length) {
         // (the groups are not drawn yet: the qualifying rounds come first)
         out.push({ c, text: 'Direct entry to the groups', alive: true });
+        continue;
+      }
+      if (c.lp) {
+        const tab = Cu.groupTable(c.groups[0]),
+          pos = tab.findIndex((r) => r.id === clubId) + 1,
+          done = c.groups[0].fixtures.flat().every((f) => f.res),
+          inList = (k) => [...(c.ko[k] || []), ...(c.ko[k + '2'] || [])].some(mine);
+        const round =
+          c.ko.final && mine(c.ko.final)
+            ? 'Final'
+            : inList('sf')
+              ? 'Semi-finals'
+              : inList('qf')
+                ? 'Quarter-finals'
+                : inList('r16')
+                  ? 'Round of 16'
+                  : inList('pp')
+                    ? 'Knockout play-off'
+                    : null;
+        out.push({
+          c,
+          text: koOut
+            ? 'Knocked out'
+            : round
+              ? round
+              : done
+                ? pos <= 8
+                  ? 'Through to the round of 16'
+                  : pos <= 24
+                    ? 'In the knockout play-off'
+                    : 'Out in the league phase'
+                : `League phase: ${U.ordinal(pos)}`,
+          alive: !koOut && (!!round || !done || pos <= 24),
+        });
         continue;
       }
       const g = c.groups.find((x) => x.clubs.includes(clubId));

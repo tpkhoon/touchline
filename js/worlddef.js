@@ -624,7 +624,28 @@
   // round; a longer league season stretches them to fit): the days of pre-season, the domestic cup's rounds, each stage of the
   // continental cups (six group days, then QF1 and QF2, SF1 and SF2, the final), the World Club Championship and the two international
   // breaks. It lives in the game's data, so a definition that changes it goes into the patch like a cup format does.
-  WD.CONT_STAGES = ['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'QF1', 'QF2', 'SF1', 'SF2', 'F'];
+  // (a calendar saved before the 36-club league phase has the first eleven only: it keeps the cups' groups of four)
+  WD.CONT_STAGES = [
+    'G1',
+    'G2',
+    'G3',
+    'G4',
+    'G5',
+    'G6',
+    'G7',
+    'G8',
+    'PP1',
+    'PP2',
+    'R161',
+    'R162',
+    'QF1',
+    'QF2',
+    'SF1',
+    'SF2',
+    'F',
+  ];
+  WD.CONT_CLASSIC = ['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'QF1', 'QF2', 'SF1', 'SF2', 'F'];
+  WD.contStages = (cont) => (cont && cont.G7 !== undefined ? WD.CONT_STAGES : WD.CONT_CLASSIC);
   WD.WORLD_STAGES = ['QF', 'SF', 'F'];
   WD.calendarNow = () => ({
     preseason: D.PRESEASON_DAYS,
@@ -659,7 +680,7 @@
         last = obj[st];
       }
     };
-    if (c.cont != null) ordered(c.cont, WD.CONT_STAGES, 'the continental cups, stage');
+    if (c.cont != null) ordered(c.cont, WD.contStages(c.cont), 'the continental cups, stage');
     if (c.world != null) ordered(c.world, WD.WORLD_STAGES, 'the Intercontinental Cup, stage');
     if (c.intl != null) {
       if (

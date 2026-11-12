@@ -1634,13 +1634,21 @@
   // Calendar: cup days slot in after these league rounds (0-based)
   FM.D.CUP_AFTER = { 1: 'DC', 4: 'DC', 7: 'DC', 11: 'DC', 15: 'DC', 19: 'DC' }; // six rounds: 36 English clubs need a first round
   // Knockout stages are two-legged when the world rule is on (QF1/QF2, SF1/SF2); otherwise the "2" days are dropped
+  // G1 to G8 are the matchdays of the group stage (or of the 36-club league phase: the cups with six group matchdays leave G7 and
+  // G8 empty), PP1 and PP2 the legs of the knockout play-off (ninth to 24th), R161 and R162 the round of 16's
   FM.D.CC_AFTER = {
     2: 'G1',
-    5: 'G2',
-    8: 'G3',
-    10: 'G4',
-    13: 'G5',
-    16: 'G6',
+    4: 'G2',
+    5: 'G3',
+    7: 'G4',
+    9: 'G5',
+    10: 'G6',
+    11: 'G7',
+    12: 'G8',
+    13: 'PP1',
+    14: 'PP2',
+    15: 'R161',
+    16: 'R162',
     17: 'QF1',
     18: 'QF2',
     19: 'SF1',
@@ -1914,7 +1922,7 @@
       sim: 'full',
       clubs: 'CLUBS_D1',
       repBand: [88, 61],
-      rules: { relegate: { to: 'D2', n: 3 }, qualify: { to: 'CC', n: 3 } },
+      rules: { relegate: { to: 'D2', n: 3 }, qualify: { to: 'CC', n: 4 } },
     },
     {
       id: 'D2',
@@ -1961,7 +1969,7 @@
       sim: 'full',
       clubs: 'CLUBS_ES1',
       repBand: [89, 58],
-      rules: { relegate: { to: 'ES2', n: 3 }, qualify: { to: 'CC', n: 3 } },
+      rules: { relegate: { to: 'ES2', n: 3 }, qualify: { to: 'CC', n: 4 } },
     },
     {
       id: 'ES2',
@@ -1996,7 +2004,7 @@
       sim: 'full',
       clubs: 'CLUBS_DE1',
       repBand: [89, 58],
-      rules: { qualify: { to: 'CC', n: 3 }, relegate: { to: 'DE2', n: 2, playoff: true } }, // 16th plays the 3rd of the second division
+      rules: { qualify: { to: 'CC', n: 4 }, relegate: { to: 'DE2', n: 2, playoff: true } }, // 16th plays the 3rd of the second division
     },
     {
       id: 'DE2',
@@ -2029,7 +2037,7 @@
       sim: 'full',
       clubs: 'CLUBS_FR1',
       repBand: [90, 57],
-      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'FR2', n: 2, playoff: true } },
+      rules: { qualify: { to: 'CC', n: 3 }, relegate: { to: 'FR2', n: 2, playoff: true } },
     },
     {
       id: 'FR2',
@@ -2062,7 +2070,7 @@
       sim: 'light',
       clubs: 'CLUBS_IT1',
       repBand: [86, 58],
-      rules: { qualify: { to: 'CC', n: 3 }, relegate: { to: 'IT2', n: 3 } },
+      rules: { qualify: { to: 'CC', n: 4 }, relegate: { to: 'IT2', n: 3 } },
     },
     {
       id: 'IT2',
@@ -2084,7 +2092,7 @@
       sim: 'light',
       clubs: 'CLUBS_PT1',
       repBand: [83, 53],
-      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'PT2', n: 2, playoff: true } },
+      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'PT2', n: 2, playoff: true } },
     },
     {
       id: 'NL1',
@@ -2095,7 +2103,7 @@
       sim: 'light',
       clubs: 'CLUBS_NL1',
       repBand: [81, 54],
-      rules: { qualify: { to: 'CC', n: 1 }, relegate: { to: 'NL2', n: 2, playoff: true } },
+      rules: { qualify: { to: 'CC', n: 2 }, relegate: { to: 'NL2', n: 2, playoff: true } },
     },
     {
       id: 'AR1',
@@ -5083,7 +5091,16 @@
     },
   ];
   FM.D.CONTINENTALS = [
-    { id: 'CC', region: 'Europe', name: 'European Champions Cup', short: 'EUR1', prize: 15e6 },
+    // leaguePhase: { size, matches }: one table of that many clubs (the real 36), each playing that many different opponents, the
+    // top eight to the round of 16 and ninth to 24th through a two-legged play-off (the sheet's UEFA format)
+    {
+      id: 'CC',
+      region: 'Europe',
+      name: 'European Champions Cup',
+      short: 'EUR1',
+      prize: 15e6,
+      leaguePhase: { size: 36, matches: 8 },
+    },
     {
       id: 'CL',
       region: 'South America',
@@ -5117,18 +5134,30 @@
       short: 'EUR2',
       prize: 5e6,
       tier: 2,
+      leaguePhase: { size: 36, matches: 8 },
       feeders: {
-        D1: 2,
-        ES1: 2,
-        DE1: 2,
-        IT1: 2,
-        FR1: 2,
-        PT1: 1,
-        NL1: 1,
-        BE1: 1,
-        TR1: 1,
+        D1: 3,
+        ES1: 3,
+        DE1: 3,
+        IT1: 3,
+        FR1: 3,
+        PT1: 2,
+        NL1: 2,
+        BE1: 2,
+        TR1: 2,
         AT1: 1,
         GR1: 1,
+        SC1: 1,
+        CZ1: 1,
+        PL1: 1,
+        DK1: 1,
+        NO1: 1,
+        RS1: 1,
+        CH1: 1,
+        UA1: 1,
+        HU1: 1,
+        SE1: 1,
+        RO1: 1,
       },
     },
     {
@@ -5149,6 +5178,7 @@
       short: 'EUR3',
       prize: 3e6,
       tier: 3,
+      leaguePhase: { size: 36, matches: 6 },
       feeders: {
         D1: 1,
         ES1: 1,
@@ -5159,6 +5189,13 @@
         NL1: 1,
         BE1: 2,
         TR1: 1,
+        AT1: 1,
+        NO1: 1,
+        RS1: 1,
+        CH1: 1,
+        HU1: 1,
+        UA1: 1,
+        SK1: 1,
         SC1: 2,
         CZ1: 1,
         GR1: 1,

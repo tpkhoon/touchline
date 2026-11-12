@@ -58,6 +58,14 @@ const report = (label) => {
   }
 };
 report('start');
+// the three European cups play the 36-club league phase (a smaller field, down to 24 clubs, makes a smaller table)
+for (const id of ['CC', 'EL', 'UC']) {
+  const c = FM.S.comps[id];
+  console.log(
+    `start ${c.name}: ${c.clubs.length} clubs direct${c.qual ? ` + ${c.qual.places} from qualifying` : ''}, league phase of ${c.lp ? c.lp.N : 'none'}`,
+  );
+  check(!!c.lp && c.lp.N >= 24, `start: ${id} has no league phase`);
+}
 for (let s = 0; s < SEASONS; s++) {
   const year = FM.S.year,
     won = {};
@@ -106,7 +114,31 @@ for (let s = 0; s < SEASONS; s++) {
       check(!elsewhere.length, `season ${s + 1}: a ${c.id} qualifier is also in ${elsewhere.map((x) => x.id)}`);
     }
     // every group winner (and with up to four groups, every runner-up) reaches the quarter-finals or semi-finals
+    // the league phase of the European cups: one table, every club played its matches, the top eight and the play-off's winners
+    // make the round of 16, and the play-off was ninth to 24th
     for (const c of W.continentals()) {
+      if (!c.lp || !c.ko.qf || !c.ko.qf.length || checked.has('L' + c.id + year)) continue;
+      checked.add('L' + c.id + year);
+      const g = c.groups[0],
+        t = FM.Cups.groupTable(g).map((r) => r.id),
+        ids = (list) => new Set(list.flatMap((f) => [f.h, f.a])),
+        r16 = ids(c.ko.r16),
+        pp = ids(c.ko.pp);
+      const tag = `season ${s + 1}: ${c.id} league phase`;
+      check(g.clubs.length === c.lp.N && t.length === c.lp.N, `${tag} has ${t.length} clubs, not ${c.lp.N}`);
+      check(
+        t.every((id) => g.table[id].p === c.lp.M),
+        `${tag}: a club did not play ${c.lp.M} matches`,
+      );
+      check(
+        r16.size === 16 && t.slice(0, 8).every((id) => r16.has(id)),
+        `${tag}: the top eight are not in the round of 16`,
+      );
+      check(pp.size === 16 && t.slice(8, 24).every((id) => pp.has(id)), `${tag}: the play-off is not ninth to 24th`);
+      check(ids(c.ko.qf).size === 8, `${tag}: the quarter-finals do not have eight clubs`);
+    }
+    for (const c of W.continentals()) {
+      if (c.lp) continue;
       const first = c.groups.length >= 4 ? c.ko.qf : c.ko.sf;
       if (!first || !first.length || checked.has(c.id + year)) continue;
       checked.add(c.id + year);

@@ -14,7 +14,7 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 | --- | --- | --- |
 | 02 Leagues | 139 leagues: clubs, rounds, splits, tournaments, play-offs, promotion and relegation, B teams, youth rules | **Done as far as the engine goes** (see "Leagues sheet" below). Club counts match the sheet in every league (Spain's third tier is now two groups of 20); the regular phase, splits, Apertura and Clausura play-offs, Uruguay's Intermedio, points-average relegation, Europe play-off knockouts, relegation play-offs against the division below (wherever the game has one), B teams and youth minimums follow the sheet. Left: a few low-confidence formats listed below. |
 | 03 Domestic cups | 117 cups: entrants, legs, replays, finals | **Done as far as the engine allows** (November 2026). Legs, neutral finals and extra-time rules follow the sheet for 24 cups; group stages added for 11 cups (Romania, Sweden, Turkey, Russia, Colombia, Kazakhstan, Uzbekistan, Singapore, the Philippines, India, Bangladesh); late entry for the top divisions of England, France, Italy, Japan, Scotland and Spain; every cup winner's continental place is read from the sheet (`D.CUP_PLACE`, 98 cups). Mexico's cup is kept (see below). Left: qualifying rounds for amateur clubs, Chile's regional groups, Brazil's seeded pots, Finland's occasional group stage, Peru's and the other irregular cups. |
-| 04 Continental club | 30 continental and regional club competitions | **Started.** Final and knockout legs follow the sheet (North American and African Champions Cups single-match finals; Libertadores and Sudamericana extra time in the final only; two-legged finals in the Southeast Asian, Gulf and Central American cups; single matches in the Arab and East African cups). The Intercontinental Cup already follows the sheet (African and Asian champions open, the Americas meet, the European champion joins the final). Left: the 36-club league phase, the Asian West and East league stages, the straight CONCACAF knockout, the Club World Cup (see below). |
+| 04 Continental club | 30 continental and regional club competitions | **Started, Europe done.** Final and knockout legs follow the sheet (North American and African Champions Cups single-match finals; Libertadores and Sudamericana extra time in the final only; two-legged finals in the Southeast Asian, Gulf and Central American cups; single matches in the Arab and East African cups). The Intercontinental Cup already follows the sheet (African and Asian champions open, the Americas meet, the European champion joins the final). The European Champions Cup, Shield and Trophy play the 36-club league phase with a knockout play-off and a round of 16 (November 2026, third pass). Left: the Asian West and East league stages, the straight CONCACAF knockout, the Club World Cup (see below). |
 | 05 International | 33 national-team tournaments | **Done as far as the engine allows** (November 2026). Sizes already follow the sheet for the confederation finals; the Gold Cup takes a guest and the Copa América plays extra time in the final only; the Southeast Asian pool is all eleven ASEAN nations, the Gulf pool the eight Gulf federation members, the Central Asian pool the CAFA nations. Left: the sizes of the regional nations cups, two-legged ASEAN knockouts, Olympic and Asian Games football (see below). |
 | 06 Regional | 40 regional competition rows | Reviewed, **no change**: the game's regional competitions are Brazil's state championships and generated regional cups, which stay as they are (the sheet lists them as fictional or partly fictional). Left: the Copa do Nordeste and Copa Verde, island and regional first stages (Cape Verde, New Zealand, India), real county, district and state cups (see below). |
 | 07 Cross-border clubs | Clubs in another nation's league (Monaco, Welsh clubs in England ...) | **Done as far as the engine allows** (November 2026): 15 clubs renamed in their home nation's style and set in the host league; 12 keep their home nation (four Welsh clubs in England's three divisions below the top, a Northern Ireland club in the Irish league, the English-based club in Wales, three Canadian clubs in the American league, two New Zealand clubs in Australia, the Japanese satellite in Singapore); Andorra's and Brunei's clubs now have their own nations (both are nations of the game); only the principality in France keeps the host's nationality (Monaco is not a nation of the game). The clubs of the pyramid below also enter the host's cup (see below) |
@@ -59,8 +59,9 @@ needs. The sheet's own Touchline columns (clubs, matches per club, format) are t
 - **Cross-border clubs:** the engine's own cross-nation league form carries them: a league lists the nations whose clubs may play in it
   (`nats`), a club has its own nation (`D.CLUB_NAT`), and its players, foreign-player rules and national cup follow that nation
   (the league's own clubs keep the league's nationality mix). `tools/crossborder.mjs` renamed 15 clubs in their home nation's style.
-  Monaco's club is the one whose home is not a nation of the game: it keeps France's nationality (`D.CROSS_BORDER` says what each
-  is). A club also enters the cup of the nation whose league it plays in (`D.CUP_HOSTS`: the Welsh clubs the English cup, the Irish
+  Monaco's club is the one whose home is not a nation of the game, and that is intended, not a gap: Monaco is not a FIFA member, so
+  it has no national team, no qualifying places and no confederation place, and its club keeps France's nationality
+  (`D.CROSS_BORDER` says what each is). A club also enters the cup of the nation whose league it plays in (`D.CUP_HOSTS`: the Welsh clubs the English cup, the Irish
   league's Northern Irish club the Irish cup, the Canadian clubs the American cup ...), so it is in two cups; the calendar's
   cup days have two spare days, and a tie that would be the club's second match of a day waits for the next cup day
   (`Sea.oneMatchADay`). A winner of either cup takes the place the cup gives.
@@ -215,14 +216,32 @@ better ranked nations of its part. A world definition that sets two or more co-h
 **Pools (05, 18).** The Southeast Asian cup draws from the eleven ASEAN nations, the Gulf cup from the eight Gulf federation members
 (Iran no longer plays it), the Central Asian cup from the CAFA nations.
 
+## Added in the third pass (November 2026)
+
+**The 36-club league phase (04).** The European Champions Cup, Shield and Trophy (the sheet's Champions, Europa and Conference
+Leagues) each play one table of 36 clubs (`leaguePhase: { size: 36, matches: 8 }`, the Trophy six matches). The clubs are drawn into
+four pots by reputation and each plays two opponents from every pot, one at home and one away (the Trophy's six leave one pot
+pair out), so a club plays eight (six) different opponents, four (three) at home. The draw tries 400 pot orders, keeps those
+with the fewest clashes of clubs from one nation and puts the matches into rounds (`Cu.lpEdges`, `Cu.lpColour`, `Cu.makeLeaguePhase`).
+The top eight go to the round of 16, ninth to 24th play a two-legged knockout play-off (the seeded club hosts the decider: ninth to
+16th against 24th to 17th), and the round of 16 pairs the top eight with the play-off winners (the best seed with the winner of the
+weakest seeded tie). Quarter-finals, semi-finals and the final are as before. A table is a multiple of four clubs, 24 at least: a
+field that does not fill 36 makes a smaller one, and a field under 24 (or a cup whose format sets a group size of its own, or a
+calendar without the new days) keeps the groups of four. The calendar has eight league-phase matchdays (`G1` to `G8`, `G7` and
+`G8` empty for the cups with six group matchdays), two play-off days (`PP1`, `PP2`) and two round-of-16 days (`R161`, `R162`)
+before the quarter-finals; a world definition saved with the older eleven stages keeps the old calendar (and the groups of four).
+The places: the Champions Cup takes four clubs from England, Spain, Germany and Italy, three from France, two from Portugal and
+the Netherlands, one from four smaller leagues, and the rest of the 36 through the qualifying rounds (the nations with no place send
+their champions: up to nine); the Shield takes 36 (three from each big league, two from Portugal, the Netherlands, Belgium and
+Turkey, one from 13 more); the Trophy 36. The places are still handed out by coefficient (`Cu.spots`).
+
 ## Still to do from these sheets
 
-- **League phase (04):** the 36-club European league phase (8 matches each against different opponents, a play-off round for 9th to
-  24th) needs 36 entrants a cup, so the places each league sends (`feeders`) and the coefficient allocation change: work on the league
-  rules, to be done with the leagues session. The game plays 16 clubs in four groups. The Asian league stage (two regions of 12) needs
-  the same and a split of the Asian clubs into regions. The Libertadores qualifying rounds exist for the main cups with eight qualifying
-  nations (`Cu.qualActive`) but are not the sheet's three fixed stages. The CONCACAF Champions Cup is a group cup in the game and a
-  straight knockout in the sheet (a continental with qualifying rounds and no groups, as the Club World Cup bracket works).
+- **League phase (04), Europe done; the Asian league stage and CONCACAF not:** the three European cups play the 36-club league phase
+  (see below). The Asian league stage (two regions of 12) needs a split of the Asian clubs into regions, which the engine does not
+  have (a cup's league phase is one table of the whole field). The Libertadores qualifying rounds exist for the main cups with eight
+  qualifying nations (`Cu.qualActive`) but are not the sheet's three fixed stages. The CONCACAF Champions Cup is a group cup in the
+  game and a straight knockout in the sheet (a continental with qualifying rounds and no groups, as the Club World Cup bracket works).
 - **Club World Cup (04):** the 2029 edition is 32 clubs in eight groups of four, then knockouts; the game plays its own World Club
   Championship: its field and groups are not checked against the sheet.
 - **Domestic cups (03):** qualifying rounds of amateur clubs below the leagues' lowest division (the game's fields are the leagues'
@@ -242,8 +261,6 @@ better ranked nations of its part. A world definition that sets two or more co-h
 
 - Regional groups as real groups (sheet 02 owns the split and tournament formats; the lower divisions need them too).
 - A division with several cross-division play-off ties, and the Argentine, Colombian and Mexican tournaments in the lower divisions.
-- Monaco as a nation of its own: the game's nation list has no Monaco, and a new nation brings a national team, qualifying places,
-  a name library and a place in every confederation count.
 - A club in two cups plays them on shared cup days (the tie that waited longest goes first); a real second-cup calendar of its own
   would need the cup days split by nation.
 - Youth: matches you can play or watch (a final of your own nation is only news), school sides with players of their own, the

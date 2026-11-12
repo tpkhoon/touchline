@@ -4144,6 +4144,12 @@
     G4: 'Group day 4',
     G5: 'Group day 5',
     G6: 'Group day 6',
+    G7: 'Group day 7 (the league phase)',
+    G8: 'Group day 8 (the league phase)',
+    PP1: 'Knockout play-off, first leg',
+    PP2: 'Knockout play-off, second leg',
+    R161: 'Round of 16, first leg',
+    R162: 'Round of 16, second leg',
     QF1: 'Quarter-final, first leg',
     QF2: 'Quarter-final, second leg',
     SF1: 'Semi-final, first leg',
@@ -4186,7 +4192,9 @@
       <div class="actions" style="margin-top:6px"><button class="btn sm" data-act="edCalCup" data-d="1">＋ Add a cup round</button><button class="btn sm" data-act="edCalCup" data-d="-1">− Take the last away</button></div>
       <div class="tiny dim" style="margin-top:4px;line-height:1.5">The biggest cup needs a day for each of its rounds; the game adds days when a cup has more than you give it.</div>
       <div class="ng-label">Continental club cups</div>
-      ${WD.CONT_STAGES.map((st) => mover('cont', st, c.cont[st], CONT_NAME[st])).join('')}
+      ${WD.contStages(c.cont)
+        .map((st) => mover('cont', st, c.cont[st], CONT_NAME[st]))
+        .join('')}
       <div class="ng-label">Intercontinental Cup <span class="tiny dim">· every season; the World Club Championship is played in the summer of every fourth</span></div>
       ${WD.WORLD_STAGES.map((st) => mover('world', st, c.world[st], WORLD_NAME[st])).join('')}
       <div class="ng-label">International breaks <span class="tiny dim">· the first window has four matchdays, the others two</span></div>

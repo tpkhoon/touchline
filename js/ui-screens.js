@@ -3807,22 +3807,35 @@
       return `${one ? 'single-match knockouts' + (f.central ? ' at one venue' : '') : legs} · ${f.legs.f === 2 ? 'two-legged final' : 'neutral final'}`;
     };
     const cupFormat = (c) => cupFormat0(c) + (c.prize ? ` · ${U.money(c.prize)} prize fund` : '');
+    // the 36-club league phase: one table, the top eight straight to the round of 16, ninth to 24th into the play-off
+    const leaguePhaseHtml = (g) =>
+      `<div class="small b dim" style="margin:10px 0 2px">LEAGUE PHASE</div><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr>${FM.Cups.groupTable(
+        g,
+      )
+        .map(
+          (r, i) =>
+            `<tr class="${i < 8 ? 'zone-up' : i < 24 ? 'zone-po' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td></tr>`,
+        )
+        .join(
+          '',
+        )}</table><div class="tiny dim" style="margin-top:6px">Top eight: the round of 16 · ninth to 24th: a two-legged knockout play-off · the rest are out</div>`;
     const groupsHtml = (c) =>
       (c.groups || [])
-        .map(
-          (g) =>
-            `<div class="small b dim" style="margin:10px 0 2px">GROUP ${esc(g.name)}</div><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th></th></tr>${((
-              mk,
-            ) =>
-              FM.Cups.groupTable(g)
-                .map(
-                  (r, i) =>
-                    `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td title="${{ top: 'Group won', through: 'Through to the knockouts', out: 'Eliminated' }[mk[r.id]] || ''}" style="color:${mk[r.id] === 'out' ? 'var(--bad)' : 'var(--good)'};font-weight:800">${{ top: '★', through: '✓', out: '✗' }[mk[r.id]] || ''}</td></tr>`,
-                )
-                .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4, c.id))}</table>`,
+        .map((g) =>
+          g.lp
+            ? leaguePhaseHtml(g)
+            : `<div class="small b dim" style="margin:10px 0 2px">GROUP ${esc(g.name)}</div><table class="t"><tr><th>#</th><th class="l">Club</th><th>P</th><th>GD</th><th>Pts</th><th></th></tr>${((
+                mk,
+              ) =>
+                FM.Cups.groupTable(g)
+                  .map(
+                    (r, i) =>
+                      `<tr class="${i < 2 ? 'zone-up' : ''} ${W.isUser(r.id) ? 'me' : ''} tap" data-act="clubView" data-id="${r.id}"><td>${i + 1}</td><td class="l"><div class="row" style="gap:6px">${C.crest(CL(r.id), 16)}<span class="ellip" style="max-width:150px">${C.flag(CL(r.id).nat)} ${esc(CL(r.id).name)}</span></div></td><td>${r.p}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="b">${r.pts}</td><td title="${{ top: 'Group won', through: 'Through to the knockouts', out: 'Eliminated' }[mk[r.id]] || ''}" style="color:${mk[r.id] === 'out' ? 'var(--bad)' : 'var(--good)'};font-weight:800">${{ top: '★', through: '✓', out: '✗' }[mk[r.id]] || ''}</td></tr>`,
+                  )
+                  .join(''))(FM.Cups.groupMarks(g, c.groups.length > 4, c.id))}</table>`,
         )
         .join('') +
-      (c.groups && c.groups.length
+      (c.groups && c.groups.length && !c.lp
         ? '<div class="tiny dim" style="margin-top:6px">★ group won · ✓ through to the knockouts · ✗ eliminated</div>'
         : '');
     // the qualifying rounds of a main continental cup: who plays, and the ties round by round
@@ -3870,7 +3883,7 @@
       .map((c) => {
         const grp = groupsHtml(c);
         const ko = FM.Cups.koList(c);
-        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${(c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${qualHtml(c)}${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
+        return `<div class="card" data-cupid="${c.id}"><div class="row"><div class="h3 grow">${esc(c.name)}</div>${c.winner ? `<span class="pill acc">${esc(CL(c.winner).name)}</span>` : ''}</div><div class="tiny dim" style="margin-top:4px">${c.region || ''} · ${U.plural(c.clubs.length, 'club')} · ${c.lp ? `a league phase of ${U.plural(c.lp.N, 'club')}, ${U.plural(c.lp.M, 'match', 'matches')} each` : (c.groups || []).length > 4 ? 'the group winners and the best runners-up make the quarter-finals' : `top 2 in each group reach the ${(c.groups || []).length >= 4 ? 'quarter-finals' : 'semi-finals'}`} · ${cupFormat(c)}</div>${qualHtml(c)}${grp}${ko.length ? `<div class="small b dim" style="margin:12px 0 2px">KNOCKOUT</div>${ko.map(fxLine).join('')}` : ''}${UI.compHistoryCard ? UI.compHistoryCard(c) : ''}</div>`;
       })
       .join('');
     // county cups and state championships: the ones you are in, or all of them

@@ -3173,7 +3173,7 @@
         for (const m of koDays) cal.push({ type: 'playoff', stage: m, torneo: 0 });
       for (const id of EURO[r] || []) cal.push({ type: 'cup', comps: [id] });
       let st = CC[r];
-      if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF)1$/, '$1');
+      if (st && !legs) st = /2$/.test(st) && st !== 'G2' ? null : st.replace(/^(QF|SF|PP|R16)1$/, '$1');
       if (st && W.continentals().length) cal.push({ type: 'cup', comps: W.continentals().map((c) => c.id), stage: st });
       // a final played over two legs (the CAF and CONCACAF cups) has its return on the next day
       if (st === 'F' && legs && W.continentals().length)

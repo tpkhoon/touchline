@@ -250,7 +250,14 @@ Championship (two European, one African, three South American) qualify without p
 
 ## Continental cups
 
-All have groups of four then knockouts, as the game's scaled-down format.
+The European cups (the Champions, Shield and Trophy: UEFA's Champions, Europa and Conference Leagues) play a league phase of 36
+clubs in one table: the clubs are drawn into four pots by reputation and each plays two opponents from every pot, one at home and
+one away (eight matches; the Trophy six), with as few meetings of clubs from one nation as the draw allows. The top eight go to the
+round of 16, ninth to 24th play a two-legged knockout play-off (ninth to 16th seeded, hosting the second leg) for the other eight
+places, and the rest are out; quarter-finals, semi-finals and the final follow. The Champions Cup fills the places the leagues
+do not have through qualifying rounds. A field smaller than 36 makes a table of the nearest multiple of four (24 at least); under
+24 clubs, or in a world whose cup has a group size of its own, the cup plays groups of four. Every other continental cup has
+groups of four (or the format its row below gives) then knockouts, as the game's scaled-down format.
 
 | Competition | Quarter-finals / semi-finals | Final |
 | --- | --- | --- |
@@ -358,8 +365,7 @@ A player who has lived in a country for a number of seasons after turning 18 can
 
 ## Where the game simplifies
 
-- The UEFA cups have 16 clubs in four groups, not the 36-club league phase with play-offs, and a league's places are
-  scaled to fit (Premier League, LaLiga, Bundesliga and Serie A 3 each, Ligue 1 2, Portugal and the Netherlands 1).
+- The UEFA cups play the 36-club league phase with a two-legged play-off for ninth to 24th and a round of 16; the pots, the nation clashes and the places a league sends are the game's own simplification (see Continental cups above).
 - France's Ligue 1 and Ligue 2 have no relegation play-off; Serie B's play-offs are four clubs, not six to eight.
 - No league has a split (Scotland, Belgium), play-offs for the title (MLS, Argentina) or an Apertura and Clausura
   (Mexico); each is one table.
