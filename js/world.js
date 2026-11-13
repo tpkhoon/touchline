@@ -806,11 +806,12 @@
     const S = FM.S,
       age = W.age(p),
       here = clubId && S.clubs[clubId];
-    if (youthPool.S !== S || youthPool.n !== Object.keys(S.clubs).length) {
+    const nClubs = leagueIndex().n; // (the number of clubs, kept as they are made: counting them here for every player was slow)
+    if (youthPool.S !== S || youthPool.n !== nClubs) {
       const by = {};
       for (const c of Object.values(S.clubs))
         if (c.comp && !c.parent && c.sim !== 'nation') (by[c.nat] = by[c.nat] || []).push(c);
-      youthPool = { S, n: Object.keys(S.clubs).length, by };
+      youthPool = { S, n: nClubs, by };
     }
     if (p.youth && S.clubs[p.youth]) {
       p.homeNat = S.clubs[p.youth].nat;
@@ -1840,16 +1841,39 @@
     );
   };
   // Scaled by the mean of its league, so the clubs differ from each other and the league as a whole keeps its share
-  const leagueLean = { S: null, n: -1, by: {} };
+  // The clubs of each league, kept as the clubs are made (W.mkClub and the overseas clubs call W.clubMade) so that nothing scans
+  // the whole world for every player it makes: that was most of the time a new world took. A world loaded from a save, or a
+  // different world, is indexed once. n is the number of clubs, which is also what tells the youth pools they are out of date.
+  const leagueLean = { S: null, n: 0, comp: {}, mean: {} };
+  const leagueIndex = () => {
+    const S = FM.S;
+    if (leagueLean.S !== S) {
+      Object.assign(leagueLean, { S, n: 0, comp: {}, mean: {} });
+      for (const id in S.clubs) {
+        const x = S.clubs[id];
+        leagueLean.n++;
+        if (x.comp && x.sim !== 'nation' && !x.parent)
+          (leagueLean.comp[x.comp] = leagueLean.comp[x.comp] || []).push(x);
+      }
+    }
+    return leagueLean;
+  };
+  W.clubMade = (club) => {
+    if (leagueLean.S !== FM.S) return; // (not indexed yet: the first lookup scans every club, this one included)
+    leagueLean.n++;
+    if (club.comp && club.sim !== 'nation' && !club.parent) {
+      (leagueLean.comp[club.comp] = leagueLean.comp[club.comp] || []).push(club);
+      delete leagueLean.mean[club.comp]; // (the league's mean lean is worked out again with this club in it)
+    }
+  };
+  // Scaled by the mean of its league, so the clubs differ from each other and the league as a whole keeps its share
   W.clubForeign = (c) => {
     if (!c.comp) return clubLean(c);
-    const cl = Object.values(FM.S.clubs);
-    if (leagueLean.S !== FM.S || leagueLean.n !== cl.length)
-      Object.assign(leagueLean, { S: FM.S, n: cl.length, by: {} });
-    let m = leagueLean.by[c.comp];
+    const L = leagueIndex();
+    let m = L.mean[c.comp];
     if (m === undefined) {
-      const same = cl.filter((x) => x.comp === c.comp && x.sim !== 'nation' && !x.parent);
-      m = leagueLean.by[c.comp] = same.length ? same.reduce((t, x) => t + clubLean(x), 0) / same.length : 1;
+      const same = L.comp[c.comp] || [];
+      m = L.mean[c.comp] = same.length ? same.reduce((t, x) => t + clubLean(x), 0) / same.length : 1;
     }
     return clubLean(c) / (m || 1);
   };
@@ -2001,7 +2025,15 @@
     }
     mine.forEach((p) => (p.no = 0)); // (numbers handed out as each player was made go back: the best choose first)
     W.numberSquad(mine);
-    W.rosterVer++; // (these players went straight into the club: any squad index built before now is out of date)
+    // (these players went straight into the club: the squad index is out of date, unless it was complete until now, in which case
+    // they are added to it. Rebuilding it for every club made a new world slow: every club scanned every player made so far.)
+    const fresh = sqIdx.S === FM.S && sqIdx.ver === W.rosterVer;
+    W.rosterVer++;
+    if (fresh) {
+      const b = (sqIdx.by[club.id] = sqIdx.by[club.id] || []);
+      for (const p of mine) if (!b.includes(p)) b.push(p);
+      sqIdx.ver = W.rosterVer;
+    }
   }
 
   W.genSquad = genSquad;
@@ -3421,6 +3453,7 @@
             }).id,
     };
     S.clubs[id] = club;
+    W.clubMade(club);
     S.comps[compId].clubs.push(id);
     W.clubAttr(club);
     genSquad(club);
@@ -3539,6 +3572,7 @@
         bestSales: [],
       };
       S.clubs[id] = club;
+      W.clubMade(club);
       genSquad(club);
     });
     // Some unattached free agents
