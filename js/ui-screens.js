@@ -2420,7 +2420,12 @@
   UI.acts.doScoutPlayer = (d) => {
     if (!FM.Scouting.scoutable(P(d.id))) {
       UI.closeSheet();
-      return UI.toast(`${W.userClub().name} only look at ${W.userClub().policy.label} players`, 3500);
+      return UI.toast(
+        W.userClub().policy.military
+          ? `${W.userClub().name} only take conscripts on national service`
+          : `${W.userClub().name} only look at ${W.userClub().policy.label} players`,
+        3500,
+      );
     }
     FM.Scouting.assign(d.s, { type: 'player', pid: d.id });
     UI.save();
@@ -4173,7 +4178,7 @@
       .map((r) => FM.Staff.get(r.key));
     return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(I.icon)} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''}</div></div></div></div>
       <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${UI.ico(I.icon)}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
-        ${c.policy ? `<div class="phrase"><span>${UI.ico('columns')}</span><span>A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club</span></div>` : ''}
+        ${c.policy ? `<div class="phrase"><span>${UI.ico('columns')}</span><span>${c.policy.military ? "The army's club: its squad is conscripts on national service, on loan from their own clubs" : `A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club`}</span></div>` : ''}
         ${c.rival ? `<div class="phrase"><span>${UI.ico('swords')}</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
         <div class="row small" style="margin-top:10px"><span style="width:90px" class="dim">Fan mood</span><div class="grow">${C.bar(c.fanMood, C.moodColor(c.fanMood))}</div></div>
         <div class="row small" style="margin-top:8px"><span style="width:90px" class="dim">Board</span><div class="grow">${C.bar(c.boardConf, C.moodColor(c.boardConf))}</div></div></div>

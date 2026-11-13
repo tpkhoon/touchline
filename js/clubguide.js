@@ -168,7 +168,7 @@
     const idt = D.IDENTITY[e.row[5]],
       out = [`${idt.label}`];
     const pol = D.CLUB_POLICY && D.CLUB_POLICY[code];
-    if (pol) out.push(`Only ${pol.label} players`);
+    if (pol) out.push(pol.military ? 'Conscripts only' : `Only ${pol.label} players`);
     if (G.rival(code)) out.push('Derby club');
     if (e.bigGround) out.push('Big ground');
     if (D.partTime(e.l.nat, e.l.tier, e.row[6])) out.push('Part-time squad');

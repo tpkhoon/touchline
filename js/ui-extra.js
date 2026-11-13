@@ -1475,7 +1475,7 @@
         .map((k) => `<option value="${esc(k)}" ${q.region === k ? 'selected' : ''}>${esc(k)}</option>`)
         .join('')}</select></div>
       ${sfPanel('search', ps.length)}
-      ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">${esc(W.userClub().name)} only sign ${esc(W.userClub().policy.label)} players, so only they are scouted and listed.</div>` : ''}
+      ${W.userClub() && W.userClub().policy ? `<div class="tiny dim" style="margin:6px 2px">${esc(W.userClub().name)} ${W.userClub().policy.military ? 'only take conscripts on national service' : `only sign ${esc(W.userClub().policy.label)} players`}, so only they are scouted and listed.</div>` : ''}
       <div class="card flat list" style="padding:4px 12px">${
         ps
           .slice(0, UI._sf.limit)
