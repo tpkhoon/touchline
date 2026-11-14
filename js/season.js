@@ -1272,7 +1272,13 @@
     ((n.type === 'bid' && n.data.status === 'open') ||
       ((n.type === 'press' || n.type === 'meeting' || n.type === 'desk') && !n.resolved) ||
       (n.type === 'youth' && n.intake && !n.done));
-  Sea.pendingDecision = () => FM.S.news.some(newDecision);
+  // The last day of the season is when the player chooses how much of the world is simulated next season (S.simNext; the choice is
+  // settled by Sea.applySimNext when the season ends). A skip stops there once a season, unless the sim runs on its own.
+  Sea.detailDue = () => {
+    const S = FM.S;
+    return !!(S.user && S.calendar && S.day === S.calendar.length - 1 && S.simAsked !== S.year);
+  };
+  Sea.pendingDecision = () => FM.S.news.some(newDecision) || Sea.detailDue();
   // What stopped a skip, in words: "2 offers for your players and a press conference need a reply"
   Sea.pendingText = function () {
     const c = {};
@@ -1288,8 +1294,13 @@
       youth: ['the youth intake day', 'youth intake days'],
     };
     const parts = Object.entries(c).map(([k, n]) => (n === 1 ? NAME[k][0] : `${n} ${NAME[k][1]}`));
+    if (Sea.detailDue()) {
+      if (!parts.length)
+        return 'The last day of the season: choose how much of the world is simulated next season (Home)';
+      parts.push('the league detail for next season');
+    }
     if (!parts.length) return '';
-    const total = Object.values(c).reduce((t, n) => t + n, 0);
+    const total = Object.values(c).reduce((t, n) => t + n, 0) + (Sea.detailDue() ? 1 : 0);
     return `${parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts.at(-1) : parts[0]} ${total > 1 ? 'need' : 'needs'} a reply`;
   };
   // Sim without stopping: the staff answer what would have stopped the sim. Offers for players are accepted when they meet his value and
@@ -1701,15 +1712,12 @@
     if (u.offers.length >= 3 || (!initial && Math.random() > 0.3)) return;
     const taken = new Set(u.offers.map((o) => o.id)),
       justLeft = u.unemployed && u.unemployed.since === S.year ? u.unemployed.from : null;
-    const lower = (c) =>
-      c.sim === 'light' &&
-      S.comps[c.comp] &&
-      S.comps[c.comp].tier > 1 &&
-      S.comps[c.comp].nat === c.nat &&
-      ['ENG', 'ESP'].includes(c.nat); // League One, Segunda
+    // Any club of the world can have a vacancy, whatever tier its league is simulated in: offers used to come only from Full leagues
+    // (and two lower divisions in Light), so a world with most leagues Minimal, or a career that began with no club (no league
+    // of its own to be Full), had no job to offer, ever. Taking the job makes that league Full (W.applySimFocus).
     const pool = Object.values(S.clubs).filter(
       (c) =>
-        (c.sim === 'full' || lower(c)) &&
+        c.sim !== 'nation' &&
         c.comp &&
         !c.parent && // a B team's job goes with the parent club's set-up, not to an outside manager
         !taken.has(c.id) &&
@@ -2137,6 +2145,23 @@
   };
 
   // ---------- Season end ----------
+  // How much of the world is simulated is chosen for each league at the start of the save and on the last day of each season, for
+  // the next one: S.simNext holds the choices made, S.simPrefs the tier each league is set to (W.applySimFocus lifts the leagues around
+  // your club to Full for as long as you are there, and they go back to this tier after)
+  Sea.applySimNext = function () {
+    const S = FM.S,
+      next = S.simNext;
+    let n = 0;
+    for (const id in next || {}) {
+      const comp = S.comps[id];
+      if (!comp || !['full', 'light', 'minimal'].includes(next[id])) continue;
+      (S.simPrefs = S.simPrefs || {})[id] = next[id];
+      comp.baseSim = next[id];
+      n++;
+    }
+    delete S.simNext;
+    return n;
+  };
   Sea.endSeason = function () {
     Sea.testimonials();
     Sea.moveSpots(); // (the places in the continental cups, by coefficient, before they are handed out)
@@ -2500,7 +2525,9 @@
     moves.forEach(applyMove);
     FM.Youth.fixBTeams().forEach(applyMove);
 
+    Sea.applySimNext(); // the league detail chosen on the last day takes effect
     W.applySimFocus(); // after promotion and relegation: your (possibly new) league and its neighbours go full
+    W.topUpFullSquads(); // (a league that became Full gets the bigger squads of that tier)
     // User evaluation (out of work: the season is recorded, but there is nothing to judge)
     if (!club) {
       S.archive.push(entry);

@@ -1234,9 +1234,10 @@
     }
     return out;
   };
-  // There is no default tier for a league: the player chooses each one. A league not yet chosen starts as Light (honest numbers,
-  // a tenth of the work of Full); the leagues next to yours are Full whatever is chosen.
-  const START_TIER = 'light';
+  // A league the player has not chosen starts as Minimal (scores only: a day of play stays quick, a Light league costs about a tenth
+  // of Full and with the world at 4,800 clubs all of them Light made a day of play take half a minute or more); the leagues next to
+  // yours are Full whatever is chosen, and every league can be set to any tier on the new-career screen.
+  const START_TIER = 'minimal';
   const simOfLeague = (l, locked) => (locked.has(l.id) ? 'full' : NG.sims[l.id] || START_TIER);
   // The leagues at a simulation tier, by name (the "wider world" text on the new-career screen reads the choice)
   const tierList = (sim) => {
@@ -1259,7 +1260,7 @@
       }).join('')}</div>`;
     const nations = [...new Set(D.LEAGUES.map((l) => l.nat))];
     return `<details id="ng-sim" ${NG.simOpen !== false ? 'open' : ''} style="margin-top:16px"><summary class="small" style="color:#c9d4e3;cursor:pointer">Choose how much of the world is simulated <span class="dim" style="color:#6f7f96">· ${U.plural(counts.full, 'club')} in full, ${counts.light} light, ${counts.minimal} minimal</span></summary>
-      <div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${TIERS.map(([, label, , d]) => `<b style="color:#c9d4e3">${label}</b>: ${d}.`).join(' ')} Choose each league yourself: nothing is chosen for you, and every league starts as Light. Your league and the ones just above and below it are always full. More full leagues means a richer world but slower days and bigger saves; simulation load ${pct}% of everything in full.</div>
+      <div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${TIERS.map(([, label, , d]) => `<b style="color:#c9d4e3">${label}</b>: ${d}.`).join(' ')} Choose any league yourself: the ones you do not choose start as Minimal, which keeps every day quick. Your league and the ones just above and below it are always full. More full leagues means a richer world but slower days and bigger saves; simulation load ${pct}% of everything in full.</div>
       <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm" data-act="ngSimPreset" data-v="minimal">All minimal</button><button class="btn sm" data-act="ngSimPreset" data-v="light">All light</button><button class="btn sm" data-act="ngSimPreset" data-v="full">All full</button></div>
       ${simMixHtml()}
       ${nations
@@ -2087,7 +2088,7 @@
         W.goUnemployed('start');
       } else W.takeCharge(NG.club, ngProfile());
       if (prepared)
-        W.topUpPreparedSquads(); // (the leagues you play in full need the bigger squads)
+        W.topUpFullSquads(); // (the leagues you play in full need the bigger squads)
       else {
         W.seedHistory();
         W.seedLegends();

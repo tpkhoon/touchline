@@ -3695,21 +3695,28 @@
   // and relegation.
   // The rules every career plays by: each competition's real ones (no world-rules choice at a new game)
   W.REAL_RULES = { win: 3, subs: 5, reg: 'real', foreignLimit: 99, twoLegs: true, awayGoals: false };
-  W.applySimFocus = function () {
+  // The leagues that are Full whatever was chosen: yours and the ones just above and below it (none out of work). They cannot be
+  // set to a lower tier, and they go back to the tier the player chose when the club changes league or the job ends.
+  W.focusLeagues = function () {
     const S = FM.S,
       uc = W.employed() && W.userClub(),
-      my = uc && S.comps[uc.comp];
-    const focus = new Set();
+      my = uc && S.comps[uc.comp],
+      focus = new Set();
     if (my) {
       focus.add(my.id);
       const r = my.rules || {};
       if (r.promote) focus.add(r.promote.to);
       if (r.relegate) focus.add(r.relegate.to);
     }
+    return focus;
+  };
+  W.applySimFocus = function () {
+    const S = FM.S,
+      focus = W.focusLeagues();
     for (const c of W.leagues()) {
       if (!c.baseSim)
         c.baseSim = (S.simPrefs && S.simPrefs[c.id]) || (D.LEAGUES.find((l) => l.id === c.id) || {}).sim || c.sim;
-      c.sim = focus.has(c.id) && c.baseSim !== 'minimal' ? 'full' : c.baseSim;
+      c.sim = focus.has(c.id) ? 'full' : c.baseSim;
     }
     Object.values(S.clubs).forEach(W.syncSim);
   };
@@ -3733,13 +3740,17 @@
       }
     }
   };
-  // A league the player runs in the full engine needs the bigger squads of that tier (the prepared world was made in the light one):
-  // the clubs of those leagues are filled up the way a new world fills a squad, and the players made are set up like the rest
-  W.topUpPreparedSquads = function () {
+  // A league run in the full engine needs the bigger squads of that tier (the prepared world was made in the light one; a league
+  // that was Minimal becomes Full when you take a job there): the clubs of those leagues are filled up the way a new world fills a
+  // squad, and the players made are set up like the rest. A squad that is already full size gets nothing.
+  W.topUpFullSquads = function () {
     const S = FM.S,
-      clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim === 'full' && !c.parent),
+      clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim === 'full' && !c.parent && !c.toppedUp), // (once: a squad is not added to every time)
       before = new Set(Object.keys(S.players));
-    clubs.forEach((c) => genSquad(c, W.squad(c.id)));
+    clubs.forEach((c) => {
+      genSquad(c, W.squad(c.id));
+      c.toppedUp = true;
+    });
     const made = Object.values(S.players).filter((p) => !before.has(p.id));
     made.forEach((p) => W.assignYouth(p, p.clubId));
     made.forEach((p) => p.clubId && FM.Contracts.aiDeal(p, S.clubs[p.clubId]));

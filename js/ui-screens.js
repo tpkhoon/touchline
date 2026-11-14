@@ -109,6 +109,7 @@
     if (!['club', 'reply', 'following', 'press', 'world'].includes(UI.sub.feed)) UI.sub.feed = 'club';
     const waiting = s.news.filter(UI.isOpenDecision).length;
     return `${hero}
+      ${UI.simDetailCard()}
       ${UI.poachCards()}
       <div class="kpis">
         <div class="kpi">${FM.Season.gamesPlayed(c.id) ? `<div class="v">${U.ordinal(pos)}</div><div class="l" title="${esc(UI.cname(s.comps[c.comp]))}">${esc(UI.cshort(s.comps[c.comp], 20))} · ${U.pts(row.pts)}</div>` : `<div class="v">—</div><div class="l" title="${esc(UI.cname(s.comps[c.comp]))}">${esc(UI.cshort(s.comps[c.comp], 20))} · season starts soon</div>`}</div>
@@ -837,6 +838,7 @@
     const target = CL(d.id);
     W.goUnemployed('poached');
     W.takeCharge(target.id, s.user.name, false);
+    W.topUpFullSquads(); // (a league that was Minimal is Full now: its squads fill up to the bigger size)
     s.user.poachCool = FM.Season.dayIndex() + 60;
     FM.Stories.share({
       kicker: 'NEW JOB',
@@ -870,6 +872,7 @@
       from = prev.from && CL(prev.from);
     if (!CL(d.id)) return;
     W.takeCharge(d.id, s.user.name, false);
+    W.topUpFullSquads(); // (a league that was Minimal is Full now: its squads fill up to the bigger size)
     FM.Stories.share({
       kicker: 'NEW JOB',
       title: `${s.user.name} takes over at ${CL(d.id).name}`,
@@ -4486,6 +4489,108 @@
       ? `<div class="card flat"><details><summary class="small b dim" style="cursor:pointer">${head}</summary>${rows}</details></div>`
       : `<div style="margin-top:10px"><details><summary class="small b dim" style="cursor:pointer;text-transform:uppercase;letter-spacing:.6px">${head}</summary>${rows}</details></div>`;
   };
+  // ---------------- League detail: how much of the world is simulated ----------------
+  // Chosen at the start of the save and on the last day of each season, for the next one (the choices wait in S.simNext until the
+  // season ends). Your league and the ones just above and below it are Full while you are at the club and cannot be changed; when the
+  // club changes league they follow it, and the leagues they leave go back to the tier chosen here.
+  const TIER_NAME = { full: 'Full', light: 'Light', minimal: 'Minimal' };
+  const detailEditable = () => !!(S().calendar && S().day === S().calendar.length - 1);
+  const tierOfLeague = (c) => (S().simNext || {})[c.id] || c.baseSim || (S().simPrefs || {})[c.id] || c.sim;
+  UI.simDetailCard = function () {
+    const s = S();
+    if (!detailEditable() || s.simAsked === s.year) return '';
+    return `<div class="card"><div class="h3">Last day of the season</div><div class="small dim" style="margin-top:4px;line-height:1.5">Choose how much of the world is simulated next season: Full, Light or Minimal for each league. Your league and the ones above and below it stay Full. A quicker world means quicker days.</div><div class="row" style="gap:8px;margin-top:10px"><button class="btn sm pri grow" data-act="simDetail">Choose league detail</button><button class="btn sm" data-act="simDetailKeep">Keep as it is</button></div></div>`;
+  };
+  UI.simDetailSheet = function () {
+    const s = S(),
+      edit = detailEditable(),
+      focus = W.focusLeagues(),
+      mine = W.employed() && W.userClub() ? W.userClub().nat : null,
+      leagues = W.leagues();
+    const byNat = {};
+    for (const c of leagues) (byNat[c.nat] = byNat[c.nat] || []).push(c);
+    const natName = (n) => (D.NATIONS[n] ? D.NATIONS[n].name : n);
+    const nats = Object.keys(byNat).sort((a, b) =>
+      a === mine ? -1 : b === mine ? 1 : natName(a).localeCompare(natName(b)),
+    );
+    const changes = Object.keys(s.simNext || {}).length;
+    const seg = (c) => {
+      const locked = focus.has(c.id),
+        on = locked ? 'full' : tierOfLeague(c);
+      return `<div class="seg" style="width:174px">${['full', 'light', 'minimal']
+        .map(
+          (k) =>
+            `<button class="${on === k ? 'on' : ''}" ${locked || !edit ? 'disabled style="opacity:.4"' : ''} data-act="simNextSet" data-id="${esc(c.id)}" data-v="${k}">${TIER_NAME[k]}</button>`,
+        )
+        .join('')}</div>`;
+    };
+    const body = nats
+      .map((n) => {
+        const ls = byNat[n].sort((a, b) => (a.tier || 0) - (b.tier || 0));
+        return `<details ${n === mine ? 'open' : ''} style="margin-top:8px"><summary class="small b" style="cursor:pointer">${esc(natName(n))}<span class="dim"> · ${ls.map((c) => TIER_NAME[focus.has(c.id) ? 'full' : tierOfLeague(c)][0]).join(' ')}</span></summary>${ls
+          .map(
+            (c) =>
+              `<div class="row" style="padding:5px 0;gap:8px"><div class="grow small ellip">${esc(c.name)}${focus.has(c.id) ? ' <span class="dim">· always Full</span>' : ''}</div>${seg(c)}</div>`,
+          )
+          .join('')}</details>`;
+      })
+      .join('');
+    const help = edit
+      ? 'Choose how much of the world is simulated next season. Your league and the ones above and below it are Full while you are at the club, and the leagues you leave go back to what you choose here.'
+      : 'You can change these on the last day of the season, for the next one. Until then they are as they are.';
+    UI.sheet(
+      `<div class="tiny dim" style="line-height:1.5">${help} <b>Full</b>: every match in the engine, with finances, transfers and cups. <b>Light</b>: a fast statistical model with honest player numbers. <b>Minimal</b>: scores only, with squads kept for scouting and the market. The more that is Full or Light, the slower the days.</div>${edit ? '<div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="simNextAll" data-v="minimal">Everything else Minimal</button><button class="btn sm grow" data-act="simNextAll" data-v="light">Everything else Light</button></div>' : ''}<div class="tiny dim" id="sim-changes" style="margin-top:8px">${changes ? U.plural(changes, 'change') + ' for next season' : 'No changes yet'}</div>${body}${edit ? '<button class="btn pri block" style="margin-top:14px" data-act="simNextDone">Done</button>' : ''}`,
+      { title: 'League detail', full: true },
+    );
+  };
+  UI.acts.simDetail = () => UI.simDetailSheet();
+  UI.acts.simDetailKeep = () => {
+    const s = S();
+    s.simAsked = s.year;
+    UI.save();
+    UI.render();
+  };
+  const noteChanges = () => {
+    const el = document.getElementById('sim-changes'),
+      n = Object.keys(S().simNext || {}).length;
+    if (el) el.textContent = n ? `${U.plural(n, 'change')} for next season` : 'No changes yet';
+  };
+  UI.acts.simNextSet = (d, el) => {
+    if (!detailEditable()) return;
+    const s = S(),
+      c = s.comps[d.id];
+    if (!c || W.focusLeagues().has(c.id) || !TIER_NAME[d.v]) return;
+    const base = c.baseSim || (s.simPrefs || {})[c.id] || c.sim;
+    s.simNext = s.simNext || {};
+    if (d.v === base) delete s.simNext[c.id];
+    else s.simNext[c.id] = d.v;
+    if (!Object.keys(s.simNext).length) delete s.simNext;
+    if (el && el.parentElement)
+      el.parentElement.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === el));
+    noteChanges();
+    UI.save();
+  };
+  UI.acts.simNextAll = (d) => {
+    if (!detailEditable() || !TIER_NAME[d.v]) return;
+    const s = S(),
+      focus = W.focusLeagues();
+    s.simNext = {};
+    for (const c of W.leagues()) {
+      const base = c.baseSim || (s.simPrefs || {})[c.id] || c.sim;
+      if (!focus.has(c.id) && d.v !== base) s.simNext[c.id] = d.v;
+    }
+    if (!Object.keys(s.simNext).length) delete s.simNext;
+    UI.save();
+    UI.simDetailSheet();
+  };
+  UI.acts.simNextDone = () => {
+    const s = S();
+    s.simAsked = s.year;
+    UI.save();
+    UI.closeAllSheets();
+    UI.toast(s.simNext ? 'League detail saved for next season' : 'League detail kept as it is', 2500);
+    UI.render();
+  };
   function settingsView() {
     const s = S();
     return `<div class="card"><div class="row"><div class="grow"><div class="h3">Theme</div><div class="small dim">Dark or light UI</div></div><div class="seg" style="width:160px"><button class="${s.settings.theme === 'dark' ? 'on' : ''}" data-act="theme" data-v="dark">Dark</button><button class="${s.settings.theme === 'light' ? 'on' : ''}" data-act="theme" data-v="light">Light</button></div></div></div>
@@ -4505,6 +4610,7 @@
         )
         .join('')}</select></div>
       <div class="card"><div class="h3">World rules</div><div class="small muted" style="margin-top:6px;line-height:1.6">Points for a win: <b>${s.rules.win}</b> · Subs: <b>${s.rules.subs}</b> · Foreign players in squad: <b>${W.foreignLimitText()}</b><br>${UI.ownRules()}Rules may change as the football world evolves.</div></div>
+      <div class="card"><div class="row"><div class="grow"><div class="h3">League detail</div><div class="small dim" style="margin-top:4px;line-height:1.5">How much of the world is simulated: Full, Light or Minimal for each league. Your league and the ones above and below it are always Full. Changed on the last day of the season, for the next one${s.simNext ? ` (${U.plural(Object.keys(s.simNext).length, 'change')} waiting)` : ''}.</div></div></div><button class="btn sm block" style="margin-top:10px" data-act="simDetail">${detailEditable() ? 'Choose league detail' : 'See league detail'}</button></div>
       ${UI.textSizeCard()}
       ${UI.installCard()}
       <div class="card"><div class="row"><div class="grow"><div class="h3">Save slot ${UI.slot}</div><div class="small dim">Autosaves after every matchday and whenever you leave the app · ${esc(FM.Save.backend())}</div></div><button class="btn sm" data-act="saveNow">Save now</button></div>
