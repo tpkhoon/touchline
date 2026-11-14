@@ -212,6 +212,150 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the window check failed: ' + e.message);
   }
+  // international football as a world sets it: the Himalaya Cup, competitions turned off, Nations Leagues of several confederations and with
+  // tiers of the world's own size, and the ways of drawing groups
+  try {
+    const I = FM.Intl,
+      S = FM.S,
+      hid = I.INVITES.find((v) => v.id === 'HIM');
+    if (!hid || I.invitePool(hid).length !== 10)
+      problems.push('the Himalaya Cup is not in the game with its ten nations');
+    else if (!hid.pool.every((c) => FM.D.NATIONS[c])) problems.push('a nation of the Himalaya Cup is not in the game');
+    else {
+      // (a world from an older build has fewer national teams: the rest are made up for the check, as clones of one, and taken out again)
+      const proto = Object.values(S.nteams)[0],
+        made = [];
+      hid.pool.forEach((c, i) => {
+        if (!Object.values(S.nteams).some((x) => x.code === c)) {
+          S.nteams['n_' + c] = { ...proto, id: 'n_' + c, code: c, coef: 30 + i };
+          made.push('n_' + c);
+        }
+      });
+      const saved = I.INVITES.slice(),
+        nowY = S.year;
+      I.INVITES.splice(0, I.INVITES.length, hid);
+      S.year = 0; // (the cup in turn: the only one there is)
+      const inv = I.planInvite(0, new Set());
+      I.INVITES.splice(0, I.INVITES.length, ...saved);
+      S.year = nowY;
+      const codes = inv && inv.teams.map((id) => S.nteams[id].code);
+      if (!inv || inv.teams.length !== 4 || !codes.every((c) => hid.pool.includes(c)))
+        problems.push('the Himalaya Cup is not played by four of its nations');
+      made.forEach((id) => delete S.nteams[id]);
+    }
+    const oldYear = I.nlYear,
+      oldCfg = I.NLCFG,
+      oldOff = { ...I.OFF };
+    I.nlYear = () => true;
+    I.NLCFG = {
+      confeds: { 'ASIA+OFC': { group: 3, groups: 2, leagues: 2 }, EUR: { on: false } },
+      links: [['ASIA', 'OFC']],
+    };
+    const nl = I.nlBuild();
+    I.nlYear = oldYear;
+    I.NLCFG = oldCfg;
+    if (!nl || !nl.confeds['ASIA+OFC']) problems.push('two confederations did not make one Nations League');
+    else {
+      const c = nl.confeds['ASIA+OFC'];
+      if (c.leagues.length > 2) problems.push(`a Nations League set to two tiers has ${c.leagues.length}`);
+      if (c.leagues.some((lg) => lg.groups.some((g) => g.teams.length > 4)))
+        problems.push('a Nations League group is bigger than the set size allows');
+      const regions = new Set(
+        c.leagues.flatMap((lg) => lg.groups.flatMap((g) => g.teams.map((id) => I.region(S.nteams[id].code)))),
+      );
+      if (!(regions.has('ASIA') && regions.has('OFC')))
+        problems.push('the combined Nations League has nations of only one confederation');
+    }
+    if (nl && nl.confeds.EUR) problems.push('a confederation turned off still plays a Nations League');
+    I.OFF.world = true;
+    if (I.heldIn('world', 2026) || I.heldIn('world', 2028) || I.heldIn('world', 2030))
+      problems.push('a tournament turned off is still played');
+    I.OFF.nl = true;
+    if (I.nlYear(2027)) problems.push('a Nations League turned off is still played');
+    for (const k of Object.keys(I.OFF)) delete I.OFF[k];
+    Object.assign(I.OFF, oldOff);
+    const eight = Object.values(S.nteams).slice(0, 16);
+    for (const m of I.DRAW_METHODS) {
+      const d = I.draw(eight, [], false, m);
+      const all = d.groups.flat();
+      if (d.groups.length !== 4 || new Set(all).size !== 16)
+        problems.push(`the ${m} draw did not make four groups of sixteen distinct teams`);
+    }
+  } catch (e) {
+    problems.push('the international check failed: ' + e.message);
+  }
+  // the interview before a job: answers that fit the club impress the board and add trust and budget; answers against its grain leave a
+  // doubtful board with less of both; nobody is turned away
+  try {
+    const S = FM.S,
+      Pe = FM.People,
+      c = Object.values(S.clubs).find((x) => x.comp && x.sim !== 'nation' && !x.parent && x.id !== S.user.clubId);
+    const saved = c.identity,
+      rep = S.user.rep;
+    S.user.rep = Math.max(S.user.rep, c.rep);
+    c.identity = 'oil';
+    const good = Pe.interviewResult(c, { plan: 'ambitious', money: 'spend', style: 'attack' });
+    c.identity = 'fan';
+    const bad = Pe.interviewResult(c, { plan: 'ambitious', money: 'spend', style: 'solid' });
+    c.identity = saved;
+    S.user.rep = rep;
+    if (
+      good.outcome !== 'impressed' ||
+      bad.outcome !== 'doubtful' ||
+      good.trust <= bad.trust ||
+      good.budget <= bad.budget
+    )
+      problems.push(`the interview does not tell fitting answers from poor ones (${good.outcome}, ${bad.outcome})`);
+    const conf = c.boardConf,
+      bud = c.budget;
+    Pe.interviewApply(c, bad);
+    if (!(c.boardConf < conf) || !(c.budget <= bud))
+      problems.push('a doubtful interview leaves the club trust and budget as they were');
+    c.boardConf = conf;
+    c.budget = bud;
+  } catch (e) {
+    problems.push('the interview check failed: ' + e.message);
+  }
+  // a cup with replays: a tie level after ninety minutes is replayed with the grounds swapped, and the replay decides it
+  try {
+    const S = FM.S,
+      cup = Object.values(S.comps).find((c) => c.type === 'cup' && !c.euro && c.clubs && c.clubs.length > 4);
+    if (cup) {
+      const [h, a] = cup.clubs,
+        was = cup.opts,
+        onRes = FM.Cups.onResult;
+      cup.opts = { legs: [], neutral: [2], replay: true };
+      FM.Cups.onResult = () => {};
+      let drew = null;
+      for (let i = 0; i < 300 && !drew; i++) {
+        const fx = { id: 'f_replay_test', comp: cup.id, h, a, res: null, ko: true, n: 8, po: 'Round of 8' };
+        const m = FM.quickSim(fx, true);
+        if (m.result().hg === m.result().ag && !m.result().pens) drew = { fx, m };
+      }
+      if (!drew) problems.push('a cup tie with replays was never left level after ninety minutes');
+      else {
+        FM.Season.apply(drew.fx, drew.m);
+        const r = drew.fx.res;
+        if (!r.replay || r.replay.h !== a || r.replay.a !== h)
+          problems.push('a drawn tie of a cup with replays was not replayed with the grounds swapped');
+        if (!(r.win === 0 || r.win === 1) || ![h, a].includes(FM.Season.winnerOf(drew.fx)))
+          problems.push('the replay did not decide the tie');
+        const fx2 = { id: 'f_noreplay_test', comp: cup.id, h, a, res: null, ko: true, n: 8 };
+        cup.opts = { legs: [], neutral: [2] };
+        let decided = false;
+        for (let i = 0; i < 300 && !decided; i++) {
+          const m = FM.quickSim(fx2, true);
+          if (m.result().hg === m.result().ag) decided = !!m.result().pens;
+        }
+        if (!decided) problems.push('a cup without replays does not settle a level tie on penalties');
+      }
+      cup.opts = was;
+      if (was === undefined) delete cup.opts;
+      FM.Cups.onResult = onRes;
+    }
+  } catch (e) {
+    problems.push('the replay check failed: ' + e.message);
+  }
   // a manager in a job is paid a little each day, and what he has kept shows
   if (W.employed() && played > 0 && !(FM.S.user.savings > 0))
     problems.push('a manager in a job has kept nothing of his pay');

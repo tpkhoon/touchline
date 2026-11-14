@@ -259,6 +259,7 @@
       this.o = o;
       this.comp = o.comp;
       this.knockout = !!o.knockout;
+      this.replayDraw = !!o.replayDraw; // (a cup tie with a replay: a draw after ninety minutes is left as it is)
       this.extraTime = W.rule(o.comp, 'extraTime') !== false && !o.noET; // some cups go straight to penalties (all rounds, or all but the later ones: o.noET)
       this.neutral = !!o.neutral; // finals and tournaments: no home advantage
       // Second leg of a two-legged tie: goals already scored in leg 1 by [this home side, this away side]
@@ -655,7 +656,10 @@
         if (this.live || this.o.track) this.ball = { side: 1, slot: this.kickoffSlot(this.sides[1]), x: 0.5, y: 0.5 };
       }
       if (ev === 'FT90') {
-        if (this.knockout && this.tied() && !this.extraTime) {
+        if (this.knockout && this.tied() && this.replayDraw) {
+          this.finish();
+          out.ev = 'FT';
+        } else if (this.knockout && this.tied() && !this.extraTime) {
           this.shootout(out, "90'");
           this.finish();
           out.ev = 'FT';
@@ -1826,6 +1830,7 @@
   Match.tieOpts = function (fx) {
     const o = fx.wx ? { weather: D.WEATHER.find((w) => w[0] === fx.wx) } : {};
     if (FM.Cups.noExtraTime(fx)) o.noET = true; // (a round that goes straight to penalties)
+    if (FM.Cups.replayDraw(fx)) o.replayDraw = true;
     if (fx.rotate) o.rotate = true; // a county cup tie: the big clubs field a reserve side
     if (!fx.first) return o;
     const f1 = FM.Cups.findFixture(fx.first);

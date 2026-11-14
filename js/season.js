@@ -806,6 +806,17 @@
       res = m.result();
     fx.res = res;
     const comp = S.comps[fx.comp];
+    // a drawn tie of a cup with replays: the replay is played now, with the grounds swapped, and decides the tie
+    if (comp.type === 'cup' && res.hg === res.ag && FM.Cups.replayDraw(fx)) {
+      const rp = FM.Cups.replay(fx, res);
+      if (W.isMine(fx.h) || W.isMine(fx.a))
+        FM.News.add({
+          type: 'club',
+          title: `${comp.name} replay: ${S.clubs[rp.h].name} ${rp.res.hg}–${rp.res.ag} ${S.clubs[rp.a].name}`,
+          body: `The tie was level at ${res.hg}–${res.ag}. The replay at ${S.clubs[rp.h].name} ${rp.res.pens ? `went to penalties (${rp.res.pens[0]}–${rp.res.pens[1]})` : 'settled it'}.`,
+          clubId: W.isMine(fx.h) ? fx.h : fx.a,
+        });
+    }
     const day = Sea.today();
     if (day && day.dn != null) for (const id of [fx.h, fx.a]) if (S.clubs[id]) S.clubs[id].lastDn = day.dn; // (for the short-week check)
     if (comp.type === 'friendly') return Sea.applyFriendly(fx, m);

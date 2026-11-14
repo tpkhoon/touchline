@@ -1095,7 +1095,7 @@ DB.clear();
 check(
   FM.D.DOMESTIC_CUPS.some((c) => c[0] === 'CUPFRA') &&
     FM.D.DOMESTIC_CUPS.some((c) => c[0] === 'CUPJPN') &&
-    FM.Intl.INVITES.length === 22,
+    FM.Intl.INVITES.length === 23,
   `clearing the database did not bring back the cups and invitationals taken out (${FM.D.DOMESTIC_CUPS.length} cups, ${FM.Intl.INVITES.length} invitationals: ${FM.Intl.INVITES.map((v) => v.id).join(' ')})`,
 );
 check(!(FM.D.CLUB_INFO[X.slice(2)] || [])[3], 'clearing the database left the crest in the picker data');

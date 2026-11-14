@@ -422,6 +422,7 @@
         neutral: o && o.neutral === 'all' ? 'all' : ((o && o.neutral) || [2]).slice(), // (no list: the final)
         prize: euroDef(id) ? euroDef(id).prize : (o && o.prize) || 3e6,
         tiers: (o && o.tiers) || 0, // the lowest division that enters (0: every division)
+        ...(o && o.replay ? { replay: true } : {}), // (a level tie is replayed with the grounds swapped, before extra time)
         ...(o && o.play ? { play: JSON.parse(JSON.stringify(o.play)) } : {}),
       };
     }
@@ -465,6 +466,7 @@
       if (!rounds(f.legs || []))
         e.push(`${at}: legs must list rounds by clubs left (2 = the final, 4 = semi-finals, 8 ...)`);
       if (f.neutral !== 'all' && !rounds(f.neutral || [])) e.push(`${at}: neutral must be "all" or a list of rounds`);
+      if (f.replay != null && typeof f.replay !== 'boolean') e.push(`${at}: replay is on or off`);
       if (f.tiers != null && !(Number.isInteger(f.tiers) && f.tiers >= 0 && f.tiers <= 6))
         e.push(`${at}: tiers is the lowest division that enters (0: every division)`);
     } else {
@@ -725,11 +727,15 @@
                 hosts: (tn.hosts || []).slice(),
                 hostCount: tn.hostCount || 1,
                 hostsQual: !!tn.hostsQual,
+                qualDraw: tn.qualDraw || 'snake',
               }
             : {}),
+          finalsDraw: tn.finalsDraw || 'pots',
         },
       ]),
     ),
+    off: { ...I().OFF },
+    nl: JSON.parse(JSON.stringify(I().NLCFG)),
     invites: I().INVITES.map((v) => ({ id: v.id, name: v.name, host: v.host, pool: v.pool, feeds: v.feeds || '' })),
   });
   // ---------- Regional cups ----------
@@ -786,12 +792,43 @@
     for (const [k, n] of Object.entries(x.every || {}))
       if (!(k in I().EVERY) || !(Number.isInteger(n) && n >= 1 && n <= 8))
         e.push(`international: how often ${k} is played is a whole number of years from 1 to 8`);
+    for (const [k, on] of Object.entries(x.off || {}))
+      if (!['world', 'continental', 'confed', 'nl', 'cwc'].includes(k) || typeof on !== 'boolean')
+        e.push(`international: "${k}" cannot be turned off, or is not on or off`);
+    if (x.nl) {
+      const ids = new Set(I().confedIds()),
+        seen = new Set();
+      for (const [id, c] of Object.entries(x.nl.confeds || {})) {
+        if (!id.split('+').every((k) => ids.has(k))) e.push(`Nations League: no confederation "${id}"`);
+        if (c.group != null && !(Number.isInteger(c.group) && c.group >= 2 && c.group <= 4))
+          e.push(
+            `Nations League ${id}: a group has two to four nations (the matches fit the first three matchdays of the breaks)`,
+          );
+        if (c.groups != null && !(Number.isInteger(c.groups) && c.groups >= 1 && c.groups <= 8))
+          e.push(`Nations League ${id}: a league has one to eight groups`);
+        if (c.leagues != null && !(Number.isInteger(c.leagues) && c.leagues >= 1 && c.leagues <= 8))
+          e.push(`Nations League ${id}: one to eight leagues`);
+        if (c.on != null && typeof c.on !== 'boolean') e.push(`Nations League ${id}: on or off`);
+      }
+      for (const l of x.nl.links || []) {
+        if (!Array.isArray(l) || l.length < 2 || !l.every((k) => ids.has(k)))
+          e.push('Nations League: a link joins two or more confederations of the world');
+        else
+          for (const k of l) {
+            if (seen.has(k)) e.push(`Nations League: ${k} is in two links`);
+            seen.add(k);
+          }
+      }
+    }
     for (const [id, v] of Object.entries(x.tourns || {})) {
       const tn = tournList().find((t) => t.id === id);
       if (!tn) {
         e.push(`international: the game has no tournament "${id}"`);
         continue;
       }
+      for (const k of ['qualDraw', 'finalsDraw'])
+        if (v[k] != null && !I().DRAW_METHODS.includes(v[k]))
+          e.push(`tournament ${id}: the draw is pots, snake or random`);
       if (v.name != null && !String(v.name).trim()) e.push(`tournament ${id}: needs a name`);
       // (a tournament can grow or shrink: groups of four, so a number of teams that four divides into, from four to sixty-four)
       if (v.size != null && !(Number.isInteger(v.size) && v.size % 4 === 0 && v.size >= 4 && v.size <= 64))
@@ -852,7 +889,14 @@
       if (v.hosts) tn.hosts = v.hosts.slice();
       if (v.hostCount) tn.hostCount = v.hostCount;
       if (v.hostsQual != null) tn.hostsQual = !!v.hostsQual;
+      if (v.qualDraw) tn.qualDraw = v.qualDraw;
+      if (v.finalsDraw) tn.finalsDraw = v.finalsDraw;
     }
+    if (x.off) {
+      for (const k of Object.keys(I().OFF)) delete I().OFF[k];
+      Object.assign(I().OFF, x.off);
+    }
+    if (x.nl) I().NLCFG = JSON.parse(JSON.stringify({ confeds: {}, links: [], ...x.nl }));
     if (x.invitesAll) {
       // the ones the world keeps, in the game's order (the others are taken out)
       const keep = new Set(x.invitesAll.map((v) => v.id));
@@ -1118,7 +1162,17 @@
       const keptIds = (def.intl.invites || []).map((v) => v.id);
       if (def.intl.invites && keptIds.length < cur.invites.length)
         d.invitesAll = def.intl.invites.map((v) => ({ id: v.id }));
-      if (d.cycle != null || d.every || Object.keys(d.tourns).length || d.invites.length || d.invitesAll)
+      if (def.intl.off && !same(def.intl.off, cur.off)) d.off = { ...def.intl.off };
+      if (def.intl.nl && !same(def.intl.nl, cur.nl)) d.nl = JSON.parse(JSON.stringify(def.intl.nl));
+      if (
+        d.cycle != null ||
+        d.every ||
+        d.off ||
+        d.nl ||
+        Object.keys(d.tourns).length ||
+        d.invites.length ||
+        d.invitesAll
+      )
         patch.intl = d;
     }
     return patch;
@@ -1516,7 +1570,14 @@
         intl: D.INTL_AFTER,
       }),
       euroPrize: (D.EURO_CUPS || []).map((c) => c.prize),
-      intl: JSON.stringify({ t: I().TOURNS, n: I().TNAME, v: I().INVITES, c: I().CYCLE, e: I().EVERY }),
+      intl: JSON.stringify({
+        t: I().TOURNS,
+        n: I().TNAME,
+        v: I().INVITES,
+        c: I().CYCLE,
+        e: I().EVERY,
+        x: { off: I().OFF, nl: I().NLCFG },
+      }),
     };
     const removeNations = addNations(patch.newNations); // (before the leagues: their mixes are copied from a twin)
     const restoreNations = editNations(patch.nationEdits);
@@ -1663,6 +1724,9 @@
         I().CYCLE = o.c;
         if (o.e) Object.assign(I().EVERY, o.e);
         else Object.assign(I().EVERY, { world: 4, continental: 4, confed: 4, cwc: 4 }); // (a snapshot from before has the four-year cycle)
+        for (const k of Object.keys(I().OFF)) delete I().OFF[k];
+        Object.assign(I().OFF, (o.x && o.x.off) || {});
+        I().NLCFG = JSON.parse(JSON.stringify((o.x && o.x.nl) || { confeds: {}, links: [] }));
       }
       D.AGENT_FIRMS.splice(0, D.AGENT_FIRMS.length, ...snap.agents);
       D.AREAS.splice(0, D.AREAS.length, ...JSON.parse(snap.areas));
@@ -3421,6 +3485,8 @@
           every: { ...(cur.every || I().EVERY), ...(patch.every || {}) },
           tourns: { ...cur.tourns, ...(patch.tourns || {}) },
           invites: patch.invites || cur.invites,
+          off: patch.off || cur.off || {},
+          nl: patch.nl || cur.nl || { confeds: {}, links: [] },
         };
         const errs = WD.validateIntl(next);
         if (errs.length) return result(errs);

@@ -36,6 +36,7 @@
       user = (id) => !nat && W.isUser(id);
     const sub = [
       r.agg ? `agg ${r.agg[0]}–${r.agg[1]}` : '',
+      r.replay ? `replay ${r.replay.hg}–${r.replay.ag}` : '',
       r.pens ? `pens ${r.pens[0]}–${r.pens[1]}` : '',
       m.po && /leg/.test(m.po) ? m.po.split(' · ').slice(1).join(' · ') : '',
     ].filter(Boolean);
@@ -160,6 +161,7 @@
     UI.sheet(
       `<div class="center tiny dim" style="margin-bottom:6px">${esc(label(m))}</div>
       <div class="row" style="justify-content:space-around;text-align:center"><div>${crest(0)}<div class="small b">${esc(sd[0].name)}</div></div><div class="h1">${r.hg}–${r.ag}</div><div>${crest(1)}<div class="small b">${esc(sd[1].name)}</div></div></div>
+      ${r.replay ? `<div class="center small dim">Replay ${r.replay.hg}–${r.replay.ag}</div>` : ''}
       ${r.pens ? `<div class="center small dim">Penalties ${r.pens[0]}–${r.pens[1]}</div>` : ''}
       ${r.agg ? `<div class="center small b">Aggregate ${r.agg[0]}–${r.agg[1]}</div>` : ''}
       <div class="center small dim" style="margin:6px 0">${[r.xg ? `xG ${r.xg[0]} – ${r.xg[1]}` : '', r.poss ? `Possession ${r.poss[0]}% – ${r.poss[1]}%` : '', r.weather || '', r.att ? `${r.att.toLocaleString()} crowd` : ''].filter(Boolean).join(' · ')}</div>

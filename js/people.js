@@ -501,6 +501,110 @@
   Pe.nextBadge = () => D.BADGES[D.BADGES.indexOf(u().badges) + 1] || null;
   Pe.courseReq = (b) => (b === 'Continental A' ? 20 : b === 'Continental Pro' ? 60 : 0);
   // The games in charge that count toward a licence: club matches and national-team matches both (3 of 20)
+  // ---------- The interview ----------
+  // Before a job the board asks three things: the plan for the club, how the money would be used and how the side would play. What it
+  // wants depends on the club (its identity and where it stands against its league) and on the manager's name against its own.
+  // Impressed: a little more trust at the start and a bigger budget. Content: the usual start. Doubtful: less trust, a smaller budget, and
+  // the offer stands as a counter-offer to take or leave. Nobody is turned away: the board that made an offer has chosen him.
+  Pe.INTERVIEW = [
+    {
+      id: 'plan',
+      q: 'What is your plan for the club?',
+      opts: [
+        ['ambitious', 'Go for the top: promotion, a cup run, a place in Europe'],
+        ['steady', 'Stabilise first, then build'],
+        ['youth', 'Build around young players from the academy'],
+      ],
+    },
+    {
+      id: 'money',
+      q: 'How would you use the transfer budget?',
+      opts: [
+        ['spend', 'Spend it on proven players, now'],
+        ['careful', 'Keep it small: wages and fees within the means'],
+        ['trade', 'Buy talent, sell at a profit, reinvest'],
+      ],
+    },
+    {
+      id: 'style',
+      q: 'How will the team play?',
+      opts: [
+        ['attack', 'Attacking football the supporters will come to see'],
+        ['solid', 'Organised and hard to beat'],
+        ['flex', 'It depends on the opponent and the squad'],
+      ],
+    },
+  ];
+  // what each identity wants of each answer: 2 a good fit, 1 acceptable, 0 neutral, -1 against
+  const WANTS = {
+    plan: {
+      oil: { ambitious: 2, steady: -1, youth: 0 },
+      giant: { ambitious: 2, steady: 0, youth: 0 },
+      historic: { ambitious: 1, steady: 1, youth: 0 },
+      fallen: { ambitious: 2, steady: 1, youth: 0 },
+      fan: { ambitious: 0, steady: 2, youth: 1 },
+      youth: { ambitious: 0, steady: 1, youth: 2 },
+      selling: { ambitious: 0, steady: 1, youth: 2 },
+    },
+    money: {
+      oil: { spend: 2, careful: -1, trade: 0 },
+      giant: { spend: 2, careful: 0, trade: 1 },
+      historic: { spend: 1, careful: 1, trade: 1 },
+      fallen: { spend: 1, careful: 1, trade: 1 },
+      fan: { spend: -1, careful: 2, trade: 1 },
+      youth: { spend: -1, careful: 1, trade: 2 },
+      selling: { spend: -1, careful: 1, trade: 2 },
+    },
+    style: {
+      oil: { attack: 2, solid: 0, flex: 1 },
+      giant: { attack: 2, solid: 0, flex: 1 },
+      historic: { attack: 1, solid: 1, flex: 1 },
+      fallen: { attack: 1, solid: 1, flex: 1 },
+      fan: { attack: 2, solid: 0, flex: 1 },
+      youth: { attack: 1, solid: 1, flex: 1 },
+      selling: { attack: 1, solid: 1, flex: 1 },
+    },
+  };
+  Pe.interviewResult = function (club, answers) {
+    const S = FM.S,
+      us = S.user,
+      id = WANTS.plan[club.identity] ? club.identity : 'historic';
+    let score = 0;
+    for (const q of Pe.INTERVIEW) {
+      const a = answers[q.id];
+      score += a == null ? 0 : WANTS[q.id][id][a];
+    }
+    // a weak side asked to go for the top does not believe it: the plan has to fit where the club stands
+    const comp = S.comps[club.comp],
+      weak = comp && FM.Season.expectedPos && FM.Season.expectedPos(club) > Math.ceil((comp.clubs || []).length / 2);
+    if (weak && answers.plan === 'ambitious') score -= 1.5;
+    // a name that does not match the club's is a gamble for the board
+    if (club.rep > us.rep + 14) score -= 1;
+    const outcome = score >= 4 ? 'impressed' : score >= 1.5 ? 'content' : 'doubtful';
+    return {
+      score,
+      outcome,
+      trust: outcome === 'impressed' ? 8 : outcome === 'content' ? 2 : -6,
+      budget: outcome === 'impressed' ? 1.1 : outcome === 'content' ? 1 : 0.9,
+      text:
+        outcome === 'impressed'
+          ? `The board are impressed: your answers are what ${club.name} want to hear. They start with trust in you and add to the transfer budget.`
+          : outcome === 'content'
+            ? 'The board are content. Your plans are workable, and the job is yours on the usual terms.'
+            : `The board have doubts: your plans do not sit well with ${club.name}. They still offer the job, with less trust to begin with and a smaller transfer budget. Take it, or walk away.`,
+    };
+  };
+  // The result applied once the job is taken (takeCharge has set the board's trust to its usual 70)
+  Pe.interviewApply = function (club, res) {
+    club.boardConf = Math.max(10, Math.min(100, club.boardConf + res.trust));
+    if (res.budget !== 1) club.budget = Math.round((club.budget * res.budget) / 1e4) * 1e4;
+    FM.News.add({
+      type: 'board',
+      title: `Interview at ${club.name}: ${res.outcome === 'impressed' ? 'a strong start' : res.outcome === 'content' ? 'the job is yours' : 'a cautious welcome'}`,
+      body: res.text,
+      clubId: club.id,
+    });
+  };
   // The manager's own pay, a week at a time: what his club (or his federation, for a national-team job with no club) pays for a name
   // like his, and what he has kept of it. A manager with two jobs is paid for both; with none, nothing comes in.
   Pe.weeklyPay = function () {

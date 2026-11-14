@@ -915,7 +915,53 @@
     UI.save();
     UI.render();
   };
+  // Taking a job starts with the board's interview (three questions): the answers decide the start, and a doubtful board's terms can be left
+  UI._iv = null;
   UI.acts.takeJob = (d) => {
+    if (!CL(d.id)) return;
+    UI._iv = { id: d.id, a: {}, res: null };
+    UI.interviewSheet();
+  };
+  UI.interviewSheet = function () {
+    const iv = UI._iv,
+      c = CL(iv.id),
+      Pe = FM.People;
+    const body = iv.res
+      ? `<div class="small" style="line-height:1.55">${esc(iv.res.text)}</div>
+        <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="ivAccept">${iv.res.outcome === 'doubtful' ? 'Take the job on their terms' : 'Take the job'}</button><button class="btn block" data-act="closeSheet">${iv.res.outcome === 'doubtful' ? 'Walk away' : 'Not yet'}</button></div>`
+      : `<div class="tiny dim" style="margin-bottom:8px;line-height:1.5">${esc(c.name)}'s board want to hear from you before they decide how the job starts.</div>${Pe.INTERVIEW.map(
+          (q) =>
+            `<div class="h3" style="margin-top:12px">${esc(q.q)}</div><div class="col" style="gap:6px;margin-top:6px">${q.opts
+              .map(
+                ([k, t]) =>
+                  `<button class="btn sm ${iv.a[q.id] === k ? 'pri' : ''}" style="text-align:left;white-space:normal" data-act="ivPick" data-q="${q.id}" data-k="${k}">${esc(t)}</button>`,
+              )
+              .join('')}</div>`,
+        ).join(
+          '',
+        )}<div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="ivAnswer" ${Object.keys(iv.a).length < Pe.INTERVIEW.length ? 'disabled' : ''}>Answer the board</button></div>`;
+    UI.closeAllSheets();
+    UI.sheet(body, { title: `Interview: ${c.name}` });
+  };
+  UI.acts.ivPick = (d) => {
+    UI._iv.a[d.q] = d.k;
+    UI.interviewSheet();
+  };
+  UI.acts.ivAnswer = () => {
+    const iv = UI._iv;
+    iv.res = FM.People.interviewResult(CL(iv.id), iv.a);
+    UI.interviewSheet();
+  };
+  UI.acts.ivAccept = () => {
+    const iv = UI._iv;
+    if (!iv || !iv.res) return;
+    UI.acts.takeJobGo({ id: iv.id });
+    FM.People.interviewApply(CL(iv.id), iv.res);
+    UI._iv = null;
+    UI.save();
+    UI.render();
+  };
+  UI.acts.takeJobGo = (d) => {
     const s = S(),
       prev = s.user.unemployed || {},
       from = prev.from && CL(prev.from);

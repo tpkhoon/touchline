@@ -3626,6 +3626,13 @@
     else if (f.neutral === 'all') f.neutral = [16, 8, 4, 2].filter((n) => !(f.legs || []).includes(n));
     setFormat(f);
   };
+  // A level single-leg tie: extra time and penalties, or a replay at the other club's ground first
+  UI.acts.edCupReplay = (d) => {
+    const f = clone(fmtNow(ED.cup));
+    if (d.v === 'replay') f.replay = true;
+    else delete f.replay;
+    setFormat(f);
+  };
   UI.acts.edCupLegs = (d) => {
     const f = clone(fmtNow(ED.cup));
     f.legs[d.k] = +d.n;
@@ -3985,6 +3992,15 @@
             )}`;
           })
           .join('')}
+        <div class="ng-label">A tie that is level after ninety minutes</div>${seg(
+          'edCupReplay',
+          f.replay ? 'replay' : 'extra',
+          [
+            ['extra', 'Extra time and penalties'],
+            ['replay', 'A replay'],
+          ],
+        )}
+        <div class="tiny dim" style="margin-top:6px;line-height:1.5">A replay is played at the other club's ground at once, and only a replay that is level goes on to extra time and penalties. It does not apply to the final or to a tie on a neutral ground, nor to a tie over two legs.</div>
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">One match is played at the home of the club drawn first, with extra time and penalties. A neutral match is the same at a neutral ground. Two legs are home and away. The calendar makes room for the extra days.</div>`;
     } else if (kind === 'cont') {
       body = `${[
@@ -4784,9 +4800,47 @@
       ...(o.pool ? { pool: o.pool } : { host: v('ihost-' + o.id) }),
       feeds: v('ifeeds-' + o.id) || '',
     }));
+    // how the draws are made, which competitions are played, and the Nations League's own settings
+    for (const tn of Object.values(FM.Intl.TOURNS).flat()) {
+      if (tn.pools.length && v('iqdraw-' + tn.id)) tourns[tn.id].qualDraw = v('iqdraw-' + tn.id);
+      if (v('ifdraw-' + tn.id)) tourns[tn.id].finalsDraw = v('ifdraw-' + tn.id);
+    }
+    const off = {};
+    for (const k of ['world', 'continental', 'confed', 'nl'])
+      if (!(($('#ed-ioff-' + k) || {}).checked ?? true)) off[k] = true;
+    const links = String(v('nllinks') || '')
+      .split(',')
+      .map((s) =>
+        s
+          .split('+')
+          .map((x) => x.trim().toUpperCase())
+          .filter(Boolean),
+      )
+      .filter((l) => l.length > 1);
+    const linkedIds = new Set(links.flat()),
+      nlKeys = [...links.map((l) => l.join('+')), ...FM.Intl.confedIds().filter((id) => !linkedIds.has(id))],
+      nlConfeds = {};
+    for (const k of nlKeys) {
+      const kid = k.replace(/\+/g, '_'),
+        c = {};
+      if (!(($('#ed-nlon-' + kid) || {}).checked ?? true)) c.on = false;
+      if (Math.round(+v('nlgroup-' + kid)) && Math.round(+v('nlgroup-' + kid)) !== 4)
+        c.group = Math.round(+v('nlgroup-' + kid));
+      if (Math.round(+v('nlgroups-' + kid)) && Math.round(+v('nlgroups-' + kid)) !== 4)
+        c.groups = Math.round(+v('nlgroups-' + kid));
+      if (Math.round(+v('nlleagues-' + kid))) c.leagues = Math.round(+v('nlleagues-' + kid));
+      if (Object.keys(c).length) nlConfeds[k] = c;
+    }
     const every = {};
     for (const k of Object.keys(FM.Intl.EVERY)) every[k] = Math.round(+v('ievery-' + k)) || FM.Intl.EVERY[k];
-    const r = WD.editor(ED.def, null).setIntl({ cycle: Math.round(+v('icycle')), every, tourns, invites });
+    const r = WD.editor(ED.def, null).setIntl({
+      cycle: Math.round(+v('icycle')),
+      every,
+      tourns,
+      invites,
+      off,
+      nl: { confeds: nlConfeds, links },
+    });
     ED.err = r.ok ? [] : r.errors;
     if (r.ok) UI.toast('Saved', 1500);
     UI.worldEditor();
@@ -4864,6 +4918,68 @@
         )
         .join('')}
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">The nations of each part of the world are drawn into groups by ranking, and the group winners go through first, then the runners-up, until the places are filled. Groups of four and three play each other once, pairs home and away; the two windows of the season have four match days.</div>
+      <div class="ng-label">How the draws are made <span class="tiny dim">· pots by ranking, a snake of the ranking, or no seeding</span></div>
+      ${Object.values(FM.Intl.TOURNS)
+        .flat()
+        .map((tn) => {
+          const v = cur.tourns[tn.id] || {},
+            opt = (sel) =>
+              FM.Intl.DRAW_METHODS.map(
+                (m) =>
+                  `<option value="${m}" ${sel === m ? 'selected' : ''}>${{ pots: 'Pots', snake: 'Snake of the ranking', random: 'Random' }[m]}</option>`,
+              ).join('');
+          return `<div class="ng-names" style="margin-top:6px;align-items:center;flex-wrap:wrap"><div class="small grow" style="min-width:140px">${esc(v.name || tn.name)}</div>${
+            tn.pools.length
+              ? `<label class="tiny dim" style="display:flex;gap:4px;align-items:center">Qualifying<select id="ed-iqdraw-${tn.id}" style="width:auto">${opt(v.qualDraw || 'snake')}</select></label>`
+              : ''
+          }<label class="tiny dim" style="display:flex;gap:4px;align-items:center">Finals<select id="ed-ifdraw-${tn.id}" style="width:auto">${opt(v.finalsDraw || 'pots')}</select></label></div>`;
+        })
+        .join('')}
+      <div class="tiny dim" style="margin-top:6px;line-height:1.5">Pots: the teams are ranked and cut into pots, and every group draws one team from each. Snake: the ranking is dealt out in a snake, so the groups are as even as they can be. Random: no seeding at all, the hosts apart.</div>
+      <div class="ng-label">Competitions played in this world <span class="tiny dim">· a year with no tournament is a Nations League year</span></div>
+      ${[
+        ['world', 'World Championship'],
+        ['continental', 'Continental championships'],
+        ['confed', 'Continental Champions Trophy'],
+        ['nl', 'Nations League'],
+      ]
+        .map(
+          ([k, l]) =>
+            `<label class="tiny" style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" id="ed-ioff-${k}" ${(cur.off || {})[k] ? '' : 'checked'}> ${l}</label>`,
+        )
+        .join('')}
+      <div class="ng-label">Nations League <span class="tiny dim">· one a confederation, or several confederations together; tiers and groups as you set them</span></div>
+      ${(() => {
+        const I2 = FM.Intl,
+          nl = cur.nl || { confeds: {}, links: [] },
+          linked = new Set((nl.links || []).flat()),
+          keys = [
+            ...(nl.links || []).filter((l) => l.length > 1).map((l) => l.join('+')),
+            ...I2.confedIds().filter((id) => !linked.has(id)),
+          ],
+          sel = (id, vals, cur0) =>
+            `<select id="ed-${id}" style="width:auto">${vals.map(([x, t]) => `<option value="${x}" ${+cur0 === x ? 'selected' : ''}>${t}</option>`).join('')}</select>`;
+        return `${keys
+          .map((k) => {
+            const c = nl.confeds[k] || {};
+            return `<div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center"><label class="tiny grow" style="display:flex;gap:6px;align-items:center;min-width:150px"><input type="checkbox" id="ed-nlon-${k.replace(/\+/g, '_')}" ${c.on === false ? '' : 'checked'}> ${esc(k.split('+').map(I2.confedName).join(' + '))}</label>${sel(
+              `nlgroup-${k.replace(/\+/g, '_')}`,
+              [
+                [2, 'groups of 2'],
+                [3, 'groups of 3'],
+                [4, 'groups of 4'],
+              ],
+              c.group || 4,
+            )}${sel(
+              `nlgroups-${k.replace(/\+/g, '_')}`,
+              [1, 2, 3, 4, 5, 6, 8].map((n) => [n, `${n} a league`]),
+              c.groups || 4,
+            )}${sel(`nlleagues-${k.replace(/\+/g, '_')}`, [[0, 'as many tiers as fit'], ...[1, 2, 3, 4, 5, 6].map((n) => [n, `${n} tier${n > 1 ? 's' : ''}`])], c.leagues || 0)}</div>`;
+          })
+          .join(
+            '',
+          )}<div class="tiny dim" style="margin-top:8px;line-height:1.5">Together: confederations that play one Nations League, written with a plus and separated by commas (for example ${esc(I2.confedIds().slice(0, 2).join('+'))}). The nations of both are ranked as one, and promotion and relegation run through all its tiers.</div><input type="text" id="ed-nllinks" value="${esc((nl.links || []).map((l) => l.join('+')).join(', '))}" placeholder="none">`;
+      })()}
       <div class="ng-label">Hosts <span class="tiny dim">· choose the host nations of a tournament, up to four for a co-hosted one</span></div>
       ${Object.values(FM.Intl.TOURNS)
         .flat()

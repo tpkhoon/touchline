@@ -204,6 +204,12 @@
       pool: ['KSA', 'QAT', 'UAE', 'IRQ', 'JOR', 'EGY', 'MAR', 'TUN', 'ALG', 'KUW', 'OMA', 'BHR'],
     },
     {
+      id: 'HIM',
+      feeds: 'AS',
+      name: 'Himalaya Cup',
+      pool: ['NEP', 'IND', 'CHN', 'BHU', 'PAK', 'AFG', 'BAN', 'MYA', 'MDV', 'SRI'],
+    },
+    {
       id: 'CAS',
       feeds: 'AS',
       name: 'Central Asian Nations Cup',
@@ -245,6 +251,7 @@
     GLF: ['West Asian (Gulf) Football Federation', 'ASIA'],
     EAS: ['East Asian Football Federation', 'ASIA'],
     CAS: ['Central and South Asian Football Union', 'ASIA'],
+    HIM: ['Himalaya Football Union', 'ASIA'],
     CEA: ['East and Central African Football Council', 'AFR'],
     SAF: ['Southern African Football Council', 'AFR'],
     WAF: ['West African Football Union', 'AFR'],
@@ -1114,9 +1121,13 @@
   I.EVERY = { world: 4, continental: 4, confed: 4, cwc: 4 };
   I.OFFSET = { world: 0, continental: 2, confed: 3, cwc: 1 };
   I.heldIn = (kind, year) => {
+    if (I.OFF[kind]) return false;
     const e = I.EVERY[kind] || 4;
     return (((year - I.CYCLE - I.OFFSET[kind]) % e) + e) % e === 0;
   };
+  // Competitions a world leaves out: { world, continental, confed, nl, cwc } set to true is not played (the world editor, def.intl.off). A year
+  // with no tournament is a Nations League year, so turning a tournament off gives the breaks to it.
+  I.OFF = {};
   I.tournamentFor = (year) => ['world', 'continental', 'confed'].find((k) => I.heldIn(k, year)) || null;
   I.kindName = (kind) =>
     ({ world: 'World Championship', continental: 'continental championships', confed: 'Continental Champions Trophy' })[
@@ -1176,11 +1187,23 @@
   const addPoolGroups = (q, kind, tn, regions, key, slots, teams, o, start) => {
     const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || o.size || 4)));
     const groups = [...Array(g)].map(() => []);
-    teams.forEach((t, i) => {
-      const row = Math.floor(i / g),
-        col = i % g;
-      groups[row % 2 ? g - 1 - col : col].push(t.id);
-    });
+    // (how the groups are drawn, a choice of the tournament: I.DRAW_METHODS)
+    const method = tn.qualDraw || 'snake';
+    if (method === 'pots') {
+      // pots of one team per group by ranking (the best g teams, the next g ...): each group draws one from every pot
+      for (let p = 0; p * g < teams.length; p++) {
+        const pot = U.shuffle(teams.slice(p * g, (p + 1) * g));
+        const open = U.shuffle(groups.map((_, gi) => gi).sort((a, b) => groups[a].length - groups[b].length));
+        pot.forEach((t, i) => groups[open[i % g]].push(t.id));
+      }
+    } else if (method === 'random') {
+      U.shuffle(teams.slice()).forEach((t, i) => groups[i % g].push(t.id));
+    } else
+      teams.forEach((t, i) => {
+        const row = Math.floor(i / g),
+          col = i % g;
+        groups[row % 2 ? g - 1 - col : col].push(t.id);
+      });
     groups.forEach((ids, gi) => {
       const rr = W.roundRobin(ids);
       // (the groups of up to four play home and away, as the sheets say of every confederation; a bigger group plays once each)
@@ -1328,22 +1351,35 @@
   // group-mate on the first three matchdays of the breaks. The group winners of a league go up at the end, the last in each
   // group go down, and the champions are the best group winner of League A. This is what the breaks are for: no friendlies.
   I.NL = { group: 4, groups: 4 };
+  // The Nations League can be set per confederation (def.intl.nl): { confeds: { EUR: { on, group, groups, leagues } }, links: [[ 'ASIA', 'OFC' ]] }
+  // a group of the leagues' size (nations in a group, groups in a league), the most leagues (tiers) it may have, off for one confederation,
+  // and confederations that play one League together (a link: the nations of both, under a name of both)
+  I.NLCFG = { confeds: {}, links: [] };
   I.nlYear = (year) => {
+    if (I.OFF.nl) return false;
     const k = I.tournamentFor(year);
     return !k || k === 'confed';
   };
   I.nlBuild = function () {
     const s = S();
     if (!I.nlYear(s.year)) return null;
-    const by = {};
+    const by = {},
+      links = (I.NLCFG.links || []).filter((l) => l.length > 1),
+      keyOf = (reg) => {
+        const l = links.find((x) => x.includes(reg));
+        return l ? l.join('+') : reg;
+      };
     Object.values(s.nteams)
       .filter((t) => !I.banned(t))
-      .forEach((t) => (by[I.region(t.code)] = by[I.region(t.code)] || []).push(t));
-    const nl = { year: s.year, confeds: {} },
-      per = I.NL.group * I.NL.groups;
-    for (const cid of I.confedIds()) {
-      const teams = by[cid] || [];
-      if (teams.length < 2) continue;
+      .forEach((t) => (by[keyOf(I.region(t.code))] = by[keyOf(I.region(t.code))] || []).push(t));
+    const nl = { year: s.year, confeds: {} };
+    const keys = [...new Set(I.confedIds().map(keyOf))];
+    for (const cid of keys) {
+      const cfg = I.NLCFG.confeds[cid] || {},
+        gsize = Math.min(4, Math.max(2, cfg.group || I.NL.group)), // (the matches fit the first three matchdays of the breaks: groups of two to four)
+        per = gsize * (cfg.groups || I.NL.groups),
+        teams = by[cid] || [];
+      if (cfg.on === false || teams.length < 2) continue;
       // last time's order (promotion and relegation already done); a first time or a changed membership: by ranking
       const prev = (s.nlOrder || {})[cid],
         codes = new Set(teams.map((t) => t.code)),
@@ -1352,14 +1388,16 @@
             ? prev.map((c) => s.nteams['n_' + c])
             : teams.slice().sort((a, b) => b.coef - a.coef);
       let L = Math.max(1, Math.ceil(order.length / per));
-      if (L > 1 && order.length - per * (L - 1) < I.NL.group) L--;
+      if (L > 1 && order.length - per * (L - 1) < gsize) L--;
+      if (cfg.leagues) L = Math.max(1, Math.min(L, cfg.leagues)); // (the last league takes whoever is left)
       nl.confeds[cid] = {
         id: cid,
-        name: `${I.confedName(cid)} Nations League`,
+        members: cid.split('+'),
+        name: `${cid.split('+').map(I.confedName).join(' and ')} Nations League`,
         order: order.map((t) => t.code),
         leagues: Array.from({ length: L }, (_, li) => {
           const lt = order.slice(li * per, li === L - 1 ? undefined : (li + 1) * per),
-            g = Math.max(1, Math.ceil(lt.length / I.NL.group)),
+            g = Math.max(1, Math.ceil(lt.length / gsize)),
             groups = [...Array(g)].map(() => []),
             letter = String.fromCharCode(65 + li);
           lt.forEach((t, i) => {
@@ -1436,7 +1474,7 @@
       champ.titles.NL = (champ.titles.NL || 0) + 1;
       s.nlHistory.unshift({ year: s.year, confed: c.id, name: c.name, winner: champ.id });
       if (s.nlHistory.length > 60) s.nlHistory.length = 60;
-      const mine = s.user && s.user.nation && I.region(T(s.user.nation).code) === c.id;
+      const mine = s.user && s.user.nation && (c.members || [c.id]).includes(I.region(T(s.user.nation).code));
       FM.News.add({
         type: 'world',
         title: `${champ.name} win the ${c.name}`,
@@ -2031,12 +2069,28 @@
   // The teams are ranked (the hosts first, who take the head of the first groups), cut into four pots of as many teams as there are
   // groups, and every group gets one team from each pot. At the World Championship no two teams from one confederation meet in
   // a group (Europe, with so many, may have two); the continental championships have no such rule. Returns the pots and the groups.
-  I.draw = function (teams, hosts, byConfed) {
+  // How a draw is made (a tournament's finals, or its qualifying groups): pots (one team from each ranking pot in every group), snake (the
+  // ranking dealt in a snake: the strongest group has the best and the weakest of the rest), random (no seeding; the hosts apart)
+  I.DRAW_METHODS = ['pots', 'snake', 'random'];
+  I.draw = function (teams, hosts, byConfed, method = 'pots') {
     const G = Math.max(1, Math.floor(teams.length / 4));
     if (teams.length < 8) return { pots: [teams.map((t) => t.id)], groups: [teams.map((t) => t.id)] };
     const rank = teams.slice().sort((a, b) => b.coef - a.coef);
     const order = [...rank.filter((t) => hosts.includes(t.id)), ...rank.filter((t) => !hosts.includes(t.id))];
     const pots = [0, 1, 2, 3].map((p) => order.slice(p * G, (p + 1) * G));
+    if (method === 'snake' || method === 'random') {
+      const groups = [...Array(G)].map(() => []);
+      const seq =
+        method === 'snake'
+          ? order
+          : [...order.filter((t) => hosts.includes(t.id)), ...U.shuffle(order.filter((t) => !hosts.includes(t.id)))];
+      seq.forEach((t, i) => {
+        const row = Math.floor(i / G),
+          col = i % G;
+        groups[method === 'snake' ? (row % 2 ? G - 1 - col : col) : i % G].push(t);
+      });
+      return { pots: pots.map((p) => p.map((t) => t.id)), groups: groups.map((g) => g.map((t) => t.id)) };
+    }
     const limit = (t) => (I.region(t.code) === 'EUR' ? 2 : 1);
     const tryDraw = (strict) => {
       const groups = pots[0].map((t) => [t]);
@@ -2130,7 +2184,7 @@
         .sort((a, b) => b.coef - a.coef);
       teams = teams.slice(0, Math.max(4, Math.floor(teams.length / 4) * 4)); // (groups of four)
       const hosts = hostsOf(tn).filter((h) => teams.some((t) => t.id === h));
-      const drawn = I.draw(teams, hosts, tn.id === 'WC');
+      const drawn = I.draw(teams, hosts, tn.id === 'WC', tn.finalsDraw || 'pots');
       const G = drawn.groups.length;
       return {
         id: tn.id,

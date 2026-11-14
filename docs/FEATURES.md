@@ -656,6 +656,12 @@ Every feature from the game design document, with what is playable in the protot
 | Competitions | The Oceania Professional League ends in two play-off groups of four and a final; the regional club cups (Southeast Asian, Gulf, Arab, East African, Central American, Atlantic) have the real field sizes and groups | Real formats 2026-27 |
 | History | Past competitions that are over (Royal League, Baltic League, Cup Winners' Cups, Intertoto, Intercontinental Cup and others) have winners in the generated thirty-year past, listed on each club's honours card | Real formats 2026-27 |
 | Competitions | Past competitions: the real cross-nation leagues and cups that are over (the Scandinavian and Baltic leagues, the Soviet, Yugoslav and Czechoslovak leagues, the Cup Winners' Cups and others) listed on the Cups screen under Past | Real formats 2026-27 |
+| International | The Himalaya Cup: an invitational of the Himalaya Football Union's ten nations (Nepal, India, China, Bhutan, Pakistan, Afghanistan, Bangladesh, Myanmar, the Maldives, Sri Lanka), four taking part each year with the host rotating through the pool; its winner goes to the Asian Nations Cup | Alpha 2 |
+| Editor | Competitions can be turned off in a world (the World Championship, the continental championships, the Trophy, the Nations League); a year with no tournament is a Nations League year | Alpha 2 |
+| Editor | The Nations League by confederation: on or off, groups of two to four nations, one to eight groups a league, the most tiers it may have, and confederations that play one Nations League together (Asia and Oceania, say) with promotion and relegation through all its tiers | Alpha 2 |
+| Editor | How a draw is made, for each tournament's qualifying groups and its finals: pots by ranking, a snake of the ranking, or random (the hosts apart) | Alpha 2 |
+| Careers | The board's interview before a job: three questions (the plan, the money, the style), an answer that fits the club's character (and its place in its league) impresses the board (more trust, a bigger budget), a poor fit leaves a doubtful board with less of both, and the job can be left | Alpha 2 |
+| Editor | Replays for a domestic cup: a single-leg tie of an early round that is level after ninety minutes is replayed with the grounds swapped (not the final, nor a neutral tie), and only a level replay goes to extra time and penalties; the replay is played at once and shown with the result | Alpha 2 |
 
 ## Yet to be added
 

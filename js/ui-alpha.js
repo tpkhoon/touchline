@@ -1351,7 +1351,9 @@
       focus = u.nation ? T(u.nation).code : club && club.nat,
       mine = focus && D.NATIONS[focus] ? I.region(focus) : null,
       id = u.nation;
-    const cfs = Object.values(nl.confeds).sort((a, b) => (b.id === mine ? 1 : 0) - (a.id === mine ? 1 : 0));
+    const cfs = Object.values(nl.confeds).sort(
+      (a, b) => ((b.members || [b.id]).includes(mine) ? 1 : 0) - ((a.members || [a.id]).includes(mine) ? 1 : 0),
+    );
     return `<div class="sec"><div class="h3">Nations League ${nl.year + 1}</div></div>
       <div class="small muted" style="margin:0 2px 8px">Every nation plays the other three in its group on the first three matchdays of the breaks: no friendlies. The group winners go up a league, the last in each group go down, and the best League A group winner is the champion.</div>
       ${cfs

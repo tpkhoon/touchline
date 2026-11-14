@@ -41,6 +41,33 @@
   };
   // A fixture that settles a tie (single matches and second legs; not first legs)
   Cu.decides = (f) => f.leg !== 1;
+  // A cup with replays (opts.replay, set in the world editor): a single-leg tie of an early round that is level after ninety minutes is not
+  // played on: it is replayed with the grounds swapped (Cu.replay), and only a replay that is level goes to extra time and penalties. Not
+  // the final, and not a tie on a neutral ground.
+  Cu.replayDraw = (f) => {
+    const c = S() && S().comps && S().comps[f.comp];
+    return !!(c && c.type === 'cup' && !c.euro && Cu.optsOf(c).replay && f.ko && !f.final && !f.neutral && !f.replayOf);
+  };
+  // The replay of a drawn tie, played at once (the other club's ground): the result is kept with the tie, and the winner is the replay's
+  Cu.replay = function (fx, res) {
+    const rp = {
+      id: FM.nextId('f'),
+      comp: fx.comp,
+      h: fx.a,
+      a: fx.h,
+      res: null,
+      ko: true,
+      po: `${fx.po || 'Replay'} · replay`,
+      n: fx.n,
+      replayOf: fx.id,
+    };
+    const m = FM.quickSim(rp, true);
+    rp.res = m.result();
+    const w = FM.Season.winnerOf(rp);
+    res.replay = { h: rp.h, a: rp.a, hg: rp.res.hg, ag: rp.res.ag, ...(rp.res.pens ? { pens: rp.res.pens } : {}) };
+    res.win = w === fx.h ? 0 : 1;
+    return rp;
+  };
   // A tie that goes straight to penalties when level (no extra time). Real cups differ by round: a domestic cup's opts.etFrom is
   // the last stage with extra time (clubs left: 2 = the final only, 16 = from the round of 16); a continental cup with etFinalOnly
   // (the Copa Libertadores) plays extra time in its final alone, and so does the South American Nations Cup (the Copa América).
