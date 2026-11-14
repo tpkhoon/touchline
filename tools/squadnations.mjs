@@ -2,12 +2,12 @@
 // zeros once gave Japan's regional leagues Swedish squads), and in every league below the top flight, and at nearly every club, most
 // players have the league's nationality or a name from its pool; no foreign nationality dominates a squad.
 //   node tools/squadnations.mjs [--seed 7]
-import { parseArgs, loadSim } from './harness.mjs';
+import { parseArgs, loadSim, cachedWorld } from './harness.mjs';
 
 const args = parseArgs();
 const { FM } = loadSim(+(args.seed || 7), { getItem: () => null, setItem() {}, removeItem() {} });
 const { W, D } = FM;
-W.newWorld({ win: 3, subs: 5, foreignLimit: 6, twoLegs: true, awayGoals: false });
+cachedWorld(FM, { seed: +(args.seed || 7), world: args.world }); // (the prepared world: made once, then opened in seconds)
 const S = FM.S;
 const fails = [];
 
@@ -82,7 +82,7 @@ for (const [id, L] of Object.entries(leagues)) {
 {
   let early = 0;
   for (const c of Object.values(S.clubs))
-    if (c.stadium && c.founded && c.sim === 'full' && FM.Records.stadium(c).opened < c.founded) early++;
+    if (c.stadium && c.founded && c.sim !== 'minimal' && FM.Records.stadium(c).opened < c.founded) early++;
   if (early) fails.push(`${early} grounds opened before their club was founded`);
   const old = Object.values(S.clubs).find((c) => c.stadium && c.founded && c.founded > 1900);
   if (old) {

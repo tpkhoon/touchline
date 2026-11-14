@@ -10,7 +10,7 @@ A mobile football manager: a deep management sim for phones. Plain JavaScript, n
 
 ## Before a push
 
-Run the deploy gate: `npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run test:saves && npm run check:escape && npm run build && npm run test:smoke`. A failing gate silently stops the site deploying. After pushing, check `gh run list --limit 1`.
+Run the deploy gate: `npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run test:saves && npm run check:escape && npm run build && npm run build:world && npm run check:prepared && npm run test:smoke`. A failing gate silently stops the site deploying. After pushing, check `gh run list --limit 1`.
 
 ## Working agreements
 

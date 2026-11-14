@@ -4,6 +4,8 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import path from 'node:path';
+import zlib from 'node:zlib';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -76,4 +78,47 @@ export function listTunables(FM) {
     }
   }
   return out.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+// ---------- A prepared world for the tests ----------
+// Making the world takes minutes (a hundred seconds at best), and every check that began with W.newWorld made its own. The first call
+// makes the world as the build does (tools/buildworld.mjs: every league in the light tier, the thirty seasons of history and the clubs'
+// legends) and keeps it in .devtools/worlds, named by the seed and by a hash of the simulation's source, so any change to the code makes
+// a new one; every call after that opens it in a few seconds. Returns { cached, ms }. The state is in FM.S, as after W.newWorld and
+// Season.init and seedHistory: a check that wants a manager takes charge of a club, as it did.
+//   const { FM } = loadSim(7); cachedWorld(FM, { seed: 7 });
+export function sourceKey() {
+  const h = crypto.createHash('sha1');
+  for (const f of SIM_SCRIPTS) h.update(fs.readFileSync(path.join(ROOT, 'js', f + '.js')));
+  return h.digest('hex').slice(0, 10);
+}
+// world: the path of a world file to open as it is (the prepared world the build made, dist/data/world.touchline), for the checks that run on
+// the world that ships; none: the kept one for this source, made when it is not there.
+export function cachedWorld(FM, { seed = 7, sims, world } = {}) {
+  const t0 = Date.now(),
+    dir = path.join(ROOT, '.devtools', 'worlds'),
+    file = world ? path.resolve(ROOT, world) : path.join(dir, `world-${sourceKey()}-${seed}.touchline`);
+  const W = FM.W;
+  const light = Object.fromEntries(FM.D.LEAGUES.map((l) => [l.id, 'light']));
+  let cached = false;
+  if (fs.existsSync(file)) {
+    const state = FM.Save.unpack(zlib.gunzipSync(fs.readFileSync(file)).toString('utf8'), { world: true }).state;
+    if (FM.DbImport && FM.DbImport.restore) FM.DbImport.restore(state);
+    FM.S = FM.Save.relink(state);
+    W.rosterVer++;
+    W.fitPreparedWorld(sims || light);
+    cached = true;
+  } else {
+    if (world) throw new Error(`No prepared world at ${file}: run npm run build:world.`);
+    W.newWorld({ ...W.REAL_RULES, sims: light });
+    FM.Season.init();
+    W.seedHistory();
+    W.seedLegends();
+    FM.S.prepared = { seed, sim: sourceKey() };
+    fs.mkdirSync(dir, { recursive: true });
+    for (const old of fs.readdirSync(dir)) if (old.endsWith(`-${seed}.touchline`)) fs.unlinkSync(path.join(dir, old)); // (the worlds of older sources)
+    fs.writeFileSync(file, zlib.gzipSync(Buffer.from(FM.Save.pack(FM.S), 'utf8'), { level: 6 }));
+    if (sims) W.fitPreparedWorld(sims);
+  }
+  return { cached, ms: Date.now() - t0 };
 }

@@ -4,17 +4,13 @@
 //   - a legend who captained a title side belongs to a club with a title,
 //   - the record scorer of a club has the most goals of its legends.
 //   node tools/histcheck.mjs [--seed 7]
-import { parseArgs, loadSim } from './harness.mjs';
+import { parseArgs, loadSim, cachedWorld } from './harness.mjs';
 
 const args = parseArgs();
 const { FM } = loadSim(+(args.seed || 7), { getItem: () => null, setItem() {}, removeItem() {} });
 const W = FM.W,
   S0 = () => FM.S;
-W.newWorld({ win: 3, subs: 5, foreignLimit: 6, twoLegs: true, awayGoals: false });
-FM.Season.init();
-W.takeCharge(Object.values(S0().clubs).find((c) => c.comp === 'D1' && c.rep < 75).id, 'Check Manager');
-W.seedHistory();
-W.seedLegends();
+cachedWorld(FM, { seed: +(args.seed || 7), world: args.world }); // (the world with its past and its legends made, as the build makes it)
 const S = S0();
 const fails = [];
 const check = (ok, msg) => ok || fails.push(msg);

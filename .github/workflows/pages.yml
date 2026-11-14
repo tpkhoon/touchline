@@ -35,6 +35,7 @@ jobs:
       - run: npm run check:escape # no new place that puts a name into markup without escaping it
       - run: npm run build
       - run: npm run build:world # the shared world a new career starts from (made once here, not on every phone); about two minutes
+      - run: npm run check:prepared # the long checks (names, squads, the generated past, the world's invariants, clashes) on the world that ships; about a minute
       - run: npm run test:smoke # the built site hangs together: every file it names is there, and the built simulation plays three days and saves
       - run: touch dist/.nojekyll # serve files as-is (no Jekyll processing)
       - uses: actions/configure-pages@v5
