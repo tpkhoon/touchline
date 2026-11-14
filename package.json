@@ -55,6 +55,7 @@
     "bench": "node tools/bench.mjs",
     "histcheck": "node tools/histcheck.mjs",
     "namecheck": "node tools/namecheck.mjs",
+    "check:squadnations": "node tools/squadnations.mjs",
     "carries": "node --max-old-space-size=6144 tools/wyscout-carries.mjs",
     "carries:tracking": "node --max-old-space-size=4096 tools/tracking-carries.mjs",
     "refstats": "node --max-old-space-size=4096 tools/refstats.mjs --write",

@@ -693,7 +693,13 @@
   // Every ground gets an opening year (from its club, deterministic) and a history of capacity changes
   R.stadium = function (c) {
     const st = c.stadium;
-    if (!st.opened) st.opened = Math.min(2012, 1880 + (U.hash(c.id + st.name) % 118));
+    // (opened on or after the club's founding, usually within a few years of it: a club that moved to a new ground later has a later
+    // date; a ground dated before its club is put right)
+    if (!st.opened || (c.founded && st.opened < c.founded)) {
+      const h = U.hash(c.id + st.name),
+        f = c.founded || 1880 + (h % 118);
+      st.opened = Math.max(f, Math.min(2012, f + (h % 10 < 7 ? h % 9 : 9 + (h % 70))));
+    }
     if (!st.hist) st.hist = [[store().since, 'Capacity', st.cap]]; // seeded before any change it records
     return st;
   };

@@ -788,8 +788,42 @@
   // The identity of a club as it is shown: a police, union, railway or works club that is "fan-owned" on paper is state-backed,
   // society-owned or company-backed, so the label follows the kind of club (the board's and the money's rules stay the same).
   // c: a club, or { name, policy } for a row not yet in a world
+  // (what the supporters want, said a few ways: a club has one of them, always the same, chosen by its name)
+  const FANS = {
+    oil: [
+      'Trophies. Nothing else matters.',
+      'The owners have spent big, and the stands expect the title to follow.',
+      'Nothing short of the top will do after all that money.',
+    ],
+    giant: [
+      'Expect to challenge for the title every season.',
+      'A club of this size is owed trophies, and the fans know it.',
+      'Anything below the top two is a disappointment here.',
+    ],
+    historic: [
+      'Want European nights and a top-half finish.',
+      'Proud of the past and hungry for a few big nights again.',
+      'Ask for pride, a decent cup run and a place in the top half.',
+    ],
+    youth: [
+      'Love seeing academy kids get their chance.',
+      'Would rather see a local boy make the team than a big signing.',
+      'The academy is the club’s pride: play the kids.',
+    ],
+    selling: [
+      'Accept sales — if you find the next gem.',
+      'Know the best players leave, and trust the club to find the next one.',
+      'Will forgive a sale if the money is spent well.',
+    ],
+    fallen: [
+      'Desperate for a return to former glory.',
+      'Remember better days and want them back.',
+      'Tired of the decline: show them the club is rising again.',
+    ],
+  };
   L.identity = function (key, c) {
-    const base = D.IDENTITY[key];
+    let base = D.IDENTITY[key];
+    if (c && c.name && FANS[key] && base) base = { ...base, fans: FANS[key][hash(c.name) % FANS[key].length] };
     if (key !== 'fan' || !c) return base;
     const k = KINDS.find((x) => x.test(c));
     const alt = {
@@ -913,10 +947,14 @@
     const cs = clubsOf().filter((c) => real(c) && !c.rival);
     for (const c of cs.sort((a, b) => (a.id < b.id ? -1 : 1))) {
       if (c.rival) continue;
-      const near = L.nearest(c, 6, L.LOCAL_KM).find((o) => !o.c.rival);
+      // (a rival from the same division first: the two meet in the league; one from another division is a rivalry of the
+      // neighbourhood, named so, and the board does not ask for a result in it)
+      const free = L.nearest(c, 6, L.LOCAL_KM).filter((o) => !o.c.rival),
+        near = free.find((o) => o.c.comp === c.comp) || free[0];
       if (!near) continue;
       const o = near.c,
-        a = c.city === o.city ? `The ${c.city} Derby` : `${[c.city, o.city].sort().join('–')} Derby`;
+        word = o.comp === c.comp ? 'Derby' : 'Rivalry',
+        a = c.city === o.city ? `The ${c.city} ${word}` : `${[c.city, o.city].sort().join('–')} ${word}`;
       c.rival = o.id;
       o.rival = c.id;
       c.derby = o.derby = a;

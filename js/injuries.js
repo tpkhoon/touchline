@@ -250,7 +250,7 @@
       if (n.type !== 'medical' || n.resolved) continue;
       if (all || s.year > n.year || s.day - n.day >= 2) {
         Inj.resolve(n, n.rec || 0);
-        n.resolved = `Head physio decided: ${n.resolved}`;
+        n.handledBy = 'physio'; // (the feed says whose decision it was: it was not the manager's)
       }
     }
   };

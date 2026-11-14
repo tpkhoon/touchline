@@ -2543,6 +2543,47 @@
     const others = Object.entries(mix).reduce((sum, [k, v]) => (k === l.nat ? sum : sum + v), 0);
     mix[l.nat] = Math.round(((others * t) / (1 - t)) * 100) / 100;
   }
+  // A lower division's mix was copied from its top flight's before that was filled in, leaving every weight at nothing: its
+  // squads then came from whichever nation was last in the list (Swedish names in Japan's regional leagues). A mix with no
+  // weight for its own league's nation is rebuilt from the nation's top flight: the same home weight, the foreigners fewer
+  // the lower the division. A nation with no healthy top-flight mix has none, and a club there draws its own nation (W.natFor).
+  const LOWER_FOREIGN = { 2: 0.8, 3: 0.5, 4: 0.35 };
+  const HOME_FLOOR = { 2: 0.78, 3: 0.86, 4: 0.9, 5: 0.92 };
+  D.BROKEN_MIX = {}; // the leagues whose mix was empty: league id → true (saves made with them are repaired on load: js/save.js)
+  D.repairMixes = function () {
+    let fixed = 0;
+    for (const l of D.LEAGUES) {
+      const mix = D.NAT_MIX[l.id];
+      if (!mix || mix[l.nat] > 0) continue;
+      D.BROKEN_MIX[l.id] = true;
+      const top = D.LEAGUES.find(
+        (x) => x.nat === l.nat && x.tier === 1 && D.NAT_MIX[x.id] && D.NAT_MIX[x.id][l.nat] > 0,
+      );
+      if (!top) {
+        delete D.NAT_MIX[l.id];
+        continue;
+      }
+      const f = LOWER_FOREIGN[l.tier] || 0.35;
+      D.NAT_MIX[l.id] = Object.fromEntries(
+        Object.entries(D.NAT_MIX[top.id]).map(([k, v]) => [k, k === l.nat ? v : Math.round(v * f * 100) / 100]),
+      );
+      fixed++;
+    }
+    // A lower division that copied its top flight's mix also copied its foreign share (half of a German fourth tier from abroad):
+    // the lower the division, the more of its players are of its own nation, never below these shares
+    for (const l of D.LEAGUES) {
+      const mix = D.NAT_MIX[l.id],
+        want = HOME_FLOOR[Math.min(l.tier, 5)];
+      if (!mix || !want || !(mix[l.nat] > 0)) continue;
+      const others = Object.entries(mix).reduce((s, [k, v]) => (k === l.nat ? s : s + v), 0);
+      if (mix[l.nat] / (mix[l.nat] + others) < want) {
+        mix[l.nat] = Math.round(((others * want) / (1 - want)) * 100) / 100;
+        fixed++;
+      }
+    }
+    return fixed;
+  };
+  D.repairMixes();
   D.NEW_NATIONS = LIST.map((n) => n.code);
   // The league nations a nation's players go to, in order of how many go (a small nation's players are placed by these)
   D.NATION_TIES = Object.fromEntries(LIST.map((n) => [n.code, n.ties]));

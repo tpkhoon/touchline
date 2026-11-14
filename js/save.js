@@ -121,6 +121,42 @@
     return s;
   };
   // Consistency fixes on every load: references to players who have since left or retired
+  // Worlds made while the lower divisions of about eighty leagues had an empty nationality mix filled their clubs with players of one
+  // foreign nation (Swedish squads in Japan's regional leagues). A club in such a league where one foreign nation holds two in five
+  // of the squad has those players made of the club's own nation: a new name from its pool, the passports started again. Nothing else
+  // about a player changes (his id, ratings, contract and history), and a squad that is already right is not touched, so this is safe
+  // to run on every load.
+  Sv.repairSquadNations = function (s) {
+    const W = FM.W,
+      D = FM.D;
+    if (!W || !D.BROKEN_MIX || !s.players || !s.clubs || !s.comps) return 0;
+    const byClub = {};
+    for (const p of Object.values(s.players))
+      if (p.clubId && !p.retired) (byClub[p.clubId] = byClub[p.clubId] || []).push(p);
+    const taken = new Set(Object.values(s.players).map((q) => `${q.fn} ${q.ln}`));
+    let fixed = 0;
+    for (const c of Object.values(s.clubs)) {
+      const comp = s.comps[c.comp];
+      if (!comp || !D.BROKEN_MIX[c.comp] || c.sim === 'nation' || c.policy || !D.NATIONS[c.nat] || comp.nat !== c.nat)
+        continue;
+      const sq = byClub[c.id] || [];
+      const count = {};
+      for (const p of sq) if (p.nat !== c.nat) count[p.nat] = (count[p.nat] || 0) + 1;
+      const [nat, n] = Object.entries(count).sort((a, b) => b[1] - a[1])[0] || [];
+      if (!nat || n < 0.4 * sq.length) continue;
+      for (const p of sq) {
+        if (p.nat !== nat) continue;
+        let nm = W.rollName(c.nat, null, p.born);
+        for (let t = 0; t < 40 && taken.has(`${nm.fn} ${nm.ln}`); t++) nm = W.rollName(c.nat, null, p.born);
+        taken.add(`${nm.fn} ${nm.ln}`);
+        Object.assign(p, { nat: c.nat, nat2: null, fn: nm.fn, ln: nm.ln });
+        delete p.heritage;
+        if (W.resetNationality) W.resetNationality(p);
+        fixed++;
+      }
+    }
+    return fixed;
+  };
   Sv.repair = function (s) {
     Sv.relink(s);
     // a role that doesn't exist for its slot (a 4-4-2 flank was a winger's slot before wide midfielders): the slot's
@@ -262,6 +298,7 @@
     // birthplace, heritage countries and passports (js/citizenship.js) for players made before they existed
     if (s.players && FM.W && FM.W.migrateNationality)
       for (const p of Object.values(s.players)) FM.W.migrateNationality(p);
+    Sv.repairSquadNations(s);
     // scouts made while the county-cup data overwrote the scouting regions have numbered regions: new profiles, and
     // any assignment to a region that does not exist is cleared
     if (s.staff && FM.W && FM.D.REGIONS) {

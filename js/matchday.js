@@ -382,7 +382,7 @@
         kind: ok ? 'good' : 'bad',
         icon: 'clipboard',
         weight: ok ? 1.1 : 1.15,
-        title: `${L}: ${ok ? 'it worked' : 'it did not'}`,
+        title: `${L}: ${ok ? 'it worked' : 'it did not work'}`,
         text,
       });
     });

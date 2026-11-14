@@ -579,13 +579,16 @@
     const an = club.facilities.analytics || 0;
     const noise = (tag, spread) => ((U.hash(p.id + tag) % 2001) / 1000 - 1) * spread;
     const dir = FM.Staff.get('director');
-    const dirAbility = dir ? W.staffAbility('director') : 8;
+    const vacant = !dir || dir.vacant; // (no sporting director: there is nobody to give a view)
+    const dirAbility = dir && !dir.vacant ? W.staffAbility('director') : 8;
     return {
       free: !p.clubId,
       analytics:
         an >= 1 && k >= 30 ? U.roundMoney(W.baseValue(p) * W.formFactor(p) * (1 + noise('an', 0.2 - an * 0.03))) : null,
       agent: p.clubId ? ask : null,
-      director: U.roundMoney(T.userAsk(p) * (1 + noise('dir', Math.max(0.03, 0.2 - dirAbility * 0.01)))),
+      director: vacant
+        ? null
+        : U.roundMoney(T.userAsk(p) * (1 + noise('dir', Math.max(0.03, 0.2 - dirAbility * 0.01)))),
       directorKnows: dirAbility >= 12 ? 'sure' : dirAbility >= 8 ? 'fairly sure' : 'guessing',
     };
   };

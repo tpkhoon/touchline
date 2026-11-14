@@ -1961,6 +1961,18 @@
     OFC: 'Asia',
   };
   Cu.regionName = (nat) => REGION_OF[FM.Intl.baseConfed(nat)];
+  // The adjective for a nation's own continent (European, Asian ...), for text written about "European nights" that every club shares
+  const REGION_ADJ = {
+    EUR: 'European',
+    SAM: 'South American',
+    ASIA: 'Asian',
+    AFR: 'African',
+    NAM: 'North American',
+    OFC: 'Oceanian',
+  };
+  Cu.continentAdj = (nat) => REGION_ADJ[FM.Intl.baseConfed(nat)] || 'continental';
+  // A line of club text with its "European" put in terms of the club's own confederation
+  Cu.regional = (text, nat) => (nat ? String(text).replace(/European/g, Cu.continentAdj(nat)) : text);
   // the cups of each part of the world, the main cup first
   Cu.spotFamilies = () => {
     const out = {};

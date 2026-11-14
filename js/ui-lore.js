@@ -61,13 +61,14 @@
     L().ensure();
     const d = S().lore && S().lore.clubs[c.id];
     if (!d) return '';
+    const more = c.stadium && d.att.n > c.stadium.cap ? ', when the ground held more standing' : '';
     const o = (id) => (id && S().clubs[id] ? ` v ${cname(id)}` : '');
     const kind = L().kind(c);
     const rv = c.rival && S().clubs[c.rival] ? L().rival(c.id, c.rival) : null;
     return `<div class="card"><div class="h3">The club</div>
       ${kind ? `<div class="phrase"><span>${UI.ico(kind.icon)}</span><span><b>${esc(kind.label)}.</b> ${esc(kind.text)}</span></div>` : ''}
       ${c.stadium ? row('Ground', esc(c.stadium.name)) : ''}
-      ${row('Record crowd', `${d.att.n.toLocaleString()}${o(d.att.vs)}${d.att.year ? `<div class="tiny dim">${d.att.year}</div>` : ''}`)}
+      ${row('Record crowd', `${d.att.n.toLocaleString()}${o(d.att.vs)}${d.att.year ? `<div class="tiny dim">${d.att.year}${more}</div>` : ''}`)}
       ${d.bigWin ? row('Record win', `${d.bigWin.gf}–${d.bigWin.ga}${o(d.bigWin.vs)}<div class="tiny dim">${d.bigWin.year}</div>`) : ''}
       ${d.bigLoss ? row('Heaviest defeat', `${d.bigLoss.gf}–${d.bigLoss.ga}${o(d.bigLoss.vs)}<div class="tiny dim">${d.bigLoss.year}</div>`) : ''}
       ${peopleRows(c)}
@@ -95,9 +96,12 @@
     const e = L().early(c);
     if (!e) return '';
     const nat = D.NATIONS[c.nat] ? D.NATIONS[c.nat].name : '';
+    // (the seasons the club could have played: not those before it was founded)
+    const first = Math.min(e.to, Math.max(e.from, (c.founded || 0) + 1)),
+      seasonsOf = Math.max(e.n, e.to - first + 1);
     return `<div class="card"><div class="row"><div class="h3 grow">Honours before the records</div><span class="tiny dim">${e.from}–${e.to}</span></div>
       ${e.t.length ? row('League champions', `${U.plural(e.t.length, 'title')}<div class="tiny dim" style="line-height:1.5">${esc(years(e.t))}</div>`) : row('League champions', '<span class="dim">No title in those years</span>')}
-      ${row('Top flight', U.plural(e.n, 'season') + (e.n ? ` of ${e.to - e.from + 1}` : ''))}
+      ${row('Top flight', U.plural(e.n, 'season') + (e.n ? ` of ${seasonsOf} (${first}–${e.to})` : ''))}
       ${e.b ? row('Best decade', `the ${e.b}s`) : ''}
       <div class="tiny dim" style="margin-top:8px">${esc(nat)}’s top flight from ${e.from}: ${esc(c.name)}’s summary before this world’s season-by-season records begin.</div></div>`;
   };
@@ -162,7 +166,9 @@
     if (!L() || fx.neutral || !fx.h || !fx.a) return '';
     const kmv = L().km(fx.h, fx.a);
     if (kmv < 25) return '';
-    return `<div class="row small" style="margin-top:6px"><span class="grow dim">Journey</span><b style="text-align:right;max-width:70%">${esc(L().tripText(fx.h, fx.a))}</b></div>`;
+    // (the trip is the visitors': a home game of ours is their journey, an away game ours)
+    const home = FM.W.isUser(fx.h);
+    return `<div class="row small" style="margin-top:6px"><span class="grow dim">${home ? 'Visitors travel' : 'Your journey'}</span><b style="text-align:right;max-width:70%">${esc(L().tripText(fx.h, fx.a))}</b></div>`;
   };
 
   // Distances matter: the longest away trips of the season in your league, as a note on the table screens
@@ -178,7 +184,7 @@
           if (k > far) ((far = k), (pair = [a, b]));
         }
     return far >= 350
-      ? `<div class="tiny dim" style="margin:0 4px 10px">The longest trip in this league: ${esc(pair[0].name)} – ${esc(pair[1].name)}, ${km(far)} km${far >= 1000 ? ' — a day of travel, and tired legs' : ''}.</div>`
+      ? `<div class="tiny dim" style="margin:0 4px 10px">The longest trip in this league: ${esc(pair[0].name)} – ${esc(pair[1].name)}, ${km(far)} km${far >= 2500 ? ' — a flight, and tired legs' : far >= 1000 ? ' — a long day of travel' : far >= 500 ? ' — a long journey' : ''}.</div>`
       : '';
   };
 })();

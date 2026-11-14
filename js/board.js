@@ -171,6 +171,12 @@
     if (club.balance < 0) out.push({ id: 'debt', text: 'Reduce the club’s debt', weight: 'important' });
     if (club.identity === 'selling')
       out.push({ id: 'profit', text: 'Make a net transfer profit', weight: 'important' });
+    // (the derby is asked for only where the two clubs are certain to meet: the rival is in the club's own league; a rival in another
+    // division is met only if a cup draw brings them together)
+    const derbyMet = (c) => {
+      const r = c.rival && S().clubs[c.rival];
+      return !!r && r.comp === c.comp;
+    };
     // the club's identity
     const idObj = {
       youth: { id: 'youth', text: 'Give 3 academy graduates 5+ appearances', weight: 'important' },
@@ -186,7 +192,7 @@
       weak = comp && Sea().expectedPos(club) > Math.ceil(W.rivalsOf(comp, club.id).length / 2);
     if (
       idObj &&
-      !(idObj.id === 'derby' && !club.rival) &&
+      !(idObj.id === 'derby' && !derbyMet(club)) &&
       !(idObj.id === 'pos2' && Sea().expectedPos(club) <= 3) &&
       !(idObj.id === 'goals' && idObj.gpg >= 2 && weak)
     )
@@ -194,6 +200,7 @@
     return out;
   };
   // This season's demands for the club (made once, when first asked for; cups join once the club is drawn)
+  B.otherDemands = (club) => otherDemands(club);
   B.list = function (club) {
     const u = S().user,
       y = S().year;

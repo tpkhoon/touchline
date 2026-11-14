@@ -249,7 +249,8 @@
   };
   UI.newsCard = function (n) {
     const s = S();
-    const when = `${n.year !== s.year ? n.year + ' · ' : ''}MD ${n.day + 1}`;
+    const cal = s.calendar && s.calendar[n.day],
+      when = `${n.year !== s.year ? n.year + ' · ' : ''}${cal && cal.dn != null ? W.dateText(cal.dn, n.year) : 'day ' + (n.day + 1)}`; // (a date: "MD 3" meant a day of the calendar, not a league matchday)
     if (n.type === 'story') {
       const c = CL(n.clubId) || club() || NOCLUB;
       return `<div class="story" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="bg"></div><button class="share" data-act="share" data-id="${n.id}" aria-label="Share"></button><div class="in"><span class="kick">${esc(n.kicker)}</span>${n.pid && P(n.pid) ? `<div class="tiny b" style="margin-top:10px;opacity:.85" data-act="player" data-id="${n.pid}">${C.flag(P(n.pid).nat)} ${esc(W.name(P(n.pid)))} ›</div>` : ''}<div class="big">${UI.ICONS[n.big] ? UI.ico(n.big, 96) : esc(n.big)}</div><div class="st">${esc(n.title)}</div><div class="ss">${esc(n.sub)}</div><div class="foot"><span>TOUCHLINE STORIES</span><span>${esc(c.name)} · ${n.year}</span></div></div></div>`;
@@ -280,17 +281,24 @@
       return `<div class="news social">${head}<div class="nb"><div class="nt">${esc(n.title)}</div>${body}</div></div>`;
     }
     let extra = '';
+    // whose answer it was: the manager's, or what the staff or the head physio decided while the sim ran
+    const said = (n) => {
+      const old = /^Head physio decided: /.test(n.resolved || ''); // (older saves kept it in the text)
+      const by = old ? 'physio' : n.handledBy;
+      const text = old ? n.resolved.replace(/^Head physio decided: /, '') : n.resolved;
+      return `${by === 'physio' ? 'Head physio' : by === 'staff' ? 'Your staff' : 'You'}: “${esc(text)}”`;
+    };
     if (n.type === 'meeting' || n.type === 'medical') {
       const act = n.type === 'medical' ? 'medical' : 'meet';
       extra = n.resolved
-        ? `<div class="reply">You: “${esc(n.resolved)}” — ${esc(n.reply || '')}</div>`
+        ? `<div class="reply">${said(n)} — ${esc(n.reply || '')}</div>`
         : `<div class="choices">${n.choices.map((ch, i) => `<button class="btn sm${n.type === 'medical' && i === n.rec ? ' pri' : ''}" data-act="${act}" data-id="${n.id}" data-i="${i}">${esc(ch.label)}</button>`).join('')}</div>`;
       if (n.pid && P(n.pid))
         extra += `<div style="margin-top:8px"><button class="btn sm" data-act="player" data-id="${n.pid}">View ${esc(W.short(P(n.pid)))} ›</button></div>`;
     }
     if (n.type === 'press') {
       extra = n.resolved
-        ? `<div class="reply">You: “${esc(n.resolved)}” — ${esc(n.reply)}</div>`
+        ? `<div class="reply">${said(n)} — ${esc(n.reply)}</div>`
         : `<div class="choices">${n.choices.map((ch, i) => `<button class="btn sm" data-act="press" data-id="${n.id}" data-i="${i}">${esc(ch.label)}</button>`).join('')}</div>`;
     }
     if (n.type === 'bid') {
@@ -2026,7 +2034,12 @@
       p90 = (x) => (m >= 270 ? ((x * 90) / m).toFixed(2) : '—');
     const cell = (v, l, sub) =>
       `<div class="kpi" style="padding:8px 4px"><div class="v" style="font-size:18px">${v}</div><div class="l">${l}</div>${sub ? `<div class="tiny dim">${sub}</div>` : ''}</div>`;
-    const faced = (st.sv || 0) + (st.ga || 0);
+    // (a keeper with games and goals against but no saves counted has no shot record to read, as in older and imported seasons:
+    // no save rate is shown rather than 0%)
+    const faced =
+      (st.sv || 0) + (st.ga || 0) && !((st.sv || 0) === 0 && (st.ga || 0) > 0 && (st.apps || 0) >= 3)
+        ? (st.sv || 0) + (st.ga || 0)
+        : 0;
     const cells = gk
       ? [
           cell(st.apps, 'Apps', `${m} mins`),
@@ -3135,7 +3148,7 @@
       .join('');
     const eu = comp.rules.playoffs && comp.rules.playoffs.europe,
       pr = comp.rules.playoffs && comp.rules.playoffs.promo;
-    return `<div class="card"><div class="h3">${eu ? 'Europe play-off' : pr ? 'Promotion play-off' + (group ? ' · ' + esc(group) : '') : 'Playoffs'}</div>${seeds}${rows.join('')}</div>`;
+    return `<div class="card"><div class="h3">${eu ? (FM.Cups.regionName(comp.nat) || 'Europe') + ' play-off' : pr ? 'Promotion play-off' + (group ? ' · ' + esc(group) : '') : 'Playoffs'}</div>${seeds}${rows.join('')}</div>`;
   };
   UI.acts.torneoView = (d) => {
     UI._torneoView = d.v === 'all' || d.v === 'inter' ? d.v : +d.v;
@@ -4211,7 +4224,7 @@
       .filter((r) => r.key !== 'scout')
       .map((r) => FM.Staff.get(r.key));
     return `<div class="hero" style="--c1:${U.heroShade(c.colors[0])};--c2:${U.heroShade(c.colors[1])}"><div class="row">${C.crest(c, 64)}<div class="grow"><div class="h1">${esc(c.name)}</div><div class="small" style="opacity:.85;margin-top:4px">${c.nick ? `“${esc(c.nick)}” · ` : ''}${esc(c.stadium.name)} · ${c.stadium.cap.toLocaleString()}</div><div style="margin-top:8px"><span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">${UI.ico(I.icon)} ${esc(I.label)}</span> <span class="pill" style="background:rgba(0,0,0,.3);color:#fff;border:0">Rep ${U.repText(c.rep)}</span> ${UI.kindPill ? UI.kindPill(c) : ''}</div></div></div></div>
-      <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${UI.ico(I.icon)}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(I.fans)}</div>
+      <div class="card"><div class="h3">Club culture</div><div class="row small" style="margin-top:6px;gap:6px"><span>${UI.ico(I.icon)}</span><b>${esc(I.label)}</b></div><div class="small muted" style="margin-top:4px;line-height:1.5">${esc(FM.Cups.regional(I.fans, c.nat))}</div>
         ${c.policy ? `<div class="phrase"><span>${UI.ico('columns')}</span><span>${c.policy.military ? "The army's club: its squad is conscripts on national service, on loan from their own clubs" : `A <b>${esc(c.policy.label)}</b> club: it signs only players of ${esc(c.policy.label)} heritage, like Athletic Club`}</span></div>` : ''}
         ${c.rival ? `<div class="phrase"><span>${UI.ico('swords')}</span><span>The <b>${esc(c.derby)}</b> vs ${esc(CL(c.rival).name)}</span></div>` : ''}
         <div class="row small" style="margin-top:10px"><span style="width:90px" class="dim">Fan mood</span><div class="grow">${C.bar(c.fanMood, C.moodColor(c.fanMood))}</div></div>

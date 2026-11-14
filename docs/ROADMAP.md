@@ -635,6 +635,11 @@ The order below is proposed; each phase ends when its gate passes, not on a date
 
 **Playtest gate (before Alpha 1)**
 
+- [x] Second playtest report, P3: a pre-season feed with a league preview, a friendlies note and a transfer rumour; the "it did not" sentence finished; four wordings for each club-guide reason and for what each club culture's fans want; seven more fan handles; a keeper with no saves counted shows no save rate instead of 0%
+- [x] Second playtest report, P2: a feed card is stamped with its date, not "MD n"; the trip line says "Visitors travel" on our home games and "Your journey" away, and the longest-trip note is worded by distance (a long journey, a long day of travel, a flight)
+- [x] Second playtest report, P2: an offer that lapses while days are simulated leaves a line in the feed (who bid, how much, that the player is still here), and a decision made by the head physio or the staff is shown as theirs, not as "You"
+- [x] Second playtest report, P1: a ground opens on or after its club's founding, a record crowd above today's capacity says the ground held more standing, a derby needs a rival in the club's league (a rival in another division is a "Rivalry" and the board does not ask for it), the top-flight tally counts only seasons since the club's founding, a vacant sporting director shows as Vacant, club text names the club's own continent, and a club's manager is mostly of its own nation
+- [x] Second playtest report, P0: eighty-five lower divisions had an empty nationality mix (Japan's regional leagues played Swedish squads) — rebuilt from the nation's top flight, lower divisions hold a floor of home players, saves are repaired on load (`node tools/squadnations.mjs`)
 - [ ] Tune match pacing at 1× and prompt frequency from real play sessions
 - [x] Rebalance club finances — done: revenue now tracks reputation, median club roughly breaks even, excess AI cash is reinvested
 - [ ] Check difficulty across club identities and both nations

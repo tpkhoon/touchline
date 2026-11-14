@@ -60,7 +60,7 @@
     return `${needLine}<div class="h3" style="margin-top:12px">What he would cost</div>
       ${row('Analytics: his worth', pr.analytics ? `~${U.money(pr.analytics)}` : '?', pr.analytics ? 'from his output, age and potential' : 'needs an analytics department (level 1)')}
       ${row('The seller wants', `~${U.money(pr.agent)}`, gap != null ? `${gap >= 0 ? gap + '% above' : -gap + '% below'} the analytics estimate` : '')}
-      ${row('Sporting director: could get it done for', `~${U.money(pr.director)}`, `${pr.directorKnows === 'sure' ? 'he is sure' : pr.directorKnows === 'fairly sure' ? 'he is fairly sure' : 'he is guessing'}`)}
+      ${pr.director == null ? row('Sporting director', 'Vacant', 'hire one in the staff screen for a view on the price') : row('Sporting director: could get it done for', `~${U.money(pr.director)}`, `${pr.directorKnows === 'sure' ? 'he is sure' : pr.directorKnows === 'fairly sure' ? 'he is fairly sure' : 'he is guessing'}`)}
       <div class="tiny dim" style="margin-top:6px">Three views of one price: which to believe is your decision.</div>`;
   };
   UI.reportCard = function (p, v) {

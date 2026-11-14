@@ -241,6 +241,13 @@
       `@${club.name.split(' ').pop()}Faithful`,
       `@TheRealTerraceTalk`,
       `@${club.city}Til1Die`,
+      `@${club.short}Terrace${U.randi(1, 99)}`,
+      `@${club.city}Lad${U.randi(70, 99)}`,
+      `@Season_Ticket_${club.short}`,
+      `@${club.short}Podcast`,
+      `@${club.name.split(' ')[0]}Mad`,
+      `@Proper${club.short}Fan`,
+      `@${U.pick(D.NATIONS.ENG.fn)}_${club.city}`,
     ]);
     const handle = () => handles.pop() || `@fan${U.randi(100, 999)}`;
     const fill = (t) =>
@@ -647,11 +654,54 @@
     FM.News.add({
       type: 'club',
       title: `Meet ${opp.name}: ${I.label}`,
-      body: `${I.fans} They play at ${opp.stadium.name} (${opp.stadium.cap.toLocaleString()}), ${U.ordinal(W.position(opp.id))} in the table.${mgr ? ` ${mgr.fn} ${mgr.ln} is in charge.` : ''}`,
+      body: `${FM.Cups.regional(I.fans, opp.nat)} They play at ${opp.stadium.name} (${opp.stadium.cap.toLocaleString()}), ${U.ordinal(W.position(opp.id))} in the table.${mgr ? ` ${mgr.fn} ${mgr.ln} is in charge.` : ''}`,
       clubId: opp.id,
     });
   };
+  // The pre-season feed is never empty: the first day of a season brings a preview of the league (who is tipped for what), a note on
+  // the friendlies and a rumour about a good player of the league, so the World feed has something in it before the first match
+  St.preseasonSeed = function () {
+    const s = FM.S,
+      c = W.employed() && W.userClub();
+    if (!c || s.seeded === s.year) return;
+    const comp = s.comps[c.comp];
+    if (!comp || comp.type !== 'league') return;
+    s.seeded = s.year;
+    const all = comp.clubs.map((id) => s.clubs[id]).filter((x) => x && x.sim !== 'nation');
+    if (all.length < 6) return;
+    const byRep = all.slice().sort((a, b) => b.rep - a.rep),
+      top = byRep.slice(0, 3),
+      low = byRep.slice(-3).reverse();
+    const nm = (x) => x.name;
+    FM.News.add({
+      type: 'world',
+      title: `${comp.name} preview: ${nm(top[0])} the favourites`,
+      body: `${nm(top[0])} start as the tip for the title, with ${nm(top[1])} and ${nm(top[2])} expected to push them. At the other end, ${low.map(nm).slice(0, 2).join(' and ')} are the sides the pundits fear for. ${c.id === top[0].id ? 'That makes you the team to catch.' : `You are tipped to finish ${U.ordinal(byRep.indexOf(c) + 1)}.`}`,
+      clubId: top[0].id,
+    });
+    FM.News.add({
+      type: 'world',
+      title: 'Pre-season: friendlies and fitness',
+      body: `Every club in the ${comp.name} is in its pre-season games. Managers are trying young players and testing fitness, and nobody reads much into a result before the first league match.`,
+      clubId: c.id,
+    });
+    const star = all
+      .filter((x) => x.id !== c.id)
+      .flatMap((x) => W.squad(x.id).map((p) => ({ p, x })))
+      .sort((a, b) => b.p.ca - a.p.ca)[0];
+    if (star) {
+      const buyer = byRep.find((x) => x.id !== star.x.id && x.rep >= star.x.rep) || top[0];
+      FM.News.add({
+        type: 'world',
+        title: `Rumour: ${nm(buyer)} watching ${W.name(star.p)}`,
+        body: `${nm(buyer)} are said to admire ${nm(star.x)}'s ${U.a(star.p.pos)}, ${W.name(star.p)}, ${W.age(star.p)}. Nothing is agreed, and ${nm(star.x)} say he is not for sale.`,
+        pid: star.p.id,
+        clubId: star.x.id,
+      });
+    }
+  };
   St.intro = function () {
+    St.preseasonSeed();
     const s = FM.S,
       c = W.employed() && W.userClub(),
       it = s.intro;
@@ -1325,7 +1375,7 @@
     FM.News.add({
       type: 'club',
       title: `Know your club: ${I.label}`,
-      body: `${I.fans}${c.rival ? `\n\nThe big one: ${U.theName(c.derby)} against ${S.clubs[c.rival].name}.` : ''}`,
+      body: `${FM.Cups.regional(I.fans, c.nat)}${c.rival ? `\n\nThe big one: ${U.theName(c.derby)} against ${S.clubs[c.rival].name}.` : ''}`,
       clubId: c.id,
     });
     FM.News.add({

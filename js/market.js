@@ -79,14 +79,27 @@
   M.BID_DAYS = 5;
   M.expireBids = function () {
     const s = S(),
-      open = FM.Season.windowOpen();
+      open = FM.Season.windowOpen(),
+      lapsed = [];
     for (const n of s.news) {
       if (n.type !== 'bid' || !n.data || n.data.status !== 'open') continue;
       if (s.year > n.year || s.day - n.day >= M.BID_DAYS || !open) {
         n.data.status = 'expired';
         n.reply = open ? 'No answer came, so they moved on.' : 'The window closed before you answered.';
+        // (an offer that lapses while the sim runs is said so in the feed, so it is not found gone: the same for a sale that was never made)
+        const p = s.players[n.data.pid],
+          buyer = s.clubs[n.data.from];
+        if (p && buyer && n.data.status === 'expired' && W.ownPlayer(p) && FM.News)
+          lapsed.push({
+            type: 'club',
+            title: `${buyer.name}'s ${n.data.loan ? 'loan offer' : 'bid'} for ${W.name(p)} lapsed`,
+            body: `${open ? `No answer came within ${U.plural(M.BID_DAYS, 'day')}.` : 'The window closed before you answered.'} ${buyer.name} ${n.data.loan ? 'asked for a loan' : `offered ${U.money(n.data.fee)}`}; ${W.name(p)} is still at the club.`,
+            pid: p.id,
+            clubId: buyer.id,
+          });
       }
     }
+    lapsed.forEach((x) => FM.News.add(x));
   };
 
   // What you still have in hand a few days before the deadline

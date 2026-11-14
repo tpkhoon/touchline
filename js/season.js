@@ -2444,8 +2444,8 @@
         if (er)
           FM.News.add({
             type: 'world',
-            title: `${S.clubs[er.champion].name} win the Europe play-off`,
-            body: `${comp.name}: ${S.clubs[er.champion].name} beat ${S.clubs[er.runnerUp].name} in the final of the play-off for a place in Europe.`,
+            title: `${S.clubs[er.champion].name} win the ${FM.Cups.regionName(comp.nat) || 'Europe'} play-off`,
+            body: `${comp.name}: ${S.clubs[er.champion].name} beat ${S.clubs[er.runnerUp].name} in the final of the play-off for a place in ${FM.Cups.regionName(comp.nat) || 'Europe'}.`,
             clubId: er.champion,
           });
       }

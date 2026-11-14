@@ -1662,7 +1662,7 @@
           <div class="tiny" style="color:#9fb0c5;margin-top:8px"><b style="color:${d.color}">${esc(d.label)}</b>: ${esc(d.why)}.</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">The board will likely ask: ${esc(G.objective(code))}.</div>
           <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(r[7] || `${r[2]} Stadium`)}, ${G.capOf(r).toLocaleString()} seats · ${money(I)}${inf.founded ? ` · founded ${inf.founded}` : ''}${inf.nick ? ` · "${esc(inf.nick)}"` : ''}</div>
-          <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(I.fans)}</div>
+          <div class="tiny" style="color:#9fb0c5;margin-top:4px">${esc(FM.Cups.regional(I.fans, e.l.nat))}</div>
           ${rv ? `<div class="row tiny" style="gap:8px;align-items:center;color:#c9d4e3;margin-top:8px">${C.crest(rvFake, 22)}<span>The ${esc(rv.derby)} against ${esc(rv.name)}</span></div>` : ''}
         </div>`;
       };

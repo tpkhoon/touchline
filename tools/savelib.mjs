@@ -67,6 +67,27 @@ export function testFile(file, { days = 5 } = {}) {
     };
   }
   info.openMs = Date.now() - t0;
+  // a save made while a division's nationality mix was empty has its squads of one foreign nation made of the club's own (js/save.js)
+  {
+    const D = FM.D,
+      S = FM.S,
+      mixed = [];
+    const by = {};
+    for (const p of Object.values(S.players)) if (p.clubId && !p.retired) (by[p.clubId] = by[p.clubId] || []).push(p);
+    for (const c of Object.values(S.clubs)) {
+      const sq = by[c.id] || [];
+      if (!D.BROKEN_MIX[c.comp] || c.policy || c.sim === 'nation' || sq.length < 8) continue;
+      const n = {};
+      for (const p of sq) if (p.nat !== c.nat) n[p.nat] = (n[p.nat] || 0) + 1;
+      const top = Math.max(0, ...Object.values(n));
+      if (top >= 0.4 * sq.length) mixed.push(c.name);
+    }
+    if (mixed.length)
+      problems.push(
+        `${mixed.length} squads are still of one foreign nation after the upgrade (${mixed.slice(0, 3).join(', ')})`,
+      );
+    if (FM.Save.repairSquadNations(S)) problems.push('the squad nationality repair is not idempotent');
+  }
   const before = new Set(checks.failing().map((r) => r.id));
   for (const f of checks.failing())
     problems.push(
@@ -88,10 +109,52 @@ export function testFile(file, { days = 5 } = {}) {
     problems.push(`fault on day ${played + 1}: ${(e.stack || e.message).split('\n').slice(0, 5).join(' | ')}`);
   }
   info.played = played;
+  // the first day of a season puts a league preview, a pre-season note and a rumour in the feed (an employed manager of a league club)
+  if (W.employed() && FM.S.comps[W.userClub().comp] && FM.S.comps[W.userClub().comp].type === 'league' && played > 0) {
+    if (!FM.S.news.some((x) => / preview: /.test(x.title))) problems.push('no league preview in the feed');
+  }
+  // an offer left unanswered lapses with a line in the feed (it is not found gone), and the head physio's decision is his, not the manager's
+  try {
+    const S = FM.S,
+      uc = W.userClub();
+    if (uc && !S.user.sacked) {
+      const mine = W.squad(uc.id).find((p) => W.ownPlayer(p)),
+        buyer = Object.values(S.clubs).find((c) => c.id !== uc.id && c.comp && c.sim !== 'nation');
+      FM.News.add({
+        type: 'bid',
+        title: 'test bid',
+        body: '',
+        pid: mine.id,
+        clubId: buyer.id,
+        data: { pid: mine.id, from: buyer.id, fee: 1e6, status: 'open', max: 1e6, rounds: 0 },
+      });
+      FM.Market.BID_DAYS = 0;
+      FM.Market.expireBids();
+      const n = S.news.find((x) => x.title === 'test bid');
+      if (n.data.status !== 'expired') problems.push('an unanswered bid did not lapse');
+      if (!S.news.some((x) => /lapsed$/.test(x.title) && x.pid === mine.id))
+        problems.push('a lapsed bid left no line in the feed');
+      FM.News.add({
+        type: 'medical',
+        title: 'test medical',
+        body: '',
+        pid: mine.id,
+        clubId: uc.id,
+        choices: [{ k: 'rehab', label: 'Rehab' }],
+        rec: 0,
+      });
+      FM.Injury.expireDecisions(true);
+      const m = S.news.find((x) => x.title === 'test medical');
+      if (m.resolved && m.handledBy !== 'physio')
+        problems.push("the head physio's decision is recorded as the manager's");
+    }
+  } catch (e) {
+    problems.push('the lapse check failed: ' + e.message);
+  }
   for (const f of checks.failing())
     if (!before.has(f.id)) problems.push(`world check fails after ${played} days: ${f.label}`);
   try {
-    const again = FM.Save.unpack(FM.Save.pack(FM.S)).state;
+    const again = FM.Save.unpack(FM.Save.pack(FM.S), { world: true }).state;
     if (
       Object.keys(again.players).length !== Object.keys(FM.S.players).length ||
       again.year !== FM.S.year ||
@@ -102,6 +165,40 @@ export function testFile(file, { days = 5 } = {}) {
     problems.push('could not be packed and opened again: ' + e.message);
   }
   return { ...info, ok: !problems.length, problems };
+}
+
+// A world made while Japan's (and some eighty other) lower divisions had an empty nationality mix: squads of one foreign nation.
+// The mix is made by hand here the way the old build left it, and the save must come back with the clubs' own nations and names.
+export function testSquadNationRepair() {
+  const problems = [];
+  const { FM } = loadSim(7);
+  const { W, D } = FM;
+  W.newWorld({ win: 3, subs: 5, foreignLimit: 6, twoLegs: true, awayGoals: false });
+  const clubs = Object.values(FM.S.clubs).filter((c) => D.BROKEN_MIX[c.comp] && c.sim !== 'nation' && !c.policy);
+  if (!clubs.length) return ['no club in a league that had a broken mix'];
+  const hit = clubs.slice(0, 12);
+  const old = {};
+  for (const c of hit)
+    for (const p of W.squad(c.id)) {
+      const nm = W.rollName('SWE', null, p.born);
+      old[p.id] = { id: p.id, ca: p.ca, fn: nm.fn, ln: nm.ln };
+      Object.assign(p, { nat: 'SWE', nat2: null, fn: nm.fn, ln: nm.ln });
+      delete p.heritage;
+    }
+  const state = FM.Save.unpack(FM.Save.pack(FM.S), { world: true }).state;
+  for (const c of hit) {
+    const sq = Object.values(state.players).filter((p) => p.clubId === c.id && !p.retired);
+    const home = sq.filter((p) => p.nat === c.nat).length;
+    if (home < 0.8 * sq.length) problems.push(`${c.name}: ${home} of ${sq.length} are ${c.nat} after the upgrade`);
+    for (const p of sq) {
+      if (p.nat === 'SWE') problems.push(`${c.name}: ${p.fn} ${p.ln} is still Swedish`);
+      if (old[p.id] && old[p.id].ca !== p.ca) problems.push(`${p.fn} ${p.ln}: his ability changed`);
+      if (old[p.id] && p.nat === c.nat && `${p.fn} ${p.ln}` === `${old[p.id].fn} ${old[p.id].ln}`)
+        problems.push(`${c.name}: ${p.fn} ${p.ln} kept his old name`);
+    }
+  }
+  if (FM.Save.repairSquadNations(state)) problems.push('the repair is not idempotent');
+  return problems.slice(0, 10);
 }
 
 export function list() {
@@ -158,6 +255,9 @@ if (isMain) {
     console.log(`Added ${path.relative(ROOT, out)}`);
     process.exit(0);
   }
+  const repair = testSquadNationRepair();
+  console.log(`${repair.length ? '✗' : '✓'} Squads of one foreign nation are repaired on load`);
+  repair.forEach((p) => console.log('    ' + p));
   const all = list().filter((x) => !args.only || x.file.includes(String(args.only)));
   if (!all.length) {
     console.log(
@@ -180,6 +280,6 @@ if (isMain) {
   console.log(`\n${good}/${all.length} saves open and play on`);
   console.log(`${good === all.length ? '✓' : '✗'} Saves that open and play on   ${good}   real ${all.length}–`);
   console.log(`· Saves in the library   ${all.length}   real 1–`);
-  if (good === all.length) console.log('All checks passed');
-  process.exit(good === all.length ? 0 : 1);
+  if (good === all.length && !repair.length) console.log('All checks passed');
+  process.exit(good === all.length && !repair.length ? 0 : 1);
 }

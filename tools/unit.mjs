@@ -598,8 +598,8 @@ try {
   let foreign = 0;
   for (let i = 0; i < 4000; i++) if (W.managerNation('BUL', 60) !== 'BUL') foreign++;
   ok(
-    foreign > 4000 * 0.25 && foreign < 4000 * 0.5,
-    `about a third of clubs have a foreign manager (${foreign} of 4000)`,
+    foreign > 4000 * 0.08 && foreign < 4000 * 0.22,
+    `about one club in seven have a foreign manager (${foreign} of 4000)`,
   );
 }
 

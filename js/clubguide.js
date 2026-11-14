@@ -149,7 +149,7 @@
     const e = G.entry(code);
     if (!e) return '';
     const set = HOOKS[e.row[5]] || HOOKS.historic;
-    return set[e.pct < 0.25 ? 0 : e.pct < 0.65 ? 1 : 2];
+    return FM.Cups.regional(set[e.pct < 0.25 ? 0 : e.pct < 0.65 ? 1 : 2], e.l.nat);
   };
 
   G.info = (code) => {
@@ -298,11 +298,26 @@
     underdog: (e) =>
       (e.pct > 0.5 ? 1 : 0) + (e.l.tier > 1 ? 0.7 : 0) + (['fan', 'selling', 'youth'].includes(e.row[5]) ? 0.4 : 0),
   };
+  // (a few ways to say each, one chosen by the club so the same club always reads the same)
   const WHY = {
-    trophies: 'Trophies now',
-    rebuild: 'A rebuild',
-    youth: 'Develop young players',
-    underdog: 'An underdog climb',
+    trophies: ['Trophies now', 'Silverware is the aim', 'Built to win things', 'A club that expects prizes'],
+    rebuild: [
+      'A rebuild',
+      'Start again from the foundations',
+      'A long job, done properly',
+      'Tear it down and build it up',
+    ],
+    youth: [
+      'Develop young players',
+      'Give the kids their chance',
+      'A club that grows its own',
+      'The academy comes first',
+    ],
+    underdog: ['An underdog climb', 'Prove them wrong', 'Punch above the weight', 'A long way up, and nothing to lose'],
+  };
+  const why = (project, code) => {
+    const set = WHY[project];
+    return set ? set[U.hash(String(code)) % set.length] : 'A good fit';
   };
   G.reason = function (code, project) {
     const e = G.entry(code),
@@ -310,7 +325,7 @@
       d = G.diff(code);
     const bits = [`${G.capOf(e.row).toLocaleString()} seats`, d.why.charAt(0).toLowerCase() + d.why.slice(1)];
     if (rv) bits.push(`${U.theName(rv.derby)} against ${rv.name}`);
-    return `${bits.join(', ')}. ${WHY[project] || 'A good fit'}.`;
+    return `${bits.join(', ')}. ${why(project, code)}.`;
   };
   // The continents the pickers group nations by (a nation's part of the world in the data, the British Isles with Europe,
   // Australia and New Zealand apart from Asia)

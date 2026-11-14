@@ -1919,7 +1919,8 @@
     return U.wpick(keys, (k) => w[at.get(k)]);
   };
   W.natFor = function (club, ctx) {
-    const mix = club.comp && D.NAT_MIX[club.comp];
+    let mix = club.comp && D.NAT_MIX[club.comp];
+    if (mix && !(mix[club.nat] > 0) && !(FM.S.comps[club.comp] && FM.S.comps[club.comp].nats)) mix = null; // (a mix with no weight for the club's own nation would pick whichever nation is last: use the nation's own)
     const f = ctx ? W.foreignFactor(club, ctx) : 1;
     // (a cross-nation league's visiting club has no mix: its players come from its own nation, as in a league with no mix; the
     // league's own clubs keep the mix, so a Welsh club in England's pyramid does not change how the English clubs are filled)
@@ -2201,12 +2202,12 @@
     const all = D.nationCodes().filter((n) => n !== host);
     return U.wpick(all, (n) => W.mgrExport(n) * W.mgrTie(host, n)) || U.pick(all);
   };
-  // How often the dugout is held by a foreigner: clubs hire one about a third of the time, rather more when the host's own game
-  // is small (a poorer club, a weaker nation)
-  W.MGR_FOREIGN = { club: 0.34, hire: 0.4 };
+  // How often the dugout is held by a foreigner: about one club in seven, fewer the smaller the club, more at the big ones
+  W.MGR_FOREIGN = { club: 0.15, hire: 0.22 };
   W.managerNation = function (host, rep = 60, hire = false) {
     const base = hire ? W.MGR_FOREIGN.hire : W.MGR_FOREIGN.club;
-    const p = base + (rep < 55 ? 0.08 : rep > 75 ? -0.04 : 0);
+    // (a small club hires from its own country: the foreign coaches are at the big clubs and the hired ones of the big names)
+    const p = rep < 50 ? base * 0.35 : rep < 62 ? base * 0.7 : rep > 75 ? base + 0.06 : base;
     return Math.random() < p ? W.foreignNation(host) : host;
   };
   // The nationality of a member of staff (or a scout) a club in `nat` would hire: mostly a local, otherwise a foreigner from
