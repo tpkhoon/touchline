@@ -173,9 +173,9 @@
       if (v >= 1e3) return s + $ + trim(v / 1e3, v >= 1e5 ? 0 : 1) + 'K';
       return s + $ + Math.round(v);
     },
-    // Realistic fee granularity: $1K steps under $100K, $10K under $10M, $50K under $50M, then $100K
+    // Realistic fee granularity: $1K steps under $100K, $2.5K under $500K (the fees of the lower divisions do not pile up on a few round figures), $10K under $10M, $50K under $50M, then $100K
     roundMoney(v) {
-      const step = v < 1e5 ? 1e3 : v < 1e7 ? 1e4 : v < 5e7 ? 5e4 : 1e5;
+      const step = v < 1e5 ? 1e3 : v < 5e5 ? 2.5e3 : v < 1e7 ? 1e4 : v < 5e7 ? 5e4 : 1e5;
       return Math.round(v / step) * step;
     },
     moneyStep(v) {

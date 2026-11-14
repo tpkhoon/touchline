@@ -594,8 +594,7 @@
   Sc.prices = function (p, k) {
     const club = W.userClub();
     if (!club || p.clubId === club.id || k < 20) return null;
-    const T = FM.Transfers,
-      ask = T.askPrice(p);
+    const T = FM.Transfers;
     const an = club.facilities.analytics || 0;
     const noise = (tag, spread) => ((U.hash(p.id + tag) % 2001) / 1000 - 1) * spread;
     const dir = FM.Staff.get('director');
@@ -605,7 +604,7 @@
       free: !p.clubId,
       analytics:
         an >= 1 && k >= 30 ? U.roundMoney(W.baseValue(p) * W.formFactor(p) * (1 + noise('an', 0.2 - an * 0.03))) : null,
-      agent: p.clubId ? ask : null,
+      agent: p.clubId ? T.userAsk(p) : null, // (the figure the offer sheet starts from: one price asked, said the same in both places)
       director: vacant
         ? null
         : U.roundMoney(T.userAsk(p) * (1 + noise('dir', Math.max(0.03, 0.2 - dirAbility * 0.01)))),

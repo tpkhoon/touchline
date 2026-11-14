@@ -140,6 +140,78 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the scouting check failed: ' + e.message);
   }
+  // every way of making an offer answers with a result that says something (never undefined), a player who has just moved is held with a
+  // date and a reason, and after the hold the price carries the premium
+  try {
+    const S = FM.S,
+      T = FM.Transfers,
+      uc = W.userClub();
+    if (W.employed() && uc) {
+      const targets = Object.values(S.players)
+        .filter((p) => p.clubId && !p.loan && !W.ownPlayer(p) && S.clubs[p.clubId].sim !== 'nation')
+        .slice(0, 12);
+      const was = uc.budget;
+      uc.budget = 0;
+      for (const p of targets)
+        for (const [fee, wage] of [
+          [0, 0],
+          [1, 1],
+          [T.userAsk(p), 1],
+          [T.userAsk(p) * 3, 1e9],
+        ]) {
+          const r = T.offer(p.id, fee, wage);
+          if (!r || typeof r !== 'object' || typeof r.msg !== 'string' || !r.msg)
+            problems.push(`an offer for ${p.id} answered ${JSON.stringify(r)}`);
+        }
+      uc.budget = was;
+      const q = targets.find((p) => p.clubId !== uc.id);
+      delete q.settled;
+      const base = T.userAsk(q);
+      T.settle(q);
+      if (!T.blockOf(q) || !/until/.test(T.blockOf(q)))
+        problems.push('a player who has just moved is not held with a date');
+      const wo = FM.Season.windowOpen;
+      FM.Season.windowOpen = () => true; // (the hold is about the player: the test is made in any part of the season)
+      const r = T.offer(q.id, 1e12, 1e9);
+      FM.Season.windowOpen = wo;
+      if (r.ok || !r.block) problems.push('an offer for a player who has just moved was not refused with a reason');
+      q.movedDn -= 61;
+      if (T.blockOf(q)) problems.push('the hold on a recent move does not lift after 60 days');
+      if (T.userAsk(q) < base * 1.3) problems.push('after the hold a recent signing does not cost a premium');
+    }
+  } catch (e) {
+    problems.push('the offer check failed: ' + e.message);
+  }
+  // the window speaks in dates from the calendar, and a bid still open when it closes is void (nothing completes after the deadline)
+  try {
+    const S = FM.S,
+      M = FM.Market,
+      w = M.windowInfo();
+    if (!/\d/.test(w.text) && w.text.indexOf('Opens again') < 0)
+      problems.push(`the window text has no date: ${w.text}`);
+    if (W.employed() && W.userClub()) {
+      const mine = W.squad(W.userClub().id).find((p) => W.ownPlayer(p)),
+        buyer = Object.values(S.clubs).find((c) => c.id !== W.userClub().id && c.comp && c.sim !== 'nation');
+      const n = FM.News.add({
+        type: 'bid',
+        title: 'late bid',
+        body: '',
+        pid: mine.id,
+        clubId: buyer.id,
+        data: { pid: mine.id, from: buyer.id, fee: 1e6, max: 2e6, status: 'open', rounds: 0 },
+      });
+      const wo = FM.Season.windowOpen;
+      FM.Season.windowOpen = () => false;
+      const r = FM.Transfers.respondBid(n, true);
+      FM.Season.windowOpen = wo;
+      if (n.data.status === 'accepted' || mine.clubId === buyer.id)
+        problems.push('a bid answered after the window closed went through');
+      if (typeof r !== 'string' && !(r && r.msg))
+        problems.push('a bid answered after the window closed gave no answer');
+    }
+  } catch (e) {
+    problems.push('the window check failed: ' + e.message);
+  }
   // a manager in a job is paid a little each day, and what he has kept shows
   if (W.employed() && played > 0 && !(FM.S.user.savings > 0))
     problems.push('a manager in a job has kept nothing of his pay');

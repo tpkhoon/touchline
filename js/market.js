@@ -49,6 +49,52 @@
     return n;
   };
   M.isDeadline = () => M.daysLeft() === 1;
+  // The window in the calendar's own dates, for every screen and message that speaks of it (one source: the days that open it): when the
+  // window open now closes (the last open day, at 23:00), or when the next one opens and closes; days left count the days of the calendar
+  // (the matchday ticker that "slipped" counted entries of the calendar, which are not always a day apart)
+  M.windowInfo = function () {
+    const s = S(),
+      cal = s.calendar || [],
+      open = FM.Season.windowOpen(),
+      dn = FM.Season.dnToday();
+    const lastOpen = (d) => {
+      while (openOn(d + 1)) d++;
+      return d;
+    };
+    let closeAt = null,
+      openAt = null;
+    if (open) closeAt = lastOpen(s.day);
+    else {
+      let d = s.day + 1;
+      while (d < cal.length && !openOn(d)) d++;
+      if (d < cal.length) {
+        openAt = d;
+        closeAt = lastOpen(d);
+      }
+    }
+    const dnOf = (i) => (i != null && cal[i] && typeof cal[i].dn === 'number' ? cal[i].dn : null);
+    const closeDn = dnOf(closeAt),
+      openDn = dnOf(openAt);
+    const when = (x) => (x == null ? '' : W.dateText(x));
+    const daysLeft =
+      open && closeDn != null && typeof dn === 'number' ? Math.max(1, closeDn - dn + 1) : open ? M.daysLeft() : 0;
+    return {
+      open,
+      closeDn,
+      openDn,
+      daysLeft,
+      closes: closeDn != null ? `${when(closeDn)} 23:00` : '',
+      opens: when(openDn),
+      // a sentence for the screens: "Closes Tue 23 Feb 23:00 (3 days left)" / "Opens Sat 6 Dec, closes Wed 10 Dec 23:00"
+      text: open
+        ? daysLeft === 1
+          ? `Deadline day: closes today at 23:00`
+          : `Closes ${closeDn != null ? `${when(closeDn)} 23:00` : 'soon'} (${U.plural(daysLeft, 'day')} left)`
+        : openDn != null
+          ? `Opens ${when(openDn)}, closes ${closeDn != null ? `${when(closeDn)} 23:00` : 'later'}`
+          : 'Opens again in next season’s pre-season',
+    };
+  };
 
   // Once a day, as each new day begins (after the previous one is played)
   M.newDay = function () {

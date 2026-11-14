@@ -265,8 +265,8 @@
   };
   Co.agentFee = function (p, fee, wage, mode) {
     const ag = Co.agentInfo(p);
-    const base = mode === 'transfer' && fee > 0 ? fee * ag.fee : wage * 52 * ag.fee * 0.6;
-    return U.roundMoney(Math.max(wage * 2, base));
+    // one basis for every deal (a transfer, a loan, a free signing, a renewal): the agent's share of the first year's wages
+    return U.roundMoney(Math.max(wage * 2, wage * D.WAGE_WEEKS * ag.fee));
   };
 
   // Apply agreed terms to the player
@@ -321,7 +321,7 @@
     if (p.clubId && !FM.Season.windowOpen())
       return {
         ok: false,
-        msg: 'The transfer window is closed. It reopens mid-season (matchday 12) and in pre-season. Free agents can be signed any time.',
+        msg: `The transfer window is closed. ${FM.Market.windowInfo().text}. Free agents can be signed any time.`,
       };
     if (p.clubId && T.isSettled(p) && !W.hasTrait(p, 'Mercenary'))
       return {

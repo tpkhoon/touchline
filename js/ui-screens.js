@@ -2563,7 +2563,7 @@
     const newCount = FM.Scouting.unseen();
     const win = FM.Season.windowOpen();
     return (
-      `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${win ? '●' : '●'}</span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `Deals can be completed now. ${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(club().budget)}</b></div></div>` +
+      `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${win ? '●' : '●'}</span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `Deals can be completed now. ${UI.windowLabel()}.` : `${FM.Market.windowInfo().text}.`}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(club().budget)}</b></div></div>` +
       chips('scout', [
         ['scouts', 'Scouts'],
         ['reports', `Reports${newCount ? ` (${newCount})` : ''}`],

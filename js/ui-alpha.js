@@ -272,7 +272,12 @@
         <div class="card flat" style="margin-top:14px"><div class="row small"><span class="grow">Package vs his demands</span><b style="color:${ev.ok ? 'var(--good)' : pct >= 90 ? 'var(--warn)' : 'var(--bad)'}">${ev.hard ? 'Refuses the role' : ev.ok ? 'Acceptable' : pct + '%'}</b></div>${C.bar(pct, ev.ok ? 'var(--good)' : pct >= 90 ? 'var(--warn)' : 'var(--bad)')}
           <div class="small" style="margin-top:8px"><b>This deal:</b> ${U.money(cost.first)}/yr in wages, ${renew ? 'adding' : ''} ${Math.round(cost.share * 100)}% ${renew ? 'to' : 'of'} your wage bill, ${U.money(cost.total)} over the contract${!renew && o.mode !== 'pre' && o.fee ? ` plus the ${U.money(o.fee)} fee` : ''}</div>
           <table class="t" style="margin-top:6px"><tr><th class="l">Season</th><th>Wages</th><th>Bonuses &amp; fees</th><th>Total</th></tr>${cost.rows.map((r) => `<tr><td class="l">${esc(r.label)}</td><td>${U.money(r.wages)}</td><td>${r.extras ? U.money(r.extras) : '—'}</td><td class="b">${U.money(r.total)}</td></tr>`).join('')}</table>
-          <div class="tiny dim" style="margin-top:6px">Bonuses are what he'd earn at his expected appearances and goals; the first season includes the agent's fee (${U.money(Co.agentFee(p, o.fee, t.wage, mode))}). Your wage bill would be ${Math.round(cost.ratio * 100)}% of revenue${cost.ratio >= FM.Finance.LIMIT.cut ? ` — over the ${Math.round(FM.Finance.LIMIT.cut * 100)}% where the board cut budgets` : ''}.${t.release ? ` A club paying ${U.money(t.release)} can take him.` : ''}</div></div>`;
+          <div class="tiny dim" style="margin-top:6px">Bonuses are what he'd earn at his expected appearances and goals; the first season includes the agent's fee (${Math.round(Co.agentInfo(p).fee * 100)}% of the first year's wages, ${D.WAGE_WEEKS} pay weeks: ${U.money(Co.agentFee(p, o.fee, t.wage, mode))}). Your wage bill would be ${Math.round(cost.ratio * 100)}% of revenue${(() => {
+            const wo = FM.Board.list(c).find((x) => x.id === 'wages');
+            return wo && cost.ratio > wo.limit
+              ? ` — past the ${Math.round(wo.limit * 100)}% the board set as an objective`
+              : '';
+          })()}${cost.ratio >= FM.Finance.LIMIT.cut ? ` — over the ${Math.round(FM.Finance.LIMIT.cut * 100)}% where the board cut budgets` : ''}.${t.release ? ` A club paying ${U.money(t.release)} can take him.` : ''}</div></div>`;
     }
     const rivals = !renew && o.mode !== 'loan' ? FM.Market.rivals(p) : [];
     const reg = !renew ? (FM.Reg.real() ? FM.Reg.canSign(c, p, undefined, true) : FM.Reg.policy(c, p)) : { ok: true };

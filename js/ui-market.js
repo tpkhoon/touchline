@@ -12,9 +12,10 @@
   const esc = U.esc;
 
   // "Window open · 3 days left" / "Deadline day"
-  UI.windowLabel = () => {
-    const n = M.daysLeft();
-    return n === 1 ? 'Deadline day' : n ? `Window open · ${U.plural(n, 'day')} left` : 'Window closed';
+  UI.windowLabel = (short) => {
+    const w = M.windowInfo();
+    if (short) return w.daysLeft === 1 ? 'Deadline day' : `Window · ${U.plural(w.daysLeft, 'day')} left`;
+    return w.open ? `Window open · ${w.text}` : `Window closed · ${w.text}`;
   };
 
   // ======================= The Transfers tab =======================
@@ -25,7 +26,7 @@
       c = W.userClub(),
       win = FM.Season.windowOpen();
     const CL = (id) => FM.clubOf(id);
-    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px"><span style="color:var(--${win ? 'good' : 'bad'})">●</span></span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14. Until then only free agents can sign.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
+    const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px"><span style="color:var(--${win ? 'good' : 'bad'})">●</span></span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `${UI.windowLabel()}.` : `${M.windowInfo().text}. Until then only free agents can sign.`}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(c.budget)}</b></div></div>`;
     const links = `<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">${[
       ['search', 'Search players'],
       ['shortlist', 'Shortlist'],

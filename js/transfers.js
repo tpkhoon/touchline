@@ -10,7 +10,28 @@
   const T = (FM.Transfers = /** @type {any} */ ({}));
   // A player who has just moved or signed a new contract is settled for a year: he doesn't talk about leaving,
   // and clubs don't try to prise him away (p.settled = the day index it ends, same day next season)
-  T.settle = (p) => (p.settled = FM.Season.dayIndex() + 1000);
+  T.settle = (p) => {
+    p.settled = FM.Season.dayIndex() + 1000;
+    // (the date he moved, in the calendar's own days: the rule below is about how long ago it was, not about a season)
+    p.movedY = FM.S.year;
+    p.movedDn = FM.Season.dnToday();
+  };
+  // A player who has just joined a club: for T.BLOCK_DAYS after the move he will not hear of another (the offer is not made, and the
+  // button says why and when it lifts); until the season ends after that he can be had at a premium (T.SETTLED_PREMIUM of the ask).
+  // A Mercenary is never held. Free agents and loanees are not held.
+  T.BLOCK_DAYS = 60;
+  T.SETTLED_PREMIUM = 1.4;
+  T.moveRule = function (p) {
+    if (!p.clubId || p.loan || !T.isSettled(p) || W.hasTrait(p, 'Mercenary')) return null;
+    const dn = FM.Season.dnToday();
+    if (typeof p.movedDn !== 'number' || typeof dn !== 'number') return { premium: true }; // (a save from before the date was kept)
+    const since = (FM.S.year - p.movedY) * 365 + dn - p.movedDn;
+    if (since < T.BLOCK_DAYS) {
+      const liftDn = dn + (T.BLOCK_DAYS - since);
+      return { block: true, since, liftDn, lifts: W.dateText(liftDn, FM.S.year) };
+    }
+    return { premium: true };
+  };
   T.isSettled = (p) => p.settled != null && FM.Season.dayIndex() < p.settled;
   // A club's five best players (cached per matchday: the AI market asks this for thousands of players)
   /** @type {any} */
@@ -47,7 +68,18 @@
   };
   // A good sporting director shaves the fee and the agent's demands when you buy
   T.dirFactor = () => FM.Staff.impact('director').buy;
-  T.userAsk = (p) => U.roundMoney(T.askPrice(p) * T.dirFactor());
+  // Why a player cannot be bid for now, in words, with the date it lifts ('' when he can)
+  T.blockOf = function (p) {
+    const r = T.moveRule(p),
+      c = p.clubId && FM.S.clubs[p.clubId];
+    return r && r.block
+      ? `${W.name(p)} joined ${c ? c.name : 'his club'} ${U.plural(Math.max(0, r.since), 'day')} ago and will not hear of another move until ${r.lifts}.`
+      : '';
+  };
+  T.userAsk = (p) => {
+    const rule = T.moveRule(p);
+    return U.roundMoney(T.askPrice(p) * T.dirFactor() * (rule && rule.premium ? T.SETTLED_PREMIUM : 1));
+  };
   T.wageDemand = function (p, toClub) {
     // (he asks for a rise on what he earns, but not more than the club pays for his ability by much: a star coming down a division
     // does not drag the wage bill of the club that signs him past its income)
@@ -264,8 +296,11 @@
     if (p.clubId && !FM.Season.windowOpen())
       return {
         ok: false,
-        msg: 'The transfer window is closed. It reopens mid-season (matchday 12) and in pre-season. Free agents can be signed any time.',
+        msg: `The transfer window is closed. ${FM.Market.windowInfo().text}. Free agents can be signed any time.`,
       };
+    // (a player who has just moved is held whatever the offer: said first, with the date)
+    const held = p.clubId && T.blockOf(p);
+    if (held) return { ok: false, block: true, msg: held };
     if (fee > club.budget) return { ok: false, msg: `That exceeds your transfer budget of ${U.money(club.budget)}.` };
     const seller = p.clubId && S.clubs[p.clubId];
     if (seller) {
@@ -279,8 +314,7 @@
         return { ok: false, counter: ask, msg: `${seller.name} want ${U.money(ask)}. Close, but not enough.` };
     }
     // Player's view
-    if (seller && T.isSettled(p) && !W.hasTrait(p, 'Mercenary'))
-      return { ok: false, msg: `${W.name(p)} has only just committed to ${seller.name} and isn't looking to move.` };
+    // (a recent signing's price already carries the premium: userAsk above; the block is stated before any of it, in T.blockOf)
     if (seller && W.hasTrait(p, 'Loyal') && T.isKey(p) && fee < T.userAsk(p) * 1.4)
       return { ok: false, msg: `${W.name(p)} is loyal to ${seller.name} and won't consider the move.` };
     if (seller && seller.rep > club.rep + 10 && p.hid.amb >= 12)
@@ -1315,7 +1349,10 @@
     }
     n.data.status = 'accepted';
     T.execute(p, buyer.id, n.data.fee, null, { deal: n.data.deal });
-    return `${W.name(p)} has joined ${buyer.name} for ${FM.Market.describeDeal(n.data.fee, n.data.deal)}.`;
+    // (what part of the fee goes to the transfer budget: the rule of the club's way of working, said so the budget's rise is explained)
+    const uc = W.userClub(),
+      share = uc ? Math.round(FM.Finance.mix(uc).sell * 100) : 0;
+    return `${W.name(p)} has joined ${buyer.name} for ${FM.Market.describeDeal(n.data.fee, n.data.deal)}.${share ? ` ${share}% of what is paid now goes to your transfer budget; the rest stays in the club's accounts.` : ''}`;
   };
   // Negotiate a bid for your player in full: your fee and how it's paid (instalments, add-on, a sell-on clause for
   // you). The bidder accepts anything that costs them no more than their limit; above it they come back part of

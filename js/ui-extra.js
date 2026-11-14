@@ -109,7 +109,7 @@
       ${v.moneyball ? `<div class="warnline" style="margin-top:8px;color:var(--acc2);background:color-mix(in srgb,var(--acc2) 12%,transparent)">${esc(v.moneyball)}</div>` : ''}
       ${UI.pricesBlock(p, v, isFree)}
       ${loanT && loanT.available ? `<div class="row small" style="margin-top:4px"><span class="grow muted">Loan possible</span><b>~${Math.round(Math.min(1, loanT.share) * 100)}% of wages</b></div>` : ''}
-      <div class="row btnrow" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}" style="flex:1 1 auto;padding:11px 10px;white-space:nowrap">Compare</button>${UI.trialButton(p)}${p.loan ? '' : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div></div>`;
+      <div class="row btnrow" style="gap:6px;margin-top:12px;flex-wrap:wrap"><button class="btn sm grow" data-act="scoutPlayer" data-id="${p.id}">Scout</button><button class="btn sm grow" data-act="shortlist" data-id="${p.id}">${s.user.shortlist.includes(p.id) ? '★ Listed' : '☆ Shortlist'}</button><button class="btn sm grow" data-act="compare" data-id="${p.id}" style="flex:1 1 auto;padding:11px 10px;white-space:nowrap">Compare</button>${UI.trialButton(p)}${p.loan ? '' : holdLine(p) ? `<button class="btn sm grow" disabled style="opacity:.6">Make offer</button>` : `<button class="btn sm pri grow" data-act="offer" data-id="${p.id}">${isFree ? 'Offer contract' : 'Make offer'}</button>`}</div>${holdLine(p) ? `<div class="warnline" style="margin-top:8px">${esc(holdLine(p))}</div>` : ''}</div>`;
   };
 
   UI.ownActions = function (p) {
@@ -270,6 +270,8 @@
   UI.acts.offer = (d) => {
     const p = P(d.id),
       c = club();
+    const held = p.clubId && !p.loan && FM.Transfers.blockOf(p);
+    if (held) return UI.toast(held, 5000);
     const mode = p.clubId && !p.loan && FM.Scouting.view(p).rec === 'Loan' ? 'loan' : 'transfer';
     UI._offer = {
       pid: p.id,
@@ -281,6 +283,13 @@
       loanFee: 0,
     };
     UI.offerSheet();
+  };
+  // Steps of 5%, 10% and 25% of the figure being negotiated (a flat ±1M is nothing on a fee of 20M and everything on one of 100K), each
+  // rounded to a figure that reads well
+  const pctSteps = (base) => {
+    const b = Math.max(base, 1000),
+      s = [0.05, 0.1, 0.25].map((x) => niceStep(b * x));
+    return [-s[2], -s[1], -s[0], s[0], s[1], s[2]];
   };
   const stepBtns = (field, steps) =>
     `<div class="row" style="gap:4px;margin-top:6px;flex-wrap:wrap">${steps.map((st) => `<button class="btn sm" style="flex:1;padding:7px 2px;font-size:12px" data-act="ofStep" data-f="${field}" data-v="${st}">${st > 0 ? '+' : '−'}${U.money(Math.abs(st)).replace('$', '')}</button>`).join('')}</div>`;
@@ -307,12 +316,12 @@
         p.clubId
           ? `<div class="row" style="margin-top:12px"><div class="h3 grow">Transfer fee</div><span class="tiny dim">asking ~${U.money(ask)}</span></div>
         <div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="0" step="1000" value="${o.fee}" data-input="ofNum" data-f="fee" class="numin"><b id="ofFee" style="min-width:74px;text-align:right">${U.money(o.fee)}</b></div>
-        ${stepBtns('fee', [-1e6, -1e5, -1e4, 1e4, 1e5, 1e6])}`
+        ${stepBtns('fee', pctSteps(ask || o.fee))}`
           : `<div class="warnline" style="margin-top:12px">Free agent — no fee. Signing-on bonus ${U.money(T.signingBonus(p, o.wage))} (10 weeks' wages).</div>`
       }
         <div class="row" style="margin-top:14px"><div class="h3 grow">Weekly wage</div><span class="tiny dim">agent wants ${U.money(dem)}</span></div>
         <div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="0" step="50" value="${o.wage}" data-input="ofNum" data-f="wage" class="numin"><b id="ofWage" style="min-width:74px;text-align:right">${U.money(o.wage)}</b></div>
-        ${stepBtns('wage', [-1000, -250, -50, 50, 250, 1000])}
+        ${stepBtns('wage', pctSteps(o.wage))}
         <div class="h3" style="margin-top:14px">Contract length</div>${chipRow('ofSet', 'years', o.years, [
           [1, '1 yr'],
           [2, '2 yrs'],
@@ -320,7 +329,7 @@
           [4, '4 yrs'],
           [5, '5 yrs'],
         ])}
-        <div class="small dim" style="margin-top:6px">Total cost over the deal: <b>${U.money(o.fee + o.wage * 52 * o.years + T.signingBonus(p, o.wage))}</b></div>`;
+        <div class="small dim" style="margin-top:6px">Total cost over the deal: <b>${U.money(o.fee + o.wage * D.WAGE_WEEKS * o.years + T.signingBonus(p, o.wage))}</b> <span class="tiny">(wages are paid for ${U.plural(D.WAGE_WEEKS, 'week')} a year)</span></div>`;
     } else {
       body = `<div class="h3" style="margin-top:12px">Share of wages you pay</div>${chipRow('ofSet', 'share', o.share, [
         [0.25, '25%'],
@@ -331,7 +340,7 @@
         <div class="small dim" style="margin-top:6px">That's ${U.money(p.wage * o.share)}/wk of his ${U.money(p.wage)}/wk.</div>
         <div class="row" style="margin-top:14px"><div class="h3 grow">Loan fee (optional)</div></div>
         <div class="row" style="gap:8px;margin-top:6px"><input type="number" inputmode="numeric" min="0" step="1000" value="${o.loanFee}" data-input="ofNum" data-f="loanFee" class="numin"><b id="ofLoanFee" style="min-width:74px;text-align:right">${U.money(o.loanFee)}</b></div>
-        ${stepBtns('loanFee', [-1e5, -1e4, 1e4, 1e5])}
+        ${stepBtns('loanFee', pctSteps(ask * 0.2 || o.loanFee).slice(1, 5))}
         <div class="small dim" style="margin-top:6px">A fee of ~5% of his value (${U.money(p.value * 0.05)}) makes his club more flexible on wages. He returns at the end of the season.</div>`;
     }
     const html = `<div class="row">${C.pos(p)}<div class="grow b">${esc(W.name(p))} <span class="dim small">${W.age(p)}</span></div>${p.clubId ? C.crest(CL(p.clubId), 26) : '<span class="pill">Free agent</span>'}</div>
@@ -362,6 +371,8 @@
     const b = document.getElementById(id);
     if (b) b.textContent = U.money(o[d.f]);
   };
+  // The reason a player cannot be bid for yet, shown beside the greyed-out button (the date it lifts is in it)
+  const holdLine = (p) => (p.clubId && !p.loan ? FM.Transfers.blockOf(p) : '');
   UI.acts.submitOffer = () => {
     const o = UI._offer,
       p = P(o.pid);
@@ -377,6 +388,15 @@
       UI.render();
       return;
     }
+    // (a refusal is never silent: it is said in the sheet and, when the player would not hear of it, kept in the feed)
+    if (r.block)
+      FM.News.add({
+        type: 'club',
+        title: `${W.short(p)}: no offer possible yet`,
+        body: r.msg,
+        pid: p.id,
+        clubId: p.clubId,
+      });
     if (r.counter) {
       if (o.mode === 'loan') o.share = r.counter;
       else o.fee = r.counter;
