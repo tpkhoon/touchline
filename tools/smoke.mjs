@@ -52,6 +52,20 @@ const listed = [...sw.matchAll(/["']\.\/([^"']+)["']/g)].map((m) => m[1]);
 for (const f of listed) ok(fs.existsSync(path.join(DIST, f)), `the service worker caches ${f}, which is not in dist`);
 ok(listed.length > 5, 'the service worker caches almost nothing');
 
+// ---- the prepared world (npm run build:world): when there is one it is for this build of the simulation ----
+if (fs.existsSync(path.join(DIST, 'data', 'world.json'))) {
+  const wm = JSON.parse(read('data/world.json')),
+    want = /sim\.min\.js\?v=(\w+)/.exec(html);
+  ok(
+    fs.existsSync(path.join(DIST, 'data', 'world.touchline')),
+    'data/world.json is there but data/world.touchline is not',
+  );
+  ok(
+    want && wm.sim === want[1],
+    'the prepared world is for another build of the simulation: run npm run build:world again',
+  );
+}
+
 // ---- the simulation bundle, as the worker runs it ----
 let seed = 11;
 const rng = () => {

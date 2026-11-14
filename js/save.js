@@ -393,9 +393,10 @@
   // Compact player format (attributes rounded, derived fields dropped) — much smaller saves
   Sv.pack = (s) => JSON.stringify({ ...s, players: W.packPlayers(s.players), pz: 1 });
   // Parse, unpack and upgrade. Returns { state, from }.
-  Sv.unpack = function (raw) {
+  // opts.world: a prepared world (no manager yet) rather than a career, so it has no user
+  Sv.unpack = function (raw, opts) {
     const st = typeof raw === 'string' ? JSON.parse(raw) : raw;
-    if (!st || typeof st !== 'object' || !st.players || !st.clubs || !st.user)
+    if (!st || typeof st !== 'object' || !st.players || !st.clubs || (!st.user && !(opts && opts.world)))
       throw Object.assign(new Error('That file is not a Touchline save.'), { code: 'invalid' });
     // Unpacking recomputes ages and values from the save's own date, so it runs with this state current
     const prev = FM.S;

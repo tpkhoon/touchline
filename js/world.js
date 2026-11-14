@@ -3713,6 +3713,41 @@
     }
     Object.values(S.clubs).forEach(W.syncSim);
   };
+  // The prepared world (tools/buildworld.mjs) is made once, with every league in the light tier, and every career begins from it.
+  // What a career changes in it: the tier of each league the player chose, and how good a young player will become (hidden: drawn
+  // again for each save around what the world gave him, so the clubs and squads are the same for everyone and the futures are not).
+  W.fitPreparedWorld = function (sims) {
+    const S = FM.S;
+    S.simPrefs = Object.fromEntries(
+      Object.entries(sims || {}).filter(([, v]) => ['full', 'light', 'minimal'].includes(v)),
+    );
+    for (const comp of W.leagues()) if (S.simPrefs[comp.id]) comp.sim = S.simPrefs[comp.id];
+    Object.values(S.clubs).forEach(W.syncSim);
+    for (const id in S.players) {
+      const p = S.players[id];
+      if (p.retired || !(p.pa > p.ca) || W.age(p) > 24) continue;
+      const pa = U.clamp(Math.round(p.pa + U.gauss(0, Math.min(5, 1 + (p.pa - p.ca) / 4))), p.ca, 99);
+      if (pa !== p.pa) {
+        p.pa = pa;
+        p.value = W.value(p);
+      }
+    }
+  };
+  // A league the player runs in the full engine needs the bigger squads of that tier (the prepared world was made in the light one):
+  // the clubs of those leagues are filled up the way a new world fills a squad, and the players made are set up like the rest
+  W.topUpPreparedSquads = function () {
+    const S = FM.S,
+      clubs = Object.values(S.clubs).filter((c) => c.comp && c.sim === 'full' && !c.parent),
+      before = new Set(Object.keys(S.players));
+    clubs.forEach((c) => genSquad(c, W.squad(c.id)));
+    const made = Object.values(S.players).filter((p) => !before.has(p.id));
+    made.forEach((p) => W.assignYouth(p, p.clubId));
+    made.forEach((p) => p.clubId && FM.Contracts.aiDeal(p, S.clubs[p.clubId]));
+    made.forEach((p) => W.backfillHistory(p));
+    made.forEach((p) => (p.value = W.value(p)));
+    if (FM.Youth && FM.Youth.assign) clubs.forEach((c) => FM.Youth.assign(c));
+    return made.length;
+  };
   // Avatars for the manager profile
   W.AVATARS = [
     '',

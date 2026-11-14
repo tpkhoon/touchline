@@ -2,7 +2,7 @@
 // Strategy: network-first for the app's own files (so you always get the latest code when online,
 // with no version juggling), falling back to the cache when offline or slow. Everything the game
 // needs is precached on install. Bump CACHE when the file list changes.
-const CACHE = 'touchline-v126';
+const CACHE = 'touchline-v127';
 const FILES = [
   './',
   './index.html',
@@ -153,6 +153,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.includes('/data/world.')) return; // the prepared world is large: the browser fetches it itself (the 4 s race below would cut it)
   e.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);

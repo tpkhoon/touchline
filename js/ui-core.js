@@ -1207,6 +1207,7 @@
     recs: [],
     db: null, // an imported database (FM.DbImport.import result) the world is built from, or null for the built-in world
     slot: 1,
+    world: 'fixed', // 'fixed': the world made when the game was built (loads in seconds), or 'random': a new one made now (minutes)
     liveEdit: true, // the in-game editor (Settings → Edit the world) is on: it can be switched off for a purist career
     sims: {}, // leagues whose simulation tier was changed from the default: { id: 'full' | 'light' | 'minimal' }
   };
@@ -1547,6 +1548,15 @@
         <div class="ng-names"><input type="text" id="ng-fn" placeholder="First name" maxlength="16" value="${esc(NG.fn)}" autocomplete="given-name"><input type="text" id="ng-ln" placeholder="Last name" maxlength="20" value="${esc(NG.ln)}" autocomplete="family-name"></div><div class="ng-err" id="ng-err" role="alert" hidden></div>
         <div class="ng-label">Country <span style="color:#6f7f96">· your own national team will know your name</span></div>
         <select id="ng-nat">${nations.map(([k, n]) => `<option value="${k}" ${NG.nat === k ? 'selected' : ''}>${n.flag} ${esc(n.name)}</option>`).join('')}</select>
+        <div class="ng-label">World <span style="color:#6f7f96">· the same world for everyone, or a new random one (takes a few minutes to build)</span></div>
+        <div class="seg">${[
+          ['fixed', 'The shared world'],
+          ['random', 'A random world'],
+        ]
+          .map(
+            ([v, t]) => `<button class="${NG.world === v ? 'on' : ''}" data-act="ngWorld" data-v="${v}">${t}</button>`,
+          )
+          .join('')}</div>
         <div class="ng-label">Editing the world in game <span style="color:#6f7f96">· fix a name or rating, or change many at once, while you play</span></div>
         <div class="seg">${[
           [true, 'On'],
@@ -1826,6 +1836,28 @@
     NG.liveEdit = d.v === 'true';
     UI.newCareer();
   };
+  UI.acts.ngWorld = (d) => {
+    NG.world = d.v === 'random' ? 'random' : 'fixed';
+    UI.newCareer();
+  };
+  // The prepared world (tools/buildworld.mjs): made when the game was built, so a new career loads it instead of generating one.
+  // Null when there is none for this build (a game run from its sources, an older build, a failed download): the world is made then.
+  UI.loadPreparedWorld = async function () {
+    try {
+      const tag = document.querySelector('script[src*="sim.min.js"]'),
+        want = tag && /[?&]v=(\w+)/.exec(tag.src);
+      if (!want) return null;
+      const meta = await fetch('data/world.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null));
+      if (!meta || meta.sim !== want[1]) return null;
+      const res = await fetch('data/world.touchline');
+      if (!res.ok) return null;
+      const text = await FM.Save.gunzip(new Uint8Array(await res.arrayBuffer()));
+      return FM.Save.unpack(text, { world: true }).state;
+    } catch (e) {
+      console.warn('The prepared world was not used', e);
+      return null;
+    }
+  };
   UI.acts.ngSlot = (d) => {
     NG.slot = +d.n;
     UI.newCareer();
@@ -2011,7 +2043,7 @@
   UI.acts.ngStart = () => {
     $('#app').innerHTML =
       `<div class="title"><div class="logo" style="font-size:40px">Building<br>your world<span>…</span></div><div class="tag">Generating clubs, players, personalities and scouting networks. This takes a little while on a phone.</div><div class="buildbar" aria-hidden="true"><i></i></div><div class="tiny" style="color:#9fb0c5;margin-top:18px;line-height:1.6;max-width:300px;margin-left:auto;margin-right:auto;text-align:left"><b style="color:#e6edf6">While you wait</b><br>${U.pick(['Continue plays forward until something needs you: nothing slips past.', 'Stars are measured against your own league: three and a half is a typical starter there.', 'Young players grow with minutes; a talented teenager on the bench stalls.', 'Every signing needs a registration place under your league rules.', 'A tired side concedes late goals: rotate before a run of games.'])}</div></div>`;
-    setTimeout(() => {
+    setTimeout(async () => {
       const theme = (FM.S && FM.S.settings) || { theme: document.documentElement.dataset.theme || 'dark', speed: 1 };
       FM.S = null;
       // your league and the two next to it are fully simulated whatever else was chosen
@@ -2031,17 +2063,32 @@
           UI.toast('The database could not load, so the built-in world is used: ' + e.message.split('\n')[0], 5000);
         }
       }
+      // The shared world was made when the game was built (tools/buildworld.mjs): loading it takes seconds, making one minutes
+      let prepared = false;
+      if (!built && NG.world !== 'random') {
+        const state = await UI.loadPreparedWorld();
+        if (state) {
+          FM.DbImport.restore(state);
+          FM.S = state;
+          W.fitPreparedWorld(sims);
+          built = prepared = true;
+        }
+      }
       if (!built) W.newWorld({ ...W.REAL_RULES, sims });
       FM.S.settings = { ...theme, noLiveEdit: !NG.liveEdit };
-      FM.Season.init();
+      if (!prepared) FM.Season.init();
       if (NG.club === 'none') {
         // A career without a club: a modest reputation and offers from the lower leagues
         W.newManager(ngProfile(), 38, NG.nat);
         if (!FM.S.staffPool) W.refreshStaffPool();
         W.goUnemployed('start');
       } else W.takeCharge(NG.club, ngProfile());
-      W.seedHistory();
-      W.seedLegends();
+      if (prepared)
+        W.topUpPreparedSquads(); // (the leagues you play in full need the bigger squads)
+      else {
+        W.seedHistory();
+        W.seedLegends();
+      }
       FM.Stories.welcome();
       UI.slot = NG.slot;
       UI.save();
