@@ -311,7 +311,7 @@
       if (!c.rival || !FM.S.clubs[c.rival]) return null;
       const r = FM.S.clubs[c.rival];
       return {
-        body: `${r.name} are your rivals. How much does the ${c.derby || 'derby'} mean to you?`,
+        body: `${r.name} are your rivals. How much does ${c.derby ? U.theName(c.derby) : 'the derby'} mean to you?`,
         choices: [
           {
             label: 'Everything',

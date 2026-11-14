@@ -103,7 +103,9 @@
           .slice(0, 23)
           .filter((p) => !W.available(p))
       : W.squad(me.id).filter((p) => !W.available(p));
-    const mgr = opp.manager && s.staff[opp.manager];
+    // (a national team's manager is the federation's: the same one the Nations screen shows, not a club's staff record, which a nation has none of)
+    const ntOpp = opp.sim === 'nation' ? (s.nteams || {})[opp.id] || (s.nteams || {})['n_' + opp.code] : null;
+    const mgr = ntOpp ? ntOpp.mgr : opp.manager && s.staff[opp.manager];
     const derby = me.rival === opp.id;
     const f1 = fx.first && FM.Cups.findFixture(fx.first);
     const asst = FM.Staff.get('assistant');

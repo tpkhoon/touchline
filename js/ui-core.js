@@ -587,19 +587,24 @@
       UI.toast(`Slot ${n} has no save data on this device. Delete the slot, or import a save file.`, 6000);
       return false;
     }
+    let step = 'reading the save';
     try {
       const { state, from } = FM.Save.unpack(raw);
+      step = 'rebuilding the world';
       FM.DbImport.restore(state); // the game's clubs and leagues as this world has them (a database's, or the built-in ones)
       NG.db = null;
       FM.S = state;
+      step = "the world's history";
       if (FM.Lore) FM.Lore.ensure(); // (a save made before the world's lore existed gets it)
       UI.slot = n;
+      step = 'upgrading the save';
       if (from < FM.Save.VERSION) {
         // Keep the original, then write the upgraded save straight away
         await FM.Save.keepBackup(n, raw);
         UI.save();
         setTimeout(() => UI.toast(`Save upgraded to the latest format (v${from} → v${FM.Save.VERSION})`, 3200), 400);
       }
+      step = 'finishing the day that was in progress';
       const left = FM.Season.resolveLive();
       if (left) {
         UI.save();
@@ -609,10 +614,54 @@
       }
       return true;
     } catch (e) {
-      console.warn('load failed', e);
-      UI.toast(e.code ? e.message : `This save could not be opened: ${(e && e.message) || 'unknown error'}`, 7000);
+      console.warn(`load failed while ${step}`, e);
+      UI.loadFailed(n, step, e, raw);
       return false;
     }
+  };
+  // A save that would not open: the reason and the step it failed in on the screen (a silent return to the title hides the cause from
+  // the player and from whoever they tell), and what can still be done with it: take the file out, or delete the slot
+  UI.loadFailed = function (n, step, e, raw) {
+    const why = (e && e.message) || 'unknown error';
+    UI._failedLoad = { n, raw, confirm: false };
+    UI.sheet(
+      `<div class="small" style="line-height:1.5">This save could not be opened. Nothing was changed: it is still in slot ${n}.</div><div class="card"><div class="small b">${esc(why)}</div><div class="tiny dim" style="margin-top:4px">It failed while ${esc(step)}.</div></div><div class="tiny dim" style="line-height:1.5">${raw ? 'Export the save to keep the file (and send it with a problem report), or delete the slot to start again.' : 'The save was read but the game could not start it.'}</div><div class="row" style="gap:8px;margin-top:10px">${raw ? '<button class="btn sm grow" data-act="failedExport">Export this save</button>' : ''}<button class="btn sm grow" data-act="failedDelete" id="failed-delete">Delete this save</button></div><button class="btn sm block" style="margin-top:8px" data-act="closeSheet">Close</button>`,
+      { title: 'This save could not be opened' },
+    );
+  };
+  UI.acts.failedExport = async () => {
+    const f = UI._failedLoad;
+    if (!f || !f.raw) return;
+    try {
+      const bytes = await FM.Save.gzip(f.raw);
+      await FM.Native.shareFile({
+        bytes,
+        name: `touchline-slot${f.n}-unopened.touchline`,
+        type: 'application/octet-stream',
+        title: 'Touchline save',
+        preferShare: matchMedia('(pointer: coarse)').matches,
+      });
+    } catch (e) {
+      UI.toast(`The save could not be exported: ${(e && e.message) || 'unknown error'}`, 5000);
+    }
+  };
+  UI.acts.failedDelete = async () => {
+    const f = UI._failedLoad;
+    if (!f) return;
+    const b = document.getElementById('failed-delete');
+    if (!f.confirm) {
+      f.confirm = true; // (a second tap confirms)
+      if (b) {
+        b.textContent = 'Tap again to delete';
+        b.classList.add('danger');
+      }
+      return;
+    }
+    await FM.Save.remove(f.n);
+    UI._failedLoad = null;
+    UI.closeAllSheets();
+    UI.toast(`Slot ${f.n} deleted`, 2000);
+    UI.title();
   };
 
   // Your club's colours as the app's accent (header ticks, buttons, highlights): the kit colour that reads best on the
@@ -764,7 +813,11 @@
     );
   };
   UI.noClubView = (tab) =>
-    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? UI.ico('shirt') : tab === 'transfers' ? UI.ico('repeat') : UI.ico('telescope')}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button></div>`;
+    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? UI.ico('shirt') : tab === 'transfers' ? UI.ico('repeat') : UI.ico('telescope')}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button>${
+      FM.W.hasNationJob()
+        ? `<div class="small dim" style="margin-top:14px">You manage a national team: its ${tab === 'squad' ? 'squad and lineup are' : 'players are'} under International.</div><button class="btn sm" style="margin-top:8px" data-act="goNation">Your national team</button>`
+        : ''
+    }</div>`;
   // Going to a tab slides it in from the side of the tab you tapped; the same tab again just fades
   UI.go = function (tab, anim) {
     if (!anim) {
@@ -1177,8 +1230,8 @@
       UI.finishPendingDay();
     } catch (e) {
       // (an error after the save was read used to leave the title screen as it was: say what happened)
-      console.warn('open save failed', e);
-      UI.toast(`This save opened but the game could not start it (${(e && e.message) || 'unknown error'}).`, 7000);
+      console.warn('load failed while drawing the first screen', e);
+      UI.loadFailed(+d.n, 'drawing the first screen', e, null);
     }
   };
   // Your result is saved at full time, but the rest of that day (every other match) runs when you leave the

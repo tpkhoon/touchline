@@ -290,6 +290,8 @@
     // Grammar helpers
     // 1 point, 2 points; a plural that is not word + s is the third argument: plural(2, 'match', 'matches')
     plural: (n, w, pl) => `${n} ${+n === 1 ? w : (pl ?? w + 's')}`,
+    // "the Salt Road Derby" whether the name is written with its article or without it (a derby called The Old Firm is not "the The Old Firm")
+    theName: (n) => 'the ' + String(n || '').replace(/^the\s+/i, ''),
     // "a" or "an" with the word: an attacking midfielder, an ST (said "ess-tee"), a CB, an hour, a university
     a: (w) => {
       const s = String(w).trim();

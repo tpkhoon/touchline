@@ -1051,6 +1051,11 @@ try {
   ok(Sv.CHUNK * 2 * 4 < 133169152, 'a handful of chunks in one transaction stays far under the value limit');
 }
 
+// ---- derby names: one article ("win the The Old Firm" was in two playtest reports) ----
+eq(U.theName('Dorrez Derby'), 'the Dorrez Derby', 'a derby name without an article gets one');
+eq(U.theName('The Old Firm'), 'the Old Firm', 'a derby name with its article is not given a second');
+eq(U.theName('the Salt Road Derby'), 'the Salt Road Derby', 'a lower-case article is kept once');
+
 console.log(
   fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
 );

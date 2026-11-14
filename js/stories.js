@@ -445,7 +445,7 @@
     if (m.derby && won)
       St.share({
         kicker: 'DERBY',
-        title: `${club.name} win the ${club.derby}`,
+        title: `${club.name} win ${U.theName(club.derby)}`,
         sub: `${W.name(best)} the hero as ${club.name} beat ${opp.name} ${gf}–${ga}.`,
         big: `${gf}–${ga}`,
         clubId: club.id,
@@ -634,7 +634,7 @@
         b = founded(opp.id);
       FM.News.add({
         type: 'club',
-        title: `Derby week: the ${c.derby}`,
+        title: `Derby week: ${U.theName(c.derby)}`,
         body: `${opp.name} are ${U.ordinal(W.position(opp.id))} in the table, you are ${U.ordinal(W.position(c.id))}, and neither will care. ${a && b ? `The clubs were founded in ${a} and ${b}, and the towns have been arguing ever since. ` : ''}Win it and the fans forgive a lot; lose it and they remember for years.\n\n${asst.fn} ${asst.ln}: "They raise their game against us every time. Don't let the crowd decide it."`,
         clubId: c.id,
       });
@@ -670,7 +670,7 @@
         FM.News.add({
           type: 'world',
           title: `${mgr.fn} ${mgr.ln}, ${rv.name}: "We know who you are"`,
-          body: `The ${rv.name} manager welcomes you to the ${comp.name}${c.rival === rv.id ? ` and says the ${c.derby} is the date he has circled` : ' and says his side expect to finish above yours'}. "Every new face gets the same welcome. We'll see how long you last."`,
+          body: `The ${rv.name} manager welcomes you to the ${comp.name}${c.rival === rv.id ? ` and says ${U.theName(c.derby)} is the date he has circled` : ' and says his side expect to finish above yours'}. "Every new face gets the same welcome. We'll see how long you last."`,
           clubId: rv.id,
         });
       return;
@@ -820,7 +820,7 @@
       if (m.derby)
         FM.News.add({
           type: 'brief',
-          title: `${w.name} win the ${w.derby}`,
+          title: `${w.name} win ${U.theName(w.derby)}`,
           body: `${hc.name} ${r.hg}–${r.ag} ${ac.name}`,
           clubId: w.id,
         });
@@ -1325,7 +1325,7 @@
     FM.News.add({
       type: 'club',
       title: `Know your club: ${I.label}`,
-      body: `${I.fans}${c.rival ? `\n\nThe big one: the ${c.derby} against ${S.clubs[c.rival].name}.` : ''}`,
+      body: `${I.fans}${c.rival ? `\n\nThe big one: ${U.theName(c.derby)} against ${S.clubs[c.rival].name}.` : ''}`,
       clubId: c.id,
     });
     FM.News.add({

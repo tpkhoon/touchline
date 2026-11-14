@@ -512,17 +512,19 @@
           ? `Stopped after ${days}, as you asked`
           : r.newOffer
             ? `${days} simulated — a new job offer has arrived`
-            : !W.employed()
-              ? `${days} simulated — no new offers yet`
-              : r.winChange
-                ? `Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
-                : r.deadline
-                  ? `Stopped after ${days}: it's deadline day`
-                  : r.pending
-                    ? `Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
-                    : r.cap
-                      ? `${days} simulated (the longest skip) — your next match is further off`
-                      : `${days} simulated`,
+            : r.natMatch
+              ? `Stopped after ${days}: your national team has a match to play`
+              : !W.employed()
+                ? `${days} simulated — no new offers yet`
+                : r.winChange
+                  ? `Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
+                  : r.deadline
+                    ? `Stopped after ${days}: it's deadline day`
+                    : r.pending
+                      ? `Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
+                      : r.cap
+                        ? `${days} simulated (the longest skip) — your next match is further off`
+                        : `${days} simulated`,
         r.pending ? 5000 : 3500,
       );
   };
@@ -618,17 +620,19 @@
           ? `Stopped after ${days}, as you asked`
           : r.done
             ? `${days} simulated`
-            : r.newOffer
-              ? `${days} simulated — a new job offer has arrived`
-              : r.winChange
-                ? `Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
-                : r.deadline
-                  ? `Stopped after ${days}: it's deadline day`
-                  : r.pending
-                    ? `Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
-                    : until === 'match'
-                      ? `${days} simulated: your next match is today`
-                      : `Stopped after ${days} (of ${r.days})`,
+            : r.natMatch
+              ? `Stopped after ${days}: your national team has a match to play`
+              : r.newOffer
+                ? `${days} simulated — a new job offer has arrived`
+                : r.winChange
+                  ? `Stopped after ${days}: the transfer window has ${r.win0 ? 'closed' : 'opened'}`
+                  : r.deadline
+                    ? `Stopped after ${days}: it's deadline day`
+                    : r.pending
+                      ? `Stopped after ${days}: ${r.pendingText || 'a decision needs a reply'}`
+                      : until === 'match'
+                        ? `${days} simulated: your next match is today`
+                        : `Stopped after ${days} (of ${r.days})`,
         r.pending ? 5000 : 3500,
       );
   };

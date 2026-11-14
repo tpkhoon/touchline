@@ -309,7 +309,7 @@
       rv = G.rival(code),
       d = G.diff(code);
     const bits = [`${G.capOf(e.row).toLocaleString()} seats`, d.why.charAt(0).toLowerCase() + d.why.slice(1)];
-    if (rv) bits.push(`the ${rv.derby} against ${rv.name}`);
+    if (rv) bits.push(`${U.theName(rv.derby)} against ${rv.name}`);
     return `${bits.join(', ')}. ${WHY[project] || 'A good fit'}.`;
   };
   // The continents the pickers group nations by (a nation's part of the world in the data, the British Isles with Europe,

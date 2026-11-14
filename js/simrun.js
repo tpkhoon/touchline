@@ -243,7 +243,10 @@
       return out;
     } catch (e) {
       console.error('Simulation failed', e);
-      UI.toast('Something went wrong simulating the day. Your save is unchanged — please report this bug.', 6000);
+      UI.toast(
+        `Something went wrong simulating the day: ${(e && e.message) || 'unknown error'} Your save is unchanged — please report this bug.`,
+        9000,
+      );
       return null;
     } finally {
       UI.simBusy = false;

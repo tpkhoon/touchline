@@ -55,6 +55,7 @@
             'puzzle',
             `${W.short(p)} is filling in at ${slots[i].t}. We lack a natural ${D.POS_NAME[slots[i].t] ? D.POS_NAME[slots[i].t].toLowerCase() : slots[i].t} of his level — worth scouting.`,
             p.id,
+            { label: 'Auto-pick XI', act: 'autoXI' }, // (no natural to swap in: let the game pick the best side it can)
           );
       }
       if (p.fitness < 72) tired.push(p);

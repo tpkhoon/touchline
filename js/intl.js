@@ -2998,11 +2998,20 @@
       return {
         text: `Win a two-legged first round to reach the ${s.quals.kind === 'world' ? 'World Championship' : 'continental'} qualifying groups`,
       };
-    if (g)
+    if (g) {
+      // (g.slots is the places of the whole pool: nine from Africa is not nine from "Africa N", one group of it. Where the pool has a
+      // group for each place, the group's winner goes through.)
+      const pool = s.quals.groups.filter((x) => x.key === g.key),
+        region = g.name.trim().replace(/\s+[A-Z]{1,2}$/, ''),
+        what = s.quals.kind === 'world' ? 'the World Championship' : 'the continental championships';
       return {
-        text: `Qualify for the ${s.quals.kind === 'world' ? 'World Championship' : 'continental championships'}: ${g.slots} place${g.slots === 1 ? '' : 's'} from ${g.name.trim()}`,
+        text:
+          pool.length === g.slots
+            ? `Win ${g.name.trim()} to qualify for ${what}`
+            : `Qualify for ${what}: ${g.slots} place${g.slots === 1 ? '' : 's'} from ${region}, in ${pool.length} groups`,
         group: g,
       };
+    }
     const nlg = I.nlGroupOf(id);
     if (nlg)
       return {
@@ -3038,7 +3047,8 @@
       const tie = !g && md < 2 && pend && pend.ties.find((t) => t.s === id || t.w === id);
       if (tie) fx = { h: md === 0 ? tie.w : tie.s, a: md === 0 ? tie.s : tie.w };
       out.push({
-        in: k,
+        // (days by the calendar, as the sim counts them: an entry of the calendar is not always a day, the "in 7d" of a match a week off)
+        in: d.dn != null ? Math.max(0, d.dn - FM.Season.dnToday()) : k,
         md: ++ix,
         opp: fx ? T(fx.h === id ? fx.a : fx.h) : null,
         home: fx ? fx.h === id : null,
@@ -3067,7 +3077,7 @@
     if (fx.kind === 'friendly') I.friendlyEffect(T(u.nation), fx, won, lost);
     u.ntStats.games++;
     won ? u.ntStats.w++ : lost ? u.ntStats.l++ : u.ntStats.d++;
-    u.rep = U.clamp(u.rep + (won ? 0.4 : lost ? -0.3 : 0.05) * (fx.kind === 'friendly' ? 0.5 : 1.5), 1, 99);
+    u.rep = U.clamp(u.rep + (won ? 1.2 : lost ? -0.6 : 0.1) * (fx.kind === 'friendly' ? 0.5 : 1.5), 1, 99);
     const t = me.club;
     FM.News.add({
       type: 'headline',

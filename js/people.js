@@ -500,25 +500,29 @@
   // ---------- Coaching badges ----------
   Pe.nextBadge = () => D.BADGES[D.BADGES.indexOf(u().badges) + 1] || null;
   Pe.courseReq = (b) => (b === 'Continental A' ? 20 : b === 'Continental Pro' ? 60 : 0);
+  // The games in charge that count toward a licence: club matches and national-team matches both (3 of 20)
+  Pe.gamesInCharge = () => u().stats.games + (u().ntStats ? u().ntStats.games : 0);
   Pe.startCourse = function () {
     const b = Pe.nextBadge(),
       c = W.userClub();
     if (!b) return { ok: false, msg: 'You already hold the top licence.' };
-    if (!c) return { ok: false, msg: 'Courses are paid for by your club — take a job first.' };
+    // (a manager with a national team and no club has no club to pay: the federation does)
+    if (!c && !W.hasNationJob())
+      return { ok: false, msg: 'Courses are paid for by your club or federation — take a job first.' };
     if (u().course) return { ok: false, msg: 'You are already on a course.' };
     const spec = D.BADGE_COURSE[b],
-      games = u().stats.games + (u().ntStats ? u().ntStats.games : 0);
+      games = Pe.gamesInCharge();
     if (games < Pe.courseReq(b))
       return {
         ok: false,
         msg: `The ${b} course needs ${U.plural(Pe.courseReq(b), 'game')} of experience (you have ${games}).`,
       };
-    if (c.balance < spec.cost) return { ok: false, msg: "The club can't cover the course fee." };
-    c.balance -= spec.cost;
+    if (c && c.balance < spec.cost) return { ok: false, msg: "The club can't cover the course fee." };
+    if (c) c.balance -= spec.cost;
     u().course = { badge: b, until: S().day + spec.days, year: S().year, days: spec.days };
     return {
       ok: true,
-      msg: `Enrolled on the ${b} licence. ${U.plural(spec.days, 'day')} of study (${U.money(spec.cost)}, paid by the club).`,
+      msg: `Enrolled on the ${b} licence. ${U.plural(spec.days, 'day')} of study (${U.money(spec.cost)}, paid by ${c ? 'the club' : 'the federation'}).`,
     };
   };
   Pe.courseTick = function () {

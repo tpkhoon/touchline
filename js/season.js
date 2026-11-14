@@ -1402,7 +1402,17 @@
     // (counted in days of the calendar, not in calendar entries: a week between two league rounds is seven days)
     const dn0 = Sea.dnToday();
     let k = 0;
+    const nationOnly = !employed0 && W.hasNationJob();
+    let natMatch = false;
     do {
+      if (nationOnly && Sea.userFixture()) {
+        natMatch = true; // (a match of the nation's is waiting: it is played, not skipped)
+        break;
+      }
+      if (k > 400)
+        throw new Error(
+          `The skip went round ${k} times without reaching a match (day ${S.day} of ${S.calendar.length}).`,
+        );
       yield [n, Sea.dayLabel()];
       summary = Sea.advance(null);
       k++;
@@ -1428,6 +1438,7 @@
       winChange,
       win0,
       deadline,
+      natMatch,
       pending: !summary && Sea.pendingDecision(),
       pendingText: !summary && Sea.pendingText(),
       cap: !summary && k >= (W.employed() ? 12 : 21),
@@ -1465,7 +1476,22 @@
     // (the days asked for are days of the calendar: sim 7 days and it goes on for a week, however many matchdays that is)
     const dn0 = Sea.dnToday(),
       exact = !opt.until; // (a number of days goes on for exactly that many; the "until" choices jump from event to event)
+    // A manager with a national team and no club has only that job: no sim stops over a match of the nation's that is waiting to be
+    // played (a skip, a wait for an offer and "sim without stopping" used to play it unseen, two matches in 99 days in a playtest)
+    const nationOnly = !employed0 && W.hasNationJob();
+    let natMatch = false,
+      rounds = 0;
     do {
+      if (nationOnly && Sea.userFixture()) {
+        natMatch = true;
+        break;
+      }
+      // (every pass plays or passes a day: a few hundred is the most a skip can need. A bug that stops the day moving on used to
+      // leave the sim going round for ever, "Simulating the matchday" on the screen: it stops with a reason now)
+      if (++rounds > Math.max(1000, days * 4))
+        throw new Error(
+          `The simulation went round ${rounds} times without reaching the end (day ${S.day} of ${S.calendar.length}).`,
+        );
       const entry = S.calendar[S.day],
         cur = Sea.dnToday();
       if (exact && entry && entry.dn != null && entry.dn > cur) {
@@ -1510,6 +1536,7 @@
       win0,
       deadline,
       handled: opt.auto ? handled : null,
+      natMatch,
       pending: !summary && Sea.pendingDecision(),
       pendingText: !summary && Sea.pendingText(),
       done: !summary && n >= days,
