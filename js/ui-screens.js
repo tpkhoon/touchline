@@ -796,6 +796,7 @@
         <div class="row" style="gap:8px;margin-top:14px">${fx ? '<button class="play grow" data-act="preview">▶ MATCHDAY</button>' : '<button class="play grow" data-act="advance">Advance ▶</button><button class="play grow" style="background:rgba(255,255,255,.14);color:#fff" data-act="skipToMatch">Wait for an offer</button>'}${'<button class="play sec" style="flex:none;width:auto;padding:14px 16px" data-act="simDaysAsk">Skip days</button>'}</div></div>
       <div class="sec"><div class="h3">${nt ? 'Club offers' : 'Job offers'}</div><span class="dim small">${offers.length ? `${offers.length} on the table` : ''}</span></div>
       ${offers.map(card).join('') || '<div class="empty">No offers right now. Keep waiting — clubs in your range will call.</div>'}
+      ${UI.jobBoardHtml()}
       <div class="sec"><div class="h3">The Feed</div></div>
       ${chips('feed', [
         ['all', 'All'],
@@ -869,6 +870,32 @@
     UI.save();
     UI.render();
     UI.toast(`You turned ${CL(d.id) ? CL(d.id).name : 'them'} down. The board are pleased.`);
+  };
+  // The job board: clubs that are looking for a manager, and your applications (Sea.jobBoard, Sea.applyForJob)
+  UI.jobBoardHtml = function () {
+    const s = S(),
+      u = s.user,
+      now = FM.Season.dayIndex(),
+      apps = (u.apps || []).filter((a) => CL(a.id)),
+      board = FM.Season.jobBoard();
+    const odds = (c) => {
+      const p = FM.Season.jobOdds(c);
+      return p >= 0.6 ? 'a good chance' : p >= 0.35 ? 'a fair chance' : 'a long shot';
+    };
+    const row = (c) => {
+      const comp = s.comps[c.comp],
+        gate = FM.Season.jobGate(c);
+      return `<div class="row" style="padding:8px 0;border-top:1px solid var(--line);gap:10px">${C.crest(c, 34)}<div class="grow" style="min-width:0"><div class="b ellip">${esc(c.name)}</div><div class="tiny dim ellip">${comp ? esc(comp.name) : ''} · ${gate.ok ? odds(c) : esc(gate.why)}${c.boardConf < 45 ? ' · the board want a change' : ''}</div></div><button class="btn sm" data-act="clubView" data-id="${c.id}">Look</button><button class="btn sm pri" ${gate.ok && apps.length < 3 ? '' : 'disabled style="opacity:.4"'} data-act="jobApply" data-id="${c.id}">Apply</button></div>`;
+    };
+    return `<div class="sec"><div class="h3">Job board</div><span class="dim small">${U.plural(board.length, 'club')} looking</span></div>
+      ${apps.length ? `<div class="card"><div class="tiny dim">YOUR APPLICATIONS (${apps.length} of 3)</div>${apps.map((a) => `<div class="row small" style="padding:6px 0"><span class="grow">${esc(CL(a.id).name)}</span><span class="dim">reply in ${Math.max(1, a.reply - now)} day${a.reply - now <= 1 ? '' : 's'}</span></div>`).join('')}</div>` : ''}
+      <div class="card" style="padding-top:4px;padding-bottom:4px">${board.map(row).join('') || '<div class="empty">No club is looking in your range just now. The board is refreshed every week.</div>'}</div>`;
+  };
+  UI.acts.jobApply = (d) => {
+    const r = FM.Season.applyForJob(d.id);
+    UI.toast(r.msg, 3500);
+    UI.save();
+    UI.render();
   };
   UI.acts.takeJob = (d) => {
     const s = S(),

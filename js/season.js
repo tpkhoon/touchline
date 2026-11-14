@@ -1730,10 +1730,101 @@
       clubId: t.id,
     });
   };
+  // ---- The job board: clubs that are looking, and applications ----
+  // Out of work the player no longer only waits for a call: a board of about a dozen clubs in the player's reputation range lists
+  // the clubs looking for a manager (the unhappy ones come first), and an application gets an answer in two to six days: an offer
+  // that stands for a week, or a no. The odds follow the gap between the club and the player's name; the top clubs want a licence.
+  Sea.jobLicence = (c) => (c.rep >= 85 ? 'Continental A' : c.rep >= 75 ? 'Continental B' : null);
+  Sea.jobOdds = function (c) {
+    const u = FM.S.user,
+      gap = c.rep - (u.rep + 5);
+    return U.clamp(0.7 - gap * 0.035 + (c.boardConf < 45 ? 0.15 : 0), 0.05, 0.9);
+  };
+  Sea.jobGate = function (c) {
+    const need = Sea.jobLicence(c);
+    return need && D.BADGES.indexOf(FM.S.user.badges) < D.BADGES.indexOf(need)
+      ? { ok: false, why: `Wants a ${need} licence` }
+      : { ok: true, why: '' };
+  };
+  Sea.jobBoard = function () {
+    const S = FM.S,
+      u = S.user;
+    if (!u || W.employed()) return [];
+    const now = Sea.dayIndex(),
+      taken = new Set([...(u.offers || []), ...(u.apps || [])].map((x) => x.id));
+    let b = S.jobBoard;
+    if (!b || b.year !== S.year || now - b.at >= 7 || b.rep !== Math.round(u.rep)) {
+      const pool = Object.values(S.clubs).filter(
+        (c) =>
+          c.sim !== 'nation' &&
+          c.comp &&
+          !c.parent &&
+          c.rep <= FM.Style.effectiveRep(c) + 14 &&
+          c.rep >= u.rep - 30 &&
+          c.id !== (u.unemployed && u.unemployed.since === S.year ? u.unemployed.from : null),
+      );
+      const ids = [];
+      for (let i = 0; i < 12 && pool.length; i++) {
+        const c = U.wpick(pool, (x) => Math.max(1, 100 - x.boardConf + 20 - Math.abs(x.rep - u.rep) * 0.5));
+        pool.splice(pool.indexOf(c), 1);
+        ids.push(c.id);
+      }
+      b = S.jobBoard = { at: now, year: S.year, rep: Math.round(u.rep), ids };
+    }
+    return b.ids.filter((id) => S.clubs[id] && !taken.has(id)).map((id) => S.clubs[id]);
+  };
+  Sea.applyForJob = function (id) {
+    const S = FM.S,
+      u = S.user,
+      c = S.clubs[id];
+    if (!u || W.employed() || !c) return { ok: false, msg: 'That is not possible now.' };
+    u.apps = u.apps || [];
+    if (u.apps.length >= 3) return { ok: false, msg: 'Three applications at once is the most: wait for an answer.' };
+    if (u.apps.some((a) => a.id === id) || (u.offers || []).some((o) => o.id === id))
+      return { ok: false, msg: `You have already been in touch with ${c.name}.` };
+    const gate = Sea.jobGate(c);
+    if (!gate.ok) return { ok: false, msg: `${c.name}: ${gate.why}.` };
+    const now = Sea.dayIndex();
+    u.apps.push({ id, at: now, reply: now + U.randi(2, 6), p: Sea.jobOdds(c) });
+    return { ok: true, msg: `You applied to ${c.name}. They will reply in a few days.` };
+  };
+  Sea.answerApplications = function () {
+    const S = FM.S,
+      u = S.user,
+      now = Sea.dayIndex();
+    if (!u || !u.apps || !u.apps.length) return;
+    const keep = [];
+    for (const a of u.apps) {
+      const c = S.clubs[a.id];
+      if (!c) continue;
+      if (a.reply > now) {
+        keep.push(a);
+        continue;
+      }
+      if (Math.random() < a.p) {
+        u.offers = (u.offers || []).filter((o) => o.id !== a.id);
+        u.offers.push({ id: a.id, until: now + U.randi(5, 10), why: 'applied' });
+        FM.News.add({
+          type: 'board',
+          title: `${c.name} want to appoint you`,
+          body: `The board were impressed at the interview and have made you an offer. It stands for about a week.`,
+          clubId: c.id,
+        });
+      } else
+        FM.News.add({
+          type: 'board',
+          title: `${c.name} have gone with someone else`,
+          body: 'Your application was not successful. There will be other clubs.',
+          clubId: c.id,
+        });
+    }
+    u.apps = keep;
+  };
   Sea.jobMarket = function (initial) {
     const S = FM.S,
       u = S.user;
     if (!u || W.employed()) return;
+    Sea.answerApplications();
     const now = Sea.dayIndex();
     u.offers = (u.offers || []).filter((o) => o.until > now && S.clubs[o.id]);
     if (u.offers.length >= 3 || (!initial && Math.random() > 0.3)) return;

@@ -1416,6 +1416,14 @@
       [91, null],
       [9, 'frisian'],
     ]);
+    // Mauritius: two thirds of Indian descent (the nation's own list), a quarter Creole and French, and Chinese and English names too (every
+    // player of the island was given a South Asian name before)
+    comm('MRI', [
+      [66, null],
+      [27, 'french'],
+      [4, 'chinese'],
+      [3, 'english'],
+    ]);
     comm('ITA', [
       [95, null],
       [3, 'german'],

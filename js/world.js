@@ -3912,6 +3912,8 @@
     S.user.sacked = false;
     delete S.user.unemployed;
     S.user.offers = [];
+    S.user.apps = []; // (applications to other clubs end with the new job, and the job board is made again for the next one)
+    delete S.jobBoard;
     S.user.poach = []; // (approaches from other clubs belonged to the old job)
     S.user.jobSince = S.year * 1000 + S.day;
     if (club.manager && S.staff[club.manager] && FM.Records) FM.Records.managerLeft(S.staff[club.manager], clubId);
