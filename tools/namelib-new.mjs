@@ -423,7 +423,7 @@ export function install(LANG, NATION_L, TIERS_BY) {
         'Karmirner Kapuytner Spitakner Sevner Deghinner Kanachner Narnjaguyner Vardaguyner Skhoyer Tuyl_Kapuytner',
       ),
       misc: words('Artsivner Gaylner Aryutsner Sarer Dashtner'),
-      tiers: ['Premier Ligan', 'Arachin Liga', 'Erkrord Liga'],
+      tiers: ['Premier Liga', 'Arachin Liga', 'Erkrord Liga'],
       cup: 'Azgayin Gavat',
       cups: ['Hanrapetutyan Gavat', 'Anvtangutyan Gavat'],
       quirk: ['Nor', 'Verin', 'Nerkin'],

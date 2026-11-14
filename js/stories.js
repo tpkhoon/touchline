@@ -82,6 +82,14 @@
         r.read = false;
         return r;
       }
+      // The same press question is not put twice within weeks (it showed once answered and once waiting): the one already there stands
+      if (n.type === 'press') {
+        const key = n.q || n.body || n.title;
+        const same = S.news.find(
+          (x) => x.type === 'press' && x.year === S.year && S.day - x.day < 40 && (x.q || x.body || x.title) === key,
+        );
+        if (same) return same;
+      }
       const item = { id: FM.nextId('n'), day: S.day, year: S.year, read: false, ...n };
       S.news.unshift(item);
       if (S.news.length > 2 * FM.News.CAP) FM.News.trim(S);

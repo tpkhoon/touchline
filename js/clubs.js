@@ -983,7 +983,7 @@
     ['Matsuhara Cometa', 'MAC', 'Matsuhara', '#EC6A9E', '#0A1F5C', 'historic', 58, 'Matsura Stadium', 24481],
     ['Kitaokaura Kingfishers', 'KIK', 'Kitaokaura', '#1C1C7C', '#AAAAAA', 'youth', 56, 'Haruura Arena', 21562],
     ['Hokuno Stella', 'HOK', 'Hokuno', '#6A1B9A', '#FFFFFF', 'fan', 56, 'Kawahara Arena', 21600],
-    ['Okaura Sevens', 'OKA', 'Okaura', '#FF6600', '#003DA5', 'youth', 55, 'Narizawa Arena', 42300],
+    ['Okaura Athletic', 'OKA', 'Okaura', '#FF6600', '#003DA5', 'youth', 55, 'Narizawa Arena', 42300],
     ['Matsuzawa Stella', 'MAS', 'Matsuzawa', '#8CC63F', '#003DA5', 'youth', 55, 'Matsuzawa Sports Complex', 15380],
     ['Higashino Sport Club', 'HIS', 'Higashino', '#00843D', '#FFFFFF', 'fan', 55, 'Kawamoto Arena', 49970],
     ['Matsaki City', 'MTS', 'Matsaki', '#FF8200', '#003DA5', 'fan', 55, 'Saita Stadium', 19594],

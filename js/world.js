@@ -722,7 +722,7 @@
       // (a surname of the nation's own culture, not of the other communities in its list: a Samoan first name goes with a Samoan or
       // an English surname, never a South Asian one)
       const own = D.NAME_POOLS[D.NATIVE_POOL[nat]];
-      return { fn: U.pick(pool.fn), ln: Math.random() < 0.7 || !own ? U.pick(pool.ln) : U.pick(own.ln) };
+      return { fn: U.pick(pool.fn), ln: Math.random() < 0.9 || !own ? U.pick(pool.ln) : U.pick(own.ln) };
     }
     const com = D.COMMUNITIES && D.COMMUNITIES[nat];
     if (com) {

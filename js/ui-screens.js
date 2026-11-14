@@ -81,6 +81,16 @@
         cal.type === 'intl'
           ? W.squad(c.id).filter((p) => FM.S.nteams && FM.Intl.squad(FM.Intl.nationOf(p)).includes(p))
           : [];
+      // (why a cup day has no match for the club: it has not entered its domestic cup yet, or is out of it)
+      const cupWait = (cl) => {
+        const cup = Object.values(s.comps).find(
+          (x) => x.type === 'cup' && !x.euro && !x.regional && x.nat === cl.nat && x.clubs && x.clubs.includes(cl.id),
+        );
+        if (!cup) return '';
+        if (cup.late && cup.late.includes(cl.id))
+          return ` ${cl.name} enter the ${cup.name} in a later round, when the smaller clubs have been thinned out.`;
+        return '';
+      };
       const what =
         cal.type === 'intl'
           ? `International break. ${
@@ -94,7 +104,7 @@
           : cal.type === 'playoff'
             ? 'The playoffs are being contested.'
             : cal.type === 'cup'
-              ? `${U.plural(others.length, cal.regional ? 'regional tie' : 'tie')} elsewhere.`
+              ? `${U.plural(others.length, cal.regional ? 'regional tie' : 'tie')} elsewhere.${cupWait(c)}`
               : '';
       const what2 =
         cal.type === 'tourn'
@@ -2117,7 +2127,7 @@
           ['Saves', (h) => n(h.sv), 'sv'],
           [
             'Sv%',
-            (h) => (h.sv || h.ga ? Math.round((100 * (h.sv || 0)) / ((h.sv || 0) + (h.ga || 0))) + '%' : '—'),
+            (h) => (h.sv ? Math.round((100 * h.sv) / (h.sv + (h.ga || 0))) + '%' : '—'), // (no saves counted is no record of them, not 0%)
             null,
           ],
           ['Rtg', (h) => (h.r ? h.r.toFixed(2) : '—'), null],
@@ -2159,7 +2169,7 @@
       if (head === 'Sv%') {
         const sv = all.reduce((t, h) => t + (h.sv || 0), 0),
           ga = all.reduce((t, h) => t + (h.ga || 0), 0);
-        return sv || ga ? Math.round((100 * sv) / (sv + ga)) + '%' : '';
+        return sv ? Math.round((100 * sv) / (sv + ga)) + '%' : '';
       }
       if (!key) return '';
       const t = all.reduce((x, h) => x + (h[key] || 0), 0);

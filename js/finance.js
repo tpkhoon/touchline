@@ -371,7 +371,9 @@
     `Halden Corvid Meridian Vantage Norland Ashgrove Kestrel Bluewater Larkspur Ironbridge Solano Tamarind Brightwell Eastmoor
     Fenwick Granite Harlow Istria Juniper Kingsley Lumen Marlowe Northgate Oakhurst Pennant Quillon Redfern Sable Thornbury Verity
     Westerley Yarrow Zephyr Alder Beacon Cobalt Everest Foxglove Glenmore Hartwell Keystone Lyric Monarch Nimbus Orchid Prism Rowan Sterling
-    Talbot Upland Valmont Winslow Aurelia Brookfield Castell Dunmore Elmstead Falconer Garnet Highmoor Ingleby Jarrow Kelmscott Lowther`.split(
+    Talbot Upland Valmont Winslow Aurelia Brookfield Castell Dunmore Elmstead Falconer Garnet Highmoor Ingleby Jarrow Kelmscott Lowther
+    Maple Norwood Osprey Pinnacle Quarry Ridgeway Silverton Tidewater Umber Vesper Wexford Xenon Yellowstone Zenith Atlas Birch Cinder
+    Delta Ember Fjord Gable Heron Indigo Jasper Kite Lagoon Mesa Nova Opal Pebble Quartz Rapids Summit Tundra Ursa Vale Willow Zinc`.split(
       /\s+/,
     );
   const TRADES = [
@@ -1132,8 +1134,10 @@
     const s = S();
     if (s.noSponsors) return;
     const takenBy = {};
+    // (no two competitions of a part of the world share a sponsor: a brand is not the title sponsor in two countries of one continent)
+    const regionOf = (nat) => (FM.D.NATIONS[nat] && FM.D.NATIONS[nat].region) || nat;
     Object.values(s.comps).forEach((c) => {
-      if (c.sponsor && c.nat) (takenBy[c.nat] = takenBy[c.nat] || new Set()).add(c.sponsor.brand);
+      if (c.sponsor && c.nat) (takenBy[regionOf(c.nat)] = takenBy[regionOf(c.nat)] || new Set()).add(c.sponsor.brand);
     });
     for (const c of Object.values(s.comps)) {
       if (!eligible(c)) continue;
@@ -1152,7 +1156,7 @@
         }
       }
       if (c.sponsor && c.sponsor.own) continue;
-      const taken = (takenBy[c.nat] = takenBy[c.nat] || new Set());
+      const taken = (takenBy[regionOf(c.nat)] = takenBy[regionOf(c.nat)] || new Set());
       if (first && !c.sponsor && c.sponsorChecked == null) {
         // a new world starts part-way through deals
         c.sponsorChecked = s.year;

@@ -471,7 +471,7 @@
       };
     }
     Object.values(s.nteams).forEach((t) => {
-      t.coef = Math.round(50 + (I.rating(t.code) - 62) * 2.2 * 10) / 10;
+      t.coef = Math.max(0, Math.round(50 + (I.rating(t.code) - 62) * 2.2 * 10) / 10);
       t.rep = I.repFromCoef(t.coef);
     });
     I.seedCaps();
@@ -2366,8 +2366,8 @@
     const delta = (K * (score - exp)) / 10;
     if (!W.isUserNation(H.club.id)) I.managerResult(H.club, score, exp, fx.kind);
     if (!W.isUserNation(A.club.id)) I.managerResult(A.club, 1 - score, 1 - exp, fx.kind);
-    H.club.coef = Math.round((H.club.coef + delta) * 10) / 10;
-    A.club.coef = Math.round((A.club.coef - delta) * 10) / 10;
+    H.club.coef = Math.max(0, Math.round((H.club.coef + delta) * 10) / 10);
+    A.club.coef = Math.max(0, Math.round((A.club.coef - delta) * 10) / 10);
     H.club.rep = I.repFromCoef(H.club.coef);
     A.club.rep = I.repFromCoef(A.club.coef);
     [H, A].forEach((sd, k) => {

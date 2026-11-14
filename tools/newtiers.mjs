@@ -160,7 +160,7 @@ const NAME_FIX = {
   ZA2: 'South African Challenge Division',
   CH3: 'Swiss Aufstiegsliga',
   CH2: 'Swiss Zweite Superliga',
-  IT3: 'Italian Lega Terza',
+  IT3: 'Lega Terza',
   IT4: 'Italian Lega Quarta',
   NL3: 'Dutch Derde Klasse',
   NL4: 'Dutch Vierde Klasse',

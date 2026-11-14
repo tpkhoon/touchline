@@ -3412,7 +3412,7 @@
     {
       id: 'AM1',
       nat: 'ARM',
-      name: 'Armenian Premier Ligan',
+      name: 'Armenian Premier League',
       short: 'AM1',
       tier: 1,
       sim: 'minimal',
@@ -4402,7 +4402,7 @@
     {
       id: 'IT3',
       nat: 'ITA',
-      name: 'Italian Lega Terza',
+      name: 'Lega Terza',
       short: 'IT3',
       tier: 3,
       sim: 'minimal',

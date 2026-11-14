@@ -1266,12 +1266,20 @@
     else Sea.apply(fx, m);
   };
   // A decision waiting in today's feed (stops a multi-day skip)
-  const newDecision = (n) =>
-    n.day === FM.S.day &&
+  // (an offer still unanswered on its last day stops the sim once more: it would lapse tomorrow)
+  const lapsing = (n) =>
+    n.type === 'bid' &&
+    n.data &&
+    n.data.status === 'open' &&
     n.year === FM.S.year &&
-    ((n.type === 'bid' && n.data.status === 'open') ||
-      ((n.type === 'press' || n.type === 'meeting' || n.type === 'desk') && !n.resolved) ||
-      (n.type === 'youth' && n.intake && !n.done));
+    FM.S.day - n.day === FM.Market.BID_DAYS - 1;
+  const newDecision = (n) =>
+    lapsing(n) ||
+    (n.day === FM.S.day &&
+      n.year === FM.S.year &&
+      ((n.type === 'bid' && n.data.status === 'open') ||
+        ((n.type === 'press' || n.type === 'meeting' || n.type === 'desk') && !n.resolved) ||
+        (n.type === 'youth' && n.intake && !n.done)));
   // The last day of the season is when the player chooses how much of the world is simulated next season (S.simNext; the choice is
   // settled by Sea.applySimNext when the season ends). A skip stops there once a season, unless the sim runs on its own.
   Sea.detailDue = () => {

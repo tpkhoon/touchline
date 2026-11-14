@@ -46,6 +46,15 @@ for (const [id, L] of Object.entries(leagues)) {
     );
 }
 
+// a player with a family heritage has the passport or origin that goes with his name (a Saudi first name on a Swedish flag has a Saudi origin)
+{
+  const odd = Object.values(S.players).filter(
+    (p) => p.heritage && !p.nat2 && !p.origins && !(p.cit && p.cit.length > 1),
+  );
+  const tot = Object.values(S.players).filter((p) => p.heritage).length;
+  if (tot && odd.length / tot > 0.15)
+    fails.push(`${odd.length} of ${tot} players of a heritage have no origin or second nation`);
+}
 // managers: mostly of the club's own nation (a small share of foreigners, fewer in the lower divisions)
 {
   let n = 0,

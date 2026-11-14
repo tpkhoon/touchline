@@ -1609,6 +1609,21 @@
       const endM = this.timeline.some((t) => t.half === 3) ? 120 : 90;
       const hw = H.goals > A.goals || (this.pens && this.pens[0] > this.pens[1]);
       const aw = A.goals > H.goals || (this.pens && this.pens[1] > this.pens[0]);
+      // (a player hurt in the match who was not replaced is said to have played on: it is in the match report, as when he is subbed)
+      this.sides.forEach((sd) => {
+        for (const pid in sd.injured || {}) {
+          if (sd.off[pid] != null || sd.on[pid] == null) continue;
+          const p = FM.S.players[pid];
+          if (p)
+            this.events.push({
+              k: 'note',
+              side: sd.idx,
+              pid,
+              min: `${endM}'`,
+              text: `${W.short(p)} played on after his knock and finished the game; the physios will look at him.`,
+            });
+        }
+      });
       this.sides.forEach((sd, k) => {
         const won = k ? aw : hw,
           lost = k ? hw : aw;
