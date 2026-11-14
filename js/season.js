@@ -2096,6 +2096,7 @@
           if (p.inj || Math.random() < 0.15) return;
           const r = Math.round(U.clamp(U.gauss(6.6 + (p.ca - avg) / 15, 0.6), 4.5, 9.8) * 10) / 10;
           p.season.apps++;
+          p.season.mins = (p.season.mins || 0) + U.randi(55, 90);
           p.lastSenior = S.day;
           p.season.rsum += r;
           p.career.apps++;

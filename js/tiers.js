@@ -141,6 +141,7 @@
       sq.forEach((p) => {
         const r = Math.round(U.clamp(U.gauss(6.5 + (p.ca - avg) / 15 + (gf - ga) * 0.15, 0.55), 4.5, 9.8) * 10) / 10;
         p.season.apps++;
+        p.season.mins = (p.season.mins || 0) + U.randi(55, 90); // (a game in a league played from ratings has no minutes of its own)
         p.lastSenior = FM.S.day;
         p.season.rsum += r;
         p.career.apps++;
@@ -229,6 +230,7 @@
           motm = p.id;
         }
         p.season.apps++;
+        p.season.mins = (p.season.mins || 0) + (mins[p.id] || 60);
         p.lastSenior = FM.S.day;
         p.season.rsum += rt;
         p.career.apps++;

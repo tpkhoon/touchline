@@ -2262,11 +2262,17 @@
     const where = t.club
       ? `<span class="tap" data-act="clubView" data-id="${t.club.id}">${C.crest(t.club, 16)} ${esc(t.club.name)}</span> <span class="dim" style="font-weight:400">(${nat(t.club.nat)})</span>`
       : `<span class="dim" style="font-weight:400">a youth academy in</span> ${nat(t.home)}`;
+    // (the seasons are counted from the career table's own rows, so the line agrees with the table: a spell's last year may be the summer he left)
+    let rowSeasons = 0;
+    if (t.why === 'record' && t.club)
+      rowSeasons = W.fullHistory(p, (p.history || []).slice().reverse()).filter(
+        (h) => h.c === t.club.id && h.y - p.born >= 15 && h.y - p.born <= 21,
+      ).length;
     const how =
       t.why === 'academy'
         ? 'came through its academy'
         : t.why === 'record'
-          ? `${t.seasons} season${t.seasons > 1 ? 's' : ''} there between 15 and 21`
+          ? `${U.plural(rowSeasons || t.seasons, 'season')} there between 15 and 21`
           : 'his youth club, from before the game began';
     const others = t.nations.filter((n) => n !== t.home);
     const hg = `${nat(t.home)}${others.length ? `<div class="tiny dim" style="font-weight:400">also homegrown for ${others.map(nat).join(', ')}</div>` : ''}`;

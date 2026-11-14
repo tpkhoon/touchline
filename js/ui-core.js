@@ -226,10 +226,10 @@
   // Northern Ireland has no flag emoji (it would show the UK's): the Ulster Banner is drawn instead, wherever a flag sits in
   // a screen (plain-text places, like a news story or a drop-down list, keep the emoji)
   const ULSTER =
-    '<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" role="img" aria-label="Northern Ireland" style="vertical-align:-0.12em"><rect width="30" height="20" fill="#fff"/><path d="M0 8.4h30v3.2H0zM13.4 0h3.2v20h-3.2z" fill="#c8102e"/><circle cx="15" cy="10" r="4.6" fill="#fff"/><path d="M15 6.1l1.1 2.2 2.4.1-1.9 1.5.7 2.4-2.3-1.4-2.3 1.4.7-2.4-1.9-1.5 2.4-.1z" fill="#c8102e"/><circle cx="15" cy="10.2" r="1" fill="#fff"/></svg>';
+    '<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" aria-hidden="true" style="vertical-align:-0.12em"><rect width="30" height="20" fill="#fff"/><path d="M0 8.4h30v3.2H0zM13.4 0h3.2v20h-3.2z" fill="#c8102e"/><circle cx="15" cy="10" r="4.6" fill="#fff"/><path d="M15 6.1l1.1 2.2 2.4.1-1.9 1.5.7 2.4-2.3-1.4-2.3 1.4.7-2.4-1.9-1.5 2.4-.1z" fill="#c8102e"/><circle cx="15" cy="10.2" r="1" fill="#fff"/></svg>';
   // Catalonia (the Senyera) and the Basque Country (the Ikurriña) have no flag emoji either
   const flagSvg = (label, body) =>
-    `<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" role="img" aria-label="${label}" style="vertical-align:-0.12em">${body}</svg>`;
+    `<svg class="flagsvg" viewBox="0 0 30 20" width="1.35em" height="0.9em" aria-hidden="true" data-flag="${label}" style="vertical-align:-0.12em">${body}</svg>`;
   const SENYERA = flagSvg(
     'Catalonia',
     '<rect width="30" height="20" fill="#fcdd09"/><path d="M0 2.2h30M0 6.7h30M0 11.1h30M0 15.6h30" stroke="#da121a" stroke-width="2.2"/>',
@@ -1375,14 +1375,14 @@
     const mine = D.subregionsOf(a);
     return D.subregionsOf(b).filter((r) => mine.includes(r)).length;
   };
-  // The nations that share a part of the world with a nation and have leagues, the ones sharing most (then the nearest) first,
+  // The nations that share a part of the world with a nation and have leagues, the nearest first,
   // at most eight; a nation in a part of its own is given its nearest neighbours up to four
   const neighboursOf = (nat) => {
     const all = leagueNations().filter((n) => n !== nat),
       byDistance = (a, b) => kmBetween(nat, a) - kmBetween(nat, b);
     const near = all
       .filter((n) => shared(nat, n))
-      .sort((a, b) => shared(nat, b) - shared(nat, a) || byDistance(a, b))
+      .sort(byDistance) // (the nearest first: a nation's neighbours are the countries around it, not those that share the most named regions)
       .slice(0, 8);
     for (const n of all.slice().sort(byDistance)) if (near.length < 4 && !near.includes(n)) near.push(n);
     return near;

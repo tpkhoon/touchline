@@ -4314,7 +4314,7 @@
     {
       id: 'CS3',
       nat: 'CHN',
-      name: 'Chinese Division Two',
+      name: 'Chinese League Two',
       short: 'CS3',
       tier: 3,
       sim: 'minimal',
@@ -4380,7 +4380,7 @@
     {
       id: 'ID3',
       nat: 'IDN',
-      name: 'Indonesian Division 2',
+      name: 'Indonesian Liga 3',
       short: 'ID3',
       tier: 3,
       sim: 'minimal',
@@ -4391,7 +4391,7 @@
     {
       id: 'IR3',
       nat: 'IRN',
-      name: 'Iranian Division Two',
+      name: 'Iranian Dovom League',
       short: 'IR3',
       tier: 3,
       sim: 'minimal',
@@ -4583,7 +4583,7 @@
     {
       id: 'TH3',
       nat: 'THA',
-      name: 'Thai Division 2',
+      name: 'Thai League Two',
       short: 'TH3',
       tier: 3,
       sim: 'minimal',
@@ -4654,7 +4654,7 @@
     {
       id: 'AT4',
       nat: 'AUT',
-      name: 'Austrian Division 4',
+      name: 'Austrian Regionalliga',
       short: 'AT4',
       tier: 4,
       sim: 'minimal',
@@ -4698,7 +4698,7 @@
     {
       id: 'CS4',
       nat: 'CHN',
-      name: 'Chinese Division 4',
+      name: 'Chinese Regional League',
       short: 'CS4',
       tier: 4,
       sim: 'minimal',
@@ -4757,7 +4757,7 @@
     {
       id: 'ID4',
       nat: 'IDN',
-      name: 'Indonesian Division 3',
+      name: 'Indonesian Liga 4',
       short: 'ID4',
       tier: 4,
       sim: 'minimal',
@@ -4768,7 +4768,7 @@
     {
       id: 'IR4',
       nat: 'IRN',
-      name: 'Iranian Division 4',
+      name: 'Iranian Chaharom League',
       short: 'IR4',
       tier: 4,
       sim: 'minimal',
@@ -4779,7 +4779,7 @@
     {
       id: 'IT4',
       nat: 'ITA',
-      name: 'Italian Lega Quarta',
+      name: 'Lega Quarta',
       short: 'IT4',
       tier: 4,
       sim: 'minimal',
@@ -4862,7 +4862,7 @@
     {
       id: 'RO4',
       nat: 'ROU',
-      name: 'Romanian Division 4',
+      name: 'Romanian Liga a IV-a',
       short: 'RO4',
       tier: 4,
       sim: 'minimal',
@@ -4906,7 +4906,7 @@
     {
       id: 'ZA4',
       nat: 'RSA',
-      name: 'South African Division 4',
+      name: 'South African Provincial League',
       short: 'ZA4',
       tier: 4,
       sim: 'minimal',
@@ -4957,7 +4957,7 @@
     {
       id: 'CH4',
       nat: 'SUI',
-      name: 'Swiss Division 4',
+      name: 'Swiss Vierte Liga',
       short: 'CH4',
       tier: 4,
       sim: 'minimal',
@@ -4968,7 +4968,7 @@
     {
       id: 'TH4',
       nat: 'THA',
-      name: 'Thai Division 3',
+      name: 'Thai League Three',
       short: 'TH4',
       tier: 4,
       sim: 'minimal',
