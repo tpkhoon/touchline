@@ -17,10 +17,23 @@
     `<div class="chips" style="flex-wrap:wrap;margin-top:6px">${opts.map(([v, l]) => `<button class="chip ${String(cur) === String(v) ? 'on' : ''}" data-act="${act}" data-k="${key}" data-v="${v}" ${extra}>${l}</button>`).join('')}</div>`;
   const gradeBadge = (g, size = 30) =>
     `<span class="grade g${g === '?' ? 'X' : g}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * 0.55)}px">${g}</span>`;
-  const recPill = (r) =>
-    r
-      ? `<span class="pill ${r === 'Sign' ? 'good' : r === 'Loan' ? 'acc' : r === 'Avoid' ? 'bad' : ''}">${r === 'Sign' ? 'Sign' : r === 'Loan' ? 'Loan' : r === 'Avoid' ? 'Avoid' : r === 'Scout' ? 'Scout more' : 'Monitor'}</span>`
+  // The advice with its reason, so "Sign" on a poor player or "Monitor" on a good one is explained: a scout's own advice carries the
+  // reason that scout gave
+  const REC_WHY = {
+    Sign: 'good value',
+    Loan: 'one for the future',
+    Avoid: 'below your level',
+    Monitor: 'not good enough yet',
+    covered: 'squad covered there',
+    pricey: 'too expensive',
+  };
+  const recPill = (x) => {
+    const r = x.rec,
+      why = x.why ?? x.recWhy;
+    return r
+      ? `<span class="pill ${r === 'Sign' ? 'good' : r === 'Loan' ? 'acc' : r === 'Avoid' ? 'bad' : ''}" title="Value verdict: the scouts' advice and why">${esc(r === 'Scout' ? 'Scout more' : r + ': ' + (REC_WHY[why] || REC_WHY[r] || ''))}</span>`
       : '';
+  };
   const knowBar = (k) =>
     `<div class="bar" style="height:4px;width:54px"><i style="width:${k}%;background:${k >= 70 ? 'var(--good)' : k >= 35 ? 'var(--warn)' : 'var(--bad)'}"></i></div>`;
 
@@ -39,7 +52,7 @@
         rounded: 'weighs the whole player',
       };
     const one = (o) =>
-      `<div class="q" style="margin:8px 0;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13.5px;border-left:3px solid var(--acc2)"><div class="row" style="gap:8px;align-items:center">${gradeBadge(o.grade, 26)}<div class="grow"><div class="small b">${o.scout ? esc(o.scout.fn + ' ' + o.scout.ln) : 'The assistant'}</div><div class="tiny dim">${o.scout ? lean[o.lean] : 'a quick look'}</div></div>${recPill(o.rec)}</div><div style="margin-top:6px;font-style:italic">${esc(o.quote)}</div></div>`;
+      `<div class="q" style="margin:8px 0;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13.5px;border-left:3px solid var(--acc2)"><div class="row" style="gap:8px;align-items:center">${gradeBadge(o.grade, 26)}<div class="grow"><div class="small b">${o.scout ? esc(o.scout.fn + ' ' + o.scout.ln) : 'The assistant'}</div><div class="tiny dim">${o.scout ? lean[o.lean] : 'a quick look'}</div></div>${recPill(o)}</div><div style="margin-top:6px;font-style:italic">${esc(o.quote)}</div></div>`;
     const more = v.opinions.length === 1 && u.scouts.length >= 2 && v.k < 100 && !v.own;
     return `${v.opinions.map(one).join('')}${v.disagree ? '<div class="warnline" style="margin:8px 0">The scouts disagree. Weigh them up: it is your decision.</div>' : ''}${more ? `<button class="btn sm block" style="margin:4px 0 8px" data-act="scoutPlayer" data-id="${p.id}">Ask another scout for a second opinion</button>` : ''}`;
   };
@@ -68,7 +81,7 @@
     const reg = FM.Scouting.region(p);
     const isFree = !p.clubId;
     const loanT = p.clubId && !p.loan ? FM.Transfers.loanTerms(p) : null;
-    return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v.rec)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
+    return `<div class="card"><div class="row" style="align-items:flex-start">${gradeBadge(v.grade, 44)}<div class="grow"><div class="h3">Scout report</div><div class="small dim">${v.scout ? `${esc(v.scout.fn + ' ' + v.scout.ln)} · ${Math.round(v.scout.regions[reg] * 100)}% knowledge of ${D.REGIONS[reg]}` : 'No dedicated report yet'}</div><div class="row" style="margin-top:6px;gap:6px">${recPill(v)}<span class="pill">${Math.round(v.k)}% known</span></div></div></div>
       <div class="h2" style="margin:12px 0 4px">“${esc(v.verdict)}”</div>
       ${v.expect ? `<div class="phrase"><span>${UI.ico('shirt')}</span><span${v.expect[1] ? ` style="color:var(--${v.expect[1]})"` : ''}>${esc(v.expect[0])}</span></div>` : ''}
       ${UI.opinionsBlock(p, v)}
@@ -718,7 +731,7 @@
     let t = UI.sub.scout;
     if (away && !['reports', 'search', 'shortlist'].includes(t)) t = 'shortlist';
     const s = S();
-    const newCount = Object.values(s.user.reports).filter((r) => r.isNew).length;
+    const newCount = FM.Scouting.unseen();
     // Scouting is about finding and judging players; the market (window, offers, lists, free agents, deals) is the
     // Transfers tab
     const nScouts = s.user.scouts.length,
@@ -749,7 +762,7 @@
   const reportRow = (p, v, extra = '', dismiss = false) => {
     const c = p.clubId && CL(p.clubId);
     const clause = p.clubId && v.k >= 40 && p.deal && p.deal.release ? ` · ${U.money(p.deal.release)}` : '';
-    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v.rec).replace('class="pill', 'style="font-size:12px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="btn sm" style="flex:none;padding:11px 8px" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">Compare</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
+    return `<div class="prow tap" data-act="player" data-id="${p.id}">${gradeBadge(v.grade)}<div class="grow" style="min-width:0"><div class="b ellip">${C.flags(p)} ${esc(W.name(p))} <span class="dim small">${W.age(p)} · ${p.pos}</span></div><div class="tiny dim ellip">${c ? esc(c.name) : 'Free agent'}${p.loan ? ' (loan)' : ''} · ${v.fee != null ? (p.clubId ? '~' + U.money(v.fee) : U.money(FM.Transfers.wageDemand(p, club())) + '/wk') : '?'}${clause}${extra}</div><div class="row" style="gap:6px;margin-top:3px">${recPill(v).replace('class="pill', 'style="font-size:12px;padding:1px 6px" class="pill')}${knowBar(v.k)}</div></div><div class="col" style="align-items:flex-end;gap:4px">${C.playerStars(p)}</div>${dismiss === 'restore' ? `<button class="btn sm" style="flex:none" data-act="restoreReport" data-id="${p.id}">Restore</button>` : dismiss ? `<div class="col" style="gap:4px;flex:none"><button class="btn sm" style="flex:none;padding:11px 8px" title="Compare with your best at his position" aria-label="Compare" data-act="compare" data-id="${p.id}">Compare</button><button class="icon-btn" style="width:30px;height:30px;font-size:13px" title="Dismiss report" aria-label="Dismiss report" data-act="dismissReport" data-id="${p.id}">✕</button></div>` : ''}</div>`;
   };
   function hubView() {
     const s = S();
@@ -763,7 +776,7 @@
           .slice(0, 2)
           .map(([k]) => FM.Scouting.regionName(k))
           .join(', ');
-        return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${U.staffText(sc.judge)}</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${a.weeks}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
+        return `<div class="row" style="padding:10px 0;border-top:1px solid var(--line)"><span style="font-size:22px">${C.flag(sc.nat)}</span><div class="grow" style="min-width:0"><div class="b small">${esc(sc.fn + ' ' + sc.ln)} <span class="dim">· ${U.staffText(sc.judge)}</span></div><div class="tiny dim ellip">${a ? (a.type === 'player' ? `Watching ${esc(P(a.pid) ? W.name(P(a.pid)) : '?')} · ${FM.Scouting.weeksLeft(a)}w left` : esc(FM.Scouting.focusLabel(a))) : `Idle · best in ${best}`}</div></div><button class="btn sm ${a ? '' : 'pri'}" data-act="assignScout" data-id="${id}">${a ? 'Change' : 'Assign'}</button></div>`;
       })
       .join('');
     return `<div class="card"><div class="row"><div class="h3 grow">Scout picks</div><span class="tiny dim">best-graded targets</span></div>${picks.length ? picks.map(({ p, v }) => reportRow(p, v)).join('') : '<div class="small dim" style="margin-top:6px">No A/B-graded targets yet. Give your scouts assignments and advance a few days.</div>'}</div>
@@ -972,8 +985,23 @@
     UI._as.maxFee = Math.max(1e5, U.roundMoney(club().budget));
     UI.assignSheet();
   };
+  // Sending a scout who is already on a job asks first (his reports so far are kept: what he learned stays in the knowledge)
   UI.acts.doAssign = () => {
+    const a = UI._as,
+      cur = S().user.assignments.find((x) => x.scout === a.scout);
+    if (cur && !a.replaceOk) {
+      const sc = S().staff[a.scout];
+      return UI.sheet(
+        `<div class="small" style="line-height:1.5">${esc(sc.fn + ' ' + sc.ln)} is on ${esc(FM.Scouting.focusLabel(cur))}. Replace it? What he has found so far stays in your reports and your knowledge of those players.</div>
+        <div class="actions" style="margin-top:14px"><button class="btn pri block" data-act="doAssignGo">Replace it</button><button class="btn block" data-act="closeSheet">Keep it</button></div>`,
+        { title: 'Replace the assignment?' },
+      );
+    }
+    UI.acts.doAssignGo();
+  };
+  UI.acts.doAssignGo = () => {
     const a = UI._as;
+    a.replaceOk = false;
     const spec = {
       type: a.type,
       pos: a.pos,
@@ -988,7 +1016,7 @@
     else spec.comp = a.comp;
     FM.Scouting.assign(a.scout, spec);
     UI.save();
-    UI.closeSheet();
+    UI.closeAllSheets();
     UI.render();
     UI.toast('Reports will arrive after each matchday');
   };
@@ -1021,8 +1049,28 @@
   });
   UI._sf = { ...SF_DEFAULT(), more: false, sort: 'default', rev: false, limit: 50 };
   const SF_AGE = { any: [0, 99], u19: [0, 19], u21: [0, 21], u23: [0, 23], prime: [24, 29], vet: [30, 99] };
-  const SF_PRICE = { any: Infinity, m1: 1e6, m5: 5e6, m20: 2e7 };
-  const SF_WAGE = { any: Infinity, k10: 1e4, k25: 2.5e4, k50: 5e4, k100: 1e5 };
+  // The fee and wage bands follow the club: a third-tier club with a small budget is offered bands that sort its market, not the top flight's
+  // (the keys stay: m1, m5, m20 are the three fee bands; k10 to k100 the four wage bands)
+  const niceStep = (v) => {
+    const e = 10 ** Math.floor(Math.log10(Math.max(v, 1))),
+      m = v / e;
+    return (m < 1.5 ? 1 : m < 3.5 ? 2.5 : m < 7.5 ? 5 : 10) * e;
+  };
+  const SF_PRICE = () => {
+    const me = W.userClub(),
+      u = me ? Math.max(1e3, niceStep(me.budget / 20)) : 5e4;
+    return { any: Infinity, m1: u, m5: u * 5, m20: u * 20 };
+  };
+  const SF_WAGE = () => {
+    const me = W.userClub(),
+      sq = me
+        ? W.squad(me.id)
+            .map((p) => p.wage || 0)
+            .sort((a, b) => a - b)
+        : [],
+      u = Math.max(100, niceStep((sq[sq.length >> 1] || 400) * 1.5));
+    return { any: Infinity, k10: u, k25: u * 2.5, k50: u * 5, k100: u * 10 };
+  };
   const SF_STARS = [
     ['any', 'Any'],
     ['2', '2★+'],
@@ -1076,10 +1124,10 @@
         if (f.price !== 'any') {
           const fee = p.clubId ? v.fee : 0;
           if (fee == null) return false;
-          if (f.price === 'budget' ? fee > (me ? me.budget : 0) : fee > SF_PRICE[f.price]) return false;
+          if (f.price === 'budget' ? fee > (me ? me.budget : 0) : fee > SF_PRICE()[f.price]) return false;
         }
       }
-      if (f.wage !== 'any' && me && FM.Transfers.wageDemand(p, me) > SF_WAGE[f.wage]) return false;
+      if (f.wage !== 'any' && me && FM.Transfers.wageDemand(p, me) > SF_WAGE()[f.wage]) return false;
       return true;
     });
   }
@@ -1195,15 +1243,15 @@
         ${lbl('Fee')}${row('price', [
           ['any', 'Any fee'],
           ['budget', 'Within budget'],
-          ['m1', `≤ ${U.money(1e6)}`],
-          ['m5', `≤ ${U.money(5e6)}`],
-          ['m20', `≤ ${U.money(2e7)}`],
+          ['m1', `≤ ${U.money(SF_PRICE().m1)}`],
+          ['m5', `≤ ${U.money(SF_PRICE().m5)}`],
+          ['m20', `≤ ${U.money(SF_PRICE().m20)}`],
         ])}
         <div class="row" style="gap:6px;margin-top:8px;flex-wrap:wrap">${sel('wage', [
           ['any', 'Any wage'],
-          ...Object.keys(SF_WAGE)
+          ...Object.keys(SF_WAGE())
             .filter((k) => k !== 'any')
-            .map((k) => [k, `Wants ≤ ${U.money(SF_WAGE[k])}/wk`]),
+            .map((k) => [k, `Wants ≤ ${U.money(SF_WAGE()[k])}/wk`]),
         ])}${sel('contract', [
           ['any', 'Any contract'],
           ['now', 'Ends this season'],

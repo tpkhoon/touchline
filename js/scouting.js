@@ -254,6 +254,23 @@
     if (d.rep) u.reports[pid] = { ...d.rep, isNew: false };
     delete u.dismissed[pid];
   };
+  // The weeks a watch of one player has left, from the calendar's days (older saves count the passes of the sim, as they did)
+  Sc.weeksLeft = function (a, step) {
+    if (typeof a.dueDn === 'number') {
+      const dn = FM.Season.dnToday();
+      if (typeof dn === 'number') return Math.max(0, Math.ceil((a.dueDn - dn) / 7));
+    }
+    return step ? --a.weeks : a.weeks;
+  };
+  // The reports you have not seen, counted from the list the Reports tab shows (a player who is still there and is not your own), so
+  // the badge and the list cannot disagree; a second opinion not yet read counts too
+  Sc.unseen = function () {
+    const S = FM.S;
+    return Object.entries(S.user.reports).filter(([pid, r]) => {
+      const p = S.players[pid];
+      return p && !FM.W.ownPlayer(p) && (r.isNew || (r.second && r.second.isNew));
+    }).length;
+  };
   Sc.assign = function (scoutId, spec) {
     const u = FM.S.user;
     if (spec.type === 'player' && u.dismissed) delete u.dismissed[spec.pid];
@@ -262,6 +279,9 @@
       const s = FM.S.staff[scoutId],
         p = FM.S.players[spec.pid];
       spec.weeks = Math.max(1, Math.round(3 - 2 * Sc.expert(s, p)));
+      // (a week is seven days of the calendar, the shared count the whole game uses, not a matchday: "2 weeks" then "1w left" the next day)
+      const dn = FM.Season.dnToday();
+      if (typeof dn === 'number') spec.dueDn = dn + spec.weeks * 7;
     }
     u.assignments.push({ scout: scoutId, since: FM.S.day, ...spec });
   };
@@ -448,7 +468,7 @@
           continue;
         }
         learn(scout, p, 1.4);
-        if (--a.weeks <= 0) {
+        if (Sc.weeksLeft(a, true) <= 0) {
           done.push(a);
           FM.News.add({
             type: 'report',

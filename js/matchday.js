@@ -710,7 +710,18 @@
     else [headline, tone] = ['An even draw.', 'neutral'];
     Md.insCauses(m, us).forEach((c) => causes.push(c));
     causes.sort((a, b) => b.weight - a.weight);
-    return { headline, tone, dx, causes: causes.slice(0, 4) };
+    // (a stat is said once: a tactic's cause and the instruction check can both quote the same counter-attack chances, under two labels)
+    const seen = new Set();
+    const unique = causes.filter((c) => {
+      const nums = (String(c.text).match(/\d+(\.\d+)?/g) || []).join(',');
+      const what = (String(c.text).match(/counter|press|cross|through ball|cutback|block|corner|set piece/i) || [
+        '',
+      ])[0].toLowerCase();
+      if (!nums || !what) return true;
+      const key = `${what}|${nums}`;
+      return seen.has(key) ? false : (seen.add(key), true);
+    });
+    return { headline, tone, dx, causes: unique.slice(0, 4) };
   };
   // Pressure before a match: an opponent in form, or a full house at their ground, weighs on a squad (nervy players most; a
   // big-game player or a veteran hardly notices). Returns what weighs and by how many morale points for a steady player.

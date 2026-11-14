@@ -113,6 +113,33 @@ export function testFile(file, { days = 5 } = {}) {
   if (W.employed() && FM.S.comps[W.userClub().comp] && FM.S.comps[W.userClub().comp].type === 'league' && played > 0) {
     if (!FM.S.news.some((x) => / preview: /.test(x.title))) problems.push('no league preview in the feed');
   }
+  // scouting: the unseen badge is the list's own count, and a finished watch leaves one report that is listed
+  try {
+    const S = FM.S,
+      Sc = FM.Scouting;
+    if (W.employed() && S.user.scouts && S.user.scouts.length) {
+      const others = Object.values(S.players).filter((p) => p.clubId && !W.ownPlayer(p));
+      const own = Object.values(S.players).find((p) => W.ownPlayer(p));
+      S.user.reports = {};
+      const before = Sc.unseen();
+      S.user.reports[own.id] = { scout: S.user.scouts[0], err: 0, errP: 0, day: S.day, year: S.year, isNew: true };
+      if (Sc.unseen() !== before) problems.push('a report on his own player is counted in the unseen badge');
+      const target = others[0];
+      Sc.assign(S.user.scouts[0], { type: 'player', pid: target.id });
+      const a = S.user.assignments.find((x) => x.pid === target.id);
+      for (let i = 0; i < 45 && FM.S.user.assignments.includes(a); i++) {
+        const fx = FM.Season.userFixture();
+        if (fx && !FM.S.user.sacked) FM.Season.applyUserMatch(FM.quickSim(fx, !!fx.ko));
+        FM.Season.advance(null);
+      }
+      if (FM.S.user.assignments.includes(a)) problems.push('a watch of one player never finished');
+      else if (!FM.S.user.reports[target.id] || !S.user.reports[target.id].isNew)
+        problems.push('a finished watch left no new report');
+      else if (Sc.unseen() !== before + 1) problems.push('a finished watch is not counted once in the unseen badge');
+    }
+  } catch (e) {
+    problems.push('the scouting check failed: ' + e.message);
+  }
   // a manager in a job is paid a little each day, and what he has kept shows
   if (W.employed() && played > 0 && !(FM.S.user.savings > 0))
     problems.push('a manager in a job has kept nothing of his pay');

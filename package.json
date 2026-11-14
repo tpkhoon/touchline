@@ -69,6 +69,7 @@
     "test:winchance": "node tools/winchance.mjs",
     "test:economy": "node tools/economy.mjs",
     "test:saves": "node tools/savelib.mjs",
+    "test:budget": "node tools/budget.mjs",
     "saves:snapshot": "node tools/savelib.mjs --snapshot",
     "shots:store": "node tools/storeshots.mjs",
     "firstbad": "node tools/firstbad.mjs",

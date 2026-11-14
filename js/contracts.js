@@ -53,7 +53,11 @@
     const d = Co.deal(p);
     const always = ['ESP', 'POR'].includes(club.nat);
     if (always || (W.age(p) <= 23 && Math.random() < 0.25) || Math.random() < 0.08)
-      d.release = U.roundMoney(Math.max(5e5, p.value * (always ? U.rand(2.5, 6) : U.rand(1.8, 3.5))));
+      // (a clause is a multiple of what he is worth and what he earns: a flat floor of half a million gave unrelated players the same clause,
+      // and was seven times the value of a typical player)
+      d.release = U.roundMoney(
+        Math.max(p.value, (p.wage || 0) * 40, 2e4) * (always ? U.rand(2.5, 6) : U.rand(1.8, 3.5)),
+      );
     else delete d.release;
     return d;
   };

@@ -2559,9 +2559,8 @@
 
   // ======================= SCOUTING =======================
   UI.screens.scout = function () {
-    const t = UI.sub.scout,
-      s = S();
-    const newCount = Object.values(s.user.reports).filter((r) => r.isNew).length;
+    const t = UI.sub.scout;
+    const newCount = FM.Scouting.unseen();
     const win = FM.Season.windowOpen();
     return (
       `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${win ? '●' : '●'}</span><div class="grow"><div class="b small">Transfer window ${win ? 'OPEN' : 'closed'}</div><div class="tiny dim">${win ? `Deals can be completed now. ${UI.windowLabel()}.` : 'Opens pre-season and matchdays 12–14.'}</div></div><div class="col" style="align-items:flex-end"><div class="tiny dim">Budget</div><b>${U.money(club().budget)}</b></div></div>` +
@@ -2641,7 +2640,7 @@
             ? '<span class="pill">Idle</span>'
             : a.type === 'region'
               ? `<span class="pill acc">Scouting ${esc(FM.Scouting.regionName(a.region))} · ${a.role ? a.role : a.pos === 'any' ? 'all' : FM.Scouting.posLabel(a.pos)} · ≤${a.maxAge}</span>`
-              : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${a.weeks}w</span>`;
+              : `<span class="pill acc">Watching ${esc(P(a.pid) ? W.short(P(a.pid)) : '?')} · ${FM.Scouting.weeksLeft(a)}w</span>`;
           return `<div class="card"><div class="row"><div style="font-size:30px">${C.flag(sc.nat)}</div><div class="grow"><div class="b">${esc(sc.fn + ' ' + sc.ln)}</div><div class="small dim">Judging ability ${U.staffText(sc.judge)} · ${esc(sc.personality)}</div></div><button class="btn sm pri" data-act="assignScout" data-id="${id}">Assign</button></div>
         <div class="small muted" style="margin:10px 0 6px">${esc(sc.note)}</div>
         ${Object.entries(D.REGIONS)

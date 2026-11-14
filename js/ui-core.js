@@ -584,7 +584,16 @@
     if (!raw) {
       // (the title screen lists a slot from its small summary: the save itself can be gone, e.g. cleared storage or a write that
       // ran out of room. Say so rather than doing nothing.)
-      UI.toast(`Slot ${n} has no save data on this device. Delete the slot, or import a save file.`, 6000);
+      // (the title lists a slot from its small summary: the save itself can be gone: cleared storage, or a write that did not finish. Say
+      // so on the screen with the way out, not in a toast that is gone in seconds.)
+      UI.loadFailed(
+        n,
+        'finding the save in this device’s storage',
+        new Error(
+          `Slot ${n} is listed, but there is no save data in it. A write may not have finished, or the browser cleared its storage.`,
+        ),
+        null,
+      );
       return false;
     }
     let step = 'reading the save';
@@ -625,7 +634,7 @@
     const why = (e && e.message) || 'unknown error';
     UI._failedLoad = { n, raw, confirm: false };
     UI.sheet(
-      `<div class="small" style="line-height:1.5">This save could not be opened. Nothing was changed: it is still in slot ${n}.</div><div class="card"><div class="small b">${esc(why)}</div><div class="tiny dim" style="margin-top:4px">It failed while ${esc(step)}.</div></div><div class="tiny dim" style="line-height:1.5">${raw ? 'Export the save to keep the file (and send it with a problem report), or delete the slot to start again.' : 'The save was read but the game could not start it.'}</div><div class="row" style="gap:8px;margin-top:10px">${raw ? '<button class="btn sm grow" data-act="failedExport">Export this save</button>' : ''}<button class="btn sm grow" data-act="failedDelete" id="failed-delete">Delete this save</button></div><button class="btn sm block" style="margin-top:8px" data-act="closeSheet">Close</button>`,
+      `<div class="small" style="line-height:1.5">This save could not be opened. Nothing was changed: it is still in slot ${n}.</div><div class="card"><div class="small b">${esc(why)}</div><div class="tiny dim" style="margin-top:4px">It failed while ${esc(step)}.</div></div><div class="tiny dim" style="line-height:1.5">${raw ? 'Export the save to keep the file (and send it with a problem report), or delete the slot to start again.' : /^finding/.test(step) ? 'There is no file to export. Delete the slot to clear it from the list, or import a save file from Settings.' : 'The save was read but the game could not start it.'}</div><div class="row" style="gap:8px;margin-top:10px">${raw ? '<button class="btn sm grow" data-act="failedExport">Export this save</button>' : ''}<button class="btn sm grow" data-act="failedDelete" id="failed-delete">Delete this save</button></div><button class="btn sm block" style="margin-top:8px" data-act="closeSheet">Close</button>`,
       { title: 'This save could not be opened' },
     );
   };

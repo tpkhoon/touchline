@@ -2212,7 +2212,7 @@
         id: 'ht',
         icon: 'speech',
         title: 'Half-time team talk',
-        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.\n${read.lines.map(([i, t]) => `${i} ${t}`).join('\n')}`,
+        body: `${sd.goals}–${op.goals} at the break. xG ${sd.xg.toFixed(2)} – ${op.xg.toFixed(2)}.\n${read.lines.map(([, t]) => t).join('\n')}`,
         options: [
           { label: 'Keep calm', desc: 'Stay the course', apply: apply('calm') },
           { label: 'Demand more', desc: 'Risky with volatile players', apply: apply('demand') },
