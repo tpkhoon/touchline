@@ -1795,7 +1795,8 @@
   // A continental cup of the definition's own: a tier (1 the champions cup of its part of the world, 2 and 3 the cups below it, 4 a
   // regional cup), a part of the world, and where its clubs come from: a tier 1 cup takes the places the leagues send to it
   // (their qualify rule), a lower tier the places named in its feeders (league: how many, after the cups above have theirs)
-  WD.TIER_NAMES = { 1: 'Champions Cup', 2: 'Shield', 3: 'Trophy', 4: 'Regional cup' };
+  WD.TIER_NAMES = { 1: 'Champions Cup', 2: 'Shield', 3: 'Trophy', 4: 'Regional cup', 5: 'Lower cup', 6: 'Lowest cup' };
+  WD.MAX_CONT_TIER = 6; // (a cup below the regional cups: the game has them already, the Arab Cup and the Balkan and Slavic cups are tier 5)
   WD.validateNewCont = function (c, def) {
     const at = `competition ${c.id}`,
       e = [];
@@ -1807,7 +1808,8 @@
     if ((def.competitions || []).some((x) => x !== c && x.id === c.id)) e.push(`${at}: two competitions share an id`);
     if (!String(c.name || '').trim()) e.push(`${at}: needs a name`);
     if (!WD.REGIONS.includes(c.region)) e.push(`${at}: a part of the world: ${WD.REGIONS.join(', ')}`);
-    if (!(Number.isInteger(c.tier) && c.tier >= 1 && c.tier <= 4)) e.push(`${at}: the tier is 1 to 4`);
+    if (!(Number.isInteger(c.tier) && c.tier >= 1 && c.tier <= WD.MAX_CONT_TIER))
+      e.push(`${at}: the tier is 1 to ${WD.MAX_CONT_TIER}`);
     const shorts = [
       ...D.CONTINENTALS.filter((x) => x.id !== c.id).map((x) => x.short),
       ...(def.competitions || []).filter((x) => x !== c).map((x) => x.short),
@@ -3355,7 +3357,7 @@
         }
         return result([]);
       },
-      // a continental cup of the definition's own (its id: CN and letters), of a tier from 1 to 4; its clubs come from the leagues'
+      // a continental cup of the definition's own (its id: CN and letters), of a tier from 1 to 6 (below the Champions Cup: the Shield, the Trophy, the regional cups and the cups below them); its clubs come from the leagues'
       // qualify rules (tier 1) or its feeders (the others), set afterwards
       addContinental(c) {
         const next = {

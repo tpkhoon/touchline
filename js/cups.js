@@ -42,31 +42,49 @@
   // A fixture that settles a tie (single matches and second legs; not first legs)
   Cu.decides = (f) => f.leg !== 1;
   // A cup with replays (opts.replay, set in the world editor): a single-leg tie of an early round that is level after ninety minutes is not
-  // played on: it is replayed with the grounds swapped (Cu.replay), and only a replay that is level goes to extra time and penalties. Not
-  // the final, and not a tie on a neutral ground.
+  // played on. It is replayed as a match of its own on the next cup day, with the grounds swapped (the replays come before the next round
+  // is drawn), and only a replay that is level goes to extra time and penalties. Not the final, a tie on a neutral ground or a leg.
   Cu.replayDraw = (f) => {
     const c = S() && S().comps && S().comps[f.comp];
-    return !!(c && c.type === 'cup' && !c.euro && Cu.optsOf(c).replay && f.ko && !f.final && !f.neutral && !f.replayOf);
+    return !!(
+      c &&
+      c.type === 'cup' &&
+      !c.euro &&
+      Cu.optsOf(c).replay &&
+      f.ko &&
+      !f.leg &&
+      !f.final &&
+      !f.neutral &&
+      !f.replayOf
+    );
   };
-  // The replay of a drawn tie, played at once (the other club's ground): the result is kept with the tie, and the winner is the replay's
-  Cu.replay = function (fx, res) {
-    const rp = {
+  // A tie that ended level and waits for its replay
+  Cu.awaitsReplay = (f) => !!(f.res && f.res.hg === f.res.ag && f.res.win == null && !f.res.pens && Cu.replayDraw(f));
+  // The replays of a round: one fixture for each tie that is level, at the other club's ground
+  Cu.replaysOf = (c, round) => {
+    const decider = round.ties2 || round.ties;
+    return decider.filter(Cu.awaitsReplay).map((f) => ({
       id: FM.nextId('f'),
-      comp: fx.comp,
-      h: fx.a,
-      a: fx.h,
+      comp: c.id,
+      h: f.a,
+      a: f.h,
       res: null,
       ko: true,
-      po: `${fx.po || 'Replay'} · replay`,
-      n: fx.n,
-      replayOf: fx.id,
-    };
-    const m = FM.quickSim(rp, true);
-    rp.res = m.result();
-    const w = FM.Season.winnerOf(rp);
-    res.replay = { h: rp.h, a: rp.a, hg: rp.res.hg, ag: rp.res.ag, ...(rp.res.pens ? { pens: rp.res.pens } : {}) };
-    res.win = w === fx.h ? 0 : 1;
-    return rp;
+      po: `${round.name} · replay`,
+      final: false,
+      neutral: false,
+      n: f.n,
+      replayOf: f.id,
+    }));
+  };
+  // A replay has been played: its score and winner go to the tie it replays (the tie's winner is the replay's)
+  Cu.settleReplay = function (fx) {
+    const c = S().comps[fx.comp],
+      orig = c.rounds.flatMap((r) => [...r.ties, ...(r.ties2 || [])]).find((x) => x.id === fx.replayOf);
+    if (!orig || !orig.res) return;
+    const w = winnerOf(fx);
+    orig.res.replay = { h: fx.h, a: fx.a, hg: fx.res.hg, ag: fx.res.ag, ...(fx.res.pens ? { pens: fx.res.pens } : {}) };
+    orig.res.win = w === orig.h ? 0 : 1;
   };
   // A tie that goes straight to penalties when level (no extra time). Real cups differ by round: a domestic cup's opts.etFrom is
   // the last stage with extra time (clubs left: 2 = the final only, 16 = from the round of 16); a continental cup with etFinalOnly
@@ -860,7 +878,8 @@
         n = Math.max(2, G * (gs.up || 2));
       }
     }
-    return days + ko(n);
+    // (a cup with replays has a day after each round for the ties that were level: the days are given for every round)
+    return days + ko(n) + (o.replay ? Math.max(0, Math.ceil(Math.log2(n)) - 1) : 0);
   };
   // The places a league's clubs skip for a lower continental cup: its main cup's, and those of the cups above this
   // one in the same region (the Conference League takes the places after the Europa League's)
@@ -1200,6 +1219,12 @@
       }
       const decider = last.ties2 || last.ties;
       if ((last.ties2 ? last.day2 : last.day) === S().day || decider.some((f) => !f.res)) return decider;
+      // the ties that were level go to a replay on this cup day: the next round is drawn when they are all played
+      if (!last.replays) {
+        last.replays = Cu.replaysOf(c, last);
+        last.replayDay = S().day;
+      }
+      if (last.replays.length && (last.replayDay === S().day || last.replays.some((f) => !f.res))) return last.replays;
     }
     let alive = last ? last.byes.concat((last.ties2 || last.ties).map(winnerOf)) : c.clubs.slice();
     // the clubs that enter late (opts.entry: { tier } = the clubs of that division and above, { top } = that many of the strongest):
@@ -1721,6 +1746,7 @@
       return;
     }
     if (!Cu.decides(fx)) return; // a first leg: nothing yet
+    if (Cu.awaitsReplay(fx)) return; // level, and to be replayed: the winner is paid when the replay is played
     const w = winnerOf(fx),
       l = w === fx.h ? fx.a : fx.h;
     pay(w, Cu.purse(c, fx, w), c, 'knockout wins'); // (the title's prize is paid in Cu.finish)

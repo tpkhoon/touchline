@@ -661,7 +661,8 @@ Every feature from the game design document, with what is playable in the protot
 | Editor | The Nations League by confederation: on or off, groups of two to four nations, one to eight groups a league, the most tiers it may have, and confederations that play one Nations League together (Asia and Oceania, say) with promotion and relegation through all its tiers | Alpha 2 |
 | Editor | How a draw is made, for each tournament's qualifying groups and its finals: pots by ranking, a snake of the ranking, or random (the hosts apart) | Alpha 2 |
 | Careers | The board's interview before a job: three questions (the plan, the money, the style), an answer that fits the club's character (and its place in its league) impresses the board (more trust, a bigger budget), a poor fit leaves a doubtful board with less of both, and the job can be left | Alpha 2 |
-| Editor | Replays for a domestic cup: a single-leg tie of an early round that is level after ninety minutes is replayed with the grounds swapped (not the final, nor a neutral tie), and only a level replay goes to extra time and penalties; the replay is played at once and shown with the result | Alpha 2 |
+| Editor | Replays for a domestic cup: a single-leg tie of an early round that is level after ninety minutes is replayed with the grounds swapped (not the final, nor a neutral tie), and only a level replay goes to extra time and penalties; the replay is a match of its own on the next cup day (the next round is drawn after it) and is shown with the result | Alpha 2 |
+| Editor | New tiers of international club competition: a continental cup can be added in any part of the world at any of six tiers (the Champions Cup, the Shield, the Trophy, the regional cups and two tiers below them), each taking the places named for it after the cups above, and a cup's screen has "Add a tier below this cup" | Alpha 2 |
 
 ## Yet to be added
 

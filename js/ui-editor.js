@@ -3701,6 +3701,7 @@
   UI.acts.edNewCup = () => {
     ED.view = 'newcup';
     ED.newKind = 'domestic';
+    ED.newCont = null;
     ED.err = [];
     UI.worldEditor();
   };
@@ -3725,13 +3726,13 @@
       ['cont', 'A continental competition'],
     ]);
     if (kind === 'cont')
-      return `<div class="h1" style="margin-top:2vh">Add a competition</div><div class="tag">A continental competition of a part of the world, in one of four tiers.</div>
+      return `<div class="h1" style="margin-top:2vh">Add a competition</div><div class="tag">A continental competition of a part of the world, in one of six tiers: a new cup can sit below any the game or the world has.</div>
       ${kinds}
       ${errBox()}
       <div class="ng-label">Name</div><input type="text" id="ed-ccname" maxlength="48" placeholder="e.g. Pacific Champions League">
       <div class="ng-label">Short name</div><input type="text" id="ed-ccshort" maxlength="6" placeholder="e.g. PAC1">
-      <div class="ng-label">Part of the world</div><select id="ed-ccregion">${WD.REGIONS.map((r) => `<option>${r}</option>`).join('')}</select>
-      <div class="ng-label">Tier</div><select id="ed-cctier">${[1, 2, 3, 4].map((t) => `<option value="${t}" ${t === 2 ? 'selected' : ''}>Tier ${t} · ${['Champions Cup', 'Shield (the next places)', 'Trophy (the places after that)', 'Regional cup'][t - 1]}</option>`).join('')}</select>
+      <div class="ng-label">Part of the world</div><select id="ed-ccregion">${WD.REGIONS.map((r) => `<option ${r === (ED.newCont || {}).region ? 'selected' : ''}>${r}</option>`).join('')}</select>
+      <div class="ng-label">Tier</div><select id="ed-cctier">${[1, 2, 3, 4, 5, 6].map((t) => `<option value="${t}" ${t === ((ED.newCont || {}).tier || 2) ? 'selected' : ''}>Tier ${t} · ${WD.TIER_NAMES[t]}${t === 1 ? ' (the leagues send it places)' : t === 2 ? ' (the next places)' : t === 3 ? ' (the places after that)' : ' (the places named for it, below the cups above)'}</option>`).join('')}</select>
       <div class="tiny dim" style="margin-top:6px;line-height:1.5">Tier 1 takes the places leagues send to it (set on each league's screen, like the Champions Cup). Tiers 2 to 4 name the leagues that feed them and how many clubs each sends, after the cups above have taken theirs: tier 2 is the Europa League's place, tier 3 the Conference League's, tier 4 a small regional cup. Every cup has a group stage and knockouts.</div>
       <div class="actions ng-foot"><button class="btn sm" data-act="edView" data-v="cups" aria-label="Back">←</button><button class="btn sm pri grow" data-act="edCreateCont">Add the competition</button></div>`;
     return `<div class="h1" style="margin-top:2vh">Add a competition</div><div class="tag">A knockout cup for a nation that has none. Every club in its fully or lightly simulated leagues enters.</div>
@@ -4000,7 +4001,7 @@
             ['replay', 'A replay'],
           ],
         )}
-        <div class="tiny dim" style="margin-top:6px;line-height:1.5">A replay is played at the other club's ground at once, and only a replay that is level goes on to extra time and penalties. It does not apply to the final or to a tie on a neutral ground, nor to a tie over two legs.</div>
+        <div class="tiny dim" style="margin-top:6px;line-height:1.5">A replay is a match of its own, at the other club's ground, on the next cup day, before the next round is drawn (the cup gets a day for each round), and only a replay that is level goes on to extra time and penalties. You play it yourself if it is your tie. It does not apply to the final or to a tie on a neutral ground, nor to a tie over two legs.</div>
         <div class="tiny dim" style="margin-top:8px;line-height:1.5">One match is played at the home of the club drawn first, with extra time and penalties. A neutral match is the same at a neutral ground. Two legs are home and away. The calendar makes room for the extra days.</div>`;
     } else if (kind === 'cont') {
       body = `${[
@@ -4121,6 +4122,7 @@
       <div class="ng-names"><input type="text" id="ed-cupname" maxlength="48" value="${esc(o.name)}"><input type="text" id="ed-cupshort" maxlength="6" style="max-width:84px" value="${esc(o.short || c.short)}"></div>
       ${body}
       ${kind === 'cont' ? contFeeders(c, f) : ''}
+      ${kind === 'cont' && contTier(c.id) < WD.MAX_CONT_TIER ? `<div class="actions" style="margin-top:12px"><button class="btn sm block" data-act="edTierBelow">Add a tier below this cup</button></div>` : ''}
       ${rules}
       ${entry}
       ${prize}
@@ -4529,7 +4531,8 @@
     const used = new Set([...D.CONTINENTALS.map((c) => c.id), ...ED.def.competitions.map((c) => c.id)]);
     let id = 'CN1';
     for (let i = 2; used.has(id); i++) id = 'CN' + i;
-    const prize = { 1: 8e6, 2: 4e6, 3: 2.5e6, 4: 1.2e6 }[tier];
+    const prize = { 1: 8e6, 2: 4e6, 3: 2.5e6, 4: 1.2e6, 5: 8e5, 6: 5e5 }[tier];
+    ED.newCont = null;
     const r = WD.editor(ED.def, null).addContinental({
       id,
       name,
@@ -4540,6 +4543,14 @@
     });
     ED.err = r.ok ? [] : r.errors;
     if (r.ok) ((ED.view = 'cup'), (ED.cup = id));
+    UI.worldEditor();
+  };
+  // A new cup one tier below this one, in its part of the world (the new-competition screen, filled in)
+  UI.acts.edTierBelow = () => {
+    ED.newCont = { region: contRegion(ED.cup), tier: Math.min(WD.MAX_CONT_TIER, contTier(ED.cup) + 1) };
+    ED.view = 'newcup';
+    ED.newKind = 'cont';
+    ED.err = [];
     UI.worldEditor();
   };
   // A league's qualify rule can name any tier 1 cup of its part of the world

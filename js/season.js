@@ -806,17 +806,16 @@
       res = m.result();
     fx.res = res;
     const comp = S.comps[fx.comp];
-    // a drawn tie of a cup with replays: the replay is played now, with the grounds swapped, and decides the tie
-    if (comp.type === 'cup' && res.hg === res.ag && FM.Cups.replayDraw(fx)) {
-      const rp = FM.Cups.replay(fx, res);
-      if (W.isMine(fx.h) || W.isMine(fx.a))
-        FM.News.add({
-          type: 'club',
-          title: `${comp.name} replay: ${S.clubs[rp.h].name} ${rp.res.hg}–${rp.res.ag} ${S.clubs[rp.a].name}`,
-          body: `The tie was level at ${res.hg}–${res.ag}. The replay at ${S.clubs[rp.h].name} ${rp.res.pens ? `went to penalties (${rp.res.pens[0]}–${rp.res.pens[1]})` : 'settled it'}.`,
-          clubId: W.isMine(fx.h) ? fx.h : fx.a,
-        });
-    }
+    // a tie of a cup with replays that is level: it will be replayed on the next cup day, at the other club's ground (said in the feed for
+    // your own club); a replay that has been played settles the tie it replays
+    if (fx.replayOf) FM.Cups.settleReplay(fx);
+    else if (comp.type === 'cup' && res.hg === res.ag && FM.Cups.replayDraw(fx) && (W.isMine(fx.h) || W.isMine(fx.a)))
+      FM.News.add({
+        type: 'club',
+        title: `${comp.name}: ${S.clubs[fx.h].name} ${res.hg}–${res.ag} ${S.clubs[fx.a].name}, a replay to play`,
+        body: `The tie is level after ninety minutes. The replay is at ${S.clubs[fx.a].name} on the next cup day, before the next round is drawn.`,
+        clubId: W.isMine(fx.h) ? fx.h : fx.a,
+      });
     const day = Sea.today();
     if (day && day.dn != null) for (const id of [fx.h, fx.a]) if (S.clubs[id]) S.clubs[id].lastDn = day.dn; // (for the short-week check)
     if (comp.type === 'friendly') return Sea.applyFriendly(fx, m);

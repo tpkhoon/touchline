@@ -316,45 +316,80 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the interview check failed: ' + e.message);
   }
-  // a cup with replays: a tie level after ninety minutes is replayed with the grounds swapped, and the replay decides it
+  // a cup with replays: a tie level after ninety minutes is not played on; it is replayed as a match of its own on the next cup day with
+  // the grounds swapped, before the next round is drawn, and the replay decides the tie. The cup is played out here, day by day.
   try {
     const S = FM.S,
-      cup = Object.values(S.comps).find((c) => c.type === 'cup' && !c.euro && c.clubs && c.clubs.length > 4);
+      Cu = FM.Cups,
+      cup = Object.values(S.comps).find((c) => c.type === 'cup' && !c.euro && c.clubs && c.clubs.length >= 16);
     if (cup) {
-      const [h, a] = cup.clubs,
-        was = cup.opts,
-        onRes = FM.Cups.onResult;
+      const was = { opts: cup.opts, clubs: cup.clubs, rounds: cup.rounds, winner: cup.winner, late: cup.late },
+        day0 = S.day,
+        pool = was.clubs.filter((id) => !W.isUser(id)).slice(0, 16);
       cup.opts = { legs: [], neutral: [2], replay: true };
-      FM.Cups.onResult = () => {};
-      let drew = null;
-      for (let i = 0; i < 300 && !drew; i++) {
-        const fx = { id: 'f_replay_test', comp: cup.id, h, a, res: null, ko: true, n: 8, po: 'Round of 8' };
-        const m = FM.quickSim(fx, true);
-        if (m.result().hg === m.result().ag && !m.result().pens) drew = { fx, m };
-      }
-      if (!drew) problems.push('a cup tie with replays was never left level after ninety minutes');
-      else {
-        FM.Season.apply(drew.fx, drew.m);
-        const r = drew.fx.res;
-        if (!r.replay || r.replay.h !== a || r.replay.a !== h)
-          problems.push('a drawn tie of a cup with replays was not replayed with the grounds swapped');
-        if (!(r.win === 0 || r.win === 1) || ![h, a].includes(FM.Season.winnerOf(drew.fx)))
-          problems.push('the replay did not decide the tie');
-        const fx2 = { id: 'f_noreplay_test', comp: cup.id, h, a, res: null, ko: true, n: 8 };
-        cup.opts = { legs: [], neutral: [2] };
-        let decided = false;
-        for (let i = 0; i < 300 && !decided; i++) {
-          const m = FM.quickSim(fx2, true);
-          if (m.result().hg === m.result().ag) decided = !!m.result().pens;
+      let replays = [],
+        finished = false;
+      for (let attempt = 0; attempt < 8 && !replays.length; attempt++) {
+        cup.clubs = pool.slice();
+        cup.rounds = [];
+        delete cup.winner;
+        cup.late = undefined;
+        let d = day0;
+        for (let i = 0; i < 40 && !cup.winner; i++) {
+          S.day = ++d;
+          for (const fx of Cu.domestic(cup)) if (!fx.res) FM.Season.apply(fx, FM.quickSim(fx, !!fx.ko));
         }
-        if (!decided) problems.push('a cup without replays does not settle a level tie on penalties');
+        finished = !!cup.winner;
+        replays = cup.rounds.flatMap((r) => r.replays || []);
       }
-      cup.opts = was;
-      if (was === undefined) delete cup.opts;
-      FM.Cups.onResult = onRes;
+      S.day = day0;
+      if (!replays.length) problems.push('a cup with replays never had a replay in eight tries');
+      else {
+        if (!finished) problems.push('a cup with replays was never won');
+        for (const rp of replays) {
+          const orig = cup.rounds.flatMap((r) => [...r.ties, ...(r.ties2 || [])]).find((x) => x.id === rp.replayOf);
+          if (!rp.res || !orig || !orig.res.replay) problems.push('a replay was not played or not kept with its tie');
+          else if (rp.h !== orig.a || rp.a !== orig.h)
+            problems.push('a replay was not played with the grounds swapped');
+          else if (!(orig.res.win === 0 || orig.res.win === 1) || ![orig.h, orig.a].includes(FM.Season.winnerOf(orig)))
+            problems.push('the replay did not decide the tie');
+        }
+        const rd = cup.rounds.find((r) => r.replays && r.replays.length),
+          next = cup.rounds[cup.rounds.indexOf(rd) + 1];
+        if (next && next.ties.some((f) => rd.replays.some((x) => x.id === f.id)))
+          problems.push('a replay was played as a round of the cup');
+      }
+      Object.assign(cup, was);
+      if (was.opts === undefined) delete cup.opts;
     }
   } catch (e) {
     problems.push('the replay check failed: ' + e.message);
+  }
+  // a new tier of international club competition below the ones the game has: a continental cup up to tier six, and no further
+  try {
+    const WD = FM.WorldDef,
+      def = WD.blank('Tier test'),
+      ed = WD.editor(def, FM.S);
+    const ok = ed.addContinental({
+      id: 'CNT6',
+      name: 'Lowest Cup of Europe',
+      short: 'LOW6',
+      region: 'Europe',
+      tier: 6,
+    });
+    if (!ok.ok) problems.push('a continental cup of tier six was refused: ' + ok.errors.join('; '));
+    const south = ed.addContinental({
+      id: 'CNT3',
+      name: 'South American Trophy',
+      short: 'SAT3',
+      region: 'South America',
+      tier: 3,
+    });
+    if (!south.ok) problems.push('a tier three cup in South America was refused: ' + south.errors.join('; '));
+    const bad = ed.addContinental({ id: 'CNT7', name: 'Too Low', short: 'LOW7', region: 'Europe', tier: 7 });
+    if (bad.ok) problems.push('a continental cup of tier seven was accepted');
+  } catch (e) {
+    problems.push('the continental tier check failed: ' + e.message);
   }
   // a manager in a job is paid a little each day, and what he has kept shows
   if (W.employed() && played > 0 && !(FM.S.user.savings > 0))
