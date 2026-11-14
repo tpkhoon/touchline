@@ -3052,7 +3052,16 @@
         md: ++ix,
         opp: fx ? T(fx.h === id ? fx.a : fx.h) : null,
         home: fx ? fx.h === id : null,
-        label: fx ? label : 'Rest',
+        label: fx ? label : g || pend ? 'Rest' : 'Friendly',
+        // (why there is no match: said on the screen, with the date, instead of a bare "Rest")
+        dn: d.dn,
+        rest: !fx && (g || pend) ? true : false,
+        note:
+          fx || !(g || pend)
+            ? ''
+            : pend
+              ? 'The first-round tie is played on the first two windows of the qualifying: until then the nation has no match'
+              : 'Your group does not play on this date: the other teams in it meet, or the group has finished its matches for the window',
       });
     });
     return out.slice(0, 4);

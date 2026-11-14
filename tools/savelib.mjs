@@ -113,6 +113,9 @@ export function testFile(file, { days = 5 } = {}) {
   if (W.employed() && FM.S.comps[W.userClub().comp] && FM.S.comps[W.userClub().comp].type === 'league' && played > 0) {
     if (!FM.S.news.some((x) => / preview: /.test(x.title))) problems.push('no league preview in the feed');
   }
+  // a manager in a job is paid a little each day, and what he has kept shows
+  if (W.employed() && played > 0 && !(FM.S.user.savings > 0))
+    problems.push('a manager in a job has kept nothing of his pay');
   // an offer left unanswered lapses with a line in the feed (it is not found gone), and the head physio's decision is his, not the manager's
   try {
     const S = FM.S,
@@ -201,6 +204,42 @@ export function testSquadNationRepair() {
   return problems.slice(0, 10);
 }
 
+// A career that starts with no club, in a world where every league is Minimal (the least a world can hold): it is saved, opened and played
+// through its first weeks without a fault, and over those weeks offers come to a manager of modest name (an out-of-work career had no way
+// back into the game once). Every day the sim runs is in this test: a skip that goes round without end is caught by the harness's cap.
+export function testNoClubCareer({ days = 45, minOffers = 2 } = {}) {
+  const problems = [];
+  const { FM } = loadSim(7);
+  const { W, D, Season: Sea } = FM;
+  try {
+    const sims = Object.fromEntries(D.LEAGUES.map((l) => [l.id, 'minimal']));
+    W.newWorld({ ...W.REAL_RULES, sims });
+    Sea.init();
+    W.newManager({ fn: 'Test', ln: 'Manager', nat: 'ENG', avatar: 0 }, 38, 'ENG');
+    if (!FM.S.staffPool) W.refreshStaffPool();
+    W.goUnemployed('start');
+    const { state } = FM.Save.unpack(FM.Save.pack(FM.S));
+    if (state.user.clubId !== null) problems.push('a career with no club does not open as one');
+    FM.S = FM.Save.relink(state);
+    FM.W.rosterVer++;
+    const seen = new Set((FM.S.user.offers || []).map((o) => o.id));
+    let waited = 0,
+      guard = 0;
+    while (waited < days && guard++ < 60) {
+      const r = Sea.skipToMatch();
+      waited += Math.max(1, r.n);
+      for (const o of FM.S.user.offers || []) seen.add(o.id);
+      if (r.summary) break;
+    }
+    if (seen.size < minOffers) problems.push(`${seen.size} job offers in ${waited} days (at least ${minOffers})`);
+  } catch (e) {
+    problems.push(
+      'a career with no club failed: ' + (e.stack || e.message).split(String.fromCharCode(10)).slice(0, 4).join(' | '),
+    );
+  }
+  return problems;
+}
+
 export function list() {
   return [
     ...files(SAVES).map((f) => ({ kind: 'release', file: f })),
@@ -258,6 +297,10 @@ if (isMain) {
   const repair = testSquadNationRepair();
   console.log(`${repair.length ? '✗' : '✓'} Squads of one foreign nation are repaired on load`);
   repair.forEach((p) => console.log('    ' + p));
+  const noClub = 'noclub' in args || !args.only ? testNoClubCareer() : [];
+  console.log(`${noClub.length ? '✗' : '✓'} A career with no club opens, plays and gets offers (every league Minimal)`);
+  noClub.forEach((p) => console.log('    ' + p));
+  repair.push(...noClub);
   const all = list().filter((x) => !args.only || x.file.includes(String(args.only)));
   if (!all.length) {
     console.log(

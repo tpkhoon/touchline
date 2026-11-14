@@ -1689,6 +1689,21 @@
       4000,
     );
   };
+  // The same pick, from the match screen: the club's XI, or the national team's when the fixture is an international one
+  UI.acts.fixXI = () => {
+    const fx = FM.Season.userFixture(),
+      nt = fx && fx.intl && S().user.nation ? S().nteams[S().user.nation] : null,
+      c = nt || club();
+    if (!c) return UI.toast('There is no side to pick.');
+    const T = nt ? nt.tactic : UI._planB ? W.secondTactic() : S().user.tactic;
+    T.lineup = null;
+    T.bench = null;
+    const { xi } = W.pickXI(c.id, T);
+    T.roles = FM.bestRoles(xi, D.FORMATIONS[T.formation], W.defaultRoles(T.formation));
+    UI.save();
+    UI.render();
+    UI.toast('Best XI, bench and roles set: everyone is in the position that suits him', 3500);
+  };
   UI.acts.slot = (d) => UI.slotPicker(+d.i);
   UI.slotPicker = function (i, inMatch) {
     const T = TT(),

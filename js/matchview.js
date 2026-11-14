@@ -127,7 +127,7 @@
       `${derby ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">${esc(me.derby)} — the fans will never forget this one, win or lose.</div>` : heat >= FM.Records.EMERGING ? `<div class="warnline">${heat >= FM.Records.RIVALRY ? `${esc(opp.name)} are rivals now` : `A rivalry is building with ${esc(opp.name)}`} — expect a big crowd and a few crunching tackles.</div>` : ''}
       <div class="row" style="justify-content:space-around;text-align:center;margin:6px 0 12px"><div>${C.crest(CL(fx.h), 56)}<div class="small b">${esc(CL(fx.h).name)}</div></div><div class="h2">VS</div><div>${C.crest(CL(fx.a), 56)}<div class="small b">${esc(CL(fx.a).name)}</div></div></div>
       <div class="card"><div class="h3">Opposition</div>
-        <div class="row small" style="margin-top:8px"><span class="grow dim">Manager</span><b>${mgr ? esc(mgr.fn + ' ' + mgr.ln) : '—'}</b></div>${UI.mgrLegendLine ? UI.mgrLegendLine(mgr, opp.id, me.id) : ''}
+        <div class="row small" style="margin-top:8px"><span class="grow dim">Manager</span><b>${mgr ? esc(mgr.fn + ' ' + mgr.ln) : ntOpp && ntOpp.vacantSince != null ? 'Vacant' : '—'}</b></div>${UI.mgrLegendLine ? UI.mgrLegendLine(mgr, opp.id, me.id) : ''}
         <div class="row small" style="margin-top:6px"><span class="grow dim">System</span><b>${opp.tactic.formation} · ${opp.tactic.buildup} · ${opp.tactic.press}</b></div>
         <div class="row small" style="margin-top:6px"><span class="grow dim">Danger man</span><b class="tap" data-act="player" data-id="${key.id}">${C.flag(key.nat)} ${esc(W.name(key))} (${key.pos})</b></div>
         <div class="q" style="margin-top:10px;padding:10px 12px;background:var(--card2);border-radius:12px;font-size:13px;border-left:3px solid var(--acc2)"><b class="tiny dim" style="display:block">${esc(asst.fn + ' ' + asst.ln)} · Assistant</b>“${tip}”</div></div>
@@ -144,7 +144,7 @@
           )
           .join(' · ')}</div>
         ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, FM.W.short(p)) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
-      ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(FM.W.short(x.p))} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} Check your XI in Tactics.</div>` : ''}
+      ${outOfPos.length ? `<div class="warnline" style="color:#ff6b6b;background:rgba(255,80,80,.12)">${outOfPos.length} out of position: ${outOfPos.map((x) => `${esc(FM.W.short(x.p))} (${W.posLabel(x.p)} at ${slots[xi.indexOf(x.p)] ? D.slotLabel(slots[xi.indexOf(x.p)]) : x.t})`).join(', ')}.${s.rules.foreignLimit < W.NO_LIMIT && xi.filter((p) => p && p.nat !== me.nat).length >= s.rules.foreignLimit ? ` The ${s.rules.foreignLimit}-foreign-player limit is filled.` : ''} <button class="btn sm" style="margin-top:8px;display:block" data-act="fixXI">Fix the XI</button></div>` : ''}
       ${MV.reminders(fx, xi.filter(Boolean), nt)}
       ${MV.oppCard(fx)}
       ${MV.talkCard(fx)}

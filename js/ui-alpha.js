@@ -1110,7 +1110,9 @@
     const nt = t
       ? `<div class="card row tap" data-act="goNation"><span style="font-size:30px">${C.flag(t.code)}</span><div class="grow"><div class="h3">${esc(t.name)} manager</div><div class="tiny dim">World #${FM.Intl.ranked().indexOf(t) + 1} · ${u.ntStats ? `${u.ntStats.w}W ${u.ntStats.d}D ${u.ntStats.l}L` : ''} · tap to manage</div></div><span class="dim">›</span></div>`
       : `<div class="card row tap" data-act="goNation"><span style="font-size:26px">${UI.ico('globe')}</span><div class="grow"><div class="h3">National team jobs</div><div class="tiny dim">${(s.ntJobs || []).length} vacanc${(s.ntJobs || []).length === 1 ? 'y' : 'ies'} — manage a country alongside your club</div></div><span class="dim">›</span></div>`;
-    return lic + nt;
+    const pay = Pe.weeklyPay();
+    const money = `<div class="card"><div class="row small"><span class="grow muted">${pay ? 'Your pay' : 'Your pay: no job'}</span><b>${pay ? U.money(pay) + '/wk' : '—'}</b></div><div class="row small" style="margin-top:6px"><span class="grow muted">Kept so far</span><b>${U.money(u.savings || 0)}</b></div></div>`;
+    return lic + nt + money;
   };
   UI.acts.course = () => {
     const r = Pe.startCourse();
@@ -1155,7 +1157,7 @@
     return `<div class="card"><div class="h3">The federation</div>
       <div class="row small" style="margin-top:8px;gap:10px"><span class="dim" style="width:84px">Confidence</span><div class="grow">${C.bar(conf, C.moodColor(conf))}</div><b style="width:36px;text-align:right">${conf}%</b></div>
       ${obj ? `<div class="small" style="margin-top:10px">${esc(obj.text)}${pos ? ` — you are ${U.ordinal(pos)}` : ''}.</div>` : ''}
-      ${up.length ? `<div class="small b dim" style="margin-top:12px">COMING UP</div>${up.map((x) => `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:60px">in ${x.in}d</span><span class="grow ellip">${x.opp ? `${x.home ? 'v' : 'at'} ${C.flag(x.opp.code)} ${esc(x.opp.name)}` : 'Opponent drawn on the day'}</span><span class="tiny dim">${esc(x.label)}</span></div>`).join('')}` : ''}
+      ${up.length ? `<div class="small b dim" style="margin-top:12px">COMING UP</div>${up.map((x) => `<div class="row small" style="padding:5px 0;border-top:1px solid var(--line)"><span class="dim" style="width:60px">in ${x.in}d</span><span class="grow ${x.rest ? '' : 'ellip'}">${x.opp ? `${x.home ? 'v' : 'at'} ${C.flag(x.opp.code)} ${esc(x.opp.name)}` : x.rest ? `<span class="dim">${x.dn != null ? esc(W.dateText(x.dn)) + ': ' : ''}no match for your nation. ${esc(x.note)}.</span>` : 'Friendly: opponent drawn on the day'}</span><span class="tiny dim">${esc(x.label)}</span></div>`).join('')}` : ''}
       ${recent.length ? `<div class="small b dim" style="margin-top:12px">RECENT</div>${recent.map(res).join('')}` : ''}
       ${elig.length ? `<button class="btn sm block" style="margin-top:12px" data-act="ntSquad" data-tab="eligible">${elig.length} eligible player${elig.length === 1 ? '' : 's'} you could win over</button>` : ''}</div>`;
   };

@@ -714,8 +714,10 @@
   UI.sub.scout = 'hub';
   UI.views = { free: () => freeView(), market: () => marketView() }; // (shown in the Transfers tab)
   UI.screens.scout = function () {
-    const t = UI.sub.scout,
-      s = S();
+    const away = !FM.W.employed(); // (out of work: no scouts to send and no club to buy for, but his shortlist, search and reports are his)
+    let t = UI.sub.scout;
+    if (away && !['reports', 'search', 'shortlist'].includes(t)) t = 'shortlist';
+    const s = S();
     const newCount = Object.values(s.user.reports).filter((r) => r.isNew).length;
     // Scouting is about finding and judging players; the market (window, offers, lists, free agents, deals) is the
     // Transfers tab
@@ -723,7 +725,7 @@
       busy = s.user.assignments.length;
     const head = `<div class="card flat row" style="padding:10px 14px"><span style="font-size:20px">${UI.ico('telescope')}</span><div class="grow"><div class="b small">Scouting network</div><div class="tiny dim">${nScouts} scout${nScouts === 1 ? '' : 's'} · ${busy} on assignment · ${newCount} new report${newCount === 1 ? '' : 's'}</div></div><button class="btn sm" data-act="tab" data-tab="transfers">Transfers</button></div>`;
     const tabs = [
-      ['hub', 'Hub'],
+      ...(away ? [] : [['hub', 'Hub']]),
       ['reports', `Reports${newCount ? ` (${newCount})` : ''}`],
       ['search', 'Search'],
       ['shortlist', 'Shortlist'],
@@ -737,7 +739,9 @@
       market: marketView,
     };
     return (
-      head +
+      (away
+        ? `<div class="card flat" style="padding:10px 14px"><div class="b small">Out of work</div><div class="tiny dim" style="line-height:1.5">Scouts and assignments come with a club. Until then you can search every player, keep a shortlist and read what the game knows of them: useful for the interview with your next board.</div></div>`
+        : head) +
       `<div class="chips">${tabs.map(([v, l]) => `<button class="chip ${t === v ? 'on' : ''}" data-act="sub" data-k="scout" data-v="${v}">${l}</button>`).join('')}</div>` +
       (views[t] || hubView)()
     );

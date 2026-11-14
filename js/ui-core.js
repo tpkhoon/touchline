@@ -813,7 +813,7 @@
     );
   };
   UI.noClubView = (tab) =>
-    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? UI.ico('shirt') : tab === 'transfers' ? UI.ico('repeat') : UI.ico('telescope')}<br><b>No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button>${
+    `<div class="empty" style="margin-top:12vh;line-height:1.6">${tab === 'squad' ? UI.ico('shirt') : tab === 'transfers' ? UI.ico('repeat') : UI.ico('telescope')}<br><b>${FM.W.hasNationJob() && tab === 'squad' ? 'No club squad: your players are the national team’s.' : `No club, no ${tab === 'squad' ? 'squad' : tab === 'transfers' ? 'transfer market' : 'scouting network'}.`}</b><br>Job offers are on the Home tab — take one and this fills up.<br><button class="btn sm pri" style="margin-top:12px" data-act="tab" data-tab="home">See job offers</button>${
       FM.W.hasNationJob()
         ? `<div class="small dim" style="margin-top:14px">You manage a national team: its ${tab === 'squad' ? 'squad and lineup are' : 'players are'} under International.</div><button class="btn sm" style="margin-top:8px" data-act="goNation">Your national team</button>`
         : ''
@@ -887,8 +887,7 @@
       ? `${C.crest(club, 30)}<div class="t-main"><div class="t-title">${esc(club.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${mdAll}${FM.Season.windowOpen() ? ` · <span style="color:var(--acc)">${UI.windowLabel()}</span>` : ''}</div></div><button class="money" data-act="goFinances" aria-label="Finances: balance ${esc(U.money(club.balance))}">${U.money(club.balance)}</button><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`
       : `${C.avatar(S.user, 32)}<div class="t-main"><div class="t-title">${esc(S.user.name)}</div><div class="t-sub">${FM.Season.seasonLabel()} · ${dt}${md} · ${nt ? `<span style="color:var(--acc)">${esc(nt.name)} manager</span>` : '<span style="color:var(--warn)">Out of work</span>'}</div></div><button class="icon-btn settings-btn ${UI.tab === 'club' && UI.sub.club === 'settings' ? 'on' : ''}" data-act="openSettings" aria-label="Settings" title="Settings">${UI.icon.gear}</button>`;
     // Squad and scouting belong to a club; out of work they explain themselves instead
-    const html =
-      !club && ['squad', 'scout', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
+    const html = !club && ['squad', 'transfers'].includes(UI.tab) ? UI.noClubView(UI.tab) : UI.screens[UI.tab]();
     $('#main').innerHTML = `<div class="screen ${anim || ''}">${html}</div>`;
     UI.afterRender && UI.afterRender();
   };
@@ -897,7 +896,7 @@
   // Out of work, only actions that make sense without a club run (anything club-bound — offers, talks, tactics,
   // old feed decisions — would reach for a club that isn't there). A whitelist fails safe: a toast, never a crash.
   const OUT_OF_WORK_OK =
-    /^(tab|sub|openSettings|liveEdit|liveEditPlayer|liveEditClub|liveBulk|live[A-Z]\w*|edOpenLive|ed[A-Z]\w*|wvFold|lrank[A-Z]\w*|slot|formation|tac|invfb|autoXI|role|pickSlot|coverToggle|lnkComp|spotsFold|spotsRegion|totwComp|totwRound|awardsComp|chartsKind|fxSet|closeSheet|player|clubView|takeJob|advance|skipToMatch|skipToMatchGo|simDaysAsk|simDays|simAuto|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|bulkUndo|expandReroll|reviewFollow|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|cupsFold|foldAll|wvFoldAll|digestTable|goCups|goNation|nation|natTab|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter)$/;
+    /^(tab|sub|openSettings|liveEdit|liveEditPlayer|liveEditClub|liveBulk|live[A-Z]\w*|edOpenLive|ed[A-Z]\w*|wvFold|lrank[A-Z]\w*|slot|formation|tac|invfb|autoXI|fixXI|role|pickSlot|coverToggle|lnkComp|spotsFold|spotsRegion|totwComp|totwRound|awardsComp|chartsKind|fxSet|closeSheet|player|clubView|takeJob|advance|skipToMatch|skipToMatchGo|simDaysAsk|simDays|simAuto|simDaysGo|simUntil|simPick|simType|simGo|simStop|expandSet|expandMode|bulkUndo|expandReroll|reviewFollow|expandEdit|expandSave|expandReset|preview|kickoff|instant|talkPick|warmPick|follow|leagueGo|post[A-Z]\w*|m[A-Z]\w*|theme|setFlag|ngSim|ngSimPreset|textSize|tut[A-Z]w*|errLogw*|setMatchView|speedDef|saveNow|exportSave|importSave|dev[A-Z]\w*|reportProblem|sendReport|shareReport|sendFeedback|sendFeedbackGo|importTo|toTitle|continue|newCareer|ng(LiveEdit|Slot|Back|Next|Club|Random|Rule|Start|Unemployed|Avatar|AvatarBg|Want|Diff|View|Suggest|DbPick|DbClear)|matchReport|share|clearRead|roundupAll|currency|statsComp|charts[A-Z]\w*|cupsView|cupsFold|foldAll|wvFoldAll|digestTable|goCups|goNation|nation|natTab|nt[A-Z]\w*|course|installApp|sqSort|sqStat|sqAlt|sqFilter|shortlist|sf[A-Z]\w*|rf[A-Z]\w*|compare|restoreReport|dismissReport|dismissWeak)$/;
   // A club badge anywhere opens that club's overview, except where choosing the club is the point of the button,
   // and not during a match
   const CREST_KEEP = /^(ngClub|ngRandom|clubView|clubGoMine|takeJob)$/;
@@ -977,7 +976,10 @@
       !OUT_OF_WORK_OK.test(el.dataset.act)
     ) {
       e.preventDefault();
-      return UI.toast('You need a club for that — job offers are on the Home tab');
+      return UI.toast(
+        'That needs a club. While you wait you can shortlist players and read reports under Scouting, and follow clubs. Job offers are on the Home tab.',
+        5000,
+      );
     }
     if (fn) {
       e.preventDefault();
@@ -1297,6 +1299,15 @@
     const locked = lockedLeagues(),
       n = D.LEAGUES.filter((l) => simOfLeague(l, locked) === sim).map((l) => l.name);
     return n.length > 1 ? `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}` : n[0] || 'none';
+  };
+  // With no club the world has no league of its own to be fully simulated: when every league is set to Minimal, say what that means
+  // (offers still come, from any club, and the league of the job you take is played in full from then on)
+  const noClubWorldNote = () => {
+    const locked = lockedLeagues(),
+      detailed = D.LEAGUES.filter((l) => simOfLeague(l, locked) !== 'minimal').length;
+    return detailed
+      ? ''
+      : ' Every league is set to Minimal, so nothing is played in detail until you take a job; the league of your first club then becomes fully simulated, and its season starts from the scores played so far. Choose some detail under "The wider world" if you want to watch a league while you wait.';
   };
   UI.simSetup = function () {
     const locked = lockedLeagues();
@@ -1833,7 +1844,7 @@
         ${UI.dbCard()}
         ${UI.simSetup()}
         <details style="margin-top:16px"><summary class="tiny" style="color:#6f7f96;cursor:pointer">The wider world</summary><div class="tiny" style="color:#6f7f96;margin-top:8px;line-height:1.5">${U.plural(D.facts().clubs, 'club')} in ${U.plural(D.facts().leagues, 'league')} across ${U.plural(D.facts().nations, 'nation')}, in three simulation tiers. Full: ${tierList('full')} — every match in the engine. Light: ${tierList('light')} — every fixture played by a fast statistical model (your own league, and the leagues just above and below it, always play in the full engine). Minimal: ${tierList('minimal')} — scores only, squads for scouting. ${D.facts().continentalCups} continental cups, feed a World Club Championship, and ${D.facts().domesticCups} domestic cups run alongside them. National teams play qualifiers and friendlies in two double-header breaks, with the World Championship every four years and continental championships in between.</div></details>
-        ${NG.club === 'none' ? '<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.</div>' : ''}
+        ${NG.club === 'none' ? `<div class="small" style="color:#c8ff3d;margin-top:14px;line-height:1.5">You start out of work, with a modest reputation. Clubs in your range will make offers over the first weeks — the struggling ones first.${noClubWorldNote()}</div>` : ''}
         <div class="actions ng-foot"><button class="btn sm" data-act="ngBack" aria-label="Back">←</button><button class="btn sm pri grow" data-act="ngStart">${NG.club === 'none' ? 'Start career — no club yet' : 'Start career'}</button></div>`;
     }
     app.innerHTML = `<div class="title">${body}</div>`;

@@ -501,6 +501,22 @@
   Pe.nextBadge = () => D.BADGES[D.BADGES.indexOf(u().badges) + 1] || null;
   Pe.courseReq = (b) => (b === 'Continental A' ? 20 : b === 'Continental Pro' ? 60 : 0);
   // The games in charge that count toward a licence: club matches and national-team matches both (3 of 20)
+  // The manager's own pay, a week at a time: what his club (or his federation, for a national-team job with no club) pays for a name
+  // like his, and what he has kept of it. A manager with two jobs is paid for both; with none, nothing comes in.
+  Pe.weeklyPay = function () {
+    const S = FM.S,
+      us = S.user,
+      c = us.clubId && S.clubs[us.clubId],
+      t = us.nation && S.nteams && S.nteams[us.nation];
+    const scale = (rep) => Math.max(300, Math.round((6 * (rep / 10) ** 3) / 50) * 50);
+    return (c ? scale(c.rep) : 0) + (t ? Math.round((scale(t.rep || 50) * (c ? 0.4 : 0.8)) / 50) * 50 : 0);
+  };
+  Pe.payDay = function () {
+    const us = FM.S.user;
+    if (!us) return;
+    us.pay = Pe.weeklyPay();
+    us.savings = Math.round((us.savings || 0) + us.pay / 7);
+  };
   Pe.gamesInCharge = () => u().stats.games + (u().ntStats ? u().ntStats.games : 0);
   Pe.startCourse = function () {
     const b = Pe.nextBadge(),

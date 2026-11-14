@@ -888,6 +888,7 @@
   // ---------- daily world chatter ----------
   St.daily = function () {
     const S = FM.S;
+    if (FM.People && FM.People.payDay) FM.People.payDay();
     St.intro();
     // Mid-season sackings
     if (S.day >= 8 && S.day <= 18 && Math.random() < 0.18) {
