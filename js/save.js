@@ -459,6 +459,15 @@
   };
   Sv.ls = ls;
 
+  // IndexedDB refuses one value over about 127 MiB (Chrome: "The serialized keys and/or value are too large"), and the save of a big
+  // world is that size (text with accents counts two bytes a character). Before this, such a save aborted without a word, the
+  // write never finished, and the slot read back empty. A long value is kept as chunks (k#c0, k#c1 ...) with a small manifest
+  // under k, all in one transaction, so a save is stored whole or not at all.
+  Sv.CHUNK = 12e6; // characters (24 MB at most)
+  Sv.splitValue = (v) =>
+    typeof v === 'string' && v.length > Sv.CHUNK
+      ? Array.from({ length: Math.ceil(v.length / Sv.CHUNK) }, (_, i) => v.slice(i * Sv.CHUNK, (i + 1) * Sv.CHUNK))
+      : null;
   const IDB = {
     kind: 'idb',
     open() {
@@ -475,16 +484,7 @@
       });
       return IDB._p;
     },
-    async put(k, v) {
-      const db = await IDB.open();
-      return new Promise((res, rej) => {
-        const t = db.transaction('saves', 'readwrite');
-        t.objectStore('saves').put(v, k);
-        t.oncomplete = () => res(true);
-        t.onerror = () => rej(t.error);
-      });
-    },
-    async get(k) {
+    async raw(k) {
       const db = await IDB.open();
       return new Promise((res, rej) => {
         const t = db.transaction('saves', 'readonly');
@@ -493,13 +493,45 @@
         q.onerror = () => rej(q.error);
       });
     },
-    async del(k) {
+    // how many chunks the value under k is kept in (0: it is kept whole)
+    async chunks(k) {
+      const v = await IDB.raw(k);
+      return v && typeof v === 'object' && v.chunks > 0 ? v.chunks : 0;
+    },
+    async put(k, v) {
       const db = await IDB.open();
+      const parts = Sv.splitValue(v),
+        old = await IDB.chunks(k);
+      return new Promise((res, rej) => {
+        const t = db.transaction('saves', 'readwrite'),
+          os = t.objectStore('saves');
+        if (parts) {
+          parts.forEach((p, i) => os.put(p, k + '#c' + i));
+          os.put({ chunks: parts.length }, k);
+        } else os.put(v, k);
+        for (let i = parts ? parts.length : 0; i < old; i++) os.delete(k + '#c' + i); // (a longer save before this one)
+        t.oncomplete = () => res(true);
+        t.onerror = () => rej(t.error);
+        t.onabort = () => rej(t.error || new Error('The browser did not store the save.'));
+      });
+    },
+    async get(k) {
+      const v = await IDB.raw(k);
+      if (!(v && typeof v === 'object' && v.chunks > 0)) return v;
+      const parts = await Promise.all(Array.from({ length: v.chunks }, (_, i) => IDB.raw(k + '#c' + i)));
+      return parts.every((p) => typeof p === 'string') ? parts.join('') : null; // (a part missing: nothing, not half a save)
+    },
+    async del(k) {
+      const db = await IDB.open(),
+        n = await IDB.chunks(k);
       return new Promise((res) => {
-        const t = db.transaction('saves', 'readwrite');
-        t.objectStore('saves').delete(k);
+        const t = db.transaction('saves', 'readwrite'),
+          os = t.objectStore('saves');
+        os.delete(k);
+        for (let i = 0; i < n; i++) os.delete(k + '#c' + i);
         t.oncomplete = () => res(true);
         t.onerror = () => res(false);
+        t.onabort = () => res(false);
       });
     },
   };
@@ -573,8 +605,10 @@
       prev = Sv.metaOf(slot);
     if (prev && prev.label) m0.label = prev.label; // (the name the player gave the save stays through every save)
     const meta = JSON.stringify(m0);
-    ls.set(META(slot), meta);
-    ls.set('touchline.last', String(slot));
+    const stored = () => {
+      ls.set(META(slot), meta);
+      ls.set('touchline.last', String(slot));
+    };
     Sv.pending++;
     const job = queue.then(async () => {
       const st = Sv.store();
@@ -582,10 +616,14 @@
         await st.put(KEY(slot), json);
         await st.put(META(slot), meta);
         ls.del(KEY(slot)); // an old localStorage copy is now stale
+        stored();
         return true;
       } catch (e) {
         // No IndexedDB (private mode) or the file write failed: fall back to localStorage
-        if (ls.set(KEY(slot), json)) return true;
+        if (ls.set(KEY(slot), json)) {
+          stored();
+          return true;
+        }
         throw e;
       } finally {
         Sv.pending--;

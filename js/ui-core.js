@@ -561,7 +561,10 @@
       const pre = FM.SimRunner && FM.SimRunner.takePacked(FM.S);
       FM.Save.write(UI.slot, FM.S, pre).catch((e) => {
         console.warn('save failed', e);
-        UI.toast('Could not save (storage full?)');
+        UI.toast(
+          `Could not save: ${(e && e.message) || 'storage full?'} Use Settings → Export save to keep your career.`,
+          8000,
+        );
       });
       return true;
     } catch (e) {
@@ -607,7 +610,7 @@
       return true;
     } catch (e) {
       console.warn('load failed', e);
-      UI.toast(e.code ? e.message : 'This save could not be opened.', 5000);
+      UI.toast(e.code ? e.message : `This save could not be opened: ${(e && e.message) || 'unknown error'}`, 7000);
       return false;
     }
   };

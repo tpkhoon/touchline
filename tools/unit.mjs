@@ -1037,6 +1037,20 @@ try {
   );
 }
 
+// ---- saves: a big world's save is stored in pieces (browsers refuse one IndexedDB value over about 127 MiB) ----
+{
+  const Sv = FM.Save;
+  eq(Sv.splitValue('short'), null, 'a short save is stored whole');
+  eq(Sv.splitValue(null), null, 'nothing to split is nothing');
+  const long = 'ā'.repeat(Sv.CHUNK * 2 + 5); // (accented text counts two bytes a character in a stored value)
+  const parts = Sv.splitValue(long);
+  ok(parts && parts.length === 3, 'a save of two chunks and a little more is three pieces');
+  ok(parts && parts.join('') === long, 'the pieces put back together are the save');
+  ok(parts && parts.every((p) => p.length <= Sv.CHUNK && p.length * 2 < 64e6), 'no piece is near the browser limit');
+  // (a packed world is about 130 MB: it must come out in pieces, none over the limit)
+  ok(Sv.CHUNK * 2 * 4 < 133169152, 'a handful of chunks in one transaction stays far under the value limit');
+}
+
 console.log(
   fails.length ? `FAIL (${fails.length} of ${n})\n - ${fails.join('\n - ')}` : `Unit tests: ${n} checks passed.`,
 );
