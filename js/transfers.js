@@ -756,16 +756,14 @@
   T.aiWindow = function (share = 1) {
     const S = FM.S;
     const full = Object.values(S.clubs).filter((c) => (c.sim === 'full' || c.sim === 'light') && !W.isUserSide(c.id));
-    const market = Object.values(S.players).filter(
-      (p) =>
-        !p.retired &&
-        !p.loan &&
-        !W.ownPlayer(p) &&
-        !p.pre && // (a pre-contract is a promise to another club)
-        !T.isSettled(p) &&
-        W.age(p) >= 19 &&
-        (W.age(p) <= (p.pos === 'GK' ? 31 : 29) || (!p.clubId && W.age(p) <= (p.pos === 'GK' ? 34 : 32))), // a free agent, a little older
-    );
+    const market = [];
+    for (const id in S.players) {
+      const p = S.players[id];
+      if (p.retired || p.loan || W.ownPlayer(p) || p.pre || T.isSettled(p)) continue; // (a pre-contract is a promise to another club)
+      const a = W.age(p);
+      if (a >= 19 && (a <= (p.pos === 'GK' ? 31 : 29) || (!p.clubId && a <= (p.pos === 'GK' ? 34 : 32))))
+        market.push(p); // (a free agent, a little older)
+    }
     const k = W.dayScale() * (full.length / 110) * share; // per-day quotas tuned on 110 clubs and 22 league days
     const dd = FM.Market.isDeadline(); // deadline day: more clubs in the market, paying a premium
     const mkt = indexMarket(market);
@@ -1097,6 +1095,19 @@
       if (!levels.has(key)) levels.set(key, starterLevel(W.squad(c.id), g));
       return levels.get(key);
     };
+    // (every prospect used to look through every club of the world, working out each one's squad again each time)
+    const everyClub = Object.values(S.clubs);
+    const squads = new Map();
+    let squadsVer = -1;
+    const squadOf = (d) => {
+      if (squadsVer !== W.rosterVer) {
+        squads.clear();
+        squadsVer = W.rosterVer;
+      }
+      let sq = squads.get(d.id);
+      if (!sq) squads.set(d.id, (sq = W.squad(d.id)));
+      return sq;
+    };
     let loans = 0;
     for (const c of full) {
       if (W.isUserSide(c.id) || W.army(c) || c.sim === 'minimal') continue;
@@ -1132,14 +1143,14 @@
           home.filter((q) => D.POS_GROUP[q.pos] === g).length <= STARTERS[g] + 1
         )
           continue;
-        const dests = Object.values(S.clubs)
+        const dests = everyClub
           .filter(
             (d) =>
               (d.sim === 'full' || d.sim === 'light') &&
               d.id !== c.id &&
               FM.Youth.owner(d.id) !== c.id &&
               d.rep < c.rep - 2 &&
-              W.squad(d.id).length < W.squadTarget(d) + 3 &&
+              squadOf(d).length < W.squadTarget(d) + 3 &&
               p.ca >= levelOf(d, g) - 1 &&
               p.ca <= W.levelFor(d.rep) + 12,
           )
