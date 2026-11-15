@@ -1,7 +1,7 @@
 // The phone's world (dist/data/world-phone.touchline): it opens inside a heap a phone's browser engine can give a page (this is run
 // under --max-old-space-size by tools/preparedchecks.mjs, and dies when the world needs more), it has the clubs of the full world and
 // most of the players, it has no season-by-season past, and a career can start in it and play a few days.
-//   node --max-old-space-size=450 tools/phonecheck.mjs --open-only        (just opening it: what the heap limit is for)
+//   node --expose-gc --max-old-space-size=900 tools/phonecheck.mjs --open-only   (just opening it: at most 450 MB of heap alive once open)
 //   node tools/phonecheck.mjs                                             (and starting a career, a few days, a save: no limit)
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -18,8 +18,10 @@ const check = (ok, msg) => ok || fails.push(msg);
 let state = FM.Save.unpack(zlib.gunzipSync(fs.readFileSync(file)).toString('utf8'), { world: true }).state;
 FM.DbImport && FM.DbImport.restore(state);
 FM.S = state;
-const heap = Math.round(process.memoryUsage().heapUsed / 1048576);
+if (global.gc) global.gc();
+const heap = Math.round(process.memoryUsage().heapUsed / 1048576); // (what is alive once it is open: the same on every version of node, which a heap limit is not)
 const players = Object.values(FM.S.players);
+check(heap <= 450 || !global.gc, `the phone world needs ${heap} MB of heap once open (at most 450)`);
 check(Object.keys(FM.S.clubs).length === meta.clubs, 'the phone world has other clubs than the full world');
 check(players.length >= meta.players * 0.7, `the phone world has ${players.length} of ${meta.players} players`);
 check(
