@@ -554,7 +554,26 @@
   // ---------------- Save / load ----------------
   // Storage, versioning and migrations live in save.js (FM.Save)
   UI.slot = 1;
-  UI.save = function () {
+  // On a phone a save is a pass over the whole world (a minute of the main thread's time in a bad case, and a copy of it in memory): the day's
+  // saves are put off until two minutes have passed since the last, and the game saves when it goes to the background (force). The state is
+  // still packed from what is current when it does.
+  const SAVE_EVERY = 120000;
+  UI.save = function (force) {
+    const lite = FM.SimRunner && FM.SimRunner.lowMemory && FM.SimRunner.lowMemory();
+    if (lite && force !== true && Date.now() - (UI._lastSave || 0) < SAVE_EVERY) {
+      UI._saveDue = true;
+      if (!UI._saveT)
+        UI._saveT = setTimeout(
+          () => {
+            UI._saveT = null;
+            if (UI._saveDue) UI.save(true);
+          },
+          Math.max(1000, SAVE_EVERY - (Date.now() - (UI._lastSave || 0))),
+        );
+      return true;
+    }
+    UI._lastSave = Date.now();
+    UI._saveDue = false;
     UI._saves = (UI._saves || 0) + 1;
     if (UI.simBusy) return false; // the world is being simulated elsewhere; it saves when it comes back
     try {

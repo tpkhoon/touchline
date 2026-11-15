@@ -95,7 +95,16 @@
     const q = core && core.getAttribute('src').includes('?') ? '?' + core.getAttribute('src').split('?')[1] : '';
     return R.SCRIPTS.map((f) => `${f}.js${q}`);
   };
-  R.available = () => !R.broken && typeof Worker !== 'undefined' && location.protocol !== 'file:';
+  // A phone or tablet (the native app, or a touch screen) plays on the main thread: the worker works on a copy of the world, which is sent to
+  // it as text (about 250 MB for this world), opened there (another 340 MB), and sent back the same way: with the world already open
+  // here that is about 1.5 GB, and the browser engine of a phone closes the app after the first day. The days are a little less smooth
+  // (the overlay still paints between days), and the world is held once.
+  R.lowMemory = () =>
+    !!(
+      (FM.Native && FM.Native.isNative && FM.Native.isNative()) ||
+      (window.matchMedia && matchMedia('(pointer: coarse)').matches)
+    );
+  R.available = () => !R.broken && typeof Worker !== 'undefined' && location.protocol !== 'file:' && !R.lowMemory();
 
   let worker = null,
     ready = null,

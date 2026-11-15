@@ -275,7 +275,7 @@
     }
   };
   UI.acts.toTitle = () => {
-    UI.save();
+    UI.save(true);
     UI.title();
   };
 

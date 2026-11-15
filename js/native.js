@@ -165,7 +165,7 @@
     lastBg = Date.now();
     const MV = FM.MatchView;
     if (document.getElementById('matchOv') && MV && MV.st && !MV.st.paused) UI.acts.mPause();
-    if (FM.S && FM.S.user && document.getElementById('main') && !UI.simBusy) UI.save();
+    if (FM.S && FM.S.user && document.getElementById('main') && !UI.simBusy) UI.save(true);
   };
 
   // ---------- Start-up ----------
