@@ -1099,3 +1099,4 @@ Step 1 is done: the game installs to the home screen and plays offline (web app 
   - Finances and difficulty still need tuning from playtests.
 - **Scope:** the editor and history modes are large; they may need to ship after 1.0.
 - [x] A phone's saves show on the title screen again: the game's wrapper around the save dropped the save-now flag (leaving for the title or the background never saved on a phone, so a first career showed only New career), and the title was drawn before the first save's write finished (it now waits); opening a save lets go of its text as soon as it is parsed
+- [x] A phone's save is stored compressed: a career in the phone's world is 65 MB of text, which the file plugin took as one escaped string and, on a phone, never finished writing (no save, no word; the title showed only New career); the app's saves are now gzip files of about 13 MB (older plain files still open), and leaving for the title says when a write is still going

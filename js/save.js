@@ -582,22 +582,59 @@
     kind: 'files',
     fs: () => window.Capacitor.Plugins.Filesystem,
     path: (k) => `saves/${k}.json`,
+    // A save of a big world is 65 MB of text: sent to the file plugin as text it is escaped and copied on the way (a phone ran out of room, and the
+    // write never finished, with no word). It is stored compressed (about 13 MB, as base64) in a .gz file; a file from before is still read.
     async put(k, v) {
       const F = FILES.fs(),
         path = FILES.path(k),
-        tmp = path + '.tmp';
-      await F.writeFile({ path: tmp, data: v, directory: 'DATA', encoding: 'utf8', recursive: true });
+        gz = path + '.gz',
+        tmp = gz + '.tmp';
+      let data = null;
+      if (typeof v === 'string' && v.length > 1e6 && typeof CompressionStream !== 'undefined') {
+        const bytes = await Sv.gzip(v);
+        let b = '';
+        for (let i = 0; i < bytes.length; i += 0x8000)
+          b += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+        data = btoa(b);
+      }
+      if (data === null) {
+        // (small: a summary, or no compression here): plain text as before
+        await F.writeFile({ path: path + '.tmp', data: v, directory: 'DATA', encoding: 'utf8', recursive: true });
+        try {
+          await F.deleteFile({ path, directory: 'DATA' });
+        } catch (e) {
+          /* first write */
+        }
+        await F.rename({ from: path + '.tmp', to: path, directory: 'DATA', toDirectory: 'DATA' });
+        try {
+          await F.deleteFile({ path: gz, directory: 'DATA' });
+        } catch (e) {}
+        return true;
+      }
+      await F.writeFile({ path: tmp, data, directory: 'DATA', recursive: true });
       try {
-        await F.deleteFile({ path, directory: 'DATA' });
+        await F.deleteFile({ path: gz, directory: 'DATA' });
       } catch (e) {
         /* first write */
       }
-      await F.rename({ from: tmp, to: path, directory: 'DATA', toDirectory: 'DATA' });
+      await F.rename({ from: tmp, to: gz, directory: 'DATA', toDirectory: 'DATA' });
+      try {
+        await F.deleteFile({ path, directory: 'DATA' }); // (the older plain-text copy is stale now)
+      } catch (e) {}
       return true;
     },
     async get(k) {
       const F = FILES.fs(),
         path = FILES.path(k);
+      try {
+        const b64 = (await F.readFile({ path: path + '.gz', directory: 'DATA' })).data;
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return await Sv.gunzip(bytes);
+      } catch (e) {
+        /* no compressed copy: try the plain one */
+      }
       for (const p of [path, path + '.tmp']) {
         try {
           return (await F.readFile({ path: p, directory: 'DATA', encoding: 'utf8' })).data;
@@ -610,7 +647,7 @@
     async del(k) {
       const F = FILES.fs(),
         path = FILES.path(k);
-      for (const p of [path, path + '.tmp']) {
+      for (const p of [path, path + '.tmp', path + '.gz', path + '.gz.tmp']) {
         try {
           await F.deleteFile({ path: p, directory: 'DATA' });
         } catch (e) {}

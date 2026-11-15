@@ -279,6 +279,7 @@
     // (the title lists a slot from the summary written once the save is stored: wait for the write, or the first save of a career is not listed)
     for (let i = 0; i < 240 && FM.Save.pending > 0; i++) await new Promise((r) => setTimeout(r, 250));
     UI.title();
+    if (FM.Save.pending > 0) UI.toast('The save is still being written. Open the game again in a minute.', 7000);
   };
 
   // ---------- Season review ----------
