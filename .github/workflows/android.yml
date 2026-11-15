@@ -69,7 +69,9 @@ jobs:
           fi
       - name: Build the APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: |
+          chmod +x gradlew # (the file was made on Windows: no execute bit)
+          ./gradlew assembleDebug --no-daemon
       - name: Name it and publish it
         env:
           GH_TOKEN: ${{ github.token }}
