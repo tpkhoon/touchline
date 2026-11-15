@@ -1526,7 +1526,7 @@
   W.fullHistory = function (p, history) {
     const S = FM.S,
       thisY = S.year,
-      rows = history.map((h) => ({ ...h }));
+      rows = history.map((h) => Object.assign(Object.create(Object.getPrototypeOf(h)), h)); // (a copy keeps the zeros a row reads from its prototype)
     const sp = (p.career && p.career.spells) || [],
       rec = new Set(rows.filter((h) => !h.now).map((h) => h.y));
     const seed = (k) => (U.hash(p.id + ':' + k) % 1000) / 1000;
@@ -4445,6 +4445,19 @@
     }
     return o;
   };
+  // A season row of a player's past as it is opened: the year, the club, the games, goals, assists and rating of the row, and only the
+  // other numbers it has (a shot count, a tackle count), the rest read as 0 from the row's prototype. A world holds nearly nine hundred
+  // thousand rows, most of them of old seasons with only the headline numbers: a row of twenty-two fields of its own was a sixth of its memory.
+  const HIST_CORE = new Set(['y', 'c', 'apps', 'g', 'r', 'a']);
+  const HIST_ZERO = Object.fromEntries(HIST.filter((k) => !HIST_CORE.has(k)).map((k) => [k, 0]));
+  W.histRow = (a) => {
+    const o = Object.create(HIST_ZERO);
+    HIST.forEach((k, i) => {
+      const v = a[i] ?? 0;
+      if (v || HIST_CORE.has(k)) o[k] = v;
+    });
+    return o;
+  };
   W.unpackPlayer = function (o) {
     const p = { ...DEFAULTS };
     for (const k in o) if (!['A', 'H', 'Z', 'K', 'Y', 'C'].includes(k)) p[UNKEY[k] || k] = o[k];
@@ -4469,7 +4482,7 @@
         ...(fee != null ? { fee } : {}),
       })),
     };
-    if (o.Y) p.history = o.Y.map((a) => Object.fromEntries(HIST.map((k, i) => [k, a[i] ?? 0])));
+    if (o.Y) p.history = o.Y.map(W.histRow);
     p.personality = W.personality(p.hid);
     W.refresh(p);
     if (o.C != null && o.C !== p.ca) {

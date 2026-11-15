@@ -391,6 +391,32 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the continental tier check failed: ' + e.message);
   }
+  // a past season row as it is opened holds only the numbers it has and reads the rest as 0, and a copy of it (the career table's) does too
+  try {
+    const rows = Object.values(FM.S.players).flatMap((p) => (p.history || []).map((h) => [p, h]));
+    const bad = rows.filter(([, h]) =>
+      ['mins', 'sh', 'kp', 'tk', 'cs', 'sv', 'ga', 'xga', 'motm', 'yc', 'rc', 'ic', 'sot', 'pas', 'xg', 'xa'].some(
+        (k) => !Number.isFinite(h[k] + 0),
+      ),
+    );
+    if (bad.length) problems.push(`${bad.length} past season rows have a number that does not read as a number`);
+    const r = FM.W.histRow([2014, 'c_X', 2, 1, 6.98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    if (Object.keys(r).length > 6 || r.sh !== 0 || r.xa !== 0 || r.apps !== 2)
+      problems.push('a past season row is not held sparse and read as zeros');
+    const mine = Object.values(FM.S.players).find((p) => p.history && p.history.length > 3);
+    const full = FM.W.fullHistory(mine, mine.history.slice().reverse());
+    if (full.filter((h) => !h.est).some((h) => !Number.isFinite(h.tk + 0) || !Number.isFinite(h.xg + 0)))
+      problems.push('the career table has a row with a number that is not one');
+    const packed = JSON.parse(JSON.stringify(FM.W.packPlayer(mine))).Y;
+    if (
+      !packed ||
+      packed.length !== mine.history.length ||
+      packed.some((a) => a.some((v, i) => i !== 1 && !Number.isFinite(v)))
+    )
+      problems.push('a past season row did not pack as numbers');
+  } catch (e) {
+    problems.push('the history rows check failed: ' + e.message);
+  }
   // a manager in a job is paid a little each day, and what he has kept shows
   if (W.employed() && played > 0 && !(FM.S.user.savings > 0))
     problems.push('a manager in a job has kept nothing of his pay');

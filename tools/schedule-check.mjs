@@ -134,7 +134,13 @@ const [a, b, c, d] = d1.map((x) => x.id);
 // ---------- the world ----------
 const chk = DB.check(def);
 DB.stage({ ...chk, def });
-DB.build(def, { ...W.REAL_RULES, win: def.rules.win, subs: def.rules.subs });
+// (every league Minimal: the checks read the calendar and the fixtures, which every league has; a world of full leagues took many minutes to make and play)
+DB.build(def, {
+  ...W.REAL_RULES,
+  win: def.rules.win,
+  subs: def.rules.subs,
+  sims: Object.fromEntries(FM.D.LEAGUES.map((l) => [l.id, 'minimal'])),
+});
 Sea.init();
 const S = FM.S;
 {

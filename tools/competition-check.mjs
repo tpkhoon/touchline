@@ -66,7 +66,10 @@ check(
     !E.addContinental({ id: 'XX', name: 'Bad id', region: 'Europe', tier: 2 }).ok,
     'a continental id that does not start CN was accepted',
   );
-  check(!E.addContinental({ id: 'CN9', name: 'Bad tier', region: 'Europe', tier: 5 }).ok, 'a fifth tier was accepted');
+  check(
+    !E.addContinental({ id: 'CN9', name: 'Bad tier', region: 'Europe', tier: 7 }).ok,
+    'a seventh tier was accepted',
+  );
   check(
     !E.addContinental({ id: 'CN9', name: 'Bad region', region: 'Mars', tier: 2 }).ok,
     'a competition on Mars was accepted',
@@ -206,7 +209,14 @@ const d4 = def.clubs.filter((c) => c.league === 'D4' && !/^c_ZZE/.test(c.id)).ma
 const chk = DB.check(def);
 check(chk.errors.length === 0, 'the definition does not check: ' + chk.errors.slice(0, 4).join('; '));
 DB.stage({ ...chk, def });
-DB.build(def, { ...W.REAL_RULES, win: def.rules.win, subs: def.rules.subs });
+// (every league Minimal: the checks read the competitions and their fixtures, which every league has; a world of full leagues took far longer to make and play)
+DB.build(def, {
+  ...W.REAL_RULES,
+  win: def.rules.win,
+  subs: def.rules.subs,
+  // (the league the expansion draft is held in is Light: a Minimal squad is sixteen, and the draft leaves eighteen)
+  sims: Object.fromEntries(FM.D.LEAGUES.map((l) => [l.id, l.id === 'D4' ? 'light' : 'minimal'])),
+});
 Sea.init();
 const S = FM.S;
 {

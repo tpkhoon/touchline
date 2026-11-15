@@ -736,7 +736,14 @@ check(
   FM.D.allClubRows().some((row) => row[0] === 'Alphaton'),
   'the staged data does not list the new club',
 );
-DB.build(def, { ...W.REAL_RULES, win: def.rules.win, subs: def.rules.subs });
+// (every league Minimal: the checks read what the editor changed in the world; a world of full leagues took far longer to make and play)
+DB.build(def, {
+  ...W.REAL_RULES,
+  win: def.rules.win,
+  subs: def.rules.subs,
+  // (the top division is Light: its clubs have managers and the full squads the changes are made to; a Minimal club has neither)
+  sims: Object.fromEntries(FM.D.LEAGUES.map((l) => [l.id, l.id === 'D1' ? 'light' : 'minimal'])),
+});
 Sea.init();
 const S = FM.S;
 check(
