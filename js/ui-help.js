@@ -274,8 +274,10 @@
       UI.toast('Could not import: ' + (e.message || 'storage error'), 4500);
     }
   };
-  UI.acts.toTitle = () => {
+  UI.acts.toTitle = async () => {
     UI.save(true);
+    // (the title lists a slot from the summary written once the save is stored: wait for the write, or the first save of a career is not listed)
+    for (let i = 0; i < 240 && FM.Save.pending > 0; i++) await new Promise((r) => setTimeout(r, 250));
     UI.title();
   };
 

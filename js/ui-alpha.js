@@ -1020,12 +1020,12 @@
   };
   // Ask the browser not to evict saves under storage pressure (once per session)
   const origSave = UI.save;
-  UI.save = function () {
+  UI.save = function (force) {
     if (!UI._persistAsked && navigator.storage && navigator.storage.persist) {
       UI._persistAsked = true;
       navigator.storage.persist().catch(() => {});
     }
-    return origSave();
+    return origSave(force);
   };
 
   // ======================= Boardroom =======================

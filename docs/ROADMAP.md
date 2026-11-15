@@ -1098,3 +1098,4 @@ Step 1 is done: the game installs to the home screen and plays offline (web app 
   - Earlier: calibration was 50–51/51 on two seeds (title dominance, elite growth, injuries, retirement ages and upsets in range; over-30s' share of top-flight minutes ends six seasons at 24–25%, real 17–28, though it still rises from ~19% early on); one seed still shows the elite improving a little too fast.
   - Finances and difficulty still need tuning from playtests.
 - **Scope:** the editor and history modes are large; they may need to ship after 1.0.
+- [x] A phone's saves show on the title screen again: the game's wrapper around the save dropped the save-now flag (leaving for the title or the background never saved on a phone, so a first career showed only New career), and the title was drawn before the first save's write finished (it now waits); opening a save lets go of its text as soon as it is parsed

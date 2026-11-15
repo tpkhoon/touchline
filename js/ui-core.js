@@ -617,7 +617,11 @@
     }
     let step = 'reading the save';
     try {
-      const { state, from } = FM.Save.unpack(raw);
+      // (a big save is 65 MB of text and opens to about 460 MB: the text is let go as soon as it is parsed, and read again from storage if it
+      // is needed after that: for a backup before an upgrade, or to export a save that would not open)
+      const hold = { raw };
+      raw = null;
+      const { state, from } = FM.Save.unpack(hold.raw, { holder: hold });
       step = 'rebuilding the world';
       FM.DbImport.restore(state); // the game's clubs and leagues as this world has them (a database's, or the built-in ones)
       NG.db = null;
@@ -628,7 +632,7 @@
       step = 'upgrading the save';
       if (from < FM.Save.VERSION) {
         // Keep the original, then write the upgraded save straight away
-        await FM.Save.keepBackup(n, raw);
+        await FM.Save.keepBackup(n, await FM.Save.read(n));
         UI.save();
         setTimeout(() => UI.toast(`Save upgraded to the latest format (v${from} → v${FM.Save.VERSION})`, 3200), 400);
       }
@@ -643,6 +647,10 @@
       return true;
     } catch (e) {
       console.warn(`load failed while ${step}`, e);
+      if (!raw)
+        try {
+          raw = await FM.Save.read(n);
+        } catch (e2) {}
       UI.loadFailed(n, step, e, raw);
       return false;
     }

@@ -432,7 +432,10 @@
   // Parse, unpack and upgrade. Returns { state, from }.
   // opts.world: a prepared world (no manager yet) rather than a career, so it has no user
   Sv.unpack = function (raw, opts) {
-    const st = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    const fromText = typeof raw === 'string';
+    const st = fromText ? JSON.parse(raw) : raw;
+    raw = null; // (the text is not needed again; a caller that gave it in opts.holder lets go of it too, so a big save is not in memory three times over)
+    if (opts && opts.holder) opts.holder.raw = null;
     if (!st || typeof st !== 'object' || !st.players || !st.clubs || (!st.user && !(opts && opts.world)))
       throw Object.assign(new Error('That file is not a Touchline save.'), { code: 'invalid' });
     // Unpacking recomputes ages and values from the save's own date, so it runs with this state current
@@ -440,7 +443,7 @@
     FM.S = st;
     try {
       if (st.pz) {
-        st.players = W.unpackPlayers(st.players, typeof raw === 'string'); // (opened from text: the packed players are let go as they are unpacked, so the two forms are not in memory together)
+        st.players = W.unpackPlayers(st.players, fromText); // (opened from text: the packed players are let go as they are unpacked, so the two forms are not in memory together)
         delete st.pz;
       }
       const from = Sv.upgrade(st);
