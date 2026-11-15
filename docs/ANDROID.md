@@ -9,7 +9,7 @@ An APK you install once; after that the game updates itself from the live site.
 - The app is a shell (Capacitor) around the live game at `https://tpkhoon.github.io/touchline/`. It opens the game from there,
   and the game's service worker keeps a copy for offline play. So **every push to `main` (the Pages deploy) is a new version of the
   game on the phone** the next time it is opened with a connection. Nothing to rebuild or reinstall.
-- The first launch needs a connection (it fetches the game and the prepared world, about 26 MB); after that it plays offline.
+- The first launch needs a connection (it fetches the game and the phone's world, about 13 MB); after that it plays offline. A phone gets a lighter world than a computer: the same clubs and players, without the players' season-by-season past (a career table rebuilds it) and with squads of sixteen until you play a league in full.
 - Saves live in the app's own storage on the phone. Export a save from Settings now and then.
 
 ## Installing

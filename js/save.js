@@ -440,7 +440,7 @@
     FM.S = st;
     try {
       if (st.pz) {
-        st.players = W.unpackPlayers(st.players);
+        st.players = W.unpackPlayers(st.players, typeof raw === 'string'); // (opened from text: the packed players are let go as they are unpacked, so the two forms are not in memory together)
         delete st.pz;
       }
       const from = Sv.upgrade(st);

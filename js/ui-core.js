@@ -1926,7 +1926,12 @@
       if (!want) return null;
       const meta = await fetch('data/world.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null));
       if (!meta || meta.sim !== want[1]) return null;
-      const res = await fetch('data/world.touchline');
+      // (a phone, a tablet: the world without the players' past, which a page of their browser engine can hold; a computer opens the full one)
+      const small =
+        meta.phone &&
+        ((FM.Native && FM.Native.isNative && FM.Native.isNative()) ||
+          (window.matchMedia && matchMedia('(pointer: coarse)').matches));
+      const res = await fetch(small ? 'data/' + meta.phone.file : 'data/world.touchline');
       if (!res.ok) return null;
       const text = await FM.Save.gunzip(new Uint8Array(await res.arrayBuffer()));
       return FM.Save.unpack(text, { world: true }).state;

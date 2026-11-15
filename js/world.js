@@ -4497,9 +4497,12 @@
     for (const id in players) out[id] = W.packPlayer(players[id]);
     return out;
   };
-  W.unpackPlayers = (packed) => {
+  W.unpackPlayers = (packed, release) => {
     const out = {};
-    for (const id in packed) out[id] = W.unpackPlayer(packed[id]);
+    for (const id in packed) {
+      out[id] = W.unpackPlayer(packed[id]);
+      if (release) delete packed[id];
+    }
     return out;
   };
 

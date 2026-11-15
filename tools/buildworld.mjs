@@ -48,7 +48,53 @@ const meta = {
   bytes: gz.length,
   sha1: crypto.createHash('sha1').update(raw).digest('hex'),
 };
+// The phone's world: the same world with the players' season-by-season past left out (a profile's career table rebuilds it from his
+// clubs and his totals, as it does for a player made later). The past is most of what a world weighs once it is open, and a phone's
+// browser engine closes the app when a page needs more than a few hundred megabytes: the full world peaks at about 1.3 GB.
+let history = 0,
+  trimmed = 0;
+for (const p of Object.values(S.players)) {
+  history += (p.history || []).length;
+  p.history = [];
+}
+// ... and the squads cut to sixteen, as a Minimal league's are (the league a career plays in is filled up again when it starts,
+// W.topUpFullSquads): the best sixteen stay, with two goalkeepers at least
+for (const c of Object.values(S.clubs)) {
+  if (!c.comp || c.sim === 'nation') continue;
+  const sq = W.squad(c.id)
+    .filter((p) => !p.loan)
+    .sort((a, b) => b.ca - a.ca);
+  if (sq.length <= 16) continue;
+  const keep = new Set(sq.slice(0, 16));
+  const gks = sq.filter((p) => p.pos === 'GK');
+  if (gks.length >= 2 && [...keep].filter((p) => p.pos === 'GK').length < 2) {
+    const out = [...keep].reverse().find((p) => p.pos !== 'GK');
+    keep.delete(out);
+    keep.add(gks.find((g) => !keep.has(g)));
+  }
+  for (const p of sq)
+    if (!keep.has(p)) {
+      delete S.players[p.id];
+      trimmed++;
+    }
+}
+W.rosterVer++;
+const rawPhone = FM.Save.pack(S);
+const gzPhone = zlib.gzipSync(rawPhone, { level: 9 });
+fs.writeFileSync(path.join(outDir, 'world-phone.touchline'), gzPhone);
+meta.phone = {
+  file: 'world-phone.touchline',
+  rawBytes: rawPhone.length,
+  bytes: gzPhone.length,
+  sha1: crypto.createHash('sha1').update(rawPhone).digest('hex'),
+  historyRowsLeftOut: history,
+  playersLeftOut: trimmed,
+  players: Object.keys(S.players).length,
+};
 fs.writeFileSync(path.join(outDir, 'world.json'), JSON.stringify(meta, null, 1));
+console.log(
+  `Phone world: the same without ${history} season rows and ${trimmed} reserve players, ${(rawPhone.length / 1e6).toFixed(1)} MB packed, ${(gzPhone.length / 1e6).toFixed(1)} MB gzipped`,
+);
 console.log(
   `Prepared world: ${meta.clubs} clubs, ${meta.players} players, ${(raw.length / 1e6).toFixed(1)} MB packed, ` +
     `${(gz.length / 1e6).toFixed(1)} MB gzipped, for simulation ${simHash} (${Math.round((Date.now() - t0) / 1000)} s)`,

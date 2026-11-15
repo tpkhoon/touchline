@@ -32,6 +32,21 @@ for (const [label, script] of [
   }
 }
 
+// the phone's world: it opens inside a heap a phone's browser engine can give a page (450 MB: the full world needs more than 600), and a
+// career can start in it, play and save
+for (const [label, flags] of [
+  ['the phone world opens in 450 MB', ['--max-old-space-size=450', 'tools/phonecheck.mjs', '--open-only']],
+  ['the phone world plays and saves', ['--max-old-space-size=3072', 'tools/phonecheck.mjs']],
+]) {
+  try {
+    execFileSync(process.execPath, flags, { cwd: ROOT, stdio: 'pipe', timeout: 10 * 60 * 1000 });
+    console.log(`✓ ${label}`);
+  } catch (e) {
+    console.log(`✗ ${label}\n    ${`${e.stdout || ''}${e.stderr || ''}`.trim().split('\n').slice(-4).join('\n    ')}`);
+    fails.push(label);
+  }
+}
+
 // the world as it is: the panel's invariants, and what a player would see twice
 const { FM, ctx } = loadSim(7, { getItem: () => null, setItem() {}, removeItem() {} });
 cachedWorld(FM, { world });
