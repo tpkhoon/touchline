@@ -32,11 +32,11 @@ for (const [label, script] of [
   }
 }
 
-// the phone's world: it needs at most 450 MB of heap once open (the full world about 550), and a
+// the phone's world: it needs at most 600 MB of heap once open (333 MB on node 24, 454 on node 22; the full world about 550 and 750), and a
 // career can start in it, play and save
 for (const [label, flags] of [
   [
-    'the phone world needs at most 450 MB once open',
+    'the phone world needs at most 600 MB once open',
     ['--expose-gc', '--max-old-space-size=900', 'tools/phonecheck.mjs', '--open-only'],
   ],
   ['the phone world plays and saves', ['--max-old-space-size=3072', 'tools/phonecheck.mjs']],
