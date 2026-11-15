@@ -1,0 +1,85 @@
+# Builds the Android app (an APK you can install on a phone) and keeps it at one fixed address:
+#   https://github.com/<user>/<repo>/releases/tag/android-latest   (touchline.apk)
+#
+# The app is a shell around the live site (https://<user>.github.io/<repo>/): it opens the game from there, and the game's own
+# service worker keeps it for offline play. So every push to main (the Pages deploy) is a new version of the game on the phone the
+# next time it is opened with a connection; the APK itself only needs rebuilding when something native changes (the icon, the
+# permissions, a plugin, the Capacitor or Android files), which is what the triggers below are, or by hand: Actions → Android
+# app → Run workflow.
+# The APK is signed with the debug key, which is enough to install it by hand ("install from unknown sources"); it is not for the
+# Play Store. Installing a newer one over an older one keeps the saves, as long as it is signed with the same key: this build keeps
+# one key in the repository's secrets if ANDROID_KEYSTORE_BASE64 is set (see docs/ANDROID.md), else the runner's debug key, which
+# changes: then uninstall first (export the save from Settings).
+name: Android app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - 'capacitor.config.json'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build # (the web folder the Capacitor sync needs: the app loads the live site, this is only its fallback)
+      - name: Point the app at the live site
+        run: |
+          node -e "
+          const fs = require('fs');
+          const c = JSON.parse(fs.readFileSync('capacitor.config.json', 'utf8'));
+          const repo = process.env.GITHUB_REPOSITORY.split('/');
+          c.server = { url: 'https://' + repo[0] + '.github.io/' + repo[1] + '/', cleartext: false };
+          fs.writeFileSync('capacitor.config.json', JSON.stringify(c, null, 2));
+          console.log(c.server.url);
+          "
+      - run: npx cap sync android
+      - name: Android SDK
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"
+      - name: Keystore (optional)
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KS" ]; then
+            mkdir -p ~/.android
+            echo "$KS" | base64 -d > ~/.android/debug.keystore
+            echo "using the key from the repository's secrets"
+          fi
+      - name: Build the APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Name it and publish it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk touchline.apk
+          ls -la touchline.apk
+          gh release view android-latest > /dev/null 2>&1 || gh release create android-latest --title "Android app" --notes "The latest Touchline app: install touchline.apk. It opens the game from the live site, so a new version of the game reaches it without a new APK." --latest=false
+          gh release upload android-latest touchline.apk --clobber
+          gh release edit android-latest --notes "The latest Touchline app (built $(date -u +%F' '%H:%M) UTC from $GITHUB_SHA): install touchline.apk. It opens the game from the live site, so a new version of the game reaches it without a new APK."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: touchline-apk
+          path: touchline.apk
