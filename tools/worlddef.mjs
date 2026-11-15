@@ -10,8 +10,13 @@ const { FM } = loadSim(+(args.seed || 4));
 const W = FM.W,
   WD = FM.WorldDef,
   R = FM.RealStats;
+// (every league Minimal: the checks are of definitions and the worlds they make, not of how a league plays; ten worlds of full leagues took about two hours)
+// (Spain's top division is Full: a test of a signing rule needs a club with a full squad; the development sides' leagues are Light: they are given the full squads of eighteen)
+const MINIMAL = Object.fromEntries(
+  FM.D.LEAGUES.map((l) => [l.id, l.id === 'ES1' ? 'full' : ['D3', 'IE1'].includes(l.id) ? 'light' : 'minimal']),
+);
 const baseWorld = () => {
-  W.newWorld(W.REAL_RULES);
+  W.newWorld({ ...W.REAL_RULES, sims: MINIMAL });
   FM.Season.init();
 };
 
@@ -311,7 +316,7 @@ if ('test' in args) {
     );
     const natsBefore = Object.keys(D.CLUB_NAT).length;
     WD.useStatic(WD.patchOf(d7));
-    W.newWorld(W.REAL_RULES);
+    W.newWorld({ ...W.REAL_RULES, sims: MINIMAL });
     FM.Season.init();
     const naf = FM.S.comps.NAF,
       nats = naf.clubs.map((id) => FM.S.clubs[id].nat);
@@ -358,7 +363,7 @@ if ('test' in args) {
       'a club twice on a matchday was accepted, or the old schedule was lost',
     );
     WD.useStatic(WD.patchOf(d8));
-    W.newWorld(W.REAL_RULES);
+    W.newWorld({ ...W.REAL_RULES, sims: MINIMAL });
     FM.Season.init();
     const first = rr[0]
       .map(([h, a]) => h + '>' + a)
@@ -416,7 +421,7 @@ if ('test' in args) {
       "a national side in another nation's league was refused: " + WD.validate(d9, null).errors.slice(0, 2),
     );
     WD.useStatic(WD.patchOf(d9));
-    W.newWorld(W.REAL_RULES);
+    W.newWorld({ ...W.REAL_RULES, sims: MINIMAL });
     FM.Season.init();
     WD.apply(d9, FM.S);
     const sq = W.squad('c_EU21');

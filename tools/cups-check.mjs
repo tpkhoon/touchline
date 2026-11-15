@@ -23,7 +23,15 @@ const check = (ok, msg) => {
   if (!ok) fails.push(msg);
 };
 
-W.newWorld({ win: 3, subs: 5, foreignLimit: 6, twoLegs: true, awayGoals: false });
+// (every league Minimal: the cups are played from the clubs of every league, which a Minimal league has; the league of the club taken is Full from then on)
+W.newWorld({
+  win: 3,
+  subs: 5,
+  foreignLimit: 6,
+  twoLegs: true,
+  awayGoals: false,
+  sims: Object.fromEntries(FM.D.LEAGUES.map((l) => [l.id, 'minimal'])),
+});
 Sea.init();
 W.takeCharge(Object.values(FM.S.clubs).find((c) => c.comp === 'D1' && c.rep < 75).id, 'Test Manager');
 W.goUnemployed('test');
@@ -111,7 +119,16 @@ for (let s = 0; s < SEASONS; s++) {
       const elsewhere = W.continentals().filter(
         (x) => x !== c && c.qual.pool.some((id) => (x.clubs || []).includes(id)),
       );
-      check(!elsewhere.length, `season ${s + 1}: a ${c.id} qualifier is also in ${elsewhere.map((x) => x.id)}`);
+      check(
+        !elsewhere.length,
+        `season ${s + 1}: a ${c.id} qualifier is also in ${elsewhere.map((x) => x.id)}: ${elsewhere
+          .flatMap((x) =>
+            c.qual.pool
+              .filter((id) => (x.clubs || []).includes(id))
+              .map((id) => `${id} (${FM.S.clubs[id].comp}, ${FM.S.clubs[id].name}) in ${x.id}`),
+          )
+          .join('; ')}`,
+      );
     }
     // every group winner (and with up to four groups, every runner-up) reaches the quarter-finals or semi-finals
     // the league phase of the European cups: one table, every club played its matches, the top eight and the play-off's winners
