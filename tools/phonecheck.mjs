@@ -20,6 +20,19 @@ FM.DbImport && FM.DbImport.restore(state);
 FM.S = state;
 if (global.gc) global.gc();
 const heap = Math.round(process.memoryUsage().heapUsed / 1048576); // (what is alive once it is open: the same on every version of node, which a heap limit is not)
+// Budgets: the world has doubled several times with nothing to say so. These are the size of what is downloaded (the full world, the phone's)
+// and, below, of a career's save: each is a little over what it is today, so growth is a decision (change the number) and not a surprise.
+const BUDGET = { phoneFileMB: 15, fullFileMB: 30, saveMB: 72 }; // (today: 12.9, 26.1, and a save of about 65)
+const mbOf = (f) => fs.statSync(f).size / 1048576;
+check(
+  mbOf(file) <= BUDGET.phoneFileMB,
+  `the phone world is ${mbOf(file).toFixed(1)} MB to download (budget ${BUDGET.phoneFileMB})`,
+);
+if (fs.existsSync('dist/data/world.touchline'))
+  check(
+    mbOf('dist/data/world.touchline') <= BUDGET.fullFileMB,
+    `the full world is ${mbOf('dist/data/world.touchline').toFixed(1)} MB to download (budget ${BUDGET.fullFileMB})`,
+  );
 const players = Object.values(FM.S.players);
 check(heap <= 600 || !global.gc, `the phone world needs ${heap} MB of heap once open (at most 600)`);
 check(Object.keys(FM.S.clubs).length === meta.clubs, 'the phone world has other clubs than the full world');
@@ -50,7 +63,12 @@ for (let i = 0; i < 4; i++) {
 check(FM.S.day >= 3, 'the phone world would not play');
 const p = W.squad(club.id)[0];
 check(W.fullHistory(p, (p.history || []).slice().reverse()).length >= 1, 'a player has no career table');
-const back = FM.Save.unpack(FM.Save.pack(FM.S)).state;
+const packed = FM.Save.pack(FM.S);
+check(
+  packed.length / 1e6 <= BUDGET.saveMB,
+  `a career save of the phone world is ${(packed.length / 1e6).toFixed(1)} MB of text (budget ${BUDGET.saveMB})`,
+);
+const back = FM.Save.unpack(packed).state;
 check(
   !!back.user && Object.keys(back.players).length === Object.keys(FM.S.players).length,
   'a save of the phone world does not open again',
@@ -59,4 +77,6 @@ if (fails.length) {
   console.error('FAILED\n' + fails.join('\n'));
   process.exit(1);
 }
-console.log(`ok: ${players.length} players, ${heap} MB of heap once open`);
+console.log(
+  `ok: ${players.length} players, ${heap} MB of heap once open, a save of ${(packed.length / 1e6).toFixed(1)} MB`,
+);

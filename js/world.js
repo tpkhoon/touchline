@@ -4424,6 +4424,13 @@
     '_riskPlayOn',
   ]);
   const r2 = (v) => Math.round(v * 100) / 100;
+  // Fields that are an empty object or list for most players: left out of the save when empty, a fresh empty one when it is opened
+  const EMPTY = new Map([
+    ['deal', () => ({})],
+    ['form', () => []],
+  ]);
+  const isEmpty = (v) =>
+    Array.isArray(v) ? v.length === 0 : !!v && typeof v === 'object' && Object.keys(v).length === 0;
   W.packPlayer = function (p) {
     // C: current ability as it was, so rounding the attributes can never shift a rating across a save/load
     const o = { A: D.ATTRS.map((k) => r2(p.attrs[k])), H: HID.map((k) => p.hid[k]), C: p.ca };
@@ -4441,6 +4448,7 @@
     for (const k in p) {
       if (DROP.has(k) || p[k] === undefined) continue;
       if (k in DEFAULTS && p[k] === DEFAULTS[k]) continue;
+      if (EMPTY.has(k) && isEmpty(p[k])) continue; // (an empty deal or form: opened again as a new empty one)
       o[KEYS[k] || k] = p[k];
     }
     return o;
@@ -4461,6 +4469,7 @@
   W.unpackPlayer = function (o) {
     const p = { ...DEFAULTS };
     for (const k in o) if (!['A', 'H', 'Z', 'K', 'Y', 'C'].includes(k)) p[UNKEY[k] || k] = o[k];
+    for (const [k, fresh] of EMPTY) if (p[k] === undefined) p[k] = fresh();
     p.attrs = Object.fromEntries(D.ATTRS.map((k, i) => [k, o.A[i]]));
     p.hid = Object.fromEntries(HID.map((k, i) => [k, o.H[i]]));
     p.season = W.blankSeason();
