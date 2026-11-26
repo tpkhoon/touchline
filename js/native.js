@@ -232,11 +232,14 @@
 
   // Boot: storage summaries first (the native app reads them from its files), then the title screen
   UI.boot = async function () {
+    FM.mark('scripts-done'); // (all the code is parsed and run)
     N.init();
     try {
       await FM.Save.syncMeta();
     } catch (e) {}
+    FM.mark('storage-ready');
     UI.title();
+    requestAnimationFrame(() => requestAnimationFrame(() => FM.mark('title-painted')));
     setTimeout(() => FM.SimRunner && FM.SimRunner.warm(), 1500);
   };
 })();

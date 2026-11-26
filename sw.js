@@ -2,7 +2,11 @@
 // Strategy: network-first for the app's own files (so you always get the latest code when online,
 // with no version juggling), falling back to the cache when offline or slow. Everything the game
 // needs is precached on install. Bump CACHE when the file list changes.
+// In a build (tools/build.mjs sets HASHED) the scripts, styles, fonts and icons are cache-first: the cache is named for the build, so what
+// it holds is what that build's page asks for, and a repeat visit does not wait on the network. Only the page itself, the manifest and
+// the small world summary (what tells a new build from an old one) stay network-first.
 const CACHE = 'touchline-v133';
+const HASHED = false;
 const FILES = [
   './',
   './index.html',
@@ -154,11 +158,28 @@ self.addEventListener('fetch', (e) => {
   }
   if (url.origin !== self.location.origin) return;
   if (url.pathname.includes('/data/world.')) return; // the prepared world is large: the browser fetches it itself (the 4 s race below would cut it)
+  const page =
+    req.mode === 'navigate' ||
+    /\/(index\.html|sw\.js|manifest\.webmanifest)$/.test(url.pathname) ||
+    url.pathname.includes('/data/');
+  if (HASHED && !page) {
+    e.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE);
+        const hit = await cache.match(req, { ignoreSearch: true });
+        if (hit) return hit;
+        const res = await fetch(req);
+        if (res && res.ok) cache.put(req, res.clone());
+        return res;
+      })(),
+    );
+    return;
+  }
   e.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);
       try {
-        const res = await Promise.race([fetch(req), timeout(4000)]);
+        const res = await Promise.race([fetch(req), timeout(req.mode === 'navigate' ? 2500 : 4000)]);
         if (res && res.ok) cache.put(req, res.clone());
         return res;
       } catch (err) {

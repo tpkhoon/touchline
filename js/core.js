@@ -2,6 +2,28 @@
 (function () {
   const FM = (window.FM = window.FM || {});
 
+  // Timings of the load phases (the browser's performance marks, "tl:" names): FM.mark('x') notes a moment, FM.perf() lists them with the
+  // time since the page began, and since the one before. On a phone: open the page, wait, then read FM.perf() (or the console's "tl:" lines).
+  FM.mark = (name) => {
+    try {
+      performance.mark('tl:' + name);
+    } catch (e) {
+      /* (no performance marks here) */
+    }
+  };
+  FM.perf = () => {
+    let last = 0;
+    return performance
+      .getEntriesByType('mark')
+      .filter((m) => m.name.startsWith('tl:'))
+      .map((m) => {
+        const row = { mark: m.name.slice(3), at: Math.round(m.startTime), since: Math.round(m.startTime - last) };
+        last = m.startTime;
+        return row;
+      });
+  };
+  FM.mark('core');
+
   // what text from another person's file may not contain: the characters that open a tag or leave a quoted attribute, and control characters
   // eslint-disable-next-line no-control-regex -- the control characters are the point
   const BAD_TEXT = new RegExp('[<>"\u0000-\u001f\u007f\u2028\u2029]');

@@ -92,6 +92,7 @@ const files = ['./', ...Object.keys(out).map((f) => './' + f)];
 const build = hash(hSim + hUi + hWorker + hCss);
 let sw = rd('sw.js')
   .replace(/const CACHE = '[^']+';/, `const CACHE = 'touchline-${build}';`)
+  .replace('const HASHED = false;', 'const HASHED = true;')
   .replace(
     /const FILES = \[[\s\S]*?\];/,
     `const FILES = ${JSON.stringify(files, null, 0).replace(/","/g, "', '").replace('["', "['").replace('"]', "']")};`,

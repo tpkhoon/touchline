@@ -594,6 +594,7 @@
   };
   UI.slotMeta = (n) => FM.Save.metaOf(n);
   UI.load = async function (n) {
+    FM.mark('load-start');
     let raw = null;
     try {
       raw = await FM.Save.read(n);
@@ -621,7 +622,9 @@
       // is needed after that: for a backup before an upgrade, or to export a save that would not open)
       const hold = { raw };
       raw = null;
+      FM.mark('load-read');
       const { state, from } = FM.Save.unpack(hold.raw, { holder: hold });
+      FM.mark('load-unpacked');
       step = 'rebuilding the world';
       FM.DbImport.restore(state); // the game's clubs and leagues as this world has them (a database's, or the built-in ones)
       NG.db = null;
@@ -637,6 +640,7 @@
         setTimeout(() => UI.toast(`Save upgraded to the latest format (v${from} → v${FM.Save.VERSION})`, 3200), 400);
       }
       step = 'finishing the day that was in progress';
+      FM.mark('load-ready');
       const left = FM.Season.resolveLive();
       if (left) {
         UI.save();
@@ -1951,6 +1955,7 @@
       const tag = document.querySelector('script[src*="sim.min.js"]'),
         want = tag && /[?&]v=(\w+)/.exec(tag.src);
       if (!want) return null;
+      FM.mark('world-start');
       const meta = await fetch('data/world.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null));
       if (!meta || meta.sim !== want[1]) return null;
       // (a phone, a tablet: the world without the players' past, which a page of their browser engine can hold; a computer opens the full one)
@@ -1960,8 +1965,13 @@
           (window.matchMedia && matchMedia('(pointer: coarse)').matches));
       const res = await fetch(small ? 'data/' + meta.phone.file : 'data/world.touchline');
       if (!res.ok) return null;
-      const text = await FM.Save.gunzip(new Uint8Array(await res.arrayBuffer()));
-      return FM.Save.unpack(text, { world: true }).state;
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      FM.mark('world-downloaded');
+      const text = await FM.Save.gunzip(bytes);
+      FM.mark('world-unzipped');
+      const st = FM.Save.unpack(text, { world: true }).state;
+      FM.mark('world-ready');
+      return st;
     } catch (e) {
       console.warn('The prepared world was not used', e);
       return null;

@@ -4742,6 +4742,11 @@
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="exportDb" data-p="0">Export clubs</button><button class="btn sm grow" data-act="exportDb" data-p="1">Export with players</button></div></div>
       <div class="card"><div class="h3">Help</div><div class="small dim" style="margin-top:4px">Something wrong, or an idea? Tell us — a report carries your game's version and a copy of your save, nothing else.</div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn sm grow" data-act="reportProblem">Report a problem</button><button class="btn sm grow" data-act="sendFeedback">Send feedback</button></div>
+        <div class="tiny dim" style="margin-top:8px;line-height:1.5">Load timings (ms since the page opened, and since the step before): ${esc(
+          FM.perf()
+            .map((r) => `${r.mark} ${r.at} (+${r.since})`)
+            .join(' · ') || 'none yet',
+        )}</div>
         ${UI.helpExtras()}${FM.Dev ? '<button class="btn sm block" style="margin-top:8px" data-act="devPanel">Developer tools</button>' : ''}</div>
       <button class="btn block" data-act="toTitle" style="margin-bottom:10px">Main menu</button>
       <div class="tiny dim center" style="margin-top:14px;line-height:1.6">TOUCHLINE prototype · one-time purchase · no energy · no packs · no pay-to-win</div>`;
