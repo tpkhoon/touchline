@@ -323,11 +323,9 @@
         ok: false,
         msg: `The transfer window is closed. ${FM.Market.windowInfo().text}. Free agents can be signed any time.`,
       };
-    if (p.clubId && T.isSettled(p) && !W.hasTrait(p, 'Mercenary'))
-      return {
-        ok: false,
-        msg: `${W.name(p)} has only just committed to ${s.clubs[p.clubId].name} and isn't looking to move.`,
-      };
+    // (a player who has just moved is held for T.BLOCK_DAYS, with the date it lifts; after that he can be had at a premium, which his ask carries)
+    const held = p.clubId && T.blockOf(p);
+    if (held) return { ok: false, block: true, msg: held };
     if (!p.clubId) deal = null;
     const cash = FM.Market.cashNow(fee, deal);
     if (cash + (fee - cash) * 0.5 > club.budget)

@@ -175,7 +175,22 @@ export function testFile(file, { days = 5 } = {}) {
       const r = T.offer(q.id, 1e12, 1e9);
       FM.Season.windowOpen = wo;
       if (r.ok || !r.block) problems.push('an offer for a player who has just moved was not refused with a reason');
+      // (the sheet's own path, with a full package: the same hold, and an answer that says something)
+      FM.Season.windowOpen = () => true;
+      const Co = FM.Contracts,
+        terms = { wage: q.wage + 1, years: 3, status: 'rotation', bonus: 0 };
+      const r2 = Co.transferOffer(q.id, 1e12, { ...terms });
+      if (!r2 || r2.ok || !r2.block)
+        problems.push('a full offer for a player who has just moved was not held with a reason');
+      for (const fee of [0, 1, T.userAsk(q)]) {
+        const r3 = Co.transferOffer(q.id, fee, { ...terms });
+        if (!r3 || typeof r3 !== 'object' || typeof r3.msg !== 'string' || !r3.msg)
+          problems.push(`a full offer for ${q.id} answered ${JSON.stringify(r3)}`);
+      }
       q.movedDn -= 61;
+      const r4 = Co.transferOffer(q.id, T.userAsk(q) * 1.1, { ...terms });
+      FM.Season.windowOpen = wo;
+      if (r4 && /only just committed/.test(r4.msg || '')) problems.push('a recent signing is still held after 60 days');
       if (T.blockOf(q)) problems.push('the hold on a recent move does not lift after 60 days');
       if (T.userAsk(q) < base * 1.3) problems.push('after the hold a recent signing does not cost a premium');
     }

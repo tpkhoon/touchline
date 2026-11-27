@@ -453,6 +453,15 @@
       UI.render();
       return;
     }
+    // (a refusal that says he will not hear of a move yet is kept in the feed, as well as said in the sheet)
+    if (r.block)
+      FM.News.add({
+        type: 'club',
+        title: `${FM.W.short(p)}: no offer possible yet`,
+        body: r.msg,
+        pid: p.id,
+        clubId: p.clubId,
+      });
     o.counterTerms = r.terms || null;
     o.cashTerms = r.cashTerms || null;
     if (r.counter) {
