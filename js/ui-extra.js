@@ -2286,8 +2286,7 @@
   UI.intlView = function () {
     const s = S(),
       uc = W.userClub();
-    const cal = s.calendar,
-      nextBreak = cal.slice(s.day).findIndex((d) => d.type === 'intl');
+    const nextBreak = FM.Season.nextWhere((d) => d.type === 'intl');
     const nt = FM.Intl.nextTournament();
     // (out of work there is no squad of your own: only the national-team side of the screen)
     const own = uc ? W.squad(uc.id) : [];
@@ -2295,7 +2294,7 @@
     const called = new Set(own.filter((p) => FM.Intl.squad(FM.Intl.nationOf(p)).includes(p)).map((p) => p.id));
     const ranked = FM.Intl.ranked();
     const history = s.archive.flatMap((e) => (e.intl || []).map((x) => ({ ...x, label: e.label }))).reverse();
-    return `<div class="card"><div class="row"><span style="font-size:26px">${UI.ico('globe')}</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak >= 0 ? `Next international break ${cal[s.day + nextBreak] && cal[s.day + nextBreak].dn != null ? 'on ' + FM.W.dateText(cal[s.day + nextBreak].dn) : `in ${nextBreak} day${nextBreak === 1 ? '' : 's'}`}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
+    return `<div class="card"><div class="row"><span style="font-size:26px">${UI.ico('globe')}</span><div class="grow"><div class="h3">International football</div><div class="tiny dim">${nextBreak ? `Next international break: ${nextBreak.text}` : 'No more breaks this season'} · ${nt ? `${nt.kind === 'world' ? 'World Championship' : nt.kind === 'confed' ? 'Continental Champions Trophy' : 'Continental championships'} in summer ${nt.year}` : ''}</div></div></div></div>
       <div class="sec"><div class="h3">Your internationals</div><span class="dim small">${called.size} in current squads</span></div>
       <div class="card flat list" style="padding:4px 12px">${
         mine.length

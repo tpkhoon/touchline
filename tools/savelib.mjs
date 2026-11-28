@@ -197,6 +197,24 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the offer check failed: ' + e.message);
   }
+  // the next international day is told by the calendar's own dates: the days to it are the days between the dates (a week between two league
+  // rounds is seven), never the number of calendar entries, and it comes with a date
+  try {
+    const Sea = FM.Season,
+      cal = FM.S.calendar || [];
+    const nx = Sea.nextWhere((d) => d.type === 'intl');
+    if (nx) {
+      const cur = Sea.dnToday();
+      if (nx.dn != null && nx.days !== Math.max(0, nx.dn - cur))
+        problems.push('the days to the next break are not the days of the calendar');
+      if (nx.dn != null && nx.idx - FM.S.day >= 3 && nx.days < nx.idx - FM.S.day)
+        problems.push(`the next break is ${nx.days} days away but ${nx.idx - FM.S.day} calendar days on`);
+      if (nx.dn != null && !/\d/.test(nx.text) && nx.days > 0) problems.push(`the next break has no date: ${nx.text}`);
+      if (cal[nx.idx].type !== 'intl') problems.push('the next break is not a break');
+    }
+  } catch (e) {
+    problems.push('the calendar check failed: ' + e.message);
+  }
   // the window speaks in dates from the calendar, and a bid still open when it closes is void (nothing completes after the deadline)
   try {
     const S = FM.S,

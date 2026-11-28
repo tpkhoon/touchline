@@ -39,6 +39,31 @@
     if (S.dnNow != null && e && e.dn != null && S.dnNow < e.dn) return S.dnNow;
     return e && e.dn != null ? e.dn : S.day;
   };
+  // The next calendar day (today included) that satisfies pred (a calendar entry), by the calendar's own dates: { idx, entry, dn, days,
+  // date, text }. days is the days of the calendar between now and then (a week between two league rounds is seven), never the count of
+  // entries, which is what the screens counted before; text says it ("today", "tomorrow", "Mon 16 Nov, in 13 days"). Null: there is none.
+  Sea.nextWhere = (pred) => {
+    const S = FM.S,
+      cal = S.calendar || [],
+      now = Sea.dnToday();
+    for (let i = Math.min(S.day, cal.length); i < cal.length; i++) {
+      const e = cal[i];
+      if (!pred(e)) continue;
+      const dn = e.dn != null ? e.dn : null,
+        days = dn != null ? Math.max(0, dn - now) : null;
+      const date = dn != null ? W.dateText(dn) : '';
+      const text =
+        days == null
+          ? `in ${U.plural(i - S.day, 'matchday')}`
+          : days === 0
+            ? 'today'
+            : days === 1
+              ? `tomorrow (${date})`
+              : `${date}, in ${U.plural(days, 'day')}`;
+      return { idx: i, entry: e, dn, days, date, text };
+    }
+    return null;
+  };
   Sea.dayNo = (cal) => {
     const first = (FM.S.calendar || [])[0],
       dn = cal && cal.dn != null ? cal.dn : Sea.dnToday();
