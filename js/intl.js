@@ -2080,7 +2080,37 @@
         s.finalSquadKey = key;
       }
     }
+    if (cal.type === 'intl' && /a$/.test(cal.tag) && s.dutyKey !== `${s.year}${cal.tag}`) {
+      s.dutyKey = `${s.year}${cal.tag}`;
+      I.dutyNotice();
+    }
     return fx;
+  };
+  // The first day of a window: the user's club is told which of its players are away with their countries, and how tired
+  // or knocked they are. No club match is played in a break, so they miss none, but they come back with what they took there
+  I.dutyList = function (club) {
+    const squads = {},
+      out = [];
+    for (const p of W.squad(club.id)) {
+      const code = I.nationOf(p);
+      if (!code || !S().nteams || !S().nteams['n_' + code]) continue;
+      const sq = (squads[code] = squads[code] || new Set(I.squad(code).map((x) => x.id)));
+      if (sq.has(p.id)) out.push({ p, code });
+    }
+    return out;
+  };
+  I.dutyNotice = function () {
+    const c = W.userClub();
+    if (!c || !W.employed()) return [];
+    const away = I.dutyList(c).filter(({ code }) => !(S().user.nation && S().user.nation === code));
+    if (away.length)
+      FM.News.add({
+        type: 'club',
+        title: `${c.name}: ${U.plural(away.length, 'player')} away on international duty`,
+        body: `${away.map(({ p, code }) => `${W.short(p)} (${D.NATIONS[code].name})`).join(', ')}. There are no club matches in the break; they come back with whatever they pick up.`,
+        clubId: c.id,
+      });
+    return away;
   };
   I.breakDay = function (tag) {
     const s = S(),

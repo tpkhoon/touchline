@@ -233,6 +233,15 @@ export function testFile(file, { days = 5 } = {}) {
       if (gks.slice(0, 3).some((p) => ![1, 12, 23].includes(nos[p.id])))
         problems.push(`a ${code} keeper does not wear 1, 12 or 23`);
     }
+    // the club is told who is away on international duty: the list holds only players of the club who are in their nation's squad
+    if (S.nteams && uc) {
+      const away = I.dutyList(uc);
+      for (const { p, code } of away) {
+        if (p.clubId !== uc.id) problems.push('a player away on duty is not at the club');
+        if (!I.squad(code).includes(p))
+          problems.push(`${W.short(p)} is listed away for ${code} but is not in its squad`);
+      }
+    }
   } catch (e) {
     problems.push('the substitution or number check failed: ' + e.message);
   }
