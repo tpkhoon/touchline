@@ -1183,9 +1183,18 @@
   // nations that play a two-legged first round before the groups), runners (the best runners-up that play off for the one place
   // in the intercontinental play-offs)
   const pool3 = (tn, pi) => (tn.pools[pi] && tn.pools[pi][2]) || {};
+  // How many groups a pool of n teams with `slots` places is drawn in: the teams over the group size, but never more groups than places (a
+  // group winner with no place to go to is the arithmetic of "twelve groups for eight places"), no group of three where one group fewer
+  // will do, and no group of more than six (the window has no more matchdays). A pool with a runners-up play-off keeps the groups it has.
+  I.groupCount = (n, slots, size, runners) => {
+    let g = Math.max(1, Math.ceil(n / (size || 4)));
+    if (!runners && slots > 0 && g > slots) g = slots;
+    else if (!runners && g > 1 && n < 4 * g && n >= 4 * (g - 1)) g--;
+    return Math.max(g, Math.ceil(n / 6));
+  };
   // Draw a pool's qualifying groups from its teams (in ranking order, snake-seeded); start = the matchday of the first round
   const addPoolGroups = (q, kind, tn, regions, key, slots, teams, o, start) => {
-    const g = Math.max(1, Math.ceil(teams.length / (tn.qualSize || o.size || 4)));
+    const g = I.groupCount(teams.length, slots, tn.qualSize || o.size || 4, !!o.runners);
     const groups = [...Array(g)].map(() => []);
     // (how the groups are drawn, a choice of the tournament: I.DRAW_METHODS)
     const method = tn.qualDraw || 'snake';

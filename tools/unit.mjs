@@ -26,6 +26,37 @@ const ok = (cond, what) => {
   if (!cond) fails.push(what);
 };
 
+// ---- qualifying: the groups add up with the places ----
+{
+  const I = FM.Intl;
+  // the World Championship's table: the pools' places and the play-off places make the finals' size
+  const wc = I.TOURNS.world[0];
+  eq(
+    wc.pools.reduce((a, p) => a + p[1], 0) + wc.playoff,
+    wc.size,
+    'the places of the world pools and the play-off make the finals',
+  );
+  for (const [n, slots, size, runners] of [
+    [36, 8, 4, false], // Asia after its first round: nine groups of four for eight places
+    [33, 6, 4, false], // North America after its first round
+    [53, 14, 4, false], // Europe
+    [7, 3, 4, false],
+    [50, 20, 4, false],
+  ]) {
+    const g = I.groupCount(n, slots, size, runners);
+    ok(
+      g <= slots || Math.ceil(n / 6) > slots,
+      `${n} teams for ${slots} places are drawn in ${g} groups: a group winner has no place`,
+    );
+    ok(Math.floor(n / g) >= (n >= 12 ? 4 : 3), `${n} teams in ${g} groups leave a group of ${Math.floor(n / g)}`);
+    ok(
+      Math.ceil(n / g) <= 6,
+      `${n} teams in ${g} groups leave a group of ${Math.ceil(n / g)} (the window has six matchdays)`,
+    );
+  }
+  eq(I.groupCount(53, 8, 6, true), 9, 'a pool with a runners-up play-off keeps its groups');
+}
+
 // ---- text: plurals and a / an ----
 eq(U.plural(1, 'point'), '1 point', 'plural of one');
 eq(U.plural(0, 'point'), '0 points', 'plural of none');
