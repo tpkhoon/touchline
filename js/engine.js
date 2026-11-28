@@ -1985,6 +1985,37 @@
           ],
         });
       }
+      // Tired legs late on: the same rule as the computer's sides and your side in an instant result (a starter under 66%, at most two a time,
+      // while there are changes left): watching live, the assistant asks you, and the changes are made as they would have been
+      if (min >= 58 && sd.subsLeft > 0 && since('tired', 15)) {
+        const tiredNow = m
+          .onPitch(sd)
+          .filter(({ p, i }) => sd.slots[i].t !== 'GK' && sd.st[p.id] < 66)
+          .sort((a, b) => sd.st[a.p.id] - sd.st[b.p.id])
+          .slice(0, Math.min(2, sd.subsLeft));
+        if (tiredNow.length)
+          return mk('tired', {
+            icon: 'medical',
+            title: `${tiredNow.map(({ p }) => W.short(p)).join(' and ')} ${tiredNow.length === 1 ? 'is' : 'are'} running on empty`,
+            body: `${tiredNow.map(({ p }) => `${W.short(p)} ${Math.round(sd.st[p.id])}%`).join(', ')}. ${U.plural(sd.subsLeft, 'change')} left.`,
+            quote: quote(
+              FM.Staff.get('physio'),
+              'Their legs have gone. Fresh players now, before it costs us a goal or an injury.',
+            ),
+            options: [
+              {
+                label: tiredNow.length === 1 ? 'Make the change' : 'Make the changes',
+                desc: 'The best fresh player for each slot',
+                apply: () => {
+                  if (sd.subWindows) sd.subWindows--;
+                  tiredNow.forEach(({ i }) => m.makeSub(sd, i, null, null));
+                  return 'Fresh legs on.';
+                },
+              },
+              { label: 'Keep them on', apply: () => 'You trust them to see it out.' },
+            ],
+          });
+      }
       if (m.events.some((e) => e.k === 'red' && e.side === sd.idx) && !used.red) {
         return mk('red', {
           icon: 'redCard',

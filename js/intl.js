@@ -616,6 +616,32 @@
     for (const p of ordered) if (out.length < n && !out.includes(p)) out.push(p);
     return out.slice(0, n);
   };
+  // National shirt numbers: unique in the squad of 23 (1 to 26). Keepers wear 1, 12 and 23; anyone else keeps his club number when it is free
+  // and not a keeper's, and takes the lowest number left when it is not. { id: number } for the squad as it is now, kept while it is the same.
+  I.GK_NOS = [1, 12, 23];
+  I.shirtNos = (code) => {
+    const t = T('n_' + code),
+      sq = I.squad(code),
+      key = sq.map((p) => p.id).join();
+    if (t && t.nums && t.nums.key === key) return t.nums.by;
+    const by = {},
+      used = new Set(I.GK_NOS);
+    const gks = sq.filter((p) => p.pos === 'GK');
+    gks.slice(0, 3).forEach((p, i) => (by[p.id] = I.GK_NOS[i]));
+    const rest = sq.filter((p) => p.pos !== 'GK' || !gks.slice(0, 3).includes(p)); // (a fourth keeper takes a number like anyone else)
+    for (const p of rest) if (p.no >= 2 && p.no <= 26 && !used.has(p.no)) ((by[p.id] = p.no), used.add(p.no));
+    let n = 2;
+    for (const p of rest) {
+      if (by[p.id]) continue;
+      while (used.has(n)) n++;
+      by[p.id] = n;
+      used.add(n);
+    }
+    if (t) t.nums = { key, by };
+    return by;
+  };
+  // The number he wears for his country (his club number when he is not in the squad)
+  I.numFor = (p, code) => I.shirtNos(code || I.nationOf(p))[p.id] || p.no || 0;
   // The squad: the user's own call-ups when managing the nation, otherwise the best 23 available (with three keepers at least)
   // Fit to play now: not injured, suspended or on service, and not one who pulled out of this window (p.ntOut: the day he did)
   I.fit = (p) =>

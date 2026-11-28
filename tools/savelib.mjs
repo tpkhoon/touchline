@@ -197,6 +197,45 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the offer check failed: ' + e.message);
   }
+  // watching a match live, tired legs late on bring the assistant's call (the computer's sides and an instant result make the changes by the
+  // same rule), and a national squad wears unique numbers: 1, 12 and 23 for the keepers, nobody twice
+  try {
+    const S = FM.S,
+      uc = W.userClub();
+    if (W.employed() && uc) {
+      const opp = Object.values(S.clubs).find((c) => c.comp === uc.comp && c.id !== uc.id);
+      const m = new FM.Match({ h: uc.id, a: opp.id, comp: uc.comp, live: true });
+      for (let i = 0; i < 60; i++) m.step();
+      const sd = m.sides.find((x) => x.user);
+      if (!m.finished && sd && sd.subsLeft > 0) {
+        m.onPitch(sd)
+          .filter(({ i }) => sd.slots[i].t !== 'GK')
+          .slice(0, 2)
+          .forEach(({ p }) => (sd.st[p.id] = 40));
+        const pr = FM.Prompts.check(m);
+        if (!pr || pr.id !== 'tired')
+          problems.push(`tired legs live brought ${pr ? pr.id : 'no prompt'}, not the tired call`);
+        else {
+          const made = sd.subsMade.length;
+          pr.options[0].apply();
+          if (sd.subsMade.length <= made) problems.push('the tired call did not make a change');
+        }
+      }
+    }
+    const I = FM.Intl;
+    if (S.nteams) {
+      const code = I.ranked()[3].code,
+        nos = I.shirtNos(code),
+        vals = Object.values(nos);
+      if (new Set(vals).size !== vals.length) problems.push(`${code}'s squad has a shirt number twice`);
+      if (vals.some((n) => n < 1 || n > 26)) problems.push(`${code}'s squad has a number outside 1 to 26`);
+      const gks = I.squad(code).filter((p) => p.pos === 'GK');
+      if (gks.slice(0, 3).some((p) => ![1, 12, 23].includes(nos[p.id])))
+        problems.push(`a ${code} keeper does not wear 1, 12 or 23`);
+    }
+  } catch (e) {
+    problems.push('the substitution or number check failed: ' + e.message);
+  }
   // one star scale for the national teams: the thirty-two best nations' starters average about three stars, and a nation's pool is not five
   // stars for everyone; the squad of a nation not run by the user has every part of the pitch
   try {

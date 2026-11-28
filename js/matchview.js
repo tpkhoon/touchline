@@ -36,12 +36,15 @@
     const tired = FM.W.pickXI(me.id, FM.S.user.tactic).xi.filter((p) => p && p.fitness < 80).length;
     return `<div class="warnline">${row.rest} day${row.rest === 1 ? '' : 's'} since your last match${row.load >= 3 ? ` — ${U.plural(row.load, 'game')} in 14 days` : ''}.${tired ? ` ${tired} of the XI below 80% fitness: think about rotating.` : ''}</div>`;
   };
+  // The number he wears: for his country in a national team's match (unique in the squad), his club number otherwise
+  const numOf = (club, p) => (club && club.sim === 'nation' ? FM.Intl.numFor(p, club.code) : p.no);
+  MV.numOf = numOf;
   MV.predictedXI = function (opp, key) {
     const t = opp.tactic,
       slots = D.FORMATIONS[t.formation] || [];
     const { xi } = W.pickXI(opp.id, t);
     const name = (p) =>
-      `${C.pname(p, (p.no ? p.no + ' ' : '') + FM.W.shirt(p))}${p === key ? ' <span title="Danger man">★</span>' : ''}`;
+      `${C.pname(p, (numOf(opp, p) ? numOf(opp, p) + ' ' : '') + FM.W.shirt(p))}${p === key ? ' <span title="Danger man">★</span>' : ''}`;
     // The lines are the formation's own (3-4-2-1 is three, four, two and one, wing-backs among the four), not the
     // positions' groups: slots from the back of the pitch forward, cut by the numbers in its name
     const nums = String(t.formation).split('-').map(Number);
@@ -140,7 +143,7 @@
           .filter(Boolean)
           .map(
             (p) =>
-              `${C.pname(p, (p.no ? p.no + ' ' : '') + FM.W.shirt(p))}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
+              `${C.pname(p, (numOf(me, p) ? numOf(me, p) + ' ' : '') + FM.W.shirt(p))}${p.fitness < 75 ? ' <span style="color:var(--warn)">(' + Math.round(p.fitness) + '%)</span>' : ''}`,
           )
           .join(' · ')}</div>
         ${unavailable.length ? `<div class="small" style="margin-top:8px;color:var(--bad)">Unavailable: ${unavailable.map((p) => C.pname(p, FM.W.short(p)) + (p.inj ? ' (injured)' : p.service ? ' (military service)' : ' (suspended)')).join(', ')}</div>` : ''}</div>
