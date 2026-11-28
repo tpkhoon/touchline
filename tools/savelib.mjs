@@ -523,6 +523,71 @@ export function testSquadNationRepair() {
   return problems.slice(0, 10);
 }
 
+// Storage that is full: a save that cannot be stored must never take the earlier one with it. The store refuses a write (and the backup in
+// browser storage has no room either): the write is refused with an error, the slot still reads back the earlier save, and its summary is
+// the earlier one. When the browser storage does have room for the new one, it is read in preference to the older copy in the store.
+export async function testFailedWrite() {
+  const problems = [];
+  const mem = {};
+  const cap = 400; // (characters a value of the browser storage can hold, here)
+  const localStorage = {
+    getItem: (k) => (k in mem ? mem[k] : null),
+    setItem(k, v) {
+      if (String(v).length > cap) throw new Error('QuotaExceededError');
+      mem[k] = String(v);
+    },
+    removeItem: (k) => void delete mem[k],
+  };
+  const { FM } = loadSim(5, localStorage);
+  const Sv = FM.Save;
+  const disk = new Map();
+  let full = false;
+  Sv.store = () => ({
+    kind: 'fake',
+    put: async (k, v) => {
+      if (full && !k.startsWith('touchline.meta')) throw new Error('storage full');
+      disk.set(k, v);
+      return true;
+    },
+    get: async (k) => disk.get(k) ?? null,
+    del: async (k) => disk.delete(k),
+  });
+  const state = (day) => ({
+    version: Sv.VERSION,
+    year: 2030,
+    day,
+    clubs: { c: { id: 'c', name: 'Test FC', short: 'TFC', colors: ['#000000', '#111111'] } },
+    user: { clubId: 'c', name: 'Mgr' },
+  });
+  const old = 'O'.repeat(2000),
+    fresh = 'N'.repeat(2000);
+  try {
+    await Sv.write(1, state(1), old);
+    full = true;
+    let refused = false;
+    try {
+      await Sv.write(1, state(2), fresh);
+    } catch (e) {
+      refused = true;
+    }
+    if (!refused) problems.push('a write that nothing could store did not say so');
+    if ((await Sv.read(1)) !== old) problems.push('a refused write took the earlier save with it');
+    const m = Sv.metaOf(1);
+    if (!m || m.day !== 1) problems.push('a refused write changed the slot summary');
+    // browser storage with room for the new save: it is the newer one and is read first
+    const small = 'S'.repeat(100);
+    await Sv.write(1, state(3), small);
+    if ((await Sv.read(1)) !== small)
+      problems.push('a save kept in browser storage was not read in preference to the older one');
+    full = false;
+    await Sv.write(1, state(4), fresh);
+    if ((await Sv.read(1)) !== fresh) problems.push('a save written after room came back was not read');
+  } catch (e) {
+    problems.push('the full-storage check failed: ' + e.message);
+  }
+  return problems;
+}
+
 // A career that starts with no club, in a world where every league is Minimal (the least a world can hold): it is saved, opened and played
 // through its first weeks without a fault, and over those weeks offers come to a manager of modest name (an out-of-work career had no way
 // back into the game once). Every day the sim runs is in this test: a skip that goes round without end is caught by the harness's cap.
@@ -616,10 +681,13 @@ if (isMain) {
   const repair = testSquadNationRepair();
   console.log(`${repair.length ? '✗' : '✓'} Squads of one foreign nation are repaired on load`);
   repair.forEach((p) => console.log('    ' + p));
+  const failedWrite = await testFailedWrite();
+  console.log(`${failedWrite.length ? '✗' : '✓'} A save that cannot be stored keeps the earlier one`);
+  failedWrite.forEach((p) => console.log('    ' + p));
   const noClub = 'noclub' in args || !args.only ? testNoClubCareer() : [];
   console.log(`${noClub.length ? '✗' : '✓'} A career with no club opens, plays and gets offers (every league Minimal)`);
   noClub.forEach((p) => console.log('    ' + p));
-  repair.push(...noClub);
+  repair.push(...noClub, ...failedWrite);
   const all = list().filter((x) => !args.only || x.file.includes(String(args.only)));
   if (!all.length) {
     console.log(

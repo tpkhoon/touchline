@@ -589,9 +589,11 @@
         path = FILES.path(k),
         gz = path + '.gz',
         tmp = gz + '.tmp';
-      let data = null;
+      let data = null,
+        size = 0;
       if (typeof v === 'string' && v.length > 1e6 && typeof CompressionStream !== 'undefined') {
         const bytes = await Sv.gzip(v);
+        size = bytes.length;
         let b = '';
         for (let i = 0; i < bytes.length; i += 0x8000)
           b += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
@@ -612,6 +614,16 @@
         return true;
       }
       await F.writeFile({ path: tmp, data, directory: 'DATA', recursive: true });
+      // (the new file is checked before the old one is touched: a write that ran out of room leaves a short file, and the old save stays)
+      if (F.stat) {
+        const st = await F.stat({ path: tmp, directory: 'DATA' });
+        if (st && typeof st.size === 'number' && st.size !== size) {
+          try {
+            await F.deleteFile({ path: tmp, directory: 'DATA' });
+          } catch (e) {}
+          throw new Error('The device did not store the whole save (is its storage full?). The earlier save is kept.');
+        }
+      }
       try {
         await F.deleteFile({ path: gz, directory: 'DATA' });
       } catch (e) {
@@ -626,14 +638,18 @@
     async get(k) {
       const F = FILES.fs(),
         path = FILES.path(k);
-      try {
-        const b64 = (await F.readFile({ path: path + '.gz', directory: 'DATA' })).data;
-        const bin = atob(b64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return await Sv.gunzip(bytes);
-      } catch (e) {
-        /* no compressed copy: try the plain one */
+      // (the finished file, then one left behind by a write that was cut off between the old file going and the new one being named)
+      for (const p of [path + '.gz', path + '.gz.tmp']) {
+        try {
+          const b64 = (await F.readFile({ path: p, directory: 'DATA' })).data;
+          const bin = atob(b64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          const text = await Sv.gunzip(bytes);
+          if (text) return text;
+        } catch (e) {
+          /* not there, or cut short: the next one */
+        }
       }
       for (const p of [path, path + '.tmp']) {
         try {
@@ -681,6 +697,7 @@
     const m0 = Sv.meta(S),
       prev = Sv.metaOf(slot);
     if (prev && prev.label) m0.label = prev.label; // (the name the player gave the save stays through every save)
+    m0.size = json.length; // (characters of text: the load list shows it, so a player can see what a slot weighs)
     const meta = JSON.stringify(m0);
     const stored = () => {
       ls.set(META(slot), meta);
@@ -710,16 +727,18 @@
     return job;
   };
   Sv.read = async function (slot) {
-    let raw = null;
-    try {
-      raw = await Sv.store().get(KEY(slot));
-    } catch (e) {}
+    // (a copy in localStorage is only there when the store refused the last write, and every write that the store takes removes it: so it is
+    // the newer one, and is read first)
+    let raw = ls.get(KEY(slot));
+    if (!raw)
+      try {
+        raw = await Sv.store().get(KEY(slot));
+      } catch (e) {}
     if (!raw && Sv.native()) {
       try {
         raw = await IDB.get(KEY(slot));
       } catch (e) {}
     }
-    if (!raw) raw = ls.get(KEY(slot));
     return raw || null;
   };
   Sv.remove = async function (slot) {
