@@ -2427,7 +2427,7 @@
       const dots = slots
         .map((sl, i) => {
           const p = xi[i];
-          return `<div class="slot-dot" style="left:${U.clamp(sl.y * 100, 11, 89)}%;top:${sl.t === 'GK' ? 90 : Math.min(74, 13 + (1 - (sl.x - 0.04) / 0.76) * 70)}%" ${p ? `data-act="player" data-id="${p.id}"` : ''}><div class="d" style="background:${t.colors[0]};color:${U.ink(t.colors[0])}">${p ? W.stars(W.slotOverall(p, sl.t, sl, t.tactic.roles[i]), sl.t) : '—'}</div><div class="n">${p ? esc(p.ln) : 'Empty'}</div><div class="r">${D.slotLabel(sl)}</div></div>`;
+          return `<div class="slot-dot" style="left:${U.clamp(sl.y * 100, 11, 89)}%;top:${sl.t === 'GK' ? 90 : Math.min(74, 13 + (1 - (sl.x - 0.04) / 0.76) * 70)}%" ${p ? `data-act="player" data-id="${p.id}"` : ''}><div class="d" style="background:${t.colors[0]};color:${U.ink(t.colors[0])}">${p ? FM.Intl.stars(W.slotOverall(p, sl.t, sl, t.tactic.roles[i]), sl.t) : '—'}</div><div class="n">${p ? esc(p.ln) : 'Empty'}</div><div class="r">${D.slotLabel(sl)}</div></div>`;
         })
         .join('');
       const caps = squad.slice().sort((x, y) => ((y.intl && y.intl.caps) || 0) - ((x.intl && x.intl.caps) || 0))[0],

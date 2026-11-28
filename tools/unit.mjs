@@ -55,6 +55,22 @@ const ok = (cond, what) => {
     );
   }
   eq(I.groupCount(53, 8, 6, true), 9, 'a pool with a runners-up play-off keeps its groups');
+  // a squad is balanced: a pool deep in one position does not fill it, and every part of the pitch is covered
+  const mk = (pos, n, ca) => Array.from({ length: n }, (_, i) => ({ pos, ca: ca - i, id: pos + i }));
+  const ordered = [
+    ...mk('CB', 14, 80),
+    ...mk('ST', 2, 70),
+    ...mk('CM', 3, 60),
+    ...mk('FB', 2, 55),
+    ...mk('GK', 4, 50),
+  ].sort((a, b) => b.ca - a.ca);
+  const sq = I.balanced(ordered, 23);
+  eq(sq.length, 23, 'a balanced squad has 23');
+  const cnt = (g) => sq.filter((p) => D.POS_GROUP[p.pos] === g).length;
+  ok(
+    cnt('GK') >= 3 && cnt('MID') >= 3 && cnt('ATT') >= 2,
+    `a balanced squad leaves a part of the pitch bare (GK ${cnt('GK')}, MID ${cnt('MID')}, ATT ${cnt('ATT')})`,
+  );
 }
 
 // ---- text: plurals and a / an ----

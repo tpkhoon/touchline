@@ -540,6 +540,41 @@
     const xi = I.pool(code).slice(0, 11);
     return xi.length ? U.avg(xi, (p) => p.ca) : 40;
   };
+  // Stars at the international level: one scale for every national-team screen (the call-ups, the line-up, a nation's eleven). Three stars
+  // is the average starter of the thirty-two best-ranked nations, by position group, as W.stars is for the league you manage in (against
+  // which a whole national pool of a lower-league manager was five stars, and a player was a different rating in the line-up (his ability
+  // in the slot) and in the call-ups (his ability in his own position)).
+  let starRefCache = { key: '', by: null };
+  I.starRef = () => {
+    const s = S(),
+      key = `${s.year}.${s.day}.${I.natVer}.${W.rosterVer}`;
+    if (starRefCache.key === key && starRefCache.S === s) return starRefCache.by;
+    const lists = { GK: [], DEF: [], MID: [], ATT: [], ALL: [] };
+    for (const t of I.ranked().slice(0, 32))
+      for (const p of I.pool(t.code).slice(0, 11)) {
+        const g = W.STAR_GROUPS[p.pos];
+        if (g) {
+          lists[g].push(p.ca);
+          lists.ALL.push(p.ca);
+        }
+      }
+    const by = {};
+    for (const g in lists) {
+      const a = lists[g],
+        n = a.length,
+        mean = n ? U.avg(a) : 66,
+        sd = n > 1 ? Math.sqrt(a.reduce((t, x) => t + (x - mean) ** 2, 0) / (n - 1)) : 6;
+      by[g] = { mean, sd: Math.max(W.STAR_MIN_SD, sd), n };
+    }
+    starRefCache = { key, S: s, by };
+    return by;
+  };
+  I.stars = (ca, pos) => {
+    const ref = I.starRef(),
+      g = pos && W.STAR_GROUPS[pos],
+      r = g && ref[g].n >= 8 ? ref[g] : ref.ALL;
+    return U.clamp(Math.round((W.STAR_CENTER + (W.STAR_SLOPE * (ca - r.mean)) / r.sd) * 2) / 2, 0.5, 5);
+  };
   // A squad always has at least three goalkeepers (as the tournaments require): when it has fewer, the best keepers of the nation who
   // are available are added, each taking the place of the weakest outfield player when the squad is full
   I.MIN_KEEPERS = 3;
@@ -566,6 +601,20 @@
       out.push(g);
     }
     return out;
+  };
+  // The best n of a list already in order of preference, with each part of the pitch covered (three keepers, and at least six defenders, five
+  // midfielders and three attackers of a squad of 23, scaled for another size): a pool where one position is deep does not fill the squad
+  // with it and leave a flank to a centre-back
+  I.balanced = (ordered, n = 23) => {
+    const min = { GK: 3, DEF: 6, MID: 5, ATT: 3 },
+      out = [];
+    for (const g in min)
+      ordered
+        .filter((p) => D.POS_GROUP[p.pos] === g)
+        .slice(0, Math.round((min[g] * n) / 23))
+        .forEach((p) => out.push(p));
+    for (const p of ordered) if (out.length < n && !out.includes(p)) out.push(p);
+    return out.slice(0, n);
   };
   // The squad: the user's own call-ups when managing the nation, otherwise the best 23 available (with three keepers at least)
   // Fit to play now: not injured, suspended or on service, and not one who pulled out of this window (p.ntOut: the day he did)
@@ -598,11 +647,10 @@
             ? U.pick(fit.filter((p) => !(p.ntUntil >= S().year)).slice(0, 3)) || null
             : null;
         const rank = (p) => I.aiScore(p) + (omit === p ? -100 : 0);
-        const ids = fit
-          .slice()
-          .sort((a, b) => rank(b) - rank(a))
-          .slice(0, 23)
-          .map((p) => p.id);
+        const ids = I.balanced(
+          fit.slice().sort((a, b) => rank(b) - rank(a)),
+          23,
+        ).map((p) => p.id);
         t.aiSq = { key, ids, omit: omit && omit.id };
         if (omit && omit.ca >= 72 && I.ranked().indexOf(t) < 30 && t.aiSq.news !== key)
           FM.News.add({

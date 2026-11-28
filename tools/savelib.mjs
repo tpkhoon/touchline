@@ -197,6 +197,29 @@ export function testFile(file, { days = 5 } = {}) {
   } catch (e) {
     problems.push('the offer check failed: ' + e.message);
   }
+  // one star scale for the national teams: the thirty-two best nations' starters average about three stars, and a nation's pool is not five
+  // stars for everyone; the squad of a nation not run by the user has every part of the pitch
+  try {
+    const I = FM.Intl;
+    if (FM.S.nteams && I.ranked().length > 40) {
+      const top = I.ranked()[0],
+        xi = I.pool(top.code).slice(0, 11);
+      const at5 = xi.filter((p) => I.stars(p.ca, p.pos) >= 5).length;
+      if (at5 > 8) problems.push(`${at5} of the best nation's eleven are five stars on the international scale`);
+      const mean = xi.reduce((t, p) => t + I.stars(p.ca, p.pos), 0) / (xi.length || 1);
+      if (mean < 2.5 || mean > 4.6)
+        problems.push(`the best nation's eleven average ${mean.toFixed(1)} stars on the international scale`);
+      const other = I.ranked().find((t) => !FM.W.isUserNation(t.id) && t !== top);
+      const sq = I.squad(other.code);
+      const grp = (g) => sq.filter((p) => FM.D.POS_GROUP[p.pos] === g).length;
+      if (grp('GK') < 3 || grp('DEF') < 5 || grp('MID') < 4 || grp('ATT') < 2)
+        problems.push(
+          `${other.name}'s squad is lopsided (GK ${grp('GK')}, DEF ${grp('DEF')}, MID ${grp('MID')}, ATT ${grp('ATT')})`,
+        );
+    }
+  } catch (e) {
+    problems.push('the national-team rating check failed: ' + e.message);
+  }
   // the next international day is told by the calendar's own dates: the days to it are the days between the dates (a week between two league
   // rounds is seven), never the number of calendar entries, and it comes with a date
   try {
